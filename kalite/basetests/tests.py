@@ -27,8 +27,11 @@ if sys.platform == 'darwin':
     os.environ["LC_ALL"] = EN_US_UTF_8
     os.environ["LANG"] = EN_US_UTF_8
 
-# Import this here after setting the above environment variables.
+# Import these here after setting the above environment variables.
+from pip._vendor.distlib.version import NormalizedVersion, _suggest_normalized_version
+
 from django.conf import settings
+
 from fle_utils.general import softload_json
 
 
@@ -105,6 +108,21 @@ class DependenciesTests(unittest2.TestCase):
             return _tuple_to_str(version)
         # attribute found is a python module like `youtube_dl.version`, so we recurse
         return self.get_version(version)
+
+    def check_versions_are_equal(self, expected_version, package_version, show_log=True):
+        """
+        We followed the advise for comparing versions here
+        http://legacy.python.org/dev/peps/pep-0386/#the-new-versioning-algorithm - however, it was superseded by
+        http://legacy.python.org/dev/peps/pep-0440/ - Version Identification and Dependency Specification
+        so we must look at it later for more robust and updated specs.
+        """
+        v1 = _suggest_normalized_version(expected_version)
+        v2 = _suggest_normalized_version(package_version)
+        if v1 is None or v2 is None:
+            if show_log:
+                self._log(" comparing as string...")
+            return expected_version == package_version
+        return NormalizedVersion(v1) == NormalizedVersion(v2)
 
     def make_url(self):
         return "http://%s:%s/" % (self.DJANGO_HOST, self.DJANGO_PRODUCTION_PORT,)
@@ -240,12 +258,13 @@ class PackagesTests(DependenciesTests):
         try:
             self._log("Testing required Python packages and their versions...")
             fail_count = 0
+
             for package, version in sorted(self.PACKAGES.iteritems()):
                 self._log("\n...importing %s..." % package)
                 p = __import__(package)
                 imported_version = self.get_version(p)
                 self._log("need version %s, found %s..." % (version, imported_version,))
-                if version == imported_version:
+                if self.check_versions_are_equal(version, imported_version):
                     self._log(" %s" % self.OK)
                 else:
                     fail_count += 1
