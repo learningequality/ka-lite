@@ -3,8 +3,13 @@
         <div class="col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3>
+                    <div class="pull-right">
+                        <div class="points-wrapper"></div>
+                        <a href="{{ content_urls.stream }}" class="btn btn-primary download-link pull-right">{{_ "Download" }}</a>
+                        <div class="clear"></div>
+                    </div>
 
+                    <h3>
                         {{#if dubs_available }}
                             <select class="content-language-selector">
                                 {{#each availability }}
@@ -14,19 +19,26 @@
                                 {{/each}}
                             </select>
                         {{/if}}
+                    </h3>
 
-                        <a href="{{ content_urls.stream }}" class="btn btn-lg btn-primary download-link">{{_ "Download" }}</a>
-                        <span class="title">{{ title }}</span>
+                    <span class="title">{{ title }}</span>
 
-                        {{#if description }}
-                        </br><small class="long-description">{{ description }}</small>
-                        {{/if}}
+                    {{#if description }}
+                    <div class="content-description">{{ description }}</div>
+                    {{/if}}
 
-                        <div class="points-wrapper pull-right"></div>
-                    <h5>
+                    <div class="clear"></div>
+
+                    <div class="borderwrapper"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="content-player-container"></div>
+                </div>
+                {{#if related_content}}
+                <div class="panel-footer">
+                    <h4>
                         Related content:
-                    </h5>
-                    {{#if related_content}}
+                    </h4>
                     <div class="row">
                         {{#each related_content }}
                             <div class="col-xs-4">
@@ -61,15 +73,8 @@
                             </div>
                         {{/each}}
                     </div>
-                    {{else}}
-                        <p>No related content</p>
-                    {{/if}}
-                    <div class="borderwrapper"></div>
-                    </h3>
                 </div>
-                <div class="panel-body">
-                    <div class="content-player-container"></div>
-                </div>
+                {{/if}}
             </div>
         </div>
     </div>
