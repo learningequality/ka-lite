@@ -338,7 +338,8 @@ form .input-group {
     border: none;
 }
 .panel-default>.panel-heading,
-.panel-body {
+.panel-body,
+.panel-footer {
     background-color: #77b05d;
 }
 .panel-heading h3 {
@@ -352,7 +353,7 @@ form .input-group {
 .panel-heading h5 {
     color: #CFDECE;
 }
-.panel-heading p{
+.panel-heading p {
     color: white;
     font-weight: 300;
 }
