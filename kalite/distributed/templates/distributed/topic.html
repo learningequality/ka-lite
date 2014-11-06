@@ -47,6 +47,8 @@
     <link href="{% static "soundmanager/css/bar-ui.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "css/distributed/audio.css" %}" rel="stylesheet" type="text/css">
 
+    <link href="{% static "pdfjs/web/viewer.css" %}" rel="stylesheet" type="text/css">
+
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -96,6 +98,17 @@
     <script src="{% static 'js/distributed/audio/views.js' %}"></script>
 
     <script src="{% url 'handlebars_templates' module_name='pdf' %}"></script>
+    <script src="{% static 'pdfjs/web/compatibility.js' %}"></script>
+    <script src="{% static 'pdfjs/web/l10n.js' %}"></script>
+    <script src="{% static 'pdfjs/build/pdf.js' %}"></script>
+    <script>
+        PDFJS.workerSrc = "{% static 'pdfjs/build/pdf.worker.js' %}";
+        PDFJS.imageResourcesPath = "{% static 'pdfjs/web/images/' %}";
+        PDFJS.cMapUrl = "{% static 'pdfjs/web/cmaps/' %}";
+        PDFJS.cMapPacked = true;
+        PDFJS.disableFontFace = true;
+    </script>
+    <script src="{% static 'pdfjs/web/viewer.js' %}"></script>
     <script src="{% static 'js/distributed/pdf/views.js' %}"></script>
 
     <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
