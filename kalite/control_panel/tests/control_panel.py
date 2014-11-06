@@ -128,9 +128,6 @@ class RestrictedTeacherTests(FacilityMixins,
                                            password=self.teacher_password,
                                            facility=self.facility)
 
-    def teacher_cant_delete_facilities(self):
-        pass
-
     def teacher_cant_edit_facilities(self):
         facility_to_edit = self.create_facility(name="edit me")
 
