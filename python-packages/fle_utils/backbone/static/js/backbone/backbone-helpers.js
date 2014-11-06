@@ -87,7 +87,7 @@ window.BaseView = Backbone.View.extend({
                         // we really only want to run this when the
                         // DOMElement is still not null, aka not
                         // garbage collected yet.
-                        if (DOMElement) {
+                        if (typeof DOMElement !== "undefined" && DOMElement !== null) {
                             DOMElement.removeEventListener.apply(DOMElement, listener.args);
                         }
 
