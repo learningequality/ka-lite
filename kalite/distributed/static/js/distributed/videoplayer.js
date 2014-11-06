@@ -323,7 +323,7 @@ window.VideoPlayerView = Backbone.View.extend({
     },
 
     _onResize: _.throttle(function() {
-        var available_width = $(".container").width();
+        var available_width = $(".content-player-container").width();
         var available_height = $(window).height() * 0.9;
         this.setContainerSize(available_width, available_height);
     }, 500),
@@ -468,9 +468,9 @@ window.VideoPointView = Backbone.View.extend({
 
 });
 
-window.VideoWrapperView = Backbone.View.extend({
+window.VideoWrapperView = BaseView.extend({
 
-    template: HB.template("video/video-wrapper"),
+    template: HB.template("content/content-wrapper"),
 
     initialize: function() {
 
@@ -500,14 +500,17 @@ window.VideoWrapperView = Backbone.View.extend({
         this.$el.html(this.template(this.model.attributes));
 
         this.videoPlayerView = new VideoPlayerView({
-            el: this.$(".video-player-container"),
+            el: this.$(".content-player-container"),
             model: this.model
         });
 
-        this.videoPointView = new VideoPointView({
-            el: this.$(".points-container"),
+        this.points_view = this.add_subview(ContentPointsView, {
             model: this.model
         });
+
+        this.points_view.render();
+
+        this.$(".points-wrapper").append(this.points_view.el);
 
     },
 
