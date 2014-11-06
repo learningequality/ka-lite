@@ -74,13 +74,17 @@ def add_facility_teacher(request):
     return _facility_user(request, new_user=True, is_teacher=True, title=title)
 
 
+@dynamic_settings
 @require_authorized_admin
-def add_facility_student(request):
+def add_facility_student(request, ds):
     """
     Admins and coaches can add students
     If central, must be an org admin
     If distributed, must be superuser or a coach
     """
+    if request.is_teacher and not ds["facility"].teacher_can_create_students:
+        return HttpResponseForbidden()
+
     title = _("Add a new student")
     return _facility_user(request, new_user=True, title=title)
 

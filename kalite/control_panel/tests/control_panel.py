@@ -169,7 +169,23 @@ class RestrictedTeacherTests(FacilityMixins,
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
     def teacher_cant_create_students(self):
-        pass
+        self.browser_login_teacher(username=self.teacher_username,
+                                   password=self.teacher_password,
+                                   facility_name=self.facility.name)
+
+        # subtest for making sure they don't see the create student button
+        self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": self.facility.id}))
+        elem = self.browser.find_element_by_css_selector('a.create-student')
+        self.assertEquals(elem.value_of_css_property("display"), "none", "create-student is still displayed!")
+
+        # TODO(aron): move these client test cases to their own test class
+        # subtest for making sure they can't actually load the create facility page
+        # use the django client since it's faster
+        self.client.login_teacher(data={"username": self.teacher_username,
+                                        "password": self.teacher_password},
+                                  facility=self.facility)
+        resp = self.client.get(self.reverse("add_facility_student"))
+        self.assertEqual(resp.status_code, 403, "Teacher was still authorized to create students; status code is %s" % resp.status_code)
 
     def teacher_cant_edit_students(self):
         pass

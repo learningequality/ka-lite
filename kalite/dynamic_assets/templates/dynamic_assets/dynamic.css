@@ -24,3 +24,11 @@
 }
 
 {% endif %}
+
+{% if request.is_teacher and not ds.facility.teacher_can_create_students %}
+
+.create-student {
+  display: none;
+}
+
+{% endif %}

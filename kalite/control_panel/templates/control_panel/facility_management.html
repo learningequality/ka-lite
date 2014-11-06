@@ -253,7 +253,7 @@
                                             </td>
                                             <td>
                                                 {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                                <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}{% endblocktrans %}" 
+                                                <a title="{% blocktrans with groupname=group.name %}Coach group {{ groupname }}{% endblocktrans %}"
                                                 {% if group.id %}
                                                     href="{% url 'coach_reports' %}?facility={{ facility_id }}&group={{ group.id }}"
                                                 {% elif group.name == ungrouped %}
@@ -292,8 +292,8 @@
         <div class="row" id="students">
             <div class="col-md-12">
                 <h2>{% trans "Students" %}&nbsp;<small>
-                    <a title="{% trans 'Add a new student.' %}" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}"><span class="glyphicon glyphicon-plus"></span>
-                    </a></br>{% trans "This report contains information about recent student activity." %}</small></h2>
+                  <a class="create-student" title="{% trans 'Add a new student.' %}" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}"><span class="glyphicon glyphicon-plus"></span>
+                  </a></br>{% trans "This report contains information about recent student activity." %}</small></h2>
             </div>
             <div class="col-md-12">
                 {% if not student_pages %}
