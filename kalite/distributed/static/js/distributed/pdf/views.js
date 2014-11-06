@@ -7,14 +7,14 @@ window.PDFViewerView = ContentBaseView.extend({
             this.log_model.set("highest_page", 0);
         }
         this.$el.html(this.template(this.data_model.attributes));
-        this.$(".pdf-iframe").load(this.initialize_listeners);
+        _.defer(this.defer_listeners);
     },
 
-    initialize_listeners: function(ev) {
-        var contentWindow = ev.target.contentWindow; // the window object inside the iframe
+    defer_listeners: function() {
+        webViewerLoad();
+        PDFView.open(this.data_model.get("content_urls").stream);
+    },
 
-        this.listenToDOM(contentWindow, "pageshow", this.page_loaded);
-        this.listenToDOM(contentWindow, "pagechange", this.page_changed); // page changed
     },
 
     page_changed: function(ev) {
