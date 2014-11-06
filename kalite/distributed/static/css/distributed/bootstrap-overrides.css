@@ -360,6 +360,10 @@ form .input-group {
 .panel-heading .borderwrapper {
     border-bottom: 1px solid rgba(255,255,255,0.5);
 }
+.panel-default .content-description {
+    color: white;
+    padding: 10px;
+}
 /* ===================================
     Footer
 =================================== */

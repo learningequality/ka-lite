@@ -15,15 +15,15 @@
                                 {{/each}}
                             </select>
                         {{/if}}
-
-                        <a href="{{ content_urls.stream }}" class="btn btn-lg btn-primary download-link">{{_ "Download" }}</a>
-                        <span class="title">{{ title }}</span>
-
-                        {{#if description }}
-                        </br><small class="long-description">{{ description }}</small>
-                        {{/if}}
-
                     </h3>
+
+                    <a href="{{ content_urls.stream }}" class="btn btn-lg btn-primary download-link">{{_ "Download" }}</a>
+                    <span class="title">{{ title }}</span>
+
+                    {{#if description }}
+                    <div class="content-description">{{ description }}</div>
+                    {{/if}}
+
                     <div class="borderwrapper"></div>
                 </div>
                 <div class="panel-body">
