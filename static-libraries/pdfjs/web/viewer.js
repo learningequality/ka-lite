@@ -25,7 +25,7 @@
 'use strict';
 
 var DEFAULT_URL = 'compressed.tracemonkey-pldi-09.pdf';
-var DEFAULT_SCALE = 'auto';
+var DEFAULT_SCALE = 'page-width';
 var DEFAULT_SCALE_DELTA = 1.1;
 var UNKNOWN_SCALE = 0;
 var DEFAULT_CACHE_SIZE = 10;
@@ -53,12 +53,6 @@ var FindStates = {
   FIND_WRAPPED: 2,
   FIND_PENDING: 3
 };
-
-PDFJS.imageResourcesPath = './images/';
-  PDFJS.workerSrc = '../build/pdf.worker.js';
-  PDFJS.cMapUrl = '../web/cmaps/';
-  PDFJS.cMapPacked = true;
-  PDFJS.disableFontFace = true;
 
 var mozL10n = document.mozL10n || document.webL10n;
 
@@ -5397,7 +5391,6 @@ function webViewerLoad(evt) {
 
 function webViewerInitialized() {
   var params = PDFView.parseQueryString(document.location.search.substring(1));
-  var file = 'file' in params ? params.file : DEFAULT_URL;
 
   var fileInput = document.createElement('input');
   fileInput.id = 'fileInput';
@@ -5592,13 +5585,7 @@ function webViewerInitialized() {
   document.getElementById('download').addEventListener('click',
     SecondaryToolbar.downloadClick.bind(SecondaryToolbar));
 
-
-  if (file) {
-    PDFView.open(file, 0);
-  }
 }
-
-document.addEventListener('DOMContentLoaded', webViewerLoad, true);
 
 function updateViewarea() {
 

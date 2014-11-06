@@ -13,31 +13,6 @@
  * limitations under the License.
  */
 
-* {
-  padding: 0;
-  margin: 0;
-}
-
-html {
-  height: 100%;
-  /* Font size is needed to make the activity bar the correct size. */
-  font-size: 10px;
-}
-
-body {
-  height: 100%;
-  background-color: #404040;
-  background-image: url(images/texture.png);
-}
-
-body,
-input,
-button,
-select {
-  font: message-box;
-  outline: none;
-}
-
 .hidden {
   display: none !important;
 }
@@ -146,25 +121,10 @@ select {
   pointer-events: none;
   position: relative;
 }
-html[dir='ltr'] .outerCenter {
-  float: right;
-  right: 50%;
-}
-html[dir='rtl'] .outerCenter {
-  float: left;
-  left: 50%;
-}
+
 .innerCenter {
   pointer-events: auto;
   position: relative;
-}
-html[dir='ltr'] .innerCenter {
-  float: right;
-  right: -50%;
-}
-html[dir='rtl'] .innerCenter {
-  float: left;
-  left: -50%;
 }
 
 #outerContainer {
@@ -498,18 +458,6 @@ html[dir='rtl'] #toolbarViewerRight {
   margin-right: -1px;
 }
 
-html[dir='ltr'] #toolbarViewerLeft,
-html[dir='rtl'] #toolbarViewerRight {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-html[dir='ltr'] #toolbarViewerRight,
-html[dir='rtl'] #toolbarViewerLeft {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
 html[dir='ltr'] #toolbarViewerLeft > *,
 html[dir='ltr'] #toolbarViewerMiddle > *,
 html[dir='ltr'] #toolbarViewerRight > *,
@@ -1101,7 +1049,6 @@ html[dir='rtl'] .verticalToolbarSeparator {
 
 #thumbnailView {
   position: absolute;
-  width: 120px;
   top: 0;
   bottom: 0;
   padding: 10px 40px 0;
@@ -1124,6 +1071,8 @@ html[dir='rtl'] .verticalToolbarSeparator {
 }
 
 .thumbnailImage {
+  margin-left: -8px;
+  margin-top: -8px;
   transition-duration: 150ms;
   border: 1px solid transparent;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
