@@ -1,28 +1,26 @@
 """
 """
-import csv 
-import copy
 import datetime
 import re
 import os
-from annoying.decorators import render_to, wraps
+from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from collections_local_copy import OrderedDict, namedtuple
+from collections_local_copy import OrderedDict
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db.models import Sum, Max
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.db.models import Max
+from django.http import Http404, HttpResponseRedirect, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
-from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
-from fle_utils.internet import CsvResponse, render_to_csv
+from fle_utils.internet import render_to_csv
+from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context
 from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
@@ -30,10 +28,9 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_node_cache
 from kalite.version import VERSION, VERSION_INFO
-from securesync.models import DeviceZone, Device, Zone, SyncSession
+from securesync.models import Device, Zone, SyncSession
 
 # TODO(dylanjbarth): this looks awful
 if settings.CENTRAL_SERVER:
