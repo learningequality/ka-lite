@@ -7,6 +7,24 @@ SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
 VERSION_INFO = {
 
+    "0.13.0": {
+        "release_date": "2014/11/06",
+        "git_commit": "19b1a64",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [""],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+
+    },
+
     "0.12.7": {
         "release_date": "2014/10/08",
         "git_commit": "75591f",
@@ -35,7 +53,7 @@ VERSION_INFO = {
             "admins": [],
         },
         "bugs_fixed": {
-            "all": ["Hotfix to allow Mac users to connect to the central server", "Mark old chronograph jobs as no longer runningwhen server starts"],
+            "all": ["Hotfix to allow Mac users to connect to the central server", "Mark old chronograph jobs as no longer running when server starts"],
             "students": [],
             "coaches": [],
             "admins": ["Critical fix: ensure models created elsewhere sync after being modified"],
