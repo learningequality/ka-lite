@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
@@ -32,6 +32,10 @@ from kalite.student_testing.utils import set_exam_mode_off
 @require_authorized_admin
 @render_to("facility/facility.html")
 def facility_edit(request, ds, id=None, zone_id=None):
+
+    if request.is_teacher and not ds["facility"].teacher_can_edit_facilities:
+        return HttpResponseForbidden()
+
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
     if facil:
         zone = facil.get_zone()
