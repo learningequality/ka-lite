@@ -3,9 +3,13 @@
         <div class="col-xs-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <div class="points-wrapper"></div>
-                    <h3>
+                    <div class="pull-right">
+                        <div class="points-wrapper"></div>
+                        <a href="{{ content_urls.stream }}" class="btn btn-primary download-link pull-right">{{_ "Download" }}</a>
+                        <div class="clear"></div>
+                    </div>
 
+                    <h3>
                         {{#if dubs_available }}
                             <select class="content-language-selector">
                                 {{#each availability }}
@@ -17,12 +21,13 @@
                         {{/if}}
                     </h3>
 
-                    <a href="{{ content_urls.stream }}" class="btn btn-lg btn-primary download-link">{{_ "Download" }}</a>
                     <span class="title">{{ title }}</span>
 
                     {{#if description }}
                     <div class="content-description">{{ description }}</div>
                     {{/if}}
+
+                    <div class="clear"></div>
 
                     <div class="borderwrapper"></div>
                 </div>

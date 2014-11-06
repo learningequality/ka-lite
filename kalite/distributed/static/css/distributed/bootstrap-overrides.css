@@ -348,7 +348,7 @@ form .input-group {
 .panel-heading span.title {
     color: white;
     font-family: Helvetica, Arial, sans-serif ;
-    font-size: 32px;
+    font-size: 24px;
 }
 .panel-heading h5 {
     color: #CFDECE;
@@ -362,7 +362,7 @@ form .input-group {
 }
 .panel-default .content-description {
     color: white;
-    padding: 10px;
+    padding: 10px 0;
 }
 /* ===================================
     Footer
