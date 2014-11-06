@@ -108,6 +108,8 @@ class FacilityUserResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['password', 'signature', 'deleted', 'signed_version', 'counter', 'notes']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -135,6 +137,8 @@ class TestLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['user', 'counter', 'signature', 'deleted', 'signed_version']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -168,6 +172,8 @@ class AttemptLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['user', 'signed_version', 'language', 'deleted', 'response_log', 'signature', 'version', 'counter']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)

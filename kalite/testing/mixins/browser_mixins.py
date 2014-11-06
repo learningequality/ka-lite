@@ -83,7 +83,8 @@ class BrowserActionMixins(object):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
 
-        time.sleep(2)  # wait for the message to get created via AJAX
+        self.browser_wait_for_ajax_calls_to_finish()
+        time.sleep(1)  # wait for the message to get created
 
         # Get messages (and limit by type)
         messages = self.browser.find_elements_by_class_name("alert")
@@ -103,12 +104,10 @@ class BrowserActionMixins(object):
                 self.assertEqual(exact, message.text, "Make sure message = '%s'" % exact)
 
     def browser_wait_for_ajax_calls_to_finish(self):
-            while True:
+            num_ajax_calls = 1 # to ensure at least one loop
+            while num_ajax_calls > 0:
                 num_ajax_calls = int(self.browser.execute_script('return jQuery.active;'))
-                if num_ajax_calls > 0:
-                    time.sleep(1)
-                else:
-                    break
+                time.sleep(1)
 
     def browser_next_form_element(self, num_expected_links=None, max_tabs=10, browser=None):
         """
