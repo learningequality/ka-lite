@@ -329,7 +329,14 @@
                             <tr class="success">
                                 <th><input class="select-all" type="checkbox" value="#students"</th>
                                 <th>{% trans "Student Name" %}</th>
-                                <th>{% trans "Edit" %}</th>
+                                <!-- Some duplication here. Cleanup! -->
+                                {% if request.is_teacher %}
+                                  {% if ds.facility.teacher_can_edit_students  %}
+                                    <th>{% trans "Edit" %}</th>
+                                  {% endif %}
+                                {% else %}
+                                  <th>{% trans "Edit" %}</th>
+                                {% endif %}
                                 <th>{% trans "Coach" %}</th>
                                 <th>{% trans "Group" %}</th>
                                 <th>{% trans "Logins" %}</th>
@@ -346,27 +353,38 @@
                                     <td>
                                         {{ student|format_name:"last_first" }}
                                     </td>
-                                    <td>
-                                        <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                    <!-- Some duplication here. Cleanup! -->
+                                    {% if request.is_teacher %}
+                                      {% if ds.facility.teacher_can_edit_students  %}
+                                        <td>
+                                          <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                                             <span class="glyphicon glyphicon-pencil"></span>
+                                          </a>
+                                        </td>
+                                      {% endif %}
+                                    {% else %}
+                                      <td>
+                                        <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                          <span class="glyphicon glyphicon-pencil"></span>
                                         </a>
-                                    </td>
+                                      </td>
+                                    {% endif %}
 
                                     <td>
-                                        <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach student {{ studentname }}{% endblocktrans %}" href="{% url 'student_view' %}?user={{ student.id }}">
+                                      <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach student {{ studentname }}{% endblocktrans %}" href="{% url 'student_view' %}?user={{ student.id }}">
                                         <div class="sparklines" sparkType="bar" sparkBarColor="green">
-                                        <!--
-                                            {{ student.total_logins }},
-                                            {{ student.total_videos }},
-                                            {{ student.total_exercises }}
-                                        -->
+                                          <!--
+                                          {{ student.total_logins }},
+                                          {{ student.total_videos }},
+                                          {{ student.total_exercises }}
+                                          -->
                                         </div></a>
                                     </td>
                                     <td>
-                                        {% if student.group %}
-                                            {% if group_id %}
-                                            <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility.id }}&group={{ student.group.id }}">
-                                            {% else %}
+                                      {% if student.group %}
+                                        {% if group_id %}
+                                          <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility.id }}&group={{ student.group.id }}">
+                                        {% else %}
                                             <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
                                             {% endif %}
                                             {{ student.group.name }}

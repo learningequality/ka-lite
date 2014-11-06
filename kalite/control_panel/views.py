@@ -305,7 +305,8 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
 @facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_management.html")
-def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
+@dynamic_settings
+def facility_management(request, ds, facility, group_id=None, zone_id=None, per_page=25):
 
     ungrouped_id = UNGROUPED
 
@@ -364,6 +365,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
         "groups": groups, # sends dict if group page, list of group data otherwise
         "student_pages": student_pages,  # paginated data
         "coach_pages": coach_pages,  # paginated data
+        "ds": ds,
         "page_urls": {
             "coaches": coach_urls,
             "students": student_urls,
@@ -561,4 +563,3 @@ def local_install_context(request):
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }
-
