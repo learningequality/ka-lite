@@ -338,7 +338,8 @@ form .input-group {
     border: none;
 }
 .panel-default>.panel-heading,
-.panel-body {
+.panel-body,
+.panel-footer {
     background-color: #77b05d;
 }
 .panel-heading h3 {
@@ -347,17 +348,21 @@ form .input-group {
 .panel-heading span.title {
     color: white;
     font-family: Helvetica, Arial, sans-serif ;
-    font-size: 32px;
+    font-size: 24px;
 }
 .panel-heading h5 {
     color: #CFDECE;
 }
-.panel-heading p{
+.panel-heading p {
     color: white;
     font-weight: 300;
 }
 .panel-heading .borderwrapper {
     border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+.panel-default .content-description {
+    color: white;
+    padding: 10px 0;
 }
 /* ===================================
     Footer
