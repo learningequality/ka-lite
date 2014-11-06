@@ -522,7 +522,7 @@ window.VideoWrapperView = BaseView.extend({
 
     close: function() {
         this.videoPlayerView.remove();
-        this.videoPointView.remove();
+        this.points_view.remove();
         this.remove();
     }
 
