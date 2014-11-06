@@ -54,6 +54,8 @@ class DependenciesTests(unittest2.TestCase):
     DJANGO_HOST = '127.0.0.1'
     DJANGO_PRODUCTION_PORT = getattr(settings, "PRODUCTION_PORT", 8008)
 
+    PSUTIL_MIN_VERSION = "2.0"
+
     # REF: https://docs.djangoproject.com/en/1.5/releases/1.5/#python-compatibility
     MINIMUM_PYTHON_VERSION = (2, 6, 5,)
     MINIMUM_PYTHON_VERSION_STR = _tuple_to_str(MINIMUM_PYTHON_VERSION)
@@ -113,6 +115,11 @@ class DependenciesTests(unittest2.TestCase):
         v1 = parse_version(expected_version)
         v2 = parse_version(package_version)
         return v1 == v2
+
+    def check_minimum_version(self, expected_version, package_version):
+        v1 = parse_version(expected_version)
+        v2 = parse_version(package_version)
+        return v1 <= v2
 
     def make_url(self):
         return "http://%s:%s/" % (self.DJANGO_HOST, self.DJANGO_PRODUCTION_PORT,)
@@ -180,6 +187,15 @@ class DjangoTests(DependenciesTests):
 
 
 class PackagesTests(DependenciesTests):
+    """
+    TODO(cpauya): We can improve this with version checks like how pip does
+    it with it's `requirements.txt`.  Example:
+    ...
+        "announcements==1.0.2",
+        "django>=1.5.1"
+    ...
+    This way it's quite easy to add more package dependencies here.
+    """
 
     # make a dictionary of package and it's version?
     NO_VERSION = DependenciesTests.NO_VERSION
@@ -265,6 +281,30 @@ class PackagesTests(DependenciesTests):
                 self._pass("\n...Result: all required Python packages can be imported...")
         except ImportError as exc:
             self._fail("Exception: %s" % exc)
+
+    def test_psutil(self):
+        """
+        From `fle_utils.set_process_priority.py`:
+            Psutil is builtin to some python installations, and the
+            versions may differ across devices.  In the 2.x psutil version,
+            `psutil.Process(os.getpid()).cmdline` is a function that returns
+            a list;  in the 1.x version it's just a list.
+
+        If it's not present in the PYTHONPATH then it's ok, but when it's
+        present then it has to be 2.0 and above.
+        """
+        msg = "Testing if `psutil` is installed..."
+        self._log(msg)
+        try:
+            import psutil
+            package_version = self.get_version(psutil)
+            self._log("must be >= %s, found %s..." % (self.PSUTIL_MIN_VERSION, package_version,))
+            if not self.check_minimum_version(self.PSUTIL_MIN_VERSION, package_version):
+                self._fail()
+            self._pass()
+        except ImportError as exc:
+            self._log("not installed...")
+            self._pass()
 
 
 class PathsTests(DependenciesTests):
