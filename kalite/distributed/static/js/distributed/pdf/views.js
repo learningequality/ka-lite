@@ -7,26 +7,27 @@ window.PDFViewerView = ContentBaseView.extend({
             this.log_model.set("highest_page", 0);
         }
         this.$el.html(this.template(this.data_model.attributes));
-        _.defer(this.defer_listeners);
+        this.initialize_listeners();
+        _.defer(this.render_pdf);
     },
 
-    defer_listeners: function() {
+    render_pdf: function() {
         webViewerLoad();
         PDFView.open(this.data_model.get("content_urls").stream);
+        this.page_loaded();
     },
 
+    initialize_listeners: function() {
+        this.listenToDOM(window, "pagechange", this.page_changed); // page changed
     },
 
-    page_changed: function(ev) {
-        var contextWindow = ev.target;
-        this.update_progress(contextWindow.PDFView);
+    page_changed: function() {
+        this.update_progress(PDFView);
     },
 
-    page_loaded: function(ev) {
-        var contextWindow = ev.target.defaultView;
-        var pdfview = contextWindow.PDFView;
+    page_loaded: function() {
         this.activate();
-        this.update_progress(pdfview);
+        this.update_progress(PDFView);
     },
 
     content_specific_progress: function(pdfview) {
