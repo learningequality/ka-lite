@@ -10,6 +10,7 @@ from kalite.topic_tools import video_dict_by_video_id, get_slug2id_map
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization, tastypie_require_admin
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.student_testing.utils import get_current_unit_settings_value
+from kalite.ab_testing.data.groups import GRADE_BY_FACILITY as GRADE
 
 
 class PlaylistResource(Resource):
@@ -52,7 +53,8 @@ class PlaylistResource(Resource):
             if 'facility_user' in request.session:
                 facility_id = request.session['facility_user'].facility.id
                 unit = get_current_unit_settings_value(facility_id)
-                playlists = [pl for pl in playlists if pl.unit <= unit]
+                facility_name = request.session['facility_user'].facility.name
+                playlists = [pl for pl in playlists if (pl.unit <= unit and int((pl.tag).split()[-1]) == GRADE[facility_name])]
 
         elif request.is_logged_in and not request.is_admin:  # user is a student
             # only allow them to access playlists that they're assigned to
