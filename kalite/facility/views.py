@@ -28,9 +28,9 @@ from kalite.shared.decorators import require_authorized_admin
 from kalite.student_testing.utils import set_exam_mode_off
 
 
-@dynamic_settings
 @require_authorized_admin
 @render_to("facility/facility.html")
+@dynamic_settings
 def facility_edit(request, ds, id=None, zone_id=None):
 
     if request.is_teacher and not ds["facility"].teacher_can_edit_facilities:
