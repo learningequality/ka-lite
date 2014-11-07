@@ -48,7 +48,7 @@
                     &gt; {% if group_id %}<a href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
                     {% else %}
                     {{ facility.name }}
-                    <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">{% trans "(edit)" %}</a>
+                  <a class="edit-link edit-facility" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">{% trans "(edit)" %}</a>
                     {% endif %}
                 </li>
                 {% endif %}
