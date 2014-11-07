@@ -318,89 +318,96 @@
                             </select>
                         </div>
                     {% endif %}
-                    <div class="form-group">
+                    {% if request.is_teacher %}
+                      {% if ds.facility.can_delete_students %}
+                        <div class="form-group delete-student">
+                          <button class="delete btn btn-success" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                        </div>
+                      {% endif %}
+                    {% else %}
+                      <div class="form-group delete-student">
                         <button class="delete btn btn-success" disabled="disabled" value="#students">{% trans "Delete Students" %}</button>
+                      </div>
+                    {% endif %}
                     </div>
-                    </div>
-                {% endif %}
-                <div class="table-responsive">
-                    <table class="table selectable-table">
-                         <thead>
-                            <tr class="success">
-                                <th><input class="select-all" type="checkbox" value="#students"</th>
-                                <th>{% trans "Student Name" %}</th>
-                                <!-- Some duplication here. Cleanup! -->
-                                {% if request.is_teacher %}
-                                  {% if ds.facility.teacher_can_edit_students  %}
-                                    <th>{% trans "Edit" %}</th>
-                                  {% endif %}
-                                {% else %}
-                                  <th>{% trans "Edit" %}</th>
-                                {% endif %}
-                                <th>{% trans "Coach" %}</th>
-                                <th>{% trans "Group" %}</th>
-                                <th>{% trans "Logins" %}</th>
-                                <th>{% trans "Login Time" %}</th>
-                                <th>{% trans "Videos Viewed" %}</th>
-                                <th>{% trans "Exercises Completed" %}</th>
-                                <th>{% trans "Mastery" %}</th>
-                            </tr>
+                    <div class="table-responsive">
+                      <table class="table selectable-table">
+                        <thead>
+                          <tr class="success">
+                            <th><input class="select-all" type="checkbox" value="#students"</th>
+                            <th>{% trans "Student Name" %}</th>
+                            <!-- Some duplication here. Cleanup! -->
+                            {% if request.is_teacher %}
+                              {% if ds.facility.teacher_can_edit_students  %}
+                                <th>{% trans "Edit" %}</th>
+                              {% endif %}
+                            {% else %}
+                              <th>{% trans "Edit" %}</th>
+                            {% endif %}
+                            <th>{% trans "Coach" %}</th>
+                            <th>{% trans "Group" %}</th>
+                            <th>{% trans "Logins" %}</th>
+                            <th>{% trans "Login Time" %}</th>
+                            <th>{% trans "Videos Viewed" %}</th>
+                            <th>{% trans "Exercises Completed" %}</th>
+                            <th>{% trans "Mastery" %}</th>
+                          </tr>
                         </thead>
                         <tbody>
-                            {% for student in student_pages %}
-                                <tr class="selectable" value="{{ student.id }}" type="students">
-                                    <td><input type="checkbox" value="#students"></td>
-                                    <td>
-                                        {{ student|format_name:"last_first" }}
-                                    </td>
-                                    <!-- Some duplication here. Cleanup! -->
-                                    {% if request.is_teacher %}
-                                      {% if ds.facility.teacher_can_edit_students  %}
-                                        <td>
-                                          <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                            <span class="glyphicon glyphicon-pencil"></span>
-                                          </a>
-                                        </td>
-                                      {% endif %}
-                                    {% else %}
-                                      <td>
-                                        <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                          <span class="glyphicon glyphicon-pencil"></span>
-                                        </a>
-                                      </td>
-                                    {% endif %}
+                          {% for student in student_pages %}
+                            <tr class="selectable" value="{{ student.id }}" type="students">
+                              <td><input type="checkbox" value="#students"></td>
+                              <td>
+                                {{ student|format_name:"last_first" }}
+                              </td>
+                              <!-- Some duplication here. Cleanup! -->
+                              {% if request.is_teacher %}
+                                {% if ds.facility.teacher_can_edit_students  %}
+                                  <td>
+                                    <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                      <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                  </td>
+                                {% endif %}
+                              {% else %}
+                                <td>
+                                  <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                  </a>
+                                </td>
+                              {% endif %}
 
-                                    <td>
-                                      <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach student {{ studentname }}{% endblocktrans %}" href="{% url 'student_view' %}?user={{ student.id }}">
-                                        <div class="sparklines" sparkType="bar" sparkBarColor="green">
-                                          <!--
-                                          {{ student.total_logins }},
-                                          {{ student.total_videos }},
-                                          {{ student.total_exercises }}
-                                          -->
-                                        </div></a>
-                                    </td>
-                                    <td>
-                                      {% if student.group %}
-                                        {% if group_id %}
-                                          <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility.id }}&group={{ student.group.id }}">
-                                        {% else %}
-                                            <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
-                                            {% endif %}
-                                            {{ student.group.name }}
-                                            </a>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ student.total_logins }}</td>
-                                    <td>{{ student.total_hours|floatformat }}</td>
-                                    <td>{{ student.total_videos }}</td>
-                                    <td>{{ student.total_exercises }}</td>
-                                    <td>{{ student.pct_mastery|percent:1  }}</td>
-                                </tr>
-                            {% endfor %}
+                              <td>
+                                <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach student {{ studentname }}{% endblocktrans %}" href="{% url 'student_view' %}?user={{ student.id }}">
+                                  <div class="sparklines" sparkType="bar" sparkBarColor="green">
+                                    <!--
+                                    {{ student.total_logins }},
+                                    {{ student.total_videos }},
+                                    {{ student.total_exercises }}
+                                    -->
+                                  </div></a>
+                              </td>
+                              <td>
+                                {% if student.group %}
+                                  {% if group_id %}
+                                    <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' %}?facility={{ facility.id }}&group={{ student.group.id }}">
+                                  {% else %}
+                                      <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
+                                  {% endif %}
+                                  {{ student.group.name }}
+                                      </a>
+                                {% endif %}
+                              </td>
+                              <td>{{ student.total_logins }}</td>
+                              <td>{{ student.total_hours|floatformat }}</td>
+                              <td>{{ student.total_videos }}</td>
+                              <td>{{ student.total_exercises }}</td>
+                              <td>{{ student.pct_mastery|percent:1  }}</td>
+                            </tr>
+                          {% endfor %}
                         </tbody>
-                    </table>
-                </div>
+                      </table>
+                    </div>
             </div>
             <div class="col-md-12">
                 {% if student_pages.num_listed_pages > 1 %}

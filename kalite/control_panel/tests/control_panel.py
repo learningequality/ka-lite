@@ -210,9 +210,16 @@ class RestrictedTeacherTests(FacilityMixins,
         resp = self.client.get(self.reverse("edit_facility_user", kwargs={"facility_user_id": self.student.id}))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to edit students; status code is %s" % resp.status_code)
 
-
     def teacher_cant_delete_students(self):
-        pass
+        self.browser_login_teacher(username=self.teacher_username,
+                                   password=self.teacher_password,
+                                   facility_name=self.facility.name)
+
+        # subtest for making sure they don't see the delete student button
+        self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": self.facility.id}))
+
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_css_selector("div.delete-student")
 
 
 class CSVExportTestSetup(FacilityMixins,
