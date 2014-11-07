@@ -34,9 +34,6 @@
     color: white;
     background-color: #5C8547;
     border: 2px solid #5C8547;
-    position: absolute;
-    top: 48px;
-    right: 30px;
 }
 .btn.btn-primary.download-link.pull-right:hover {
     background-color: white;
