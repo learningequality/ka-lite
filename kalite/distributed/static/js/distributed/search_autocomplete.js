@@ -110,7 +110,11 @@ $(document).ready(function() {
             // When they click a specific item, just go there (if we recognize it)
             var id = ui.item.value;
             if (_nodes && id in _nodes && _nodes[id]) {
-                window.location.href = "/learn/" + _nodes[id].path;
+                if ("channel_router" in window) {
+                    window.channel_router.navigate(_nodes[id].path, {trigger: true});
+                } else {
+                    window.location.href = "/learn/" + _nodes[id].path;
+                }
             } else {
                 show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
             }
