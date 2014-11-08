@@ -118,6 +118,8 @@ $(document).ready(function() {
             } else {
                 show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
             }
+            $("#search-box input").val("");
+            return false;
         }
 
     });
