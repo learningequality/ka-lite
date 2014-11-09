@@ -909,3 +909,16 @@ div#fade {
 }
 
 /* END styles for modal dialog */
+
+.pdf-frame {
+    height: 1000px;
+    font-size: 10px;
+    background-color: #404040;
+    padding: 0;
+    margin: 0;
+}
+
+.pdf-frame body, input, button, select {
+  font: message-box;
+  outline: none;
+}

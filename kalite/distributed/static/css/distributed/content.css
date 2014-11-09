@@ -5,19 +5,40 @@
     border-radius: 5px;
     padding: 20px;
     background-color: rgb(248, 248, 248);
-}   
+}
 .points-wrapper {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.download-link {
+    margin-bottom: 10px;
+}
+.panel-heading-right-column {
+    float: right;
+    text-align: right;
 }
 .points-wrapper span.points-container {
     /* Most of this is overriding the styles from video css */
-    margin: 0;
-    padding: 5 5;
-    float: none;
-    background-color: #77B05D;
+    margin: 5px 0;
+    float: right;
+    background-color: white;
     border: 2px solid rgba(255,255,255,0.5);
     position: relative;
-    color: white;
+    color: #77B05D;
     font-weight: 400;
+    border-radius: 4px;
+}
+.btn.btn-primary.download-link.pull-right {
+    padding: 5px;
+    margin: 5px 0;
+    color: white;
+    background-color: #5C8547;
+    border: 2px solid #5C8547;
+}
+.btn.btn-primary.download-link.pull-right:hover {
+    background-color: white;
+    color: #77B05D;
+    border: 2px solid white;
 }
 /*.related-content-container {
     background-color: rgba(141, 198, 63, 0.5);
