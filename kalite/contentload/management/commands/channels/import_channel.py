@@ -44,10 +44,10 @@ attribute_whitelists = {
 }
 
 denormed_attribute_list = {
-    "Video": ["kind", "description", "title", "duration", "youtube_id", "readable_id", "id", "y_pos", "x_pos", "path", "slug"],
-    "Exercise": ["kind", "description", "title", "display_name", "name", "id", "y_pos", "x_pos", "path", "slug"],
-    "Audio": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug"],
-    "Document": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug"],
+    "Video": ["kind", "description", "title", "duration", "id", "y_pos", "x_pos", "path", "slug", "organization"],
+    "Exercise": ["kind", "description", "title", "name", "id", "y_pos", "x_pos", "path", "slug", "organization"],
+    "Audio": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug", "organization"],
+    "Document": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug", "organization"],
 }
 
 kind_blacklist = [None]
