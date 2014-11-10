@@ -13,7 +13,7 @@ from kalite.testing.base import KALiteClientTestCase, KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateTeacherMixin, CreateStudentMixin
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
-    get_current_unit_settings_value, set_current_unit_settings_value, set_exam_mode_off
+    get_current_unit_settings_value, set_current_unit_settings_value
 
 logging = settings.LOG
 
@@ -22,7 +22,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
 
-    exam_id = 'g3_t1'  # needs to be the first exam in the test list UI
+    exam_id = 'g4_u401_t1'  # needs to be the first exam in the test list UI
     login_url = reverse('login')
     logout_url = reverse('logout')
     test_list_url = reverse('test_list')
@@ -33,7 +33,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
         super(BaseTest, self).setUp()
 
-        self.facility = self.create_facility()
+        self.facility = self.create_facility(name="facility1")
         self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
         self.student_data = CreateStudentMixin.DEFAULTS.copy()
         self.teacher_data['facility'] = self.student_data['facility'] = self.facility
@@ -123,6 +123,9 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         # super(KALiteBrowserTestCase, self).setUp()
         super(BrowserTests, self).setUp()
 
+        # set the unit to 101
+        set_current_unit_settings_value(self.facility.id, 101)
+
         # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
         # or use the KALiteTestCase.reverse() method.
         self.test_list_url = self.reverse('test_list')
@@ -185,7 +188,7 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         btn = self.get_button(is_on=True)
 
         # Do not logout teacher (because this disables exams)
-        # Instead, create a new browser instance and check the student redirects 
+        # Instead, create a new browser instance and check the student redirects
         self.student_browser = self.create_browser()
         self.login_student_in_browser(expect_url=self.exam_page_url, exam_mode_on=True, browser=self.student_browser)
 
@@ -343,6 +346,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrows
         self.login_url = self.reverse('login')
         self.logout_url = self.reverse('logout')
         self.current_unit_url = self.reverse('current_unit')
+        set_current_unit_settings_value(self.facility.id, 101)
 
     def tearDown(self):
         super(CurrentUnitBrowserTests, self).tearDown()
@@ -390,23 +394,6 @@ class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrows
         unit_next = get_current_unit_settings_value(facility_id)
         self.assertNotEqual(unit, unit_next)
 
-        # click previous and test that Setting was decremented
-        btn = self.get_button(is_next=False)
-        btn.click()
-
-        self.browser_accept_alert()
-
-        # wait until ajax call is done
-        sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit,)
-        self.wait_for_element(By.CSS_SELECTOR, sel)
-
-        unit_prev = get_current_unit_settings_value(facility_id)
-        self.assertEqual(unit, unit_prev)
-
-        # check that previous button is disabled
-        btn = self.get_button(is_next=False)
-        self.assertFalse(btn.is_enabled(), "Previous button must be disabled when current unit is on first.")
-
     def test_current_unit_last(self):
         self.login_teacher_in_browser()
 
@@ -427,29 +414,3 @@ class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrows
         # check that next button is disabled
         btn = self.get_button(is_next=True)
         self.assertFalse(btn.is_enabled(), "Next button must be disabled when current unit is on last.")
-
-        # click previous and test that Setting was decremented
-        btn = self.get_button(is_next=False)
-        btn.click()
-
-        self.browser_accept_alert()
-
-        # wait until ajax call is done
-        sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit - 1,)
-        self.wait_for_element(By.CSS_SELECTOR, sel)
-
-        unit_prev = get_current_unit_settings_value(facility_id)
-        self.assertNotEqual(unit, unit_prev)
-
-        # click next and test that Setting was incremented
-        btn = self.get_button(is_next=True)
-        btn.click()
-
-        self.browser_accept_alert()
-
-        # wait until ajax call is done
-        sel = "%s%s" % (self.CSS_CURRENT_UNIT_ACTIVE, unit,)
-        self.wait_for_element(By.CSS_SELECTOR, sel)
-
-        unit_next = get_current_unit_settings_value(facility_id)
-        self.assertEqual(unit, unit_next)

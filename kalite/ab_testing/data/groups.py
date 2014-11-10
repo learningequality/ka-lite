@@ -1,28 +1,23 @@
 CONDITION_BY_FACILITY_AND_UNIT = {
     "facility1": {
-        "1": "nalanda_control",
-        "2": "nalanda_input",
-        "3": "nalanda_output",
+        "101": "nalanda_input",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
     },
     "facility2": {
-        "1": "nalanda_output",
-        "2": "nalanda_control",
-        "3": "nalanda_input",
+        "101": "nalanda_control",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
     },
     "facility3": {
-        "1": "nalanda_input",
-        "2": "nalanda_output",
-        "3": "nalanda_control",
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_control",
     },
     "Test": {
-        "1": "testing",
-        "2": "testing",
-        "3": "testing",
-        "4": "testing",
-        "5": "testing",
-        "6": "testing",
-        "7": "testing",
-        "8": "testing",
+        "101": "testing",
+        "102": "testing",
+        "103": "testing",
     },
 }
 

@@ -12,8 +12,8 @@ window.StoreWrapperView = Backbone.View.extend({
 
         this.render();
 
-        this.available_items = new AvailableStoreItemCollection;
-        this.purchased_items = new PurchasedStoreItemCollection;
+        this.available_items = new AvailableStoreItemCollection();
+        this.purchased_items = new PurchasedStoreItemCollection();
 
         this.available_item_view = new AvailableStoreItemListView({
             collection: this.available_items,
@@ -59,7 +59,7 @@ window.StoreWrapperView = Backbone.View.extend({
             item: item.id,
             purchased_at: statusModel.get_server_time(),
             reversible: item.get("returnable"),
-            context_id: 0, // TODO-BLOCKER: put the current unit in here
+            context_id: ds.ab_testing.unit || 0,
             context_type: "unit",
             user: statusModel.get("user_uri"),
             value: -cost
@@ -122,11 +122,17 @@ window.PurchasedStoreItemListView = Backbone.View.extend({
 
         this.listenTo(this.collection, "add", this.add_item);
         this.listenTo(this.collection, "reset", this.add_all_items);
+        this.last_unit = 0;
     },
 
     add_item: function(model) {
-        var item = this.options.available_items.get(model.get("item"))
+        var item = this.options.available_items.get(model.get("item"));
         if (item && item.get("shown")) {
+            if (model.get("context_id") != this.last_unit) {
+                // TODO(jamalex): hack-hack
+                this.$el.append("<div class='clear'></div><h2 class='unit-header'>Unit " + model.get("context_id") + "</h2>");
+                this.last_unit = model.get("context_id");
+            }
             var view = new PurchasedStoreItemView({
                 model: model,
                 available_items: this.options.available_items
@@ -175,7 +181,10 @@ window.PurchasedStoreItemView = Backbone.View.extend({
     render: function() {
         // retrieve the item object itself, for rendering
         var item = this.options.available_items.get(this.model.get("item"));
-        this.$el.html(this.template(item.attributes));
+        this.$el.html(this.template({
+            item: item.attributes,
+            transaction: this.model.attributes
+        }));
         return this;
     }
 

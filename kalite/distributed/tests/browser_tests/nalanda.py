@@ -10,7 +10,7 @@ from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 from kalite.topic_tools import get_node_cache
 from kalite.student_testing.utils import set_current_unit_settings_value
 
-PLAYLIST_ID = "g3_p1"
+PLAYLIST_ID = "g4_u403_p1"
 
 logging = settings.LOG
 
@@ -45,33 +45,26 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         """
         Test exercise points in control unit.
         """
-        self.set_unit_navigate_to_exercise(1, "place_value")
+        self.set_unit_navigate_to_exercise(102, "recognizing_fractions")
         time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 0, "Basepoints should be zero in control")
+        self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"),
+                         0,
+                         "Basepoints should be zero in control")
 
     def test_nalanda_input_exercise(self):
         """
         Test exercise points in input unit.
         """
-        self.set_unit_navigate_to_exercise(2, "number_line")
+        self.set_unit_navigate_to_exercise(101, "telling_time")
         time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 36, "Basepoints should be 36 in input condition")
+        actual_points = self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')")
+        expected_points = 25
+        self.assertEqual(actual_points, expected_points, "Basepoints should be %s in input condition; is actually %s" % (expected_points, actual_points))
 
     def test_nalanda_output_exercise(self):
         """
         Test exercise points in output unit.
         """
-        self.set_unit_navigate_to_exercise(3, "conditional_statements_2")
+        self.set_unit_navigate_to_exercise(101, "conditional_statements_2")
         time.sleep(5)
         self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 0, "Basepoints should be zero in output")
-
-    def test_nalanda_input_video(self):
-        """
-        Test video points in input unit.
-        """
-        set_current_unit_settings_value(self.facility.id, 2)
-        self.browse_to(
-            self.live_server_url +
-            reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
-        time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.playlist_view.content_view.currently_shown_view.model.get('possible_points')"), 0, "Video points should be zero")

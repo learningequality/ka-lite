@@ -66,6 +66,9 @@ class PlaylistToGroupMapping(ExtendedModel):
 
 
 class QuizLog(DeferredCountSyncedModel):
+
+    minversion = "0.13.0"
+
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     quiz = models.CharField(blank=True, max_length=100)
     index = models.IntegerField(blank=False, null=False, default=0)
@@ -87,7 +90,7 @@ class VanillaPlaylist:
     """
     playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
 
-    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned']
+    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned', 'unit', 'show']
 
     def __init__(self, **kwargs):
         self.pk = self.id = kwargs.get('id')
@@ -98,7 +101,7 @@ class VanillaPlaylist:
         self.unit = kwargs.get('unit')
 
     @classmethod
-    def all(cls):
+    def all(cls, limit_to_shown=True):
         with open(cls.playlistjson) as f:
             raw_playlists = json.load(f)
 
@@ -106,8 +109,13 @@ class VanillaPlaylist:
         # also add in the group IDs that are assigned to view this playlist
         playlists = []
         for playlist_dict in raw_playlists:
+            # don't include playlists without show: True attribute
+            if limit_to_shown and not playlist_dict.get("show"):
+                continue
+
             playlist = cls(title=playlist_dict['title'],
                            description='',
+                           show=playlist_dict.get('show', False),
                            id=playlist_dict['id'],
                            tag=playlist_dict['tag'],
                            unit=playlist_dict['unit'])

@@ -7,10 +7,10 @@
 *.pid
 *.prof
 *.pyc
+*.pyo
 *~
 *.sublime-*
 *.zip
-build/
 locale/
 node_modules/
 tmp/
@@ -45,3 +45,5 @@ writeup/
 .tags
 /kalite/i18n/static/
 /.vagrant/
+ghostdriver.log
+/kalite/_built.touch

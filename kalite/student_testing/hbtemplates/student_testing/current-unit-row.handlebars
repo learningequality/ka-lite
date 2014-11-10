@@ -9,10 +9,9 @@
     </button>
     {{#each unit_list}}
         {{#ifcond this '==' ../current_unit }}
-            <span class="current-unit-{{this}}" style="font-weight: bold;"> {{_ "Unit" }} {{this}} </span>
+            <span class="current-unit-{{this}}" style="font-weight: bold; vertical-align: top;"> {{_ "Unit" }} {{this}} </span>
         {{else}}
-            <a href="#" class="selected-unit" data-facility-id="{{../facility_id}}"
-               data-selected-unit="{{this}}">{{this}}</a>
+            {{this}}
         {{/ifcond}}
         &nbsp;
     {{/each}}
