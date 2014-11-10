@@ -2,7 +2,6 @@ import json
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
-
 from django.utils.translation import ugettext as _
 from django.conf.urls import url
 
@@ -26,6 +25,14 @@ class ExerciseLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+    def obj_create(self, bundle, **kwargs):
+        is_admin = getattr(bundle.request, "is_admin", False)
+        user = getattr(bundle.request, "user", None)
+        if is_admin:
+            if user and getattr(user, 'is_superuser', False):
+                return None
+        return super(ExerciseLogResource, self).obj_create(bundle, **kwargs)
+
 
 class AttemptLogResource(ModelResource):
 
@@ -41,6 +48,14 @@ class AttemptLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+    def obj_create(self, bundle, **kwargs):
+        is_admin = getattr(bundle.request, "is_admin", False)
+        user = getattr(bundle.request, "user", None)
+        if is_admin:
+            if user and getattr(user, 'is_superuser', False):
+                return None
+        return super(AttemptLogResource, self).obj_create(bundle, **kwargs)
+
 
 class ContentLogResource(ModelResource):
 
@@ -54,6 +69,7 @@ class ContentLogResource(ModelResource):
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
+
 
 class Video:
 
@@ -132,19 +148,19 @@ class VideoResource(Resource):
         else:
             raise NotFound('Video with id %s not found' % id)
 
-    def obj_create(self, request):
+    def obj_create(self, bundle, **kwargs):
         raise NotImplementedError
 
     def obj_update(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def obj_delete_list(self, request):
+    def obj_delete_list(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def obj_delete(self, request):
+    def obj_delete(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def rollback(self, request):
+    def rollback(self, bundles):
         raise NotImplementedError
 
 
@@ -170,6 +186,7 @@ class Exercise():
         self.slug = kwargs.get('slug')
         self.exercise_id = kwargs.get('exercise_id')
         self.uses_assessment_items = kwargs.get('uses_assessment_items')
+
 
 class ExerciseResource(Resource):
 
@@ -226,19 +243,19 @@ class ExerciseResource(Resource):
         else:
             raise NotFound('Exercise with id %s not found' % id)
 
-    def obj_create(self, request):
+    def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
     def obj_update(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
-    def obj_delete_list(self, request):
+    def obj_delete_list(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
-    def obj_delete(self, request):
+    def obj_delete(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
-    def rollback(self, request):
+    def rollback(self, bundles):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
 
@@ -261,7 +278,6 @@ class AssessmentItemResource(Resource):
     author_names = fields.CharField(attribute='author_names')
     sha = fields.CharField(attribute='sha')
     id = fields.CharField(attribute='id')
-
 
     class Meta:
         resource_name = 'assessment_item'
@@ -296,19 +312,19 @@ class AssessmentItemResource(Resource):
         else:
             raise NotFound('AssessmentItem with id %s not found' % id)
 
-    def obj_create(self, request):
+    def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
     def obj_update(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
-    def obj_delete_list(self, request):
+    def obj_delete_list(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
-    def obj_delete(self, request):
+    def obj_delete(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
-    def rollback(self, request):
+    def rollback(self, bundles):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
 
@@ -325,7 +341,7 @@ class Content:
 
         extra_fields = {}
 
-        for k,v in kwargs.iteritems():
+        for k, v in kwargs.iteritems():
             extra_fields[k] = v
 
         # the computed values
@@ -334,7 +350,6 @@ class Content:
         self.selected_language = lang_code
         if self.description == "None":
             self.description = ""
-
 
 
 class ContentResource(Resource):
@@ -384,17 +399,17 @@ class ContentResource(Resource):
         else:
             raise NotFound('Content with id %s not found' % content_id)
 
-    def obj_create(self, request):
+    def obj_create(self, bundle, **kwargs):
         raise NotImplementedError
 
     def obj_update(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def obj_delete_list(self, request):
+    def obj_delete_list(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def obj_delete(self, request):
+    def obj_delete(self, bundle, **kwargs):
         raise NotImplementedError
 
-    def rollback(self, request):
+    def rollback(self, bundles):
         raise NotImplementedError

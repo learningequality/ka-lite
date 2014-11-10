@@ -27,7 +27,7 @@ footer {
 a:hover, a:focus {
     text-decoration: none;
 }
-h2, .no-margin-top { 
+h2, .no-margin-top {
     margin-top: 0;
 }
 label {
@@ -48,7 +48,7 @@ input[type="submit"] {
 }
 .help-tooltip {
     color: rgb(58, 58, 58);
-    position: relative; 
+    position: relative;
     top: -5px;
 }
 .caret.caret-reversed {
@@ -71,64 +71,125 @@ input[type="submit"] {
 }
 .kalite-navbar {
     width: 100%;
-    border-radius: 0;
+    border-radius: 2px 2px 0 0;
 }
-.navbar-brand img { 
+.navbar-brand img {
     margin-top: -6px;
 }
 .navbar ul li a {
-    color: #333 !important;
+    color: white;
     text-transform: uppercase;
-    border-radius: 4px 4px 0 0;
-    border-color: rgba(196, 196, 196, 1);
-    border-bottom-color: transparent;
-    background-color: rgba(255, 255, 255, 0.25);
+    border-left: 2px solid #5C8547;
+    border-top: 2px solid #5C8547;
+    border-right: 2px solid #5C8547;
+    padding-bottom: 13px;
+}
+.navbar ul li {
+    padding-right: 7px;
 }
 .nav.navbar-nav.nav-tabs {
     position: relative;
     border-bottom: none;
-    margin-top: 3px;
-    top: -1px;
+    top: 5px;
+}
+.navbar ul.nav-tabs {
+    border-bottom: 2px solid #5C8547;
+}
+.nav-tabs li a,
+.nav-tabs li.active a,
+.nav-tabls li a:active {
+    border: 0;
+    border-radius: 5px 15px 0 0;
+    margin: 0;
+    background-color: #5C8547;
+    color: white;
 }
 #points {
     margin-left: 20px;
 }
-.navbar ul li a:hover,
-.navbar ul li a:focus,
-.navbar ul li a.active {
+.nav-tabs li.active a:hover,
+.nav-tabs li a:hover,
+.nav-tabs li.active a {
     background-color: white;
-    border-bottom-color: white;
+    border-left: 2px solid #5C8547;
+    border-top: 2px solid #5C8547;
+    border-right: 2px solid #5C8547;
+    color: #5C8547;
 }
-ul.dropdown-menu li a {
+.navbar ul li.dropdown {
+    padding-right: 0;
+}
+.navbar ul li.dropdown.open ul.dropdown-menu {
+    padding: 9px 0;
+}
+.navbar ul li.dropdown.open a {
+    color: #5C8547;
+}
+.navbar ul li.dropdown.open ul.dropdown-menu li a {
     text-transform: none;
+    background-color: white;
+    color: black;
+    border: 0;
+    padding-bottom: 0;
+    padding-top: 0;
 }
-ul.dropdown-menu li a:hover {
+.navbar ul li.dropdown.open ul.dropdown-menu li {
+    padding: 0;
+}
+.navbar ul li.dropdown.open ul.dropdown-menu li a:hover {
     background-color: rgb(237, 237, 237);
 }
+.dropdown-menu li a {
+    background-color: white;
+    color: black;
+    border: 0;
+    border-radius: 0;
+}
+
 @media (min-width: 768px) {
     .navbar-right .dropdown-menu {
         left: 0;
-    }    
+    }
 }
 
 .glyphicon-search:hover, .glyphicon-search:focus {
     cursor: pointer;
 }
 form#search-box {
-    margin-right: 15px;
+    margin-right: 25px;
     margin-top: 14px;
+    position: relative;
+    right: 30px;
 }
-input#search.ui-autocomplete-input {
+input #search.ui-autocomplete-input {
     font-size: 12px;
     height: 23px;
     width: 140px;
 }
+form .input-group {
+    position: relative;
+    top: -5px;
+}
 #search-button {
     color: #fff !important;
-    margin-left: -3px;
-}
-#search-button:hover, #search-button:focus {
     background: #4cae4c !important;
+    position: relative;
+    left: 188px;
+    top: -2px;
+    border-radius: 3px;
+}
+.source {
+    margin-top: 2em;
+}
+
+.source p,
+.source pre {
+    margin: 0.25em 0;
+    padding: 0;
+}
+
+.source .note {
+    font-style: italic;
 }
 /* Language selector */
 #language_selector {
@@ -168,7 +229,7 @@ input#search.ui-autocomplete-input {
             box-shadow: 0 1px 3px #ccc;
 }
 .suggested-action {
-    background: #f8f8f8;   
+    background: #f8f8f8;
     border-radius: 6px;
     margin-bottom: 10px;
     min-height: 256px;
@@ -225,7 +286,7 @@ input#search.ui-autocomplete-input {
     margin-left: 10px;
     margin-right: 10px;
 }
-#suggested-action-image-link-coachpage-progress, 
+#suggested-action-image-link-coachpage-progress,
 #suggested-action-image-link-coachpage-effort,
 #suggested-action-image-link-coachpage-mastery {
     background-size: cover;
@@ -266,15 +327,51 @@ input#search.ui-autocomplete-input {
     padding: 2px;
 }
 
-
+/* ===================================
+    Content Panel
+=================================== */
+.panel,
+.panel-default {
+    border: none;
+}
+.panel-default>.panel-heading {
+    border: none;
+}
+.panel-default>.panel-heading,
+.panel-body,
+.panel-footer {
+    background-color: #77b05d;
+}
+.panel-heading h3 {
+    margin: 10px 0;
+}
+.panel-heading span.title {
+    color: white;
+    font-family: Helvetica, Arial, sans-serif ;
+    font-size: 24px;
+}
+.panel-heading h5 {
+    color: #CFDECE;
+}
+.panel-heading p {
+    color: white;
+    font-weight: 300;
+}
+.panel-heading .borderwrapper {
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+.panel-default .content-description {
+    color: white;
+    padding: 10px 0;
+}
 /* ===================================
     Footer
 =================================== */
 footer {
     border-top: 1px solid #999;
 }
-.footer-text { 
-    font-size: 11px; 
+.footer-text {
+    font-size: 11px;
     text-align: center;
     margin: 0;
 }
