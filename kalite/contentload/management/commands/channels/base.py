@@ -169,12 +169,11 @@ def rebuild_topictree(
                 children_to_delete.append(i)
                 logging.debug("Removing hidden child: %s" % child[channel_data["slug_key"][child_kind]])
                 continue
-            elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
+            elif channel_data.get("require_download_link", False) and child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
                 #   we won't remove these nodes
                 logging.warn("No download link for video: %s\n" % child.get("youtube_id", child.get("id", "")))
-                if channel_data.get("require_download_link", False):
-                    children_to_delete.append(i)
+                children_to_delete.append(i)
                 continue
 
             child_kinds = child_kinds.union(set([child_kind]))
