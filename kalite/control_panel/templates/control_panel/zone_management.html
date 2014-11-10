@@ -5,27 +5,18 @@
 
 {% block title %}{{ zone.name }} - {% trans "Sharing Network Management Console" %} {{ block.super }}{% endblock title %}
 
+{% block users_active %}active{% endblock users_active %}
+{% block manage_active %}active{% endblock manage_active %}
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
+
 {% block headcss %}{{ block.super }}
     {% if clock_set %}
         {% include_block "control_panel/snippets/clock_set.html" "headcss" %}
     {% endif %}
     <style>
-        .reports {
-            padding-right: 15px;
-            white-space: nowrap;
-        }
-        .devices{
-            padding-top: 20px;
-        }
-        .facilities__header li{
-            display: inline;
-            padding-right: 10px;
-        }
-        .not-registered-only{
-            /*Remove after bootstrap*/
-            font-weight: bold;
-            background-color: #CCCCCC;
-            padding: 5px;
+        .help-tooltip {
+            position: relative;
+            top: -5px;
         }
     </style>
 {% endblock headcss %}
@@ -43,18 +34,21 @@
 
             {% block download_button %}
                 <!--li>
-                    <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
+                    <a class="btn btn-success" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
+            <a href="{% url 'data_export' %}{% if zone_id != "None" %}?zone_id={{ zone_id }}{% endif %}" class="btn btn-success">{% trans "Export Data" %}</a>
 {% endblock buttons %}
 
 {% block control_panel_content %}
 
 <div class="container">
-    <!-- Begin Facilities -->
-    <div class="row">
-        <div class="col-md-12">
-            <h2>{% trans "Facilities" %}&nbsp;<small><a href="{% url 'add_facility' zone_id=zone_id %}" title="{% trans 'Add a new facility' %}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "A facility is a physical location where students learn." %}</small></h2>
+    {# Facilities Section #}
+    {% include "control_panel/partials/_facility_table.html" %}
+
+    {# Device Section #}
+    {% include "control_panel/partials/_device_table.html" %}
+</div>
 
         </div>
     </div>
@@ -133,7 +127,7 @@
                             <tr class="{% if not device.is_registered %}warning {% endif %}{% if device.is_demo_device %}active{% endif %}">
                                 <td>
                                     {% if device.num_times_synced != None %}<a href="{% url 'device_management' zone_id=zone_id device_id=id %}">{% endif %}
-                                        {{ device.name }}
+                                        {{ device.name|truncatechars:25 }}
                                     {% if device.is_demo_device %}[Demo data]{% endif %}
                                     {% if device.num_times_synced != None %}</a>{% endif %}
                                 </td>
@@ -167,6 +161,7 @@
 
                                         {% if device.is_registered %}
                                             <button id="force-sync" class="btn btn-primary">{% trans "Sync Now!" %}</button>
+                                            <a href="{% url 'update_software' %}" id="update-link" class=" registered-only">{% trans "Update" %}</a>
                                         {% else %}
                                             <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
                                         {% endif %}

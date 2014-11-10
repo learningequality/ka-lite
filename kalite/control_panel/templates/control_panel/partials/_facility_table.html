@@ -1,0 +1,81 @@
+{% load i18n %}
+{% load staticfiles %}
+
+<div class="row">
+    <div class="col-xs-12">
+        <h2>
+            {% trans "Facilities" %} 
+            <small>
+                <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "A facility is a physical location where students learn." %}'></span>
+            </small>
+        </h2>
+        {% if not facilities %}
+            <p>
+                {% trans "You currently have no facilities that sync data with the central server." %}
+            </p>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr class="success">
+                            <th>{% trans "Facility Name" %}</th>
+                            <th>{% trans "# Users" %}</th>
+                            <th>{% trans "# Groups" %}</th>
+                            <th>{% trans "Last Usage" %}</th>
+                            <th>{% trans "Delete" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for id,facility in facilities.items %}
+                            <tr>
+                                <td>
+                                     <a class="facility-name" href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
+                                        {{ facility.name }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ facility.num_users }}
+                                </td>
+                                <td>
+                                    {{ facility.num_groups }}
+                                </td>
+                                </td>
+                                <td>
+                                    {% if not facility.last_time_used %}
+                                        {% trans "Never" %}
+                                    {% elif facility.last_time_used.last_activity_datetime %}
+                                        {{ facility.last_time_used.last_activity_datetime }}
+                                    {% else %}
+                                        {{ facility.last_time_used.start_datetime|date }} - {{ facility.last_time_used.end_datetime|date }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if request.is_django_user %}
+                                    <a class="facility-delete-link" href="#">
+                                        <span class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}"></span>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        {# Add a new facility #}
+                        <tr>
+                            {# 5 empty cells for formatting purposes #}
+                            <td></td> <td></td> <td></td> <td></td> <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<div class="row table-bottom-options">
+    <div class="col-sm-4 col-xs-12">
+        <p class="add-new-table-item">
+            <a href="{% url 'add_facility' zone_id=zone_id %}">
+                <span class="glyphicon glyphicon-plus-sign"></span>
+                {% trans 'Add a new facility' %}...
+            </a>
+        </p>
+    </div>
+</div>

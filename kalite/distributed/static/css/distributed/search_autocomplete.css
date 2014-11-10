@@ -1,34 +1,74 @@
-li.autocomplete {
-    font-weight: bold;
-    line-height: 35px;
-    padding-left: 35px;
-    margin: 3px 0px 3px 0px;
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 25px 25px;
+.autocomplete {
     cursor: pointer;
+    display: block;
 }
-li.exercise.available {
-    background-image:url(/static/images/distributed/search-exercise-available.png);
+ul.ui-autocomplete  {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    z-index: 1500;
 }
-li.topic.available {
-    background-image:url(/static/images/distributed/search-topic-available.png);
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus {
+    background: #8dc63f;
+    border: 0;
+    border-radius: 0;
+    color: white;
 }
-li.video.available {
-    background-image:url(/static/images/distributed/search-video-available.png);
+a.ui-corner-all.ui-state-focus span.autocomplete.icon-topic.available,
+a.ui-corner-all.ui-state-focus span.autocomplete.icon-exercise.available,
+a.ui-corner-all.ui-state-focus span.autocomplete.icon-video.available,
+a.ui-corner-all.ui-state-focus span.autocomplete.icon-document.available {
+    color: white;
 }
-li.exercise.unavailable {
-    background-image:url(/static/images/distributed/search-exercise-unavailable.png);
+.ui-menu .ui-menu-item a{
+    outline: 0;
+    padding-top: 6px;
+    padding-bottom: 0;
+    margin: 0;
 }
-li.topic.unavailable {
-    background-image:url(/static/images/distributed/search-topic-unavailable.png);
-}
-li.video.unavailable {
-    background-image:url(/static/images/distributed/search-video-unavailable.png);
+.ui-menu .ui-menu-item span {
+    font-weight: 300;
+    font-size: 1em;
+    padding-right: 0;
 }
 .available {
     color: black;
 }
 .unavailable {
     color:gray;
+}
+
+/* Misc visuals
+----------------------------------*/
+
+/* Corner radius */
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-left,
+.ui-corner-tl {
+    border-top-left-radius: 0;
+}
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-right,
+.ui-corner-tr {
+    border-top-right-radius: 0;
+}
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-left,
+.ui-corner-bl {
+    border-bottom-left-radius: 0;
+}
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-right,
+.ui-corner-br {
+    border-bottom-right-radius: 0;
 }

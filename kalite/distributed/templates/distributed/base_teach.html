@@ -1,0 +1,24 @@
+{% extends base_template %}
+
+{% load staticfiles %}
+{% load i18n %}
+{% load my_filters %}
+
+{% block teach_active_teachers %}active{% endblock teach_active_teachers %}
+{% block teach_active_admins %}active{% endblock teach_active_admins %}
+
+{% block headcss %}{{block.super}}{% endblock headcss %}
+
+{% block subnavbar %}
+	<div class="teach-nav admin-only">
+        <ul>
+            <li class="reports {% block reports_active %}{% endblock reports_active %}"><a href="{% url 'tabular_view' %}" title="{% trans 'Track the progress of your students' %}"><div class="">{% trans "Reports" %}</div></a></li>
+            <li class="playlist {% block playlist_active %}{% endblock playlist_active %}"><a class="link-width" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to student groups' %}"><div>{% trans "Playlists" %}</div></a></li>
+            <li class="exams {% block exams-active %}{% endblock exams-active %}"><a href="{% url 'test_list' %}" title="{% trans 'See list of available tests.' %}"><div>{% trans "Tests" %}</div></a></li>
+            <li class="teacher-only units {% block current_unit_active %}{% endblock current_unit_active %}"><a href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div>{% trans "Units" %}</div></a></li>
+            <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}"><a href="/" title="{% trans 'KA Lite Home' %}"><div>{% trans "Learn" %}</div></a></li>
+        </ul>
+    </div>
+{% endblock subnavbar %}
+
+

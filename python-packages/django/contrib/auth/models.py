@@ -374,8 +374,9 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
 
     Username, password and email are required. Other fields are optional.
     """
-    username = models.CharField(_('username'), max_length=30, unique=True,
-        help_text=_('Required. 30 characters or fewer. Letters, numbers and '
+    #Changed to modify username length from 30 to 75 (matching email addresses)
+    username = models.CharField(_('username'), max_length=75, unique=True, #  KA-LITE-MOD (use email for username)
+        help_text=_('Required. 75 characters or fewer. Letters, numbers and '
                     '@/./+/-/_ characters'),
         validators=[
             validators.RegexValidator(re.compile('^[\w.@+-]+$'), _('Enter a valid username.'), 'invalid')

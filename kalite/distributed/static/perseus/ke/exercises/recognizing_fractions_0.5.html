@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Recognizing fractions 0.5</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <!--
+        Compares fractions that have the same numerator or have the same denominator.
+        TODO: would like to draw overlapping circles or rectangle slices for hints.
+    -->
+    <div class="exercise">
+        <div class="vars">
+            <var id="NUM_1">randRange(1, 9)</var>
+            <var id="DEN_1">randRange(3, 9)</var>
+            <var id="WHOLES">ceil(NUM_1 / DEN_1)</var>
+            <var id="FINAL">NUM_1 - (WHOLES - 1) * DEN_1</var>
+        </div>
+        <div class="problems">
+            <div id="pie-chart">
+                <div class="question">
+                        <p data-if="WHOLES === 1">What fraction of the circle is shaded red?</p>
+                        <div data-else="">
+                            <p>This circle represents one whole.</p>
+                            <div class="graphie">
+                                init({
+                                    range: [[0, 6], [-2.1, 2.1]],
+                                    scale: 25
+                                });
+                                piechart([0, DEN_1], [RED, "#999"], 2, false, 3, 0);
+                            </div>
+                            <p>What fraction is shaded red below?</p>
+                        </div>
+
+                        <div class="graphie">
+                            init({
+                                range: [[0, 6 * WHOLES], [-2.1, 2.1]],
+                                scale: 25
+                            });
+
+                            for (var i = 0; i &lt; WHOLES; i++) {
+                                if (i === 0) {
+                                    piechart([FINAL, DEN_1 - FINAL], [RED, "#999"], 2, false, (i + 1) * 3, 0);
+                                } else {
+                                    piechart([DEN_1, 0], [RED, "#999"], 2, false, i * 6 + 3, 0);
+                                }
+                            }
+                        </div>
+                </div>
+                <p class="solution" data-simplify="optional"><var>NUM_1 / DEN_1</var></p>
+                <div class="hints">
+                    <p>To find the numerator, count the red slices.</p>
+                    <p data-if="isSingular(NUM_1)">There is <code><var>NUM_1</var></code> red slice.</p>
+                    <p data-else="">There are <code><var>NUM_1</var></code> red slices.</p>
+                    <p data-if="WHOLES === 1">To find the denominator, count the total number of slices in the circle.</p>
+                    <p data-else="">To find the denominator, count the total number of slices in a circle.</p>
+                    <p data-if="WHOLES === 1">There are <code><var>DEN_1</var></code> slices in the circle.</p>
+                    <p data-else="">There are <code><var>DEN_1</var></code> slices in a circle.</p>
+                    <p>So the answer is <code>\dfrac{\red{<var>NUM_1</var>}}{<var>DEN_1</var>}</code>.</p>
+                </div>
+            </div>
+
+            <div id="rectangle-area">
+                <div class="question">
+                    <p data-if="WHOLES === 1">What fraction of the rectangle is shaded red?</p>
+                    <div data-else="">
+                        <p>This rectangle represents one whole.</p>
+                        <div class="graphie">
+                            init({
+                                range: [[0, 1], [0, 1]],
+                                scale: [250, 25]
+                            });
+                            rectchart([0, DEN_1], [RED, "#999"], 0);
+                        </div>
+                        <p>What fraction is shaded red below?</p>
+                    </div>
+
+                    <div class="graphie">
+                        init({
+                            range: [[0, 1], [0, 2 * WHOLES - 1]],
+                            scale: [250, 25]
+                        });
+
+                        for (var i = 0; i &lt; WHOLES; i++) {
+                            if (i === 0) {
+                                rectchart([FINAL, DEN_1 - FINAL], [RED, "#999"], i * 2);
+                            } else {
+                                rectchart([DEN_1, 0], [RED, "#999"], i * 2);
+                            }
+                        }
+                    </div>
+                </div>
+                <p class="solution" data-simplify="optional"><var>NUM_1 / DEN_1</var></p>
+
+                <div class="hints">
+                    <p>To find the numerator, count the red blocks.</p>
+                    <p data-if="isSingular(NUM_1)">There is <code><var>NUM_1</var></code> red block.</p>
+                    <p data-else="">There are <code><var>NUM_1</var></code> red blocks.</p>
+                    <p data-if="WHOLES === 1">To find the denominator, count the total blocks in the rectangle.</p>
+                    <p data-else="">To find the denominator, count the total blocks in a rectangle.</p>
+                    <p data-if="WHOLES === 1">There are <code><var>DEN_1</var></code> blocks in the rectangle.</p>
+                    <p data-else="">There are <code><var>DEN_1</var></code> blocks in a rectangle.</p>
+                    <p>So the answer is <code>\dfrac{\red{<var>NUM_1</var>}}{<var>DEN_1</var>}</code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

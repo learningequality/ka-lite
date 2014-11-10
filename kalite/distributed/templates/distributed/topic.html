@@ -1,128 +1,136 @@
-{% extends base_template %}
-{% load i18n %}
-{% load my_filters %}
-{% load i18n_filters %}
+{% extends "distributed/base_teach.html" %}
+{% load my_filters i18n i18n_filters staticfiles %}
 
-{% block watch_active %}active{% endblock watch_active %}
+{% block title %}
+    {% trans "Learn" %}
+{% endblock title %}
+
+{% block learn_active %}active{% endblock learn_active %}
+{% block learn_subnav_active %}learn-active active-tab active-nav{% endblock learn_subnav_active %}
+
 
 {% block headcss %}{{ block.super }}
-    <style>
-        .long-description {
-            margin-top: 5px;
+
+    <style type="text/css">
+        /* Overridding bootstrap back to defaults to make perseus looking good */
+        ul {
+            list-style-type: none;
+            margin-left: -8px;
         }
-        li {
-           font-size: 15px;
-           line-height: 23px;
-           margin-left: 10px;
+        .checkbox, .checkbox > input {
+            padding-left: 0;
+            float: none !important;
         }
-        .subtitle-indicator {
-            background-color: #aaf;
-            margin: 0px 1px 0px 0px;
-            padding: 2px;
-        }
-        .dubbedvideo-indicator {
-            background-color: #faa;
-            margin: 0px 1px 0px 0px;
-            padding: 2px;
+        #workarea .perseus-widget-container ul.blank-background {
+            background-color: #F7F7F7 !important;
         }
     </style>
+
+    {% if load_perseus_assets %}
+        <!-- START PERSEUS STUFF -->
+        <link rel="stylesheet" type="text/css" href="{% static 'perseus/ke/css/khan-exercise.css' True %}">
+        <style id="exercise-inline-style"></style> <!-- Used by KA to dynamically add styling to the exercise -->
+        <link rel="stylesheet" type="text/css" href="{% static "perseus/lib/katex/fonts/fonts.css" %}" />
+        <link rel="stylesheet/less" type="text/css" href="{% static "perseus/lib/katex/katex.less" %}" />
+        <link rel="stylesheet" type="text/css" href="{% static "perseus/lib/mathquill/mathquill.css" %}" />
+        <link rel="stylesheet/less" type="text/css" href="{% static "perseus/stylesheets/exercise-content-package/perseus.less" %}" />
+        <!-- END PERSEUS STUFF -->
+    {% endif %}
+    
+    <!--[if !IE]> -->
+    <link href="{% static "video-js/video-js.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
+    <!-- <![endif]-->
+    <link href="{% static "css/distributed/sidebar.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "css/distributed/content.css" %}" rel="stylesheet" type="text/css">
+
+    <link href="{% static "soundmanager/css/bar-ui.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "css/distributed/audio.css" %}" rel="stylesheet" type="text/css">
+
+    <link href="{% static "pdfjs/web/viewer.css" %}" rel="stylesheet" type="text/css">
+
 {% endblock headcss %}
 
-
 {% block headjs %}{{ block.super }}
+    {% if load_perseus_assets %}
+        <!-- START PERSEUS STUFF -->
+        <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
+        <script src="{% static "perseus/lib/marked.js" %}"></script>
+        <script src="{% static "perseus/lib/react-with-addons.js" %}"></script>
+        <script src="{% static "perseus/ke/third_party/MathJax/2.1/MathJax.js" True %}?config={% static "perseus/ke/third_party/MathJax/2.1/config/KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d" %}"></script>
+        <script src="{% static "perseus/lib/katex/katex.js" %}"></script>
+        <script src="{% static "perseus/lib/mathquill/mathquill.js" %}"></script>
+        <script src="{% static "perseus/lib/kas.js" %}"></script>
+        <script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
+        <script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
+        <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
+        <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
+        <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+        <script src="{% static 'js/seedrandom.min.js' %}"></script>
+        <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
+        <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
+        <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
+        <script src="{% static 'perseus/ke/interface.js' %}"></script>
+        <!-- END PERSEUS STUFF -->
+    {% endif %}
+
+    <script type="text/javascript">
+        var ALL_TOPICS_URL = '{{ topics_url }}';
+    </script>
+
+    <!--[if !IE]> -->
+    <script src="{% static "video-js/video.js" %}"></script>
+    <script src="{% static "video-js/video-speed.js" %}"></script>
+    <script>
+        _V_.options.flash.swf = "{% static "video-js/video-js.swf" %}";
+    </script>
+    <!-- <![endif]-->
+    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
+    <script src="{% static "js/distributed/videoplayer.js" %}"></script>
+
+    <script src="{% static "soundmanager/soundmanager2-nodebug-jsmin.js" %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='content' %}"></script>
+    <script src="{% static 'js/distributed/content/models.js' %}"></script>
+    <script src="{% static 'js/distributed/content/views.js' %}"></script>
+    
+    <script src="{% url 'handlebars_templates' module_name='audio' %}"></script>
+    <script src="{% static 'js/distributed/audio/views.js' %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='pdf' %}"></script>
+    <script src="{% static 'pdfjs/web/compatibility.js' %}"></script>
+    <script src="{% static 'pdfjs/web/l10n.js' %}"></script>
+    <script src="{% static 'pdfjs/build/pdf.js' %}"></script>
+    <script>
+        PDFJS.workerSrc = "{% static 'pdfjs/build/pdf.worker.js' %}";
+        PDFJS.imageResourcesPath = "{% static 'pdfjs/web/images/' %}";
+        PDFJS.cMapUrl = "{% static 'pdfjs/web/cmaps/' %}";
+        PDFJS.cMapPacked = true;
+        PDFJS.disableFontFace = true;
+    </script>
+    <script src="{% static 'pdfjs/web/viewer.js' %}"></script>
+    <script src="{% static 'js/distributed/pdf/views.js' %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
+    <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/bigSlide.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/models.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/views.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/router.js' %}"></script>
+
     <script type="text/javascript">
         $(function() {
-            $('.video-unavailable').removeAttr("href");
-
-            // TODO(bcipolli): use javascript to translate here
-            $('a.video-unavailable').attr("title", "{% trans 'This video is not downloaded.' %}");
+            window.channel_router = new ChannelRouter({default_channel: "{{ channel }}"})
+            Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
         });
     </script>
+
 {% endblock headjs %}
 
-
 {% block content %}
-    <h1 class="title-header">
-        <div class="title">{% trans title %}</div>
-        <div class="long-description">{% if description %}{% trans description %}{% endif %}</div>
-    </h1>
-    {% if topics %}
-    <h2>{% trans "Subtopics" %}</h2>
-    <ol>
-        {% for subtopic in topics %}
-        <li>
-            <span>
-                <a href="{{ subtopic.path }}" class="topic-link topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
-                    {% trans subtopic.title %}
-                </a>
-            </span>
-        </li>
-        {% endfor %}
-        <br/>
-    </ol>
-    {% endif %}
-
-    {% if videos %}
-    <h2>{% trans "Videos" %}</h2>
-    <ol>
-        {% for video in videos %}
-        <li>
-            <span class="progress-circle" data-video-id="{{ video.id }}"></span>
-            {% comment %}Four scenarios:
-            1. Offline, local video
-            2. Offline, no local video
-            3. Online, local video
-            4. Online, no local video
-            {% endcomment %}
-            <a href="{{ video.path }}" class="video-link client-online-only video-{% if not video.available %}un{% endif %}available">
-                {% trans video.title %}
-            </a>
-            <a href="{{ video.path }}" class="video-link not-client-online-only video-{% if not video.on_disk %}un{% endif %}available">
-                {% trans video.title %}
-            </a>
-
-            {# dubbed videos #}
-            {% for lang_code, avail in video.availability.iteritems %}
-                {% if avail.on_disk %}
-                <span class="dubbedvideo-indicator">
-                    <a href="{{ video.path }}?lang={{ lang_code }}" title="{% blocktrans with lang_name=lang_code|get_language_name %}Dubbed video available in {{ lang_name }}{% endblocktrans %}">
-                        {{ lang_code }}
-                    </a></span>
-                {% endif %}
-            {% endfor %}
-
-            {# subtitles #}{# TODO(bcipolli) don't hard-code to english? #}
-            {% for lang_code in video.availability.en.subtitles.keys %}
-                <span class="subtitle-indicator" title="{% blocktrans with lang_name=lang_code|get_language_name %}Subtitle available in {{ lang_name }}{% endblocktrans %}">
-                    {{ lang_code }}
-                </span>
-            {% endfor %}
-        </li>
-        {% endfor %}
-        <br/>
-    </ol>
-    {% endif %}
-
-    {% if exercises %}
-    <h2>{% trans "Exercises" %}</h2>
-    <ol>
-        {% for exercise in exercises %}
-        <li>
-            <span class="progress-circle" data-exercise-id="{{ exercise.name }}"></span>
-            <a class="exercise-link" href="{{ exercise.path }}">{% trans exercise.title %}</a>
-
-            {# translated exercises #}
-            {% for lang in exercise_langs|get_item:exercise.id %}
-                <span class="dubbedvideo-indicator">
-                    <a href="{{ exercise.path }}?lang={{ lang }}">
-                        {{ lang }}
-                    </a>
-                </span>
-            {% endfor %}
-
-        </li>
-        {% endfor %}
-        <br/>
-    </ol>
-    {% endif %}
+    {{ block.super }}
+    <div id="sidebar-container">
+    </div>
+    <div id="content-area">
+    </div>
 {% endblock content %}

@@ -40,7 +40,7 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
 def get_video_node_by_youtube_id(youtube_id):
     """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
     video_id = i18n.get_video_id(youtube_id=youtube_id)
-    return topic_tools.get_node_cache("Video").get(video_id, [None])[0]
+    return topic_tools.get_node_cache("Video").get(video_id, [None])
 
 
 class Command(UpdatesDynamicCommand, CronCommand):
@@ -197,7 +197,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
                     # If a connection error, we should retry.
                     if isinstance(e, DownloadError):
-                        connection_error = "[Errno 8]" in e.message
+                        connection_error = "[Errno 8]" in e.args[0]
                     elif isinstance(e, IOError) and hasattr(e, "strerror"):
                         connection_error = e.strerror[0] == 8
                     else:

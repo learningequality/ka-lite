@@ -1,0 +1,55 @@
+{% extends "distributed/base_teach.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block exams-active %}exams-active active-tab active-nav{% endblock exams-active %}
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+
+{% block title %}{% trans "Tests" %}{{ block.super }}{% endblock %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static_with_build 'css/student_testing/test_list.css' %}">
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script>
+        var ALL_TESTS_URL = "{% url 'api_dispatch_list' resource_name='test' %}";
+    </script>
+
+    <script src="{% url 'handlebars_templates' module_name='student_testing' %}"></script>
+    <script src="{% static 'js/student_testing/models.js' %}"></script>
+    <script src="{% static 'js/student_testing/test_list.js' %}"></script>
+
+    <script>
+        $(function() {
+            window.test_setting_app_view = new TestSettingAppView({
+                el: $("#test-setting-app-container")
+            });
+        });
+    </script>
+
+
+{% endblock headjs %}
+
+{% block content %}
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>
+                    {% trans "Tests" %}
+                    <small>
+                        <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% blocktrans %}Click on the "Enable Exam Mode" button to enable exam-mode for that test and redirect students to the exam page.{% endblocktrans %} {% blocktrans %}Click on the "Disable Exam Mode" button to disable the exam-mode setting for the test. {% endblocktrans %}'></span>
+                    </small>
+                </h2>
+            </div>
+        </div>
+        <div id="test-setting-app-container">
+            {# Backbone magic here! #}
+        </div>
+    </div>
+{% endblock content %}
+{% comment %}
+{% endcomment %}

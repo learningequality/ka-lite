@@ -1,6 +1,11 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 # this is actually 0.12.5, but we need to update language pack version fallbacks before changing here
-VERSION = "0.12.0"
+MAJOR_VERSION = 0
+MINOR_VERSION = 12
+PATCH_NUMBER = 0
+
+VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_NUMBER)
+
 VERSION_INFO = {
 
     "0.12.8": {

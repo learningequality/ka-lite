@@ -1,68 +1,15 @@
-body {
+/*body {
     min-width: 600px;
-}
+}*/
 
-#outer-wrapper {
-    background: url(/static/images/distributed/light-page-bg.png) repeat-x;
-}
-
-#page-container-inner {
-    background: transparent url(/static/images/distributed/content-border.1.png) no-repeat;
-    background-position: right 60px;
-}
-#page-container {
-    background: none;
-}
-#container {
-    background: transparent url(/static/images/distributed/content-border.1.png) no-repeat;
-    background-position: 0px 0px;
-}
-
-#page-container {
-    background-position: 0 50px;
-    min-width: 600px;
-    max-width: 1100px;
-}
-
-article {
+/*article {
     padding: 20px;
-}
+}*/
 
-footer {
-    background: url(/static/images/distributed/footer-bg.png) repeat-x 0 0; /*! data-uri(/images/footer-bg.png) */
-    min-width: 570px;
-}
-footer.short {
-    color: #555;
-    background: url(/static/images/distributed/light-page-bg.png) repeat-x 0 -30px;
-    border-top: 1px solid #C6D1AD;
-    z-index: 10;
-}
-footer #leaves {
-    background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
-    background-position: 319px -908px;
-    height: 188px;
-}
-footer #creative-commons-link {
-    background-image: url(/static/images/distributed/non-repeating-sprites.4.png);
-    margin-right: 15px;
-}
-footer.short .inner {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-a:link:focus,
+/*a:link:focus,
 a:hover {
     color: #2F92A5;
-}
-
-#language_selector {
-    width:75px;
-    position: relative;
-    top: -1px;
-    float: right;
-}
+}*/
 
 #top-header {
     height: 60px;
@@ -70,24 +17,10 @@ a:hover {
     top: 0px;
 }
 
-footer.short {
-    margin-top: 32px;
-    height: 39px;
-    padding: 2px 0px 3px 0px;
-}
-
-#fle-logo {
-    height:18px;
-    margin-right: 5px;
-    margin-left:10px;
-    margin-top: 5px;
-}
-
-
 #top-header #logo {
     position: absolute;
     top: 5px;
-    z-index: 50; /*TODO(dylan): stopgap solution;*/
+    z-index: 50; /*TODO(dylanjbarth): stopgap solution;*/
 }
 
 #logo-image-small img {
@@ -106,21 +39,6 @@ footer.short {
     height: 50px;
 }
 
-nav {
-    display: block;
-    clear: both;
-    width: 100%;
-    margin: 0;
-    padding: 3px 0;
-    white-space: nowrap;
-    /* Position this at 30 so the white triangle appears on top of the page_sub_nav breadcrumbs border */
-    height: 30px;
-    z-index: 50;
-    position: relative;
-    right: 10px;
-    top: 22px;
-}
-
 .nav-subheader {
     font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
     font-weight: normal;
@@ -136,6 +54,7 @@ nav {
     color: #263500;
     height: 20px;
     display: block;
+    line-height: 18px;
 }
 
 .nav-subheader a:hover {
@@ -144,14 +63,12 @@ nav {
 
 .nav-subheader > a, .nav-subheader > span {
     margin-left: 20px;
-    display: block;
     float: right;
 }
 
 .nav-subheader a.active:after {
     content: url(/static/images/distributed/nav-selector.gif);
     position: relative;
-    top: -6px;
     display: block;
     left: 50%;
     margin-left: -5px;
@@ -162,35 +79,348 @@ nav {
     color: darkRed;
 }
 
-#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice {
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice, #nav_tests {
     display: none;
-}
-
-#logged-in-name {
-    display: inline-block;
-    min-width: 10px;
-    max-width: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: bottom;
-    *vertical-align: middle; /*Hack to properly align Username in IE6 & IE7 */
 }
 
 /********** End of Top Navigation bar ***********/
 
-h2 {
-    margin-bottom: 10px;
+/********** "Teacher" Sub-Navigation bar ***********/
+.teach-nav {
+    width: 100%;
+    border-bottom: 4px solid #5C8547;
+    margin-bottom: 25px;
 }
+.teach-nav ul {
+    padding-left: 1%;
+    margin-bottom: 0;
+}
+.teach-nav li {
+    background-color: #5C8547;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    border-top: 3px solid #5C8547;
+    border-right: 3px solid #5C8547;
+    border-left: 3px solid #5C8547;
+    width: 110px;
+    text-align: center;
+    font-weight: bold;
+    display: inline-block;
+    margin: 0 2px -4px 0;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
+
+}
+.teach-nav li div {
+    position: relative;
+    width: 110px;
+    height: 88px;
+    line-height: 10;
+    margin: -24px 0px -47px -3px;
+}
+.teach-nav li div:hover {
+    color: #5C8547;
+}
+.teach-nav li:hover {
+    background-color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 16px;
+    color: #5C8547;
+    font-weight: bold;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
+}
+.teach-nav li a {
+    color: white;
+    padding: 0px 15px 5px 15px;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    height: 87px;
+}
+.teach-nav li a:hover {
+    color: #5C8547;
+}
+.teach-nav li img {
+    height: 40px;
+    width: auto;
+    display: block;
+    margin: auto;
+    margin-bottom: 5px;
+}
+.link-width {
+    width: 90px;
+}
+.active-nav {
+    color: #5C8547 !important;
+    background-color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 16px;
+    font-weight: bold;
+}
+.active-tab {
+    height: 89px;
+    width: 110px;
+}
+.active-tab div {
+    color: #5C8547 !important;
+}
+.reports {
+    background: url("../../images/distributed/reports-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.reports:hover, .reports-active {
+    background: url("../../images/distributed/reports-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+    color: #5C8547 !important;
+}
+.playlist {
+    background: url("../../images/distributed/playlist-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.playlist:hover, .playlists-active {
+    background: url("../../images/distributed/playlist-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.exams {
+    background: url("../../images/distributed/exam-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.exams:hover, .exams-active {
+    background: url("../../images/distributed/exam-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.units {
+    background: url("../../images/distributed/units-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.units:hover, .units-active {
+    background: url("../../images/distributed/units-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.learn {
+    background: url("../../images/distributed/learn-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.learn:hover, .learn-active {
+    background: url("../../images/distributed/learn-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+/********* End Sub-Navigation bar **********/
+
+
+/********* "Admin" Sub-Navigation bar **********/
+.manage-nav {
+    display: inline-block;
+    width: 100%;
+    border-bottom: 4px solid #5C8547;
+    margin-bottom: 25px;
+}
+.manage-nav ul {
+    padding-left: 1%;
+    margin-bottom: -4px;
+    height: 87px;
+}
+.manage-nav li {
+    background-color: #5C8547;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    border-top: 3px solid #5C8547;
+    border-right: 3px solid #5C8547;
+    border-left: 3px solid #5C8547;
+    width: 110px;
+    text-align: center;
+    font-weight: bold;
+    display: inline-block !important;
+    margin: 0 2px -4px 0;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
+}
+.manage-nav li:hover {
+    background-color: white;
+    -webkit-transition: all 115ms ease-out !important;
+    -moz-transition: all 115ms ease-out !important;
+    -o-transition: all 115ms ease-out !important;
+    transition: all 115ms ease-out !important;
+}
+.manage-nav li a {
+    color: white;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+}
+.manage-nav li div {
+    position: relative;
+    width: 110px;
+    height: 85px;
+    line-height: 9.5;
+    margin-left: -3px;
+    margin-top: -3px;
+}
+.manage-nav li div:hover {
+    color: #5C8547;
+}
+.manage-nav li a:hover {
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 16px !important;
+    color: #5C8547;
+    font-weight: bold;
+    text-decoration: none;
+}
+.manage-nav li img {
+    height: 40px;
+    width: auto;
+    display: block;
+    margin: auto;
+    margin-bottom: 5px;
+}
+.active-nav {
+    color: #405D32 !important;
+    background-color: white !important;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 16px !important;
+    font-weight: bold;
+}
+.users {
+    background: url("../../images/distributed/users-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.users:hover, .users-active {
+    background: url("../../images/distributed/users-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.video {
+    background: url("../../images/distributed/videos_icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.video:hover, .video-active {
+    background: url("../../images/distributed/videos_active_icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.languages {
+    background: url("../../images/distributed/language_icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.languages:hover, .languages-active {
+    background: url("../../images/distributed/language_active_icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.facility {
+    background: url("../../images/distributed/facility-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.facility:hover, .facility-active {
+    background: url("../../images/distributed/facility-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+/********* End "Admin" Sub-Navigation bar **********/
+
+
+/********* Coach Reports Sub-Navigation bar *********/
+.active {
+    border: none !important;
+}
+.sub-active {
+    border: 0;
+    margin: 0;
+    background-color: #5C8547;
+    color: white;
+    padding: 0;
+}
+.dropdown.sub-active {
+    padding: 0;
+    border-radius: 5px 15px 0 0;
+}
+.sub-active.open {
+    color: black;
+}
+.subnav {
+    text-align: center;
+    margin: 40px 0 50px 0;
+}
+.subnav li {
+    display: inline-block;
+    text-align: center;
+    border-radius: 10px;
+    border: 3px solid #6E9F56;
+    margin: -25px 10px 0 10px;
+}
+.subnav li a {
+    width: 150px;
+    height: 80px;
+    text-decoration: none;
+    color: #5C8547;
+    font-weight: bold;
+    -webkit-transition: all 115ms ease-out !important;
+    -moz-transition: all 115ms ease-out !important;
+    -o-transition: all 115ms ease-out !important;
+    transition: all 115ms ease-out !important;
+}
+.subnav span {
+    line-height: 1.6;
+    font-size: 17px;
+}
+.sub-active.open ul.dropdown-menu {
+    padding: 9px 0;
+}
+.sub-active.open ul.dropdown-menu li {
+    padding: 0;
+}
+.sub-active.open ul.dropdown-menu li a {
+    text-transform: none;
+    background-color: white;
+    color: black;
+    border-radius: 0;
+    border: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+.sub-active.open ul.dropdown-menu li a:hover {
+    background-color: rgb(237, 237, 237);
+}
+.sub-active.open a.dropdown-toggle,
+.sub-active.open a.dropdown-toggle:hover {
+    color: black;
+}
+.progress-tab img,
+.effort-tab img,
+.mastery-tab img {
+    margin: -10px -30px 0 -15px;
+    border-radius: 8px;
+    left: 15px;
+    opacity: 0.18;
+    position: absolute;
+}
+
+/********* End Coach Reports Sub-Navigation bar **********/
 
 .title-header .long-description {
     color: #666;
     font-size: 15px;
-}
-
-div#map-container {
-    min-height: 1000px;
-    min-width: 800px;
 }
 
 div.exercises-card {
@@ -221,6 +451,25 @@ div.exercises-card {
     background-color: #5BDB44;
 }
 
+.exercise-title-prefix {
+    opacity: 0.3;
+}
+
+.attempts {
+    font-size: 18px;
+    text-align: right;
+    width: 100%;
+}
+
+.progress-points {
+    width: 90%;
+    text-align: center;
+    float: left;
+    white-space: nowrap;
+    font-size: 1.1em;
+    padding: 4px 8px;
+}
+
 .practice-exercise-description {
     opacity: 0.5;
     font-size: 0.7em;
@@ -244,6 +493,15 @@ div.exercises-card {
     float: left;
     margin: 0;
     width: 98%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info-box.related-content {
+    padding: 10px;
+    margin: 10px;
+    height: 100px;
+    font-weight: bold;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -372,10 +630,10 @@ li .progress-circle {
     color: red;
 }
 
-
-#hint-remainder {
+.hint-reminder {
     line-height: 18px;
     padding-top: 10px;
+    color: #777;
 }
 
 #totalpoints {
@@ -400,7 +658,6 @@ li .progress-circle {
     padding-left: 5px;
     padding-right: 5px;
     margin-right: 4px;
-    margin-top: 10px;
     font-size: 0.8em;
     float: right;
     background-color: #EEEEFF;
@@ -408,31 +665,13 @@ li .progress-circle {
     -moz-border-radius: 5px;
 }
 
-.vidprev {
-    float: left;
-}
-
-.vidnext {
-    float: right;
-    padding-right: 4px;
-}
-
-#sitepoints {
-    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
-    float: right;
-    margin-top: 7px;
-    margin-right: 19px;
-    opacity: 0.7;
-    font-size: 1.05em;
-}
-
 #scratchpad > div {
-    margin-top: 10px;
+    margin-top: 0; /* Controls whether scratchpad comes out of boundary - GH #1859 */
     max-width: 514px;
 }
 
 .current-card-contents #workarea {
-    margin-top: 50px;
+    margin-top: 10px;
     margin-right: 30px;
 }
 
@@ -475,7 +714,8 @@ a:active.topic-unavailable,
 a:link.topic-unavailable,
 a:link.video-unavailable,
 a:visited.topic-unavailable {
-    color: #bbb;
+    color: #ACBDD1;
+    font-weight: normal;
     text-decoration: none;
 }
 a:hover.video-unavailable {
@@ -484,51 +724,53 @@ a:hover.video-unavailable {
 a:hover.topic-unavailable {
     color: #ddd;
 }
-
-.green_button{
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    background-color: #81ba6f;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 13px;
-    color: #ffffff;
-    padding: 10px 20px;
-    border:0px;
-    vertical-align: middle;
-}
-
-a.green_button, a.green_button:hover,input.green_button, input.green_button:hover {
-    color: white !important;
-    text-decoration: none;
-}
-a.green_button:hover,input.green_button:hover{
-    background-color:#318a3f;
-}
 a.disabled {
     background-color: #C0C0C0;
 }
 
-#search-box {
-    float: right;
+/* BEGIN styles for software-keyboard */
+
+
+#software-keyboard {
+    border: 2px solid #cfcfcf;
+    background: #c3c3c3;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 1);
+    text-align: center;
+    padding: 0px;
+    margin-top: 10px;
+}
+
+#software-keyboard div {
+    display: inline-block;
+    min-width: 33%;
+    padding: 3px;
+}
+
+#software-keyboard div .key {
+    width: 100%;
+    text-align: center;
+    line-height: 30px;
+    font-size: 26px;
 }
 
 #search-box input {
     position: relative;
-    top: -1px;
+    top: -2px;
+    float: right;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+#show-keyboard {
+    font-size: 10px;
+    width: 90px;
     float: right;
 }
 
-#search-button {
-    top: 1px;
-    position: relative;
-    padding: 3px 8px 2px 8px;
-    height: 14px;
-    line-height: 14px;
-    float: right;
-    margin-left: 1px;
-    min-width: 5px;
-}
+/* END styles for software-keyboard */
 
 input#search {
     width: 150px;
@@ -590,3 +832,93 @@ div .col-xs-4 {
 }
 
 /* END styles for software-keyboard */
+
+/*
+Icon Font
+======================================
+*/
+
+/*
+To update these icons go to icomoon.io
+and navigate to the icomoon app.
+
+Here click 'import icons' and select the SVG file
+in static/fonts.
+
+Select all the imported icons, and then add whichever
+other icons you want to use in addition.
+
+When finished, press the 'Font' button at the bottom of
+the screen. Take note of the character numbers \e6xx
+below your new icons, you will need these to specify
+in the css block below.
+
+Now click 'Download'. Open the icomoon.zip file that
+downloads and navigate into the fonts directory.
+Extract the contents of the fonts directory into static/fonts
+overwriting all existing files.
+
+Now add class definitions below for your new icon, and add that
+to items you want to have the icon appear with.
+*/
+
+.icon-exercise:before {
+    content: "\e600";
+}
+.icon-video:before {
+    content: "\e601";
+}
+.icon-quiz:before {
+    content: "\e602";
+}
+.icon-topic:before {
+    content: "\e603";
+}
+.icon-audio:before {
+    content: "\e604";
+}
+.icon-document:before {
+    content: "\e605";
+}
+/* BEGIN styles for modal dialog */
+
+div#overlay {
+    position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
+    margin: auto;
+    height: 30px;
+    width: 400px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1100; /* makes the div the top layer, so it’ll lay on top of the other content */
+}
+
+
+div#fade {
+    position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
+    left: 0%; /* makes the div span all the way across the viewing area */
+    top: 0%; /* makes the div span all the way across the viewing area */
+    background-color: black;
+    -moz-opacity: 0.7; /* makes the div transparent, so you have a cool overlay effect */
+    opacity: .70;
+    filter: alpha(opacity=70);
+    width: 100%;
+    height: 100%;
+    z-index: 1010; /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */
+}
+
+/* END styles for modal dialog */
+
+.pdf-frame {
+    height: 1000px;
+    font-size: 10px;
+    background-color: #404040;
+    padding: 0;
+    margin: 0;
+}
+
+.pdf-frame body, input, button, select {
+  font: message-box;
+  outline: none;
+}

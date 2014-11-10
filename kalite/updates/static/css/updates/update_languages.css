@@ -1,34 +1,110 @@
-.download-actions {
-    width: 600px;
-    float: left;
-    margin: 5px 10px 20px 0px;
-    padding: 10px;
+.download-actions-languages {
+    padding-right: 0;
 }
+
 #language-packs {
-    margin-top: 20px;
+    margin-bottom: 10px;
 }
-.lang-link, .lang-name, .lang-data, .upgrade-link, .delete-language-button {
+
+.lang-link, .lang-name, .lang-data, .upgrade-link {
     float: left;
     font-size: 12pt;
 }
+
 .upgrade-link a {
-    font-weight: bold;
     text-decoration: underline;
 }
-.lang-link { width: 120px; }
-.lang-name { width: 250px; }
-.lang-data { width: 250px; }
-.upgrade-link { width: 300px; }
-.delete-language-button {float: right;}
+
+.lang-link {
+    width: 25%; 
+    text-align: center;
+}
+
+.lang-name {
+    text-align: center; 
+    width: 20%;
+}
+
+.lang-data {
+    text-align: center; 
+}
+
+.lang-data {
+    width: 25%; 
+}
+
+.upgrade-link {
+    text-align: center;
+    width: 26%; 
+}
 
 #langpack-details {
-    margin-top: 10px;
     display: none;
+    font-size: 12px;
 }
+
 #langpack-details span {
-    margin-left: 10px;
     font-weight: bold;
 }
+
 #languagepackdownload-progressbar {
+    margin-top: 25px;
     margin-bottom: 25px;
+}
+
+h4.button_text, p.button_text, #language-packs, #langpack-details span {
+    margin-left: 10px;
+}
+
+h4.button_text {
+    margin-top: 10px;
+}
+
+#installed-languages-div {
+    padding: 5px 0px 20px 25px;
+    margin-top: 20px;
+}
+
+.language-table tr {
+    border-top: 1px solid #ddd;
+    width: 100%;
+    padding-top: 20px;
+}
+
+.language-table td {
+    border-top: none !important;
+    padding-top: 15px !important;
+    height: 100px !important;
+    width: 33%;
+}
+
+
+
+.language-table span {
+    line-height: 2;
+}
+
+.delete-language-button {
+    text-align: center;
+}
+
+@media only screen and (max-width: 1199px) {
+    .lang-link, .lang-name, .lang-data, .upgrade-link { font-size: 12px; }
+}
+
+@media only screen and (max-width: 767px) {
+    .lang-data { text-align: middle; }
+}
+
+@media only screen and (max-width: 450px) {
+    .lang-link, .lang-name, .lang-data, .upgrade-link { font-size: 10px; }
+}
+
+@media only screen and (max-width: 432px) {
+    #langpack-details { font-size: 10px; }
+}
+
+@media only screen and (max-width: 401px) {
+    #langpack-details { float: left; }
+    #get-language-button { float: left !important; margin-bottom: 10px; margin-left: 10px; }
 }

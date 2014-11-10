@@ -1,0 +1,81 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="pull-right">
+                        <div class="points-wrapper"></div>
+                        <a href="{{ content_urls.stream }}" class="btn btn-primary download-link pull-right">{{_ "Download" }}</a>
+                        <div class="clear"></div>
+                    </div>
+
+                    <h3>
+                        {{#if dubs_available }}
+                            <select class="content-language-selector">
+                                {{#each availability }}
+                                <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                                    {{ language_name }}
+                                </option>
+                                {{/each}}
+                            </select>
+                        {{/if}}
+                    </h3>
+
+                    <span class="title">{{ title }}</span>
+
+                    {{#if description }}
+                    <div class="content-description">{{ description }}</div>
+                    {{/if}}
+
+                    <div class="clear"></div>
+
+                    <div class="borderwrapper"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="content-player-container"></div>
+                </div>
+                {{#if related_content}}
+                <div class="panel-footer">
+                    <h4>
+                        Related content:
+                    </h4>
+                    <div class="row">
+                        {{#each related_content }}
+                            <div class="col-xs-4">
+                                <a href="/learn/{{ path }}" title="{{description}}" class="btn btn-success btn-related-content">
+                                    <div class="related-content-header">
+                                        {{#ifcond kind "==" "Video"}}
+                                        <span class="icon-video"></span>
+                                        {{/ifcond}}
+                                        {{#ifcond kind "==" "Exercise"}}
+                                        <span class="icon-exercise"></span>
+                                        {{/ifcond}}
+                                        {{#ifcond kind "==" "Quiz"}}
+                                        <span class="icon-quiz"></span>
+                                        {{/ifcond}}
+                                        {{#ifcond kind "==" "Topic"}}
+                                        <span class="icon-list"></span>
+                                        {{/ifcond}}
+                                        {{#ifcond kind "==" "Audio"}}
+                                        <span class="icon-audio"></span>
+                                        {{/ifcond}}
+                                        {{#ifcond kind "==" "Document"}}
+                                        <span class="icon-document"></span>
+                                        {{/ifcond}}
+                                        <span class="related-content-title">{{ title }}</span>
+                                    </div>
+                                    <div class="related-content-body">
+                                        <p>
+                                            {{#truncate description 100 }}{{/truncate}}
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>

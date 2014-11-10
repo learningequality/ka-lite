@@ -55,6 +55,9 @@ class FacilityUserForm(forms.ModelForm):
             "is_teacher": forms.HiddenInput(),
             "zone_fallback": forms.HiddenInput(),
             "warned": forms.HiddenInput(),
+            "username": forms.TextInput(attrs={"autocomplete": "off"}),
+            "first_name": forms.TextInput(attrs={"autocomplete": "off"}),
+            "last_name": forms.TextInput(attrs={"autocomplete": "off"}),
         }
 
 
@@ -86,13 +89,25 @@ class FacilityUserForm(forms.ModelForm):
         # If they have put anything in the new password field, it must match the password check field
         if password_first != password_recheck:
             self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
-        
+
         # Next, enforce length if they submitted a password
         if password_first:
             try:
                 verify_raw_password(password_first)
             except ValidationError as ve:
-                self.set_field_error(field_name='password_first', message=ve.messages[0])
+                # MUST: The ValidationError constructor sets the error message into a list with
+                # `self.messages = [message]` so we get the first message from the list.  It
+                # should have assigned the value to `self.message = message` too but maybe on
+                # newer Django versions this is fixed.
+                message = ''
+                if hasattr(ve, 'messages') and isinstance(ve.messages, list) and ve.messages:
+                    message = ve.messages[0]
+                self.set_field_error(field_name='password_first', message=message)
+
+        elif (self.instance and not self.instance.password) or password_first or password_recheck:
+            # Only perform check on a new user or a password change
+            if password_first != password_recheck:
+                self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
 
         ## Warn the user during sign up or adding user if a user with this first and last name already exists in the facility
         if not self.cleaned_data.get("warned", False) and (self.cleaned_data["first_name"] or self.cleaned_data["last_name"]):
@@ -115,6 +130,7 @@ class FacilityUserForm(forms.ModelForm):
 
 
 class FacilityForm(forms.ModelForm):
+    name = forms.CharField(label=_("Name (required)"))
 
     class Meta:
         model = Facility
@@ -153,7 +169,7 @@ class FacilityGroupForm(forms.ModelForm):
 
     class Meta:
         model = FacilityGroup
-        fields = ("name", "facility", "zone_fallback", )
+        fields = ("name", "description", "facility", "zone_fallback", )
         widgets = {
             "facility": forms.HiddenInput(),
             "zone_fallback": forms.HiddenInput(), # TODO(jamalex): this shouldn't be in here
@@ -181,6 +197,9 @@ class LoginForm(forms.ModelForm):
     class Meta:
         model = FacilityUser
         fields = ("facility", "username", "password")
+        widgets = {
+            "username": forms.TextInput(attrs={"autocomplete": "off"}),
+        }
 
     def __init__(self, request=None, *args, **kwargs):
         self.user_cache = None

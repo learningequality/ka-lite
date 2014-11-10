@@ -1,0 +1,112 @@
+{% extends base_template %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block headcss %}{{ block.super }}
+<!--   <link rel="stylesheet" src="{% static 'css/sidr.dark.css'%}">
+    <link rel="stylesheet" href="{% static 'css/playlist/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/playlist/utility.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" /> -->
+
+    <!-- exercise-related files -->
+    <link rel="stylesheet" type="text/css" href="{% static 'khan-exercises/css/khan-exercise.css' %}">
+
+    <!-- video-related files -->
+    <!--[if IE]>
+    <link href="{% static "video-js-4/video-js.mod.css" %}" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link href="{% static "video-js-4/video-js-old-ie.css" %}" rel="stylesheet" type="text/css">
+    <![endif]-->
+    <!--[if !IE]> -->
+    <link href="{% static "video-js/video-js.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
+    <!-- <![endif]-->
+
+    <link href="{% static "css/distributed/sidebar.css" %}" rel="stylesheet" type="text/css">
+
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript">
+        var channel = '{{ channel }}';
+        var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name=channel %}";
+    </script>
+
+    <!-- START PERSEUS STUFF -->
+    <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
+    <script src="{% static "perseus/lib/marked.js" %}"></script>
+    <script src="{% static "perseus/lib/react-with-addons.js" %}"></script>
+    <script src="{% static "perseus/ke/third_party/MathJax/2.1/MathJax.js" True %}?config={% static "perseus/ke/third_party/MathJax/2.1/config/KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d" %}"></script>
+    <script src="{% static "perseus/lib/katex/katex.js" %}"></script>
+    <script src="{% static "perseus/lib/mathquill/mathquill.js" %}"></script>
+    <script src="{% static "perseus/lib/kas.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
+    <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+
+    <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
+    <script src="{% static 'perseus/ke/interface.js' %}"></script>
+    <!-- END PERSEUS STUFF -->
+
+    <script src="{% static 'js/seedrandom.min.js' %}"></script>
+    <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
+    <!-- Import below is to allow quizes to create 'gift_cards' to award points !-->
+    <script src="{% static 'js/store/models.js' %}"></script>
+
+    <!-- video-related files -->
+    <!--[if IE]>
+    <script src="{% static "video-js-4/video.js" %}"></script>
+    <script>
+        _V_.options.flash.swf = "{% static "video-js-4/video-js.swf" %}?" + Math.random();
+    </script>
+    <![endif]-->
+    <!--[if !IE]> -->
+    <script src="{% static "video-js/video.js" %}"></script>
+    <script src="{% static "video-js/video-speed.js" %}"></script>
+    <script>
+        _V_.options.flash.swf = "{% static "video-js/video-js.swf" %}";
+    </script>
+    <!-- <![endif]-->
+
+    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
+    <script src="{% static "js/distributed/videoplayer.js" %}"></script>
+
+    <!-- playlist-related files -->
+    <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
+    <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/bigSlide.js' %}"></script>
+    <script src="{% static 'js/playlist/models.js' %}"></script>
+    <script src="{% static 'js/distributed/topics/views.js' %}"></script>
+
+    <script>
+        $(function() {
+            statusModel.loaded.then(function() {
+                window.sidebar_view = new SidebarView({
+                    model: new Playlist({id: "{{ playlist_id }}"}),
+                    entity_key: "entries",
+                    entity_collection: PlaylistEntryList
+                });
+                $("#sidebar-container").append(sidebar_view.el);
+            });
+        });
+    </script>
+
+{% endblock headjs %}
+
+{% block content %}
+
+    <div id="sidebar-container"></div>
+
+    <div id="content-area">
+    </div>
+
+{% endblock content %}

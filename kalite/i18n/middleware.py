@@ -45,4 +45,5 @@ def set_language_data_from_request(request):
 
 class SessionLanguage:
     def process_request(self, request):
+        request.in_context_localized = settings.IN_CONTEXT_LOCALIZED  # also set whether to turn on in-context localization
         return set_language_data_from_request(request)

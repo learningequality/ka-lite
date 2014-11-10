@@ -1,3 +1,10 @@
+$.ajaxSetup({dataFilter: function(data, type) {
+    if (type === "json" && data === "") {
+        data = null;
+    }
+    return data;
+}});
+
 function assert(val, msg) {
     if (!val) {
         show_message("error", msg);
@@ -7,7 +14,7 @@ function assert(val, msg) {
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
+    if (document.cookie && document.cookie !== '') {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);
@@ -64,6 +71,17 @@ function doRequest(url, data, opts) {
         });
 }
 
+// Customize the Backbone.js ajax method to call our success and fail handlers for error display
+Backbone.ajax = function() {
+    return Backbone.$.ajax.apply(Backbone.$, arguments)
+        .success(function(resp) {
+            handleSuccessAPI(resp);
+        })
+        .fail(function(resp) {
+            handleFailedAPI(resp);
+        });
+};
+
 function handleSuccessAPI(obj) {
 
     var messages = null;
@@ -101,7 +119,6 @@ function handleSuccessAPI(obj) {
         }
     }
 
-    clear_messages("error");
     if (messages) {
         show_api_messages(messages);
     }
@@ -112,6 +129,8 @@ function handleFailedAPI(resp, error_prefix) {
     // 1. With an API response (resp) containing a JSON error.
     // 2. With an explicit error_prefix
 
+    // TODO(jamalex): simplify this crud; "error_prefix" doesn't even seem to get used at all?
+
     // Parse the messages.
     var messages = {};
     switch (resp.status) {
@@ -120,9 +139,16 @@ function handleFailedAPI(resp, error_prefix) {
             break;
 
         case 200:  // return JSON messages
+
+        case 201:  // return JSON messages
+
         case 500:  // also currently return JSON messages
+
+            // handle empty responses gracefully
+            resp.responseText = resp.responseText || "{}";
+
             try {
-                messages = $.parseJSON(resp.responseText);
+                messages = $.parseJSON(resp.responseText || "{}");
             } catch (e) {
                 var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
@@ -183,23 +209,29 @@ String.prototype.hashCode = function(){
 
 // Generic functions for client-side message passing
 //   through our Django-based server-side API
-function show_message(msg_class, msg_text) {
+function show_message(msg_class, msg_text, msg_id) {
     // This function is generic--can be called with server-side messages,
     //    or to display purely client-side messages.
     // msg_class includes error, warning, and success
+    if (msg_id === undefined) {
+        msg_id = msg_text.hashCode();
+    }
 
-    // remove any existing message with the same id
-
-    var msg_id = msg_text.hashCode();
-
-    // Avoid duplicating the same message by removing
+    // Avoid duplicating the same message by removing any existing message with the same id
     if (msg_id) {
         $("#" + msg_id).remove();
     }
 
-    x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+    if (!msg_text) {
+        return $("#message_container");
+    }
 
-    msg_html = "<div class='alert alert-" + msg_class + "'";
+    var x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+
+    if (msg_class === "error") {
+        msg_class = "danger"
+    };
+    var msg_html = "<div class='alert alert-" + msg_class + "'";
 
     if (msg_id) {
         msg_html += " id='" + msg_id + "'";

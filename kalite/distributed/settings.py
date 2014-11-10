@@ -1,6 +1,5 @@
 import getpass
 import hashlib
-import json
 import os
 import sys
 import tempfile
@@ -42,20 +41,27 @@ INSTALLED_APPS = (
     "fle_utils.config",
     "fle_utils.chronograph",
     "fle_utils.django_utils",  # templatetags
+    "fle_utils.handlebars",
+    "fle_utils.backbone",
     "fle_utils.build",
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
     "kalite.django_cherrypy_wsgiserver",  # API endpoint for PID
     "kalite.i18n",  #
-    "kalite.khanload",  # khan academy interactions
+    "kalite.contentload",  # content loading interactions
     "kalite.topic_tools",  # Querying topic tree
     "kalite.main", # in order for securesync to work, this needs to be here.
+    "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
+    "kalite.student_testing",
     "kalite.caching",
+    "kalite.store",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
+    "kalite.ab_testing",
+    "kalite.dynamic_assets",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,6 +70,7 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     __package__ + ".middleware.LockdownCheck",
+    "student_testing.middleware.ExamModeCheck",
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -92,6 +99,16 @@ CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http:/
 
 KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), "static", "khan-exercises")
 
+########################
+# Exercise AB-testing
+########################
+FIXED_BLOCK_EXERCISES = getattr(local_settings, 'FIXED_BLOCK_EXERCISES', 0)
+STREAK_CORRECT_NEEDED = getattr(local_settings, 'STREAK_CORRECT_NEEDED', 8)
+
+########################
+# Video AB-testing
+########################
+POINTS_PER_VIDEO = getattr(local_settings, 'POINTS_PER_VIDEO', 750)
 
 ########################
 # Ports & Accessibility

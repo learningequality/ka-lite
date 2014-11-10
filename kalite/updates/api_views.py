@@ -278,7 +278,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
         }
 
     elif node["kind"] == "Video":
-        video_id = node["youtube_id"]
+        video_id = node.get("youtube_id", node.get("id"))
         youtube_id = get_youtube_id(video_id, lang_code=lang_code)
 
         if not youtube_id:
@@ -334,6 +334,10 @@ def start_update_kalite(request):
         mechanism = data['mechanism']
     except KeyError:
         raise KeyError(_("You did not select a valid choice for an update mechanism."))
+
+    # Clear any preexisting logs
+    if UpdateProgressLog.objects.count():
+        UpdateProgressLog.objects.all().delete()
 
     call_command_async('update', mechanism, old_server_pid=os.getpid(), in_proc=True)
 

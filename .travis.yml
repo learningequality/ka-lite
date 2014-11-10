@@ -15,7 +15,7 @@ install:
 script:
 - python python-packages/fle_utils/tests.py
 - python kalite/manage.py syncdb --migrate --noinput --traceback
-- python kalite/manage.py test
+- python kalite/manage.py test --traceback
 - grunt jshint
 notifications:
   email:

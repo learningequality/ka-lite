@@ -7,7 +7,8 @@ from django.conf import settings; logging = settings.LOG
 from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
-from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle
+
+from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_name
 from kalite.topic_tools import get_topic_tree, get_videos
 
 
@@ -51,10 +52,10 @@ def delete_downloaded_files(youtube_id):
     return videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
 
 
-def is_video_on_disk(youtube_id, format="mp4", videos_path=None):
-    videos_path = videos_path or settings.CONTENT_ROOT
-    video_file = os.path.join(videos_path, youtube_id + ".%s" % format)
-    return os.path.isfile(video_file)
+def is_content_on_disk(content_id, format="mp4", content_path=None):
+    content_path = content_path or settings.CONTENT_ROOT
+    content_file = os.path.join(content_path, content_id + ".%s" % format)
+    return os.path.isfile(content_file)
 
 
 _vid_last_updated = 0
@@ -95,15 +96,15 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     """
     videos_path = videos_path or settings.CONTENT_ROOT
 
-    def compute_video_availability(youtube_id, format, videos_path=videos_path):
-        return {"on_disk": is_video_on_disk(youtube_id, format, videos_path=videos_path)}
+    def compute_video_availability(youtube_id, format, content_path=videos_path):
+        return {"on_disk": is_content_on_disk(youtube_id, format, content_path=videos_path)}
 
     def compute_video_metadata(youtube_id, format):
         return {"stream_type": "video/%s" % format}
 
     def compute_video_urls(youtube_id, format, lang_code, on_disk=None, thumb_formats=["png", "jpg"], videos_path=videos_path):
         if on_disk is None:
-            on_disk = is_video_on_disk(youtube_id, format, videos_path=videos_path)
+            on_disk = is_content_on_disk(youtube_id, format, content_path=videos_path)
 
         if on_disk:
             video_base_url = settings.CONTENT_URL + youtube_id
@@ -127,13 +128,13 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
         return {"stream": stream_url, "thumbnail": thumbnail_url}
 
     video_availability = video.get("availability", {}) if not force else {}
-    en_youtube_id = get_youtube_id(video["id"], lang_code=None)  # get base ID
-    video_map = get_id2oklang_map(video["id"]) or {}
+    en_youtube_id = video.get("youtube_id", video["id"])
+    video_map = get_id2oklang_map(en_youtube_id) or {}
 
     if not "on_disk" in video_availability:
         for lang_code in video_map.keys():
             youtube_id = video_map[lang_code].encode('utf-8')
-            video_availability[lang_code] = compute_video_availability(youtube_id, format=format, videos_path=videos_path)
+            video_availability[lang_code] = compute_video_availability(youtube_id, format=format, content_path=videos_path)
         video_availability["en"] = video_availability.get("en", {"on_disk": False})  # en should always be defined
 
         # Summarize status
@@ -148,11 +149,11 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
                 # Only add properties if anything is available.
                 video_availability[lang_code].update(urls)
                 video_availability[lang_code].update(compute_video_metadata(youtube_id, format))
+                video_availability[lang_code]["language_name"] = get_language_name(lang_code)
 
         # Get the (english) subtitle urls
         subtitle_lang_codes = get_langs_with_subtitle(en_youtube_id)
-        subtitles_tuple = [(lc, get_srt_url(en_youtube_id, lc)) for lc in subtitle_lang_codes if os.path.exists(get_srt_path(lc, en_youtube_id))]
-        subtitles_urls = dict(subtitles_tuple)
+        subtitles_urls = [{"code": lc, "url": get_srt_url(en_youtube_id, lc), "name": get_language_name(lc)} for lc in subtitle_lang_codes if os.path.exists(get_srt_path(lc, en_youtube_id))]
         video_availability["en"]["subtitles"] = subtitles_urls
 
     # now scrub any values that don't actually exist
@@ -166,6 +167,81 @@ def stamp_availability_on_video(video, format="mp4", force=False, stamp_urls=Tru
     video["available"] = any_available
 
     return video
+
+def stamp_availability_on_content(content, format=None, force=False, stamp_urls=True, content_path=None):
+    """
+    Stamp all relevant urls and availability onto a content object (if necessary), including:
+    * whether the content is available (on disk or online)
+    """
+    content_path = content_path or settings.CONTENT_ROOT
+
+    format = format or content.get("format", "")
+
+    def compute_content_availability(content_id, format, content_path=content_path):
+        return {"on_disk": is_content_on_disk(content_id, format, content_path=content_path)}
+
+    def compute_content_metadata(content_id, format):
+        return {"stream_type": "content/%s" % format}
+
+    def compute_content_urls(content_id, format, lang_code, on_disk=None, thumb_formats=["png", "jpg"], content_path=content_path):
+        if on_disk is None:
+            on_disk = is_content_on_disk(content_id, format, content_path=content_path)
+
+        if on_disk:
+            content_base_url = settings.CONTENT_URL + content_id
+            stream_url = content_base_url + ".%s" % format
+            thumbnail_url = None  # default to None now, so we know when no thumbnail is available.
+
+            for thumb_format in thumb_formats:  # find the thumbnail on disk
+                thumb_filename = '%s.%s' % (content_id, thumb_format)
+                thumb_filepath = os.path.join(content_path, thumb_filename)
+                if os.path.exists(thumb_filepath):
+                    thumbnail_url = content_base_url + "." + thumb_format  # default
+                    break
+
+        elif settings.BACKUP_VIDEO_SOURCE and lang_code == "en":
+            dict_vals = {"content_id": content_id, "content_format": format, "thumb_format": thumb_formats[0] }
+            stream_url = settings.BACKUP_VIDEO_SOURCE % dict_vals
+            thumbnail_url = settings.BACKUP_THUMBNAIL_SOURCE % dict_vals if settings.BACKUP_THUMBNAIL_SOURCE else None
+
+        else:
+            return {}  # no URLs
+        return {"stream": stream_url, "thumbnail": thumbnail_url}
+
+    content_availability = content.get("availability", {}) if not force else {}
+    content_map = {"en": content["id"]} #get_id2oklang_map(content["content_id"]) or {}
+
+    if not "on_disk" in content_availability:
+        for lang_code in content_map.keys():
+            content_id = content_map[lang_code].encode('utf-8')
+            content_availability[lang_code] = compute_content_availability(content_id, format=format, content_path=content_path)
+        content_availability["en"] = content_availability.get("en", {"on_disk": False})  # en should always be defined
+
+        # Summarize status
+        any_on_disk = any([lang_avail["on_disk"] for lang_avail in content_availability.values()])
+        any_available = any_on_disk or bool(settings.BACKUP_VIDEO_SOURCE)
+
+    if stamp_urls:
+        # Loop over all known dubbed content
+        for lang_code, content_id in content_map.iteritems():
+            urls = compute_content_urls(content_id, format, lang_code, on_disk=content_availability[lang_code]["on_disk"], content_path=content_path)
+            if urls:
+                # Only add properties if anything is available.
+                content_availability[lang_code].update(urls)
+                content_availability[lang_code].update(compute_content_metadata(content_id, format))
+                content_availability[lang_code]["language_name"] = get_language_name(lang_code)
+
+    # now scrub any values that don't actually exist
+    for lang_code in content_availability.keys():
+        if not content_availability[lang_code]["on_disk"] and len(content_availability[lang_code]) == 1:
+            del content_availability[lang_code]
+
+    # Now summarize some availability onto the content itself
+    content["availability"] = content_availability
+    content["on_disk"]   = any_on_disk
+    content["available"] = any_available
+
+    return content
 
 
 def stamp_availability_on_topic(topic, videos_path=None, force=True, stamp_urls=True, update_counts_question_mark= None):
