@@ -98,7 +98,7 @@ $(document).ready(function() {
                     continue;
                 }
 
-                var label = "<span class='autocomplete icon-" + node.kind.toLowerCase() + " " + (node.available ? "" : "un") + "available'>" + " " + gettext(node.title) + "</span>&nbsp;";
+                var label = "<span class='autocomplete icon-" + node.kind + " " + (node.available ? "" : "un") + "available'>" + " " + gettext(node.title) + "</span>&nbsp;";
                 results.push({
                     label: label,
                     value: ids_filtered[i]

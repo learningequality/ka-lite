@@ -20,10 +20,10 @@ ul.ui-autocomplete  {
     border-radius: 0;
     color: white;
 }
-a.ui-corner-all.ui-state-focus span.autocomplete.icon-topic.available,
-a.ui-corner-all.ui-state-focus span.autocomplete.icon-exercise.available,
-a.ui-corner-all.ui-state-focus span.autocomplete.icon-video.available,
-a.ui-corner-all.ui-state-focus span.autocomplete.icon-document.available {
+a.ui-corner-all.ui-state-focus span.autocomplete.icon-Topic.available,
+a.ui-corner-all.ui-state-focus span.autocomplete.icon-Exercise.available,
+a.ui-corner-all.ui-state-focus span.autocomplete.icon-Video.available,
+a.ui-corner-all.ui-state-focus span.autocomplete.icon-Document.available {
     color: white;
 }
 .ui-menu .ui-menu-item a{
