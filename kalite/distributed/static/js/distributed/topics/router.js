@@ -22,6 +22,15 @@ ChannelRouter = Backbone.Router.extend({
         if (fragments.length > 0) {
             this.navigate(fragments.slice(0,-1).join("/") + "/");
         }
+    },
+
+    navigate_splat: function(splat) {
+        splat = splat || "/";
+        if (splat.indexOf("/", splat.length - 1)==-1) {
+            splat += "/";
+            this.navigate(Backbone.history.getFragment() + "/");
+        }
+        this.control_view.navigate_paths(splat.split("/"));
     }
 });
 
@@ -35,11 +44,6 @@ TopicChannelRouter = ChannelRouter.extend({
             });
             this.channel = channel;
         }
-        splat = splat || "/";
-        if (splat.indexOf("/", splat.length - 1)==-1) {
-            splat += "/";
-            this.navigate(Backbone.history.getFragment() + "/");
-        }
-        this.control_view.navigate_paths(splat.split("/"));
+        this.navigate_splat(splat);
     }
 });

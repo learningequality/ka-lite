@@ -66,7 +66,7 @@ window.KnowledgeMapView = Backbone.View.extend({
             this.zoomLevel += 1;
             this.show_current_layer();
             if (data.slug_modified!==true) {
-                window.router.add_slug(this.zoomLevels[this.zoomLevel]);
+                window.channel_router.add_slug(this.zoomLevels[this.zoomLevel]);
             }
         }
     },
@@ -75,7 +75,7 @@ window.KnowledgeMapView = Backbone.View.extend({
         if (this.zoomLevel > 0) {
             this.zoomLevel = this.zoomLevel - 1;
             this.show_current_layer();
-            window.router.url_back();
+            window.channel_router.url_back();
         }
     },
 
@@ -226,17 +226,17 @@ window.KnowledgeMapItemView = Backbone.View.extend({
     },
 
     clicked: function(ev) {
-        window.router.navigate(this.model.get("path"), {trigger: true});
+        window.channel_router.navigate(this.model.get("path"), {trigger: true});
         return false;
     },
 
     zoom_to_sub_layer: function() {
         this.map.panTo(this.model.coordinates());
-        window.router.add_slug(this.model.get("slug"));
+        window.channel_router.add_slug(this.model.get("slug"));
     },
 
     navigate_to_exercise: function() {
-        window.router.add_slug(this.model.get("slug"));
+        window.channel_router.add_slug(this.model.get("slug"));
     },
 
     show_exercise: function() {
@@ -251,7 +251,7 @@ window.KnowledgeMapItemView = Backbone.View.extend({
     },
 
     close_exercise: function() {
-        window.router.url_back();
+        window.channel_router.url_back();
         if (_.isFunction(this.exercise_view.close)) {
             this.exercise_view.close();
         } else {

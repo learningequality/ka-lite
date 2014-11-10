@@ -6,6 +6,6 @@ MapChannelRouter = ChannelRouter.extend({
             });
             this.channel = channel;
         }
-        this.control_view.navigate_paths((splat || "").split("/"));
+        this.navigate_splat(splat);
     },
 });

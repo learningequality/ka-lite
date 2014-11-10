@@ -120,7 +120,7 @@
 
     <script type="text/javascript">
         $(function() {
-            window.channel_router = new ChannelRouter({default_channel: "{{ channel }}"})
+            window.channel_router = new TopicChannelRouter({default_channel: "{{ channel }}"})
             Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
         });
     </script>

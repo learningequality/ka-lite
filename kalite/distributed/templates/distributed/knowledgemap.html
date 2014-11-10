@@ -48,7 +48,7 @@
     <script src="{% static 'js/distributed/map/router.js' %}"></script>
     <script type="text/javascript">
         $(function() {
-            window.router = new MapChannelRouter({default_channel: "{{ channel }}"})
+            window.channel_router = new MapChannelRouter({default_channel: "{{ channel }}"})
             Backbone.history.start({pushState: true, root: "{% url 'exercise_dashboard' %}"});
         });
     </script>
