@@ -5,7 +5,10 @@
                 <div class="panel-heading">
                     <div class="pull-right">
                         <div class="points-wrapper"></div>
+                        {{!-- TODO-BLOCKER 0.13 rtibbles enable this for other content types. --}}
+                        {{#ifcond kind "==" "Document" }}
                         <a href="{{ content_urls.stream }}" class="btn btn-primary download-link pull-right">{{_ "Download" }}</a>
+                        {{/ifcond}}
                         <div class="clear"></div>
                     </div>
 

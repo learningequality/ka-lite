@@ -143,7 +143,7 @@ def construct_node(location, parent_path, node_cache, channel):
         node.update({
             "kind": "Topic",
             "id": slug,
-            "children": sorted([construct_node(os.path.join(location, s), current_path, node_cache, channel) for s in os.listdir(location)], key=lambda x: x.get("title", "") if x else ""),
+            "children": sorted([construct_node(os.path.join(location, s), current_path, node_cache, channel) for s in os.listdir(location)], key=lambda x: (not x.get("topic_spotlight", False) if x else True, x.get("title", "") if x else "")),
         })
 
         node["children"] = [child for child in node["children"] if child]
