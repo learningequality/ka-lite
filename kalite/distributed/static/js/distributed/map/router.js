@@ -7,5 +7,5 @@ MapChannelRouter = ChannelRouter.extend({
             this.channel = channel;
         }
         this.navigate_splat(splat);
-    },
+    }
 });
