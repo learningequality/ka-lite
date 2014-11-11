@@ -225,12 +225,7 @@ window.KnowledgeMapItemView = Backbone.View.extend({
     },
 
     clicked: function(ev) {
-        if (this.model.get("kind")=="Exercise") {
-            // TODO-BLOCKER 0.13 rtibbles : Remove this and actually get the KA exercises and videos to have proper path info!
-            this.navigate_to_exercise();
-        } else {
-            window.channel_router.navigate(this.model.get("path"), {trigger: true});
-        }
+        window.channel_router.navigate(this.model.get("path"), {trigger: true});
         return false;
     },
 
