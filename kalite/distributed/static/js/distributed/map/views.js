@@ -116,7 +116,7 @@ window.KnowledgeMapView = Backbone.View.extend({
 
     continue_navigation: function(paths, current_layer) {
         var exercise = false;
-        if (this.zoomLevel >= this.zoomLevels.length - 1) {
+        if (this.zoomLevel > this.zoomLevels.length - 1) {
             this.zoomLevel = this.zoomLevels.length - 1;
             exercise = true;
         }
