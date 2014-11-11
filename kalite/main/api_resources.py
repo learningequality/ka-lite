@@ -81,7 +81,7 @@ class Video:
             setattr(self, k, v)
 
         # the computed values
-        self.video_urls = kwargs.get('availability', {}).get(lang_code, {})
+        self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
         self.subtitle_urls = kwargs.get('availability', {}).get(lang_code, {}).get('subtitles', {})
         self.selected_language = lang_code
         self.dubs_available = len(kwargs.get('availability', {})) > 1
@@ -108,7 +108,7 @@ class VideoResource(Resource):
     subtitle_urls = fields.ListField(attribute='subtitle_urls')
     title = fields.CharField(attribute='title')
     video_id = fields.CharField(attribute='video_id')
-    video_urls = fields.DictField(attribute='video_urls')
+    content_urls = fields.DictField(attribute='content_urls')
     youtube_id = fields.CharField(attribute='youtube_id', default="no_youtube_id")
     related_content = fields.ListField(attribute='related_content')
 
