@@ -126,7 +126,7 @@ def construct_node(location, parent_path, node_cache, channel):
     if not parent_path:
         base_name = channel["name"]
     slug = slugify(unicode(".".join(base_name.split(".")[:-1])))
-    if slug in node_cache["Slugs"]:
+    if not slug or slug in node_cache["Slugs"]:
         slug = slugify(unicode(base_name))
     # Note: It is assumed that any file with *exactly* the same file name is the same file.
     node_cache["Slugs"].add(slug)
