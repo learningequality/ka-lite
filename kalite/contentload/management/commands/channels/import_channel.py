@@ -125,7 +125,11 @@ def construct_node(location, parent_path, node_cache, channel):
         return None
     if not parent_path:
         base_name = channel["name"]
-    slug = slugify(unicode(base_name.split(".")[0]))
+    slug = slugify(unicode(".".join(base_name.split(".")[:-1])))
+    if slug in node_cache["Slugs"]:
+        slug = slugify(unicode(base_name))
+    # Note: It is assumed that any file with *exactly* the same file name is the same file.
+    node_cache["Slugs"].add(slug)
     current_path = os.path.join(parent_path, slug)
     try:
         with open(location + ".json", "r") as f:
@@ -254,6 +258,7 @@ def retrieve_API_data(channel=None):
         "Video": [],
         "Exercise": [],
         "Content": [],
+        "Slugs": set(),
     }
 
     topic_tree = construct_node(path, "", node_cache, channel)
@@ -265,6 +270,8 @@ def retrieve_API_data(channel=None):
     assessment_items = []
 
     content = node_cache["Content"]
+
+    del node_cache["Slugs"]
 
     annotate_related_content(node_cache)
 
