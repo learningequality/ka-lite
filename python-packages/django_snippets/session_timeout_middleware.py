@@ -17,7 +17,8 @@ class SessionIdleTimeout:
         # Only do timeout if enabled
         if settings.SESSION_IDLE_TIMEOUT:
             # Timeout is done only for authenticated logged in *student* users.
-            if (request.user.is_authenticated() or "facility_user" in request.session) and not request.is_admin:
+            # if (request.user.is_authenticated() or "facility_user" in request.session) and not request.is_admin:
+            if request.is_student:
                 current_datetime = datetime.datetime.now()
                 
                 # Timeout if idle time period is exceeded.
@@ -26,7 +27,7 @@ class SessionIdleTimeout:
                     (current_datetime - request.session['last_activity']).seconds >
                         settings.SESSION_IDLE_TIMEOUT):
                     logout(request)
-                    messages.add_message(request, messages.ERROR, 'Your session has been timed out...')
+                    messages.add_message(request, messages.ERROR, 'Your session has been timed out')
 
                     # Redirect to the login page if session has timed-out.
                     redirect_to = reverse('login')
