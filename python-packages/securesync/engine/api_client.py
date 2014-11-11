@@ -148,7 +148,10 @@ class SyncClient(BaseClient):
 
     def get_server_device_counters(self):
         r = self.get("device/counters")
-        return json.loads(r.content or "{}").get("device_counters", {})
+        data = json.loads(r.content or "{}")
+        if "error" in data:
+            raise Exception("Server error in retrieving counters: " + data["error"])
+        return data.get("device_counters", {})
 
     def get_client_device_counters(self):
         return get_device_counters(zone=self.session.client_device.get_zone())
