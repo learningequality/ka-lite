@@ -7,6 +7,9 @@ from django.conf import settings; logging = settings.LOG
 from django.utils.text import slugify
 
 
+exercise_lookup = {}
+video_lookup = {}
+
 # For specification of channel_data dictionary, please see CHANNELDATA.md
 def retrieve_API_data(channel=None):
 
@@ -53,7 +56,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     node["slug"] = node[channel_data["slug_key"][kind]] if node[channel_data["slug_key"][kind]] != "root" else "khan"
     node["slug"] = slugify(unicode(node["slug"]))
 
-    node["path"] = path + node["slug"] + "/"
+    node["path"] = node.get("path", "") or path + node["slug"] + "/"
     if "title" not in node:
         node["title"] = (node.get(channel_data["title_key"][kind], ""))
     node["title"] = node["title"].strip()
@@ -65,6 +68,8 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
         node["video_id"] = node.get("youtube_id", "")
+        video_lookup.get(str(node["id"]), {}).update(node)
+
 
     elif kind == "Exercise":
         # For each exercise, need to set the exercise_id
@@ -75,6 +80,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
         # compute base points
         # Minimum points per exercise: 5
         node["basepoints"] = ceil(7 * log(max(exp(5. / 7), node.get("seconds_per_fast_problem", 0))))
+        exercise_lookup.get(str(node["id"]), {}).update(node)
 
     return node
 
