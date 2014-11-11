@@ -101,7 +101,7 @@ window.KnowledgeMapView = Backbone.View.extend({
     navigate_paths: function(paths) {
         var self = this;
         paths = _.reject(paths, function(slug) {return slug===null || slug==="";});
-        this.zoomLevel = paths.length;
+        this.zoomLevel = Math.min(paths.length, this.zoomLevels.length - 1);
 
         current_layer = this.show_current_layer();
 
@@ -116,8 +116,7 @@ window.KnowledgeMapView = Backbone.View.extend({
 
     continue_navigation: function(paths, current_layer) {
         var exercise = false;
-        if (this.zoomLevel > this.zoomLevels.length - 1) {
-            this.zoomLevel = this.zoomLevels.length - 1;
+        if (paths.length == this.zoomLevels.length) {
             exercise = true;
         }
         collection = new TopicCollection(_.filter(current_layer.collection.models, function(model){
@@ -226,7 +225,12 @@ window.KnowledgeMapItemView = Backbone.View.extend({
     },
 
     clicked: function(ev) {
-        window.channel_router.navigate(this.model.get("path"), {trigger: true});
+        if (this.model.get("kind")=="Exercise") {
+            // TODO-BLOCKER 0.13 rtibbles : Remove this and actually get the KA exercises and videos to have proper path info!
+            this.navigate_to_exercise();
+        } else {
+            window.channel_router.navigate(this.model.get("path"), {trigger: true});
+        }
         return false;
     },
 
