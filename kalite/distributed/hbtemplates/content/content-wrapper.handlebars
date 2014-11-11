@@ -44,24 +44,7 @@
                             <div class="col-xs-4">
                                 <a href="/learn/{{ path }}" title="{{description}}" class="btn btn-success btn-related-content">
                                     <div class="related-content-header">
-                                        {{#ifcond kind "==" "Video"}}
-                                        <span class="icon-Video"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Exercise"}}
-                                        <span class="icon-Exercise"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Quiz"}}
-                                        <span class="icon-Quiz"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Topic"}}
-                                        <span class="icon-List"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Audio"}}
-                                        <span class="icon-Audio"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Document"}}
-                                        <span class="icon-Document"></span>
-                                        {{/ifcond}}
+                                        <span class="icon-{{ kind }}"></span>
                                         <span class="related-content-title">{{ title }}</span>
                                     </div>
                                     <div class="related-content-body">
