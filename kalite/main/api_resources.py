@@ -110,6 +110,7 @@ class VideoResource(Resource):
     video_id = fields.CharField(attribute='video_id')
     video_urls = fields.DictField(attribute='video_urls')
     youtube_id = fields.CharField(attribute='youtube_id', default="no_youtube_id")
+    related_content = fields.ListField(attribute='related_content')
 
     class Meta:
         resource_name = 'video'
