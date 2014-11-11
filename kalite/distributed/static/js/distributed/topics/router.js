@@ -13,7 +13,7 @@ ChannelRouter = Backbone.Router.extend({
     },
 
     add_slug: function(slug) {
-        this.navigate(Backbone.history.getFragment() + slug + "/");
+        this.navigate(Backbone.history.getFragment() + slug + "/", {trigger: true});
     },
 
     url_back: function() {
