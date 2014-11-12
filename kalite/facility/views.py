@@ -74,8 +74,8 @@ def add_facility_teacher(request):
     return _facility_user(request, new_user=True, is_teacher=True, title=title)
 
 
-@dynamic_settings
 @require_authorized_admin
+@dynamic_settings
 def add_facility_student(request, ds):
     """
     Admins and coaches can add students
