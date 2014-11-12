@@ -9,5 +9,6 @@
     "comparing_whole_numbers", "counting_1", "place_value", "subtraction_3",
     "subtraction_4"
   ],
-  "is_practice": false
+  "is_practice": false,
+  "show": true
 }
