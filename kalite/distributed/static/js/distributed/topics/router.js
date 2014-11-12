@@ -24,7 +24,7 @@ ChannelRouter = Backbone.Router.extend({
         splat = splat || "/";
         if (splat.indexOf("/", splat.length - 1)==-1) {
             splat += "/";
-            this.navigate(Backbone.history.getFragment() + "/");
+            this.navigate(Backbone.history.getFragment() + "/", {replace: true});
         }
         this.control_view.navigate_paths(splat.split("/"));
     },
