@@ -30,11 +30,9 @@ class Command(BaseCommand):
                 facility["103"] = row["unit_3"]
                 facility["104"] = row["unit_4"]
 
-
                 id = row["facility_id"]
                 facility_unit_mappings[id] = facility
                 facility_grade_mappings[id] = row["grade"]
-
 
         savedir = os.path.join(os.path.dirname(__file__),
                                "..",
