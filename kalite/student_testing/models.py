@@ -70,14 +70,16 @@ class Test():
         self.is_exam_mode = is_exam_mode
 
     @classmethod
-    def all(cls, force=False):
+    def all(cls, force=True, show_all=False):
         if not cls.testscache or force:
             for testfile in glob.iglob(STUDENT_TESTING_DATA_PATH + "/*.json"):
+
                 with open(testfile) as f:
                     data = json.load(f)
-                    # Coerce each test dict into a Test object
-                    # also add in the group IDs that are assigned to view this test
-                    test_id = os.path.splitext(os.path.basename(f.name))[0]
-                    data["test_id"] = test_id
-                    cls.testscache[test_id] = (Test(**data))
+                    if show_all or data.get("show", False):
+                        # Coerce each test dict into a Test object
+                        # also add in the group IDs that are assigned to view this test
+                        test_id = os.path.splitext(os.path.basename(f.name))[0]
+                        data["test_id"] = test_id
+                        cls.testscache[test_id] = (Test(**data))
         return cls.testscache
