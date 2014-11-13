@@ -67,8 +67,8 @@ function plotTopics(topic_paths) {
             "xaxis":       $("#xaxis option:selected").val(),
             "yaxis":       $("#yaxis option:selected").val(),
             "user":        "",
-            "group":       $("#" + $("#facility option:selected").val() + "_group_select option:selected").val(),
-            "facility":    $("#facility option:selected").val(),
+            "group":       $("#group-select option:selected").val(),
+            "facility":    $('#facility-select option:selected').val(),
             "topic_path":  topic_paths
         }
     );

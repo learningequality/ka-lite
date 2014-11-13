@@ -214,9 +214,12 @@ def compute_data(data_types, who, where):
         # Query out all exercises, videos, exercise logs, and video logs before looping to limit requests.
         # This means we could pull data for n-dimensional coach report displays with the same number of requests!
         # Note: User activity is polled inside the loop, to prevent possible slowdown for exercise and video reports.
-        exercises = query_exercises(exercises)
+        try:
+            exercises = query_exercises(exercises)
 
-        videos = query_videos(videos)
+            videos = query_videos(videos)
+        except:
+            logging.error("this piece of code fail")
 
         if exercises:
             ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
@@ -384,8 +387,11 @@ def api_data(request, xaxis="", yaxis=""):
         return HttpResponseNotFound(_("Must specify a topic path"))
 
     # Query out the data: what?
-    computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
-
+    computed_data = []
+    try:
+        computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+    except:
+        logging.error("compute data error")
     # Quickly add back in exercise meta-data (could potentially be used in future for other data too!)
     ex_nodes = get_node_cache()["Exercise"]
     exercises = []
