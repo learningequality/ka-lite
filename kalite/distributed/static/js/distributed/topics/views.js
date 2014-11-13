@@ -66,6 +66,9 @@ window.SidebarView = BaseView.extend({
 
         _.bindAll(this);
 
+        this.entity_key = options.entity_key;
+        this.entity_collection = options.entity_collection;
+
         this.channel = options.channel;
 
         this.state_model = new Backbone.Model({
@@ -100,8 +103,8 @@ window.SidebarView = BaseView.extend({
         this.topic_node_view = new TopicContainerOuterView({
             channel: this.channel,
             model: this.model,
-            entity_key: this.options.entity_key,
-            entity_collection: this.options.entity_collection,
+            entity_key: this.entity_key,
+            entity_collection: this.entity_collection,
             state_model: this.state_model
         });
         this.listenTo(this.topic_node_view, "hideSidebar", this.hide_sidebar);
@@ -188,21 +191,23 @@ window.TopicContainerInnerView = BaseView.extend({
         'click .back-to-parent' : 'backToParent'
     },
 
-    initialize: function() {
+    initialize: function(options) {
 
         var self = this;
 
         _.bindAll(this);
 
-        this.state_model = this.options.state_model;
+        this.state_model = options.state_model;
 
-        this.entity_key = this.options.entity_key;
+        this.entity_key = options.entity_key;
 
-        this.entity_collection = this.options.entity_collection;
+        this.entity_collection = options.entity_collection;
+
+        this.level = options.level;
 
         this._entry_views = [];
 
-        this.has_parent = this.options.has_parent;
+        this.has_parent = options.has_parent;
 
         if (!(this.model.get(this.entity_key) instanceof this.entity_collection)) {
 
@@ -215,7 +220,7 @@ window.TopicContainerInnerView = BaseView.extend({
         this.add_all_entries();
 
         this.listenTo(this.state_model, "change:current_level", this.update_level_color);
-        this.state_model.set("current_level", this.options.level);
+        this.state_model.set("current_level", options.level);
 
     },
 
@@ -249,7 +254,7 @@ window.TopicContainerInnerView = BaseView.extend({
     },
 
     update_level_color: function() {
-        var opacity = (this.options.level+1) / (this.state_model.get("current_level")+1);
+        var opacity = (this.level+1) / (this.state_model.get("current_level")+1);
         this.$el.css("opacity", opacity);
     },
 
@@ -414,7 +419,10 @@ window.TopicContainerOuterView = BaseView.extend({
 
         _.bindAll(this);
 
-        this.state_model = this.options.state_model;
+        this.state_model = options.state_model;
+
+        this.entity_key = options.entity_key;
+        this.entity_collection = options.entity_collection;
 
         this.inner_views = [];
         this.model =  this.model || new TopicNode({channel: options.channel});
@@ -449,8 +457,8 @@ window.TopicContainerOuterView = BaseView.extend({
         var data = {
             model: node,
             has_parent: this.inner_views.length >= 1,
-            entity_key: this.options.entity_key,
-            entity_collection: this.options.entity_collection,
+            entity_key: this.entity_key,
+            entity_collection: this.entity_collection,
             state_model: this.state_model,
             level: this.state_model.get("current_level")
         };

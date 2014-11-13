@@ -446,14 +446,14 @@ window.VideoWrapperView = BaseView.extend({
 
     template: HB.template("content/content-wrapper"),
 
-    initialize: function() {
+    initialize: function(options) {
 
         var self = this;
 
         _.bindAll(this);
 
         // TODO(jamalex): separate this out into a state model, video data model, and user data model
-        doRequest("/api/video/" + this.options.video_id).success(function(data) {
+        doRequest("/api/video/" + options.video_id).success(function(data) {
             self.model = new VideoPlayerModel(data);
             self.render();
         });
