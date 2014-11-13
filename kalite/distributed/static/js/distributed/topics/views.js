@@ -89,12 +89,7 @@ window.SidebarView = BaseView.extend({
 
         this.$el.html(this.template());
 
-        this.sidebar = this.$('').bigSlide({
-            menu: this.$(".sidebar-panel"),
-            // push: "#page-container, #footer, .sidebar-tab",
-            // push: ".sidebar-tab",
-            menuWidth: "220px"
-        });
+        this.sidebar = this.$(".sidebar-panel");
 
         _.defer(function() {
             self.show_sidebar();
@@ -154,14 +149,12 @@ window.SidebarView = BaseView.extend({
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
             this.sidebar.show();
-            this.sidebar.open();
             this.resize_sidebar();
             this.$(".sidebar-tab").html("&lt");
             this.$(".fade").show();
         } else {
             this.sidebar.hide();
             this.$(".sidebar-tab").css({left: 0});
-            // this.sidebar.close();
             this.$(".sidebar-tab").html("&gt");
             this.$(".fade").hide();
         }
