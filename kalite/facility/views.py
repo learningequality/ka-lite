@@ -113,7 +113,7 @@ def edit_facility_user(request, ds, facility_user_id):
     If users have permission to add a user, they also can edit the user. Additionally,
     a user may edit his/her own information, like in the case of a student.
     """
-    if request.is_teacher and not ds["facility"].teacher_can_edit_students:
+    if request.is_teacher and not ds["facility"].teacher_can_create_students:
         return HttpResponseForbidden()
 
     user_being_edited = get_object_or_404(FacilityUser, id=facility_user_id) or None
