@@ -21,7 +21,7 @@ CONDITION_SETTINGS = {
         "distributed.turn_off_points_for_exercises": True,
         "student_testing.turn_on_points_for_practice_exams": True,
         "store.show_store_link_once_points_earned": True,
-        "distributed.front_page_welcome_message": "This month you will in earn points for each question you answer correctly on your practice unit test as the end of the month.   You can earn a maximum of 2000 points for the unit.  You will also be able to exchange your points for rewards.  Once you earn points, you can click on the link to the rewards store to see other exciting rewards!  Try as hard on the exam at the end of the month to earn rewards!  Some examples of rewards include:  Some examples of rewards include: Dinosaur Book (250 points), Bi-color Pencils (800 points), Chess (1550 points) and many more",
+        "distributed.front_page_welcome_message": "This month you will in earn points for each question you answer correctly on your practice unit test as the end of the month.   You can earn a maximum of 2000 points for the unit.  You will also be able to exchange your points for rewards.  Once you earn points, you can click on the link to the rewards store to see other exciting rewards!  Try as hard as you can on the practice test at the end of the month to earn rewards! Some examples of rewards include: Dinosaur Book (250 points), Bi-color Pencils (800 points), Chess (1550 points) and many more!",
     },
     "testing": {
         "distributed.turn_off_motivational_features": False,
