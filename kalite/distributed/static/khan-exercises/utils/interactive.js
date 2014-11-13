@@ -447,7 +447,7 @@ $.extend(KhanUtil.Graphie.prototype, {
 
                 var sPath = [
                     addPoints(sMidpoint, sOffsetVector, sHeightVector),
-                    addPoints(sMidpoint, sOffsetVector, 
+                    addPoints(sMidpoint, sOffsetVector,
                               reverseVector(sHeightVector))
                 ];
 
@@ -1768,7 +1768,7 @@ $.extend(KhanUtil.Graphie.prototype, {
                         if (!_.any(_.pluck(points, "dragging"))) {
                             _.each(points, function(point) {
                                 point.visibleShape.animate(point.normalStyle, 50);
-                            });                            
+                            });
                         }
                     }
 
@@ -1857,7 +1857,7 @@ $.extend(KhanUtil.Graphie.prototype, {
                             KhanUtil.dragging = false;
                             if (!polygon.highlight) {
                                 polygon.visibleShape.animate(polygon.normalStyle, 50);
-                                
+
                                 _.each(points, function(point) {
                                     point.visibleShape.animate(point.normalStyle, 50);
                                 });
@@ -1900,7 +1900,7 @@ $.extend(KhanUtil.Graphie.prototype, {
     },
 
     // MovableAngle is an angle that can be dragged around the screen.
-    // By attaching a smartPoint to the vertex and ray control points, the 
+    // By attaching a smartPoint to the vertex and ray control points, the
     // rays can be manipulated individually.
     //
     // Use only with smartPoints; add the smartPoints first, then:
@@ -2644,8 +2644,8 @@ function Protractor(graph, center) {
     var r = graph.unscaleVector(180.5)[0];
     var imgPos = graph.scalePoint([this.cx - r, this.cy + r - graph.unscaleVector(10.5)[1]]);
     this.set.push(graph.mouselayer.image(
-            "https://ka-perseus-graphie.s3.amazonaws.com/e9d032f2ab8b95979f674fbfa67056442ba1ff6a.png",
-            imgPos[0], imgPos[1], 360, 180));
+        "/static/images/distributed/protractor.png",
+        imgPos[0], imgPos[1], 360, 180));
 
 
     // Customized polar coordinate thingie to make it easier to draw the double-headed arrow thing.
