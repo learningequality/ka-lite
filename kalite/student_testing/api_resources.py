@@ -17,6 +17,7 @@ from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.facility.models import Facility
 from kalite.playlist import UNITS
+from kalite.ab_testing.data.groups import get_grade_by_facility, GRADE_BY_FACILITY as GRADE
 
 from .models import Test, TestLog
 from .settings import SETTINGS_KEY_EXAM_MODE
@@ -117,6 +118,18 @@ class TestResource(Resource):
         testscache = Test.all(force=force)
         return sorted(testscache.values(), key=lambda test: test.title)
 
+    def _read_facility_tests(self, facility, test_id=None, force=False):
+        testscache = Test.all(force=force)
+        for k in testscache.keys():
+            temp = k.split('_')
+            if int(temp[0][-1]) != get_grade_by_facility(facility):
+                del testscache[k]
+            elif temp[1][0] != 'u':
+                del testscache[k]
+            elif (int(temp[1][1:]) - 300) != get_current_unit_settings_value(facility.id):
+                del testscache[k]
+        return sorted(testscache.values(), key=lambda test: test.title)
+
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/(?P<test_id>[\w\d_.-]+)/$" % self._meta.resource_name,
@@ -138,6 +151,10 @@ class TestResource(Resource):
         """
         if not request.is_admin:
             return []
+        else:
+            if 'facility_user' in request.session:
+                facility = request.session['facility_user'].facility
+                return self._read_facility_tests(facility, force=force,)
         return self._read_tests(force=force)
 
     def obj_get_list(self, bundle, **kwargs):
