@@ -129,7 +129,7 @@ class RestrictedTeacherTests(FacilityMixins,
                                            password=self.teacher_password,
                                            facility=self.facility)
 
-    def teacher_cant_edit_facilities(self):
+    def test_teacher_cant_edit_facilities(self):
         facility_to_edit = self.create_facility(name="edit me")
 
         self.browser_login_teacher(username=self.teacher_username,
@@ -150,7 +150,7 @@ class RestrictedTeacherTests(FacilityMixins,
         resp = self.client.get(self.reverse("facility_edit", kwargs={"id": facility_to_edit.id}))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
-    def teacher_cant_create_facilities(self):
+    def test_teacher_cant_create_facilities(self):
         self.browser_login_teacher(username=self.teacher_username,
                                    password=self.teacher_password,
                                    facility_name=self.facility.name)
@@ -169,7 +169,7 @@ class RestrictedTeacherTests(FacilityMixins,
         resp = self.client.get(self.reverse("add_facility", kwargs={"id": "new", "zone_id": None}))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
-    def teacher_cant_create_students(self):
+    def test_teacher_cant_create_students(self):
         self.browser_login_teacher(username=self.teacher_username,
                                    password=self.teacher_password,
                                    facility_name=self.facility.name)
@@ -188,7 +188,7 @@ class RestrictedTeacherTests(FacilityMixins,
         resp = self.client.get(self.reverse("add_facility_student"))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to create students; status code is %s" % resp.status_code)
 
-    def teacher_cant_edit_students(self):
+    def test_teacher_cant_edit_students(self):
         self.browser_login_teacher(username=self.teacher_username,
                                    password=self.teacher_password,
                                    facility_name=self.facility.name)
@@ -210,7 +210,7 @@ class RestrictedTeacherTests(FacilityMixins,
         resp = self.client.get(self.reverse("edit_facility_user", kwargs={"facility_user_id": self.student.id}))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to edit students; status code is %s" % resp.status_code)
 
-    def teacher_cant_delete_students(self):
+    def test_teacher_cant_delete_students(self):
         self.browser_login_teacher(username=self.teacher_username,
                                    password=self.teacher_password,
                                    facility_name=self.facility.name)
