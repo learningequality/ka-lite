@@ -8,5 +8,6 @@
     "comparing_whole_numbers", "counting_1", "inequalities_on_a_number_line",
     "place_value"
   ],
-  "is_practice": true
+    "is_practice": true,
+    "show": true
 }

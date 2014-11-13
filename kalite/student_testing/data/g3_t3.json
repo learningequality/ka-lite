@@ -9,5 +9,6 @@
     "logical_arguments_deductive_reasoning", "measuring_segments",
     "subtraction_1", "subtraction_2"
   ],
-  "is_practice": false
+    "is_practice": false,
+    "show": true
 }
