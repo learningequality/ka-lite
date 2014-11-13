@@ -53,6 +53,7 @@ class SwitchTest(BaseTest):
         Tests that when an exam is unset in the output condition
         that a gift_card is created with appropriate points.
         """
+        set_current_unit_settings_value(self.facility.id, self.unit)  # make sure the unit and grade we are in match the test
         test_object = Test.all().get(self.exam_id, None)
         self.assertTrue(test_object)
         testlog = TestLog(user=self.student, test=self.exam_id, index=20, started=True, complete=True, total_correct=15, total_number=21)
