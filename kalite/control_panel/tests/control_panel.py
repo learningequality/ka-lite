@@ -129,7 +129,7 @@ class RestrictedTeacherTests(FacilityMixins,
                                            password=self.teacher_password,
                                            facility=self.facility)
 
-    def teacher_cant_edit_facilities(self):
+    def test_teacher_cant_edit_facilities(self):
         facility_to_edit = self.create_facility(name="edit me")
 
         self.browser_login_teacher(username=self.teacher_username,
@@ -150,7 +150,7 @@ class RestrictedTeacherTests(FacilityMixins,
         resp = self.client.get(self.reverse("facility_edit", kwargs={"id": facility_to_edit.id}))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
-    def teacher_cant_create_facilities(self):
+    def test_teacher_cant_create_facilities(self):
         self.browser_login_teacher(username=self.teacher_username,
                                    password=self.teacher_password,
                                    facility_name=self.facility.name)
@@ -169,7 +169,7 @@ class RestrictedTeacherTests(FacilityMixins,
         resp = self.client.get(self.reverse("add_facility", kwargs={"id": "new", "zone_id": None}))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
-    def teacher_cant_create_students(self):
+    def test_teacher_cant_create_students(self):
         self.browser_login_teacher(username=self.teacher_username,
                                    password=self.teacher_password,
                                    facility_name=self.facility.name)
@@ -188,18 +188,21 @@ class RestrictedTeacherTests(FacilityMixins,
         resp = self.client.get(self.reverse("add_facility_student"))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to create students; status code is %s" % resp.status_code)
 
-    def teacher_cant_edit_students(self):
+    def test_teacher_can_edit_students(self):
         self.browser_login_teacher(username=self.teacher_username,
                                    password=self.teacher_password,
                                    facility_name=self.facility.name)
 
-        # subtest for making sure they don't see the edit student button
+        # NOTE: Hi all, we disabled this test since we want nalanda
+        # teachers to still edit students, mainly so they can reset
+        # the password.
+
+        # # subtest for making sure they don't see the edit student button
         self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": self.facility.id}))
         student_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.student.id)
 
-        # we don't render the link instead of just hiding it
-        with self.assertRaises(NoSuchElementException):
-            student_row.find_element_by_css_selector("a.edit-student")
+        # # make sure we render the link
+        student_row.find_element_by_css_selector("a.edit-student")
 
         # TODO(aron): move these client test cases to their own test class
         # subtest for making sure they can't actually load the create facility page
@@ -208,9 +211,9 @@ class RestrictedTeacherTests(FacilityMixins,
                                         "password": self.teacher_password},
                                   facility=self.facility)
         resp = self.client.get(self.reverse("edit_facility_user", kwargs={"facility_user_id": self.student.id}))
-        self.assertEqual(resp.status_code, 403, "Teacher was still authorized to edit students; status code is %s" % resp.status_code)
+        self.assertEqual(resp.status_code, 200, "Teacher was not authorized to edit students; status code is %s" % resp.status_code)
 
-    def teacher_cant_delete_students(self):
+    def test_teacher_cant_delete_students(self):
         self.browser_login_teacher(username=self.teacher_username,
                                    password=self.teacher_password,
                                    facility_name=self.facility.name)
