@@ -11,4 +11,4 @@ class DynamicSettings(DynamicSettingsBase):
     teacher_can_delete_facilities = fields.BooleanField(default=not settings.RESTRICTED_TEACHER_PERMISSIONS)
     teacher_can_delete_students = fields.BooleanField(default=not settings.RESTRICTED_TEACHER_PERMISSIONS)
     teacher_can_edit_facilities = fields.BooleanField(default=not settings.RESTRICTED_TEACHER_PERMISSIONS)
-    teacher_can_edit_students = fields.BooleanField(default=True settings.RESTRICTED_TEACHER_PERMISSIONS)
+    teacher_can_edit_students = fields.BooleanField(default=True)
