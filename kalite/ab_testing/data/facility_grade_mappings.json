@@ -1,5 +1,6 @@
 {
-    "": 6,
+    "80dec4f5": 4,
+    "30ce6a38": 6,
     "098b9e64": 5,
     "0a87a43d": 6,
     "0ac82014": 4,
@@ -47,5 +48,11 @@
     "facility1": 4,
     "facility2": 5,
     "facility3": 6,
-    "Test"     : 1
+    "Test"     : 1,
+    "test-facility-grade4-input": 4,
+    "test-facility-grade4-output": 4,
+    "test-facility-grade5-input": 5,
+    "test-facility-grade5-output": 5,
+    "test-facility-grade6-input": 6,
+    "test-facility-grade6-output": 6
 }
