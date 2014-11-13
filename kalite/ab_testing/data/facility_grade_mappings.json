@@ -48,5 +48,11 @@
     "facility1": 4,
     "facility2": 5,
     "facility3": 6,
-    "Test"     : 1
+    "Test"     : 1,
+    "test-facility-grade4-input": 4,
+    "test-facility-grade4-output": 4,
+    "test-facility-grade5-input": 5,
+    "test-facility-grade5-output": 5,
+    "test-facility-grade6-input": 6,
+    "test-facility-grade6-output": 6
 }

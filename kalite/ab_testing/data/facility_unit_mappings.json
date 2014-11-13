@@ -302,5 +302,48 @@
         "102": "testing",
         "103": "testing",
         "104": "testing"
+    },
+
+    "test-facility-grade4-input": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+
+    "test-facility-grade4-output": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+
+    "test-facility-grade5-input": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+
+    "test-facility-grade5-output": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+
+    "test-facility-grade6-input": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+
+    "test-facility-grade6-output": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
     }
+
 }
