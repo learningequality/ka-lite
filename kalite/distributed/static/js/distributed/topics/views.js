@@ -6,8 +6,6 @@ window.ContentAreaView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
-
         this.model = new Backbone.Model();
 
         this.render();
@@ -63,8 +61,6 @@ window.SidebarView = BaseView.extend({
     initialize: function(options) {
 
         var self = this;
-
-        _.bindAll(this);
 
         this.entity_key = options.entity_key;
         this.entity_collection = options.entity_collection;
@@ -188,8 +184,6 @@ window.TopicContainerInnerView = BaseView.extend({
 
         var self = this;
 
-        _.bindAll(this);
-
         this.state_model = options.state_model;
 
         this.entity_key = options.entity_key;
@@ -264,7 +258,7 @@ window.TopicContainerInnerView = BaseView.extend({
 
     add_all_entries: function() {
         this.render();
-        this.model.get(this.entity_key).map(this.add_new_entry);
+        this.model.get(this.entity_key).forEach(this.add_new_entry, this);
     },
 
     show: function() {
@@ -378,8 +372,6 @@ window.SidebarEntryView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
-
         this.listenTo(this.model, "change:active", this.toggle_active);
 
     },
@@ -410,7 +402,7 @@ window.TopicContainerOuterView = BaseView.extend({
 
     initialize: function(options) {
 
-        _.bindAll(this);
+        this.render = _.bind(this.render, this);
 
         this.state_model = options.state_model;
 

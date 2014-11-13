@@ -169,7 +169,6 @@ var TotalPointView = Backbone.View.extend({
 var UsernameView = Backbone.View.extend({
 
     initialize: function() {
-        _.bindAll(this);
         this.model.bind("change:username", this.render);
         this.render();
     },
