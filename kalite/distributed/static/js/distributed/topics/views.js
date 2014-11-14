@@ -106,7 +106,7 @@ window.SidebarView = BaseView.extend({
         return this;
     },
 
-    resize_sidebar: function() {
+    resize_sidebar: _.debounce(function() {
         var current_level = this.state_model.get("current_level");
         // TODO(jamalex): have this calculated dynamically
         var column_width = 200; // this.$(".topic-container-inner").width();
@@ -123,7 +123,7 @@ window.SidebarView = BaseView.extend({
         //                html.clientHeight, html.scrollHeight, html.offsetHeight)
 
         // this.$(".sidebar-panel").height(height - 55); // minus height of top nav
-    },
+    }, 100),
 
     check_external_click: function(ev) {
         if (this.state_model.get("open")) {
@@ -226,7 +226,7 @@ window.TopicContainerInnerView = BaseView.extend({
 
         // resize the scrollable part of sidebar to the page height
         $(window).resize(_.throttle(function() {
-            var height = $(window).height() - self.$(".slimScrollDiv").position().top;
+            var height = $(window).height();
             self.$(".slimScrollDiv, .sidebar").height(height);
         }, 200));
         $(window).resize();
