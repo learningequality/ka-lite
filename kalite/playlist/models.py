@@ -66,6 +66,9 @@ class PlaylistToGroupMapping(ExtendedModel):
 
 
 class QuizLog(DeferredCountSyncedModel):
+
+    minversion = "0.13.0"
+
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     quiz = models.CharField(blank=True, max_length=100)
     index = models.IntegerField(blank=False, null=False, default=0)

@@ -161,6 +161,8 @@ class FacilityUserResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['password', 'signature', 'deleted', 'signed_version', 'counter', 'notes']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -188,6 +190,8 @@ class TestLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['user', 'counter', 'signature', 'deleted', 'signed_version']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -197,11 +201,12 @@ class TestLogResource(ParentFacilityUserResource):
         return super(TestLogResource, self).authorized_read_list(test_logs, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
-        """Add username, facility name, and facility ID to responses"""
+        """Add username, user ID, facility name, and facility ID to responses"""
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)
             bundle.data["username"] = user.username
+            bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
             bundle.data.pop("user")
@@ -221,6 +226,8 @@ class AttemptLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['user', 'signed_version', 'language', 'deleted', 'response_log', 'signature', 'version', 'counter']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -230,11 +237,12 @@ class AttemptLogResource(ParentFacilityUserResource):
         return super(AttemptLogResource, self).authorized_read_list(attempt_logs, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
-        """Add username, facility name, and facility ID to responses"""
+        """Add username, user ID, facility name, and facility ID to responses"""
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)
             bundle.data["username"] = user.username
+            bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
             bundle.data.pop("user")
@@ -263,11 +271,12 @@ class ExerciseLogResource(ParentFacilityUserResource):
         return super(ExerciseLogResource, self).authorized_read_list(exercise_logs, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
-        """Add username, facility name, and facility ID to responses"""
+        """Add username, user ID, facility name, and facility ID to responses"""
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)
             bundle.data["username"] = user.username
+            bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
             bundle.data.pop("user")
@@ -323,7 +332,7 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
         return super(StoreTransactionLogResource, self).authorized_read_list(store_logs, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
-        """Add username, facility name, and facility ID to responses"""
+        """Add username, user ID, facility name, and facility ID to responses"""
         store_items = StoreItem.all()
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]

@@ -665,6 +665,24 @@ li .progress-circle {
     -moz-border-radius: 5px;
 }
 
+.vidprev {
+    float: left;
+}
+
+.vidnext {
+    float: right;
+    padding-right: 4px;
+}
+
+#sitepoints {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    float: left;
+    margin-top: 3px;
+    margin-left: 168px;
+    opacity: 0.7;
+    font-size: 1.2em;
+}
+
 #scratchpad > div {
     margin-top: 0; /* Controls whether scratchpad comes out of boundary - GH #1859 */
     max-width: 514px;
@@ -885,13 +903,14 @@ to items you want to have the icon appear with.
 div#overlay {
     position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
     margin: auto;
-    height: 30px;
+    height: 50px;
     width: 400px;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
     z-index: 1100; /* makes the div the top layer, so it’ll lay on top of the other content */
+    font-weight: bold;
 }
 
 

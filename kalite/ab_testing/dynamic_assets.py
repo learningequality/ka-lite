@@ -1,4 +1,4 @@
-from .data.groups import CONDITION_BY_FACILITY_AND_UNIT as CONDITION, GRADE_BY_FACILITY as GRADE
+from .data.groups import get_condition_by_facility_and_unit, get_grade_by_facility
 from .data.conditions import CONDITION_SETTINGS
 
 from kalite.student_testing.utils import get_current_unit_settings_value
@@ -22,11 +22,11 @@ def modify_dynamic_settings(ds, request=None, user=None):
         unit = get_current_unit_settings_value(facility.id)
 
         # look up what condition the user is currently assigned to
-        condition = CONDITION.get(facility.id, CONDITION.get(facility.name, CONDITION.get(facility.id[0:8], {}))).get(str(unit), "")
+        condition = get_condition_by_facility_and_unit(facility, unit)
 
         # Set grade level on students to enable dynamic checking of student playlists within a unit.
         # TODO (richard): (doge) Much hardcode. Such hack. So get rid. Wow.
-        ds["ab_testing"].student_grade_level = GRADE.get(facility.id, GRADE.get(facility.name, GRADE.get(facility.id[0:8], 0)))
+        ds["ab_testing"].student_grade_level = get_grade_by_facility(facility)
         ds["ab_testing"].unit = unit
         
         # load the settings associated with the user's current condition

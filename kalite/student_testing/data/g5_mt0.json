@@ -11,5 +11,8 @@
     "multiplication_4", "perimeter_1", "perimeter_of_squares_and_rectangles",
     "place_value", "subtraction_3", "subtraction_4"
   ],
-  "is_practice": false
+    "is_practice": false,
+    "unit": 101,
+    "grade": 5,
+    "show": true
 }
