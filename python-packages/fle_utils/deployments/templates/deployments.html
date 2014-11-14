@@ -35,7 +35,7 @@
                 var deployments = $.parseJSON('{{ deployments|safe }}');
                 $(deployments).each(function(d, deployment){
                     // Extract relevent info 
-                    // TODO(dylan): refactor this into it's own function
+                    // TODO(dylanjbarth): refactor this into it's own function
                     var fields = deployment["fields"];
                     var title = fields["title"];
                     var latitude = fields["latitude"];

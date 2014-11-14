@@ -4,11 +4,10 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import Client
 
-from .mixins.facility_mixins import CreateStudentMixin, CreateTeacherMixin, CreateFacilityMixin
 
 logging = settings.LOG
 
-
+# TODO(aronasorman): this is pretty confusing (e.g. student_data is defined here and on the test object)
 class KALiteClient(Client):
     facility = None
     teacher = None
@@ -27,16 +26,10 @@ class KALiteClient(Client):
         self.logout_url = reverse('logout')
 
     def setUp(self):
-
-        # MUST: create a facility to be shared between the teacher and student
-        self.facility = CreateFacilityMixin.create_facility()
-        self.facility_data = CreateFacilityMixin.DEFAULTS.copy()
-
-        self.teacher = CreateTeacherMixin.create_teacher()
-        self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
-
-        self.student = CreateStudentMixin.create_student()
-        self.student_data = CreateStudentMixin.DEFAULTS.copy()
+        # Aron: we don't delete this since after a big refactoring
+        # I don't wanna go ahead and remove all calls to self.client.setUp
+        # again. Probably another time.
+        pass
 
     def login(self, username, password, facility=None):
         self.get(self.login_url)
@@ -54,6 +47,8 @@ class KALiteClient(Client):
             data['facility'] = facility.id
         elif use_default_facility and self.facility:
             data['facility'] = self.facility.id
+        elif data['facility']:
+            data['facility'] = data['facility'].id
         else:
             data['facility'] = None
         response = self.post(self.login_url, data=data, follow=follow)

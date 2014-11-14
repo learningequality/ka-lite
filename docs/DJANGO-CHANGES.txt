@@ -98,3 +98,14 @@ index 2b8e801..6349ed5 100644
 +
          TestRunner = get_runner(settings, options.get('testrunner'))
          options['verbosity'] = int(options.get('verbosity'))
+
+We extend clean_pyc so it will be automatically skipped when built by the build process
+     def handle_noargs(self, **options):
++        from django.conf import settings
++        if settings.BUILT:
++            settings.LOG.info("Installation built by build process; skipping clean_pyc")
++            return
++
+         project_root = options.get("path", None)
+         if not project_root:
+             project_root = get_project_root()

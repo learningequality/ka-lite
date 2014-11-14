@@ -55,6 +55,9 @@ class FacilityUserForm(forms.ModelForm):
             "is_teacher": forms.HiddenInput(),
             "zone_fallback": forms.HiddenInput(),
             "warned": forms.HiddenInput(),
+            "username": forms.TextInput(attrs={"autocomplete": "off"}),
+            "first_name": forms.TextInput(attrs={"autocomplete": "off"}),
+            "last_name": forms.TextInput(attrs={"autocomplete": "off"}),
         }
 
 
@@ -192,6 +195,9 @@ class LoginForm(forms.ModelForm):
     class Meta:
         model = FacilityUser
         fields = ("facility", "username", "password")
+        widgets = {
+            "username": forms.TextInput(attrs={"autocomplete": "off"}),
+        }
 
     def __init__(self, request=None, *args, **kwargs):
         self.user_cache = None

@@ -16,7 +16,6 @@ def package_selected(package_name):
 ##############################
 # Basic setup
 ##############################
-
 try:
     from local_settings import *
     import local_settings
@@ -28,7 +27,6 @@ except ImportError:
 DEBUG          = getattr(local_settings, "DEBUG", False)
 
 CENTRAL_SERVER = False  # Hopefully will be removed soon.
-
 
 ##############################
 # Basic setup of logging
@@ -50,6 +48,9 @@ logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 # Not really a Django setting, but we treat it like one--it's eeeeverywhere.
 PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", os.path.dirname(os.path.realpath(__file__)))) + "/"
+
+BUILD_INDICATOR_FILE = os.path.join(PROJECT_PATH, "_built.touch")
+BUILT = os.path.exists(BUILD_INDICATOR_FILE)  # whether this installation was processed by the build server
 
 LOCALE_PATHS   = getattr(local_settings, "LOCALE_PATHS", (PROJECT_PATH + "/../locale",))
 LOCALE_PATHS   = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
@@ -103,10 +104,18 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
-    "fle_utils.testing",
-    "kalite.testing",
     "kalite.distributed",
-) + getattr(local_settings, 'INSTALLED_APPS', tuple())
+    "kalite.store",
+)
+
+if not BUILT:
+    INSTALLED_APPS += (
+        "fle_utils.testing",
+        "kalite.testing",
+    ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
+else:
+    INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
+
 MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
     "django_snippets.session_timeout_middleware.SessionIdleTimeout",
@@ -140,8 +149,9 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
 
-# only allow, and use by default, JSON in tastypie
+# only allow, and use by default, JSON in tastypie, and remove api page limit
 TASTYPIE_DEFAULT_FORMATS = ['json']
+API_LIMIT_PER_PAGE = 0
 
 # Default to a 20 minute timeout for a session - set to 0 to disable.
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
@@ -200,7 +210,10 @@ if package_selected("RPi"):
 if package_selected("Nalanda"):
     LOG.info("Nalanda package selected")
     TURN_OFF_MOTIVATIONAL_FEATURES = True
+    RESTRICTED_TEACHER_PERMISSIONS = True
     FIXED_BLOCK_EXERCISES = 5
+    QUIZ_REPEATS = 3
+UNIT_POINTS = 2000
 
 
 if package_selected("UserRestricted"):

@@ -1,19 +1,32 @@
-
 import json
+from tastypie.exceptions import NotFound, Unauthorized
+
 from django.core.urlresolvers import reverse
-from django.test import Client, TestCase
 
 from .models import Playlist
-from kalite.testing.mixins.django_mixins import CreateAdminMixin
-from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
+from kalite.testing.mixins import CreateAdminMixin, CreateTeacherMixin, CreateStudentMixin, FacilityMixins
+from kalite.testing.base import KALiteTestCase, KALiteClientTestCase, KALiteClient
+
+class BaseTest(FacilityMixins, KALiteTestCase):
+
+    def setUp(self):
+
+        super(BaseTest, self).setUp()
+        self.facility = self.create_facility()
+        self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
+        self.student_data = CreateStudentMixin.DEFAULTS.copy()
+        self.teacher_data['facility'] = self.student_data['facility'] = self.facility
+
+        self.teacher = self.create_teacher(**self.teacher_data)
+        self.student = self.create_student(**self.student_data)
+
+        self.client = KALiteClient()
 
 
-class PlaylistTests(CreateDeviceMixin, FacilityMixins, TestCase):
+class PlaylistTests(FacilityMixins, KALiteTestCase):
     # fixtures = ['single_student_testdata.json']
 
     def setUp(self):
-        self.setup_fake_device()  # Call this so we don't have to generate a device key, which takes a long time!
 
         self.test_student = self.create_student()
         self.p = Playlist.objects.create(
@@ -51,31 +64,51 @@ class PlaylistTests(CreateDeviceMixin, FacilityMixins, TestCase):
         self.assertEqual(entries[2].reload().sort_order, 3)
 
 
-class PlaylistAPITests(FacilityMixins, CreateDeviceMixin, CreateAdminMixin, TestCase):
+class PlaylistAPITests(CreateAdminMixin, BaseTest):
+
+    test_playlist_id = 'g4_u401_p1'
+
     def _playlist_url(self, playlist_id=None):
         '''
         If no playlist_id is given, returns a url that gets all
         playlists. If playlist_id is given, returns a detail url for that playlist
         '''
-        if not playlist_id:
+        # If no playlist id was provided, return the collection-level API URL
+        # (Specifically compare against `None` in case `playlist_id` is `0`)
+        if playlist_id is None:
             return reverse("api_dispatch_list", kwargs={'resource_name': 'playlist'})
         else:
             return reverse("api_dispatch_detail", kwargs={'resource_name': 'playlist', 'pk': playlist_id})
 
     def setUp(self):
-        self.setup_fake_device()  # Call this so we don't have to generate a device key, which takes a long time!
+        super(PlaylistAPITests, self).setUp()
         self.admin = self.create_admin()
         self.group = self.create_group()
-        self.client = Client()
-        self.client.login(username='admin', password='admin')
 
     def test_playlist_list_url_exists(self):
         resp = self.client.get(self._playlist_url())
         self.assertEquals(resp.status_code, 200)
 
     def test_playlist_detail_url_exists(self):
-        resp = self.client.get(self._playlist_url(0))
+        resp = self.client.get(self._playlist_url(self.test_playlist_id))
         self.assertEquals(resp.status_code, 200)
+
+    def test_playlist_updating_auth_admin_only(self):
+
+        # get the existing data
+        self.client.login_student(self.student_data)
+        resp = self.client.get(self._playlist_url(self.test_playlist_id))
+        jsondata = resp.content
+
+        # try updating it as a student (should fail)
+        resp = self.client.put(self._playlist_url(self.test_playlist_id), data=jsondata, content_type="application/json")
+        self.assertEquals(resp.status_code, 401)
+
+        # try updating it as a teacher (should succeed)
+        self.client.login_teacher(self.teacher_data)
+        resp = self.client.put(self._playlist_url(self.test_playlist_id), data=jsondata, content_type="application/json")
+        self.assertEquals(resp.status_code, 204)
+
 
     def test_playlist_list_has_required_data(self):
         PLAYLIST_REQUIRED_ATTRIBUTES = [('description', unicode),
@@ -111,9 +144,8 @@ class PlaylistAPITests(FacilityMixins, CreateDeviceMixin, CreateAdminMixin, Test
                                               ('entity_kind', unicode),
                                               ('sort_order', int),
                                               ('description', unicode)]
-        playlist_id = 'g3_p1'
 
-        resp = self.client.get(self._playlist_url(playlist_id))
+        resp = self.client.get(self._playlist_url(self.test_playlist_id))
         playlist_dict = json.loads(resp.content)
 
         # check that the toplevel playlist attribute has the required data
@@ -128,3 +160,18 @@ class PlaylistAPITests(FacilityMixins, CreateDeviceMixin, CreateAdminMixin, Test
                 val = entry.get(attribute)
                 errmsgtemplate = "val %s for attribute %s for entry %s is not of type %s; is actually of type %s"
                 self.assertTrue(isinstance(val, attrtype), errmsgtemplate % (val, attribute, entry, attrtype, type(val)))
+
+    def test_teacher_get_groups_only_belonging_to_that_facility(self):
+
+        self.facility = self.create_facility()
+        self.facility2 = self.create_facility(name="facility 2")
+        self.group = self.create_group(name='group1', facility=self.facility)
+        self.group2 = self.create_group(name='group2', facility=self.facility2)
+        self.teacher = self.create_teacher(username="teacher", password="password", facility=self.facility2)
+        self.api_group_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "group"})
+        self.client.login(username='teacher', password='password', facility=self.facility2.id)
+        group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility2.id).content)
+        objects = group_resp.get("objects")
+        self.assertEqual(len(objects), 1, "API response incorrect")
+        self.assertEqual(objects[0]["name"], "group2", "API response incorrect")
+        self.client.logout()

@@ -84,10 +84,12 @@ var PlaylistView = Backbone.View.extend({
         var dataTransfer = ev.originalEvent.dataTransfer;
         var groupID = dataTransfer.getData('student-grp-id');
         var group = groups.get(groupID);
+        var groups_assigned = this.model.get('groups_assigned')
 
-        this.model.get('groups_assigned').add(group);
-        console.log(this.model);
-        this.model.save();
+        if (groups_assigned.findWhere({"id": group.get("id")}) == null) {
+            groups_assigned.add(group);
+            this.model.save();
+        }
     },
 
     allowDrop: function(ev) {
@@ -104,7 +106,9 @@ var PlaylistGroupView = Backbone.View.extend({
 
     render: function() {
         var dict = this.model.toJSON();
-        this.$el.html(this.template(dict));
+        if (groups.findWhere({id: dict.id}) != null) {
+            this.$el.html(this.template(dict));
+        }
 
         return this;
     },
@@ -133,7 +137,7 @@ var AppView = Backbone.View.extend({
         this.listenTo(playlists, 'reset', this.addAllPlaylists);
 
         playlists.fetch();
-        groups.fetch();
+        groups.fetch({ data: $.param({ facility_id: statusModel.get('facility_id') }) });
     },
 
     addNewGroup: function(group) {
@@ -159,6 +163,8 @@ $(function() {
 
     $("tr.title+tr").hide();
 
-    var app = new AppView;
+    statusModel.loaded.then(function() {
+        var app = new AppView;
+    });
 
 });

@@ -14,7 +14,8 @@ logging = settings.LOG
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
-from .base import KALiteDistributedBrowserTestCase, KALiteDistributedWithFacilityBrowserTestCase
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 from kalite.student_testing.models import TestLog
 from kalite.student_testing.settings import STUDENT_TESTING_DATA_PATH
 from kalite.student_testing.utils import set_exam_mode_on
@@ -22,10 +23,13 @@ from kalite.student_testing.utils import set_exam_mode_on
 
 # TODO (rtibbles): After integration into develop,
 # this needs to be modified to create a test and test using the test.
-TEST_ID = '1500'
+# NOTEFROM (aron): the specific test below has been chosen due to all
+# of its questions having a textarea for answer entry, which
+# test_exercise_mastery assumes.
+TEST_ID = 'g3_t4'
 
 
-class StudentTestTest(KALiteDistributedWithFacilityBrowserTestCase):
+class StudentTestTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
 
     """
     Test tests.
@@ -38,7 +42,11 @@ class StudentTestTest(KALiteDistributedWithFacilityBrowserTestCase):
         Create a student, log the student in, and go to the test page.
         """
         super(StudentTestTest, self).setUp()
-        self.student = self.create_student(facility_name=self.facility_name)
+        self.facility_name = "fac"
+        self.facility = self.create_facility(name=self.facility_name)
+        self.student = self.create_student(username=self.student_username,
+                                           password=self.student_password,
+                                           facility=self.facility)
         self.browser_login_student(
             self.student_username,
             self.student_password,
@@ -69,23 +77,33 @@ class StudentTestTest(KALiteDistributedWithFacilityBrowserTestCase):
         """
         answer = "notrightatall"
 
-        for i in range(0, 5):
+        total_questions = 30    # tester, check the test to determine this
+
+        for i in range(0, 30):
             self.browser_submit_answers(answer)
 
         # Now test the models
         testlog = TestLog.objects.get(test=TEST_ID, user=self.student)
-        self.assertEqual(testlog.index, 5, "Index should be 3")
+        self.assertEqual(testlog.index, total_questions, "Index should be %s" % total_questions)
         self.assertTrue(testlog.started, "Student has not started the test.")
         self.assertEqual(
-            testlog.total_number, 5, "Student should have 3 attempts.")
+            testlog.total_number,
+            total_questions,
+            "Student should have %s attempts." % total_questions
+        )
         self.assertTrue(
-            testlog.complete, "Student should have completed the test.")
+            testlog.complete,
+            "Student should have completed the test."
+        )
         self.assertEqual(
-            testlog.total_correct, 0, "Student should have none correct.")
+            testlog.total_correct,
+            0,
+            "Student should have none correct."
+        )
 
 
 @unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
-class LoadTestTest(KALiteDistributedWithFacilityBrowserTestCase):
+class LoadTestTest(KALiteBrowserTestCase):
 
     """Tests if the test is loaded without any JS error.
 

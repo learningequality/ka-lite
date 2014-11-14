@@ -1,0 +1,34 @@
+/* Hide motivational features if disabled in settings */
+{% if ds.distributed.turn_off_motivational_features %}
+.motivational-feature {
+  display: none;
+}
+
+#map-container .ex-live {
+  display: none;
+}
+{% endif %}
+
+{% if request.is_teacher and not ds.facility.teacher_can_create_facilities %}
+
+.create-facility {
+  display: none;
+}
+
+{% endif %}
+
+{% if request.is_teacher and not ds.facility.teacher_can_edit_facilities %}
+
+.edit-facility {
+  display: none;
+}
+
+{% endif %}
+
+{% if request.is_teacher and not ds.facility.teacher_can_create_students %}
+
+.create-student {
+  display: none;
+}
+
+{% endif %}

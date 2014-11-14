@@ -177,7 +177,11 @@ class DeviceManager(SyncedModelManager):
 
     def by_zone(self, zone):
         # get Devices that belong to a particular zone, or are a trusted authority
-        return self.filter(Q(devicezone__zone=zone, devicezone__revoked=False) |
+        return self.by_zones([zone.id])
+
+    def by_zones(self, zones):
+        # get Devices that belong to a list of zone IDs, or are a trusted authority
+        return self.filter(Q(devicezone__zone__id__in=zones, devicezone__revoked=False) |
             Q(devicemetadata__is_trusted=True))
 
 

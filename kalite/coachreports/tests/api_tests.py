@@ -1,22 +1,13 @@
 import json
-import os
 
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.management import call_command
-from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
-from django.utils import unittest
+from tastypie.exceptions import Unauthorized
 
-from kalite.facility.models import Facility, FacilityUser
-from kalite.main.tests.base import MainTestCase
-from kalite.main.models import VideoLog, ExerciseLog
 from kalite.testing import KALiteClient, KALiteTestCase
+from kalite.testing.mixins import CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins
 
 
 class TestGetTopicTree(KALiteTestCase):
-    def setUp(self):
-        self.client = KALiteClient()
 
     def test_get_root(self):
         """Get the root node of the topic tree"""
@@ -51,3 +42,111 @@ class TestGetTopicTree(KALiteTestCase):
 
         resp = self.client.get(reverse("get_topic_tree_by_kinds", kwargs={"topic_path": "/foo"}))
         self.assertEqual(resp.status_code, 404, "Status code should be 404 (actual: %s)" % resp.status_code)
+
+
+class PlaylistProgressAPITest(CreatePlaylistProgressMixin,
+                              CreateAdminMixin,
+                              FacilityMixins,
+                              KALiteTestCase):
+
+    def setUp(self):
+        # Create fake accounts and data
+        super(PlaylistProgressAPITest, self).setUp()
+        self.setup_fake_device()
+        self.facility = self.create_facility()
+        self.admin = self.create_admin()
+        self.test_student = self.create_student()
+        self.hacker_student = self.create_student(username="hacker", password="hacker")
+        self.client = KALiteClient()
+
+    def test_playlist_progress_resource(self, auth_test=False):
+        self.playlist = self.create_playlist_progress(self.test_student)
+        # Playlist Progress (high-level)
+        if not auth_test:
+            self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)
+        resp = self.client.get("%s?user_id=%s" % (reverse("api_dispatch_list", kwargs={"resource_name": "playlist_progress"}), self.test_student.id))
+        json_resp = json.loads(resp.content)
+
+        # Get our playlist
+        pl_response = next((entry for entry in json_resp["objects"] if entry["id"] == self.playlist.id), None)
+        self.assertTrue(pl_response, "No playlist response found")
+
+        # Sample to check that we are getting what we expect
+        pct_struggling = pl_response["ex_pct_struggling"]
+        self.assertEqual(pct_struggling, 12, "Incorrect value returned by API; returned %s" % pct_struggling)
+        self.assertEqual(pl_response["vid_pct_complete"], 0, "Incorrect value returned by API")  # tested playlist doesn't have videos
+        self.assertEqual(pl_response["quiz_status"], "borderline", "Incorrect value returned by API")
+
+        self.client.logout()
+
+    def test_playlist_progress_detail_resource(self, auth_test=False):
+        self.playlist = self.create_playlist_progress(self.test_student)
+        # Playlist Progress Details
+        if not auth_test:
+            self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)
+        resp = self.client.get("%s?user_id=%s&playlist_id=%s" % (reverse("api_dispatch_list", kwargs={"resource_name": "playlist_progress_detail"}), self.test_student.id, self.playlist.id))
+        pl_response = json.loads(resp.content)["objects"]
+
+        # Sample to check that we are getting what we expect
+        num_responses = len(pl_response)
+        self.assertEqual(num_responses, 8, "Incorrect value returned by API; returned %s" % num_responses)
+        actual_status = pl_response[1]["status"]
+        self.assertEqual(actual_status, "struggling", "Incorrect value returned by API; returned %s" % actual_status)
+        self.assertEqual(pl_response[1]["score"], 50, "Incorrect value returned by API")
+        self.assertEqual(pl_response[0]["status"], "notstarted", "Incorrect value returned by API")
+        self.assertEqual(pl_response[0]["score"], 0, "Incorrect value returned by API")
+
+        self.client.logout()
+
+    def test_playlist_progress_detail_resource_no_quiz(self, auth_test=False):
+        # Regression test for error during missing entry PlayListProgressDetail function call.
+        self.playlist = self.create_playlist_progress(self.test_student, quiz=False)
+        # Playlist Progress Details
+        if not auth_test:
+            self.client.login(username=self.test_student.username, password="password", facility=self.facility.id)
+        resp = self.client.get("%s?user_id=%s&playlist_id=%s" % (reverse("api_dispatch_list", kwargs={"resource_name": "playlist_progress_detail"}), self.test_student.id, self.playlist.id))
+        pl_response = json.loads(resp.content)["objects"]
+
+        # Sample to check that we are getting what we expect
+        num_responses = len(pl_response)
+        self.assertEqual(num_responses, 8, "Incorrect value returned by API; returned %s" % num_responses)
+        self.assertEqual(pl_response[0]["status"], "notstarted", "Incorrect value returned by API")
+        self.assertEqual(pl_response[0]["score"], 0, "Incorrect value returned by API")
+        self.assertEqual(pl_response[1]["status"], "struggling", "Incorrect value returned by API")
+        self.assertEqual(pl_response[1]["score"], 50, "Incorrect value returned by API")
+
+        self.client.logout()
+
+    def test_playlist_progress_resource_auth(self):
+        # Admins should be able to view
+        self.client.login(username=self.admin.username, password="admin")
+        self.test_playlist_progress_resource(auth_test=True)
+        self.client.logout()
+
+        # other students should not
+        self.client.login(username=self.hacker_student.username, password="hacker", facility=self.facility.id)
+        with self.assertRaises(Unauthorized):
+            self.test_playlist_progress_resource(auth_test=True)
+        self.client.logout()
+
+        # nor should not logged in users
+        with self.assertRaises(Unauthorized):
+            self.test_playlist_progress_resource(auth_test=True)
+        self.client.logout()
+
+    def test_playlist_progress_detail_resource_auth(self):
+        # Admins should be able to view
+        self.client.login(username=self.admin.username, password="admin")
+        self.test_playlist_progress_detail_resource(auth_test=True)
+        self.client.logout()
+
+        # other students should not
+        self.client.login(username=self.hacker_student.username, password="hacker", facility=self.facility.id)
+        with self.assertRaises(Unauthorized):
+            self.test_playlist_progress_detail_resource(auth_test=True)
+        self.client.logout()
+
+        # nor should not logged in users
+        with self.assertRaises(Unauthorized):
+            self.test_playlist_progress_detail_resource(auth_test=True)
+        self.client.logout()

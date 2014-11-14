@@ -1,6 +1,12 @@
+from django.conf import settings
+
 from fle_utils.config.models import Settings
 
 from .settings import SETTINGS_KEY_EXAM_MODE
+from kalite.playlist import UNITS
+from kalite.student_testing.signals import exam_unset, unit_switch
+
+logging = settings.LOG
 
 
 def get_exam_mode_on():
@@ -38,14 +44,17 @@ def set_exam_mode_on(test_object):
         return test_object.set_exam_mode()
 
 
+def set_exam_mode_off():
+    """Switch off exam mode if it is on, do nothing if already off"""
+    Settings.set(SETTINGS_KEY_EXAM_MODE, '')
+    return
+
 # ==========================
 # Some constants and helper functions to be used for the "Current Unit" feature.
 # ==========================
 
 SETTINGS_CURRENT_UNIT_PREFIX = 'current_unit_'
 SETTINGS_FACILITY_ID_CHARS = 8
-SETTINGS_MAX_UNITS = 20  # TODO(cpauya): Maybe put to settings.py or Settings?
-
 
 def get_current_unit_settings_name(facility_id):
     name = SETTINGS_CURRENT_UNIT_PREFIX
@@ -71,7 +80,7 @@ def get_current_unit_settings_value(facility_id):
     entry on the Settings.
     """
     name = get_current_unit_settings_name(facility_id)
-    value = Settings.get(name, 0)
+    value = Settings.get(name, UNITS[0])
     if value == 0:
         # This may be the first time this facility`s current unit is queried so
         # make sure it has a value at Settings so we can either change it on

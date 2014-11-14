@@ -11,7 +11,6 @@
         font-size: 0.7em;
         padding-left: 20px;
         position: relative;
-        top: -15px;
         display: none;
     }
 
@@ -87,23 +86,27 @@
                 <p class="not-registered-only">{% trans "This device is not registered, and so cannot sync data with the central server." %}</p>
             {% else %}
 
-                {% if sync_job.is_running %}
-                    <h3>{% trans "A sync is currently in progress..." %} <a href=".">{% trans "(refresh)" %}</a></h3>
-                {% else %}
-                    <h3>
-                    {% if sync_job.last_run_successful %}
-                        <img src="{% static 'admin/img/icon-yes.gif' %}"/>
-                        {% trans "The last sync completed successfully" %}
+                {% if sync_job %}
+
+                    {% if sync_job.is_running %}
+                        <h3>{% trans "A sync is currently in progress..." %} <a href=".">{% trans "(refresh)" %}</a></h3>
                     {% else %}
-                        <img src="{% static 'admin/img/icon-no.gif' %}"/>
-                        {% trans "There was an error in syncing" %}
+                        <h3>
+                        {% if sync_job.last_run_successful %}
+                            <img src="{% static 'admin/img/icon-yes.gif' %}"/>
+                            {% trans "The last sync completed successfully" %}
+                        {% else %}
+                            <img src="{% static 'admin/img/icon-no.gif' %}"/>
+                            {% trans "There was an error in syncing" %}
+                        {% endif %}
+                        <span class="show-sync-details">(<a>{% trans "show details" %}</a>)</span>
+                        </h3>
+                        <div class="sync-details">
+                            <div class="sync-stdout">{{ sync_job.log_set.all.0.stdout|linebreaksbr }}</div>
+                            <div class="sync-stderr">{{ sync_job.log_set.all.0.stderr|linebreaksbr }}</div>
+                        </div>
                     {% endif %}
-                    <span class="show-sync-details">(<a>{% trans "show details" %}</a>)</span>
-                    </h3>
-                    <div class="sync-details">
-                        <div class="sync-stdout">{{ sync_job.log_set.all.0.stdout|linebreaksbr }}</div>
-                        <div class="sync-stderr">{{ sync_job.log_set.all.0.stderr|linebreaksbr }}</div>
-                    </div>
+
                 {% endif %}
 
                 <table class="table">

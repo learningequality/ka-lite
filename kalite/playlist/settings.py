@@ -10,3 +10,5 @@ INSTALLED_APPS = (
     "kalite.khanload",
     "kalite.main",
 )
+
+QUIZ_REPEATS = 3

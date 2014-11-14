@@ -1,15 +1,29 @@
-from distributed.tests.browser_tests.base import KALiteDistributedWithFacilityBrowserTestCase
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
 
 
-class FacilityUserPermissionsTests(KALiteDistributedWithFacilityBrowserTestCase):
+class FacilityUserPermissionsTests(CreateAdminMixin,
+                                   FacilityMixins,
+                                   BrowserActionMixins,
+                                   KALiteBrowserTestCase):
     """Test different users creating/editing or trying to create/edit other types of users"""
 
     def setUp(self):
         super(FacilityUserPermissionsTests, self).setUp()
+
         self.default_password = 'password'
-        self.teacher = self.create_teacher(password=self.default_password)
+
+        self.admin_data = {'username': 'admin', 'password': 'admin'}
+        self.admin = self.create_admin(**self.admin_data)
+
+        self.facility = self.create_facility()
+
+        self.teacher_data = {'username': 'teacher1', 'password': self.default_password}
+        self.teacher = self.create_teacher(**self.teacher_data)
         self.teacher_to_edit = self.create_teacher(username='Edit Me', password=self.default_password)
-        self.student = self.create_student(password=self.default_password)
+
+        self.student_data = {'username': 'student1', 'password': self.default_password}
+        self.student_to_edit = self.create_student(**self.student_data)
         self.student_form_data = {
             'id_username': 'user',
             'id_password_first': self.default_password,
@@ -17,12 +31,13 @@ class FacilityUserPermissionsTests(KALiteDistributedWithFacilityBrowserTestCase)
         }
         self.teacher_form_data = self.student_form_data.copy()
         self.teacher_form_data['id_username'] = 'teacher'
-        # Urls 
+
+        # Urls
         self.add_student_url = self.reverse('add_facility_student')
         self.add_teacher_url = self.reverse('add_facility_teacher')
-        self.edit_student_url = self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id})
+        self.edit_student_url = self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student_to_edit.id})
         self.edit_teacher_url = self.reverse('edit_facility_user', kwargs={'facility_user_id': self.teacher_to_edit.id})
-    
+
     def submit_and_wait(self, url, message_type, message_contains):
         self.browser.find_elements_by_class_name("submit")[0].click()
         self.wait_for_page_change(url)
@@ -52,10 +67,14 @@ class FacilityUserPermissionsTests(KALiteDistributedWithFacilityBrowserTestCase)
         edit_data = self.teacher_form_data.copy()
         edit_data['id_username'] = 'changed_teacher'
         self.fill_form(edit_data)
-        self.submit_and_wait(self.reverse('facility_management', kwargs={'zone_id': 'None', 'facility_id': self.facility.id}), "success", message_contains)
+        try:
+            self.submit_and_wait(self.reverse('facility_management', kwargs={'zone_id': 'None', 'facility_id': self.facility.id}), "success", message_contains)
+        except:
+            import pdb; pdb.set_trace()
+            print 'hi'
 
     def test_admin_permissions(self):
-        self.browser_login_admin()
+        self.browser_login_admin(**self.admin_data)
         self.add_student()
         self.add_teacher()
         self.edit_student()
@@ -69,7 +88,7 @@ class FacilityUserPermissionsTests(KALiteDistributedWithFacilityBrowserTestCase)
         self.edit_teacher()
 
     def test_student_edit_self(self):
-        self.browser_login_student(username=self.student.username, password=self.default_password)
+        self.browser_login_student(username=self.student_to_edit.username, password=self.default_password)
         self.edit_student(message_contains="You successfully updated your user settings")
 
     def test_teacher_edit_self(self):

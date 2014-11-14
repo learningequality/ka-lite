@@ -20,9 +20,9 @@ window.Exercises = {
 };
 
 window.ExerciseParams = {
-    STREAK_CORRECT_NEEDED: 8,
+    STREAK_CORRECT_NEEDED: ds.distributed.streak_correct_needed || 8,
     STREAK_WINDOW: 10,
-    FIXED_BLOCK_EXERCISES: window.FIXED_BLOCK_EXERCISES || 0
+    FIXED_BLOCK_EXERCISES: ds.distributed.fixed_block_exercises || 0
 };
 
 window.ExerciseDataModel = Backbone.Model.extend({
@@ -130,6 +130,10 @@ window.ExerciseLogModel = Backbone.Model.extend({
             return 0;
         }
         return this.get("attempts") - this.get("attempts_before_completion");
+    },
+
+    fixed_block_questions_remaining: function() {
+        return ExerciseParams.FIXED_BLOCK_EXERCISES - this.attempts_since_completion();
     },
 
     urlRoot: "/api/exerciselog/"
@@ -259,7 +263,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     calculate_points_per_question: function(basepoints) {
         // for comparability with the original algorithm (when a streak of 10 was needed),
         // we calibrate the points awarded for each question (note that there are no random bonuses now)
-        return Math.round((basepoints * 10) / ExerciseParams.STREAK_CORRECT_NEEDED);
+        return Math.floor((basepoints * 10) / ExerciseParams.STREAK_CORRECT_NEEDED);
     }
 
 });
@@ -305,6 +309,8 @@ window.TestLogModel = Backbone.Model.extend({
         If seeded inside each call to the function, then the blocks of seeds for each user
         would be identically shuffled.
         */
+
+        // TODO (rtibbles): qUnit or other javascript unit testing to set up tests for this code.
         if(typeof(test_data_model)==="object"){
 
             var random = new Math.seedrandom(this.get("user"));
@@ -315,35 +321,39 @@ window.TestLogModel = Backbone.Model.extend({
 
             var repeats = test_data_model.get("repeats");
 
-            var block_seeds = [];
-
-            // Create list of seeds incremented from initial_seed, one for every repeat.
-            for(i=0; i < repeats; i++){
-                block_seeds.push(initial_seed + i);
-            }
-
-            // Cache random shuffling of block seeds for each exercise_id.
-            var shuffled_block_seeds_gen = {}
-
             // Final seed and item sequences.
-            this.seed_sequence = []
+            this.seed_sequence = [];
 
-            this.item_sequence = []
+            this.item_sequence = [];
 
             /*
             Loop over every repeat, adding each exercise_id in turn to item_sequence.
-            On first loop, create shuffled copy of block_seeds for each exercise_id.
-            Add seed from shuffled block_seeds copy to seed_sequence.
+            Increment initial_seed on each inner iteration to give unique seeds across
+            all exercises. This will prevent similarly generated exercises from appearing identical.
             This will have the net effect of a fixed sequence of exercise_ids, repeating
-            'repeats' times, with each exercise_id having a shuffled sequence of seeds across blocks.
+            'repeats' times. Build seed sequences per item, so that sequence of seeds can be shuffled
+            per item, giving the net result that across tests, the seed/item pairs are matched, but the
+            order the seeds appear in within the item repeat blocks is different for each test taker.
             */
+            var item_seed_sequence = [];
+
             for(j=0; j < repeats; j++){
                 for(i=0; i < items.length; i++){
-                    if(j==0){
-                        shuffled_block_seeds_gen[i] = seeded_shuffle(block_seeds, random);
+                    if(j===0){
+                        item_seed_sequence[i] = [];
                     }
                     this.item_sequence.push(items[i]);
-                    this.seed_sequence.push(shuffled_block_seeds_gen[i][j]);
+                    item_seed_sequence[i].push(initial_seed);
+                    initial_seed+=1;
+                }
+            }
+            for(i=0; i < items.length; i++){
+                item_seed_sequence[i] = seeded_shuffle(item_seed_sequence[i], random);
+            }
+
+            for(j=0; j < repeats; j++){
+                for(i=0; i < items.length; i++){
+                    this.seed_sequence.push(item_seed_sequence[i][j]);
                 }
             }
         }
@@ -413,7 +423,7 @@ window.TestLogCollection = Backbone.Collection.extend({
 var QuizDataModel = Backbone.Model.extend({
 
     defaults: {
-        repeats: 3
+        repeats: ds.distributed.quiz_repeats || 3
     },
 
     initialize: function() {
@@ -477,18 +487,28 @@ window.QuizLogModel = Backbone.Model.extend({
 
             var repeats = quiz_data_model.get("repeats");
 
+            var initial_seed = new Math.seedrandom(this.get("user") + this.get("attempts"))()*1000;
+
             this.item_sequence = [];
+
+            this.seed_sequence = [];
 
             for(j=0; j < repeats; j++){
                 this.item_sequence.push(items);
+                for(i=0; i < items.length; i++){
+                    this.seed_sequence.push(initial_seed);
+                    initial_seed+=1;
+                }
             }
 
             this.item_sequence = _.flatten(this.item_sequence);
 
             this.item_sequence = seeded_shuffle(this.item_sequence, random);
+
         }
         return {
-            exercise_id: this.item_sequence[this.get("index")]
+            exercise_id: this.item_sequence[this.get("index")],
+            seed: this.seed_sequence[this.get("index")]
         };
     },
 
@@ -548,6 +568,19 @@ window.QuizLogModel = Backbone.Model.extend({
         }
         // deflate the response log list so it will be saved along with the model later
         this.set("response_log", JSON.stringify(this._response_log_cache));
+
+    },
+
+    get_latest_response_log_item: function() {
+
+        // inflate the stored JSON if needed
+        if (!this._response_log_cache) {
+            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
+        }
+
+        // add the event to the response log list
+
+        return this._response_log_cache[this.get("attempts")-1];
 
     },
 
@@ -894,6 +927,7 @@ window.ExercisePracticeView = Backbone.View.extend({
     },
 
     display_message: function() {
+        var msg;
 
         var context = {
             numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
@@ -902,21 +936,30 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         if (!this.log_model.get("complete")) {
             if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
-                var msg = "";
+                msg = "";
             } else {
-                var msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
             }
         } else {
-            context.remaining = ExerciseParams.FIXED_BLOCK_EXERCISES - this.log_model.attempts_since_completion();
+            context.remaining = this.log_model.fixed_block_questions_remaining();
             if (!this.current_attempt_log.get("correct") && !this.current_attempt_log.get("complete")) {
                 context.remaining++;
             }
             if (context.remaining > 1) {
-                var msg = gettext("You have completed your streak.") + " " + gettext("There are %(remaining)d additional questions in this exercise.");
+                msg = gettext("You have completed your streak.") + " " + gettext("Answer %(remaining)d additional questions to finish this exercise.");
+                if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
+                    show_modal("info", sprintf(msg, context));
+                }
             } else if (context.remaining == 1) {
-                var msg = gettext("You have completed your streak.") + " " + gettext("There is 1 additional question in this exercise.");
+                msg = gettext("You have completed your streak.") + " " + gettext("Answer 1 additional question to finish this exercise.");
+                if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
+                    show_modal("info", sprintf(msg, context));
+                }
             } else {
-                var msg = gettext("You have completed this exercise.");
+                msg = gettext("You have finished this exercise!");
+                if (context.remaining == 0) {
+                    show_modal("info", sprintf(msg, context));
+                }
             }
         }
 
@@ -978,7 +1021,7 @@ window.ExercisePracticeView = Backbone.View.extend({
             version: window.statusModel.get("version")
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
@@ -1007,8 +1050,9 @@ window.ExercisePracticeView = Backbone.View.extend({
             // update and save the exercise and attempt logs
             this.update_and_save_log_models("answer_given", data);
 
-            this.display_message();
-
+            if (data.correct) {
+                this.display_message();
+            }
         }
 
     },
@@ -1039,14 +1083,22 @@ window.ExercisePracticeView = Backbone.View.extend({
                 points: data.correct ? this.get_points_per_question() : 0,
                 time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp"))
             });
-            this.attempt_collection.add_new(this.current_attempt_log);
 
             // only change the streak progress and points if we're not already complete
             if (!this.log_model.get("complete")) {
+                this.attempt_collection.add_new(this.current_attempt_log);
                 this.log_model.set({
                     streak_progress: this.attempt_collection.get_streak_progress_percent(),
                     points: this.attempt_collection.get_streak_points()
                 });
+            // or if we're still in a fixed block
+            } else if (this.log_model.fixed_block_questions_remaining() > 0) {
+                // increment points from where they currently are to account for a new correct answer
+                if (data.correct) {
+                    this.log_model.set({
+                        points: this.log_model.get("points") + this.get_points_per_question()
+                    });
+                }
             }
 
             this.log_model.set({
@@ -1084,8 +1136,24 @@ window.ExercisePracticeView = Backbone.View.extend({
 
                 // if this is the first attempt, or the previous attempt was complete, start a new attempt log
                 if (!self.current_attempt_log || self.current_attempt_log.get("complete")) {
+
                     self.exercise_view.load_question(); // will generate a new random seed to use
-                    self.initialize_new_attempt_log({seed: self.exercise_view.data_model.get("seed")});
+
+                    // determine the suffix to add to context_type, to indicate what stage we're in
+                    var context_type_suffix = "";
+                    if (self.log_model.get("complete")) {
+                        if (self.log_model.fixed_block_questions_remaining() > 0) {
+                            context_type_suffix = "_fixedblock";
+                        } else {
+                            context_type_suffix = "_completed";
+                        }
+                    }
+
+                    self.initialize_new_attempt_log({
+                        seed: self.exercise_view.data_model.get("seed"),
+                        context_type: self.options.context_type + context_type_suffix
+                    });
+
                 } else { // use the seed already established for this attempt
                     self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
                 }
@@ -1224,7 +1292,7 @@ window.ExerciseTestView = Backbone.View.extend({
             version: window.statusModel.get("version")
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
@@ -1310,6 +1378,8 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         _.bindAll(this);
 
+        this.points = 0;
+
         if (window.statusModel.get("is_logged_in")) {
 
             this.quiz_model = options.quiz_model;
@@ -1330,11 +1400,31 @@ window.ExerciseQuizView = Backbone.View.extend({
     },
 
     finish_quiz: function() {
-        this.$el.html(this.stop_template())
+        this.$el.html(this.stop_template({
+            correct: this.log_model.get_latest_response_log_item(),
+            total_number: this.log_model.get("total_number")
+        }));
+
+        if(this.log_model.get("attempts")==1){
+            if(this.points > 0){
+                var purchased_model = new PurchasedStoreItemModel({
+                    item: "/api/store/storeitem/gift_card/",
+                    purchased_at: window.statusModel.get_server_time(),
+                    reversible: false,
+                    context_id: ds.ab_testing.unit || 0,
+                    context_type: "unit",
+                    user: window.statusModel.get("user_uri"),
+                    value: this.points
+                });
+                purchased_model.save();
+
+                statusModel.set("newpoints", statusModel.get("newpoints") + this.points);
+            }
+        }
 
         var self = this;
 
-        $("#stop-quiz").click(function(){self.trigger("complete");})
+        $("#stop-quiz").click(function(){self.trigger("complete");});
     },
 
     user_data_loaded: function() {
@@ -1382,7 +1472,7 @@ window.ExerciseQuizView = Backbone.View.extend({
             seed: this.exercise_view.data_model.seed
         };
 
-        var data = $.extend(defaults, data);
+        data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
 
@@ -1423,6 +1513,10 @@ window.ExerciseQuizView = Backbone.View.extend({
                 index: this.log_model.get("index") + 1
             });
 
+            if((!this.log_model.get("complete")) && data.correct){
+                this.points += this.exercise_view.data_model.get("basepoints");
+            }
+
             this.log_model.add_response_log_item(data);
 
             this.log_model.save();
@@ -1459,7 +1553,7 @@ window.ExerciseQuizView = Backbone.View.extend({
 
 
 function seeded_shuffle(source_array, random) {
-    var array = source_array.slice(0)
+    var array = source_array.slice(0);
     var m = array.length, t, i;
 
     // While there remain elements to shuffle…
