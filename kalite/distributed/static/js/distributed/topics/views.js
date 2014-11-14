@@ -55,7 +55,8 @@ window.SidebarView = BaseView.extend({
     template: HB.template("topics/sidebar"),
 
     events: {
-        "click .sidebar-tab": "toggle_sidebar"
+        "click .sidebar-tab": "toggle_sidebar",
+        "click .fade": "check_external_click"
     },
 
     initialize: function(options) {
@@ -76,7 +77,6 @@ window.SidebarView = BaseView.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
         this.listenTo(this.state_model, "change:current_level", this.resize_sidebar);
-        this.listenToDOM(this.$(".fade"), "click", self.check_external_click);
 
     },
 
@@ -145,13 +145,11 @@ window.SidebarView = BaseView.extend({
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
             this.sidebar.show();
-            this.resize_sidebar();
-            this.$(".sidebar-tab").html("&lt");
+            this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width()}).html("&lt");
             this.$(".fade").show();
         } else {
             this.sidebar.hide();
-            this.$(".sidebar-tab").css({left: 0});
-            this.$(".sidebar-tab").html("&gt");
+            this.$(".sidebar-tab").css({left: 0}).html("&gt");
             this.$(".fade").hide();
         }
     },
