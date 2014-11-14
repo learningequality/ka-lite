@@ -31,8 +31,13 @@ window.ContentWrapperView = BaseView.extend({
 
     user_data_loaded: function() {
         this.log_model = this.log_collection.get_first_log_or_new_log();
+        this.initialize_listeners();
 
         this.render();
+    },
+
+    initialize_listeners: function() {
+        this.listenToDOM($(".download-link"), "click", _.partial(this.set_progress, 1.));
     },
 
     render: function() {
