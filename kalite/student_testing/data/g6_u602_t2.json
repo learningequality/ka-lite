@@ -11,5 +11,6 @@
     "dividing_decimals_1", "subtracting_decimals"
   ],
   "is_practice": false,
-  "show": true
+    "grade": 6,
+    "show": true
 }

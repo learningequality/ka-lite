@@ -10,5 +10,6 @@
     "recognizing_rays_lines_and_line_segments", "triangle_types"
   ],
   "is_practice": true,
-  "show": true
+    "grade": 5,
+    "show": true
 }

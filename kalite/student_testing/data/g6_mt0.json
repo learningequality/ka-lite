@@ -11,5 +11,6 @@
     "order_of_operations", "prime_factorization", "square_roots"
   ],
     "is_practice": false,
+    "grade": 6,
     "show": true
 }

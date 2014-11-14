@@ -10,5 +10,6 @@
     "radius_diameter_and_circumference", "triangle_types"
   ],
   "is_practice": true,
-  "show": true
+    "grade": 4,
+    "show": true
 }

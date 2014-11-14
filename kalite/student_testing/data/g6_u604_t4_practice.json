@@ -10,5 +10,6 @@
     "triangle_types"
   ],
   "is_practice": true,
-  "show": true
+    "grade": 6,
+    "show": true
 }

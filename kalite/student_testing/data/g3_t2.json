@@ -6,5 +6,6 @@
   "repeats": "5",
   "ids": [ "addition_1", "multiplication_0.5", "number_line" ],
     "is_practice": false,
+    "grade": 3,
     "show": true
 }

@@ -13,5 +13,6 @@
     "simplifying_fractions", "subtracting_fractions"
   ],
   "is_practice": true,
-  "show": true
+    "grade": 5,
+    "show": true
 }
