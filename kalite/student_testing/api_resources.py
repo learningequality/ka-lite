@@ -120,15 +120,8 @@ class TestResource(Resource):
 
     def _read_facility_tests(self, facility, test_id=None, force=False):
         testscache = Test.all(force=force)
-        for k in testscache.keys():
-            temp = k.split('_')
-            if int(temp[0][-1]) != get_grade_by_facility(facility):
-                del testscache[k]
-            elif temp[1][0] != 'u':
-                del testscache[k]
-            elif (int(temp[1][1:]) - 300) != get_current_unit_settings_value(facility.id):
-                del testscache[k]
-        return sorted(testscache.values(), key=lambda test: test.title)
+        valid_tests = dict((id, test) for (id, test) in testscache.iteritems() if test.grade == get_grade_by_facility(facility) and test.unit == get_current_unit_settings_value(facility.id))
+        return sorted(valid_tests.values(), key=lambda test: test.title)
 
     def prepend_urls(self):
         return [
