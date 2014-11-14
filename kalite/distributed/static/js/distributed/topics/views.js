@@ -116,6 +116,7 @@ window.SidebarView = BaseView.extend({
         this.width = (current_level-1) * column_width + last_column_width + 10;
         this.$(".sidebar-panel").width(this.width);
         this.$(".sidebar-tab").css({left: this.width});
+        this.update_sidebar_visibility();
 
         // TODO(dylanjbarth): Resize sidebar to not cover top nav
         // var body = document.body, html = document.documentElement;
