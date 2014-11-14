@@ -48,7 +48,11 @@ window.ContentWrapperView = BaseView.extend({
                 break;
 
             case "Document":
-                ContentView = PDFViewerView;
+                if ("PDFJS" in window) {
+                    ContentView = PDFViewerView;
+                } else {
+                    ContentView = ContentBaseView;
+                }
                 break;
         }
 
