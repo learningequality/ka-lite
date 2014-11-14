@@ -1,7 +1,7 @@
 .sidebar-icon {
     padding-right: 10px;
     background-color: rgba(219, 219, 219, 0.19);
-    border-radius: 6px;
+    /*border-radius: 6px;*/
     padding: 7px;
 }
 .sidebar-icon.partial {
@@ -22,7 +22,7 @@ Nav Panel
 */
 
 .sidebar-panel {
-    
+    -webkit-transform: translateZ(0);
     background: #5F832E;
     z-index: 9999;
     position: fixed;
@@ -54,7 +54,8 @@ div.fade {
 }
 
 .sidebar-panel li {
-    box-shadow: 0 -1px 0 rgba(0, 0, 0, .20) inset, 0 1px 0 rgba(255, 255, 255, .05);
+    /*box-shadow: 0 -1px 0 rgba(0, 0, 0, .20) inset, 0 1px 0 rgba(255, 255, 255, .05);*/
+    border-bottom: 1px solid #4b6824;
 }
 
 .sidebar-panel .sidebar-entry {
@@ -70,10 +71,10 @@ div.fade {
     margin: 2px 5px 2px 0;
 }
 
-.sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
+/*.sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
     background: #8dc63f;
 }
-
+*/
 .sidebar-panel .active-entry {
     background: #77AA31;
 }
@@ -135,7 +136,8 @@ div.fade {
 .topic-container-inner {
     float: left;
     width: 200px;
-    box-shadow: 1px 0px 7px rgb(55, 55, 55) inset;
+    border-right: 3px solid #3C531D;
+    /*box-shadow: 1px 0px 7px rgb(55, 55, 55) inset;*/
 }
 .topic-container-inner:last-child {
     width: 400px;
