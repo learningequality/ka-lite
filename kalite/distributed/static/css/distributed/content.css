@@ -70,3 +70,11 @@
     position: relative;
     top: 5px;
 }
+.row.tag-row {
+    margin: 0;
+}
+.btn-tag {
+    background-color: #8dc63f;
+    border-color: #8dc63f;
+    color: white;
+}

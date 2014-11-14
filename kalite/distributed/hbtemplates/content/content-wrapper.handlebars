@@ -61,6 +61,22 @@
                     </div>
                 </div>
                 {{/if}}
+                {{#if tags}}
+                <div class="panel-footer">
+                    <h4>
+                        Keywords:
+                    </h4>
+                    <div class="row tag-row">
+                        {{#each tags }}
+                            <a href="/search/?query={{ this }}">
+                                <span class="btn btn-tag">
+                                {{ this }}
+                                </span>
+                            </a>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
             </div>
         </div>
     </div>

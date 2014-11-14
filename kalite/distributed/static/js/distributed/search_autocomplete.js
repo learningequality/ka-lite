@@ -34,13 +34,17 @@ function flattenNodes() {
     for (var id in _nodes) {
         if(!_.has(_titles, _nodes[id]["title"])){
             _titles[_nodes[id]["title"]] = id;
-            if (_nodes[id]["keywords"]!==undefined){
-                for (var i = 0; i < _nodes[id]["keywords"].length; i++){
-                    if (_keywords[_nodes[id]["keywords"][i]]===undefined){
-                        _keywords[_nodes[id]["keywords"][i]] = [];
-                    }
-                    if($.inArray(id, _keywords[_nodes[id]["keywords"][i]]) == -1) {
-                        _keywords[_nodes[id]["keywords"][i]].push(id);
+            var search_items = ["tags", "keywords"]
+            for (var k = 0; k < search_items.length; k++) {
+                var search_item = search_items[k];
+                if (_nodes[id][search_item]!==undefined){
+                    for (var i = 0; i < _nodes[id][search_item].length; i++){
+                        if (_keywords[_nodes[id][search_item][i]]===undefined){
+                            _keywords[_nodes[id][search_item][i]] = [];
+                        }
+                        if($.inArray(id, _keywords[_nodes[id][search_item][i]]) == -1) {
+                            _keywords[_nodes[id][search_item][i]].push(id);
+                        }
                     }
                 }
             }
