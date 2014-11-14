@@ -174,36 +174,37 @@ div.fade {
 }
 
 .sidebar-entry-header {
-    max-height: 2.5em;
-    margin-bottom: -10px;
-    margin-top: -10px;
+    display: table;
+    max-height: 2.5em;
+    margin-bottom: -10px;
+    margin-top: -10px;
 }
 .topic-container-inner:last-child .sidebar-entry-header {
-    display: table;
-    margin-bottom: 12px;
+    margin-bottom: 12px;
 }
 .sidebar-entry-header > .sidebar-icon {
-    height: 100%;
-    margin-top: 2px;
+    height: 100%;
+    margin-top: 2px;
 }
 .sidebar-entry-header > .sidebar-title {
-    line-height: 1em;
-    display: block;
-    white-space: nowrap;
-    overflow:hidden; 
-    text-overflow: ellipsis; 
-    padding-left: 8px;
-    padding-top: 13px;
-    padding-bottom: 5px;
+    line-height: 1em;
+    display:table-cell;
+    vertical-align:middle;
+    white-space: inherit;
+    text-overflow: inherit; 
+    padding-left: 8px;
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
 .topic-container-inner:last-child .sidebar-entry-header > .sidebar-title {
-    display:table-cell;
-    vertical-align:middle;
-    white-space: inherit;
-    text-overflow: inherit; 
-    padding-top: 0px;
-    padding-bottom: 0px;
+    display:table-cell;
+    vertical-align:middle;
+    white-space: inherit;
+    text-overflow: inherit; 
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
+
 .topic-container-inner:last-child .sidebar-entry-header > .sidebar-icon {
     height: 100%;
     margin-top: 2px;
