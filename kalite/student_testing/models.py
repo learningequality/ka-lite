@@ -42,11 +42,11 @@ class TestLog(DeferredCountSyncedModel):
         '''
         Returns the Test object associated with this TestLog.
         '''
-        return Test.testscache[self.test]
+        return Test.all(show_all=True)[self.test]
 
 class Test():
 
-    testscache = {}
+    _testscache = {}
 
     def __init__(self, **kwargs):
         test_id = kwargs.get('test_id')
@@ -73,16 +73,16 @@ class Test():
         self.is_exam_mode = is_exam_mode
 
     @classmethod
-    def all(cls, force=True, show_all=False):
-        if not cls.testscache or force:
+    def all(cls, force=False, show_all=False):
+        if not cls._testscache or force:
             for testfile in glob.iglob(STUDENT_TESTING_DATA_PATH + "/*.json"):
 
                 with open(testfile) as f:
                     data = json.load(f)
-                    if show_all or data.get("show", False):
-                        # Coerce each test dict into a Test object
-                        # also add in the group IDs that are assigned to view this test
-                        test_id = os.path.splitext(os.path.basename(f.name))[0]
-                        data["test_id"] = test_id
-                        cls.testscache[test_id] = (Test(**data))
-        return cls.testscache
+                    # Coerce each test dict into a Test object
+                    # also add in the group IDs that are assigned to view this test
+                    test_id = os.path.splitext(os.path.basename(f.name))[0]
+                    data["test_id"] = test_id
+                    cls._testscache[test_id] = (Test(**data))
+
+        return dict((id, test) for id, test in cls._testscache.iteritems() if show_all or test.show)
