@@ -113,9 +113,9 @@ window.SidebarView = BaseView.extend({
         var last_column_width = 400;
         // hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. 
-        var new_width = (current_level-1) * column_width + last_column_width + 10;
-        this.$(".sidebar-panel").width(new_width);
-        this.$(".sidebar-tab").css({left: new_width});
+        this.width = (current_level-1) * column_width + last_column_width + 10;
+        this.$(".sidebar-panel").width(this.width);
+        this.$(".sidebar-tab").css({left: this.width});
 
         // TODO(dylanjbarth): Resize sidebar to not cover top nav
         // var body = document.body, html = document.documentElement;
@@ -144,11 +144,11 @@ window.SidebarView = BaseView.extend({
 
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
-            this.sidebar.show();
+            this.sidebar.css({left: 0});
             this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width()}).html("&lt");
             this.$(".fade").show();
         } else {
-            this.sidebar.hide();
+            this.sidebar.css({left: - this.width});
             this.$(".sidebar-tab").css({left: 0}).html("&gt");
             this.$(".fade").hide();
         }
