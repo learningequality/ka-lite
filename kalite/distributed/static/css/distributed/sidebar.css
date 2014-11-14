@@ -174,21 +174,20 @@ div.fade {
 }
 
 .sidebar-entry-header {
-    display: table;
     max-height: 2.5em;
     margin-bottom: -10px;
     margin-top: -10px;
 }
 .topic-container-inner:last-child .sidebar-entry-header {
-    margin-bottom: 12px;
+    margin-bottom: 12px;
 }
 .sidebar-entry-header > .sidebar-icon {
     height: 100%;
     margin-top: 2px;
+    margin-right: 5px;
 }
 .sidebar-entry-header > .sidebar-title {
     line-height: 1em;
-    display:table-cell;
     vertical-align:middle;
     white-space: inherit;
     text-overflow: inherit; 
@@ -197,7 +196,6 @@ div.fade {
     padding-bottom: 0px;
 }
 .topic-container-inner:last-child .sidebar-entry-header > .sidebar-title {
-    display:table-cell;
     vertical-align:middle;
     white-space: inherit;
     text-overflow: inherit; 
@@ -208,6 +206,5 @@ div.fade {
 .topic-container-inner:last-child .sidebar-entry-header > .sidebar-icon {
     height: 100%;
     margin-top: 2px;
-    display:table-cell;
     vertical-align:middle;
 }
