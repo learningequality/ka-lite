@@ -56,6 +56,8 @@ class Test():
         self.seed = kwargs.get('seed')
         self.repeats = kwargs.get('repeats')
         self.practice = kwargs.get('is_practice')
+        self.unit = kwargs.get('unit')
+        self.grade = kwargs.get('grade')
         self.test_id = test_id
         self.test_url = "" if settings.CENTRAL_SERVER else reverse('test', args=[test_id])
         self.total_questions = len(kwargs.get('ids', [])) * int(self.repeats or 0)
