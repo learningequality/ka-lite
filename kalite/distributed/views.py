@@ -188,6 +188,7 @@ def learn(request):
         "topics_url": settings.CONTENT_DATA_URL + "%(channel_name)s/topics.json",
         "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
         "channel": settings.CHANNEL,
+        "pdfjs": settings.PDFJS,
     }
     return context
 
