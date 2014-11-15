@@ -317,13 +317,17 @@ def search(request, topics):  # we don't use the topics variable, but this setup
             possible_matches[node_type] = []  # make dict only for non-skipped categories
             for node in node_dict.values():
                 title = _(node['title']).lower()  # this could be done once and stored.
+                keywords = [x.lower() for x in node.get('keywords', [])]
+                tags = [x.lower() for x in node.get('tags', [])]
                 if title == query:
                     # Redirect to an exact match
                     return HttpResponseRedirect(reverse('learn') + node['path'])
 
-                elif len(possible_matches[node_type]) < max_results_per_category and query in title:
+                elif (len(possible_matches[node_type]) < max_results_per_category and
+                    (query in title or query in keywords or query in tags)):
                     # For efficiency, don't do substring matches when we've got lots of results
                     possible_matches[node_type].append(node)
+
 
             hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
 
