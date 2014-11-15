@@ -34,7 +34,7 @@ function flattenNodes() {
     for (var id in _nodes) {
         if(!_.has(_titles, _nodes[id]["title"])){
             _titles[_nodes[id]["title"]] = id;
-            var search_items = ["tags", "keywords"]
+            var search_items = ["tags", "keywords"];
             for (var k = 0; k < search_items.length; k++) {
                 var search_item = search_items[k];
                 if (_nodes[id][search_item]!==undefined){

@@ -59,7 +59,8 @@
     border-color: #8dc63f;
 }
 .btn-related-content:hover {
-    background-color: #8dc63f;
+    background-color: #5C8547;
+    border-color: #5C8547;
 }
 .related-content-header {
     font-size: 24px;
@@ -70,11 +71,18 @@
     position: relative;
     top: 5px;
 }
-.row.tag-row {
-    margin: 0;
+.panel-footer h3 {
+    font-weight: 400;
 }
 .btn-tag {
+    font-size: 20px;
+    font-weight: 300;
     background-color: #8dc63f;
     border-color: #8dc63f;
+    color: white;
+}
+.btn-tag:hover {
+    background-color: #5C8547;
+    border-color: #5C8547;
     color: white;
 }

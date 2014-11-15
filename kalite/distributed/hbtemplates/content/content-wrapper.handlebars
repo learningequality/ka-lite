@@ -39,9 +39,9 @@
                 </div>
                 {{#if related_content}}
                 <div class="panel-footer">
-                    <h4>
+                    <h3>
                         Related content:
-                    </h4>
+                    </h3>
                     <div class="row">
                         {{#each related_content }}
                             <div class="col-xs-4">
@@ -63,18 +63,16 @@
                 {{/if}}
                 {{#if tags}}
                 <div class="panel-footer">
-                    <h4>
-                        Keywords:
-                    </h4>
-                    <div class="row tag-row">
-                        {{#each tags }}
-                            <a href="/search/?query={{ this }}">
-                                <span class="btn btn-tag">
-                                {{ this }}
-                                </span>
-                            </a>
-                        {{/each}}
-                    </div>
+                    <h3>
+                        Tags:
+                    </h3>
+                    {{#each tags }}
+                        <a href="/search/?query={{ this }}">
+                            <span class="btn btn-tag">
+                            {{ this }}
+                            </span>
+                        </a>
+                    {{/each}}
                 </div>
                 {{/if}}
             </div>
