@@ -40,6 +40,14 @@
     color: #77B05D;
     border: 2px solid white;
 }
+.organization {
+    display: block;
+    margin-top: -3px;
+    margin-bottom: 5px;
+    color: #6d726b;
+    word-wrap: break-word;
+    font-size: 20px;
+}
 /*.related-content-container {
     background-color: rgba(141, 198, 63, 0.5);
 }
