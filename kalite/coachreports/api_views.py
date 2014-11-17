@@ -180,7 +180,7 @@ def compute_data(data_types, who, where):
         attempts
     """
 
-    # None indicates that the data hasn't been queried yet.
+    # Use 0 as a default index when there no query given
     #   We'll query it on demand, for efficiency
     topics = None
     exercises = None
@@ -202,7 +202,7 @@ def compute_data(data_types, who, where):
     # This lambda partial creates a function to return all items with a particular path from the NODE_CACHE.
     search_fun_single_path = partial(lambda t, p: t["path"].startswith(p), p=tuple(where))
     # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
-    search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
+    search_fun_multi_path = partial(lambda ts, p: ([p]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
     query_topics = partial(lambda t, sf: t if t is not None else [t["id"] for t in filter(sf, get_node_cache('Topic').values())], sf=search_fun_single_path)
     query_exercises = partial(lambda e, sf: e if e is not None else [ex["id"] for ex in filter(sf, get_exercise_cache().values())], sf=search_fun_multi_path)
@@ -214,12 +214,10 @@ def compute_data(data_types, who, where):
         # Query out all exercises, videos, exercise logs, and video logs before looping to limit requests.
         # This means we could pull data for n-dimensional coach report displays with the same number of requests!
         # Note: User activity is polled inside the loop, to prevent possible slowdown for exercise and video reports.
-        try:
-            exercises = query_exercises(exercises)
 
-            videos = query_videos(videos)
-        except:
-            logging.error("this piece of code fail")
+        exercises = query_exercises(exercises)
+
+        videos = query_videos(videos)
 
         if exercises:
             ex_logs = query_logs(data.keys(), exercises, "exercise", ex_logs)
@@ -231,12 +229,9 @@ def compute_data(data_types, who, where):
             if data_type in data[data.keys()[0]]:  # if the first user has it, then all do; no need to calc again.
                 continue
 
-            #
-            # These are summary stats: you only get one per user
-            #
+        # These are summary stats: you only get one per user
             if data_type == "pct_mastery":
-
-                # Efficient query out, spread out to dict
+                # Efficient query out, spread out to dictSS
                 for user in data.keys():
                     data[user][data_type] = 0 if not ex_logs[user] else 100. * sum([el['complete'] for el in ex_logs[user]]) / float(len(exercises))
 
@@ -244,9 +239,12 @@ def compute_data(data_types, who, where):
                 if "ex:attempts" in data[data.keys()[0]] and "vid:total_seconds_watched" in data[data.keys()[0]]:
                     # exercises and videos would be initialized already
                     for user in data.keys():
-                        avg_attempts = 0 if len(exercises) == 0 else sum(data[user]["ex:attempts"].values()) / float(len(exercises))
-                        avg_video_points = 0 if len(videos) == 0 else sum(data[user]["vid:total_seconds_watched"].values()) / float(len(videos))
-                        data[user][data_type] = 100. * (0.5 * avg_attempts / 10. + 0.5 * avg_video_points / 750.)
+                        try:
+                            avg_attempts = 0 if len(exercises) == 0 else sum(data[user]["ex:attempts"].values()) / float(len(exercises))
+                            avg_video_points = 0 if len(videos) == 0 else sum(data[user]["vid:total_seconds_watched"].values()) / float(len(videos))
+                            data[user][data_type] = 100. * (0.5 * avg_attempts / 10. + 0.5 * avg_video_points / 750.)
+                        except:
+                            logging.error("this code fail")
                 else:
                     data_types += ["ex:attempts", "vid:total_seconds_watched", "effort"]
 
@@ -284,8 +282,8 @@ def compute_data(data_types, who, where):
             else:
                 raise Exception("Unknown type: '%s' not in %s" % (data_type, str([f.name for f in ExerciseLog._meta.fields])))
 
-    # Returning empty list instead of None allows javascript on client
-    # side to read 'length' property without error.
+        # Returning empty list instead of None allows javascript on client
+        # side to read 'length' property without error.
     exercises = exercises or []
 
     videos = videos or []
@@ -372,15 +370,19 @@ def api_data(request, xaxis="", yaxis=""):
         if form.data.get("group") == "Ungrouped":
             groups = []
             users = FacilityUser.objects.filter(facility__in=[form.data.get("facility")], group__isnull=True, is_teacher=False).order_by("last_name", "first_name")
-        else:
+        elif form.data.get("group"):
             groups = [get_object_or_404(FacilityGroup, id=form.data.get("group"))]
             users = FacilityUser.objects.filter(group=form.data.get("group"), is_teacher=False).order_by("last_name", "first_name")
+        else:
+            groups = FacilityGroup.objects.all()
+            users = FacilityUser.objects.all()
     elif form.data.get("facility"):
         facility = get_object_or_404(Facility, id=form.data.get("facility"))
         groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility")])
         users = FacilityUser.objects.filter(facility__in=[form.data.get("facility")], is_teacher=False).order_by("last_name", "first_name")
     else:
-        return HttpResponseNotFound(_("Did not specify facility, group, nor user."))
+        # return HttpResponseNotFound(_("Did not specify facility, group, nor user."))
+        facility = Facility.objects.all()
 
     # Query out the data: where?
     if not form.data.get("topic_path"):
