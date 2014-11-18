@@ -11,7 +11,30 @@ ChannelRouter = Backbone.Router.extend({
     navigate_default_channel: function() {
         this.navigate(this.default_channel + "/", {trigger: true, replace: true});
     },
-  
+
+    add_slug: function(slug) {
+        this.navigate(Backbone.history.getFragment() + slug + "/", {trigger: true});
+    },
+
+    url_back: function() {
+        var current_url = Backbone.history.getFragment();
+        var fragments = current_url.split("/").slice(0,-1);
+        if (fragments.length > 0) {
+            this.navigate(fragments.slice(0,-1).join("/") + "/");
+        }
+    },
+
+    navigate_splat: function(splat) {
+        splat = splat || "/";
+        if (splat.indexOf("/", splat.length - 1)==-1) {
+            splat += "/";
+            this.navigate(Backbone.history.getFragment() + "/");
+        }
+        this.control_view.navigate_paths(splat.split("/"));
+    }
+});
+
+TopicChannelRouter = ChannelRouter.extend({
     navigate_channel: function(channel, splat) {
         if (this.channel!==channel) {
             this.control_view = new SidebarView({
@@ -21,23 +44,6 @@ ChannelRouter = Backbone.Router.extend({
             });
             this.channel = channel;
         }
-        splat = splat || "/";
-        if (splat.indexOf("/", splat.length - 1)==-1) {
-            splat += "/";
-            this.navigate(Backbone.history.getFragment() + "/");
-        }
-        this.control_view.navigate_paths(splat.split("/"));
-    },
-
-    add_slug: function(slug) {
-        this.navigate(Backbone.history.getFragment() + slug + "/");
-    },
-
-    url_back: function() {
-        var current_url = Backbone.history.getFragment();
-        var fragments = current_url.split("/").slice(0,-1);
-        if (fragments.length > 0) {
-            this.navigate(fragments.slice(0,-1).join("/") + "/");
-        }
+        this.navigate_splat(splat);
     }
 });

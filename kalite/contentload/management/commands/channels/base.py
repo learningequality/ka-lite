@@ -6,6 +6,8 @@ from django.conf import settings; logging = settings.LOG
 
 from django.utils.text import slugify
 
+video_paths = {}
+exercise_paths = {}
 
 # For specification of channel_data dictionary, please see CHANNELDATA.md
 def retrieve_API_data(channel=None):
@@ -53,7 +55,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     node["slug"] = node[channel_data["slug_key"][kind]] if node[channel_data["slug_key"][kind]] != "root" else "khan"
     node["slug"] = slugify(unicode(node["slug"]))
 
-    node["path"] = path + node["slug"] + "/"
+    node["path"] = node.get("path", "") or path + node["slug"] + "/"
     if "title" not in node:
         node["title"] = (node.get(channel_data["title_key"][kind], ""))
     node["title"] = node["title"].strip()
@@ -65,6 +67,8 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
         node["video_id"] = node.get("youtube_id", "")
+        video_paths[str(node["id"])] = node["path"]
+
 
     elif kind == "Exercise":
         # For each exercise, need to set the exercise_id
@@ -75,6 +79,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
         # compute base points
         # Minimum points per exercise: 5
         node["basepoints"] = ceil(7 * log(max(exp(5. / 7), node.get("seconds_per_fast_problem", 0))))
+        exercise_paths[str(node["id"])] = node["path"]
 
     return node
 
@@ -238,6 +243,12 @@ def rebuild_topictree(
                         content["x_pos"] = min(x_pos) + (max(x_pos) - min(x_pos)) * i / float(len(videos))
 
     recurse_nodes_to_add_position_data(topic_tree)
+
+    for exercise in exercises:
+        exercise["path"] = exercise_paths.get(exercise.get(channel_data.get("id_key", {}).get("Exercise"), ""))
+
+    for video in videos:
+        video["path"] = video_paths.get(video.get(channel_data.get("id_key", {}).get("Video"), ""))
 
     return topic_tree, exercises, videos, assessment_items, contents
 
