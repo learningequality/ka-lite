@@ -379,9 +379,9 @@ def api_data(request, xaxis="", yaxis=""):
     else:
         # Allow superuser to see the data.
         if request.user.is_authenticated() and request.user.is_superuser:
-            facility = Facility.objects.all()
-            groups = FacilityGroup.objects.all()
-            users = FacilityUser.objects.all()
+            facility = []
+            groups = []
+            users = FacilityUser.objects.all().order_by("last_name", "first_name")
         else:
             return HttpResponseNotFound(_("Did not specify facility, group, nor user."))
 
