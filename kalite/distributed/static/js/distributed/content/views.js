@@ -1,5 +1,9 @@
 window.ContentWrapperView = BaseView.extend({
 
+    events: {
+        "click .download-link": "set_full_progress"
+    },
+
     template: HB.template("content/content-wrapper"),
 
     initialize: function(options) {
@@ -31,13 +35,12 @@ window.ContentWrapperView = BaseView.extend({
 
     user_data_loaded: function() {
         this.log_model = this.log_collection.get_first_log_or_new_log();
-        this.initialize_listeners();
-
         this.render();
     },
 
-    initialize_listeners: function() {
-        this.listenToDOM($(".download-link"), "click", _.partial(this.set_progress, 1.));
+    set_full_progress: function() {
+        this.content_view.set_progress(1.);
+        this.content_view.log_model.save();
     },
 
     render: function() {
