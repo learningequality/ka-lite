@@ -471,6 +471,9 @@ block_re = re.compile(r"""^\s*blocktrans(\s+.*context\s+((?:"[^"]*?")|(?:'[^']*?
 endblock_re = re.compile(r"""^\s*endblocktrans$""")
 plural_re = re.compile(r"""^\s*plural$""")
 constant_re = re.compile(r"""_\(((?:".*?")|(?:'.*?'))\)""")
+# DJANGO_CHANGE(cpauya):
+# For handlebars templates using `{{_ "text here" }}`.
+constant_hb_re = re.compile(r"""^_\s((?:".*?")|(?:'.*?'))$""")
 one_percent_re = re.compile(r"""(?<!%)%(?!%)""")
 
 
@@ -558,6 +561,9 @@ def templatize(src, origin=None):
                 imatch = inline_re.match(t.contents)
                 bmatch = block_re.match(t.contents)
                 cmatches = constant_re.findall(t.contents)
+                # DJANGO_CHANGE(cpauya):
+                # For handlebars templates using `{{_ "text here" }}`.
+                hbmatches = constant_hb_re.findall(t.contents)
                 if imatch:
                     g = imatch.group(1)
                     if g[0] == '"':
@@ -580,6 +586,10 @@ def templatize(src, origin=None):
                 elif bmatch:
                     for fmatch in constant_re.findall(t.contents):
                         out.write(' _(%s) ' % fmatch)
+                    # DJANGO_CHANGE(cpauya):
+                    # For handlebars templates using `{{_ "text here" }}`.
+                    for hbmatch in constant_hb_re.findall(t.contents):
+                        out.write(' _(%s) ' % hbmatch)
                     if bmatch.group(1):
                         # A context is provided
                         context_match = context_re.match(bmatch.group(1))
@@ -595,6 +605,11 @@ def templatize(src, origin=None):
                 elif cmatches:
                     for cmatch in cmatches:
                         out.write(' _(%s) ' % cmatch)
+                # DJANGO_CHANGE(cpauya):
+                # For handlebars templates using `{{_ "text here" }}`.
+                elif hbmatches:
+                    for hbmatch in hbmatches:
+                        out.write(' _(%s) ' % hbmatch)
                 elif t.contents == 'comment':
                     incomment = True
                 else:
@@ -604,6 +619,11 @@ def templatize(src, origin=None):
                 cmatch = constant_re.match(parts[0])
                 if cmatch:
                     out.write(' _(%s) ' % cmatch.group(1))
+                # DJANGO_CHANGE(cpauya):
+                # For handlebars templates using `{{_ "text here" }}`.
+                hbmatch = constant_hb_re.match(parts[0])
+                if hbmatch:
+                    out.write(' _(%s) ' % hbmatch.group(1))
                 for p in parts[1:]:
                     if p.find(':_(') >= 0:
                         out.write(' %s ' % p.split(':',1)[1])

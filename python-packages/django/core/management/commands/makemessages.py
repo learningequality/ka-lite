@@ -147,25 +147,12 @@ def process_file(file, dirpath, potfile, domain, verbosity,
         work_file = os.path.join(dirpath, thefile)
         with open(work_file, "w") as fp:
             fp.write(src_data)
-        # DJANGO_CHANGE(cpauya):
-        # Check for .handlebars file extensions for i18n texts to be
-        # included in gettext and add a keyword to be used to
-        # identify the text for i18n.
-        # Usage example in .handlebars files:
-        #   <option>{{_ "Hello World!" }}</option>
-        if 'handlebars' in file_ext:
-            cmd = (
-                'xgettext -d %s -L Lua %s %s '
-                '--keyword={{_ '
-                '--from-code UTF-8 --add-comments=Translators -o - "%s"' %
-                (domain, wrap, location, work_file))
-        else:
-            cmd = (
-                'xgettext -d %s -L C %s %s --keyword=gettext_noop '
-                '--keyword=gettext_lazy --keyword=ngettext_lazy:1,2 '
-                '--keyword=pgettext:1c,2 --keyword=npgettext:1c,2,3 '
-                '--from-code UTF-8 --add-comments=Translators -o - "%s"' %
-                (domain, wrap, location, work_file))
+        cmd = (
+            'xgettext -d %s -L C %s %s --keyword=gettext_noop '
+            '--keyword=gettext_lazy --keyword=ngettext_lazy:1,2 '
+            '--keyword=pgettext:1c,2 --keyword=npgettext:1c,2,3 '
+            '--from-code UTF-8 --add-comments=Translators -o - "%s"' %
+            (domain, wrap, location, work_file))
     elif domain == 'django' and (file_ext == '.py' or file_ext in extensions):
         thefile = file
         orig_file = os.path.join(dirpath, file)
