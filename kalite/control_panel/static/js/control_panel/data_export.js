@@ -205,13 +205,21 @@ var FacilitySelectView = Backbone.View.extend({
 
     render: function() {
 
-        var template_context = {
-            facilities: this.facility_list.toJSON(),
-            selection: this.model.get("facility_id"),
-            // Facility select is enabled only if zone_id has been set 
-            is_disabled: this.is_disabled()
-        };
-
+        if (this.model.get("facility_id") != ""){
+            var template_context = {
+                facilities: this.facility_list.toJSON(),
+                selection: this.model.get("facility_id"),
+                is_disabled: true
+            };
+        }
+        else{
+            var template_context = {
+                facilities: this.facility_list.toJSON(),
+                selection: this.model.get("facility_id"),
+                // Facility select is enabled only if zone_id has been set
+                is_disabled: this.is_disabled()
+            };
+        }
         this.$el.html(this.template(template_context));
 
         return this;
@@ -281,6 +289,7 @@ var GroupSelectView = Backbone.View.extend({
         // Create collections
         this.group_list = new GroupCollection();
 
+        this.fetch_by_facility();
         // Re-render self when the fetch returns or state model changes
         this.listenTo(this.group_list, 'sync', this.render);
         this.listenTo(this.group_list, 'reset', this.render);
