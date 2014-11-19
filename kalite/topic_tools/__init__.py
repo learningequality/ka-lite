@@ -78,8 +78,9 @@ def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
         root_node = get_topic_tree(force=force)
-        sorted_items = sorted(root_node["knowledge_map"]["nodes"].items(), key=lambda k: (k[1]["v_position"], k[1]["h_position"]))
-        KNOWLEDGEMAP_TOPICS =  [k[0] for k in sorted_items]
+        math_node = [child for child in root_node["children"] if child.get("title", "") == "Math"][0]
+        all_nodes = [child for subnode in math_node["children"] for child in subnode["children"] if "Exercise" in child["contains"]]
+        KNOWLEDGEMAP_TOPICS = sorted(all_nodes, key=lambda k: (k.get("v_position", 0), k.get("h_position", 0)))
     return KNOWLEDGEMAP_TOPICS
 
 

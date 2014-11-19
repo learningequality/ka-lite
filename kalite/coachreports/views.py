@@ -167,7 +167,7 @@ def tabular_view(request, facility, report_type="exercise"):
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = [get_node_cache("Topic").get(tid) for tid in get_knowledgemap_topics()]
+    topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics()]
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         # For translators: the following two translations are nouns
