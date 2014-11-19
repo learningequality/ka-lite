@@ -162,6 +162,9 @@ def data_export(request):
     facility_id = request.GET.get("facility_id", "")
     group_id = request.GET.get("group_id", "")
 
+    if 'facility_user' in request.session:
+        facility_id = request.session['facility_user'].facility.id
+
     if zone_id:
         zone = Zone.objects.get(id=zone_id)
     else:
