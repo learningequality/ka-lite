@@ -39,8 +39,10 @@ window.ContentWrapperView = BaseView.extend({
     },
 
     set_full_progress: function() {
-        this.content_view.set_progress(1.);
-        this.content_view.log_model.save();
+        if (this.data_model.get("kind") === "Document" && !("PDFJS" in window)) {
+            this.content_view.set_progress(1.);
+            this.content_view.log_model.save();
+        }
     },
 
     render: function() {
