@@ -198,7 +198,10 @@ def construct_node(location, parent_path, node_cache, channel):
     # Verify some required fields:
     if "title" not in node:
         logging.warning("Title missing from file {base_name}, using file name instead".format(base_name=base_name))
-        node["title"] = os.path.splitext(base_name)[0]
+        if os.path.isdir(location):
+            node["title"] = base_name
+        else:
+            node["title"] = os.path.splitext(base_name)[0]
 
     if not os.path.isdir(location):
         nodecopy = copy.deepcopy(node)
