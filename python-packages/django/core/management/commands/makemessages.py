@@ -137,7 +137,23 @@ def process_file(file, dirpath, potfile, domain, verbosity,
     from django.utils.translation import templatize
 
     _, file_ext = os.path.splitext(file)
-    if domain == 'djangojs' and file_ext in extensions:
+
+    # DJANGO_CHANGE(cpauya):
+    # Handlebars templates must be processed like a Django template but
+    # must be saved into `djangojs.po` so we refactor the if conditions below.
+
+    is_file_ext_in_extensions = file_ext in extensions
+
+    is_handlebars = False
+    if is_file_ext_in_extensions and 'handlebars' in file_ext:
+        is_handlebars = True
+
+    if is_handlebars and domain != 'djangojs':
+        stdout.write('You must set the domain to "djangojs" like `-d djangojs` for handlebars templates!')
+
+    # DJANGO_CHANGE(cpauya):
+    # Check handlebars extension are processed like a Django template but saved in `djangojs` domain.
+    if domain == 'djangojs' and is_file_ext_in_extensions and not is_handlebars:
         is_templatized = True
         orig_file = os.path.join(dirpath, file)
         with open(orig_file) as fp:
@@ -153,10 +169,14 @@ def process_file(file, dirpath, potfile, domain, verbosity,
             '--keyword=pgettext:1c,2 --keyword=npgettext:1c,2,3 '
             '--from-code UTF-8 --add-comments=Translators -o - "%s"' %
             (domain, wrap, location, work_file))
-    elif domain == 'django' and (file_ext == '.py' or file_ext in extensions):
+    # DJANGO_CHANGE(cpauya):
+    # Check handlebars extension are processed like a Django template but saved in `djangojs` domain.
+    elif (domain == 'django' and (file_ext == '.py' or is_file_ext_in_extensions) and not is_handlebars) or \
+            (domain == 'djangojs' and is_handlebars):
         thefile = file
         orig_file = os.path.join(dirpath, file)
-        is_templatized = file_ext in extensions
+        # DJANGO_CHANGE(cpauya):
+        is_templatized = is_file_ext_in_extensions
         if is_templatized:
             with open(orig_file, "rU") as fp:
                 src_data = fp.read()
@@ -342,6 +362,8 @@ def make_messages(locale=None, domain='django', verbosity=1, all=False,
 
 
 class Command(NoArgsCommand):
+    # DJANGO_CHANGE(cpauya):
+    # Include the handlebars extension for `djangojs` domain.
     option_list = NoArgsCommand.option_list + (
         make_option('--locale', '-l', default=None, dest='locale',
             help='Creates or updates the message files for the given locale (e.g. pt_BR).'),
@@ -350,7 +372,7 @@ class Command(NoArgsCommand):
         make_option('--all', '-a', action='store_true', dest='all',
             default=False, help='Updates the message files for all existing locales.'),
         make_option('--extension', '-e', dest='extensions',
-            help='The file extension(s) to examine (default: "html,txt", or "js" if the domain is "djangojs"). Separate multiple extensions with commas, or use -e multiple times.',
+            help='The file extension(s) to examine (default: "html,txt", or "js,handlebars" if the domain is "djangojs"). Separate multiple extensions with commas, or use -e multiple times.',
             action='append'),
         make_option('--symlinks', '-s', action='store_true', dest='symlinks',
             default=False, help='Follows symlinks to directories when examining source code and templates for translation strings.'),
@@ -389,7 +411,9 @@ class Command(NoArgsCommand):
         no_location = options.get('no_location')
         no_obsolete = options.get('no_obsolete')
         if domain == 'djangojs':
-            exts = extensions if extensions else ['js']
+            # DJANGO_CHANGE(cpauya):
+            # Include the handlebars extension for `djangojs` domain.
+            exts = extensions if extensions else ['js', 'handlebars']
         else:
             exts = extensions if extensions else ['html', 'txt']
         extensions = handle_extensions(exts)
