@@ -203,6 +203,12 @@ def construct_node(location, parent_path, node_cache, channel):
         else:
             node["title"] = os.path.splitext(base_name)[0]
 
+    # Clean up some fields:
+    # allow tags and keywords to be a single item as a string, convert to list
+    for key in ["tags", "keywords"]:
+        if isinstance(node.get(key, []), basestring):
+            node[key] = [node[key]]
+
     if not os.path.isdir(location):
         nodecopy = copy.deepcopy(node)
         if kind == "Video":
