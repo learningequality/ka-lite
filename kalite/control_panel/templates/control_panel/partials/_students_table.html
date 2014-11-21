@@ -67,7 +67,7 @@
                                 {{ student|format_name:"last_first" }}
                             </td>
                             <td>
-                                <a title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit student {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </a>
                             </td>
@@ -102,7 +102,7 @@
                     {% endfor %}
                     {# 10x td for table formatting #}
                     <tr>
-                        <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> 
+                        <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -134,5 +134,5 @@
             </ul>
         {% endif %}
     </div>
-</div> 
+</div>
 {% endif %}
