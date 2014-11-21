@@ -140,6 +140,7 @@ class Command(NoArgsCommand):
         node_cache["Exercise"] = exercise_cache
         node_cache["Video"] = video_cache
         node_cache["Content"] = content_cache
+        node_cache["AssessmentItem"] = assessment_item_cache
         slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
         
         level_cache = channel_tools.recurse_topic_tree_to_create_hierarchy(topic_tree)
@@ -157,11 +158,20 @@ class Command(NoArgsCommand):
         for level in channel_tools.hierarchy:
             save_cache_file("Map_" + level, cache_object=level_cache[level], data_path=channel_path)
 
-        if channel_tools.channel_data_files:
+        if hasattr(channel_tools, "channel_data_files"):
             channel_tools.channel_data_files(dest=channel_path)
 
-        sys.stdout.write("Downloaded topic_tree data for %d topics, %d videos, %d exercises\n" % (
-            len(node_cache["Topic"]),
-            len(node_cache["Video"]),
-            len(node_cache["Exercise"]),
+        sys.stdout.write(
+            """Downloaded topic_tree data for
+            {topics} topics
+            {videos} videos
+            {exercises} exercises
+            {contents} content files
+            {assessments} assessment items
+            """.format(
+            topics=len(node_cache["Topic"]),
+            videos=len(node_cache["Video"]),
+            exercises=len(node_cache["Exercise"]),
+            contents=len(node_cache["Content"]),
+            assessments=len(node_cache["AssessmentItem"],)
         ))

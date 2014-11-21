@@ -442,44 +442,18 @@ window.VideoPlayerView = Backbone.View.extend({
 });
 
 
-window.VideoPointView = Backbone.View.extend({
-    /*
-    Passively display the point count to the user (and listen to changes on the model to know when to update).
-    */
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.model = this.options.model || new VideoPlayerModel(this.options);
-
-        if(!ds.distributed.turn_off_points_for_videos){
-            this.model.whenPointsIncrease(this._updatePoints);
-
-            this._updatePoints();
-        }
-
-    },
-
-    _updatePoints: function(points) {
-        this.$(".points").text(points);
-        this.$el.toggle(points > 0);
-    }
-
-});
-
 window.VideoWrapperView = BaseView.extend({
 
     template: HB.template("content/content-wrapper"),
 
-    initialize: function() {
+    initialize: function(options) {
 
         var self = this;
 
         _.bindAll(this);
 
         // TODO(jamalex): separate this out into a state model, video data model, and user data model
-        doRequest("/api/video/" + this.options.video_id).success(function(data) {
+        doRequest("/api/video/" + options.video_id).success(function(data) {
             self.model = new VideoPlayerModel(data);
             self.render();
         });
@@ -522,7 +496,7 @@ window.VideoWrapperView = BaseView.extend({
 
     close: function() {
         this.videoPlayerView.remove();
-        this.videoPointView.remove();
+        this.points_view.remove();
         this.remove();
     }
 

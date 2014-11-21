@@ -880,27 +880,27 @@ Now add class definitions below for your new icon, and add that
 to items you want to have the icon appear with.
 */
 
-.icon-exercise:before {
+.icon-Exercise:before {
     content: "\e600";
 }
-.icon-video:before {
+.icon-Video:before {
     content: "\e601";
 }
-.icon-quiz:before {
+.icon-Quiz:before {
     content: "\e602";
 }
-.icon-topic:before {
+.icon-Topic:before {
     content: "\e603";
 }
-.icon-audio:before {
+.icon-Audio:before {
     content: "\e604";
 }
-.icon-document:before {
+.icon-Document:before {
     content: "\e605";
 }
 /* BEGIN styles for modal dialog */
 
-div#overlay {
+div#modal {
     position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
     margin: auto;
     height: 50px;
