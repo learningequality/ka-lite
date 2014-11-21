@@ -73,20 +73,27 @@
     border-color: #5C8547;
 }
 .related-content-header {
-    font-size: 24px;
+    font-size: 14px;
     padding-bottom: 5px;
+    /*overflow: hidden;
+    white-space: nowrap;*/
 }
 .related-content-title {
+    font-weight: 400;
+    font-size: 1.2em;
     margin-left: 10px;
     position: relative;
     top: 5px;
 }
 .panel-footer h3 {
+    color: #6d726b;
+    margin-top: 0px;
+    font-size: 20px;
     font-weight: 400;
 }
 .btn-tag {
-    font-size: 20px;
-    font-weight: 300;
+    font-size: 1.2em;
+    font-weight: 400;
     background-color: #8dc63f;
     border-color: #8dc63f;
     color: white;
