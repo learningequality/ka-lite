@@ -112,7 +112,7 @@
 <div class="row table-bottom-options">
     <div class="col-sm-4 col-xs-12">
         <p class="add-new-table-item">
-            <a href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
+            <a class="create-student" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
                 <span class="glyphicon glyphicon-plus-sign"></span> {% trans 'Add a new student.' %}
             </a>
         </p>
