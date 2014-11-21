@@ -274,9 +274,9 @@ window.TestDataModel = Backbone.Model.extend({
     */
 
     url: function() {
-        return "/test/api/test/" + this.get("test_id") + "/"
+        return "/test/api/test/" + this.get("test_id") + "/";
     }
-})
+});
 
 window.TestLogModel = Backbone.Model.extend({
     /*
@@ -431,7 +431,7 @@ var QuizDataModel = Backbone.Model.extend({
             ids: this.get_exercise_ids_from_playlist_entry(this.get("entry")),
             quiz_id: this.get("entry").get("entity_id"),
             seed: this.get("entry").get("seed") || null
-        })
+        });
     },
 
     get_exercise_ids_from_playlist_entry: function(entry) {
@@ -443,9 +443,9 @@ var QuizDataModel = Backbone.Model.extend({
                     return memo;
                 }
             }, 0);
-        return _.map(new Backbone.Collection(temp_collection.slice(left_index)).where({"entity_kind": "Exercise"}), function(value){return value.get("entity_id")});
+        return _.map(new Backbone.Collection(temp_collection.slice(left_index)).where({"entity_kind": "Exercise"}), function(value){return value.get("entity_id");});
     }
-})
+});
 
 window.QuizLogModel = Backbone.Model.extend({
     /*
@@ -537,14 +537,14 @@ window.QuizLogModel = Backbone.Model.extend({
                     this.set({
                         complete: true
 
-                    })
+                    });
                 }
 
                 this.trigger("complete");
             }
         }
 
-        Backbone.Model.prototype.save.call(this)
+        Backbone.Model.prototype.save.call(this);
     },
 
     add_response_log_item: function(data) {
