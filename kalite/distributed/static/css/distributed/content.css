@@ -5,7 +5,7 @@
     border-radius: 5px;
     padding: 20px;
     background-color: rgb(248, 248, 248);
-}   
+}
 .points-wrapper {
     font-size: 20px;
     margin-bottom: 10px;
@@ -19,14 +19,34 @@
 }
 .points-wrapper span.points-container {
     /* Most of this is overriding the styles from video css */
-    margin: 0;
-    padding: 5 5;
-    float: none;
-    background-color: #77B05D;
+    margin: 5px 0;
+    float: right;
+    background-color: white;
     border: 2px solid rgba(255,255,255,0.5);
     position: relative;
-    color: white;
+    color: #77B05D;
     font-weight: 400;
+    border-radius: 4px;
+}
+.btn.btn-primary.download-link.pull-right {
+    padding: 5px;
+    margin: 5px 0;
+    color: white;
+    background-color: #5C8547;
+    border: 2px solid #5C8547;
+}
+.btn.btn-primary.download-link.pull-right:hover {
+    background-color: white;
+    color: #77B05D;
+    border: 2px solid white;
+}
+.organization {
+    display: block;
+    margin-top: -3px;
+    margin-bottom: 5px;
+    color: #6d726b;
+    word-wrap: break-word;
+    font-size: 20px;
 }
 /*.related-content-container {
     background-color: rgba(141, 198, 63, 0.5);
@@ -47,7 +67,8 @@
     border-color: #8dc63f;
 }
 .btn-related-content:hover {
-    background-color: #8dc63f;
+    background-color: #5C8547;
+    border-color: #5C8547;
 }
 .related-content-header {
     font-size: 24px;
@@ -57,4 +78,19 @@
     margin-left: 10px;
     position: relative;
     top: 5px;
+}
+.panel-footer h3 {
+    font-weight: 400;
+}
+.btn-tag {
+    font-size: 20px;
+    font-weight: 300;
+    background-color: #8dc63f;
+    border-color: #8dc63f;
+    color: white;
+}
+.btn-tag:hover {
+    background-color: #5C8547;
+    border-color: #5C8547;
+    color: white;
 }
