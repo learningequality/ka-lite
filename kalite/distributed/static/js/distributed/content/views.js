@@ -1,8 +1,12 @@
 window.ContentWrapperView = BaseView.extend({
 
+    events: {
+        "click .download-link": "set_full_progress"
+    },
+
     template: HB.template("content/content-wrapper"),
 
-    initialize: function() {
+    initialize: function(options) {
 
         _.bindAll(this);
 
@@ -10,7 +14,7 @@ window.ContentWrapperView = BaseView.extend({
 
         window.statusModel.loaded.then(function() {
             // load the info about the content itself
-            self.data_model = new ContentDataModel({id: self.options.id});
+            self.data_model = new ContentDataModel({id: options.id});
             if (self.data_model.get("id")) {
                 self.data_model.fetch().then(function() {
 
@@ -31,8 +35,14 @@ window.ContentWrapperView = BaseView.extend({
 
     user_data_loaded: function() {
         this.log_model = this.log_collection.get_first_log_or_new_log();
-
         this.render();
+    },
+
+    set_full_progress: function() {
+        if (this.data_model.get("kind") === "Document" && !("PDFJS" in window)) {
+            this.content_view.set_progress(1.);
+            this.content_view.log_model.save();
+        }
     },
 
     render: function() {
@@ -48,7 +58,11 @@ window.ContentWrapperView = BaseView.extend({
                 break;
 
             case "Document":
-                ContentView = PDFViewerView;
+                if ("PDFJS" in window) {
+                    ContentView = PDFViewerView;
+                } else {
+                    ContentView = ContentBaseView;
+                }
                 break;
         }
 

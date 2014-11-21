@@ -34,13 +34,17 @@ function flattenNodes() {
     for (var id in _nodes) {
         if(!_.has(_titles, _nodes[id]["title"])){
             _titles[_nodes[id]["title"]] = id;
-            if (_nodes[id]["keywords"]!==undefined){
-                for (var i = 0; i < _nodes[id]["keywords"].length; i++){
-                    if (_keywords[_nodes[id]["keywords"][i]]===undefined){
-                        _keywords[_nodes[id]["keywords"][i]] = [];
-                    }
-                    if($.inArray(id, _keywords[_nodes[id]["keywords"][i]]) == -1) {
-                        _keywords[_nodes[id]["keywords"][i]].push(id);
+            var search_items = ["tags", "keywords"];
+            for (var k = 0; k < search_items.length; k++) {
+                var search_item = search_items[k];
+                if (_nodes[id][search_item]!==undefined){
+                    for (var i = 0; i < _nodes[id][search_item].length; i++){
+                        if (_keywords[_nodes[id][search_item][i]]===undefined){
+                            _keywords[_nodes[id][search_item][i]] = [];
+                        }
+                        if($.inArray(id, _keywords[_nodes[id][search_item][i]]) == -1) {
+                            _keywords[_nodes[id][search_item][i]].push(id);
+                        }
                     }
                 }
             }
@@ -98,7 +102,7 @@ $(document).ready(function() {
                     continue;
                 }
 
-                var label = "<span class='autocomplete icon-" + node.kind.toLowerCase() + " " + (node.available ? "" : "un") + "available'>" + " " + gettext(node.title) + "</span>&nbsp;";
+                var label = "<span class='autocomplete icon-" + node.kind + " " + (node.available ? "" : "un") + "available'>" + " " + gettext(node.title) + "</span>&nbsp;";
                 results.push({
                     label: label,
                     value: ids_filtered[i]
@@ -110,10 +114,16 @@ $(document).ready(function() {
             // When they click a specific item, just go there (if we recognize it)
             var id = ui.item.value;
             if (_nodes && id in _nodes && _nodes[id]) {
-                window.location.href = "/learn/" + _nodes[id].path;
+                if ("channel_router" in window) {
+                    window.channel_router.navigate(_nodes[id].path, {trigger: true});
+                } else {
+                    window.location.href = "/learn/" + _nodes[id].path;
+                }
             } else {
                 show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
             }
+            $("#search-box input").val("");
+            return false;
         }
 
     });

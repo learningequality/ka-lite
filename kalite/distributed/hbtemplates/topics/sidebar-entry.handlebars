@@ -2,83 +2,17 @@
 <span class="sidebar-entry sidebar-divider">{{ entity_id }}</span>
 {{else}}
 <a class="sidebar-entry sidebar-entry-link {{#if active }}active{{/if}}" href="#" title="{{ description }}">
-    <!-- <span class="icon-{{ entity_kind }}"></span> -->
-    {{#ifcond entity_kind "==" "Video"}}
     <div class="sidebar-entry-header">
-        <span class="sidebar-icon icon-video" data-video-id="{{ youtube_id }}"></span>
-        <span class="sidebar-title" data-video-id="{{ youtube_id }}">{{ title }}</span>
-    </div>
-        {{#unless organization}}
-            <span class="sidebar-space-holder">  </span>
-        {{else}}
-            <span class="sidebar-organization">by: {{ organization }}</span>
-        {{/unless}}
-    <span class="sidebar-description sidebar-content-description" data-topic-id="{{ id }}">{{ description }}</span>
-    {{/ifcond}}
 
-    {{#ifcond entity_kind "==" "Exercise"}}
-    <div class="sidebar-entry-header">
-        <span class="sidebar-icon icon-exercise" data-exercise-id="{{ entity_id }}"></span>
-        <span class="sidebar-title" data-exercise-id="{{ entity_id }}">{{ title }}</span>
+        <span class="sidebar-icon icon-{{ entity_kind }}" data-content-id="{{ content_id }}"></span>
+        <span class="sidebar-title" data-content-id="{{ content_id }}">{{ title }}</span>
     </div>
-        {{#unless organization}}
-            <span class="sidebar-space-holder">  </span>
-        {{else}}
-            <span class="sidebar-organization">by: {{ organization }}</span>
-        {{/unless}}
-    <span class="sidebar-description sidebar-content-description" data-topic-id="{{ id }}">{{ description }}</span>
-    {{/ifcond}}
 
-    {{#ifcond entity_kind "==" "Quiz"}}
-    <div class="sidebar-entry-header">
-        <span class="sidebar-icon icon-quiz" data-quiz-id="{{ entity_id }}"></span>
-        <span class="sidebar-title" data-quiz-id="{{ entity_id }}">{{ title }}</span>
-    </div>
-        {{#unless organization}}
-            <span class="sidebar-space-holder">  </span>
-        {{else}}
-            <span class="sidebar-organization">by: {{ organization }}</span>
-        {{/unless}}
-    <span class="sidebar-description sidebar-content-description" data-topic-id="{{ id }}">{{ description }}</span>
-    {{/ifcond}}
-
-    {{#ifcond entity_kind "==" "Topic"}}
-    <div class="sidebar-entry-header">
-        <span class="sidebar-icon icon-topic" data-topic-id="{{ id }}"></span>
-        <span class="sidebar-title" data-topic-id="{{ id }}">{{#truncate title 45 }}{{/truncate}}</span></br>
-    </div>
-        {{#unless organization}}
-            <span class="sidebar-space-holder">  </span>
-        {{else}}
-            <span class="sidebar-organization">by: {{ organization }}</span>
-        {{/unless}}
+    {{#unless organization}}
+        <span class="sidebar-space-holder">  </span>
+    {{else}}
+        <span class="sidebar-organization">by: {{ organization }}</span>
+    {{/unless}}
     <span class="sidebar-description sidebar-topic-description" data-topic-id="{{ id }}">{{#truncate description 100 }}{{/truncate}}</span>
-    {{/ifcond}}
-
-    {{#ifcond entity_kind "==" "Audio"}}
-    <div class="sidebar-entry-header">
-        <span class="sidebar-icon icon-audio" data-content-id="{{ content_id }}"></span>
-        <span class="sidebar-title" data-content-id="{{ content_id }}">{{ title }}</span>
-    </div>
-        {{#unless organization}}
-            <span class="sidebar-space-holder">  </span>
-        {{else}}
-            <span class="sidebar-organization">by: {{ organization }}</span>
-        {{/unless}}
-    <span class="sidebar-description sidebar-content-description" data-topic-id="{{ id }}">{{ description }}</span>
-    {{/ifcond}}
-
-    {{#ifcond entity_kind "==" "Document"}}
-    <div class="sidebar-entry-header">
-        <span class="sidebar-icon icon-document" data-content-id="{{ content_id }}"></span>
-        <span class="sidebar-title" data-content-id="{{ content_id }}">{{ title }}</span>
-    </div>
-        {{#unless organization}}
-            <span class="sidebar-space-holder">  </span>
-        {{else}}
-            <span class="sidebar-organization">by: {{ organization }}</span>
-        {{/unless}}
-    <span class="sidebar-description sidebar-content-description" data-topic-id="{{ id }}">{{ description }}</span>
-    {{/ifcond}}
 </a>
 {{/ifcond}}
