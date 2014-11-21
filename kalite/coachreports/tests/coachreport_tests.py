@@ -366,7 +366,7 @@ class PlaylistProgressTest(FacilityMixins,
         self.browser.find_elements_by_class_name('toggle-details')[0].click()
 
         # Confirm lower-level progress appears
-        playlist_details = self.browser_wait_for_element(css_selector='.progress-indicator-sm')
+        playlist_details = self.browser_wait_for_element(css_selector='.progress-block')
         self.assertTrue(playlist_details, "Didn't load details")
 
 
