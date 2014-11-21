@@ -16,6 +16,7 @@ class AuthFlags:
     def process_request(self, request):
         request.is_admin = False
         request.is_teacher = False
+        request.is_student = False
         request.is_logged_in = False
         request.is_django_user = False
 
@@ -33,6 +34,8 @@ class AuthFlags:
             if request.session["facility_user"].is_teacher:
                 request.is_admin = True
                 request.is_teacher = True
+            else:
+                request.is_student = True
             request.is_logged_in = True
 
 
