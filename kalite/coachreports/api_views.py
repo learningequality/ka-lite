@@ -385,8 +385,6 @@ def api_data(request, xaxis="", yaxis=""):
         else:
             return HttpResponseNotFound(_("Did not specify facility, group, nor user."))
 
-    users = FacilityUser.objects.all()
-
     # Query out the data: where?
     if not form.data.get("topic_path"):
         return HttpResponseNotFound(_("Must specify a topic path"))
