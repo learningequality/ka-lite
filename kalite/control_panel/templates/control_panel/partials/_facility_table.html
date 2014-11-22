@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-xs-12">
         <h2>
-            {% trans "Facilities" %} 
+            {% trans "Facilities" %}
             <small>
                 <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "A facility is a physical location where students learn." %}'></span>
             </small>
@@ -72,7 +72,7 @@
 <div class="row table-bottom-options">
     <div class="col-sm-4 col-xs-12">
         <p class="add-new-table-item">
-            <a href="{% url 'add_facility' zone_id=zone_id %}">
+            <a class="create-facility" href="{% url 'add_facility' zone_id=zone_id %}">
                 <span class="glyphicon glyphicon-plus-sign"></span>
                 {% trans 'Add a new facility' %}...
             </a>

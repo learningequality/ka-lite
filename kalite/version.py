@@ -1,13 +1,29 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-# this is actually 0.12.5, but we need to update language pack version fallbacks before changing here
-MAJOR_VERSION = 0
-MINOR_VERSION = 12
-PATCH_NUMBER = 0
-
-VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_NUMBER)
-SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION,)
+MAJOR_VERSION = "0"
+MINOR_VERSION = "13"
+PATCH_VERSION = "0"
+VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
+SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
 VERSION_INFO = {
+
+    "0.13.0": {
+        "release_date": "2014/11/06",
+        "git_commit": "19b1a64",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [""],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+
+    },
 
     "0.12.7": {
         "release_date": "2014/10/08",
@@ -37,7 +53,7 @@ VERSION_INFO = {
             "admins": [],
         },
         "bugs_fixed": {
-            "all": ["Hotfix to allow Mac users to connect to the central server", "Mark old chronograph jobs as no longer runningwhen server starts"],
+            "all": ["Hotfix to allow Mac users to connect to the central server", "Mark old chronograph jobs as no longer running when server starts"],
             "students": [],
             "coaches": [],
             "admins": ["Critical fix: ensure models created elsewhere sync after being modified"],
