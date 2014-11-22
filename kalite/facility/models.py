@@ -86,7 +86,7 @@ class Facility(DeferredCountSyncedModel):
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-    description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.13.0" # TODO-BLOCKER(jamalex): change this to the specific version it is at the time it ships
+    description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.13.0"
 
     def __init__(self, *args, **kwargs):
         super(FacilityGroup, self).__init__(*args, **kwargs)

@@ -1,0 +1,349 @@
+{
+    "80dec4f5": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "30ce6a38": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+    "098b9e64": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "0a87a43d": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+    "0ac82014": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "0dfa0174": {
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "0ece8d0d": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+    "0f8c3fb5": {
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "138f7c9e": {
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "140d6b9c": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "1ff41bca": {
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "201474cd": {
+        "101": "nalanda_input",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "2d593e55": {
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "2e5d2c37": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "2e907643": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "4765a3ca": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "476a3555": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "4e8a6196": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "562e1dca": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+    "5ff29c64": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "700777bb": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "80dec4f5": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "8b265bd1": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "9274d145": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+    "92a69971": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "99ca838e": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "a49b4c79": {
+        "101": "nalanda_input",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "a69f9e12": {
+        "101": "nalanda_input",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "a96349e9": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+    "af04edca": {
+        "101": "nalanda_input",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "b55b8939": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+    "c038b8db": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+    "c08551cf": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "c1882efd": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+    "c2b99d05": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+    "c65a2349": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+    "c9ed776e": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "d7de949b": {
+        "101": "nalanda_input",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "d86dbcac": {
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "dcb5382b": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+    "e836259d": {
+        "101": "nalanda_input",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "ea4507fa": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+    "ed3b1063": {
+        "101": "nalanda_input",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_input"
+    },
+    "ee75e317": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+    "f0edd032": {
+        "101": "nalanda_control",
+        "102": "nalanda_control",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+    "f9446815": {
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_output"
+    },
+
+    "facility1": {
+        "101": "nalanda_input",
+        "102": "nalanda_control",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+
+    "facility2": {
+        "101": "nalanda_control",
+        "102": "nalanda_output",
+        "103": "nalanda_input",
+        "103": "nalanda_input"
+    },
+
+    "facility3": {
+        "101": "nalanda_output",
+        "102": "nalanda_input",
+        "103": "nalanda_control",
+        "104": "nalanda_control"
+    },
+
+    "Test": {
+        "101": "testing",
+        "102": "testing",
+        "103": "testing",
+        "104": "testing"
+    },
+
+    "test-facility-grade4-input": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+
+    "test-facility-grade4-output": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+
+    "test-facility-grade5-input": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+
+    "test-facility-grade5-output": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    },
+
+    "test-facility-grade6-input": {
+        "101": "nalanda_input",
+        "102": "nalanda_input",
+        "103": "nalanda_input",
+        "104": "nalanda_input"
+    },
+
+    "test-facility-grade6-output": {
+        "101": "nalanda_output",
+        "102": "nalanda_output",
+        "103": "nalanda_output",
+        "104": "nalanda_output"
+    }
+
+}

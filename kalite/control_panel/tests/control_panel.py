@@ -1,6 +1,7 @@
 import json
 
 from django.conf import settings
+from django.test.utils import override_settings
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -106,6 +107,118 @@ class GroupControlTests(FacilityMixins,
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
+
+
+@override_settings(RESTRICTED_TEACHER_PERMISSIONS=True)
+class RestrictedTeacherTests(FacilityMixins,
+                             BrowserActionMixins,
+                             KALiteClientTestCase,
+                             KALiteBrowserTestCase):
+
+    def setUp(self):
+        super(RestrictedTeacherTests, self).setUp()
+
+        self.teacher_username, self.teacher_password = "teacher", "password"
+        self.facility = self.create_facility()
+        self.student = self.create_student(facility=self.facility)
+        self.teacher = self.create_teacher(username=self.teacher_username,
+                                           password=self.teacher_password,
+                                           facility=self.facility)
+
+    def test_teacher_cant_edit_facilities(self):
+        facility_to_edit = self.create_facility(name="edit me")
+
+        self.browser_login_teacher(username=self.teacher_username,
+                                   password=self.teacher_password,
+                                   facility_name=self.facility.name)
+
+        # subtest for making sure they don't see the create facility button
+        self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": facility_to_edit.id}))
+        elem = self.browser.find_element_by_css_selector('a.edit-facility')
+        self.assertEquals(elem.value_of_css_property("display"), "none", "edit-facility is still displayed!")
+
+        # TODO(aron): move these client test cases to their own test class
+        # subtest for making sure they can't actually load the create facility page
+        # use the django client since it's faster
+        self.client.login_teacher(data={"username": self.teacher_username,
+                                        "password": self.teacher_password},
+                                  facility=self.facility)
+        resp = self.client.get(self.reverse("facility_edit", kwargs={"id": facility_to_edit.id}))
+        self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
+
+    def test_teacher_cant_create_facilities(self):
+        self.browser_login_teacher(username=self.teacher_username,
+                                   password=self.teacher_password,
+                                   facility_name=self.facility.name)
+
+        # subtest for making sure they don't see the create facility button
+        self.browse_to(self.reverse("zone_management", kwargs={"zone_id": None}))
+        elem = self.browser.find_element_by_css_selector('a.create-facility')
+        self.assertEquals(elem.value_of_css_property("display"), "none", "delete-facility is still displayed!")
+
+        # TODO(aron): move these client test cases to their own test class
+        # subtest for making sure they can't actually load the create facility page
+        # use the django client since it's faster
+        self.client.login_teacher(data={"username": self.teacher_username,
+                                        "password": self.teacher_password},
+                                  facility=self.facility)
+        resp = self.client.get(self.reverse("add_facility", kwargs={"id": "new", "zone_id": None}))
+        self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
+
+    def test_teacher_cant_create_students(self):
+        self.browser_login_teacher(username=self.teacher_username,
+                                   password=self.teacher_password,
+                                   facility_name=self.facility.name)
+
+        # subtest for making sure they don't see the create student button
+        self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": self.facility.id}))
+        elem = self.browser.find_element_by_css_selector('a.create-student')
+        self.assertEquals(elem.value_of_css_property("display"), "none", "create-student is still displayed!")
+
+        # TODO(aron): move these client test cases to their own test class
+        # subtest for making sure they can't actually load the create facility page
+        # use the django client since it's faster
+        self.client.login_teacher(data={"username": self.teacher_username,
+                                        "password": self.teacher_password},
+                                  facility=self.facility)
+        resp = self.client.get(self.reverse("add_facility_student"))
+        self.assertEqual(resp.status_code, 403, "Teacher was still authorized to create students; status code is %s" % resp.status_code)
+
+    def test_teacher_can_edit_students(self):
+        self.browser_login_teacher(username=self.teacher_username,
+                                   password=self.teacher_password,
+                                   facility_name=self.facility.name)
+
+        # NOTE: Hi all, we disabled this test since we want nalanda
+        # teachers to still edit students, mainly so they can reset
+        # the password.
+
+        # # subtest for making sure they don't see the edit student button
+        self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": self.facility.id}))
+        student_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.student.id)
+
+        # # make sure we render the link
+        student_row.find_element_by_css_selector("a.edit-student")
+
+        # TODO(aron): move these client test cases to their own test class
+        # subtest for making sure they can't actually load the create facility page
+        # use the django client since it's faster
+        self.client.login_teacher(data={"username": self.teacher_username,
+                                        "password": self.teacher_password},
+                                  facility=self.facility)
+        resp = self.client.get(self.reverse("edit_facility_user", kwargs={"facility_user_id": self.student.id}))
+        self.assertEqual(resp.status_code, 200, "Teacher was not authorized to edit students; status code is %s" % resp.status_code)
+
+    def test_teacher_cant_delete_students(self):
+        self.browser_login_teacher(username=self.teacher_username,
+                                   password=self.teacher_password,
+                                   facility_name=self.facility.name)
+
+        # subtest for making sure they don't see the delete student button
+        self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": self.facility.id}))
+
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_css_selector("div.delete-student")
 
 
 class CSVExportTestSetup(FacilityMixins,

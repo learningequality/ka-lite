@@ -66,7 +66,7 @@ class PlaylistTests(FacilityMixins, KALiteTestCase):
 
 class PlaylistAPITests(CreateAdminMixin, BaseTest):
 
-    test_playlist_id = 'g3_p1'
+    test_playlist_id = 'g4_u401_p1'
 
     def _playlist_url(self, playlist_id=None):
         '''
@@ -162,7 +162,7 @@ class PlaylistAPITests(CreateAdminMixin, BaseTest):
                 self.assertTrue(isinstance(val, attrtype), errmsgtemplate % (val, attribute, entry, attrtype, type(val)))
 
     def test_teacher_get_groups_only_belonging_to_that_facility(self):
-        
+
         self.facility = self.create_facility()
         self.facility2 = self.create_facility(name="facility 2")
         self.group = self.create_group(name='group1', facility=self.facility)

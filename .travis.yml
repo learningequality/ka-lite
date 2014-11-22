@@ -10,9 +10,10 @@ before_install:
 - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile
   --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
 install:
-- npm install
-- npm install -g grunt-cli
+- pushd $TRAVIS_BUILD_DIR; npm install; popd
+- pushd $TRAVIS_BUILD_DIR; npm install -g grunt-cli; popd
 script:
+- cd $TRAVIS_BUILD_DIR
 - python python-packages/fle_utils/tests.py
 - python kalite/manage.py syncdb --migrate --noinput --traceback
 - python kalite/manage.py test --traceback -v 2

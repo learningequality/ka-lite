@@ -359,15 +359,14 @@ class PlaylistProgressTest(FacilityMixins,
 
         # Confirm high level progress appears
         progress_bar = self.browser_wait_for_element(css_selector='.progress-bar')
-        progress_bar_success = self.browser_wait_for_element(css_selector='.progress-bar-success')
-        self.assertTrue(progress_bar_success, "Playlist progress rendering incorrectly.")
+        # progress_bar_success = self.browser_wait_for_element(css_selector='.progress-bar-success')
         self.assertTrue(progress_bar, "Playlist progress rendering incorrectly.")
 
         # Trigger API call
         self.browser.find_elements_by_class_name('toggle-details')[0].click()
 
         # Confirm lower-level progress appears
-        playlist_details = self.browser_wait_for_element(css_selector='.progress-indicator-sm')
+        playlist_details = self.browser_wait_for_element(css_selector='.progress-block')
         self.assertTrue(playlist_details, "Didn't load details")
 
 
@@ -389,12 +388,12 @@ class SpendingReportTests(FacilityMixins,
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('spending_report_view'))
         points_remaining = self.browser.find_element_by_xpath("//tbody/tr/td[2]")
-        self.assertEqual(points_remaining.text, '-10', "Remaining points incorrect")
+        self.assertEqual(points_remaining.text, '-1000', "Remaining points incorrect; remainings points are actually %s" % points_remaining.text)
 
     def test_spending_report_detail_displays(self):
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('spending_report_detail_view', kwargs={"user_id": self.student.id}))
         item_title = self.browser.find_element_by_xpath("//tbody/tr/td[2]")
-        self.assertEqual(item_title.text, 'Coloured Pencil', "Item title incorrect")
+        self.assertEqual(item_title.text, 'Alpha Chisel Marker', "Item title incorrect; item is actually %s" % item_title.text)
         item_cost = self.browser.find_element_by_xpath("//tbody/tr/td[4]")
-        self.assertEqual(item_cost.text, '10', "Item cost incorrect")
+        self.assertEqual(item_cost.text, '1000', "Item cost incorrect; item is actually %s" % item_cost.text)
