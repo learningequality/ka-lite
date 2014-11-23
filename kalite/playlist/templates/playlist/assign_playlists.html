@@ -19,7 +19,7 @@
   </script>
 
   <script type="text/html" id="playlist-template">
-    <td playlist-id="<%= id %>"> Unit <%= unit %>: <%= tag %>: <%= title %> <table class="playlist-groups"></table></td>
+    <td playlist-id="<%= id %>"> <%= tag %>: Unit <%= unit %>: <%= title %> <table class="playlist-groups"></table></td>
   </script>
   <script type="text/html" id="playlist-group-template">
     <td playlist-group-id="<%= id%>"> <%= name %></td>
@@ -30,8 +30,8 @@
   <script type="text/javascript" src="{% static 'js/playlist/assign_playlists.js' %}"></script>
 
   <script type="text/javascript">
-   var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}"
-   var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}"
+   var ALL_GROUPS_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+   var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}";
   </script>
 {% endblock headjs %}
 

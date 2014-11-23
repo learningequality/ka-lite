@@ -6,6 +6,11 @@ Here, these are focused on:
 * topic tree views (search, knowledge map)
 """
 import json
+import math
+import os
+import re
+import os
+import datetime
 
 from annoying.functions import get_object_or_None
 from django.conf import settings
@@ -284,18 +289,23 @@ def exercise(request, exercise_id):
 
             if ds["distributed"].turn_off_points_for_exercises:
                 exercise["basepoints"] = 0
-            elif ds["distributed"].turn_off_points_for_noncurrent_unit and exercise["exercise_id"] not in current_unit_exercises:
-                exercise["basepoints"] = 0
-            else:
-                # TODO-BLOCKER(rtibbles): Revisit this, pending determination of quiz in every playlist.
-                exercise["basepoints"] = settings.UNIT_POINTS / (
-                    len(current_unit_exercises)*(ds["distributed"].streak_correct_needed +
-                        ds["distributed"].fixed_block_exercises +
-                        ds["distributed"].quiz_repeats))
-    if exercise:
-        return JsonResponse(exercise)
-    else:
-        return JsonResponseMessageError("Exercise with id %(exercise_id)s not found" % {"exercise_id": exercise_id}, status=404)
+            elif ds["distributed"].turn_off_points_for_noncurrent_unit:
+                # No points if it's not in the current unit
+                if not current_unit_exercises or exercise["exercise_id"] not in current_unit_exercises:
+                    exercise["basepoints"] = 0
+                # Otherwise, give the appropriate fraction of UNIT_POINTS to this question
+                else:
+                    # TODO-BLOCKER(rtibbles): Revisit this if we add quizzes back in at some point
+                    # (or, we could just dynamically check for quizzes, and factor them in)
+                    questions_per_exercise = ds["distributed"].streak_correct_needed \
+                                           + ds["distributed"].fixed_block_exercises #\
+                                           # + ds["distributed"].quiz_repeats
+                    total_question_count = len(current_unit_exercises) * questions_per_exercise
+                    uncorrected_basepoints = settings.UNIT_POINTS / float(total_question_count)
+                    # pre-correct for the adjustments to be made by calculate_points_per_question
+                    exercise["basepoints"] = math.ceil(uncorrected_basepoints / 10.0 * settings.STREAK_CORRECT_NEEDED)
+
+    return JsonResponse(exercise)
 
 
 @api_handle_error_with_json

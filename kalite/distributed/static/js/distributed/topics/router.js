@@ -12,6 +12,23 @@ ChannelRouter = Backbone.Router.extend({
         this.navigate(this.default_channel + "/", {trigger: true, replace: true});
     },
 
+    navigate_channel: function(channel, splat) {
+        if (this.channel!==channel) {
+            this.control_view = new SidebarView({
+                channel: channel,
+                entity_key: "children",
+                entity_collection: TopicCollection
+            });
+            this.channel = channel;
+        }
+        splat = splat || "/";
+        if (splat.indexOf("/", splat.length - 1)==-1) {
+            splat += "/";
+            this.navigate(Backbone.history.getFragment() + "/", {replace: true});
+        }
+        this.control_view.navigate_paths(splat.split("/"));
+    },
+
     add_slug: function(slug) {
         this.navigate(Backbone.history.getFragment() + slug + "/", {trigger: true});
     },

@@ -2,7 +2,6 @@ import datetime
 
 from django.db import models
 from django.db.models import Sum
-from django.utils.translation import ugettext_lazy as _
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 
@@ -20,28 +19,6 @@ from django.conf import settings; logging = settings.LOG
 
 from .data.items import STORE_ITEMS
 
-# Create your models here.
-
-# class StoreItem(DeferredCountSyncedModel):
-#     """
-#     Model to track items available for student purchase.
-#     """
-
-#     # TODO-BLOCKER(rtibbles): Update this to "0.13.0" (or whatever the release version number is at the time this goes upstream)
-
-#     minversion = "0.12.0"
-
-#     cost = models.IntegerField(default=0)
-#     returnable = models.BooleanField(default=False) # can this item be returned to the store for a refund?
-#     title = models.CharField(max_length=100)
-#     description = models.TextField(blank=True, verbose_name=_("Description"))
-#     thumbnail = models.TextField(blank=True) # data URI for image of item
-#     # Fields to map onto arbitrary resources like avatars, etc.
-#     resource_id = models.CharField(max_length=100, blank=True)
-#     resource_type = models.CharField(max_length=100, blank=True)
-
-#     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
-#         pass
 
 class StoreItem():
 
@@ -76,7 +53,7 @@ class StoreTransactionLog(DeferredCountSyncedModel):
 
     # TODO-BLOCKER(rtibbles): Update this to "0.13.0" (or whatever the release version number is at the time this goes upstream)
 
-    minversion = "0.12.0"
+    minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, db_index=True)
     value = models.IntegerField(default=0)
@@ -125,7 +102,10 @@ def handle_exam_unset(sender, **kwargs):
             ds = load_dynamic_settings(user=facility_user)
             if ds["student_testing"].turn_on_points_for_practice_exams:
                 transaction_log, created = StoreTransactionLog.objects.get_or_create(user=testlog.user, context_id=unit_id, context_type="output_condition", item="gift_card")
-                transaction_log.value = int(round(settings.UNIT_POINTS*float(testlog.total_correct)/testlog.total_number))
+                try:
+                    transaction_log.value = int(round(settings.UNIT_POINTS * float(testlog.total_correct)/testlog.total_number))
+                except ZeroDivisionError:  # one of the students just hasn't started answering a test when we turn it off
+                    continue
                 transaction_log.save()
 
 

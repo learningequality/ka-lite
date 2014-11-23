@@ -3,19 +3,17 @@
 import urlparse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from securesync.devices.models import Zone
+from securesync.devices.views import *  # ARGH! TODO(aron): figure out what things are imported here, and import them specifically
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.db import models
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 from .decorators import facility_required, facility_from_request
@@ -23,20 +21,21 @@ from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import set_query_params
+from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
-from student_testing.utils import set_exam_mode_off
-
-
 from kalite.shared.decorators import require_authorized_admin
-from securesync.devices.models import Zone
-from securesync.devices.views import *
-
+from kalite.student_testing.utils import set_exam_mode_off
 
 
 @require_authorized_admin
 @render_to("facility/facility.html")
-def facility_edit(request, id=None, zone_id=None):
+@dynamic_settings
+def facility_edit(request, ds, id=None, zone_id=None):
+
+    if request.is_teacher and not ds["facility"].teacher_can_edit_facilities:
+        return HttpResponseForbidden()
+
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
     if facil:
         zone = facil.get_zone()
@@ -76,12 +75,16 @@ def add_facility_teacher(request):
 
 
 @require_authorized_admin
-def add_facility_student(request):
+@dynamic_settings
+def add_facility_student(request, ds):
     """
     Admins and coaches can add students
     If central, must be an org admin
     If distributed, must be superuser or a coach
     """
+    if request.is_teacher and not ds["facility"].teacher_can_create_students:
+        return HttpResponseForbidden()
+
     title = _("Add a new student")
     return _facility_user(request, new_user=True, title=title)
 
@@ -104,7 +107,8 @@ def facility_user_signup(request):
 
 
 @require_authorized_admin
-def edit_facility_user(request, facility_user_id):
+@dynamic_settings
+def edit_facility_user(request, ds, facility_user_id):
     """
     If users have permission to add a user, they also can edit the user. Additionally,
     a user may edit his/her own information, like in the case of a student.
@@ -156,7 +160,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
                     return HttpResponseRedirect(next)
 
             # New user created by admin
-            elif request.is_admin:
+            elif request.is_admin or request.is_django_user:
                 messages.success(request, _("You successfully created user '%(username)s'") % {"username": form.instance.get_name()})
                 return HttpResponseRedirect(next)
 

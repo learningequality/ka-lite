@@ -6,8 +6,6 @@ window.ContentAreaView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
-
         this.model = new Backbone.Model();
 
         this.render();
@@ -57,14 +55,16 @@ window.SidebarView = BaseView.extend({
     template: HB.template("topics/sidebar"),
 
     events: {
-        "click .sidebar-tab": "toggle_sidebar"
+        "click .sidebar-tab": "toggle_sidebar",
+        "click .fade": "check_external_click"
     },
 
     initialize: function(options) {
 
         var self = this;
 
-        _.bindAll(this);
+        this.entity_key = options.entity_key;
+        this.entity_collection = options.entity_collection;
 
         this.channel = options.channel;
 
@@ -77,7 +77,6 @@ window.SidebarView = BaseView.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
         this.listenTo(this.state_model, "change:current_level", this.resize_sidebar);
-        this.listenToDOM(this.$(".fade"), "click", self.check_external_click);
 
     },
 
@@ -86,12 +85,7 @@ window.SidebarView = BaseView.extend({
 
         this.$el.html(this.template());
 
-        this.sidebar = this.$('').bigSlide({
-            menu: this.$(".sidebar-panel"),
-            // push: "#page-container, #footer, .sidebar-tab",
-            // push: ".sidebar-tab",
-            menuWidth: "220px"
-        });
+        this.sidebar = this.$(".sidebar-panel");
 
         _.defer(function() {
             self.show_sidebar();
@@ -100,8 +94,8 @@ window.SidebarView = BaseView.extend({
         this.topic_node_view = new TopicContainerOuterView({
             channel: this.channel,
             model: this.model,
-            entity_key: this.options.entity_key,
-            entity_collection: this.options.entity_collection,
+            entity_key: this.entity_key,
+            entity_collection: this.entity_collection,
             state_model: this.state_model
         });
         this.listenTo(this.topic_node_view, "hideSidebar", this.hide_sidebar);
@@ -112,16 +106,17 @@ window.SidebarView = BaseView.extend({
         return this;
     },
 
-    resize_sidebar: function() {
+    resize_sidebar: _.debounce(function() {
         var current_level = this.state_model.get("current_level");
         // TODO(jamalex): have this calculated dynamically
         var column_width = 200; // this.$(".topic-container-inner").width();
         var last_column_width = 400;
         // hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. 
-        var new_width = (current_level-1) * column_width + last_column_width + 10;
-        this.$(".sidebar-panel").width(new_width);
-        this.$(".sidebar-tab").css({left: new_width});
+        this.width = (current_level-1) * column_width + last_column_width + 10;
+        this.$(".sidebar-panel").width(this.width);
+        this.$(".sidebar-tab").css({left: this.width});
+        this.update_sidebar_visibility();
 
         // TODO(dylanjbarth): Resize sidebar to not cover top nav
         // var body = document.body, html = document.documentElement;
@@ -129,7 +124,7 @@ window.SidebarView = BaseView.extend({
         //                html.clientHeight, html.scrollHeight, html.offsetHeight)
 
         // this.$(".sidebar-panel").height(height - 55); // minus height of top nav
-    },
+    }, 100),
 
     check_external_click: function(ev) {
         if (this.state_model.get("open")) {
@@ -150,16 +145,12 @@ window.SidebarView = BaseView.extend({
 
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
-            this.sidebar.show();
-            this.sidebar.open();
-            this.resize_sidebar();
-            this.$(".sidebar-tab").html("&lt");
+            this.sidebar.css({left: 0});
+            this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width()}).html("&lt");
             this.$(".fade").show();
         } else {
-            this.sidebar.hide();
-            this.$(".sidebar-tab").css({left: 0});
-            // this.sidebar.close();
-            this.$(".sidebar-tab").html("&gt");
+            this.sidebar.css({left: - this.width});
+            this.$(".sidebar-tab").css({left: 0}).html("&gt");
             this.$(".fade").hide();
         }
     },
@@ -188,21 +179,21 @@ window.TopicContainerInnerView = BaseView.extend({
         'click .back-to-parent' : 'backToParent'
     },
 
-    initialize: function() {
+    initialize: function(options) {
 
         var self = this;
 
-        _.bindAll(this);
+        this.state_model = options.state_model;
 
-        this.state_model = this.options.state_model;
+        this.entity_key = options.entity_key;
 
-        this.entity_key = this.options.entity_key;
+        this.entity_collection = options.entity_collection;
 
-        this.entity_collection = this.options.entity_collection;
+        this.level = options.level;
 
         this._entry_views = [];
 
-        this.has_parent = this.options.has_parent;
+        this.has_parent = options.has_parent;
 
         if (!(this.model.get(this.entity_key) instanceof this.entity_collection)) {
 
@@ -215,7 +206,7 @@ window.TopicContainerInnerView = BaseView.extend({
         this.add_all_entries();
 
         this.listenTo(this.state_model, "change:current_level", this.update_level_color);
-        this.state_model.set("current_level", this.options.level);
+        this.state_model.set("current_level", options.level);
 
     },
 
@@ -234,7 +225,7 @@ window.TopicContainerInnerView = BaseView.extend({
 
         // resize the scrollable part of sidebar to the page height
         $(window).resize(_.throttle(function() {
-            var height = $(window).height() - self.$(".slimScrollDiv").position().top;
+            var height = $(window).height();
             self.$(".slimScrollDiv, .sidebar").height(height);
         }, 200));
         $(window).resize();
@@ -249,7 +240,7 @@ window.TopicContainerInnerView = BaseView.extend({
     },
 
     update_level_color: function() {
-        var opacity = (this.options.level+1) / (this.state_model.get("current_level")+1);
+        var opacity = (this.level+1) / (this.state_model.get("current_level")+1);
         this.$el.css("opacity", opacity);
     },
 
@@ -266,7 +257,7 @@ window.TopicContainerInnerView = BaseView.extend({
 
     add_all_entries: function() {
         this.render();
-        this.model.get(this.entity_key).map(this.add_new_entry);
+        this.model.get(this.entity_key).forEach(this.add_new_entry, this);
     },
 
     show: function() {
@@ -380,8 +371,6 @@ window.SidebarEntryView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
-
         this.listenTo(this.model, "change:active", this.toggle_active);
 
     },
@@ -412,9 +401,12 @@ window.TopicContainerOuterView = BaseView.extend({
 
     initialize: function(options) {
 
-        _.bindAll(this);
+        this.render = _.bind(this.render, this);
 
-        this.state_model = this.options.state_model;
+        this.state_model = options.state_model;
+
+        this.entity_key = options.entity_key;
+        this.entity_collection = options.entity_collection;
 
         this.inner_views = [];
         this.model =  this.model || new TopicNode({channel: options.channel});
@@ -449,8 +441,8 @@ window.TopicContainerOuterView = BaseView.extend({
         var data = {
             model: node,
             has_parent: this.inner_views.length >= 1,
-            entity_key: this.options.entity_key,
-            entity_collection: this.options.entity_collection,
+            entity_key: this.entity_key,
+            entity_collection: this.entity_collection,
             state_model: this.state_model,
             level: this.state_model.get("current_level")
         };
