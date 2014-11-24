@@ -148,7 +148,7 @@ window.VideoPlayerModel = Backbone.Model.extend({
     _updatePointsEstimate: function() {
 
         var duration = this.getDuration();
-        if (duration === 0) return;
+        if (duration <= 1) return;
 
         var percentTotal = this.get("total_seconds_watched") / duration;
         if (percentTotal > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {

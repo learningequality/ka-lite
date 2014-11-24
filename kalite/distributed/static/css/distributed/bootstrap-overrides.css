@@ -356,7 +356,7 @@ form .input-group {
     font-weight: 300;
 }
 .panel-heading .borderwrapper {
-    border-bottom: 1px solid rgba(255,255,255,0.5);
+   /* border-bottom: 1px solid rgba(255,255,255,0.5);*/
 }
 .panel-default .content-description {
     color: white;

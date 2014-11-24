@@ -10,6 +10,7 @@
 }
 
 [class^="icon-"], [class*=" icon-"] {
+	margin-top: 5px;
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
