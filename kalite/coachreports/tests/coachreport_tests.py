@@ -84,12 +84,33 @@ class TestScatterReport(FacilityMixins,
         self.admin = self.create_admin(**self.admin_data)
         self.facility = self.create_facility()
 
-    def test_user_interface(self):
+    def test_data_chart(self):
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('scatter_view'))
         self.student1 = self.create_student(first_name="I", last_name="tested", username="yay", facility=self.facility)
         self.student2 = self.create_student(first_name="I", last_name="didn't", username="boo", facility=self.facility)
-        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]')
+        # check if all facility is selected
+        facility_select = self.browser.find_element_by_id("facility-select")
+        facility_options = facility_select.find_elements_by_tag_name('option')
+        facility_option = facility_options[0]
+        self.assertEqual("All", facility_option.text)
+        # check if the xaxis is mastery and yaxis is effort
+        xaxis_select = self.browser.find_element_by_id("xaxis")
+        yaxis_select = self.browser.find_element_by_id("yaxis")
+
+        xaxis_options = xaxis_select.find_elements_by_tag_name("option")
+        xaxis_option = xaxis_options[1]
+        self.assertEqual("Mastery", xaxis_option.text)
+
+        yaxis_options = yaxis_select.find_elements_by_tag_name("option")
+        yaxis_option = yaxis_options[2]
+        self.assertEqual("Effort", yaxis_option.text)
+
+        self.browser.find_elements_by_class_name("dynatree-checkbox")[1].click()
+        self.browser.find_element_by_xpath('//button[@id="content_tree_toggle"]').click()
+        facility_user = self.browser.find_elements_by_class_name("dot")
+        for user_option in facility_user:
+            user_option.click()
 
 
 class CoachNavigationTest(FacilityMixins,
