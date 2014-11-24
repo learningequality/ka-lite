@@ -55,6 +55,8 @@ function d3_scatter(data, options, appendtohtml) {
   // Click anywhere on SVG object to hide tooltip
   svg.on("click", function() {
     tooltip.style("visibility", "hidden");
+    $('.tooltip').hide()
+
   });
   
   // Create invisible background rectangle to catch any clicks that are not
@@ -69,42 +71,42 @@ function d3_scatter(data, options, appendtohtml) {
 
   // Create four different rectangles to highlight and label the different quadrants of the graph.
   // Each rectangle is a group with a coloured (fill) rectangle, and a text label.
-  var struggling = svg.append("g")
+  var struggling = svg.append("g");
   struggling.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", 0)
     .attr("y", 0)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#FF0000")
+    .attr("fill", "#FF0000");
   struggling.append("text")
     .attr("class", "quadrant-label")
     .attr("x", width/4)
     .attr("y", height/4)
     .text(gettext("Struggling"));
 
-  var bored = svg.append("g")
+  var bored = svg.append("g");
   bored.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", width/2)
     .attr("y", height/2)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#000000")
+    .attr("fill", "#000000");
   bored.append("text")
     .attr("class", "quadrant-label")
     .attr("x", 3*width/4)
     .attr("y", 3*height/4)
     .text(gettext("Bored"));
 
-  var disengaged = svg.append("g")
+  var disengaged = svg.append("g");
   disengaged.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", 0)
     .attr("y", height/2)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#FFFF00")
+    .attr("fill", "#FFFF00");
   disengaged.append("text")
     .attr("class", "quadrant-label")
     .attr("x", width/4)
@@ -172,7 +174,6 @@ function d3_scatter(data, options, appendtohtml) {
         d3.event.stopPropagation();
         // Show tooltip if it is currently hidden
         if(tooltip.style("visibility")=="hidden") {
-          console.log("show tooltip")
           tooltip.html(d["tooltip"])
             .style("visibility", "visible")
             .style("left", (d3.event.pageX) + "px")
@@ -181,9 +182,9 @@ function d3_scatter(data, options, appendtohtml) {
           d3.select(this).attr("tooltip", true);
         } else {
           // Hide tooltip if already open for this item
-          console.log("hide")
           if(d3.select(this).attr("tooltip")=="true") {
             tooltip.style("visibility", "hidden");
+            $('.tooltip').hide()
           } else {
             // Otherwise unflag other point as tooltip
             svg.selectAll(".dot").attr("tooltip", false);
