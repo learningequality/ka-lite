@@ -55,7 +55,7 @@ function d3_scatter(data, options, appendtohtml) {
   // Click anywhere on SVG object to hide tooltip
   svg.on("click", function() {
     tooltip.style("visibility", "hidden");
-    $('.tooltip').hide()
+    $('.tooltip').hide();
 
   });
   
@@ -113,14 +113,14 @@ function d3_scatter(data, options, appendtohtml) {
     .attr("y", 3*height/4)
     .text(gettext("Disengaged"));
 
-  var ontarget = svg.append("g")
+  var ontarget = svg.append("g");
   ontarget.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", width/2)
     .attr("y", 0)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#00FF00")
+    .attr("fill", "#00FF00");
   ontarget.append("text")
     .attr("class", "quadrant-label")
     .attr("x", 3*width/4)
@@ -184,7 +184,7 @@ function d3_scatter(data, options, appendtohtml) {
           // Hide tooltip if already open for this item
           if(d3.select(this).attr("tooltip")=="true") {
             tooltip.style("visibility", "hidden");
-            $('.tooltip').hide()
+            $('.tooltip').hide();
           } else {
             // Otherwise unflag other point as tooltip
             svg.selectAll(".dot").attr("tooltip", false);
