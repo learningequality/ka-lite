@@ -8,6 +8,7 @@ Here, these are focused on:
 import cgi
 import copy
 import json
+import math
 import os
 import re
 import os
@@ -28,6 +29,10 @@ from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonRes
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data
+from kalite.dynamic_assets.decorators import dynamic_settings
+
+from kalite.student_testing.utils import get_current_unit_settings_value
+from kalite.playlist.models import VanillaPlaylist as Playlist
 
 
 class student_log_api(object):
@@ -67,6 +72,8 @@ def save_video_log(request):
     data = form.data
     user = request.session["facility_user"]
     try:
+        complete = data.get("complete", False)
+        completion_timestamp = data.get("completion_timestamp", None)
         videolog = VideoLog.update_video_log(
             facility_user=user,
             video_id=data["video_id"],
@@ -74,6 +81,8 @@ def save_video_log(request):
             total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
             points=data["points"],
             language=data.get("language") or request.language,
+            complete=complete,
+            completion_timestamp=completion_timestamp,
         )
 
     except ValidationError as e:
@@ -236,11 +245,51 @@ def get_video_logs(request):
 def flat_topic_tree(request, lang_code):
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
 
+UNIT_EXERCISES = {}
 
+@dynamic_settings
 @api_handle_error_with_json
 @backend_cache_page
-def exercise(request, exercise_id):
-    return JsonResponse(get_exercise_data(request, exercise_id))
+def exercise(request, ds, exercise_id):
+    exercise = get_exercise_data(request, exercise_id)
+    if "facility_user" in request.session:
+        facility_id = request.session["facility_user"].facility.id
+        current_unit = get_current_unit_settings_value(facility_id)
+        student_grade = ds["ab_testing"].student_grade_level
+        if student_grade:
+            if not UNIT_EXERCISES.has_key(current_unit):
+                for playlist in Playlist.all():
+                    if not UNIT_EXERCISES.has_key(playlist.unit):
+                        UNIT_EXERCISES[playlist.unit] = {}
+                    # Assumes gx_pyy id for playlist.
+                    grade = int(playlist.id[1])
+                    if not UNIT_EXERCISES[playlist.unit].has_key(grade):
+                        UNIT_EXERCISES[playlist.unit][grade] = []
+                    for entry in playlist.entries:
+                        if entry["entity_kind"] == "Exercise":
+                            UNIT_EXERCISES[playlist.unit][grade].append(entry["entity_id"])
+
+            current_unit_exercises = UNIT_EXERCISES.get(current_unit, {}).get(student_grade, [])
+
+            if ds["distributed"].turn_off_points_for_exercises:
+                exercise["basepoints"] = 0
+            elif ds["distributed"].turn_off_points_for_noncurrent_unit:
+                # No points if it's not in the current unit
+                if not current_unit_exercises or exercise["exercise_id"] not in current_unit_exercises:
+                    exercise["basepoints"] = 0
+                # Otherwise, give the appropriate fraction of UNIT_POINTS to this question
+                else:
+                    # TODO-BLOCKER(rtibbles): Revisit this if we add quizzes back in at some point
+                    # (or, we could just dynamically check for quizzes, and factor them in)
+                    questions_per_exercise = ds["distributed"].streak_correct_needed \
+                                           + ds["distributed"].fixed_block_exercises #\
+                                           # + ds["distributed"].quiz_repeats
+                    total_question_count = len(current_unit_exercises) * questions_per_exercise
+                    uncorrected_basepoints = settings.UNIT_POINTS / float(total_question_count)
+                    # pre-correct for the adjustments to be made by calculate_points_per_question
+                    exercise["basepoints"] = math.ceil(uncorrected_basepoints / 10.0 * settings.STREAK_CORRECT_NEEDED)
+
+    return JsonResponse(exercise)
 
 
 @api_handle_error_with_json

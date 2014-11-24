@@ -78,8 +78,9 @@ def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
         root_node = get_topic_tree(force=force)
-        sorted_items = sorted(root_node["knowledge_map"]["nodes"].items(), key=lambda k: (k[1]["v_position"], k[1]["h_position"]))
-        KNOWLEDGEMAP_TOPICS =  [k[0] for k in sorted_items]
+        math_node = [child for child in root_node["children"] if child.get("title", "") == "Math"][0]
+        all_nodes = [child for subnode in math_node["children"] for child in subnode["children"] if "Exercise" in child["contains"]]
+        KNOWLEDGEMAP_TOPICS = sorted(all_nodes, key=lambda k: (k.get("v_position", 0), k.get("h_position", 0)))
     return KNOWLEDGEMAP_TOPICS
 
 
@@ -472,8 +473,8 @@ def get_video_data(request, video_id=None):
     video = videos_dict.get(video_id)
 
     # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
-    from kalite.updates import stamp_availability_on_video
-    video = stamp_availability_on_video(video)
+    # from kalite.updates import stamp_availability_on_video
+    # video = stamp_availability_on_video(video)
 
     if not video["available"]:
         if request.is_admin:
@@ -521,3 +522,11 @@ def video_dict_by_video_id(flat_topic_tree=None):
             video_title_dict[video_key] = video_node
 
     return video_title_dict
+
+def convert_leaf_url_to_id(leaf_url):
+    """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""
+    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1] 
+    assert(len(leaf_id) == 1), "Something in leaf ID is malformed: %s" % leaf_url
+    return leaf_id[0]
+
+

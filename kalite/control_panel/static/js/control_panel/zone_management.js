@@ -1,5 +1,6 @@
 $(function () {
-    $("#force-sync").click(function(){
+    $("#force-sync").click(function(ev){
+        ev.preventDefault();
         force_sync();
     });
 

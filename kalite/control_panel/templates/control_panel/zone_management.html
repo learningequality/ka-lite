@@ -46,6 +46,7 @@
                     <a class="green_button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
+            <a href="{% url 'data_export' %}{% if zone_id != "None" %}?zone_id={{ zone_id }}{% endif %}" class="btn btn-success">{% trans "Export Data" %}</a>
 {% endblock buttons %}
 
 {% block control_panel_content %}
@@ -54,7 +55,7 @@
     <!-- Begin Facilities -->
     <div class="row">
         <div class="col-md-12">
-            <h2>{% trans "Facilities" %}&nbsp;<small><a href="{% url 'add_facility' zone_id=zone_id %}" title="{% trans 'Add a new facility' %}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "A facility is a physical location where students learn." %}</small></h2>
+          <h2>{% trans "Facilities" %}&nbsp;<small><a class="create-facility" href="{% url 'add_facility' zone_id=zone_id %}" title="{% trans 'Add a new facility' %}"><span class="glyphicon glyphicon-plus"></span></a></br>{% trans "A facility is a physical location where students learn." %}</small></h2>
 
         </div>
     </div>
@@ -133,7 +134,7 @@
                             <tr class="{% if not device.is_registered %}warning {% endif %}{% if device.is_demo_device %}active{% endif %}">
                                 <td>
                                     {% if device.num_times_synced != None %}<a href="{% url 'device_management' zone_id=zone_id device_id=id %}">{% endif %}
-                                        {{ device.name }}
+                                        {{ device.name|truncatechars:25 }}
                                     {% if device.is_demo_device %}[Demo data]{% endif %}
                                     {% if device.num_times_synced != None %}</a>{% endif %}
                                 </td>
@@ -164,9 +165,14 @@
                                 </td>
                                 <td>
                                     {% if device.is_own_device %}
-                                        <button id="force-sync" class="btn btn-primary registered-only">{% trans "Sync Now!" %}</button>
-                                        <a href="{% url 'update_software' %}" id="update-link" class="btn btn-primary registered-only"><button>{% trans "Update" %}</button></a>
-                                        <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
+
+                                        {% if device.is_registered %}
+                                            <button id="force-sync" class="btn btn-primary">{% trans "Sync Now!" %}</button>
+                                            <a href="{% url 'update_software' %}" id="update-link" class=" registered-only">{% trans "Update" %}</a>
+                                        {% else %}
+                                            <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register device" %}</a>
+                                        {% endif %}
+
                                         {% if clock_set %}
                                         /
                                         <a onclick="$('#clock_set').show()">set clock</a>
