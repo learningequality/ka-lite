@@ -517,14 +517,14 @@
 .play-pause:hover,
 .paused .play-pause:hover {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/play.png);
- background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/play.svg);
+ /*background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/play.svg);*/
  background-size: 67.5%;
  background-position: 40% 53%;
 }
 
 .playing .play-pause {
  background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/pause.png);
- background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/pause.svg);
+ /*background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/pause.svg);*/
  background-size: 57.6%;
  background-position: 50% 53%;
 }
