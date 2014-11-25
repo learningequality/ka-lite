@@ -65,8 +65,10 @@ window.SoftwareKeyboardView = Backbone.View.extend({
                 this.field.val(this.field.val() + key);
             }
         }
-
         this.field.trigger("keypress");
+
+        // on key pressed change the focus to check answer button.
+        this.$el.parent("#answercontent.info-box").find("#check-answer-button").focus();
 
         return false;
     },
