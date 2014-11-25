@@ -26,7 +26,6 @@
 {% endblock headjs %}
 
 {% block report_content %}
-    {{ block.super }}
     {% block axis_dropdown %}
         {% trans "X-Axis" %}:
         <select id="xaxis" name="xaxis">
@@ -45,5 +44,7 @@
         </select>
         
     {% endblock axis_dropdown %}
+    <br/>
+    {{ block.super }}
 {% endblock report_content %}
 

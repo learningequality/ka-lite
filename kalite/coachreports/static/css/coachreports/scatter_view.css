@@ -7,6 +7,8 @@
 }
 .tooltip {
     padding: 10px;
+    position: relative;
+    opacity: 100;
 }
 
 .username {

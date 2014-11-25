@@ -42,19 +42,21 @@ function d3_scatter(data, options, appendtohtml) {
       .attr("height", height + margin.top + margin.bottom)
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
+
   // Create tooltip object for displaying user specific information
   var tooltip = d3.select("body").append("div")
         .style("visibility", "hidden")
         .attr("id", "summary");
-  
+
   // Set x and y range
-  x.domain([0, 100]);
-  y.domain([0, 100]);
-  
+  x.domain(d3.extent(data, function(d) { return d[xCoordinate]; })).nice();
+  y.domain(d3.extent(data, function(d) { return d[yCoordinate]; })).nice();
+
   // Click anywhere on SVG object to hide tooltip
   svg.on("click", function() {
     tooltip.style("visibility", "hidden");
+    $('.tooltip').hide();
+
   });
   
   // Create invisible background rectangle to catch any clicks that are not
@@ -174,7 +176,7 @@ function d3_scatter(data, options, appendtohtml) {
         if(tooltip.style("visibility")=="hidden") {
           tooltip.html(d["tooltip"])
             .style("visibility", "visible")
-            .style("left", (d3.event.pageX) + "px")     
+            .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY - 28) + "px");
           // Mark this item as having the tooltip
           d3.select(this).attr("tooltip", true);
@@ -182,6 +184,7 @@ function d3_scatter(data, options, appendtohtml) {
           // Hide tooltip if already open for this item
           if(d3.select(this).attr("tooltip")=="true") {
             tooltip.style("visibility", "hidden");
+            $('.tooltip').hide();
           } else {
             // Otherwise unflag other point as tooltip
             svg.selectAll(".dot").attr("tooltip", false);
@@ -192,7 +195,7 @@ function d3_scatter(data, options, appendtohtml) {
               // Position tooltip based on data point
               // TODO: Intelligently position tooltip when near the edge
               // of the plot area to prevent overflow.
-              .style("left", (d3.event.pageX) + "px")     
+              .style("left", (d3.event.pageX) + "px")
               .style("top", (d3.event.pageY - 28) + "px");
           }
         }
