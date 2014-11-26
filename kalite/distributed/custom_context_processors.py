@@ -20,6 +20,7 @@ def custom(request):
         "is_central": False,
         "settings": settings,
         "VERSION": version.VERSION,
+        "SHORTVERSION": version.SHORTVERSION,
         "True": True,
         "False": False
     }
