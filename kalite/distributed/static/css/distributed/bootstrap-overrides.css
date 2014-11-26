@@ -261,7 +261,7 @@ form .input-group {
     font-weight: bold;
 }
 #suggested-action-image-link-homepage {
-    width: 350px;
+    width: 100%;
 }
 .topic-list {
     line-height: 35px;
