@@ -49,6 +49,7 @@ window.StoreWrapperView = Backbone.View.extend({
     make_purchase: function(item) {
         var points_remaining = statusModel.get("totalpoints");
         var cost = item.get("cost");
+        console.log(item);
 
         if (cost > points_remaining) {
             alert("Sorry, you don't have enough points to purchase that right now.");
@@ -56,7 +57,7 @@ window.StoreWrapperView = Backbone.View.extend({
         }
         else
         {
-            var check = confirm(gettext("Are you sure you want to purchase?"));
+            var check = confirm(gettext("Are you sure you want to purchase " + item.get("title") + " for " + item.get("cost") + " points?"));
             if (!check) {
                 return;
             }
