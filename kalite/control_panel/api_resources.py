@@ -165,6 +165,9 @@ class TestLogResource(ParentFacilityUserResource):
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
             bundle.data["is_teacher"] = user.is_teacher
+            attempt_logs = AttemptLog.objects.filter(user=user, context_id=bundle.data["test"], context_type="test")
+            bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
+            bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
             bundle.data.pop("user")
 
         return to_be_serialized
