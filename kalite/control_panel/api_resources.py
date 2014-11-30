@@ -128,6 +128,7 @@ class FacilityUserResource(ParentFacilityUserResource):
             user = self._facility_users.get(bundle.data["id"])
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
 
         return to_be_serialized
 
@@ -163,6 +164,7 @@ class TestLogResource(ParentFacilityUserResource):
             bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
             bundle.data.pop("user")
 
         return to_be_serialized
@@ -199,6 +201,7 @@ class AttemptLogResource(ParentFacilityUserResource):
             bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
             bundle.data.pop("user")
 
         return to_be_serialized
@@ -235,6 +238,7 @@ class ExerciseLogResource(ParentFacilityUserResource):
             bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
             attempt_logs = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"])
             bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
             bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
@@ -305,6 +309,7 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
             bundle.data["username"] = user.username
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
             item_id = bundle.data["item"].strip("/").split("/")[-1]
             bundle.data["item"] = item_id
             item = store_items.get(item_id)
