@@ -185,6 +185,9 @@ class ExerciseLog(DeferredCountSyncedModel):
     def get_points_for_user(user):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
+    def get_attempt_logs(self):
+        return AttemptLog.objects.filter(user=self.user, exercise_id=self.exercise_id, context_type__in=["playlist", "exercise"])
+
 
 class UserLogSummary(DeferredCountSyncedModel):
     """Like UserLogs, but summarized over a longer period of time.

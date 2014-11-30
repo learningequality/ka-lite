@@ -1,5 +1,6 @@
 <h2>
-    <span class="exercise-title-prefix">{{_ "Practicing" }}</span> <span class="exercise-title">{{ title }}</span>
+    <span class="exercise-title-prefix">{{#if test_id }}{{_ "Test" }}{{ else }}{{_ "Practicing" }}{{/if }}</span>
+    <span class="exercise-title">{{ title }}</span>
     {{#if description }}<br/><span class="practice-exercise-description">{{ description }}</span>{{/if }}
 </h2>
 

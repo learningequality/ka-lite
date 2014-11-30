@@ -11,5 +11,7 @@
     "order_of_operations", "prime_factorization", "square_roots"
   ],
     "is_practice": false,
+    "unit": 101,
+    "grade": 6,
     "show": true
 }
