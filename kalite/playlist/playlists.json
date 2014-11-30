@@ -6247,51 +6247,12 @@
         "entity_kind": "Exercise",
         "is_essential": false,
         "sort_order": 4
-      },
-      {
-        "entity_id": "/e/converting_fractions_to_decimals/",
-        "entity_kind": "Exercise",
-        "is_essential": false,
-        "sort_order": 5
       }
     ],
     "id": "g5_u500_p6",
     "show": true,
     "tag": "Grade 5",
     "title": "Playlist Optional Prerequisite: Decimals",
-    "unit": 100
-  },
-  {
-    "entries": [
-      {
-        "entity_id": "/e/perimeter_of_squares_and_rectangles/",
-        "entity_kind": "Exercise",
-        "is_essential": false,
-        "sort_order": 0
-      },
-      {
-        "entity_id": "/e/area_1/",
-        "entity_kind": "Exercise",
-        "is_essential": false,
-        "sort_order": 1
-      },
-      {
-        "entity_id": "/e/area_of_squares_and_rectangles/",
-        "entity_kind": "Exercise",
-        "is_essential": false,
-        "sort_order": 2
-      },
-      {
-        "entity_id": "/e/radius_diameter_and_circumference/",
-        "entity_kind": "Exercise",
-        "is_essential": false,
-        "sort_order": 3
-      }
-    ],
-    "id": "g5_u500_p7",
-    "show": true,
-    "tag": "Grade 5",
-    "title": "Playlist Optional Prerequisite: Area and Perimeter and Circles",
     "unit": 100
   },
   {
