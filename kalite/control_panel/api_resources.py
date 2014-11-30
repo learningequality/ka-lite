@@ -1,5 +1,6 @@
 from annoying.functions import get_object_or_None
 from datetime import datetime
+from django.db.models import Max, Min
 from django.http import HttpResponse
 from tastypie import fields
 from tastypie.exceptions import NotFound, BadRequest
@@ -234,6 +235,9 @@ class ExerciseLogResource(ParentFacilityUserResource):
             bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            attempt_logs = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"])
+            bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
+            bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
             bundle.data.pop("user")
 
         return to_be_serialized
