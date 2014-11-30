@@ -17,10 +17,13 @@ from store.models import StoreItem
 
 
 class FacilityResource(ModelResource):
+
     class Meta:
         queryset = Facility.objects.all()
         resource_name = 'facility'
         authorization = ObjectAdminAuthorization()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering facilities by zone
@@ -35,10 +38,13 @@ class FacilityResource(ModelResource):
         
 
 class FacilityGroupResource(ModelResource):
+
     class Meta:
         queryset = FacilityGroup.objects.all()
         resource_name = 'group'
         authorization = ObjectAdminAuthorization()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering groups by facility
@@ -209,6 +215,8 @@ class ExerciseLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['signed_version', 'counter', 'signature']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -239,6 +247,8 @@ class DeviceLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['signed_version', 'public_key', 'counter', 'signature']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def _get_device_logs(self, bundle):
         # requires at least one zone_id, which we pass as a list to zone_ids
@@ -272,6 +282,8 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['signed_version', 'counter', 'signature', 'deleted', 'reversible']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
