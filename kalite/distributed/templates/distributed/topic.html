@@ -41,7 +41,14 @@
     <link href="{% static "video-js/video-js.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
     <!-- <![endif]-->
-    <link href="{% static "css/distributed/sidebar.css" %}" rel="stylesheet" type="text/css">
+    <link id="sidebar-style" rel="stylesheet" type="text/css">
+    <script type="text/javascript">
+        if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+            document.getElementById("sidebar-style").setAttribute("href", '{% static "css/distributed/sidebar.css" %}');
+        }else{
+            document.getElementById("sidebar-style").setAttribute("href", '{% static "css/distributed/sidebar-for-tablet.css" %}');
+        }
+    </script>
     <link href="{% static "css/distributed/content.css" %}" rel="stylesheet" type="text/css">
 
     <link href="{% static "soundmanager/css/bar-ui.css" %}" rel="stylesheet" type="text/css">
