@@ -56,14 +56,22 @@ var PlaylistView = Backbone.View.extend({
         'dragover': 'allowDrop'
     },
 
-    render: function() {
+    render: function(value) {
+
         var playlist = this;
-        var dict = this.model.toJSON();
-        this.$el.html(this.template(dict));
-
-
-        this.renderGroups();
-
+        if ( (this.model.get('title').indexOf("Core") > -1) && value == "core") {
+            this.$el.html(this.template(dict));
+            this.renderGroups();
+        } else if ( (this.model.get('title').indexOf("Prerequisite") > -1) && value == "pre") {
+            var dict = this.model.toJSON();
+            this.$el.html(this.template(dict));
+            this.renderGroups();
+        }
+        else if ( (this.model.get('title').indexOf("Advanced") > -1) && value == "advanced") {
+            var dict = this.model.toJSON();
+            this.$el.html(this.template(dict));
+            this.renderGroups();
+        }
         return this;
     },
 
@@ -133,7 +141,9 @@ var AppView = Backbone.View.extend({
         this.listenTo(groups, 'add', this.addNewGroup);
         this.listenTo(groups, 'reset', this.addAllGroups);
 
-        this.listenTo(playlists, 'add', this.addNewPlaylist);
+        this.listenTo(playlists, 'add', this.addCorePlaylist);
+        this.listenTo(playlists, 'add', this.addPrePlaylist);
+        this.listenTo(playlists, 'add', this.addAdvancedPlaylist);
         this.listenTo(playlists, 'reset', this.addAllPlaylists);
 
         playlists.fetch();
@@ -149,13 +159,26 @@ var AppView = Backbone.View.extend({
         groups.each(this.addNewGroup);
     },
 
-    addNewPlaylist: function(playlist) {
+    addCorePlaylist: function(playlist) {
         var view = new PlaylistView({model: playlist});
-        $("#playlists").append(view.render().el);
+        $("#core-playlists").append(view.render("core").el);
+    },
+
+    addPrePlaylist: function(playlist) {
+        var view = new PlaylistView({model: playlist});
+        $("#pre-playlists").append(view.render("pre").el);
+    },
+
+    addAdvancedPlaylist: function(playlist) {
+        var view = new PlaylistView({model: playlist});
+        $("#advanced-playlists").append(view.render("advanced").el);
     },
 
     addAllPlaylists: function() {
-        playlists.each(this.addNewPlaylist);
+        playlists.each(this.addCorePlaylist);
+        playlists.each(this.addPrePlaylist);
+        playlists.each(this.addAdvancedPlaylist);
+
     }
 });
 
