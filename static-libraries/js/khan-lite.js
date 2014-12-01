@@ -297,3 +297,9 @@ $.ajaxSetup({
         }
     }
 });
+
+//check if it's running on tablet or desktop
+$(function() {
+    $("body").toggleClass("touch", Modernizr.touch);
+    $("body").toggleClass("no-touch", !Modernizr.touch);
+});
