@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
+from django.db.models.query_utils import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
@@ -383,15 +384,28 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     login_logs = UserLogSummary.objects.filter(user__in=users)
 
     # filter results
+    q1 = Q(start_datetime__gte=period_start)
+    q2 = Q(start_datetime__gte=period_start) & Q(end_datetime__gte=period_end)
+    q3 = Q(start_datetime__lt=period_start) & Q(end_datetime__gte=period_end)
+    q4 = Q(start_datetime__lt=period_start) & Q(end_datetime__gte=period_start)
+    q5 = Q(start_datetime__gte=period_end) & Q(end_datetime__gt=period_end)
+    q6 = Q(start_datetime__lt=period_start) & Q(end_datetime__gt=period_end)
     if period_start:
         exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
         video_logs = video_logs.filter(completion_timestamp__gte=period_start)
-        login_logs = login_logs.filter(start_datetime__gte=period_start)
+        login_logs = login_logs.filter(Q(q1))
     if period_end:
         exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
         video_logs = video_logs.filter(completion_timestamp__lte=period_end)
         login_logs = login_logs.filter(total_seconds__gt=0, start_datetime__lte=period_end)
-
+    if period_start and period_end:
+        exercise_logs = exercise_logs.filter(Q(completion_timestamp__gte=period_start) &
+                        Q(completion_timestamp__lte=period_end))
+        video_logs = video_logs.filter(Q(completion_timestamp__gte=period_start) &
+                                       Q(completion_timestamp__lte=period_end))
+        login_logs = login_logs.filter(Q(total_seconds__gt=0), Q(q2) | Q(q3) | Q(q4) | Q(q5) | Q(q6))
+        # login_logs = login_logs.filter(Q(total_seconds__gt=0), Q(start_datetime__range=[period_start, period_end]) &
+        #                                Q(start_datetime__range=[period_start, period_end]))
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
     video_logs = list(video_logs.values("video_id", "user__pk"))
