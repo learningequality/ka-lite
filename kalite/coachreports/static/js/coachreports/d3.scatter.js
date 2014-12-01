@@ -49,14 +49,12 @@ function d3_scatter(data, options, appendtohtml) {
         .attr("id", "summary");
 
   // Set x and y range
-  x.domain(d3.extent(data, function(d) { return d[xCoordinate]; })).nice();
-  y.domain(d3.extent(data, function(d) { return d[yCoordinate]; })).nice();
+  x.domain([0, 100]);
+  y.domain([0, 100]);
 
   // Click anywhere on SVG object to hide tooltip
   svg.on("click", function() {
     tooltip.style("visibility", "hidden");
-    $('.tooltip').hide();
-
   });
   
   // Create invisible background rectangle to catch any clicks that are not
@@ -184,7 +182,6 @@ function d3_scatter(data, options, appendtohtml) {
           // Hide tooltip if already open for this item
           if(d3.select(this).attr("tooltip")=="true") {
             tooltip.style("visibility", "hidden");
-            $('.tooltip').hide();
           } else {
             // Otherwise unflag other point as tooltip
             svg.selectAll(".dot").attr("tooltip", false);

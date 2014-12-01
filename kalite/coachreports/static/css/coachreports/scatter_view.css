@@ -5,7 +5,7 @@
 #table div {
     margin-top: 25px;
 }
-.tooltip {
+.usertooltip {
     padding: 10px;
     position: relative;
     opacity: 100;
@@ -28,14 +28,14 @@ table.detail td.data {
     width: 25%;
 }
 
-.tooltip > div {
+.usertooltip > div {
     max-height: 100px;
     overflow: scroll;
     overflow-x: hidden;
     margin-top: 3px;
 }
 
-.tooltip .username {
+.usertooltip .username {
     overflow: hidden;
     float: left;
     vertical-align:middle;
