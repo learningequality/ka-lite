@@ -2,7 +2,6 @@
 """
 import copy
 import datetime
-import dateutil
 import re
 import os
 from annoying.decorators import render_to, wraps
@@ -14,7 +13,6 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Sum, Max
-from django.db.models.query_utils import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
@@ -385,33 +383,15 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     login_logs = UserLogSummary.objects.filter(user__in=users)
 
     # filter results
-    login_logs = login_logs.filter(total_seconds__gt=0)
     if period_start:
         exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
         video_logs = video_logs.filter(completion_timestamp__gte=period_start)
+        login_logs = login_logs.filter(start_datetime__gte=period_start)
     if period_end:
-        # MUST: Fix the midnight bug where period end covers up to the prior day only because
-        # period end is datetime(year, month, day, hour=0, minute=0), meaning midnight of previous day.
-        # Example:
-        #   If period_end == '2014-12-01', we cannot include the records dated '2014-12-01 09:30'.
-        #   So to fix this, we change it to '2014-12-01 23:59.999999'.
-        period_end = dateutil.parser.parse(period_end)
-        period_end = period_end + dateutil.relativedelta.relativedelta(days=+1, microseconds=-1)
         exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
         video_logs = video_logs.filter(completion_timestamp__lte=period_end)
-    if period_start and period_end:
-        exercise_logs = exercise_logs.filter(Q(completion_timestamp__gte=period_start) &
-                                             Q(completion_timestamp__lte=period_end))
+        login_logs = login_logs.filter(total_seconds__gt=0, start_datetime__lte=period_end)
 
-        q1 = Q(completion_timestamp__isnull=False) & \
-             Q(completion_timestamp__gte=period_start) & \
-             Q(completion_timestamp__lte=period_end)
-        q2 = Q(completion_timestamp__isnull=True)
-        video_logs = video_logs.filter(q1 | q2)
-
-        login_q1 = Q(start_datetime__gte=period_start) & Q(start_datetime__lte=period_end) & \
-                   Q(end_datetime__gte=period_start) & Q(end_datetime__lte=period_end)
-        login_logs = login_logs.filter(login_q1)
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
     video_logs = list(video_logs.values("video_id", "user__pk"))
