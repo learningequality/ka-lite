@@ -11,11 +11,9 @@ def django_module(app_name, parse_paths):
     """
     Parse the django_app templates and its handlebars templates
     """
-    print parse_paths
     for path in parse_paths:
         local_dir = os.path.abspath(os.path.join(app_name, path))
         file_dir = glob.glob('%s/*' % (local_dir))
-        print path
         if path == "hbtemplates":
             for file_path in file_dir:
                 subprocess.call("i18nize-templates %s/*.handlebars" % (file_path), shell=True)
