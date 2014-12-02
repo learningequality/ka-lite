@@ -48,10 +48,10 @@ class Command(BaseCommand):
         parse by django app and specific file.
     usage :
         sample usage
-            python manage.py i18nize-templates coachreports
-            python manage.py i18nize-templates coachreports -parse templates
-            python manage.py i18nize-templates coachreports -parse hbtemplates
-            python manage.py i18nize_template  coachreports --parse-file facility-select.handlebars
+            python manage.py i18nize_template coachreports
+            python manage.py i18nize_template coachreports --parse templates
+            python manage.py i18nize_template coachreports --parse hbtemplates
+            python manage.py i18nize_template coachreports --parse-file facility-select.handlebars
     """
     option_list = BaseCommand.option_list + (
        make_option('--parse',
