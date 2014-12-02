@@ -1,9 +1,12 @@
 .sidebar-icon {
     padding-right: 10px;
     background-color: rgba(219, 219, 219, 0.19);
-    /*border-radius: 6px;*/
     padding: 7px;
 }
+.no-touch .sidebar-icon{
+    border-radius: 6px;
+}
+
 .sidebar-icon.partial {
     opacity: 0.45;
 }
@@ -54,8 +57,10 @@ div.fade {
 }
 
 .sidebar-panel li {
-    /*box-shadow: 0 -1px 0 rgba(0, 0, 0, .20) inset, 0 1px 0 rgba(255, 255, 255, .05);*/
     border-bottom: 1px solid #4b6824;
+}
+.no-touch .sidebar-panel li{
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, .20) inset, 0 1px 0 rgba(255, 255, 255, .05);
 }
 
 .sidebar-panel .sidebar-entry {
@@ -71,10 +76,10 @@ div.fade {
     margin: 2px 5px 2px 0;
 }
 
-/*.sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
+.no-touch .sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
     background: #8dc63f;
 }
-*/
+
 .sidebar-panel .active-entry {
     background: #77AA31;
 }
@@ -137,8 +142,11 @@ div.fade {
     float: left;
     width: 200px;
     border-right: 3px solid #3C531D;
-    /*box-shadow: 1px 0px 7px rgb(55, 55, 55) inset;*/
 }
+.no-touch .topic-container-inner {
+    box-shadow: 1px 0px 7px rgb(55, 55, 55) inset;
+}
+
 .topic-container-inner:last-child {
     width: 400px;
 }
@@ -173,42 +181,6 @@ div.fade {
     word-wrap: break-word;
 }
 
-/*.sidebar-entry-header {
-    max-height: 2.5em;
-    margin-bottom: -10px;
-    margin-top: -10px;
-}
-.topic-container-inner:last-child .sidebar-entry-header {
-    margin-bottom: 12px;
-}
-.sidebar-entry-header > .sidebar-icon {
-    height: 100%;
-    margin-top: 2px;
-    margin-right: 5px;
-}
-.sidebar-entry-header > .sidebar-title {
-    line-height: 1em;
-    vertical-align:middle;
-    white-space: inherit;
-    text-overflow: inherit; 
-    padding-left: 8px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-}
-.topic-container-inner:last-child .sidebar-entry-header > .sidebar-title {
-    vertical-align:middle;
-    white-space: inherit;
-    text-overflow: inherit; 
-    padding-top: 0px;
-    padding-bottom: 0px;
-}
-
-.topic-container-inner:last-child .sidebar-entry-header > .sidebar-icon {
-    height: 100%;
-    margin-top: 2px;
-    vertical-align:middle;
-}
-*/
 .sidebar-entry-header {
     display: table;
     max-height: 2.5em;
