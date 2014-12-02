@@ -158,7 +158,7 @@ class Command(NoArgsCommand):
         for level in channel_tools.hierarchy:
             save_cache_file("Map_" + level, cache_object=level_cache[level], data_path=channel_path)
 
-        if channel_tools.channel_data_files:
+        if hasattr(channel_tools, "channel_data_files"):
             channel_tools.channel_data_files(dest=channel_path)
 
         sys.stdout.write(

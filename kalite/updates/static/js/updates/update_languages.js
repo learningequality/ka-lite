@@ -134,7 +134,8 @@ $(function () {
 
     });
 });
-
+  
+function whether_show_beta_lang_packs(){
     //
     // show list of installable languages in the dropdown box
     //
@@ -144,12 +145,17 @@ $(function () {
         var srtcount = langdata["subtitle_count"];
         var percent_translated = langdata["percent_translated"];
         var langcode = langdata["code"];
+        var langbeta = langdata["beta"];
 
         // if language already installed, dont show in dropdown box
         var installed_languages = installed.map(function(elem) { return elem['code']; });
         if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
             if (percent_translated > 0 || srtcount > 0) {
-                $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s</option>', langdata));
+                if(langbeta && $("#beta-checkbox").is(':checked')){
+                    $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s -- BETA</option>', langdata));
+                }else if(!langbeta){
+                    $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s</option>', langdata));
+                }
             }
         }
     });
@@ -157,6 +163,14 @@ $(function () {
     if (installables.length > 0) {
         $('#language-packs').change(); // trigger the 'Get Language' Button update
     }
+}
+
+whether_show_beta_lang_packs();
+
+$('#beta-checkbox').click(function() {
+     whether_show_beta_lang_packs();
+});
+
 }
 
 //

@@ -68,22 +68,12 @@ function tablifyThis(ex_data) {
     return table;
 }
 
-function user2tooltip2(json, user, xaxis, yaxis) {
-    // A test tooltip; currently unused (but could become useful again later)
-    var html = "<div class='tooltip'>";
-    html += "<div class='cleardiv'>" + json["users"][user] + "</div>";
-    html += "<a target='_new' href='" + setGetParam(generate_current_link(), "user_id", user).replace("scatter", "student") + "'>more details</a>";
-    html += "</div>";
-
-    return html;
-}
-
 function user2tooltip(json, user, xaxis, yaxis) {
     // Creating a HTML blob for the tooltip that shows when a user's is clicked.
     var axes = [xaxis];
     var exercises = json['exercises'];
     var videos = json['videos'];
-    var tooltip = "<div class='tooltip'>";
+    var tooltip = "<div class='usertooltip'>";
     tooltip += "<div id='legend'><div class='username'>" + json['users'][user] + "</div><div class='legend'><div class='struggling'></div>Struggling</div><div class='legend'><div class='notattempted'></div>Not Attempted</div><div class='legend'><div class='attempted'></div>Attempted</div></div>";
     for (var ai in axes) {
         if(axes[ai] == 'pct_mastery' || axes[ai] == 'effort'){

@@ -470,8 +470,7 @@ class AttemptLog(DeferredCountSyncedModel):
     Detailed instances of user exercise engagement.
     """
 
-    # TODO-BLOCKER(rtibbles): Update this to "0.13.0" (or whatever the release version number is at the time this goes upstream)
-    minversion = "0.12.0"
+    minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
@@ -492,7 +491,11 @@ class AttemptLog(DeferredCountSyncedModel):
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
+
 class ContentLog(DeferredCountSyncedModel):
+
+    minversion = "0.13.0"
+
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     content_id = models.CharField(max_length=100, db_index=True)
     points = models.IntegerField(default=0)

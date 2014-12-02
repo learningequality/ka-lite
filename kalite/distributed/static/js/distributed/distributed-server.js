@@ -38,7 +38,7 @@ function show_api_messages(messages) {
 function show_modal(msg_class, msg_text) {
     clear_modal();
 
-    var msg_html = sprintf("<div class='alert alert-%1$s' id='overlay'><a class='close' data-dismiss='alert' href='#''>&times;</a>%2$s</div><div id='fade'></div>", msg_class, msg_text);
+    var msg_html = sprintf("<div class='alert alert-%1$s' id='modal'><a class='close' data-dismiss='alert' href='#''>&times;</a>%2$s</div><div id='fade'></div>", msg_class, msg_text);
 
     window.modal = $(msg_html).appendTo("body");
     $(".close").click(clear_modal);

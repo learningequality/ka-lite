@@ -112,6 +112,7 @@ if not BUILT:
     INSTALLED_APPS += (
         "fle_utils.testing",
         "kalite.testing",
+        "kalite.basetests",
     ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
 else:
     INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
@@ -149,8 +150,9 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
 
-# only allow, and use by default, JSON in tastypie
+# only allow, and use by default, JSON in tastypie, and remove api page limit
 TASTYPIE_DEFAULT_FORMATS = ['json']
+API_LIMIT_PER_PAGE = 0
 
 # Default to a 20 minute timeout for a session - set to 0 to disable.
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
@@ -209,6 +211,7 @@ if package_selected("RPi"):
 if package_selected("Nalanda"):
     LOG.info("Nalanda package selected")
     TURN_OFF_MOTIVATIONAL_FEATURES = True
+    RESTRICTED_TEACHER_PERMISSIONS = True
     FIXED_BLOCK_EXERCISES = 5
     QUIZ_REPEATS = 3
 UNIT_POINTS = 2000

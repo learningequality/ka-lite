@@ -111,6 +111,15 @@ def get_knowledgemap_topics(force=False):
         KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=False)
     return KNOWLEDGEMAP_TOPICS
 
+
+LEAFED_TOPICS = None
+CACHE_VARS.append("LEAFED_TOPICS")
+def get_leafed_topics(force=False):
+    global LEAFED_TOPICS
+    if LEAFED_TOPICS is None or force:
+        LEAFED_TOPICS = [topic for topic in get_node_cache()["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
+    return LEAFED_TOPICS
+
 CONTENT          = None
 CACHE_VARS.append("CONTENT")
 def get_content_cache(force=False):

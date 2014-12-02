@@ -84,12 +84,33 @@ class TestScatterReport(FacilityMixins,
         self.admin = self.create_admin(**self.admin_data)
         self.facility = self.create_facility()
 
-    def test_user_interface(self):
+    def test_data_chart(self):
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('scatter_view'))
         self.student1 = self.create_student(first_name="I", last_name="tested", username="yay", facility=self.facility)
         self.student2 = self.create_student(first_name="I", last_name="didn't", username="boo", facility=self.facility)
-        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]')
+        # check if all facility is selected
+        facility_select = self.browser.find_element_by_id("facility-select")
+        facility_options = facility_select.find_elements_by_tag_name('option')
+        facility_option = facility_options[0]
+        self.assertEqual("All", facility_option.text)
+        # check if the xaxis is mastery and yaxis is effort
+        xaxis_select = self.browser.find_element_by_id("xaxis")
+        yaxis_select = self.browser.find_element_by_id("yaxis")
+
+        xaxis_options = xaxis_select.find_elements_by_tag_name("option")
+        xaxis_option = xaxis_options[1]
+        self.assertEqual("Mastery", xaxis_option.text)
+
+        yaxis_options = yaxis_select.find_elements_by_tag_name("option")
+        yaxis_option = yaxis_options[2]
+        self.assertEqual("Effort", yaxis_option.text)
+
+        self.browser.find_elements_by_class_name("dynatree-checkbox")[1].click()
+        self.browser.find_element_by_xpath('//button[@id="content_tree_toggle"]').click()
+        facility_user = self.browser.find_elements_by_class_name("dot")
+        for user_option in facility_user:
+            user_option.click()
 
 
 class CoachNavigationTest(FacilityMixins,
@@ -359,15 +380,14 @@ class PlaylistProgressTest(FacilityMixins,
 
         # Confirm high level progress appears
         progress_bar = self.browser_wait_for_element(css_selector='.progress-bar')
-        progress_bar_success = self.browser_wait_for_element(css_selector='.progress-bar-success')
-        self.assertTrue(progress_bar_success, "Playlist progress rendering incorrectly.")
+        # progress_bar_success = self.browser_wait_for_element(css_selector='.progress-bar-success')
         self.assertTrue(progress_bar, "Playlist progress rendering incorrectly.")
 
         # Trigger API call
         self.browser.find_elements_by_class_name('toggle-details')[0].click()
 
         # Confirm lower-level progress appears
-        playlist_details = self.browser_wait_for_element(css_selector='.progress-indicator-sm')
+        playlist_details = self.browser_wait_for_element(css_selector='.progress-block')
         self.assertTrue(playlist_details, "Didn't load details")
 
 
@@ -389,12 +409,12 @@ class SpendingReportTests(FacilityMixins,
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('spending_report_view'))
         points_remaining = self.browser.find_element_by_xpath("//tbody/tr/td[2]")
-        self.assertEqual(points_remaining.text, '-10', "Remaining points incorrect")
+        self.assertEqual(points_remaining.text, '-1000', "Remaining points incorrect; remainings points are actually %s" % points_remaining.text)
 
     def test_spending_report_detail_displays(self):
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('spending_report_detail_view', kwargs={"user_id": self.student.id}))
         item_title = self.browser.find_element_by_xpath("//tbody/tr/td[2]")
-        self.assertEqual(item_title.text, 'Coloured Pencil', "Item title incorrect")
+        self.assertEqual(item_title.text, 'Alpha Chisel Marker', "Item title incorrect; item is actually %s" % item_title.text)
         item_cost = self.browser.find_element_by_xpath("//tbody/tr/td[4]")
-        self.assertEqual(item_cost.text, '10', "Item cost incorrect")
+        self.assertEqual(item_cost.text, '1000', "Item cost incorrect; item is actually %s" % item_cost.text)

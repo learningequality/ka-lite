@@ -16,7 +16,7 @@
     <script type="text/javascript">
         var start_languagepackdownload_url = "{% url 'start_languagepack_download' %}";
         var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}"
-        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
+        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ SHORTVERSION }}";
         var DELETE_LANGUAGEPACK_URL = "{% url 'delete_language_pack' %}";
         var defaultLanguage = "{{ default_language }}";
     </script>
@@ -28,8 +28,8 @@
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
     <div class="container">
-        
-        <div class="col-sm-8 col-md-7 col lg-5 download-actions-languages get-language vertical-shadow">            
+
+        <div class="col-sm-8 col-md-7 col lg-5 download-actions-languages get-language vertical-shadow">
             <div class="row">
                 <h4 class="button_text">{% trans "Download or Update Language Packs" %}</h4>
             </div>
@@ -48,6 +48,9 @@
                         <select id="language-packs"></select>
                     </span>
 
+                    <label for="beta-checkbox">   Show beta language packs</label>
+                    <input type="checkbox" id="beta-checkbox">
+
                     <button class="btn btn-success btn-xs pull-right" id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
                 </div>
                 <div id="langpack-details">
@@ -58,7 +61,7 @@
                     <span id="lp-disk-size"></span><label>&nbsp;({% trans "on disk" %})</label>
                     <span id="lp-num-exers"></span><label>&nbsp;{% trans "exercise(s)" %}</label>
                 </div>
-            </div>       
+            </div>
         </div>
 
         <div id="languagepackdownload-progressbar">
@@ -70,7 +73,7 @@
             <div class="row">
                 <h4>{% trans "Installed Languages" %}</h4>
             </div>
-            
+
             <div class="row table-responsive language-table">
                 <table class="installed-languages table"></table>
             </div>

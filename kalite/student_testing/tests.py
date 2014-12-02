@@ -22,7 +22,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
 
-    exam_id = 'g4_u3_t3'  # needs to be the first exam in the test list UI
+    exam_id = 'g4_u401_t1'  # needs to be the first exam in the test list UI
     login_url = reverse('login')
     logout_url = reverse('logout')
     test_list_url = reverse('test_list')
@@ -33,7 +33,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
         super(BaseTest, self).setUp()
 
-        self.facility = self.create_facility()
+        self.facility = self.create_facility(name="facility1")
         self.teacher_data = CreateTeacherMixin.DEFAULTS.copy()
         self.student_data = CreateStudentMixin.DEFAULTS.copy()
         self.teacher_data['facility'] = self.student_data['facility'] = self.facility
@@ -122,6 +122,9 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
 
         # super(KALiteBrowserTestCase, self).setUp()
         super(BrowserTests, self).setUp()
+
+        # set the unit to 101
+        set_current_unit_settings_value(self.facility.id, 101)
 
         # MUST: We inherit from LiveServerTestCase, so make the urls relative to the host url
         # or use the KALiteTestCase.reverse() method.
@@ -343,6 +346,7 @@ class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrows
         self.login_url = self.reverse('login')
         self.logout_url = self.reverse('logout')
         self.current_unit_url = self.reverse('current_unit')
+        set_current_unit_settings_value(self.facility.id, 101)
 
     def tearDown(self):
         super(CurrentUnitBrowserTests, self).tearDown()

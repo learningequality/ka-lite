@@ -28,7 +28,7 @@ from kalite import caching
 from kalite.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath
 from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
-from kalite.version import VERSION
+from kalite.version import SHORTVERSION
 
 
 class Command(UpdatesStaticCommand, CronCommand):
@@ -44,7 +44,7 @@ class Command(UpdatesStaticCommand, CronCommand):
         make_option('-s', '--software_version',
                     action='store',
                     dest='software_version',
-                    default=VERSION,
+                    default=SHORTVERSION,
                     metavar="SOFT_VERS",
                     help="Specify the software version to download a language pack for."),
         make_option('-f', '--from-file',
@@ -215,7 +215,7 @@ def move_srts(lang_code):
         shutil.rmtree(src_dir)
 
 
-def get_language_pack_url(lang_code, version=VERSION):
+def get_language_pack_url(lang_code, version=SHORTVERSION):
     """As published"""
     return "http://%(host)s/media/language_packs/%(version)s/%(lang_code)s.zip" % {
         "host": settings.CENTRAL_SERVER_HOST,
