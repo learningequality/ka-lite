@@ -151,7 +151,14 @@ var AppView = Backbone.View.extend({
 
     addNewPlaylist: function(playlist) {
         var view = new PlaylistView({model: playlist});
-        $("#playlists").append(view.render().el);
+        var title = playlist.get('title');
+        if (title.indexOf("Core") > -1){
+            $("#core-playlists").append(view.render().el);
+        } else if (title.indexOf("Prerequisite") > -1){
+            $("#pre-playlists").append(view.render().el);
+        } else if (title.indexOf("Advanced") > -1){
+            $("#advanced-playlists").append(view.render().el);
+        }
     },
 
     addAllPlaylists: function() {
