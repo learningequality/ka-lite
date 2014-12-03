@@ -54,6 +54,13 @@ window.StoreWrapperView = Backbone.View.extend({
             alert("Sorry, you don't have enough points to purchase that right now.");
             return;
         }
+        else
+        {
+            var check = confirm(sprintf(gettext("Are you sure you want to purchase %s for %s points?",item.get("title"),item.get("cost"))));
+            if (!check) {
+                return;
+            }
+        }
 
         var purchased_model = new PurchasedStoreItemModel({
             item: item.id,
