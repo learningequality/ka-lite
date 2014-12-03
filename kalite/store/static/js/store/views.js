@@ -56,7 +56,7 @@ window.StoreWrapperView = Backbone.View.extend({
         }
         else
         {
-            var check = confirm(sprintf("Are you sure you want to purchase %s for %s points?",item.get("title"),item.get("cost")));
+            var check = confirm(sprintf(gettext("Are you sure you want to purchase %s for %s points?",item.get("title"),item.get("cost"))));
             if (!check) {
                 return;
             }
