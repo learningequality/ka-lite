@@ -1,5 +1,6 @@
 from annoying.functions import get_object_or_None
 from datetime import datetime
+from django.db.models import Max, Min
 from django.http import HttpResponse
 from tastypie import fields
 from tastypie.exceptions import NotFound, BadRequest
@@ -17,10 +18,13 @@ from store.models import StoreItem
 
 
 class FacilityResource(ModelResource):
+
     class Meta:
         queryset = Facility.objects.all()
         resource_name = 'facility'
         authorization = ObjectAdminAuthorization()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering facilities by zone
@@ -35,10 +39,13 @@ class FacilityResource(ModelResource):
         
 
 class FacilityGroupResource(ModelResource):
+
     class Meta:
         queryset = FacilityGroup.objects.all()
         resource_name = 'group'
         authorization = ObjectAdminAuthorization()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         # Allow filtering groups by facility
@@ -121,6 +128,7 @@ class FacilityUserResource(ParentFacilityUserResource):
             user = self._facility_users.get(bundle.data["id"])
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
 
         return to_be_serialized
 
@@ -156,6 +164,10 @@ class TestLogResource(ParentFacilityUserResource):
             bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
+            attempt_logs = AttemptLog.objects.filter(user=user, context_id=bundle.data["test"], context_type="test")
+            bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
+            bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
             bundle.data.pop("user")
 
         return to_be_serialized
@@ -192,6 +204,7 @@ class AttemptLogResource(ParentFacilityUserResource):
             bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
             bundle.data.pop("user")
 
         return to_be_serialized
@@ -209,6 +222,8 @@ class ExerciseLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['signed_version', 'counter', 'signature']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -226,6 +241,10 @@ class ExerciseLogResource(ParentFacilityUserResource):
             bundle.data["user_id"] = user.id
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
+            attempt_logs = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"])
+            bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
+            bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
             bundle.data.pop("user")
 
         return to_be_serialized
@@ -239,6 +258,8 @@ class DeviceLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['signed_version', 'public_key', 'counter', 'signature']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def _get_device_logs(self, bundle):
         # requires at least one zone_id, which we pass as a list to zone_ids
@@ -272,6 +293,8 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
         authorization = ObjectAdminAuthorization()
         excludes = ['signed_version', 'counter', 'signature', 'deleted', 'reversible']
         serializer = CSVSerializer()
+        limit = 0
+        max_limit = 0
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -289,6 +312,7 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
             bundle.data["username"] = user.username
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
+            bundle.data["is_teacher"] = user.is_teacher
             item_id = bundle.data["item"].strip("/").split("/")[-1]
             bundle.data["item"] = item_id
             item = store_items.get(item_id)

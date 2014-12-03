@@ -737,7 +737,10 @@ window.ExerciseView = Backbone.View.extend({
 
     render: function() {
 
-        this.$el.html(this.template(this.data_model.attributes));
+        var data  = $.extend(this.data_model.attributes, {test_id: this.options.test_id});
+
+        this.$el.html(this.template(data));
+        var html = this.template(this.data_model.attributes);
 
         this.initialize_listeners();
 
@@ -1245,6 +1248,7 @@ window.ExerciseTestView = Backbone.View.extend({
                 var question_data = this.log_model.get_item_data(this.test_model);
 
                 var data = $.extend({el: this.el}, question_data);
+                data = $.extend(data, {test_id: this.options.test_id});
 
                 this.initialize_new_attempt_log(question_data);
 
