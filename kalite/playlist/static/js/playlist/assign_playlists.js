@@ -56,12 +56,14 @@ var PlaylistView = Backbone.View.extend({
         'dragover': 'allowDrop'
     },
 
-    render: function(value) {
-
+    render: function() {
         var playlist = this;
         var dict = this.model.toJSON();
         this.$el.html(this.template(dict));
+
+
         this.renderGroups();
+
         return this;
     },
 
@@ -145,21 +147,6 @@ var AppView = Backbone.View.extend({
 
     addAllGroups: function() {
         groups.each(this.addNewGroup);
-    },
-
-    addCorePlaylist: function(playlist) {
-        var view = new PlaylistView({model: playlist});
-        $("#core-playlists").append(view.render("Core").el);
-    },
-
-    addPrePlaylist: function(playlist) {
-        var view = new PlaylistView({model: playlist});
-        $("#pre-playlists").append(view.render("Prerequisite").el);
-    },
-
-    addAdvancedPlaylist: function(playlist) {
-        var view = new PlaylistView({model: playlist});
-        $("#advanced-playlists").append(view.render("Advanced").el);
     },
 
     addNewPlaylist: function(playlist) {
