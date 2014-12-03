@@ -59,19 +59,9 @@ var PlaylistView = Backbone.View.extend({
     render: function(value) {
 
         var playlist = this;
-        if ( (this.model.get('title').indexOf("Core") > -1) && value == "core") {
-            this.$el.html(this.template(dict));
-            this.renderGroups();
-        } else if ( (this.model.get('title').indexOf("Prerequisite") > -1) && value == "pre") {
-            var dict = this.model.toJSON();
-            this.$el.html(this.template(dict));
-            this.renderGroups();
-        }
-        else if ( (this.model.get('title').indexOf("Advanced") > -1) && value == "advanced") {
-            var dict = this.model.toJSON();
-            this.$el.html(this.template(dict));
-            this.renderGroups();
-        }
+        var dict = this.model.toJSON();
+        this.$el.html(this.template(dict));
+        this.renderGroups();
         return this;
     },
 
@@ -141,9 +131,7 @@ var AppView = Backbone.View.extend({
         this.listenTo(groups, 'add', this.addNewGroup);
         this.listenTo(groups, 'reset', this.addAllGroups);
 
-        this.listenTo(playlists, 'add', this.addCorePlaylist);
-        this.listenTo(playlists, 'add', this.addPrePlaylist);
-        this.listenTo(playlists, 'add', this.addAdvancedPlaylist);
+        this.listenTo(playlists, 'add', this.addNewPlaylist);
         this.listenTo(playlists, 'reset', this.addAllPlaylists);
 
         playlists.fetch();
@@ -161,24 +149,33 @@ var AppView = Backbone.View.extend({
 
     addCorePlaylist: function(playlist) {
         var view = new PlaylistView({model: playlist});
-        $("#core-playlists").append(view.render("core").el);
+        $("#core-playlists").append(view.render("Core").el);
     },
 
     addPrePlaylist: function(playlist) {
         var view = new PlaylistView({model: playlist});
-        $("#pre-playlists").append(view.render("pre").el);
+        $("#pre-playlists").append(view.render("Prerequisite").el);
     },
 
     addAdvancedPlaylist: function(playlist) {
         var view = new PlaylistView({model: playlist});
-        $("#advanced-playlists").append(view.render("advanced").el);
+        $("#advanced-playlists").append(view.render("Advanced").el);
+    },
+
+    addNewPlaylist: function(playlist) {
+        var view = new PlaylistView({model: playlist});
+        var title = playlist.get('title');
+        if (title.indexOf("Core") > -1){
+            $("#core-playlists").append(view.render().el);
+        } else if (title.indexOf("Prerequisite") > -1){
+            $("#pre-playlists").append(view.render().el);
+        } else if (title.indexOf("Advanced") > -1){
+            $("#advanced-playlists").append(view.render().el);
+        }
     },
 
     addAllPlaylists: function() {
-        playlists.each(this.addCorePlaylist);
-        playlists.each(this.addPrePlaylist);
-        playlists.each(this.addAdvancedPlaylist);
-
+        playlists.each(this.addNewPlaylist);
     }
 });
 
