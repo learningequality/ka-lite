@@ -8,9 +8,9 @@ window.CurrentUnitRowView = Backbone.View.extend({
     initialize: function(options) {
         _.bindAll(this);
         this.listenTo(this.model, "change:current_unit", this.render);
-        this.model.on("change", this.changing, this);
-        this.model.on("request", this.requesting, this);
-        this.model.on("sync", this.syncing, this);
+        this.listenTo(this.model, "change", this.changing);
+        this.listenTo(this.model, "request", this.requesting);
+        this.listenTo(this.model, "sync", this.syncing);
         this.render();
     },
 
@@ -26,7 +26,7 @@ window.CurrentUnitRowView = Backbone.View.extend({
     },
 
     changing: function() {
-        $('.loading').modal({
+        $('#loading').modal({
              show: true,
              keyboard: false,
              backdrop: 'static'
@@ -37,7 +37,7 @@ window.CurrentUnitRowView = Backbone.View.extend({
     },
 
     syncing: function() {
-        $('.loading').modal('hide');
+        $('#loading').modal('hide');
     },
 
     unit_number_clicked: function(ev) {
