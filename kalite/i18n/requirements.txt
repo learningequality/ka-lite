@@ -1,5 +1,2 @@
 # Use the master branch from the repo.
 # -e git+https://github.com/mrpau/i18nize_templates/#egg=i18nize_templates
-
-# Use a specific commit from the repo.
--e git+https://github.com/mrpau/i18nize_templates/@3bd1503e39b68f44b622a6c55664c5267087496e#egg=i18nize_templates
