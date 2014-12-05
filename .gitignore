@@ -43,6 +43,8 @@ writeup/
 /kalite/media
 /data/*
 !/data/khan/
+/data/khan/assessment_items.json
+/data/khan/assessment_item_images
 /kalite/private_key.pem
 /kalite/secrets.py
 /kalite/static
