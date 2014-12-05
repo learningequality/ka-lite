@@ -446,7 +446,6 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     login_logs = login_logs.filter(total_seconds__gt=0)
     if period_start:
         exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
-        video_logs = video_logs.filter(completion_timestamp__gte=period_start)
     if period_end:
         # MUST: Fix the midnight bug where period end covers up to the prior day only because
         # period end is datetime(year, month, day, hour=0, minute=0), meaning midnight of previous day.
@@ -456,7 +455,6 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         period_end = dateutil.parser.parse(period_end)
         period_end = period_end + dateutil.relativedelta.relativedelta(days=+1, microseconds=-1)
         exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
-        video_logs = video_logs.filter(completion_timestamp__lte=period_end)
     if period_start and period_end:
         exercise_logs = exercise_logs.filter(Q(completion_timestamp__gte=period_start) &
                                              Q(completion_timestamp__lte=period_end))
