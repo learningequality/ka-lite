@@ -3,6 +3,24 @@
 VERSION = "0.12.0"
 VERSION_INFO = {
 
+    "0.12.9": {
+        "release_date": "2014/12/05",
+        "git_commit": "a0333d4",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["Fixed the issue with runserver failing when it tries to create a database", "Fix CSV export's logged_in and total_videos column"],
+        },
+
+    },
+
     "0.12.8": {
         "release_date": "2014/10/27",
         "git_commit": "b973ba1",
