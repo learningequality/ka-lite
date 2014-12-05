@@ -1,6 +1,17 @@
 from khan_api_python.api_models import Khan, APIError
 from functools import partial
 import base
+import os
+import json
+import requests
+import re
+from binascii import a2b_base64
+import threading
+import time
+
+from django.conf import settings; logging = settings.LOG
+
+from fle_utils.general import ensure_dir
 
 slug_key = {
     "Topic": "node_slug",
@@ -31,7 +42,7 @@ attribute_whitelists = {
     "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data", "render_type", "path", "slug"],
     "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id", "y_pos", "x_pos", "in_knowledge_map", "path", "slug"],
     "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "y_pos", "x_pos", "in_knowledge_map", "all_assessment_items", "uses_assessment_items", "path", "slug"],
-    "AssessmentItem": ["kind", "name", "item_data", "tags", "author_names", "sha", "id"]
+    "AssessmentItem": ["kind", "name", "item_data", "author_names", "sha", "id"]
 }
 
 denormed_attribute_list = {
@@ -110,9 +121,128 @@ def retrieve_API_data(channel=None):
 
     assessment_items = []
 
-    # for exercise in exercises:
-    #     for assessment_item in exercise.all_assessment_items:
-    #         assessment_items.append(khan.get_assessment_item(assessment_item["id"]))
+    image_dir = os.path.join(settings.CONTENT_DATA_PATH, "khan/assessment_item_images")
+
+    ensure_dir(image_dir)
+
+    data_uri_regex = re.compile("(data:[^,]*,)(.*)")
+
+    # Limit number of simultaneous requests
+    semaphore = threading.BoundedSemaphore(100)
+    filesemaphore = threading.BoundedSemaphore(256)
+
+    def fetch_assessment_data(exercise):
+        logging.info("Fetching Assessment Item Data for {exercise}".format(exercise=exercise.display_name))
+        for assessment_item in exercise.all_assessment_items:
+            counter = 0
+            wait = 5
+            while wait:
+                try:
+                    semaphore.acquire()
+                    logging.info("Fetching assessment item {assessment}".format(assessment=assessment_item["id"]))
+                    assessment_data = khan.get_assessment_item(assessment_item["id"])
+                    semaphore.release()
+                    if assessment_data.get("item_data"):
+                        wait = 0
+                    else:
+                        logging.info("Fetching assessment item {assessment} failed retrying in {wait}".format(assessment=assessment_item["id"], wait=wait))
+                        time.sleep(wait)
+                        wait = wait*2
+                        counter += 1
+                except (requests.ConnectionError, requests.Timeout):
+                    semaphore.release()
+                    time.sleep(wait)
+                    wait = wait*2
+                    counter += 1
+                if counter > 5:
+                    break
+            if assessment_data.get("item_data", ""):
+                assessment_items.append(assessment_data)
+                item_data = json.loads(assessment_data.item_data)
+                for item_type, type_data in item_data.items():
+                    if type(type_data) is dict:
+                        type_data = [type_data]
+                    for type_datum in type_data:
+                        for image in type_datum.get("images", {}).keys():
+                            if image.startswith("data"):
+                                if not os.path.exists(os.path.join(image_dir, image.split("/")[-1]):
+                                    image_data = a2b_base64(data_uri_regex.match(image).groups()[1])
+                                    wait = 5
+                                    while wait:
+                                        try:
+                                            filesemaphore.acquire()
+                                            logging.info("Saving Base64 URI")
+                                            with open(os.path.join(image_dir, image.split("/")[-1]), "w") as f:
+                                                f.write(image_data)
+                                            filesemaphore.release()
+                                            wait = 0
+                                        except IOError:
+                                            logging.info("Saving Base64 URI Failed, retrying")
+                                            filesemaphore.release()
+                                            time.sleep(wait)
+                                            wait = wait*2
+                            else:
+                                if not os.path.exists(os.path.join(image_dir, image.split("/")[-1]):
+                                    wait = 5
+                                    while wait:
+                                        try:
+                                            semaphore.acquire()
+                                            logging.info("Fetching {image}".format(image=image))
+                                            imagerequest = requests.get(image, verify=False)
+                                            semaphore.release()
+                                            wait = 0
+                                        except (requests.ConnectionError, requests.Timeout):
+                                            logging.info("Fetching {image} failed retrying in {wait}".format(image=image, wait=wait))
+                                            semaphore.release()
+                                            time.sleep(wait)
+                                            wait = wait*2
+                                    if imagerequest.status_code == 200:
+                                        wait = 5
+                                        while wait:
+                                            try:
+                                                filesemaphore.acquire()
+                                                with open(os.path.join(image_dir, image.split("/")[-1]), "w") as f:
+                                                    f.write(imagerequest.content)
+                                                filesemaphore.release()
+                                                wait = 0
+                                            except IOError:
+                                                filesemaphore.release()
+                                                time.sleep(wait)
+                                                wait = wait*2
+                                if "graphie" in image:
+                                    if not os.path.exists(os.path.join(image_dir, image.split("/")[-1].replace("png", "js")):
+                                        wait = 5
+                                        while wait:
+                                            try:
+                                                semaphore.acquire()
+                                                logging.info("Fetching graphie javascript for {image}".format(image=image))
+                                                jsrequest = requests.get(image.replace("png", "js"))
+                                                semaphore.release()
+                                            except (requests.ConnectionError, requests.Timeout):
+                                                logging.info("Fetching graphie javascript for {image} failed retrying in {wait}".format(image=image, wait=wait))
+                                                semaphore.release()
+                                                time.sleep(wait)
+                                                wait = wait*2
+                                        if jsrequest.status_code == 200:
+                                            wait = 5
+                                            while wait:
+                                                try:
+                                                    filesemaphore.acquire()
+                                                    with open(os.path.join(image_dir, image.split("/")[-1].replace("png", "js")), "w") as f:
+                                                        f.write(jsrequest.content)
+                                                    filesemaphore.release()
+                                                    wait = 0
+                                                except IOError:
+                                                    filesemaphore.release()
+                                                    time.sleep(wait)
+                                                    wait = wait*2
+
+    threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises]
+
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
 
     content = []
 
@@ -121,3 +251,5 @@ def retrieve_API_data(channel=None):
 recurse_topic_tree_to_create_hierarchy = partial(base.recurse_topic_tree_to_create_hierarchy, hierarchy=hierarchy)
 
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
+
+channel_data_files = None
