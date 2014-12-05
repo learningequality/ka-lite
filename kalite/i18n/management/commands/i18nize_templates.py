@@ -2,13 +2,11 @@ import logging
 import os
 import subprocess
 
+from django.conf import settings; logging = settings.LOG
 from django.core.management.base import AppCommand
 from django.core.management.commands.makemessages import handle_extensions
 
 from optparse import make_option
-
-
-logger = logging.getLogger(__name__)
 
 
 def i18nize_parser(parse_dir, extensions, parse_file):
@@ -18,7 +16,7 @@ def i18nize_parser(parse_dir, extensions, parse_file):
     """
     filenames_to_process = []
     for dirpath, dirnames, filenames in os.walk(parse_dir):
-        logger.info("==> Looking for template file/s at %s" % dirpath)
+        logging.info("==> Looking for template file/s at %s" % dirpath)
         for filename in filenames:
             # Validate file extensions.
             for extension in extensions:
@@ -31,19 +29,19 @@ def i18nize_parser(parse_dir, extensions, parse_file):
                         if not file_path.endswith(parse_file):
                             continue
                         else:
-                            logger.info("==> Processing single template file %s..." % parse_file)
+                            logging.info("==> Processing single template file %s..." % parse_file)
                     filenames_to_process.append(file_path)
     if filenames_to_process:
         # MUST: Instead of passing the filenames one by one, we join them into a
         # single string separated by space and pass it as an argument to the
         # `i18nize-templates` script.
-        logger.info("Found %s template/s to process..." % (len(filenames_to_process),))
-        logger.info("Calling `i18nize-templates`...")
+        logging.info("Found %s template/s to process..." % (len(filenames_to_process),))
+        logging.info("Calling `i18nize-templates`...")
         filenames = ' '.join(filenames_to_process)
         subprocess.call("i18nize-templates %s" % (filenames,), shell=True)
-        logger.info("DONE processing.")
+        logging.info("DONE processing.")
     else:
-        logger.info('Did not find any files with extensions [%s] to process!' % (", ".join(extensions),))
+        logging.info('Did not find any files with extensions [%s] to process!' % (", ".join(extensions),))
 
 
 class Command(AppCommand):
@@ -93,10 +91,10 @@ class Command(AppCommand):
 
         # TODO(cpauya): Get the app name here.
         if parse_file:
-            logger.info("Will look for %s only at %s app with extensions: [%s]..." %
+            logging.info("Will look for %s only at %s app with extensions: [%s]..." %
                         (parse_file, app.__file__, ', '.join(extensions),))
         else:
-            logger.info("Will look for template files at %s app with extensions: [%s]..." %
+            logging.info("Will look for template files at %s app with extensions: [%s]..." %
                         (app.__name__, ', '.join(extensions)))
 
         local_dir = os.path.dirname(app.__file__)
