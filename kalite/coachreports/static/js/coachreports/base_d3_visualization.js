@@ -21,12 +21,13 @@ function plotJsonData(chart_div, base_url, props) {
        NOTE: you have to implement drawJsonChart(chart_div, json, xaxis, yaxis); */
 
     // Scrub data
-    if (!props["user"])       { props["user"]       = FORM_USER; }
-    if (!props["topic_path"]) { props["topic_path"] = FORM_TOPIC_PATH; }
+    // if (!props["user"])       { props["user"]       = FORM_USER; }
+    // if (!props["topic_path"]) { props["topic_path"] = FORM_TOPIC_PATH; }
 
-    if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length == 0) { // one of the ---- is selected
-        return false;
-    }
+    // if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length == 0) { // one of the ---- is selected
+    //     return false;
+    // }
+    // console.log("elielieli: " + props["topic_path"] + "   2222: " + FORM_TOPIC_PATH);
 
     // Get the data
     var url = base_url + "?" + $.param(props, true);
@@ -38,7 +39,7 @@ function plotJsonData(chart_div, base_url, props) {
                 xaxis_name: stat2name(props["xaxis"]),
                 yaxis_name: stat2name(props["yaxis"])
             }));
-            if (Object.keys(json["data"]).length > 0) {
+            if (json["objects"].length > 0) {
                 drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
             } else {
                 show_message("error", gettext("No student accounts in this group have been created."));
@@ -57,6 +58,7 @@ function plotTopics(topic_paths) {
     if (!$("#content_tree")) {
         return false;
     }
+    console.log("blablabla: " + topic_paths + "   3333: " + get_topic_paths_from_tree());
     if (topic_paths==null) {
         topic_paths = get_topic_paths_from_tree();
     }
@@ -66,10 +68,10 @@ function plotTopics(topic_paths) {
         {
             "xaxis":       $("#xaxis option:selected").val(),
             "yaxis":       $("#yaxis option:selected").val(),
-            "user":        "",
+            // "user":        "",
             "group":       $("#group-select option:selected").val(),
             "facility":    $("#facility-select option:selected").val(),
-            "topic_path":  topic_paths
+            // "topic_path":  topic_paths
         }
     );
 }
