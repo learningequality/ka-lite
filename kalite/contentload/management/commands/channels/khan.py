@@ -165,7 +165,7 @@ def retrieve_API_data(channel=None):
                     for type_datum in type_data:
                         for image in type_datum.get("images", {}).keys():
                             if image.startswith("data"):
-                                if not os.path.exists(os.path.join(image_dir, image.split("/")[-1]):
+                                if not os.path.exists(os.path.join(image_dir, image.split("/")[-1])):
                                     image_data = a2b_base64(data_uri_regex.match(image).groups()[1])
                                     wait = 5
                                     while wait:
@@ -182,7 +182,7 @@ def retrieve_API_data(channel=None):
                                             time.sleep(wait)
                                             wait = wait*2
                             else:
-                                if not os.path.exists(os.path.join(image_dir, image.split("/")[-1]):
+                                if not os.path.exists(os.path.join(image_dir, image.split("/")[-1])):
                                     wait = 5
                                     while wait:
                                         try:
@@ -210,7 +210,7 @@ def retrieve_API_data(channel=None):
                                                 time.sleep(wait)
                                                 wait = wait*2
                                 if "graphie" in image:
-                                    if not os.path.exists(os.path.join(image_dir, image.split("/")[-1].replace("png", "js")):
+                                    if not os.path.exists(os.path.join(image_dir, image.split("/")[-1].replace("png", "js"))):
                                         wait = 5
                                         while wait:
                                             try:
@@ -251,5 +251,3 @@ def retrieve_API_data(channel=None):
 recurse_topic_tree_to_create_hierarchy = partial(base.recurse_topic_tree_to_create_hierarchy, hierarchy=hierarchy)
 
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
-
-channel_data_files = None
