@@ -27,10 +27,9 @@ function plotJsonData(chart_div, base_url, props) {
     // if (!props["xaxis"] || !props["yaxis"] || !props["topic_path"] || props["topic_path"].length == 0) { // one of the ---- is selected
     //     return false;
     // }
-    // console.log("elielieli: " + props["topic_path"] + "   2222: " + FORM_TOPIC_PATH);
 
     // Get the data
-    var url = base_url + "?" + $.param(props, true);
+    var url = base_url + "?" + $.param(props, true); 
 
     clear_messages();
     doRequest(url)
@@ -58,7 +57,6 @@ function plotTopics(topic_paths) {
     if (!$("#content_tree")) {
         return false;
     }
-    console.log("blablabla: " + topic_paths + "   3333: " + get_topic_paths_from_tree());
     if (topic_paths==null) {
         topic_paths = get_topic_paths_from_tree();
     }
@@ -66,12 +64,18 @@ function plotTopics(topic_paths) {
         "#chart_div",
         API_DATA_URL,
         {
-            "xaxis":       $("#xaxis option:selected").val(),
-            "yaxis":       $("#yaxis option:selected").val(),
+            // "xaxis":       $("#xaxis option:selected").val(),
+            // "yaxis":       $("#yaxis option:selected").val(),
+            "xaxis":       "Mastery",
+            "yaxis":       "Attempts",
             // "user":        "",
             "group":       $("#group-select option:selected").val(),
             "facility":    $("#facility-select option:selected").val(),
-            // "topic_path":  topic_paths
+
+            "completion_timestamp__gte": $("#datepicker_start").val(),
+            "completion_timestamp__lte": $("#datepicker_end").val(),
+
+            "topic_path":  topic_paths
         }
     );
 }
