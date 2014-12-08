@@ -1,9 +1,11 @@
 from tastypie import fields
 from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
+from tastypie.utils import now
 
 from django.db.models import Sum, Count
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
 
 from kalite.shared.decorators import get_user_from_request
 from .models import PlaylistProgress, PlaylistProgressDetail
@@ -81,7 +83,6 @@ class PlaylistProgressResource(PlaylistParentResource):
 
     def obj_get_list(self, bundle, **kwargs):
         self.permission_check(bundle.request)
-        print self.get_object_list(bundle.request)
         return self.get_object_list(bundle.request)
 
 
@@ -125,13 +126,16 @@ class ExerciseSummaryResource(ModelResource):
     class Meta:
         queryset = ExerciseLog.objects.all()
         resource_name = 'exercisesummarylog'
-        #excludes = ['attempts_before_completion', 'counter', 'attempts', 'signed_version', 'signature', 'resource_uri', 'id', 'language', 'resource_uri', 'user', 'streak_progress', 'points']
-        # excludes = ['exercise_id']
-        filtering = {
-            # "exercise_id": ('exact', ),
-            # "user": ('exact', ),
-            "completion_timestamp": ('gte', 'lte')
-        }
+        excludes = ['attempts_before_completion', 
+            'complete', 'counter', 'attempts', 'signed_version', 'signature', 'resource_uri', 'id', 'language', 
+            'resource_uri', 'user', 'streak_progress', 'points', 'completion_counter', 'completion_timestamp',
+            'exercise_id', 'mastered', 'struggling', 'deleted'
+            ]
+        # filtering = {
+        #     # "exercise_id": ('exact', ),
+        #     # "user": ('exact', ),
+        #     "completion_timestamp": ('gte', 'lte')
+        # }
         authorization = UserObjectsOnlyAuthorization()
 
     def obj_create(self, bundle, **kwargs):
@@ -151,23 +155,24 @@ class ExerciseSummaryResource(ModelResource):
         bundle.data['user_name'] = userinfo.get('user_name')
         bundle.data['total_attempts'] = userinfo.get('total_attempts')
         bundle.data['mastered'] = userinfo.get('mastered')
-        # bundle.data['exercise_id'] = userinfo.get('exercise_id')
-        # bundle.data['exercise_url'] = get_exercise_cache().get(userinfo.get('exercise_id')).get("path")
         bundle.data['exercises'] = userinfo.get('exercises')
         return bundle
-    
+
+    def get_object_list(self, request):
+        #TODO-BLOCKER(66eli77): need to find a way to include exercises that are not completed yet.
+        return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+            completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+            completion_timestamp__lte=request.GET.get('completion_timestamp__lte'))
+
     def obj_get_list(self, bundle, **kwargs):
         # self.permission_check(bundle.request)
         exercise_logs = self.get_object_list(bundle.request)
-        # import pdb; pdb.set_trace()
         pre_user = None
         filtered_logs = []
         exercises_info = []
 
         for e in exercise_logs:
             if e.user == pre_user:
-                if e.user.get_name() == "Ben Wong":
-                    print "elielielie: ", e
                 pass
             else:
                 pre_user = e.user
@@ -185,8 +190,6 @@ class ExerciseSummaryResource(ModelResource):
                 }
                 filtered_logs.append(e)
                 self.user_info.append(user_dic)
-                if e.user.get_name() == "Ben Wong":
-                    print "elielielie: ", e
 
         self.user_info.reverse()
         return filtered_logs

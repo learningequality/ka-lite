@@ -14,5 +14,4 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^', include(PlaylistProgressResource().urls)),
     url(r'^', include(PlaylistProgressDetailResource().urls)),
     url(r'^', include(ExerciseSummaryResource().urls)),
-
 )
