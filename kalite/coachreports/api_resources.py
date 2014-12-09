@@ -160,9 +160,28 @@ class ExerciseSummaryResource(ModelResource):
 
     def get_object_list(self, request):
         #TODO-BLOCKER(66eli77): need to find a way to include exercises that are not completed yet.
-        return super(ExerciseSummaryResource, self).get_object_list(request).filter(
-            completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
-            completion_timestamp__lte=request.GET.get('completion_timestamp__lte'))
+        if not request.GET.get('facility_id'):
+            if not request.GET.get('group_id'):
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'))
+            else:
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__group=request.GET.get('group_id'))
+        else:
+            if not request.GET.get('group_id'):
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__facility=request.GET.get('facility_id'))
+            else:
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__facility=request.GET.get('facility_id'),
+                    user__group=request.GET.get('group_id'))
 
     def obj_get_list(self, bundle, **kwargs):
         # self.permission_check(bundle.request)
