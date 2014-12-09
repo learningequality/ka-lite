@@ -1416,121 +1416,116 @@ function renderDebugInfo() {
     }
 
     // Show the debug info
-    // Allow coaches or admin users to view the Debug Info.
-    // Students are no longer allow to view debug Info.
-    // We will also disable this from our guests users.
-    if (statusModel.get("is_admin")){
-        if (localMode && Khan.query.debug != null) {
-            $(document).keypress(function(e) {
-                if (e.charCode === 104) {
-                    $("#hint").click();
-                }
-            });
-            var debugWrap = $("#debug").css({"margin-right": "15px"}).empty();
-            var debugURL = window.location.protocol + "//" + window.location.host + window.location.pathname +
-                "?debug&problem=" + currentProblemType;
-
-            $("<h3>Debug Info</h3>").appendTo(debugWrap);
-
-            var src = exercise.data("src");
-            if (src != null) {
-                var srcInfo = $("<p>").appendTo(debugWrap);
-                srcInfo.append("From ");
-
-                $("<a>")
-                    .text(src)
-                    .attr("href", src + "?debug")
-                    .appendTo(srcInfo);
+    if (localMode && Khan.query.debug != null) {
+        $(document).keypress(function(e) {
+            if (e.charCode === 104) {
+                $("#hint").click();
             }
+        });
+        var debugWrap = $("#debug").css({"margin-right": "15px"}).empty();
+        var debugURL = window.location.protocol + "//" + window.location.host + window.location.pathname +
+            "?debug&problem=" + currentProblemType;
 
-            var links = $("<p>").appendTo(debugWrap);
+        $("<h3>Debug Info</h3>").appendTo(debugWrap);
 
-            if (!Khan.query.activity) {
-                var historyURL = debugURL + "&seed=" + currentProblemSeed + "&activity=";
-                $("<a>Problem history</a>").attr("href", "javascript:").click(function() {
-                    window.location.href = historyURL + encodeURIComponent(
-                            JSON.stringify(Exercises.userActivityLog));
-                }).appendTo(links);
-            } else {
-                $("<a>Random problem</a>")
-                    .attr("href", window.location.protocol + "//" +
-                            window.location.host + window.location.pathname +
-                            "?debug")
-                    .appendTo(links);
-            }
+        var src = exercise.data("src");
+        if (src != null) {
+            var srcInfo = $("<p>").appendTo(debugWrap);
+            srcInfo.append("From ");
 
-            links.append("<br><b>Problem types:</b><br>");
-
-            exercises.children(".problems").children().each(function(n, prob) {
-                var probID = $(prob).attr("id") || "" + n;
-                links.append($("<div>")
-                    .css({
-                        "padding-left": "20px",
-                        "outline":
-                            (currentProblemType === probID) ?
-                            "1px dashed gray" : ""
-                    })
-                    .append($("<span>").text(n + ": "))
-                    .append($("<a>")
-                        .text(probID)
-                        .attr("href", window.location.protocol + "//" +
-                            window.location.host + window.location.pathname +
-                            "?debug&problem=" + probID)
-                    ));
-            });
-
-
-            // If this is a child exercise, show which one it came from
-            if (exercise.data("name") !== currentExerciseId) {
-                links.append("<br>");
-                links.append("Original exercise: " + exercise.data("name"));
-            }
-
-            if ($.tmpl.DATA_ENSURE_LOOPS > 0) {
-                var dataEnsureInfo = $("<p>");
-                dataEnsureInfo.append("Data-ensure loops: " + $.tmpl.DATA_ENSURE_LOOPS);
-                if ($.tmpl.DATA_ENSURE_LOOPS > 15) {
-                    dataEnsureInfo.css("background-color", "yellow");
-                }
-                if ($.tmpl.DATA_ENSURE_LOOPS > 30) {
-                    dataEnsureInfo.css("background-color", "orange");
-                }
-                if ($.tmpl.DATA_ENSURE_LOOPS > 50) {
-                    dataEnsureInfo.css("background-color", "red");
-                }
-                dataEnsureInfo.appendTo(debugWrap);
-            }
-
-            if (typeof $.tmpl.VARS !== "undefined") {
-                var varInfo = $("<p>");
-
-                $.each($.tmpl.VARS, function(name, value) {
-                    var str;
-
-                    if (typeof value === "function") {
-                        str = value.toString();
-                    } else {
-                        // JSON is prettier (when it works)
-                        try {
-                            str = JSON.stringify(value);
-                        } catch (e) {
-                            str = value.toString();
-                        }
-                    }
-
-                    varInfo.append($("<b>").text(name));
-                    varInfo.append(": ");
-                    varInfo.append($("<var>").text(str));
-                    varInfo.append("<br>");
-                });
-
-                varInfo.appendTo(debugWrap);
-            }
-
-            // for special style rules
-
-            $("body").addClass("debug");
+            $("<a>")
+                .text(src)
+                .attr("href", src + "?debug")
+                .appendTo(srcInfo);
         }
+
+        var links = $("<p>").appendTo(debugWrap);
+
+        if (!Khan.query.activity) {
+            var historyURL = debugURL + "&seed=" + currentProblemSeed + "&activity=";
+            $("<a>Problem history</a>").attr("href", "javascript:").click(function() {
+                window.location.href = historyURL + encodeURIComponent(
+                        JSON.stringify(Exercises.userActivityLog));
+            }).appendTo(links);
+        } else {
+            $("<a>Random problem</a>")
+                .attr("href", window.location.protocol + "//" +
+                        window.location.host + window.location.pathname +
+                        "?debug")
+                .appendTo(links);
+        }
+
+        links.append("<br><b>Problem types:</b><br>");
+
+        exercises.children(".problems").children().each(function(n, prob) {
+            var probID = $(prob).attr("id") || "" + n;
+            links.append($("<div>")
+                .css({
+                    "padding-left": "20px",
+                    "outline":
+                        (currentProblemType === probID) ?
+                        "1px dashed gray" : ""
+                })
+                .append($("<span>").text(n + ": "))
+                .append($("<a>")
+                    .text(probID)
+                    .attr("href", window.location.protocol + "//" +
+                        window.location.host + window.location.pathname +
+                        "?debug&problem=" + probID)
+                ));
+        });
+
+
+        // If this is a child exercise, show which one it came from
+        if (exercise.data("name") !== currentExerciseId) {
+            links.append("<br>");
+            links.append("Original exercise: " + exercise.data("name"));
+        }
+
+        if ($.tmpl.DATA_ENSURE_LOOPS > 0) {
+            var dataEnsureInfo = $("<p>");
+            dataEnsureInfo.append("Data-ensure loops: " + $.tmpl.DATA_ENSURE_LOOPS);
+            if ($.tmpl.DATA_ENSURE_LOOPS > 15) {
+                dataEnsureInfo.css("background-color", "yellow");
+            }
+            if ($.tmpl.DATA_ENSURE_LOOPS > 30) {
+                dataEnsureInfo.css("background-color", "orange");
+            }
+            if ($.tmpl.DATA_ENSURE_LOOPS > 50) {
+                dataEnsureInfo.css("background-color", "red");
+            }
+            dataEnsureInfo.appendTo(debugWrap);
+        }
+
+        if (typeof $.tmpl.VARS !== "undefined") {
+            var varInfo = $("<p>");
+
+            $.each($.tmpl.VARS, function(name, value) {
+                var str;
+
+                if (typeof value === "function") {
+                    str = value.toString();
+                } else {
+                    // JSON is prettier (when it works)
+                    try {
+                        str = JSON.stringify(value);
+                    } catch (e) {
+                        str = value.toString();
+                    }
+                }
+
+                varInfo.append($("<b>").text(name));
+                varInfo.append(": ");
+                varInfo.append($("<var>").text(str));
+                varInfo.append("<br>");
+            });
+
+            varInfo.appendTo(debugWrap);
+        }
+
+        // for special style rules
+
+        $("body").addClass("debug");
     }
 }
 
