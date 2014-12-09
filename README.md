@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/learningequality/ka-lite.png?label=ready&title=Ready)](https://waffle.io/learningequality/ka-lite)
 [Khan Academy](http://www.khanacademy.org/)'s core mission is to "provide a free world-class education for anyone anywhere", and as [70% of the world's population is without access to the internet](http://en.wikipedia.org/wiki/Global_Internet_usage), primarily in the developing world, providing an alternative delivery mechanism for Khan Academy content is key to fulfilling this mission.
 
 [KA Lite](http://kalite.learningequality.org/) is a lightweight [Django](https://www.djangoproject.com/) web app for serving core Khan Academy content (videos and exercises) from a local server, with points and progress-tracking, without needing internet connectivity. 
