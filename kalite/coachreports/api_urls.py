@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url, include
 
-from .api_resources import PlaylistProgressResource, PlaylistProgressDetailResource
+from .api_resources import PlaylistProgressResource, PlaylistProgressDetailResource, ExerciseSummaryResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -13,4 +13,5 @@ urlpatterns = patterns(__package__ + '.api_views',
     # TastyPie API Urls
     url(r'^', include(PlaylistProgressResource().urls)),
     url(r'^', include(PlaylistProgressDetailResource().urls)),
+    url(r'^', include(ExerciseSummaryResource().urls)),
 )

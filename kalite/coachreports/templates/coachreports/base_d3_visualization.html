@@ -74,7 +74,7 @@
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/d3.v3.min.js' %}"></script>
     <script type="text/javascript">
-        var API_DATA_URL = "{% url 'api_data' %}";
+        var API_DATA_URL = "{% url 'api_dispatch_list' resource_name='exercisesummarylog' %}";
         var GET_TOPIC_TREE_URL = "{% url 'get_topic_tree_by_kinds' topic_path='/' %}";
         var IMAGES_URL = "{% static 'images/' %}";
 
@@ -114,7 +114,7 @@
     <!-- a good way to do this would be to create these elements dynamically (in script),
          and move this all to javascript. -->
         <br/>
-        <div id="content_tree_template">
+       <!--  <div id="content_tree_template">
             <div class="row col-xs-12">
                 <button class="btn btn-default btn-xs" id="content_tree_toggle">
                     {% trans "View Report" %}
@@ -124,7 +124,7 @@
                 <br/>
                 <h4>{% trans "Loading topic tree... Please wait!" %}</h4>
             </div>
-        </div>
+        </div> -->
 
         <div id="google-chart">
         {% block chart_div %}
