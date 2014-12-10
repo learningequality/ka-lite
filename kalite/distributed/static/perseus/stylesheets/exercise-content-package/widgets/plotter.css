@@ -1,0 +1,23 @@
+.perseus-widget-plotter svg,
+.perseus-widget-plotter vml {
+  position: absolute;
+}
+.perseus-widget-plotter span.rotate {
+  -moz-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+}
+.perseus-widget-plotter body.ie span.rotate {
+  left: 60px !important;
+  top: 140px !important;
+}
+.set-from-scale-box {
+  border: 2px solid #EEEEEE;
+  border-radius: 3px;
+  padding: 3px;
+}
+.categories-title {
+  font-size: 14px;
+}

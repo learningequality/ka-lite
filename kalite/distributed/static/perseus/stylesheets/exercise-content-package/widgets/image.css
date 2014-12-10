@@ -1,0 +1,11 @@
+.perseus-widget-image .label-settings td {
+  padding: 5px 4px;
+  text-align: center;
+}
+.perseus-widget-image .label-settings tr:nth-child(odd) td {
+  background-color: transparent;
+}
+.perseus-widget-image .label-settings th,
+.perseus-widget-image .label-settings td {
+  border-width: 0;
+}

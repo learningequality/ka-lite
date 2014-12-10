@@ -1,0 +1,9 @@
+.perseus-widget-measurer {
+  position: relative;
+}
+.perseus-widget-measurer img {
+  position: absolute;
+}
+.perseus-widget-measurer-url {
+  width: 70%;
+}
