@@ -244,6 +244,35 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
         return super(ExerciseSummaryResource, self).get_object_list(request).filter(
                     complete__exact=True)
 
+    def get_object_list(self, request):
+        #TODO-BLOCKER(66eli77): need to find a way to include exercises that are not completed yet.
+        if not request.GET.get('facility_id'):
+            if not request.GET.get('group_id'):
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    complete__exact=True)
+            else:
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__group=request.GET.get('group_id'),
+                    complete__exact=True)
+        else:
+            if not request.GET.get('group_id'):
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__facility=request.GET.get('facility_id'),
+                    complete__exact=True)
+            else:
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__facility=request.GET.get('facility_id'),
+                    user__group=request.GET.get('group_id'),
+                    complete__exact=True)
+
     def obj_get_list(self, bundle, **kwargs):
         # self.permission_check(bundle.request)
         exercise_logs = self.get_object_list(bundle.request)
@@ -275,36 +304,5 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
             filtered_logs.append(curr_user[0])
             self.user_info.append(user_dic)
 
-
-        # omit_first_encounter = False
-        # for e in exercise_logs:
-        #     if e.user == pre_user:
-        #         mastered = exercise_logs.filter(user=e.user, completion_timestamp__lte=e.completion_timestamp).count()
-        #         exercises_dic = {
-        #             "mastered": mastered,
-        #             "completion_timestamp": e.completion_timestamp
-        #         }
-        #         exercises_info.append(exercises_dic)
-        #     else:
-        #         if omit_first_encounter:
-        #             user_dic = {
-        #                 "user_name": e.user.get_name(),
-        #                 "exercises": list(exercises_info)
-        #             }
-        #             filtered_logs.append(e)
-        #             self.user_info.append(user_dic)
-        #         omit_first_encounter = True
-
-        #         mastered = exercise_logs.filter(user=e.user, completion_timestamp__lte=e.completion_timestamp).count()
-        #         exercises_dic = {
-        #             "mastered": mastered,
-        #             "completion_timestamp": e.completion_timestamp
-        #         }
-        #         exercises_info.append(exercises_dic)
-
-        #         pre_user = e.user
-
-
         self.user_info.reverse()
         return filtered_logs
-        # return exercise_logs

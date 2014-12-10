@@ -69,6 +69,9 @@ function TimelineplotTopics(topic_paths) {
             "group_id": getParamValue("group_id"),
             "facility_id": getParamValue("facility_id"),
 
+            "completion_timestamp__gte": $("#timeline_datepicker_start").val(),
+            "completion_timestamp__lte": $("#timeline_datepicker_end").val(),
+
             "topic_path":  topic_paths
         }
     );
@@ -104,8 +107,8 @@ function plotTopics(topic_paths) {
             "group_id": getParamValue("group_id"),
             "facility_id": getParamValue("facility_id"),
 
-            "completion_timestamp__gte": $("#datepicker_start").val(),
-            "completion_timestamp__lte": $("#datepicker_end").val(),
+            "completion_timestamp__gte": $("#scatter_datepicker_start").val(),
+            "completion_timestamp__lte": $("#scatter_datepicker_end").val(),
 
             "topic_path":  topic_paths
         }

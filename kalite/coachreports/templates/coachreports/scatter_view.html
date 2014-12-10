@@ -19,16 +19,16 @@
     <script type="text/javascript" src="{% static 'js/coachreports/scatter_view.js' %}"></script>
     <script>
         setTimeout( function() {
-            $("#datepicker_start").change(   function() { plotTopics(null); });
-            $("#datepicker_end").change(   function() { plotTopics(null); });
+            $("#scatter_datepicker_start").change(   function() { plotTopics(null); });
+            $("#scatter_datepicker_end").change(   function() { plotTopics(null); });
         }, 200);
     </script>
     <script>
         $(function() {
-            $( "#datepicker_start" ).datepicker({
+            $( "#scatter_datepicker_start" ).datepicker({
                 dateFormat: "yy-mm-dd"
             });
-            $( "#datepicker_end" ).datepicker({
+            $( "#scatter_datepicker_end" ).datepicker({
                 dateFormat: "yy-mm-dd"
             });
             
@@ -37,8 +37,8 @@
             d.setDate(d.getDate() - 31);
             var one_month_early = $.datepicker.formatDate('yy-mm-dd', d);
 
-            $("#datepicker_end").val(current_date);
-            $("#datepicker_start").val(one_month_early);
+            $("#scatter_datepicker_end").val(current_date);
+            $("#scatter_datepicker_start").val(one_month_early);
             // race condition here, have to wait sometime until url is polulated
             // setTimeout( function() {
             //     plotTopics(null);
@@ -51,9 +51,9 @@
 {% block report_content %}
     {% block axis_dropdown %}
         {% trans "Starting-Time" %}:
-        <input type="text" id="datepicker_start">
+        <input type="text" id="scatter_datepicker_start">
         {% trans "Ending-Time" %}:
-        <input type="text" id="datepicker_end">
+        <input type="text" id="scatter_datepicker_end">
         
     {% endblock axis_dropdown %}
     <br/>
