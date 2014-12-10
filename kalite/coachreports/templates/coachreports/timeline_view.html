@@ -25,16 +25,16 @@
         }
 
         setTimeout( function() {
-            $("#timeline_datepicker_start").change(   function() { TimelineplotTopics(null); });
-            $("#timeline_datepicker_end").change(   function() { TimelineplotTopics(null); });
+            $("#datepicker_start").change(   function() { TimelineplotTopics(null); });
+            $("#datepicker_end").change(   function() { TimelineplotTopics(null); });
         }, 200);
     </script>
     <script>
         $(function() {
-            $( "#timeline_datepicker_start" ).datepicker({
+            $( "#datepicker_start" ).datepicker({
                 dateFormat: "yy-mm-dd"
             });
-            $( "#timeline_datepicker_end" ).datepicker({
+            $( "#datepicker_end" ).datepicker({
                 dateFormat: "yy-mm-dd"
             });
             
@@ -43,8 +43,8 @@
             d.setDate(d.getDate() - 31);
             var one_month_early = $.datepicker.formatDate('yy-mm-dd', d);
 
-            $("#timeline_datepicker_end").val(current_date);
-            $("#timeline_datepicker_start").val(one_month_early);
+            $("#datepicker_end").val(current_date);
+            $("#datepicker_start").val(one_month_early);
             // race condition here, have to wait sometime until url is polulated
             // setTimeout( function() {
             //     TimelineplotTopics(null);
@@ -53,13 +53,3 @@
         });
     </script>
 {% endblock headjs %}
-
-{% block report_content %}
-    {% block axis_dropdown %}
-        {% trans "Starting-Time" %}:
-        <input type="text" id="timeline_datepicker_start">
-        {% trans "Ending-Time" %}:
-        <input type="text" id="timeline_datepicker_end">
-    {% endblock axis_dropdown %}
-    {{ block.super }}
-{% endblock report_content %}

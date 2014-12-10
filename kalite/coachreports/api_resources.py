@@ -237,14 +237,6 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
         return bundle
 
     def get_object_list(self, request):
-        # return super(ExerciseSummaryResource, self).get_object_list(request).filter(
-        #             complete__exact=True,
-        #             user__facility=request.GET.get('facility_id'),
-        #             user__group=request.GET.get('group_id'))
-        return super(ExerciseSummaryResource, self).get_object_list(request).filter(
-                    complete__exact=True)
-
-    def get_object_list(self, request):
         #TODO-BLOCKER(66eli77): need to find a way to include exercises that are not completed yet.
         if not request.GET.get('facility_id'):
             if not request.GET.get('group_id'):
@@ -278,17 +270,14 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
         exercise_logs = self.get_object_list(bundle.request)
         pre_user = None
         filtered_logs = []
-        # exercises_info = []
 
         self.total_timestamps = exercise_logs.count()
         print "fafafafa: ", self.total_timestamps
 
         name_list = exercise_logs.values("user").distinct()
-        # print "wawawawa: ", name_list
         for n in name_list:
             exercises_info = []
             curr_user = exercise_logs.filter(user=n.get('user')).order_by('completion_timestamp')
-            # print "wawawawa: ", curr_user
             for e in curr_user:
                 mastered = curr_user.filter(completion_timestamp__lte=e.completion_timestamp).count()
                 exercises_dic = {

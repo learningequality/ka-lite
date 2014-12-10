@@ -76,7 +76,7 @@
     <script type="text/javascript">
         var API_DATA_URL = "{% url 'api_dispatch_list' resource_name='ScatterReportExerciselog' %}";
         var TIMELINE_API_DATA_URL = "{% url 'api_dispatch_list' resource_name='TimelineReportExerciselog' %}";
-        
+
         var GET_TOPIC_TREE_URL = "{% url 'get_topic_tree_by_kinds' topic_path='/' %}";
         var IMAGES_URL = "{% static 'images/' %}";
 
@@ -115,6 +115,10 @@
 {% block report_content %}
     <!-- a good way to do this would be to create these elements dynamically (in script),
          and move this all to javascript. -->
+         {% trans "Starting-Time" %}:
+        <input type="text" id="datepicker_start">
+        {% trans "Ending-Time" %}:
+        <input type="text" id="datepicker_end">
         <br/>
        <!--  <div id="content_tree_template">
             <div class="row col-xs-12">
@@ -139,22 +143,5 @@
             <div id="data_table"></div>
         {% endblock data_table %}
 
-        <div id="choose">
-            <form id="select_data" name="select_data">
-          <!--   {% block axis_dropdown %} -->
-            <h1>axis dropdown</h1>
-            [You must fill me in!!]
-                {% comment %} Stick this in here, as it will be silenced (but available as a block) %}{% endcomment %}
-                {% block data_options %}
-                    <option value="">----</option>
-                    {% for stat in stats %}
-                    {% if stat.type == "number" %}
-                    <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
-                    {% endif %}
-                    {% endfor %}
-                {% endblock data_options %}
-            {% endblock axis_dropdown %}
-            </form>
-        </div>
 {% endblock report_content %}
 
