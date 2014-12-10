@@ -28,7 +28,7 @@
             $("#xaxis").change(function() {
                 $("#yaxis option").prop("disabled", true);
                 $("#yaxis option[value='" + ystats[$("#xaxis").val()] + "']").prop("disabled", false).prop("selected", true);
-                plotTopics(null);
+                TimelineplotTopics(null);
             });
         });
     </script>

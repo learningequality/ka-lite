@@ -94,7 +94,7 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml, options) {
     user.append("path")
       .attr("class", "line")
       .attr("d", function(d) { return line(d.values); })
-      .attr("username", function(d) {return d.name.replace(", ","");})
+      .attr("username", function(d) {return d.name.replace(" ","").replace(". ","");})
       .style("stroke", function(d) { return color(d.name); })
       .append("svg:title")
       .text(function(d) { return d.name; });
@@ -107,10 +107,10 @@ function d3_multiTimeSeries (data, timeScale, appendtohtml, options) {
       .attr("class", "legend")
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })      
       .on("mouseover", function(d) {
-          d3.select('[username=' + d.replace(", ","") + ']').style("stroke-width", 5);
+          d3.select('[username=' + d.replace(" ","").replace(". ","") + ']').style("stroke-width", 5);
       })
       .on("mouseout", function(d) {
-          d3.select('[username=' + d.replace(", ","") + ']').style("stroke-width", 1.5);
+          d3.select('[username=' + d.replace(" ","").replace(". ","") + ']').style("stroke-width", 1.5);
       });
 
     // Draw a box and text for each user

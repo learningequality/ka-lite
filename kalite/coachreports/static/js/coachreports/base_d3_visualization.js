@@ -52,6 +52,28 @@ function plotJsonData(chart_div, base_url, props) {
     $("#chart_div").html("");
 }
 
+function TimelineplotTopics(topic_paths) {
+    // if (!$("#content_tree")) {
+    //     return false;
+    // }
+    if (topic_paths==null) {
+        topic_paths = get_topic_paths_from_tree();
+    }
+
+    plotJsonData(
+        "#chart_div",
+        TIMELINE_API_DATA_URL,
+        {
+            "xaxis": "completion_timestamp",
+            "yaxis": "mastered",
+            "group_id": getParamValue("group_id"),
+            "facility_id": getParamValue("facility_id"),
+
+            "topic_path":  topic_paths
+        }
+    );
+}
+
 
 function plotTopics(topic_paths) {
     if (!$("#content_tree")) {

@@ -224,76 +224,87 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
             'resource_uri', 'user', 'streak_progress', 'points', 'completion_counter', 'completion_timestamp',
             'exercise_id', 'mastered', 'struggling', 'deleted'
             ]
-        # filtering = {
-        #     # "exercise_id": ('exact', ),
-        #     # "user": ('exact', ),
-        #     "completion_timestamp": ('gte', 'lte')
-        # }
         authorization = UserObjectsOnlyAuthorization()
 
-    # add this custom field to store all the info needed for scatter report
     user_info = []
-    # dehydrate() can add extra field to the result json without change the model
-    # dehydrate() will get called as many times as how many objects exist in the queryset
+    total_timestamps = 0
     def dehydrate(self, bundle): 
+        print "sssss ", self.total_timestamps
         userinfo = self.user_info.pop()
+        bundle.data['total_timestamps'] = self.total_timestamps
         bundle.data['user_name'] = userinfo.get('user_name')
-        bundle.data['total_attempts'] = userinfo.get('total_attempts')
-        bundle.data['mastered'] = userinfo.get('mastered')
         bundle.data['exercises'] = userinfo.get('exercises')
         return bundle
 
     def get_object_list(self, request):
-        #TODO-BLOCKER(66eli77): need to find a way to include exercises that are not completed yet.
-        if not request.GET.get('facility_id'):
-            if not request.GET.get('group_id'):
-                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
-                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
-                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'))
-            else:
-                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
-                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
-                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
-                    user__group=request.GET.get('group_id'))
-        else:
-            if not request.GET.get('group_id'):
-                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
-                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
-                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
-                    user__facility=request.GET.get('facility_id'))
-            else:
-                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
-                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
-                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
-                    user__facility=request.GET.get('facility_id'),
-                    user__group=request.GET.get('group_id'))
+        # return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+        #             complete__exact=True,
+        #             user__facility=request.GET.get('facility_id'),
+        #             user__group=request.GET.get('group_id'))
+        return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    complete__exact=True)
 
     def obj_get_list(self, bundle, **kwargs):
         # self.permission_check(bundle.request)
         exercise_logs = self.get_object_list(bundle.request)
         pre_user = None
         filtered_logs = []
-        exercises_info = []
+        # exercises_info = []
 
-        for e in exercise_logs:
-            if e.user == pre_user:
-                pass
-            else:
-                pre_user = e.user
-                attempts = exercise_logs.filter(user=e.user).aggregate(Sum("attempts"))["attempts__sum"]
-                mastered = exercise_logs.filter(user=e.user, complete=True).count()
-                exercises_info = exercise_logs.filter(user=e.user).values('exercise_id', 'attempts', 'struggling')
-                for i in exercises_info:
-                    i["exercise_url"] = get_exercise_cache().get(i['exercise_id']).get("path")
+        self.total_timestamps = exercise_logs.count()
+        print "fafafafa: ", self.total_timestamps
 
-                user_dic = {
-                    "user_name": e.user.get_name(),
-                    "total_attempts": attempts,
+        name_list = exercise_logs.values("user").distinct()
+        # print "wawawawa: ", name_list
+        for n in name_list:
+            exercises_info = []
+            curr_user = exercise_logs.filter(user=n.get('user')).order_by('completion_timestamp')
+            # print "wawawawa: ", curr_user
+            for e in curr_user:
+                mastered = curr_user.filter(completion_timestamp__lte=e.completion_timestamp).count()
+                exercises_dic = {
                     "mastered": mastered,
-                    "exercises": list(exercises_info)
+                    "completion_timestamp": e.completion_timestamp
                 }
-                filtered_logs.append(e)
-                self.user_info.append(user_dic)
+                exercises_info.append(exercises_dic)
+
+            user_dic = {
+                "user_name": curr_user[0].user.get_name(),
+                "exercises": list(exercises_info)
+            }
+            filtered_logs.append(curr_user[0])
+            self.user_info.append(user_dic)
+
+
+        # omit_first_encounter = False
+        # for e in exercise_logs:
+        #     if e.user == pre_user:
+        #         mastered = exercise_logs.filter(user=e.user, completion_timestamp__lte=e.completion_timestamp).count()
+        #         exercises_dic = {
+        #             "mastered": mastered,
+        #             "completion_timestamp": e.completion_timestamp
+        #         }
+        #         exercises_info.append(exercises_dic)
+        #     else:
+        #         if omit_first_encounter:
+        #             user_dic = {
+        #                 "user_name": e.user.get_name(),
+        #                 "exercises": list(exercises_info)
+        #             }
+        #             filtered_logs.append(e)
+        #             self.user_info.append(user_dic)
+        #         omit_first_encounter = True
+
+        #         mastered = exercise_logs.filter(user=e.user, completion_timestamp__lte=e.completion_timestamp).count()
+        #         exercises_dic = {
+        #             "mastered": mastered,
+        #             "completion_timestamp": e.completion_timestamp
+        #         }
+        #         exercises_info.append(exercises_dic)
+
+        #         pre_user = e.user
+
 
         self.user_info.reverse()
         return filtered_logs
+        # return exercise_logs
