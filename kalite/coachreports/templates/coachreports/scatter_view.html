@@ -39,10 +39,7 @@
 
             $("#datepicker_end").val(current_date);
             $("#datepicker_start").val(one_month_early);
-            // race condition here, have to wait sometime until url is polulated
-            // setTimeout( function() {
-            //     plotTopics(null);
-            // }, 200);
+            
             plotTopics(null);
         });
     </script>

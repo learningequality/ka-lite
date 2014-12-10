@@ -82,25 +82,14 @@ function plotTopics(topic_paths) {
     if (topic_paths==null) {
         topic_paths = get_topic_paths_from_tree();
     }
-    // // the following code are fragile because it depends on the string structure of current URL
-    // // but retrieving info from URL(fastest) solves the race condition cause by geting info from Jquery selection
-    // var curr_url = document.URL.split( '&' );
-    // var facility_id_part = curr_url[curr_url.length-2];
-    // var group_id_part = curr_url[curr_url.length-1];
-    // var facility_id = facility_id_part.match(/facility_id=(.*)/)[1];
-    // var group_id = group_id_part.match(/group_id=(.*)/)[1];
 
     plotJsonData(
         "#chart_div",
         API_DATA_URL,
         {
-            // "xaxis":       $("#xaxis option:selected").val(),
-            // "yaxis":       $("#yaxis option:selected").val(),
             "xaxis": "Mastery",
             "yaxis": "Attempts",
-            // "user":        "",
-            // "group_id": $("#group-select option:selected").val(),
-            // "facility_id": $("#facility-select option:selected").val(),
+
             "group_id": getParamValue("group_id"),
             "facility_id": getParamValue("facility_id"),
 
