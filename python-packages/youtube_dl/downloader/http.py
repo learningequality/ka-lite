@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import os
 import time
 
@@ -23,11 +25,23 @@ class HttpFD(FileDownloader):
         headers = {'Youtubedl-no-compression': 'True'}
         if 'user_agent' in info_dict:
             headers['Youtubedl-user-agent'] = info_dict['user_agent']
-        basic_request = compat_urllib_request.Request(url, None, headers)
-        request = compat_urllib_request.Request(url, None, headers)
+        if 'http_referer' in info_dict:
+            headers['Referer'] = info_dict['http_referer']
+        add_headers = info_dict.get('http_headers')
+        if add_headers:
+            headers.update(add_headers)
+        data = info_dict.get('http_post_data')
+        http_method = info_dict.get('http_method')
+        basic_request = compat_urllib_request.Request(url, data, headers)
+        request = compat_urllib_request.Request(url, data, headers)
+        if http_method is not None:
+            basic_request.get_method = lambda: http_method
+            request.get_method = lambda: http_method
 
-        if self.params.get('test', False):
-            request.add_header('Range', 'bytes=0-10240')
+        is_test = self.params.get('test', False)
+
+        if is_test:
+            request.add_header('Range', 'bytes=0-%s' % str(self._TEST_FILE_SIZE - 1))
 
         # Establish possible resume length
         if os.path.isfile(encodeFilename(tmpfilename)):
@@ -49,7 +63,7 @@ class HttpFD(FileDownloader):
         while count <= retries:
             # Establish connection
             try:
-                data = compat_urllib_request.urlopen(request)
+                data = self.ydl.urlopen(request)
                 break
             except (compat_urllib_error.HTTPError, ) as err:
                 if (err.code < 500 or err.code >= 600) and err.code != 416:
@@ -59,7 +73,7 @@ class HttpFD(FileDownloader):
                     # Unable to resume (requested range not satisfiable)
                     try:
                         # Open the connection again without the range header
-                        data = compat_urllib_request.urlopen(basic_request)
+                        data = self.ydl.urlopen(basic_request)
                         content_length = data.info()['Content-Length']
                     except (compat_urllib_error.HTTPError, ) as err:
                         if err.code < 500 or err.code >= 600:
@@ -85,6 +99,7 @@ class HttpFD(FileDownloader):
                         else:
                             # The length does not match, we start the download over
                             self.report_unable_to_resume()
+                            resume_len = 0
                             open_mode = 'wb'
                             break
             # Retry
@@ -93,19 +108,28 @@ class HttpFD(FileDownloader):
                 self.report_retry(count, retries)
 
         if count > retries:
-            self.report_error(u'giving up after %s retries' % retries)
+            self.report_error('giving up after %s retries' % retries)
             return False
 
         data_len = data.info().get('Content-length', None)
+
+        # Range HTTP header may be ignored/unsupported by a webserver
+        # (e.g. extractor/scivee.py, extractor/bambuser.py).
+        # However, for a test we still would like to download just a piece of a file.
+        # To achieve this we limit data_len to _TEST_FILE_SIZE and manually control
+        # block size when downloading a file.
+        if is_test and (data_len is None or int(data_len) > self._TEST_FILE_SIZE):
+            data_len = self._TEST_FILE_SIZE
+
         if data_len is not None:
             data_len = int(data_len) + resume_len
             min_data_len = self.params.get("min_filesize", None)
             max_data_len = self.params.get("max_filesize", None)
             if min_data_len is not None and data_len < min_data_len:
-                self.to_screen(u'\r[download] File is smaller than min-filesize (%s bytes < %s bytes). Aborting.' % (data_len, min_data_len))
+                self.to_screen('\r[download] File is smaller than min-filesize (%s bytes < %s bytes). Aborting.' % (data_len, min_data_len))
                 return False
             if max_data_len is not None and data_len > max_data_len:
-                self.to_screen(u'\r[download] File is larger than max-filesize (%s bytes > %s bytes). Aborting.' % (data_len, max_data_len))
+                self.to_screen('\r[download] File is larger than max-filesize (%s bytes > %s bytes). Aborting.' % (data_len, max_data_len))
                 return False
 
         data_len_str = format_bytes(data_len)
@@ -115,7 +139,7 @@ class HttpFD(FileDownloader):
         while True:
             # Download and write
             before = time.time()
-            data_block = data.read(block_size)
+            data_block = data.read(block_size if not is_test else min(block_size, data_len - byte_counter))
             after = time.time()
             if len(data_block) == 0:
                 break
@@ -129,13 +153,13 @@ class HttpFD(FileDownloader):
                     filename = self.undo_temp_name(tmpfilename)
                     self.report_destination(filename)
                 except (OSError, IOError) as err:
-                    self.report_error(u'unable to open for writing: %s' % str(err))
+                    self.report_error('unable to open for writing: %s' % str(err))
                     return False
             try:
                 stream.write(data_block)
             except (IOError, OSError) as err:
-                self.to_stderr(u"\n")
-                self.report_error(u'unable to write data: %s' % str(err))
+                self.to_stderr('\n')
+                self.report_error('unable to write data: %s' % str(err))
                 return False
             if not self.params.get('noresizebuffer', False):
                 block_size = self.best_block_size(after - before, len(data_block))
@@ -159,14 +183,18 @@ class HttpFD(FileDownloader):
                 'speed': speed,
             })
 
+            if is_test and byte_counter == data_len:
+                break
+
             # Apply rate limit
             self.slow_down(start, byte_counter - resume_len)
 
         if stream is None:
-            self.to_stderr(u"\n")
-            self.report_error(u'Did not get any data blocks')
+            self.to_stderr('\n')
+            self.report_error('Did not get any data blocks')
             return False
-        stream.close()
+        if tmpfilename != '-':
+            stream.close()
         self.report_finish(data_len_str, (time.time() - start))
         if data_len is not None and byte_counter != data_len:
             raise ContentTooShortError(byte_counter, int(data_len))
