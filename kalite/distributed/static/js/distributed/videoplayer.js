@@ -486,6 +486,15 @@ window.VideoWrapperView = BaseView.extend({
 
         this.$(".points-wrapper").append(this.points_view.el);
 
+
+        this.start_timestamp_view = this.add_subview(ContentStartTimeStampView, {
+            model: this.model
+        });
+
+        this.start_timestamp_view.render();
+
+        this.$(".start-timestamp-wrapper").append(this.start_timestamp_view.el);
+
     },
 
     languageChange: function() {

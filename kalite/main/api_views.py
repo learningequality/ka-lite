@@ -251,7 +251,7 @@ def get_content_logs(request):
     user = request.session["facility_user"]
     logs = ContentLog.objects \
         .filter(user=user, content_id__in=data) \
-        .values("content_id", "complete", "points")
+        .values("content_id", "complete", "start_timestamp", "points")
 
     return JsonResponse(list(logs))
 
