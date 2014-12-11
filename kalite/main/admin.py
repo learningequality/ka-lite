@@ -37,6 +37,6 @@ admin.site.register(AttemptLog, AttemptLogAdmin)
 
 
 class ContentLogAdmin(admin.ModelAdmin):
-    list_display = ("content_id", "user", "completion_timestamp", "start_timestamp",)
-    list_filter = ("completion_timestamp", "user", "content_id", "start_timestamp",)
+    list_display = ("content_id", "user", "points", "start_timestamp", "time_spent", "completion_timestamp", "content_source", "progress", )
+    list_filter = ("content_id", "user", "points", "start_timestamp", "time_spent", "completion_timestamp", "content_source", "progress", )
 admin.site.register(ContentLog, ContentLogAdmin)
