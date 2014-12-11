@@ -3,30 +3,17 @@ function drawChart_timeline(chart_div, dataTable, timeScale, options) {
 }
 
 function json2dataTable_timeline(json, xaxis, yaxis) {
-    // Given a dictionary, create a data table, one row at a time.
-    // console.log("loglog1: ", xaxis);
-    // console.log("loglog2: ", yaxis);
-    // console.log("loglog3: ", json['objects']);
-    console.log("fffffff: ", json['objects']);
-    
     var dataTable = [];
     var timeScale = [];
 
-    // nusers = Object.keys(json['objects']).length;
-    // console.log("loglog3: ", nusers);
-
     nobjects = json['objects'].length;
-    console.log("loglog66: ", nobjects);
-    console.log("loglog4: ", new Date(json['objects'][1]['exercises'][0][xaxis]));
-    // return null;
 
     var multiplier = 1;
 
-    multiplier = 100/32;
+    multiplier = 100/nobjects;
 
     for (var s in json['objects']){
         var curr_s = json['objects'][s]['exercises'];
-     //   console.log("haha1: ", curr_s); //each user with all the timelog
         var data_array = {};
         data_array["name"] = json['objects'][s]['user_name'];
 
@@ -34,7 +21,6 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
 
         for (var k in curr_s){
             var curr_k = curr_s[k];
-     //       console.log("haha2: ", curr_k);  //each timelog and mstered
             timeScale.push(new Date(curr_k[xaxis]));
             values.push({
                 date: new Date(curr_k[xaxis]), data_point: multiplier*curr_k[yaxis]
@@ -42,13 +28,8 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
         }
 
         data_array["values"] = values;
-        // for(var i = 0; i < 2; i++){
-        //     timeScale.push(new Date(curr_s[i][xaxis]));
-        // }
         dataTable.push(data_array);
     }
-    // console.log("elieli dataTable: ", dataTable);
-    // console.log("elieli timeScale: ", timeScale);
     return [dataTable, timeScale];
   }
 
