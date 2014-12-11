@@ -3,15 +3,20 @@ from __future__ import unicode_literals
 
 import json
 import re
+import calendar
+import datetime
 
 from .common import InfoExtractor
 from ..utils import (
     HEADRequest,
     unified_strdate,
+    ExtractorError,
 )
 
 
-class ORFIE(InfoExtractor):
+class ORFTVthekIE(InfoExtractor):
+    IE_NAME = 'orf:tvthek'
+    IE_DESC = 'ORF TVthek'
     _VALID_URL = r'https?://tvthek\.orf\.at/(?:programs/.+?/episodes|topics/.+?|program/[^/]+)/(?P<id>\d+)'
 
     _TEST = {
@@ -35,7 +40,15 @@ class ORFIE(InfoExtractor):
         data_json = self._search_regex(
             r'initializeAdworx\((.+?)\);\n', webpage, 'video info')
         all_data = json.loads(data_json)
-        sdata = all_data[0]['values']['segments']
+
+        def get_segments(all_data):
+            for data in all_data:
+                if data['name'] == 'Tracker::EPISODE_DETAIL_PAGE_OVER_PROGRAM':
+                    return data['values']['segments']
+
+        sdata = get_segments(all_data)
+        if not sdata:
+            raise ExtractorError('Unable to extract segments')
 
         def quality_to_int(s):
             m = re.search('([0-9]+)', s)
@@ -95,4 +108,74 @@ class ORFIE(InfoExtractor):
             '_type': 'playlist',
             'entries': entries,
             'id': playlist_id,
+        }
+
+
+# Audios on ORF radio are only available for 7 days, so we can't add tests.
+
+
+class ORFOE1IE(InfoExtractor):
+    IE_NAME = 'orf:oe1'
+    IE_DESC = 'Radio Österreich 1'
+    _VALID_URL = r'http://oe1\.orf\.at/programm/(?P<id>[0-9]+)'
+
+    def _real_extract(self, url):
+        mobj = re.match(self._VALID_URL, url)
+        show_id = mobj.group('id')
+
+        data = self._download_json(
+            'http://oe1.orf.at/programm/%s/konsole' % show_id,
+            show_id
+        )
+
+        timestamp = datetime.datetime.strptime('%s %s' % (
+            data['item']['day_label'],
+            data['item']['time']
+        ), '%d.%m.%Y %H:%M')
+        unix_timestamp = calendar.timegm(timestamp.utctimetuple())
+
+        return {
+            'id': show_id,
+            'title': data['item']['title'],
+            'url': data['item']['url_stream'],
+            'ext': 'mp3',
+            'description': data['item'].get('info'),
+            'timestamp': unix_timestamp
+        }
+
+
+class ORFFM4IE(InfoExtractor):
+    IE_DESC = 'orf:fm4'
+    IE_DESC = 'radio FM4'
+    _VALID_URL = r'http://fm4\.orf\.at/7tage/?#(?P<date>[0-9]+)/(?P<show>\w+)'
+
+    def _real_extract(self, url):
+        mobj = re.match(self._VALID_URL, url)
+        show_date = mobj.group('date')
+        show_id = mobj.group('show')
+
+        data = self._download_json(
+            'http://audioapi.orf.at/fm4/json/2.0/broadcasts/%s/4%s' % (show_date, show_id),
+            show_id
+        )
+
+        def extract_entry_dict(info, title, subtitle):
+            return {
+                'id': info['loopStreamId'].replace('.mp3', ''),
+                'url': 'http://loopstream01.apa.at/?channel=fm4&id=%s' % info['loopStreamId'],
+                'title': title,
+                'description': subtitle,
+                'duration': (info['end'] - info['start']) / 1000,
+                'timestamp': info['start'] / 1000,
+                'ext': 'mp3'
+            }
+
+        entries = [extract_entry_dict(t, data['title'], data['subtitle']) for t in data['streams']]
+
+        return {
+            '_type': 'playlist',
+            'id': show_id,
+            'title': data['title'],
+            'description': data['subtitle'],
+            'entries': entries
         }

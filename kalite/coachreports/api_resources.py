@@ -120,12 +120,21 @@ class PlaylistProgressDetailResource(PlaylistParentResource):
         return self.get_object_list(bundle.request)
 
 class ExerciseSummaryResource(ModelResource):
-
     user = fields.ForeignKey(FacilityUserResource, 'user')
+
+    def obj_create(self, bundle, **kwargs):
+        is_admin = getattr(bundle.request, "is_admin", False)
+        user = getattr(bundle.request, "user", None)
+        if is_admin:
+            if user and getattr(user, 'is_superuser', False):
+                return None
+        return super(ExerciseLogResource, self).obj_create(bundle, **kwargs)
+
+class ScatterReportExerciseResource(ExerciseSummaryResource):
 
     class Meta:
         queryset = ExerciseLog.objects.all()
-        resource_name = 'exercisesummarylog'
+        resource_name = 'ScatterReportExerciselog'
         excludes = ['attempts_before_completion', 
             'complete', 'counter', 'attempts', 'signed_version', 'signature', 'resource_uri', 'id', 'language', 
             'resource_uri', 'user', 'streak_progress', 'points', 'completion_counter', 'completion_timestamp',
@@ -137,14 +146,6 @@ class ExerciseSummaryResource(ModelResource):
         #     "completion_timestamp": ('gte', 'lte')
         # }
         authorization = UserObjectsOnlyAuthorization()
-
-    def obj_create(self, bundle, **kwargs):
-        is_admin = getattr(bundle.request, "is_admin", False)
-        user = getattr(bundle.request, "user", None)
-        if is_admin:
-            if user and getattr(user, 'is_superuser', False):
-                return None
-        return super(ExerciseLogResource, self).obj_create(bundle, **kwargs)
 
     # add this custom field to store all the info needed for scatter report
     user_info = []
@@ -209,6 +210,88 @@ class ExerciseSummaryResource(ModelResource):
                 }
                 filtered_logs.append(e)
                 self.user_info.append(user_dic)
+
+        self.user_info.reverse()
+        return filtered_logs
+
+class TimelineReportExerciseResource(ExerciseSummaryResource):
+
+    class Meta:
+        queryset = ExerciseLog.objects.all()
+        resource_name = 'TimelineReportExerciselog'
+        excludes = ['attempts_before_completion', 
+            'complete', 'counter', 'attempts', 'signed_version', 'signature', 'resource_uri', 'id', 'language', 
+            'resource_uri', 'user', 'streak_progress', 'points', 'completion_counter', 'completion_timestamp',
+            'exercise_id', 'mastered', 'struggling', 'deleted'
+            ]
+        authorization = UserObjectsOnlyAuthorization()
+
+    user_info = []
+    total_timestamps = 0
+    def dehydrate(self, bundle): 
+        print "sssss ", self.total_timestamps
+        userinfo = self.user_info.pop()
+        bundle.data['total_timestamps'] = self.total_timestamps
+        bundle.data['user_name'] = userinfo.get('user_name')
+        bundle.data['exercises'] = userinfo.get('exercises')
+        return bundle
+
+    def get_object_list(self, request):
+        #TODO-BLOCKER(66eli77): need to find a way to include exercises that are not completed yet.
+        if not request.GET.get('facility_id'):
+            if not request.GET.get('group_id'):
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    complete__exact=True)
+            else:
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__group=request.GET.get('group_id'),
+                    complete__exact=True)
+        else:
+            if not request.GET.get('group_id'):
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__facility=request.GET.get('facility_id'),
+                    complete__exact=True)
+            else:
+                return super(ExerciseSummaryResource, self).get_object_list(request).filter(
+                    completion_timestamp__gte=request.GET.get('completion_timestamp__gte'), 
+                    completion_timestamp__lte=request.GET.get('completion_timestamp__lte'),
+                    user__facility=request.GET.get('facility_id'),
+                    user__group=request.GET.get('group_id'),
+                    complete__exact=True)
+
+    def obj_get_list(self, bundle, **kwargs):
+        # self.permission_check(bundle.request)
+        exercise_logs = self.get_object_list(bundle.request)
+        pre_user = None
+        filtered_logs = []
+
+        self.total_timestamps = exercise_logs.count()
+        print "fafafafa: ", self.total_timestamps
+
+        name_list = exercise_logs.values("user").distinct()
+        for n in name_list:
+            exercises_info = []
+            curr_user = exercise_logs.filter(user=n.get('user')).order_by('completion_timestamp')
+            for e in curr_user:
+                mastered = curr_user.filter(completion_timestamp__lte=e.completion_timestamp).count()
+                exercises_dic = {
+                    "mastered": mastered,
+                    "completion_timestamp": e.completion_timestamp
+                }
+                exercises_info.append(exercises_dic)
+
+            user_dic = {
+                "user_name": curr_user[0].user.get_name(),
+                "exercises": list(exercises_info)
+            }
+            filtered_logs.append(curr_user[0])
+            self.user_info.append(user_dic)
 
         self.user_info.reverse()
         return filtered_logs

@@ -52,6 +52,28 @@ function plotJsonData(chart_div, base_url, props) {
     $("#chart_div").html("");
 }
 
+function TimelineplotTopics(topic_paths) {
+    if (topic_paths==null) {
+        topic_paths = get_topic_paths_from_tree();
+    }
+
+    plotJsonData(
+        "#chart_div",
+        TIMELINE_API_DATA_URL,
+        {
+            "xaxis": "completion_timestamp",
+            "yaxis": "mastered",
+            "group_id": getParamValue("group_id"),
+            "facility_id": getParamValue("facility_id"),
+
+            "completion_timestamp__gte": $("#datepicker_start").val(),
+            "completion_timestamp__lte": $("#datepicker_end").val(),
+
+            "topic_path":  topic_paths
+        }
+    );
+}
+
 
 function plotTopics(topic_paths) {
     if (!$("#content_tree")) {
@@ -60,27 +82,16 @@ function plotTopics(topic_paths) {
     if (topic_paths==null) {
         topic_paths = get_topic_paths_from_tree();
     }
-    // the following code are fragile because it depends on the string structure of current URL
-    // but retrieving info from URL(fastest) solves the race condition cause by geting info from Jquery selection
-    var curr_url = document.URL.split( '&' );
-    var facility_id_part = curr_url[curr_url.length-2];
-    var group_id_part = curr_url[curr_url.length-1];
-    var facility_id = facility_id_part.match(/facility_id=(.*)/)[1];
-    var group_id = group_id_part.match(/group_id=(.*)/)[1];
 
     plotJsonData(
         "#chart_div",
         API_DATA_URL,
         {
-            // "xaxis":       $("#xaxis option:selected").val(),
-            // "yaxis":       $("#yaxis option:selected").val(),
             "xaxis": "Mastery",
             "yaxis": "Attempts",
-            // "user":        "",
-            // "group_id": $("#group-select option:selected").val(),
-            // "facility_id": $("#facility-select option:selected").val(),
-            "group_id": group_id,
-            "facility_id": facility_id,
+
+            "group_id": getParamValue("group_id"),
+            "facility_id": getParamValue("facility_id"),
 
             "completion_timestamp__gte": $("#datepicker_start").val(),
             "completion_timestamp__lte": $("#datepicker_end").val(),
