@@ -34,3 +34,9 @@ class AttemptLogAdmin(admin.ModelAdmin):
     list_display = ("exercise_id", "user", "language", "answer_given", "context_type", "context_id", "correct")
     list_filter = ("exercise_id", "user", "language", "context_type", "context_id" )
 admin.site.register(AttemptLog, AttemptLogAdmin)
+
+
+class ContentLogAdmin(admin.ModelAdmin):
+    list_display = ("content_id", "user", "completion_timestamp", "start_timestamp",)
+    list_filter = ("completion_timestamp", "user", "content_id", "start_timestamp",)
+admin.site.register(ContentLog, ContentLogAdmin)
