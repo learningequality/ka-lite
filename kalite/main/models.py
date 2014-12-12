@@ -508,7 +508,7 @@ class ContentLog(DeferredCountSyncedModel):
     progress_timestamp = models.DateTimeField(blank=True, null=True)
     content_source = models.CharField(max_length=100, db_index=True)
     content_kind = models.CharField(max_length=100, db_index=True)
-    progress = models.IntegerField(blank=True, null=True)
+    progress = models.IntegerField(blank=True, null=True) # TODO(djallado): Change this to Floatfield for percentage.
     views = models.IntegerField(blank=True, null=True)
     extra_fields = models.TextField(blank=True)
 
@@ -519,6 +519,11 @@ class ContentLog(DeferredCountSyncedModel):
     @staticmethod
     def get_points_for_user(user):
         return ContentLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+
+    def save(self, *args, **kwargs):
+        if self.content_id and self.complete:
+            self.progress_timestamp = datetime.now()
+        super(ContentLog, self).save(*args, **kwargs)
 
 
 @receiver(pre_save, sender=UserLog)
