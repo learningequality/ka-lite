@@ -521,7 +521,7 @@ class ContentLog(DeferredCountSyncedModel):
         return ContentLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
     def save(self, *args, **kwargs):
-        if self.content_id and self.complete:
+        if self.content_id and not self.complete:
             self.progress_timestamp = datetime.now()
         super(ContentLog, self).save(*args, **kwargs)
 
