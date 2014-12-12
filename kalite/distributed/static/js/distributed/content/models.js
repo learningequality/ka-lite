@@ -61,7 +61,6 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         points: 0,
         views: 0,
         progress: 0,
-        start_timestamp: 0,
         time_spent: 0
     },
 
@@ -72,7 +71,6 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         "points",
         "language",
         "complete",
-        "start_timestamp",
         "completion_timestamp",
         "completion_counter",
         "time_spent",

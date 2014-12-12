@@ -80,6 +80,7 @@ window.ContentWrapperView = BaseView.extend({
         });
 
         this.points_view.render();
+
         this.$(".points-wrapper").append(this.points_view.el);
 
         this.log_model.set("views", this.log_model.get("views") + 1);
@@ -178,28 +179,10 @@ window.ContentPointsView = BaseView.extend({
     initialize: function() {
         this.starting_points = this.model.get("points") || 0;
         this.listenTo(this.model, "change", this.render);
-
-
     },
 
     render: function() {
         this.$el.html(this.template(this.model.attributes));
         statusModel.set("newpoints", this.model.get("points") - this.starting_points);
-    }
-});
-
-window.ContentStartTimeStampView = BaseView.extend({
-
-    template: HB.template("content/start-timestamp"),
-
-    initialize: function() {
-        var date = new Date();
-        this.start_timestamp = this.model.get("start_timestamp") || date;
-        this.listenTo(this.model, "change", this.render);
-    },
-
-    render: function() {
-        this.$el.html(this.template(this.model.attributes));
-        console.log(this.start_timestamp);
     }
 });
