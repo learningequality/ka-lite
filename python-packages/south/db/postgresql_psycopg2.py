@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import uuid
 from django.db.backends.util import truncate_name
 from south.db import generic
@@ -8,7 +10,7 @@ class DatabaseOperations(generic.DatabaseOperations):
     """
     PsycoPG2 implementation of database operations.
     """
-    
+
     backend_name = "postgres"
 
     def create_index_name(self, table_name, column_names, suffix=""):
@@ -46,30 +48,35 @@ class DatabaseOperations(generic.DatabaseOperations):
         generic.DatabaseOperations.rename_table(self, old_table_name, table_name)
         # Then, try renaming the ID sequence
         # (if you're using other AutoFields... your problem, unfortunately)
-        self.commit_transaction()
-        self.start_transaction()
-        try:
+
+        if self.execute(
+            """
+            SELECT 1
+            FROM information_schema.sequences
+            WHERE sequence_name = %s
+            """,
+            [old_table_name + '_id_seq']
+        ):
             generic.DatabaseOperations.rename_table(self, old_table_name + "_id_seq", table_name + "_id_seq")
-        except:
-            if self.debug:
-                print "   ~ No such sequence (ignoring error)"
-            self.rollback_transaction()
-        else:
-            self.commit_transaction()
-        self.start_transaction()
 
         # Rename primary key index, will not rename other indices on
         # the table that are used by django (e.g. foreign keys). Until
         # figure out how, you need to do this yourself.
-        try:
+
+        pkey_index_names = self.execute(
+            """
+            SELECT pg_index.indexrelid::regclass
+            FROM pg_index, pg_attribute
+            WHERE
+              indrelid = %s::regclass AND
+              pg_attribute.attrelid = indrelid AND
+              pg_attribute.attnum = any(pg_index.indkey)
+              AND indisprimary
+            """,
+            [table_name]
+        )
+        if old_table_name + "_pkey" in pkey_index_names:
             generic.DatabaseOperations.rename_table(self, old_table_name + "_pkey", table_name + "_pkey")
-        except:
-            if self.debug:
-                print "   ~ No such primary key (ignoring error)"
-            self.rollback_transaction()
-        else:
-            self.commit_transaction()
-        self.start_transaction()
 
     def rename_index(self, old_index_name, index_name):
         "Rename an index individually"
@@ -82,7 +89,7 @@ class DatabaseOperations(generic.DatabaseOperations):
         else:
             return super(DatabaseOperations, self)._default_value_workaround(value)
 
-    def _db_type_for_alter_column(self, field): 
+    def _db_type_for_alter_column(self, field):
         return self._db_positive_type_for_alter_column(DatabaseOperations, field)
 
     def _alter_add_column_mods(self, field, name, params, sqls):
