@@ -492,8 +492,10 @@ class AttemptLog(DeferredCountSyncedModel):
     response_log = models.TextField(default="[]")
     response_count = models.IntegerField(default=0)
 
-    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
-        pass
+    class Meta:
+        index_together = [
+            ["user", "exercise_id", "context_type"],
+        ]
 
 
 @receiver(pre_save, sender=UserLog)
