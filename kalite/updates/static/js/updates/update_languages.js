@@ -211,7 +211,7 @@ function select_lang_pack( event ) {
     var lang_code = event.data.caller_value;
     var found = false;
     var li = $(sprintf('#option-%s', lang_code));
-    $('#language-packs-selection').html( li.text() )
+    $('#language-packs-selection').html( li.html() )
                                   .append( $('<span></span>').attr('class', 'caret') );
     $('#language-packs').attr('value', li.attr('value'));
 
