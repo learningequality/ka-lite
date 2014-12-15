@@ -112,3 +112,9 @@ h4.button_text {
 #language-packs {
     display: inline-block;
 }
+
+.beta-text {
+  font-size: x-small;
+  color: red;
+  margin: 0 1em;
+}

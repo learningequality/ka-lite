@@ -161,8 +161,8 @@ function populate_installable_lang_pack_dd(){
                                        );
                 if(langbeta && $("#beta-checkbox").is(':checked')){
                     li.find('a')
-                      .append( $('<img>').attr('src', BETA_BUTTON_URL)
-                                         .attr('class', 'beta-button-img')
+                      .append( $('<span></span>').text(gettext('beta'))
+                                                 .attr('class', 'beta-text')
                       );
                     lp_ul.append(li);
                 }else if(!langbeta){
@@ -211,7 +211,7 @@ function select_lang_pack( event ) {
     var lang_code = event.data.caller_value;
     var found = false;
     var li = $(sprintf('#option-%s', lang_code));
-    $('#language-packs-selection').html( li.html() )
+    $('#language-packs-selection').html( li.text() )
                                   .append( $('<span></span>').attr('class', 'caret') );
     $('#language-packs').attr('value', li.attr('value'));
 
