@@ -215,17 +215,14 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     model: AttemptLogModel,
 
     initialize: function(models, options) {
-        this.exercise_id = options.exercise_id;
-        this.context_type = options.context_type;
+        this.filters = $.extend({
+            "user": window.statusModel.get("user_id"),
+            "limit": ExerciseParams.STREAK_WINDOW
+        }, options);
     },
 
     url: function() {
-        return "/api/attemptlog/?" + $.param({
-            "exercise_id": this.exercise_id,
-            "user": window.statusModel.get("user_id"),
-            "limit": ExerciseParams.STREAK_WINDOW,
-            "context_type": this.context_type
-        });
+        return "/api/attemptlog/?" + $.param(this.filters, true);
     },
 
     add_new: function(attemptlog) {
@@ -918,7 +915,7 @@ window.ExercisePracticeView = Backbone.View.extend({
                 var log_collection_deferred = self.log_collection.fetch();
 
                 // load the last 10 (or however many) specific attempts the user made on self exercise
-                self.attempt_collection = new AttemptLogCollection([], {exercise_id: self.options.exercise_id, context_type: self.options.context_type});
+                self.attempt_collection = new AttemptLogCollection([], {exercise_id: self.options.exercise_id, context_type__in: ["playlist", "exercise"]});
                 var attempt_collection_deferred = self.attempt_collection.fetch();
 
                 // wait until both the exercise and attempt logs have been loaded before continuing
