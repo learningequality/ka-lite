@@ -154,7 +154,8 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 API_LIMIT_PER_PAGE = 0
 
 # Default to a 20 minute timeout for a session - set to 0 to disable.
-SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
+# TODO(jamalex): re-enable this to something sensible, once #2800 is resolved
+SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 ########################
 # After all settings, but before config packages,
