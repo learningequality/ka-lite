@@ -2504,7 +2504,7 @@
         "sort_order": 3
       },
       {
-        "entity_id": "e/adding_subtracting_mixed_numbers_0.5/",
+        "entity_id": "/e/adding_subtracting_mixed_numbers_0.5/",
         "entity_kind": "Exercise",
         "is_essential": false,
         "sort_order": 4
@@ -2633,25 +2633,25 @@
   {
     "entries": [
       {
-        "entity_id": "/e/multi-digit-multiplication/",
+        "entity_id": "/e/multiplication_4/",
         "entity_kind": "Exercise",
         "is_essential": false,
         "sort_order": 0
       },
       {
-        "entity_id": "/e/multiplication-and-division-word-problems/",
+        "entity_id": "/e/arithmetic_word_problems_2/",
         "entity_kind": "Exercise",
         "is_essential": false,
         "sort_order": 1
       },
       {
-        "entity_id": "/e/multiplication-and-division-word-problems-2/",
+        "entity_id": "/e/arithmetic_word_problems/",
         "entity_kind": "Exercise",
         "is_essential": false,
         "sort_order": 2
       },
       {
-        "entity_id": "/e/multi-digit-division/",
+        "entity_id": "/e/division_4/",
         "entity_kind": "Exercise",
         "is_essential": false,
         "sort_order": 3
@@ -9497,7 +9497,7 @@
   {
     "entries": [
       {
-        "entity_id": "e/number_line_2/",
+        "entity_id": "/e/number_line_2/",
         "entity_kind": "Exercise",
         "is_essential": false,
         "sort_order": 0
@@ -9518,7 +9518,7 @@
     "id": "g6_u600_p7",
     "show": true,
     "tag": "Grade 6",
-    "title": "Playlist Optional Prerequisite: Basic Integers, Ratios, Angles ",
+    "title": "Playlist Optional Prerequisite: Basic Integers, Ratios, Angles",
     "unit": 100
   },
   {
