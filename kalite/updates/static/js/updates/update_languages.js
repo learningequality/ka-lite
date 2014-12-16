@@ -42,15 +42,18 @@ function display_languages() {
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
+            var subtitle = gettext("Subtitles")
             if (lang['code'] !== defaultLanguage) {
-                link_text = sprintf("<span><a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'><button type='button' class='btn btn-default btn-sm'>Set as default</button></a></span>", {
+                link_text = sprintf("<span><a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'><button type='button' class='btn btn-default btn-sm'>%(link_text)s</button></a></span>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
                 });
             } else {
-                link_text = "Default";
+                link_text = gettext("Default");
             }
-            var lang_name_data = sprintf("<b>%(name)s</b><br>%(subtitle_count)d Subtitles <br> %(percent_translated)d%% Translated", lang);
+            lang["subtitles"] = gettext("Subtitles");
+            lang["translated"] = gettext("Translated");
+            var lang_name_data = sprintf("<b>%(name)s</b><br>%(subtitle_count)d %(subtitles)s <br> %(percent_translated)d%% %(translated)s", lang);
             var lang_code = lang['code'];
             
             var lang_description = sprintf("<tr><td class='lang-name'>%s</td><td class='lang-link'>%s </td>", lang_name_data, link_text);
@@ -81,16 +84,18 @@ function display_languages() {
                         });
                     }
                     else {
-                        lang_description += sprintf("<td class='upgrade-link'>Up to date</td>");
+                        lang_description += sprintf("<td class='upgrade-link'>%(up_to_date_text)s</td>", {
+                            up_to_date_text: gettext("Up to Date")
+                        });
                     }
                 }
             }
 
             if ( lang_code != 'en')
-                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, sprintf(gettext('Delete'), lang));
+                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete'));
             else
                 if (lang['subtitle_count'] > 0) {
-                    lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, sprintf(gettext('Delete Subtitles'), lang));
+                    lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete Subtitles'));
                 }
 
             lang_description += "<td class='clear'></td></tr>";
