@@ -108,3 +108,13 @@ h4.button_text {
     #langpack-details { float: left; }
     #get-language-button { float: left !important; margin-bottom: 10px; margin-left: 10px; }
 }
+
+#language-packs {
+    display: inline-block;
+}
+
+.beta-text {
+  font-size: x-small;
+  color: red;
+  margin: 0 1em;
+}

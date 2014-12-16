@@ -19,6 +19,7 @@
         var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ SHORTVERSION }}";
         var DELETE_LANGUAGEPACK_URL = "{% url 'delete_language_pack' %}";
         var defaultLanguage = "{{ default_language }}";
+        var BETA_BUTTON_URL = "{% static 'images/updates/beta-button.png' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
@@ -45,7 +46,13 @@
             <div class="row">
                 <div id="langpacks">
                     <span class= "button_style">
-                        <select id="language-packs"></select>
+                        <div class="dropdown" id="language-packs">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="language-packs-selection" data-toggle="dropdown" aria-expanded="true">
+                                select language pack
+                                <span class="caret"></span>
+                            </button>
+                          <ul class="dropdown-menu" role="menu" id="language-packs-ul"></ul>
+                        </div>
                     </span>
 
                     <label for="beta-checkbox">   Show beta language packs</label>
