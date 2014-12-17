@@ -39,5 +39,5 @@ class TestSaveContentLog(KALiteTestCase):
             new_start_timestamp.save()
             # Make sure that the start_timestamp will not change when we update,
             # only progress_timestamp will update.
-            self.assertEqual(new_start_timestamp.start_timestamp,self.contentlog.start_timestamp)
-            self.assertNotEqual(new_start_timestamp.progress_timestamp,self.contentlog.progress_timestamp)
+            self.assertEqual(new_start_timestamp.start_timestamp, self.contentlog.start_timestamp)
+            self.assertTrue(new_start_timestamp.progress_timestamp > self.contentlog.progress_timestamp)
