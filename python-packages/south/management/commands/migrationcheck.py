@@ -44,7 +44,7 @@ class Command(BaseCommand):
                     dummy = model._default_manager.exists()
             except (KeyboardInterrupt, SystemExit):
                 raise
-            except Exception, e:
+            except Exception as e:
                 failures += 1
                 if verbosity >= 1:
                     self.stderr.write(err_msg % app_name)
