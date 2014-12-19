@@ -229,7 +229,6 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
     user_info = []
     total_timestamps = 0
     def dehydrate(self, bundle): 
-        print "sssss ", self.total_timestamps
         userinfo = self.user_info.pop()
         bundle.data['total_timestamps'] = self.total_timestamps
         bundle.data['user_name'] = userinfo.get('user_name')
@@ -272,7 +271,6 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
         filtered_logs = []
 
         self.total_timestamps = exercise_logs.count()
-        print "fafafafa: ", self.total_timestamps
 
         name_list = exercise_logs.values("user").distinct()
         for n in name_list:
