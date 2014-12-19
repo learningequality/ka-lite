@@ -388,24 +388,17 @@ class SyncedModel(ExtendedModel):
     def set_id(self):
         self.id = self.id or self.get_uuid()
 
-    # def get_uuid(self):
-    #     """
-    #     By default, all objects get an ID from the
-    #     device and the counter position at which it was created.
-    #     """
-    #     assert self.counter is not None, "counter required for get_uuid"
-
-    #     own_device = _get_own_device()
-    #     namespace = own_device.id and uuid.UUID(own_device.id) or settings.ROOT_UUID_NAMESPACE
-    #     return uuid.uuid5(namespace, str(self.counter)).hex
-
     def get_uuid(self):
         """
         Replacement default UUID generator that is completely random, rather than being based
         on the signing device id and counter, until we can make the increment_counter_position
-        function properly atomic, to avoid a race condition leading to duplicate counters/IDs.
+        function properly atomic, to avoid having a race condition lead to duplicate counters/IDs.
         """
         return uuid.uuid4().hex
+        # The old logic for this method, for reference:
+        #  own_device = _get_own_device()
+        #  namespace = own_device.id and uuid.UUID(own_device.id) or settings.ROOT_UUID_NAMESPACE
+        #  return uuid.uuid5(namespace, str(self.counter)).hex
 
     def get_existing_instance(self):
         uuid = self.id or self.get_uuid()
@@ -413,7 +406,6 @@ class SyncedModel(ExtendedModel):
             return self.__class__.objects.get(id=uuid)
         except self.__class__.DoesNotExist:
             return None
-
 
     def get_zone(self):
         """
