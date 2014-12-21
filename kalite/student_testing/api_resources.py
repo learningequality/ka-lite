@@ -201,7 +201,7 @@ class CurrentUnit():
         self.facility_id = kwargs.get('facility_id', '')
         self.facility_name = kwargs.get('facility_name', '<facility_name>')
         self.facility_url = kwargs.get('facility_url', '<facility_url>')
-        self.unit_list = [unit for unit in kwargs.get('unit_list', UNITS) if unit >= 100]
+        self.unit_list = [unit for unit in kwargs.get('unit_list', UNITS) if unit > 100]
         self.current_unit = kwargs.get('current_unit', self._get_current_unit())
         self.max_unit = max(self.unit_list)
         self.min_unit = min(self.unit_list)
