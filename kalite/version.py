@@ -5,7 +5,7 @@ VERSION_INFO = {
 
     "0.12.10": {
         "release_date": "2014/12/20",
-        "git_commit": "25ebdb8",
+        "git_commit": "b880fe4",
         "new_features": {
             "all": [],
             "students": [],
