@@ -31,6 +31,7 @@ writeup/
 /data/logs
 /data/i18n
 /data/subtitles
+/data/screenshots
 /kalite/*.jpg
 /kalite/*.mp4.part
 /kalite/i18n/data/dubbed_video_mappings.json
@@ -41,6 +42,7 @@ writeup/
 /kalite/secrets.py
 /kalite/static
 /kalite/i18n/static/js/i18n
+/kalite/ghostdriver.log
 /TAGS
 .tags
 /kalite/i18n/static/
