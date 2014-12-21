@@ -3,6 +3,24 @@
 VERSION = "0.12.0"
 VERSION_INFO = {
 
+    "0.12.10": {
+        "release_date": "2014/12/20",
+        "git_commit": "b880fe4",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["Make get_uuid more robust from race conditions"],
+            "students": [],
+            "coaches": [],
+            "admins": ["Removed partially watched videos from CSV export"],
+        },
+
+    },
+
     "0.12.9": {
         "release_date": "2014/12/05",
         "git_commit": "a0333d4",

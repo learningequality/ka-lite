@@ -10,6 +10,7 @@ from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
+from django.db.models.expressions import F
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
@@ -214,10 +215,7 @@ class Device(SyncedModel):
         return super(Device, self)._hashable_representation(fields=fields)
 
     def get_metadata(self):
-        try:
-            return self.devicemetadata
-        except DeviceMetadata.DoesNotExist:
-            return DeviceMetadata(device=self)
+        return DeviceMetadata.objects.get_or_create(device=self)[0]
 
     def get_counter_position(self):
         """
@@ -243,15 +241,16 @@ class Device(SyncedModel):
         metadata.counter_position = counter_position
         metadata.save()
 
-
     @transaction.commit_on_success
     def increment_counter_position(self):
+        """Increment and return the counter position for this device.
+        TODO-BLOCKER(jamalex): While from testing, this new version seems much less prone to race conditions,
+        it still seems like a possibility. Further testing would be good.
+        """
         metadata = self.get_metadata()
-        if not metadata.device.id:
-            return 0
-        metadata.counter_position += 1
+        metadata.counter_position = F("counter_position") + 1
         metadata.save()
-        return metadata.counter_position
+        return self.get_metadata().counter_position
 
     def full_clean(self, *args, **kwargs):
         # TODO(jamalex): we skip out here, because otherwise self-signed devices will fail
