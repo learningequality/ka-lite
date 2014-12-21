@@ -6,6 +6,8 @@ window.TestListRowView = Backbone.View.extend({
 
     initialize: function(options) {
         this.listenTo(this.model, 'change', this.render);
+        this.listenTo(this.model, "request", this.show_loading_modal);
+        this.listenTo(this.model, "sync", this.hide_loading_modal);
     },
 
     render: function() {
@@ -21,6 +23,27 @@ window.TestListRowView = Backbone.View.extend({
 
         this.trigger("exam_mode_toggle", this.model);
 
+    },
+
+    show_loading_modal: function() {
+        var self = this;
+        this.show_modal = true;
+        setTimeout(function() {
+            if (self.show_modal) {
+                $('#loading').modal({
+                     show: true,
+                     keyboard: false,
+                     backdrop: 'static'
+                });
+            }
+        }, 500);
+    },
+
+    hide_loading_modal: function() {
+        this.show_modal = false;
+        setTimeout(function() {
+            $('#loading').modal('hide');
+        }, 500);
     }
 
 });
