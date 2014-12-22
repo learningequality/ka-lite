@@ -34,7 +34,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
         return ''.join(random.sample(string.ascii_lowercase, settings.PASSWORD_CONSTRAINTS['min_length']))
 
     def test_query_login_admin(self):
-        with self.assertNumQueries(FuzzyInt(35, 44)):
+        with self.assertNumQueries(FuzzyInt(35, 47)):
             self.browser_login_admin(**self.admin_data)
 
     def test_query_login_teacher(self):
