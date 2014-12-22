@@ -501,14 +501,17 @@ class ContentLog(DeferredCountSyncedModel):
     points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
+    start_timestamp = models.DateTimeField(auto_now_add=True, editable=False)  # this must NOT be null
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
     time_spent = models.FloatField(blank=True, null=True)
+    progress_timestamp = models.DateTimeField(blank=True, null=True)
     content_source = models.CharField(max_length=100, db_index=True)
     content_kind = models.CharField(max_length=100, db_index=True)
-    progress = models.IntegerField(blank=True, null=True)
+    progress = models.IntegerField(blank=True, null=True) # TODO(djallado): Change this to Floatfield for percentage.
     views = models.IntegerField(blank=True, null=True)
     extra_fields = models.TextField(blank=True)
+
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -516,6 +519,11 @@ class ContentLog(DeferredCountSyncedModel):
     @staticmethod
     def get_points_for_user(user):
         return ContentLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+
+    def save(self, *args, **kwargs):
+        if self.content_id and not self.complete:
+            self.progress_timestamp = datetime.now()
+        super(ContentLog, self).save(*args, **kwargs)
 
 
 @receiver(pre_save, sender=UserLog)
