@@ -2,21 +2,23 @@
 Handles freezing of models into FakeORMs.
 """
 
+from __future__ import print_function
+
 import sys
 
 from django.db import models
 from django.db.models.base import ModelBase, Model
 from django.contrib.contenttypes.generic import GenericRelation
 
-from south.orm import FakeORM
 from south.utils import get_attribute, auto_through
 from south import modelsinspector
+from south.utils.py3 import string_types
 
 def freeze_apps(apps):
     """
     Takes a list of app labels, and returns a string of their frozen form.
     """
-    if isinstance(apps, basestring):
+    if isinstance(apps, string_types):
         apps = [apps]
     frozen_models = set()
     # For each app, add in all its models
@@ -42,14 +44,14 @@ def freeze_apps(apps):
                 missing_fields = True
                 model_class = model_classes[key]
                 field_class = model_class._meta.get_field_by_name(field_name)[0]
-                print " ! Cannot freeze field '%s.%s'" % (key, field_name)
-                print " ! (this field has class %s.%s)" % (field_class.__class__.__module__, field_class.__class__.__name__)
+                print(" ! Cannot freeze field '%s.%s'" % (key, field_name))
+                print(" ! (this field has class %s.%s)" % (field_class.__class__.__module__, field_class.__class__.__name__))
     if missing_fields:
-        print ""
-        print " ! South cannot introspect some fields; this is probably because they are custom"
-        print " ! fields. If they worked in 0.6 or below, this is because we have removed the"
-        print " ! models parser (it often broke things)."
-        print " ! To fix this, read http://south.aeracode.org/wiki/MyFieldsDontWork"
+        print("")
+        print(" ! South cannot introspect some fields; this is probably because they are custom")
+        print(" ! fields. If they worked in 0.6 or below, this is because we have removed the")
+        print(" ! models parser (it often broke things).")
+        print(" ! To fix this, read http://south.aeracode.org/wiki/MyFieldsDontWork")
         sys.exit(1)
     
     return model_defs
@@ -116,7 +118,7 @@ def field_dependencies(field, checked_models=None):
     checked_models = checked_models or set()
     depends = set()
     arg_defs, kwarg_defs = modelsinspector.matching_details(field)
-    for attrname, options in arg_defs + kwarg_defs.values():
+    for attrname, options in arg_defs + list(kwarg_defs.values()):
         if options.get("ignore_if_auto_through", False) and auto_through(field):
             continue
         if options.get("is_value", False):

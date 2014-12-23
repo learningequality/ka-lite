@@ -462,13 +462,12 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
                                              Q(completion_timestamp__lte=period_end))
 
         q1 = Q(completion_timestamp__isnull=False) & \
-             Q(completion_timestamp__gte=period_start) & \
-             Q(completion_timestamp__lte=period_end)
-        q2 = Q(completion_timestamp__isnull=True)
-        video_logs = video_logs.filter(q1 | q2)
+            Q(completion_timestamp__gte=period_start) & \
+            Q(completion_timestamp__lte=period_end)
+        video_logs = video_logs.filter(q1)
 
         login_q1 = Q(start_datetime__gte=period_start) & Q(start_datetime__lte=period_end) & \
-                   Q(end_datetime__gte=period_start) & Q(end_datetime__lte=period_end)
+            Q(end_datetime__gte=period_start) & Q(end_datetime__lte=period_end)
         login_logs = login_logs.filter(login_q1)
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))

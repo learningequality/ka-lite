@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import re
 import sys
 
@@ -26,6 +28,7 @@ except ImportError:
             return res
 
 from south.logger import get_logger
+from south.utils.py3 import string_types, text_type
 
 
 def alias(attrname):
@@ -82,6 +85,7 @@ class DatabaseOperations(object):
     add_column_string = 'ALTER TABLE %s ADD COLUMN %s;'
     delete_unique_sql = "ALTER TABLE %s DROP CONSTRAINT %s"
     delete_foreign_key_sql = 'ALTER TABLE %(table)s DROP CONSTRAINT %(constraint)s'
+    create_table_sql = 'CREATE TABLE %(table)s (%(columns)s)'
     max_index_name_length = 63
     drop_index_string = 'DROP INDEX %(index_name)s'
     delete_column_string = 'ALTER TABLE %s DROP COLUMN %s CASCADE;'
@@ -97,6 +101,7 @@ class DatabaseOperations(object):
     supports_foreign_keys = True
     has_check_constraints = True
     has_booleans = True
+    raises_default_errors = True
 
     @cached_property
     def has_ddl_transactions(self):
@@ -150,7 +155,7 @@ class DatabaseOperations(object):
             if table is INVALID:
                 raise INVALID
             elif column_name is None:
-                return table.items()
+                return list(table.items())
             else:
                 return table[column_name]
 
@@ -252,7 +257,11 @@ class DatabaseOperations(object):
         """
         return self._get_connection().ops.quote_name(name)
 
-    def execute(self, sql, params=[]):
+    def _print_sql_error(self, e, sql, params=[]):
+        print('FATAL ERROR - The following SQL query failed: %s' % sql, file=sys.stderr)
+        print('The error was: %s' % e, file=sys.stderr)
+        
+    def execute(self, sql, params=[], print_all_errors=True):
         """
         Executes the given SQL statement, with optional parameters.
         If the instance's debug attribute is True, prints out what it executes.
@@ -262,18 +271,18 @@ class DatabaseOperations(object):
         
         cursor = self._get_connection().cursor()
         if self.debug:
-            print "   = %s" % sql, params
+            print("   = %s" % sql, params)
 
         if self.dry_run:
             return []
 
-        get_logger().debug('execute "%s" with params "%s"' % (sql, params))
+        get_logger().debug(text_type('execute "%s" with params "%s"' % (sql, params)))
 
         try:
             cursor.execute(sql, params)
-        except DatabaseError, e:
-            print >> sys.stderr, 'FATAL ERROR - The following SQL query failed: %s' % sql
-            print >> sys.stderr, 'The error was: %s' % e
+        except DatabaseError as e:
+            if print_all_errors:
+                self._print_sql_error(e, sql, params)
             raise
 
         try:
@@ -336,7 +345,7 @@ class DatabaseOperations(object):
         """
 
         if len(table_name) > 63:
-            print "   ! WARNING: You have a table name longer than 63 characters; this will not fully work on PostgreSQL or MySQL."
+            print("   ! WARNING: You have a table name longer than 63 characters; this will not fully work on PostgreSQL or MySQL.")
 
         # avoid default values in CREATE TABLE statements (#925)
         for field_name, field in fields:
@@ -347,10 +356,10 @@ class DatabaseOperations(object):
             for field_name, field in fields
         ]
 
-        self.execute('CREATE TABLE %s (%s);' % (
-            self.quote_name(table_name),
-            ', '.join([col for col in columns if col]),
-        ))
+        self.execute(self.create_table_sql % {
+            "table": self.quote_name(table_name),
+            "columns": ', '.join([col for col in columns if col]),
+        })
 
     add_table = alias('create_table')  # Alias for consistency's sake
 
@@ -409,7 +418,7 @@ class DatabaseOperations(object):
             self.execute(sql)
 
             # Now, drop the default if we need to
-            if not keep_default and field.default is not None:
+            if field.default is not None:
                 field.default = NOT_PROVIDED
                 self.alter_column(table_name, name, field, explicit_name=False, ignore_constraints=True)
 
@@ -435,12 +444,16 @@ class DatabaseOperations(object):
 
     def _alter_set_defaults(self, field, name, params, sqls):
         "Subcommand of alter_column that sets default values (overrideable)"
-        # Next, set any default
-        if not field.null and field.has_default():
-            default = field.get_default()
-            sqls.append(('ALTER COLUMN %s SET DEFAULT %%s ' % (self.quote_name(name),), [default]))
-        else:
-            sqls.append(('ALTER COLUMN %s DROP DEFAULT' % (self.quote_name(name),), []))
+        # Historically, we used to set defaults here.
+        # But since South 0.8, we don't ever set defaults on alter-column -- we only
+        # use database-level defaults as scaffolding when adding columns.
+        # However, we still sometimes need to remove defaults in alter-column.
+        sqls.append(('ALTER COLUMN %s DROP DEFAULT' % (self.quote_name(name),), []))
+
+    def _update_nulls_to_default(self, params, field):
+        "Subcommand of alter_column that updates nulls to default value (overrideable)"
+        default = field.get_db_prep_save(field.get_default(), connection=self._get_connection())
+        self.execute('UPDATE %(table_name)s SET %(column)s=%%s WHERE %(column)s IS NULL' % params, [default])
 
     @invalidate_table_constraints
     def alter_column(self, table_name, name, field, explicit_name=True, ignore_constraints=False):
@@ -457,7 +470,7 @@ class DatabaseOperations(object):
         
         if self.dry_run:
             if self.debug:
-                print '   - no dry run output for alter_column() due to dynamic DDL, sorry'
+                print('   - no dry run output for alter_column() due to dynamic DDL, sorry')
             return
 
         # hook for the field to do any resolution prior to it's attributes being queried
@@ -493,7 +506,7 @@ class DatabaseOperations(object):
         params = {
             "column": self.quote_name(name),
             "type": self._db_type_for_alter_column(field),
-            "table_name": table_name
+            "table_name": self.quote_name(table_name)
         }
 
         # SQLs is a list of (SQL, values) pairs.
@@ -506,15 +519,15 @@ class DatabaseOperations(object):
         # Add any field- and backend- specific modifications
         self._alter_add_column_mods(field, name, params, sqls)
         # Next, nullity
-        if field.null:
+        if field.null or field.has_default():
             sqls.append((self.alter_string_set_null % params, []))
         else:
             sqls.append((self.alter_string_drop_null % params, []))
 
-        # Next, set any default
+        # Do defaults
         self._alter_set_defaults(field, name, params, sqls)
 
-        # Finally, actually change the column
+        # Actually change the column (step 1 -- Nullity may need to be fixed)
         if self.allows_combined_alters:
             sqls, values = zip(*sqls)
             self.execute(
@@ -525,7 +538,12 @@ class DatabaseOperations(object):
             # Databases like e.g. MySQL don't like more than one alter at once.
             for sql, values in sqls:
                 self.execute("ALTER TABLE %s %s;" % (self.quote_name(table_name), sql), values)
-        
+
+        if not field.null and field.has_default():
+            # Final fixes
+            self._update_nulls_to_default(params, field)
+            self.execute("ALTER TABLE %s %s;" % (self.quote_name(table_name), self.alter_string_drop_null % params), [])
+
         if not ignore_constraints:
             # Add back FK constraints if needed
             if field.rel and self.supports_foreign_keys:
@@ -618,7 +636,7 @@ class DatabaseOperations(object):
         # Dry runs mean we can't do anything.
         if self.dry_run:
             if self.debug:
-                print '   - no dry run output for delete_unique_column() due to dynamic DDL, sorry'
+                print('   - no dry run output for delete_unique_column() due to dynamic DDL, sorry')
             return
 
         constraints = list(self._constraints_affecting_columns(table_name, columns))
@@ -688,10 +706,10 @@ class DatabaseOperations(object):
                         default = field.get_db_prep_save(default, connection=self._get_connection())
                         default = self._default_value_workaround(default)
                         # Now do some very cheap quoting. TODO: Redesign return values to avoid this.
-                        if isinstance(default, basestring):
+                        if isinstance(default, string_types):
                             default = "'%s'" % default.replace("'", "''")
                         # Escape any % signs in the output (bug #317)
-                        if isinstance(default, basestring):
+                        if isinstance(default, string_types):
                             default = default.replace("%", "%%")
                         # Add it in
                         sql += " DEFAULT %s"
@@ -752,10 +770,10 @@ class DatabaseOperations(object):
         """
         Generates a full SQL statement to add a foreign key constraint
         """
-        constraint_name = '%s_refs_%s_%x' % (from_column_name, to_column_name, abs(hash((from_table_name, to_table_name))))
+        constraint_name = '%s_refs_%s_%s' % (from_column_name, to_column_name, self._digest(from_table_name, to_table_name))
         return 'ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s (%s)%s;' % (
             self.quote_name(from_table_name),
-            self.quote_name(truncate_name(constraint_name, self._get_connection().ops.max_name_length())),
+            self.quote_name(self.shorten_name(constraint_name)),
             self.quote_name(from_column_name),
             self.quote_name(to_table_name),
             self.quote_name(to_column_name),
@@ -769,7 +787,7 @@ class DatabaseOperations(object):
         """
         if self.dry_run:
             if self.debug:
-                print '   - no dry run output for delete_foreign_key() due to dynamic DDL, sorry'
+                print('   - no dry run output for delete_foreign_key() due to dynamic DDL, sorry')
             return  # We can't look at the DB to get the constraints
         constraints = self._find_foreign_constraints(table_name, column)
         if not constraints:
@@ -806,6 +824,9 @@ class DatabaseOperations(object):
             self._django_db_creation = BaseDatabaseCreation(self._get_connection())
         return self._django_db_creation._digest(*args)
 
+    def shorten_name(self, name):
+        return truncate_name(name, self._get_connection().ops.max_name_length())
+
     def create_index_name(self, table_name, column_names, suffix=""):
         """
         Generate a unique name for the index
@@ -813,9 +834,13 @@ class DatabaseOperations(object):
 
         # If there is just one column in the index, use a default algorithm from Django
         if len(column_names) == 1 and not suffix:
-            return truncate_name(
-                '%s_%s' % (table_name, self._digest(column_names[0])),
-                self._get_connection().ops.max_name_length()
+            try:
+                _hash = self._digest([column_names[0]])
+            except TypeError:
+                # Django < 1.5 backward compatibility.
+                _hash = self._digest(column_names[0])
+            return self.shorten_name(
+                '%s_%s' % (table_name, _hash),
             )
 
         # Else generate the name for the index by South
@@ -835,7 +860,7 @@ class DatabaseOperations(object):
         Generates a create index statement on 'table_name' for a list of 'column_names'
         """
         if not column_names:
-            print "No column names supplied on which to create an index"
+            print("No column names supplied on which to create an index")
             return ''
 
         connection = self._get_connection()
@@ -866,7 +891,7 @@ class DatabaseOperations(object):
         This is possible using only columns due to the deterministic
         index naming function which relies on column names.
         """
-        if isinstance(column_names, (str, unicode)):
+        if isinstance(column_names, string_types):
             column_names = [column_names]
         name = self.create_index_name(table_name, column_names)
         sql = self.drop_index_string % {
@@ -901,7 +926,7 @@ class DatabaseOperations(object):
         # Dry runs mean we can't do anything.
         if self.dry_run:
             if self.debug:
-                print '   - no dry run output for delete_primary_key() due to dynamic DDL, sorry'
+                print('   - no dry run output for delete_primary_key() due to dynamic DDL, sorry')
             return
         
         constraints = list(self._constraints_affecting_columns(table_name, None, type="PRIMARY KEY"))
@@ -999,7 +1024,7 @@ class DatabaseOperations(object):
             except KeyError:
                 signals[app_label] = list(model_names)
         # Send only one signal per app.
-        for (app_label, model_names) in signals.iteritems():
+        for (app_label, model_names) in signals.items():
             self.really_send_create_signal(app_label, list(set(model_names)),
                                            verbosity=verbosity,
                                            interactive=interactive)
@@ -1020,7 +1045,7 @@ class DatabaseOperations(object):
         """
         
         if self.debug:
-            print " - Sending post_syncdb signal for %s: %s" % (app_label, model_names)
+            print(" - Sending post_syncdb signal for %s: %s" % (app_label, model_names))
         
         app = models.get_app(app_label)
         if not app:

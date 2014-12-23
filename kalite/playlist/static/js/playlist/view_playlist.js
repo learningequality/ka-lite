@@ -43,6 +43,7 @@ window.PlaylistView = Backbone.View.extend({
                     context_type: "playlist",
                     context_id: this.model.get("id")
                 });
+                window.location.hash = entry.get("entity_id");
                 this.content_view.show_view(view);
                 break;
 
@@ -165,7 +166,13 @@ window.PlaylistSidebarView = Backbone.View.extend({
         this.show_sidebar();
 
         _.defer(function() {
-            self.$("a:first").click();
+            entry = self.model.get('entries').findWhere({"entity_id": (window.location.hash).slice(1)});
+            if (entry) {
+                self.trigger("entry_requested", entry)
+            }
+            else {
+                self.$("a:first").click();
+            }
         });
 
     },
