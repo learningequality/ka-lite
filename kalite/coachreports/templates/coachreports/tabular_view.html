@@ -102,25 +102,28 @@
                 {% endfor %}
             </select>
         </div>
-        {% elif topics and playlists and groups %}
-        <div class="selection">
-            <div class="subtitle">{% trans "Select Topic" %}</div>
-            <select id="topic">
-                <option {% if not request.GET.topic %}selected{% endif %}>----</option>
-                {% for topic in topics %}
-                    <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{% trans topic.title %}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="selection">
-            <div class="subtitle">{% trans "Select Playlist" %}</div>
-            <select id="playlist">
-                <option {% if not request.GET.playlist %}selected{% endif %}>----</option>
-                {% for playlist in playlists %}
-                    <option value="{{ playlist.id }}"{% if request.GET.playlist == playlist.id %}selected{% endif %}>{% trans playlist.title %}</option>
-                {% endfor %}
-            </select>
-        </div>
+        {% elif groups %}
+            {% if playlists %}
+                <div class="selection">
+                    <div class="subtitle">{% trans "Select Playlist" %}</div>
+                    <select id="playlist">
+                        <option {% if not request.GET.playlist %}selected{% endif %}>----</option>
+                        {% for playlist in playlists %}
+                            <option value="{{ playlist.id }}"{% if request.GET.playlist == playlist.id %}selected{% endif %}>{% trans playlist.title %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% elif topics %}
+                <div class="selection">
+                    <div class="subtitle">{% trans "Select Topic" %}</div>
+                    <select id="topic">
+                        <option {% if not request.GET.topic %}selected{% endif %}>----</option>
+                        {% for topic in topics %}
+                            <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{% trans topic.title %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
         {% endif %}
     </div>
 
@@ -143,9 +146,13 @@
         {% elif request.GET.topic and request.GET.playlist %}
             {% trans "Please select either a topic or a playlist above, but not both." %}
         {% elif not request.GET.topic and not request.GET.playlist %}
-            {% comment %}Group was selected, but data not queried because a topic was not selected
+            {% comment %}Group was selected, but data not queried because a topic or playlist was not selected
             (NOTE: this required knowledge of how the view queries data){% endcomment %}
-            {% trans "Please select a topic or playlist above." %}
+            {% if playlists %}
+                {% trans "Please select a playlist above." %}
+            {% elif topics %}
+                {% trans "Please select a topic above." %}
+            {% endif %}
         {% else %}
             {% comment %}Everything specified, but no users fit the query.{% endcomment %}
             {% trans "No student accounts in this group have been created." %}

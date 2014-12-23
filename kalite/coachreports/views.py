@@ -185,15 +185,10 @@ def tabular_view(request, facility, report_type="exercise"):
     # Exactly one of topic_id or playlist_id should be present
     if not ((topic_id or playlist_id) and not (topic_id and playlist_id)):
         return context
-    # If exactly one is present, make sure it's whitelisted
-    elif not ((playlist_id and re.match("^[\w\-]+$", playlist_id)) or (topic_id and re.match("^[\w\-]+$", topic_id))):
-        return context
 
     group_id = request.GET.get("group", "")
     users = get_user_queryset(request, facility, group_id)
-    playlist = None
-    if playlist_id:
-        playlist = filter(lambda p: p.id==playlist_id, Playlist.all())[0]
+    playlist = (filter(lambda p: p.id==playlist_id, Playlist.all()) or [None])[0]
 
     # We have enough data to render over a group of students
     # Get type-specific information
@@ -201,8 +196,8 @@ def tabular_view(request, facility, report_type="exercise"):
         # Fill in exercises
         if topic_id:
             exercises = get_topic_exercises(topic_id=topic_id)
-        elif playlist is not None:
-            exercises = get_playlist_entries(playlist, "Exercise")
+        elif playlist:
+            exercises = playlist.get_playlist_entries("Exercise")
         
         exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
         context["exercises"] = exercises
@@ -237,8 +232,8 @@ def tabular_view(request, facility, report_type="exercise"):
         # Fill in videos
         if topic_id:
             context["videos"] = get_topic_videos(topic_id=topic_id)
-        elif playlist is not None:
-            context["videos"] = get_playlist_entries(playlist, "Video")
+        elif playlist:
+            context["videos"] = playlist.get_playlist_entries("Video")
 
         # More code, but much faster
         video_ids = [vid["id"] for vid in context["videos"]]
@@ -591,17 +586,3 @@ def return_list_stat(stat_list, stat):
         return_stat = sqrt(avg_variance)
 
     return round(return_stat, 1)
-
-def get_playlist_entries(playlist, entry_type):
-    """
-    Given a VanillaPlaylist, inspect it's 'entries' attribute and return a list
-    containing corresponding nodes for each item from the topic tree.
-    entry_type should be "Exercise" or "Video".
-    """
-    unprepared = filter(lambda ex: ex["entity_kind"]==entry_type, playlist.entries)
-    prepared = []
-    for entry in unprepared:
-        new_item = get_node_cache()[entry_type][entry['entity_id']][0]
-        assert new_item is not None
-        prepared.append(new_item)
-    return prepared
