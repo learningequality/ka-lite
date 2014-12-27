@@ -232,7 +232,7 @@ class PackagesTests(DependenciesTests):
         "tastypie": "0.11.0",
         "unittest2": "0.7.1",
         "werkzeug": "0.8.3",
-        "youtube_dl": "2014.02.21.1",
+        "youtube_dl": "2014.12.10.3",
         "collections_local_copy": NO_VERSION,
         "memory_profiler": "0.26",
         "mimeparse": "0.1.4",

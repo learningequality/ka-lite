@@ -255,6 +255,34 @@ function get_message(msg_id) {
     return $("#" + msg_id).text();
 }
 
+var getParamValue = (function() {
+    var params;
+    var resetParams = function() {
+            var query = window.location.search;
+            var regex = /[?&;](.+?)=([^&;]+)/g;
+            var match;
+
+            params = {};
+
+            if (query) {
+                while (match = regex.exec(query)) {
+                    params[match[1]] = decodeURIComponent(match[2]);
+                }
+            }    
+        };
+
+    window.addEventListener && window.addEventListener('popstate', resetParams);
+
+    resetParams();
+
+    function getParam(param) {
+        return params.hasOwnProperty(param) ? params[param] : null;
+    }
+    
+    return getParam;
+
+})();
+
 function setGetParam(href, name, val) {
     // Generic function for changing a querystring parameter in a url
     var vars = {};

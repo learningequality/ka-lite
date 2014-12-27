@@ -80,10 +80,18 @@ class Video:
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
 
+        if not lang_code:
+            lang_code = "en"
+        selected_language = kwargs.get('selected_language')
+        if not selected_language:
+            selected_language = lang_code
+        # TODO(cpauya): Get the reason why we have this `lang_code` argument or why do we
+        # have the `selected_language` argument also?!  Which one is which?
+        lang_code = selected_language
         # the computed values
         self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
         self.subtitle_urls = kwargs.get('availability', {}).get(lang_code, {}).get('subtitles', {})
-        self.selected_language = lang_code
+        self.selected_language = selected_language
         self.dubs_available = len(kwargs.get('availability', {})) > 1
         self.title = _(kwargs.get('title'))
         self.id = self.pk = self.video_id = kwargs.get('id')

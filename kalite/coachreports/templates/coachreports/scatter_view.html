@@ -19,32 +19,29 @@
     <script type="text/javascript" src="{% static 'js/coachreports/scatter_view.js' %}"></script>
     <script>
         setTimeout( function() {
-            $("#xaxis").change(   function() { plotTopics(null); });
-            $("#yaxis").change(   function() { plotTopics(null); });
+            $("#datepicker_start").change(   function() { plotTopics(null); });
+            $("#datepicker_end").change(   function() { plotTopics(null); });
         }, 200);
     </script>
-{% endblock headjs %}
+    <script>
+        $(function() {
+            $( "#datepicker_start" ).datepicker({
+                dateFormat: "yy-mm-dd"
+            });
+            $( "#datepicker_end" ).datepicker({
+                dateFormat: "yy-mm-dd"
+            });
+            
+            var d = new Date();
+            var current_date = $.datepicker.formatDate('yy-mm-dd', d);
+            d.setDate(d.getDate() - 31);
+            var one_month_early = $.datepicker.formatDate('yy-mm-dd', d);
 
-{% block report_content %}
-    {% block axis_dropdown %}
-        {% trans "X-Axis" %}:
-        <select id="xaxis" name="xaxis">
-            {% block data_options %}
-                <option value="">----</option>
-                    {% for stat in stats %}
-                        {% if stat.type == "number" and not stat.noscatter %}
-                            <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
-                        {% endif %}
-                    {% endfor %}
-            {% endblock data_options %}
-        </select>
-        {% trans "Y-Axis" %}:
-        <select id="yaxis" name="yaxis">
-            {% repeatblock data_options %}
-        </select>
-        
-    {% endblock axis_dropdown %}
-    <br/>
-    {{ block.super }}
-{% endblock report_content %}
+            $("#datepicker_end").val(current_date);
+            $("#datepicker_start").val(one_month_early);
+            
+            plotTopics(null);
+        });
+    </script>
+{% endblock headjs %}
 

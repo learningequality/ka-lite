@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 logging = settings.LOG
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
@@ -95,23 +95,13 @@ class TestScatterReport(FacilityMixins,
         facility_option = facility_options[0]
         self.assertEqual("All", facility_option.text)
         # check if the xaxis is mastery and yaxis is effort
-        xaxis_select = self.browser.find_element_by_id("xaxis")
-        yaxis_select = self.browser.find_element_by_id("yaxis")
+        datepicker_start = self.browser.find_element_by_id("datepicker_start")
+        datepicker_end = self.browser.find_element_by_id("datepicker_end")
 
-        xaxis_options = xaxis_select.find_elements_by_tag_name("option")
-        xaxis_option = xaxis_options[1]
-        self.assertEqual("Mastery", xaxis_option.text)
-
-        yaxis_options = yaxis_select.find_elements_by_tag_name("option")
-        yaxis_option = yaxis_options[2]
-        self.assertEqual("Effort", yaxis_option.text)
-
-        self.browser.find_elements_by_class_name("dynatree-checkbox")[1].click()
-        self.browser.find_element_by_xpath('//button[@id="content_tree_toggle"]').click()
-        facility_user = self.browser.find_elements_by_class_name("dot")
-        for user_option in facility_user:
-            user_option.click()
-
+        now = datetime.now()
+        current_date = datetime.now() - timedelta(days=31)
+        self.assertEqual(current_date.strftime("%Y-%m-%d"), datepicker_start.get_attribute("value"))
+        self.assertEqual(now.strftime("%Y-%m-%d"), datepicker_end.get_attribute("value"))
 
 class CoachNavigationTest(FacilityMixins,
                           StudentProgressMixin,

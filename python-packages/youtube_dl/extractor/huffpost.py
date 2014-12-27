@@ -21,9 +21,10 @@ class HuffPostIE(InfoExtractor):
 
     _TEST = {
         'url': 'http://live.huffingtonpost.com/r/segment/legalese-it/52dd3e4b02a7602131000677',
-        'file': '52dd3e4b02a7602131000677.mp4',
         'md5': '55f5e8981c1c80a64706a44b74833de8',
         'info_dict': {
+            'id': '52dd3e4b02a7602131000677',
+            'ext': 'mp4',
             'title': 'Legalese It! with @MikeSacksHP',
             'description': 'This week on Legalese It, Mike talks to David Bosco about his new book on the ICC, "Rough Justice," he also discusses the Virginia AG\'s historic stance on gay marriage, the execution of Edgar Tamayo, the ICC\'s delay of Kenya\'s President and more.  ',
             'duration': 1549,
@@ -32,8 +33,7 @@ class HuffPostIE(InfoExtractor):
     }
 
     def _real_extract(self, url):
-        mobj = re.match(self._VALID_URL, url)
-        video_id = mobj.group('id')
+        video_id = self._match_id(url)
 
         api_url = 'http://embed.live.huffingtonpost.com/api/segments/%s.json' % video_id
         data = self._download_json(api_url, video_id)['data']

@@ -726,7 +726,8 @@ window.ExerciseView = Backbone.View.extend({
         if (this.data_model.exercise_id) {
             this.data_model.fetch();
         }
-
+        // Solved the issue: https://github.com/learningequality/ka-lite/issues/2127.
+        Khan.query.debug = null;
         this.render();
 
         _.defer(this.initialize_khan_exercises_listeners);
@@ -818,7 +819,7 @@ window.ExerciseView = Backbone.View.extend({
 
         this.data_model.update_if_needed_then(function() {
 
-            var framework = self.data_model.get_framework();
+            var framework = self.data_model.get("framework");
 
             Exercises.setCurrentFramework(framework);
 
@@ -859,7 +860,7 @@ window.ExerciseView = Backbone.View.extend({
 
     check_answer: function() {
         var data;
-        if (this.data_model.get_framework() == "khan-exercises") {
+        if (this.data_model.get("framework") == "khan-exercises") {
             data = Khan.scoreInput();
         } else {
             data = Exercises.PerseusBridge.scoreInput();

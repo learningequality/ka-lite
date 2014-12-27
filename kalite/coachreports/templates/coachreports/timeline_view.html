@@ -24,33 +24,29 @@
             "user:last_active_datetime": "user:total_seconds"
         }
 
+        setTimeout( function() {
+            $("#datepicker_start").change(   function() { TimelineplotTopics(null); });
+            $("#datepicker_end").change(   function() { TimelineplotTopics(null); });
+        }, 200);
+    </script>
+    <script>
         $(function() {
-            $("#xaxis").change(function() {
-                $("#yaxis option").prop("disabled", true);
-                $("#yaxis option[value='" + ystats[$("#xaxis").val()] + "']").prop("disabled", false).prop("selected", true);
-                plotTopics(null);
+            $( "#datepicker_start" ).datepicker({
+                dateFormat: "yy-mm-dd"
             });
+            $( "#datepicker_end" ).datepicker({
+                dateFormat: "yy-mm-dd"
+            });
+            
+            var d = new Date();
+            var current_date = $.datepicker.formatDate('yy-mm-dd', d);
+            d.setDate(d.getDate() - 31);
+            var one_month_early = $.datepicker.formatDate('yy-mm-dd', d);
+
+            $("#datepicker_end").val(current_date);
+            $("#datepicker_start").val(one_month_early);
+
+            TimelineplotTopics(null);
         });
     </script>
 {% endblock headjs %}
-
-{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-
-{% block axis_dropdown %}
-    {% trans "X-Axis" %}:
-    <select id="xaxis" name="xaxis">
-        {% for stat in stats %}
-        {% if stat.type == "datetime" %}
-        <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
-        {% endif %}
-        {% endfor %}
-    </select>
-    {% trans "Y-Axis" %}:
-    <select id="yaxis" name="yaxis" class="no-select">
-            {% for stat in stats %}
-                {% if stat.timeline %}
-                    <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected {% else %} disabled {% endif %}>{% trans stat.name %}</option>
-                {% endif %}
-            {% endfor %}
-    </select>
-{% endblock axis_dropdown %}

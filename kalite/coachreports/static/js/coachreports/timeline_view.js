@@ -3,64 +3,32 @@ function drawChart_timeline(chart_div, dataTable, timeScale, options) {
 }
 
 function json2dataTable_timeline(json, xaxis, yaxis) {
-    // Given a dictionary, create a data table, one row at a time.
-    
     var dataTable = [];
-
-    nusers = Object.keys(json['data']).length;
-
-    nobjects = json['exercises'].length || json['videos'].length;
-
     var timeScale = [];
 
+    nobjects = json['objects'].length;
+
     var multiplier = 1;
-    
-    for (var ui=0; ui<nusers; ++ui) {
-        var uid = Object.keys(json['data'])[ui];
 
-        var good_xdata = [];
-        var good_ydata = [];
-        var all_xdata = json['data'][uid][xaxis];
-        var all_ydata = json['data'][uid][yaxis];
-        if (xaxis=="user:last_active_datetime"){
-            good_xdata = all_xdata;
-            good_ydata = all_ydata;
-            for (var ri in all_xdata) {
-                all_xdata[ri] = new Date(all_xdata[ri]);
-                timeScale.push(all_xdata[ri]);
-            }
-        } else {
-            multiplier = 100/nobjects;
-            for (var ri in all_xdata) {
-                var xdata = all_xdata[ri];
-                if (xdata === null) {
-                    continue;
-                }
-                good_xdata.push(new Date(xdata));
-                timeScale.push(new Date(xdata));
-                good_ydata.push( good_ydata.length + 1 );
-            }
+    multiplier = 100/nobjects;
+
+    for (var s in json['objects']){
+        var curr_s = json['objects'][s]['exercises'];
+        var data_array = {};
+        data_array["name"] = json['objects'][s]['user_name'];
+
+        var values = [];
+
+        for (var k in curr_s){
+            var curr_k = curr_s[k];
+            timeScale.push(new Date(curr_k[xaxis]));
+            values.push({
+                date: new Date(curr_k[xaxis]), data_point: multiplier*curr_k[yaxis]
+            });
         }
 
-        // Now create a data table
-        if (good_xdata.length > 1) {
-            var data_array = {};
-
-            data_array["name"] = json["users"][uid];
-
-            var values = [];
-            
-            for (var ri=0; ri<good_xdata.length; ++ri) {
-
-                values.push({
-                    date: good_xdata[ri], data_point: multiplier*good_ydata[ri]
-                });
-            }
-            
-            data_array["values"] = values;
-            
-            dataTable.push(data_array);
-        }
+        data_array["values"] = values;
+        dataTable.push(data_array);
     }
     return [dataTable, timeScale];
   }
@@ -68,8 +36,8 @@ function json2dataTable_timeline(json, xaxis, yaxis) {
 function drawJsonChart_timeline(chart_div, json, xaxis, yaxis) {
     var options = {
       title: stat2name(xaxis) + ' vs. ' + stat2name(yaxis) + ' comparison',
-      hAxis: {title: stat2name(xaxis), stat: xaxis },
-      vAxis: {title: stat2name(yaxis), stat: yaxis }
+      hAxis: {title: "The Exercises Completed", stat: xaxis },
+      vAxis: {title: "Mastery", stat: yaxis }
     };
     var data = json2dataTable_timeline(json, xaxis, yaxis);
     var dataTable = data[0];
