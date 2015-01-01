@@ -508,10 +508,9 @@ class ContentLog(DeferredCountSyncedModel):
     progress_timestamp = models.DateTimeField(blank=True, null=True)
     content_source = models.CharField(max_length=100, db_index=True)
     content_kind = models.CharField(max_length=100, db_index=True)
-    progress = models.IntegerField(blank=True, null=True) # TODO(djallado): Change this to Floatfield for percentage.
+    progress = models.FloatField(blank=True, null=True)  # (djallado): Changed this to Floatfield for percentage.
     views = models.IntegerField(blank=True, null=True)
     extra_fields = models.TextField(blank=True)
-
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -571,6 +570,7 @@ def cull_records(sender, **kwargs):
             to_discard = current_models \
                 .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
             UserLog.objects.filter(pk__in=to_discard).delete()
+
 
 def logout_endlog(sender, request, user, **kwargs):
     if "facility_user" in request.session:

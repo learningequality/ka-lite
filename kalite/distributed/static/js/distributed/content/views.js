@@ -136,6 +136,10 @@ window.ContentBaseView = BaseView.extend({
         this.log_model.set({
             points: Math.min(this.possible_points, Math.floor(this.possible_points * progress))
         });
+
+        this.log_model.set({
+            progress: progress
+        });
     },
 
     update_progress: function() {
@@ -156,7 +160,6 @@ window.ContentBaseView = BaseView.extend({
         var progress = this.content_specific_progress.apply(this, arguments);
 
         this.set_progress(progress);
-
         this.log_model.save();
     },
 
