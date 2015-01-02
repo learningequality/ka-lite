@@ -1,8 +1,12 @@
+import json
 import os
-import urllib3
-import vcr
+import requests
+from mock import patch, MagicMock
+
+from django.core.management import call_command
 
 from kalite.testing import KALiteTestCase
+from kalite.contentload.management.commands import generate_assessment_zips as mod
 
 HTTREPLAY_RECORDINGS_DIR = os.path.join(os.path.dirname(__file__),
                                         "fixtures")
@@ -10,8 +14,31 @@ HTTREPLAY_RECORDINGS_DIR = os.path.join(os.path.dirname(__file__),
 
 class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
-    @vcr.use_cassette("fixtures/generate_assessment_zips_tests.yml")
-    def test_fetches_assessment_items(self):
-        urllib3.urlopen(
-            "https://s3.amazonaws.com/uploads.hipchat.com/86198%2F624195%2FtYo7Ez0tt3e1qQW%2Fassessmentitems.json"
+    @patch.object(requests, 'get')
+    def test_fetches_assessment_items(self, get_method):
+        with open(os.path.join(HTTREPLAY_RECORDINGS_DIR, "assessment_items_cache.json")) as f:
+            assessment_items_content = f.read()
+
+        get_method.return_value = MagicMock(content=assessment_items_content)
+
+        call_command("generate_assessment_zips")
+
+        self.assertEqual(get_method.call_count, 1, "requests.get not called at all!")
+
+
+class GetAllImageUrlsTests(KALiteTestCase):
+
+    def setUp(self):
+
+        with open(os.path.join(HTTREPLAY_RECORDINGS_DIR, "assessment_items_sample.json")) as f:
+            self.assessment_sample = json.load(f)
+
+    def test_gets_images_urls_inside_item_data(self):
+        imgurl = "https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"
+
+        result = list(mod.all_image_urls(self.assessment_sample))
+        self.assertIn(
+            imgurl,
+            result,
+            "%s not found!" % imgurl
         )
