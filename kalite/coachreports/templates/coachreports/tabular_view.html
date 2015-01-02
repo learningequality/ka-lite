@@ -148,11 +148,13 @@
         {% elif not request.GET.topic and not request.GET.playlist %}
             {% comment %}Group was selected, but data not queried because a topic or playlist was not selected
             (NOTE: this required knowledge of how the view queries data){% endcomment %}
+            <div id="no_topic_or_playlist_error">
             {% if playlists %}
                 {% trans "Please select a playlist above." %}
             {% elif topics %}
                 {% trans "Please select a topic above." %}
             {% endif %}
+            </div>
         {% else %}
             {% comment %}Everything specified, but no users fit the query.{% endcomment %}
             {% trans "No student accounts in this group have been created." %}
