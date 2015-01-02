@@ -1,8 +1,10 @@
+import copy
 import json
 import re
 import requests
 
 from django.core.management.base import NoArgsCommand
+
 
 class Command(NoArgsCommand):
 
@@ -15,7 +17,19 @@ def all_image_urls(items):
     for _, v in items.iteritems():
 
         item_data = v["item_data"]
-        imgurlregex = 'https://ka-perseus-graphie.s3.amazonaws.com/\w+\.png'
+        imgurlregex = r'http.*?\.png'
 
         for match in re.finditer(imgurlregex, item_data):
             yield str(match.group(0))  # match.group(0) means get the entire string
+
+
+def localhosted_image_urls(items):
+    newitems = copy.deepcopy(items)
+
+    url_to_replace = r'https://ka-perseus-graphie.s3.amazonaws.com/(?P<id>\w+)\.png'
+
+    for _, v in newitems.iteritems():
+        old_item_data = v['item_data']
+        v['item_data'] = re.sub(url_to_replace, r'http://localhost:8008/\g<id>.png', old_item_data)
+
+    return newitems

@@ -26,19 +26,27 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
         self.assertEqual(get_method.call_count, 1, "requests.get not called at all!")
 
 
-class GetAllImageUrlsTests(KALiteTestCase):
+class UtilityFunctionTests(KALiteTestCase):
 
     def setUp(self):
 
         with open(os.path.join(HTTREPLAY_RECORDINGS_DIR, "assessment_items_sample.json")) as f:
             self.assessment_sample = json.load(f)
+        self.imgurl = "https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"
 
     def test_gets_images_urls_inside_item_data(self):
-        imgurl = "https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"
 
         result = list(mod.all_image_urls(self.assessment_sample))
         self.assertIn(
-            imgurl,
+            self.imgurl,
             result,
-            "%s not found!" % imgurl
+            "%s not found!" % self.imgurl
         )
+
+    def test_localhosted_image_urls_replaces_with_local_urls(self):
+        newimgurl = "http://localhost:8008/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"  # replace with what's in settings
+        new_assessment_items = mod.localhosted_image_urls(self.assessment_sample)
+
+        all_images = list(mod.all_image_urls(new_assessment_items))
+        self.assertNotIn(self.imgurl, all_images)
+        self.assertIn(newimgurl, all_images)
