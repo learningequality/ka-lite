@@ -124,8 +124,10 @@
 
     <script type="text/javascript">
         $(function() {
-            window.channel_router = new ChannelRouter({default_channel: "{{ channel }}"})
-            Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
+            statusModel.loaded.then(function() {
+                window.channel_router = new ChannelRouter({default_channel: "{{ channel }}"})
+                Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
+            });
         });
     </script>
 
