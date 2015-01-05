@@ -46,7 +46,11 @@ def download_url_to_dir(url, dir=settings.CONTENT_ROOT):
     ensure_dir(dir)
     logging.info("downloading %s" % url)
     r = requests.get(url)
-    r.raise_for_status()
+    try:
+        r.raise_for_status()
+    except Exception as e:
+        logging.error(str(r))
+        return None
     filename = os.path.basename(url)
     with open(os.path.join(dir, filename), 'w') as f:
         f.write(r.content)
