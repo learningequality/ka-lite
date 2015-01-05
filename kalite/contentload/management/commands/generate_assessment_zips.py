@@ -7,6 +7,7 @@ from multiprocessing.dummy import Pool
 
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
+from fle_utils.general import ensure_dir
 
 logging = settings.LOG
 
@@ -41,6 +42,8 @@ def download_urls(urls):
     pool.map(download_url_to_dir, urls)
 
 def download_url_to_dir(url, dir=settings.CONTENT_ROOT):
+    dir = os.path.join(dir, "khan")
+    ensure_dir(dir)
     logging.info("downloading %s" % url)
     r = requests.get(url)
     r.raise_for_status()
@@ -59,7 +62,7 @@ def all_image_urls(items):
     for _, v in items.iteritems():
 
         item_data = v["item_data"]
-        imgurlregex = r'http.*?\.png'
+        imgurlregex = r"https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg))"
 
         for match in re.finditer(imgurlregex, item_data):
             yield str(match.group(0))  # match.group(0) means get the entire string
@@ -68,10 +71,10 @@ def all_image_urls(items):
 def localhosted_image_urls(items):
     newitems = copy.deepcopy(items)
 
-    url_to_replace = r'https://ka-perseus-graphie.s3.amazonaws.com/(?P<id>\w+)\.png'
+    url_to_replace = r'https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg))'
 
     for _, v in newitems.iteritems():
         old_item_data = v['item_data']
-        v['item_data'] = re.sub(url_to_replace, r'http://localhost:8008/\g<id>.png', old_item_data)
+        v['item_data'] = re.sub(url_to_replace, r'/content/khan/\g<filename>', old_item_data)
 
     return newitems
