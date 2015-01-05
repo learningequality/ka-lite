@@ -511,7 +511,9 @@ class ContentLog(DeferredCountSyncedModel):
     extra_fields = models.TextField(blank=True)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
-        pass
+        index_together = [
+            ["user", "id"],
+        ]
 
     @staticmethod
     def get_points_for_user(user):
