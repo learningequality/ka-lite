@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+import zipfile
 from mock import patch, MagicMock
 
 from django.core.management import call_command
@@ -44,9 +45,34 @@ class UtilityFunctionTests(KALiteTestCase):
         )
 
     def test_localhosted_image_urls_replaces_with_local_urls(self):
-        newimgurl = "http://localhost:8008/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"  # replace with what's in settings
+        newimgurl = "/content/khan/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"  # replace with what's in settings
         new_assessment_items = mod.localhosted_image_urls(self.assessment_sample)
 
         all_images = list(mod.all_image_urls(new_assessment_items))
         self.assertNotIn(self.imgurl, all_images)
-        self.assertIn(newimgurl, all_images)
+
+    @patch.object(requests, "get")
+    def test_download_url_to_zip_writes_to_zipfile(self, get_method):
+        expected_return_value = "none"
+
+        zipobj = MagicMock()
+
+        get_method.return_value = MagicMock(content=expected_return_value)
+
+        mod.download_url_to_zip(zipobj, "http://test.com")
+
+        zipobj.writestr.assert_called_once_with("test.com", expected_return_value)
+
+
+    @patch.object(zipfile, "ZipFile")
+    @patch.object(mod, "download_url_to_zip")
+    def test_download_url_downloads_all_urls(self, download_method, zipfile_class):
+        download_method.return_value = 1
+
+        zipfile_class.return_value = MagicMock()
+
+        urls = ["http://test1.com", "http://test2.com"]
+        mod.download_urls(urls)
+
+        for url in urls:
+            download_method.assert_any_call(zipfile_class.return_value, url)
