@@ -32,6 +32,10 @@
             $("#topic").change(function(){
                 window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
             });
+            
+            $("#playlist").change(function(){
+                window.location.href = setGetParam(window.location.href, "playlist", $("#playlist option:selected").val());
+            });
 
             $("#facility").change(function(){
                 window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
@@ -88,9 +92,8 @@
             <div class="subtitle">{% trans "No report types available." %}</div>
         {% endif %}
         </div>
-
-        <div class="selection">
         {% if users and request_report_type == "student" %}
+        <div class="selection">
             <div class="subtitle">{% trans "Select Student" %}</div>
             <select id="student">
                 <option {% if not request.GET.user %}selected{% endif %}>----</option>
@@ -98,16 +101,30 @@
                     <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.name }}</option>
                 {% endfor %}
             </select>
-        {% elif topics and groups %}
-            <div class="subtitle">{% trans "Select Topic" %}</div>
-            <select id="topic">
-                <option {% if not request.GET.topic %}selected{% endif %}>----</option>
-                {% for topic in topics %}
-                    <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{% trans topic.title %}</option>
-                {% endfor %}
-            </select>
-        {% endif %}
         </div>
+        {% elif groups %}
+            {% if playlists %}
+                <div class="selection">
+                    <div class="subtitle">{% trans "Select Playlist" %}</div>
+                    <select id="playlist">
+                        <option {% if not request.GET.playlist %}selected{% endif %}>----</option>
+                        {% for playlist in playlists %}
+                            <option value="{{ playlist.id }}"{% if request.GET.playlist == playlist.id %}selected{% endif %}>{% trans playlist.title %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% elif topics %}
+                <div class="selection">
+                    <div class="subtitle">{% trans "Select Topic" %}</div>
+                    <select id="topic">
+                        <option {% if not request.GET.topic %}selected{% endif %}>----</option>
+                        {% for topic in topics %}
+                            <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{% trans topic.title %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 
     <div id="content">
@@ -126,10 +143,18 @@
         {% if not groups.0.groups and not groups.1 and request.GET.topic %}
             {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
             {% trans "No student accounts have been created." %}
-        {% elif not request.GET.topic %}
-            {% comment %}Group was selected, but data not queried because a topic was not selected
+        {% elif request.GET.topic and request.GET.playlist %}
+            {% trans "Please select either a topic or a playlist above, but not both." %}
+        {% elif not request.GET.topic and not request.GET.playlist %}
+            {% comment %}Group was selected, but data not queried because a topic or playlist was not selected
             (NOTE: this required knowledge of how the view queries data){% endcomment %}
-            {% trans "Please select a topic above." %}
+            <div id="no_topic_or_playlist_error">
+            {% if playlists %}
+                {% trans "Please select a playlist above." %}
+            {% elif topics %}
+                {% trans "Please select a topic above." %}
+            {% endif %}
+            </div>
         {% else %}
             {% comment %}Everything specified, but no users fit the query.{% endcomment %}
             {% trans "No student accounts in this group have been created." %}
