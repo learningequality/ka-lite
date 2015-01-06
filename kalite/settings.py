@@ -216,6 +216,9 @@ if package_selected("Nalanda"):
     QUIZ_REPEATS = 3
 UNIT_POINTS = 2000
 
+# for extracting assessment item resources
+ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(PROJECT_PATH, "..", "content", "khan")
+
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
