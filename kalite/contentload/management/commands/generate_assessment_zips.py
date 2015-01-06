@@ -3,7 +3,8 @@ import json
 import re
 import requests
 import os
-from multiprocessing.dummy import Pool
+import zipfile
+from multiprocessing.dummy import Pool as ThreadPool
 
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
@@ -37,29 +38,25 @@ class Command(NoArgsCommand):
         logging.info("downloading images")
         download_urls(image_urls)
 
-def download_urls(urls):
-    pool = Pool(5)
-    pool.map(download_url_to_dir, urls)
 
-def download_url_to_dir(url, dir=settings.CONTENT_ROOT):
-    dir = os.path.join(dir, "khan")
-    ensure_dir(dir)
+def download_urls(urls):
+    pool = ThreadPool(5)
+    with open(os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip"), "w") as f:
+        zf = zipfile.ZipFile(f)
+        download_to_zip_func = lambda url: download_url_to_zip(zf, url)
+        pool.map(download_to_zip_func, urls)
+
+
+def download_url_to_zip(zipfile, url):
     logging.info("downloading %s" % url)
+    filename = os.path.basename(url)
     r = requests.get(url)
     try:
         r.raise_for_status()
     except Exception as e:
         logging.error(str(r))
         return None
-    filename = os.path.basename(url)
-    with open(os.path.join(dir, filename), 'w') as f:
-        f.write(r.content)
-
-# def download_url(url, fobject):
-#     r = requests.get(url)
-#     r.raise_for_status()
-#     filename = os.path.basename(url)
-#     fobject.writestr(filename.content)
+    zipfile.writestr(filename, r.content)
 
 
 def all_image_urls(items):
