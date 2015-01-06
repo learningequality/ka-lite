@@ -129,7 +129,6 @@ def retrieve_API_data(channel=None):
 
     # Limit number of simultaneous requests
     semaphore = threading.BoundedSemaphore(100)
-    filesemaphore = threading.BoundedSemaphore(256)
 
     def fetch_assessment_data(exercise):
         logging.info("Fetching Assessment Item Data for {exercise}".format(exercise=exercise.display_name))
@@ -155,87 +154,8 @@ def retrieve_API_data(channel=None):
                     wait = wait*2
                     counter += 1
                 if counter > 5:
+                    logging.info("Fetching assessment item {assessment} failed more than 5 times, aborting".format(assessment=assessment_item["id"]))
                     break
-            if assessment_data.get("item_data", ""):
-                assessment_items.append(assessment_data)
-                item_data = json.loads(assessment_data.item_data)
-                for item_type, type_data in item_data.items():
-                    if type(type_data) is dict:
-                        type_data = [type_data]
-                    for type_datum in type_data:
-                        for image in type_datum.get("images", {}).keys():
-                            if image.startswith("data"):
-                                if not os.path.exists(os.path.join(image_dir, image.split("/")[-1])):
-                                    image_data = a2b_base64(data_uri_regex.match(image).groups()[1])
-                                    wait = 5
-                                    while wait:
-                                        try:
-                                            filesemaphore.acquire()
-                                            logging.info("Saving Base64 URI")
-                                            with open(os.path.join(image_dir, image.split("/")[-1]), "w") as f:
-                                                f.write(image_data)
-                                            filesemaphore.release()
-                                            wait = 0
-                                        except IOError:
-                                            logging.info("Saving Base64 URI Failed, retrying")
-                                            filesemaphore.release()
-                                            time.sleep(wait)
-                                            wait = wait*2
-                            else:
-                                if not os.path.exists(os.path.join(image_dir, image.split("/")[-1])):
-                                    wait = 5
-                                    while wait:
-                                        try:
-                                            semaphore.acquire()
-                                            logging.info("Fetching {image}".format(image=image))
-                                            imagerequest = requests.get(image, verify=False)
-                                            semaphore.release()
-                                            wait = 0
-                                        except (requests.ConnectionError, requests.Timeout):
-                                            logging.info("Fetching {image} failed retrying in {wait}".format(image=image, wait=wait))
-                                            semaphore.release()
-                                            time.sleep(wait)
-                                            wait = wait*2
-                                    if imagerequest.status_code == 200:
-                                        wait = 5
-                                        while wait:
-                                            try:
-                                                filesemaphore.acquire()
-                                                with open(os.path.join(image_dir, image.split("/")[-1]), "w") as f:
-                                                    f.write(imagerequest.content)
-                                                filesemaphore.release()
-                                                wait = 0
-                                            except IOError:
-                                                filesemaphore.release()
-                                                time.sleep(wait)
-                                                wait = wait*2
-                                if "graphie" in image:
-                                    if not os.path.exists(os.path.join(image_dir, image.split("/")[-1].replace("png", "js"))):
-                                        wait = 5
-                                        while wait:
-                                            try:
-                                                semaphore.acquire()
-                                                logging.info("Fetching graphie javascript for {image}".format(image=image))
-                                                jsrequest = requests.get(image.replace("png", "js"))
-                                                semaphore.release()
-                                            except (requests.ConnectionError, requests.Timeout):
-                                                logging.info("Fetching graphie javascript for {image} failed retrying in {wait}".format(image=image, wait=wait))
-                                                semaphore.release()
-                                                time.sleep(wait)
-                                                wait = wait*2
-                                        if jsrequest.status_code == 200:
-                                            wait = 5
-                                            while wait:
-                                                try:
-                                                    filesemaphore.acquire()
-                                                    with open(os.path.join(image_dir, image.split("/")[-1].replace("png", "js")), "w") as f:
-                                                        f.write(jsrequest.content)
-                                                    filesemaphore.release()
-                                                    wait = 0
-                                                except IOError:
-                                                    filesemaphore.release()
-                                                    time.sleep(wait)
-                                                    wait = wait*2
 
     threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises]
 
