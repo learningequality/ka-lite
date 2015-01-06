@@ -79,7 +79,7 @@ def denorm_data(node):
         kind = node.get("kind", "")
         if channel_data["denormed_attribute_list"].has_key(kind):
             for key in node.keys():
-                if key not in channel_data["denormed_attribute_list"][kind] or not node.get(key, ""):
+                if key not in channel_data["denormed_attribute_list"][kind] or not node.get(key, "") or isinstance(node.get(key), partial):
                     del node[key]
 
 
@@ -89,7 +89,6 @@ def build_full_cache(items, id_key="id"):
     create an item cache with fleshed out meta-data.
     """
     for item in items:
-        logging.info("Fetching item information for {id}".format(id=item.get(id_key, "Unknown")))
         for attribute in item._API_attributes:
             logging.info("Fetching item information for {id}, attribute: {attribute}".format(id=item.get(id_key, "Unknown"), attribute=attribute))
             try:
@@ -115,9 +114,15 @@ hierarchy = ["Domain", "Subject", "Topic", "Tutorial"]
 def retrieve_API_data(channel=None):
     khan = Khan()
 
+    logging.info("Fetching Khan topic tree")
+
     topic_tree = khan.get_topic_tree()
 
+    logging.info("Fetching Khan exercises")
+
     exercises = khan.get_exercises()
+
+    logging.info("Fetching Khan videos")
 
     videos = khan.get_videos()
 
