@@ -36,15 +36,20 @@ class Command(NoArgsCommand):
             json.dump(new_assessment_items, f, indent=4)
 
         logging.info("downloading images")
-        download_urls(image_urls)
+        zip_file_path = download_urls(image_urls)
+
+        logging.info("Zip File with images placed in %s" % zip_file_path)
 
 
 def download_urls(urls):
     pool = ThreadPool(5)
-    with open(os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip"), "w") as f:
+    zip_file_path = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
+    with open(zip_file_path, "w") as f:
         zf = zipfile.ZipFile(f)
         download_to_zip_func = lambda url: download_url_to_zip(zf, url)
         pool.map(download_to_zip_func, urls)
+
+    return zip_file_path
 
 
 def download_url_to_zip(zipfile, url):
