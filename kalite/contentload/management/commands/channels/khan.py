@@ -89,7 +89,9 @@ def build_full_cache(items, id_key="id"):
     create an item cache with fleshed out meta-data.
     """
     for item in items:
+        logging.info("Fetching item information for {id}".format(id=item.get(id_key, "Unknown")))
         for attribute in item._API_attributes:
+            logging.info("Fetching item information for {id}, attribute: {attribute}".format(id=item.get(id_key, "Unknown"), attribute=attribute))
             try:
                 dummy_variable_to_force_fetch = item.__getattr__(attribute)
                 if isinstance(item[attribute], list):
