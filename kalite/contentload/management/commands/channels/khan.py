@@ -150,6 +150,7 @@ def retrieve_API_data(channel=None):
                     semaphore.release()
                     if assessment_data.get("item_data"):
                         wait = 0
+                        assessment_items.append(assessment_data)
                     else:
                         logging.info("Fetching assessment item {assessment} failed retrying in {wait}".format(assessment=assessment_item["id"], wait=wait))
                         time.sleep(wait)
