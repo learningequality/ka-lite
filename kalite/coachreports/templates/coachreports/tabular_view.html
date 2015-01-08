@@ -32,7 +32,7 @@
             $("#topic").change(function(){
                 window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
             });
-            
+
             $("#playlist").change(function(){
                 window.location.href = setGetParam(window.location.href, "playlist", $("#playlist option:selected").val());
             });
@@ -109,7 +109,7 @@
                     <select id="playlist">
                         <option {% if not request.GET.playlist %}selected{% endif %}>----</option>
                         {% for playlist in playlists %}
-                            <option value="{{ playlist.id }}"{% if request.GET.playlist == playlist.id %}selected{% endif %}>{% trans playlist.title %}</option>
+                            <option value="{{ playlist.id }}"{% if request.GET.playlist == playlist.id %}selected{% endif %}>{{ playlist.tag }}: {% trans playlist.title %}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -262,4 +262,3 @@
         {% endif %}
     {% endif %}
 {% endblock content %}
-
