@@ -1,17 +1,16 @@
-from khan_api_python.api_models import Khan, APIError
-from functools import partial
 import base
 import os
-import json
-import requests
 import re
-from binascii import a2b_base64
+import requests
 import threading
 import time
-
-from django.conf import settings; logging = settings.LOG
-
 from fle_utils.general import ensure_dir
+from functools import partial
+from khan_api_python.api_models import Khan, APIError
+
+from django.conf import settings
+
+logging = settings.LOG
 
 slug_key = {
     "Topic": "node_slug",
