@@ -13,6 +13,7 @@ logging = settings.LOG
 
 ZIP_FILE_PATH = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
 
+
 class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
@@ -36,16 +37,21 @@ class Command(NoArgsCommand):
             json.dump(new_assessment_items, f, indent=4)
 
         logging.info("downloading images")
-        zip_file_path = download_urls(image_urls)
+        with zipfile.ZipFile(ZIP_FILE_PATH, "w") as zf:
+            zip_file_path = download_urls(zf, image_urls)
 
         logging.info("Zip File with images placed in %s" % zip_file_path)
 
 
-def download_urls(urls):
+def write_assessment_to_zip(zf, assessment_items):
+    assessment_json_string = json.dumps(assessment_items)
+    zf.writestr("assessment_items.json", assessment_json_string)
+
+
+def download_urls(zf, urls):
     pool = ThreadPool(5)
-    with zipfile.ZipFile(ZIP_FILE_PATH, "w") as zf:
-        download_to_zip_func = lambda url: download_url_to_zip(zf, url)
-        pool.map(download_to_zip_func, urls)
+    download_to_zip_func = lambda url: download_url_to_zip(zf, url)
+    pool.map(download_to_zip_func, urls)
 
     return ZIP_FILE_PATH
 

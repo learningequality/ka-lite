@@ -63,15 +63,13 @@ class UtilityFunctionTests(KALiteTestCase):
 
         zipobj.writestr.assert_called_once_with("test.com", expected_return_value)
 
-
-    @patch.object(zipfile, "ZipFile")
+    @patch.object(zipfile, "ZipFile", autospec=True)
     @patch.object(mod, "download_url_to_zip")
     def test_download_url_downloads_all_urls(self, download_method, zipfile_class):
         download_method.return_value = 1
 
-        zipfile_class.return_value = MagicMock()
-
         urls = ["http://test1.com", "http://test2.com"]
-        mod.download_urls(urls)
+        with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
+            mod.download_urls(zf, urls)
 
         self.assertEqual(download_method.call_count, len(urls))
