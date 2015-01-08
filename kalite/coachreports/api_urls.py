@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url, include
 
-from .api_resources import PlaylistProgressResource, PlaylistProgressDetailResource, ScatterReportExerciseResource, TimelineReportExerciseResource, KnowledgeMapExerciseResource
+from .api_resources import PlaylistProgressResource, PlaylistProgressDetailResource, ScatterReportExerciseResource, TimelineReportExerciseResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -15,6 +15,4 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^', include(PlaylistProgressDetailResource().urls)),
     url(r'^', include(ScatterReportExerciseResource().urls)),
     url(r'^', include(TimelineReportExerciseResource().urls)),
-
-    url(r'^', include(KnowledgeMapExerciseResource().urls)),
 )

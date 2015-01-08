@@ -5,34 +5,13 @@
 {% block practice_active %}active{% endblock practice_active %}
 
 {% block headcss %}{{ block.super }}
-    <link rel='stylesheet' type='text/css' href='{% static "css/distributed/kmap_editor.css" %}' />
     <link rel='stylesheet' type='text/css' href='{% static "css/distributed/tipsy.css" %}' />
+    <link rel='stylesheet' type='text/css' href='{% static "css/knowledgemap/knowledgemap.css" %}' />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <!-- START PERSEUS STUFF -->
-    <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
-    <script src="{% static "perseus/lib/marked.js" %}"></script>
-    <script src="{% static "perseus/lib/react-with-addons.js" %}"></script>
-    <script src="{% static "perseus/ke/third_party/MathJax/2.1/MathJax.js" True %}?config={% static "perseus/ke/third_party/MathJax/2.1/config/KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d" %}"></script>
-    <script src="{% static "perseus/lib/katex/katex.js" %}"></script>
-    <script src="{% static "perseus/lib/mathquill/mathquill.js" %}"></script>
-    <script src="{% static "perseus/lib/kas.js" %}"></script>
-    <script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
-    <script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
-    <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
-    <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
-    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
-    <script src="{% static 'js/seedrandom.min.js' %}"></script>
-    <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
-    <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
-    <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
-    <script src="{% static 'perseus/ke/interface.js' %}"></script>
     <script src="{% static 'js/distributed/jquery.tipsy.js' %}"></script>
-    <!-- END PERSEUS STUFF -->
 
-    <script src="{% url 'handlebars_templates' module_name='map' %}"></script>
-    <script src="{% static 'js/leaflet.js' %}"></script>
     <script type="text/javascript">
         var TOPIC_DATA_URLS = {
             Domains: '{{ data_url }}/map_domains.json',
@@ -43,58 +22,18 @@
         }
         var ALL_TOPICS_URL = '{{ topics_url }}';
     </script>
-
-<!-- need to move to separated css file later -->
-    <style>
-      .node text {
-        font: 10px sans-serif;
-        pointer-events: none;
-        text-anchor: middle;
-      }
-
-      .desc-tip{
-        font-size: 18px;
-        margin-top: -34px;
-      }
-
-      .desc-tip .tipsy-inner{
-        -webkit-border-radius: 10px;
-        -moz-border-radius: 10px;
-        border-radius: 10px;
-        max-width: 400px;
-        box-shadow: 0px 0px 17px #28333D;
-        -webkit-box-shadow: 0px 0px 17px #28333D;
-        -moz-box-shadow: 0px 0px 17px #28333D; 
-        border: solid 1px rgba(255, 255, 255, 0.25);
-      }
-
-      div span {
-        height: 100%; 
-        vertical-align: middle; 
-        display: inline-block;
-      }
-
-      div h {
-        margin: 0; 
-        vertical-align: 
-        middle; display: 
-        inline-block;
-      }
-    </style>
-
 {% endblock headjs %}
 
 {% block content %}
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
 
+<script>
 window.statusModel.loaded.then(function() {
 
-
   var user_exercises_json;
-  var url = setGetParamDict("/api/coachreports/KnowledgeMapExerciselog/", {
+  var url = setGetParamDict("/api/knowledgemap/KnowledgeMapExerciselog/", {
     user: statusModel.get("user_id"), 
-    completion_timestamp__gte: '2010-11-15',   //because the topic.json contain repetitive object under same parent, which cause problem for displaying knowledge map
+    completion_timestamp__gte: '2014-10-20',   //because the topic.json contain repetitive object under same parent, which cause problem for displaying knowledge map
     completion_timestamp__lte: '2017-12-22'     //use this time filter to avoid encounter repetitive objects
   }); 
 

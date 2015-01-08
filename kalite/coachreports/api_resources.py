@@ -293,21 +293,3 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
 
         self.user_info.reverse()
         return filtered_logs
-
-class KnowledgeMapExerciseResource(ExerciseSummaryResource):
-
-    class Meta:
-        queryset = ExerciseLog.objects.all()
-        resource_name = 'KnowledgeMapExerciselog'
-        filtering = {
-            "exercise_id": ['exact'],
-            "user": ['exact'],
-            "completion_timestamp": ['gte', 'lte']
-        }
-
-        excludes = ['attempts_before_completion', 
-            'complete', 'counter', 'attempts', 'language', 'signed_version',
-            'points', 'completion_counter',
-            'mastered', 'struggling', 'deleted'
-            ]
-        authorization = UserObjectsOnlyAuthorization()
