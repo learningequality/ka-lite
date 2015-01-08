@@ -119,7 +119,7 @@ class PlaylistProgressDetailResource(PlaylistParentResource):
         self.permission_check(bundle.request)
         return self.get_object_list(bundle.request)
 
-class ExerciseSummaryResource(ModelResource):
+class ExerciseSummaryResource(ModelResource, PlaylistParentResource):
     user = fields.ForeignKey(FacilityUserResource, 'user')
 
     def obj_create(self, bundle, **kwargs):
@@ -299,28 +299,15 @@ class KnowledgeMapExerciseResource(ExerciseSummaryResource):
     class Meta:
         queryset = ExerciseLog.objects.all()
         resource_name = 'KnowledgeMapExerciselog'
+        filtering = {
+            "exercise_id": ['exact'],
+            "user": ['exact'],
+            "completion_timestamp": ['gte', 'lte']
+        }
 
         excludes = ['attempts_before_completion', 
             'complete', 'counter', 'attempts', 'language', 'signed_version',
-            'points', 'completion_counter', 'completion_timestamp',
+            'points', 'completion_counter',
             'mastered', 'struggling', 'deleted'
             ]
         authorization = UserObjectsOnlyAuthorization()
-
-    def get_object_list(self, request):
-        return super(ExerciseSummaryResource, self).get_object_list(request).filter(
-            completion_timestamp__gte='2014-10-25', 
-            completion_timestamp__lte='2014-12-22',
-            # user="19bf8439722252ff854c2b9126f86e8f")
-            # Guan Wong:
-            # user__exact="19bf8439722252ff854c2b9126f86e8f")
-            # Sofia Brown:
-            # user__exact="5596a405a92154b2a25e753127963a43")
-            # Guan Brown:
-            user__exact="aa10aa46ae3d5f8e981148529301d9fd")
-            # Zenab Mench:
-            # user__exact="bf5235e6d7af581da99be187bddcb2b7")
-
-    def obj_get_list(self, bundle, **kwargs):
-        exercise_logs = self.get_object_list(bundle.request)
-        return exercise_logs
