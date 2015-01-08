@@ -106,6 +106,12 @@ var user_hashtable = {};
 for (var key in user_exercises_json["objects"]) {
   user_hashtable[user_exercises_json["objects"][key].exercise_id] = user_exercises_json["objects"][key];
 }
+
+// color-order: math_blue/sifi_scarlet/econ_orange/artist_red/cyber_green/test_purple/partner_emerald/college_pink
+var color_scheme_array = ["#1c758a","#94424f","#c78d46","#cf5044","#699c52","#644172","#49a88f","#e89cb9"];
+
+var subject_list = [];
+
 var force = d3.layout.force()
   // // .theta(.0001)
   // .alpha(0.1)
@@ -201,14 +207,27 @@ var nodes;
     initialized = true;
     nodes = initial(root);
   }
+    .attr("stroke", colorline);
     for(var l = 0; l < link[0].length; l++){
       links_table[link[0][l].__data__.source.slug + "," + link[0][l].__data__.target.slug] = link[0][l];
     }
         .on("click", click)
         .on("mouseover", highlight_path)
         .on("mouseout", recover_highlight);
+    node.select("rect")
+        .attr("stroke-width", 4)
+        .attr("stroke", colornode_stroke)
+        .style("fill", colornode_fill);
+        .style("fill", init_text_fill)
+        .style("font-size", "14")
         .call(wrap, 130);
+        .style("fill", "white")
+        .text(function(d) { 
         .call(wrap, 90);
+    node.select("circle")
+        .attr("stroke-width", 4)
+        .attr("stroke", colornode_stroke)
+        .style("fill", colornode_fill);
     $(".node").tipsy({ 
       gravity: 's',
       className: 'desc-tip',
@@ -287,6 +306,53 @@ function tick() {
 
   node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 }
+
+function init_text_fill(d) {
+    var subject_domain = d.path.split("/")[1];
+    var color_code = subject_list.indexOf(subject_domain);
+    var assigned_color = color_scheme_array[color_code];
+
+    return d._children != null &&  d._children[0] != null ? "white" //    collapsed package
+        : d.children ? assigned_color // expanded package
+        : assigned_color;
+}
+
+function text_fill(d) {
+    var subject_domain = d.path.split("/")[1];
+    var color_code = subject_list.indexOf(subject_domain);
+    var assigned_color = color_scheme_array[color_code];
+    return d._children != null &&  d._children[0] != null ? assigned_color //    collapsed package
+        : d.children ? "white" // expanded package
+        : assigned_color;
+}
+
+function colornode_fill(d) {
+    var subject_domain = d.path.split("/")[1];
+    var color_code = subject_list.indexOf(subject_domain);
+    var assigned_color = color_scheme_array[color_code];
+    var d3_color = d3.rgb(assigned_color);
+    return d._children &&  d._children[0] != null ? assigned_color //    collapsed package
+        : d.children && d.kind != "Subject" ? "white" // expanded package
+        : d.progress == 100 && !d.children ? assigned_color // completed leaf node
+        : d.progress == 0 && !d.children ? "white"  // fresh leaf node
+        : d.kind != "Subject" ? d3_color.brighter(1.9) // inprogress leaf node
+        : assigned_color;
+}
+
+function colornode_stroke(d) {
+    var subject_domain = d.path.split("/")[1];
+    var color_code = subject_list.indexOf(subject_domain);
+    var assigned_color = color_scheme_array[color_code];
+    return assigned_color;
+}
+
+function colorline(d) {
+  var subject_domain = d.source.path.split("/")[1];
+  var color_code = subject_list.indexOf(subject_domain);
+  var assigned_color = color_scheme_array[color_code];
+  return assigned_color;
+}
+
 var highlight_recover_color;
 var recover_node_holder = [];
 var recover_link_holder = [];
