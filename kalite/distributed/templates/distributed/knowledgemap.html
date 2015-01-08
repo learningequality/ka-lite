@@ -111,6 +111,14 @@ var force = d3.layout.force()
   // .alpha(0.1)
   .size([width, height]);
   // .on("tick", tick);
+  .call(d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoomHandler))
+var label_tanslate;
+var label_scale;
+function zoomHandler() {
+  label_tanslate = d3.event.translate;
+  label_scale = d3.event.scale;
+  svg.attr("transform", "translate(" + label_tanslate + ")scale(" + label_scale + ")");
+}
 var initialized =false;
 
 d3.json(sprintf(TOPIC_DATA_URLS.Topics, {channel_name: "khan"}), function(error, json) {
