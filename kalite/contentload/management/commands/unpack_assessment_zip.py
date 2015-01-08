@@ -1,5 +1,6 @@
 import StringIO
 import requests
+import os
 import urlparse
 import zipfile
 from fle_utils.general import ensure_dir
@@ -23,11 +24,21 @@ class Command(BaseCommand):
         else:                   # file; just open it normally
             f = open(ziplocation, "r")
 
+        zf = zipfile.ZipFile(f, "r")
+
         unpack_zipfile_to_khan_content(zf)
 
 
+def extract_assessment_items_to_data_dir(zf):
+    khan_data_path = os.path.join(settings.CONTENT_DATA_PATH, "khan")
+    assessment_items_path = os.path.join(khan_data_path, "assessment_items.json")
+    zf.extract("assessment_items.json", assessment_items_path)
+
+
 def unpack_zipfile_to_khan_content(zf):
-    zf.extractall(settings.ASSESSMENT_ITEMS_RESOURCES_DIR)
+    dir = settings.ASSESSMENT_ITEMS_RESOURCES_DIR
+    ensure_dir(dir)
+    zf.extractall(dir)
 
 
 def is_valid_url(url):

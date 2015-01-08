@@ -44,7 +44,6 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
         zipfile_instance.extractall.assert_called_once_with(extract_dir)
 
-
     def test_is_valid_url_returns_false_for_invalid_urls(self):
         invalid_urls = [
             "/something.path",
@@ -54,6 +53,12 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         for url in invalid_urls:
             self.assertFalse(mod.is_valid_url(url))
 
+    @patch.object(zipfile, "ZipFile", autospec=True)
+    def test_extract_assessment_items_to_data_dir(self, zipfile_class):
+        with zipfile.ZipFile("mock.zip") as zf:
+            mod.extract_assessment_items_to_data_dir(zf)
+
+            self.assertTrue(zf.extract.call_args[0][0], "assessment_items.json")
 
     def test_is_valid_url_returns_true_for_valid_urls(self):
         pass
