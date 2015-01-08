@@ -104,6 +104,8 @@ var force = d3.layout.force()
   .chargeDistance(20000/unfold_scale_factor)
   .gravity(.912)
   .friction(0.2);
+        .call(wrap, 130);
+        .call(wrap, 90);
     $(".node").tipsy({ 
       gravity: 's',
       className: 'desc-tip',
@@ -132,4 +134,45 @@ var force = d3.layout.force()
         </div>
     </div>
     <div id="fade"></div>
+//this wrap function probably not flexable enough for longer string.
+function wrap(text, width) {
+  text.each(function() {
+    var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+      if(word.indexOf('%') !== -1){
+        line.push(word);
+        tspan.text(line.join(" "));
+        if(text.text().length > 15){
+          line.pop();
+          tspan.text(line.join(" "));
+          line = [word];
+          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + -1.15 + "em").text(word);
+        }else{
+          line.pop();
+          tspan.text(line.join(" "));
+          line = [word];
+          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + 0.1 + "em").text(word);
+        }
+      }else{
+        line.push(word);
+        tspan.text(line.join(" "));
+      }
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
+}
+
 {% endblock content %}
