@@ -99,6 +99,8 @@ var force = d3.layout.force()
   // .alpha(0.1)
   .size([width, height]);
   // .on("tick", tick);
+var links_table = {}; //for link look up
+var nodes;
   force.linkDistance(function(d){ 
     if(d.target.kind !== "Topic"){
       return  d.source.children.length * 1 + d.source.title.length * 1.5; 
@@ -128,7 +130,12 @@ var force = d3.layout.force()
   .chargeDistance(20000/unfold_scale_factor)
   .gravity(.912)
   .friction(0.2);
+    for(var l = 0; l < link[0].length; l++){
+      links_table[link[0][l].__data__.source.slug + "," + link[0][l].__data__.target.slug] = link[0][l];
+    }
         .on("click", click)
+        .on("mouseover", highlight_path)
+        .on("mouseout", recover_highlight);
         .call(wrap, 130);
         .call(wrap, 90);
     $(".node").tipsy({ 
@@ -209,6 +216,64 @@ function tick() {
 
   node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 }
+var highlight_recover_color;
+var recover_node_holder = [];
+var recover_link_holder = [];
+
+function highlight_path(d) {
+  highlight_recover_color = d3.select(this).select("circle").attr("stroke");
+
+  d3.select(this).select("circle")
+    .attr("stroke", "#00FF00");
+  d3.select(this).select("rect")
+    .attr("stroke", "#00FF00");
+
+  recover_node_holder.push(d3.select(this));
+
+  var path_array = d.path.split("/");
+  var source_curr;
+  var target_curr;
+  for (var i = 0; i < path_array.length -2; i++){
+    target_curr = path_array[i];
+    var matched_link = links_table[source_curr + ',' + target_curr];
+    if(matched_link){
+      matched_link.setAttribute("stroke", "#00FF00");
+      recover_link_holder.push(matched_link);
+    }
+    source_curr = path_array[i];
+
+    for( var n = 0; n < node[0].length; n++){
+      if(path_array[i] == node[0][n].__data__.slug && node[0][n].__data__.kind !== "Video" && node[0][n].__data__.kind !== "Exercise"){
+        node[0][n].getElementsByTagName("circle")[0].setAttribute("stroke", "#00FF00");
+        node[0][n].getElementsByTagName("rect")[0].setAttribute("stroke", "#00FF00");
+        recover_node_holder.push(node[0][n]);
+      }
+    }
+  }
+  matched_link = links_table[source_curr + ',' + d.slug];
+  if(matched_link){
+    matched_link.setAttribute("stroke", "#00FF00");
+    recover_link_holder.push(matched_link);
+  }
+}
+
+
+function recover_highlight(d){
+  var end_link = recover_node_holder.shift();
+  end_link.select("circle").attr("stroke", highlight_recover_color);
+  end_link.select("rect").attr("stroke", highlight_recover_color);
+
+  for(var h in recover_node_holder){
+    recover_node_holder[h].getElementsByTagName("circle")[0].setAttribute("stroke", highlight_recover_color);
+    recover_node_holder[h].getElementsByTagName("rect")[0].setAttribute("stroke", highlight_recover_color);
+  }
+  for(var j in recover_link_holder){
+    recover_link_holder[j].setAttribute("stroke", highlight_recover_color);
+  }
+  recover_node_holder.length = 0;
+  recover_link_holder.length = 0;
+}
+
 // Toggle children on click.
 function click(d) {
   d.fixed = true;
