@@ -70,6 +70,40 @@
 {% endblock headjs %}
 
 {% block content %}
+var force = d3.layout.force()
+  // // .theta(.0001)
+  // .alpha(0.1)
+  .size([width, height]);
+  // .on("tick", tick);
+  force.linkDistance(function(d){ 
+    if(d.target.kind !== "Topic"){
+      return  d.source.children.length * 1 + d.source.title.length * 1.5; 
+    }else{
+      return  d.source.children.length * 4 + d.target.title.length * 5; 
+    }
+  })
+  .linkStrength(function(d){
+    if(d.target.kind !== "Topic"){
+      return 1;
+    }else if(d.source.kind == "Subject"){
+      return 7;
+    }
+    else{
+      return 7.5;
+    }
+  })
+  .charge(function(d){
+    if(d.kind == "Exercise" || d.kind == "Video"){
+      return -4000;
+    }else if(d.kind == "Topic"){
+      return d.title.length*(-2000);
+    }else{
+      return -70000;
+    }
+  })
+  .chargeDistance(20000/unfold_scale_factor)
+  .gravity(.912)
+  .friction(0.2);
     $(".node").tipsy({ 
       gravity: 's',
       className: 'desc-tip',
