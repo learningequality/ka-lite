@@ -168,6 +168,9 @@ var loading = svg.append("text")
     .attr("dy", ".35em")
     .style("text-anchor", "middle")
     .text("Simulating. One moment please…");
+
+var n_tick = 1;
+
 var links_table = {}; //for link look up
 var nodes;
   force.linkDistance(function(d){ 
@@ -199,14 +202,38 @@ var nodes;
   .chargeDistance(20000/unfold_scale_factor)
   .gravity(.912)
   .friction(0.2);
+  // Use a timeout to allow the rest of the page to load first.
+  setTimeout(function() {
+
+    // Run the layout a fixed number of times.
+    // The ideal number of times scales with graph complexity.
+    // Of course, don't run too long—you'll hang the page!
+    force.start();
+    for (var i = n_tick * n_tick; i > 0; --i) force.tick();
+    force.stop();
+
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
     loading.remove();
   }, 10);
+
   if(initialized){
     nodes = flatten(root);
   }else{
     initialized = true;
     nodes = initial(root);
   }
+    // Restart the force layout.
+    force
+        .nodes(nodes)
+        .links(links)
+        .start();
+
     .attr("stroke", colorline);
     for(var l = 0; l < link[0].length; l++){
       links_table[link[0][l].__data__.source.slug + "," + link[0][l].__data__.target.slug] = link[0][l];
@@ -214,6 +241,7 @@ var nodes;
         .on("click", click)
         .on("mouseover", highlight_path)
         .on("mouseout", recover_highlight);
+    n_tick = nodeEnter[0].length;
     node.select("rect")
         .attr("stroke-width", 4)
         .attr("stroke", colornode_stroke)
