@@ -16,7 +16,7 @@ HTTREPLAY_RECORDINGS_DIR = os.path.join(os.path.dirname(__file__),
 class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
     @patch.object(requests, 'get')
-    def test_fetches_assessment_items(self, get_method):
+    def test_command(self, get_method):
         with open(os.path.join(HTTREPLAY_RECORDINGS_DIR, "assessment_items_cache.json")) as f:
             assessment_items_content = f.read()
 
@@ -24,7 +24,22 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
         call_command("generate_assessment_zips")
 
-        self.assertEqual(get_method.call_count, 1, "requests.get not called at all!")
+        self.assertEqual(get_method.call_count, 2, "requests.get not called at all!")
+
+        with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
+            self.assertIn("assessment_items.json", zf.namelist())  # make sure assessment items is written
+
+            for filename in zf.namelist():
+                if ".gif" in filename:
+                    continue
+                elif ".jpg" in filename:
+                    continue
+                elif ".png" in filename:
+                    continue
+                elif "assessment_items.json" in filename:
+                    continue
+                else:
+                    self.assertTrue(False, "Invalid file %s got in the assessment zip!" % filename)
 
 
 class UtilityFunctionTests(KALiteTestCase):

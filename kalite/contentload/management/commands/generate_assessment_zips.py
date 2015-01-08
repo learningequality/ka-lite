@@ -38,6 +38,7 @@ class Command(NoArgsCommand):
 
         logging.info("downloading images")
         with zipfile.ZipFile(ZIP_FILE_PATH, "w") as zf:
+            write_assessment_to_zip(zf, new_assessment_items)
             zip_file_path = download_urls(zf, image_urls)
 
         logging.info("Zip File with images placed in %s" % zip_file_path)
