@@ -128,6 +128,7 @@ var force = d3.layout.force()
   .chargeDistance(20000/unfold_scale_factor)
   .gravity(.912)
   .friction(0.2);
+        .on("click", click)
         .call(wrap, 130);
         .call(wrap, 90);
     $(".node").tipsy({ 
@@ -207,5 +208,33 @@ function tick() {
       .attr("y2", function(d) { return d.target.y; });
 
   node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+}
+// Toggle children on click.
+function click(d) {
+  d.fixed = true;
+  setTimeout(function(){ d.fixed = false; }, 3000);
+if (d3.event.defaultPrevented) return; // ignore drag
+  var update_color = text_fill(d);
+  d3.select(this).select("text")
+    .style("fill", update_color);
+
+    if (d.children) {
+      if(d._children && d._children[0] != null){
+        for(var i in d._children){
+          d.children.push(d._children[i]);
+        }
+        d._children = null;
+      }else{
+        d._children = d.children;
+        d.children = null;
+    }
+  } else {
+      if(!d._children){
+          location.href = "http://localhost:9011/learn/"+ d.path;
+      }
+      d.children = d._children;
+      d._children = null;
+  }
+  update();
 }
 {% endblock content %}
