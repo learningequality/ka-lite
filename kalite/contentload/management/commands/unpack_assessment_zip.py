@@ -8,6 +8,18 @@ from fle_utils.general import ensure_dir
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+KHAN_DATA_PATH = os.path.join(
+    settings.CONTENT_DATA_PATH,
+    "khan",
+)
+
+KHAN_CONTENT_PATH = os.path.join(
+    settings.CONTENT_ROOT,
+    "khan"
+)
+
+ASSESSMENT_ITEMS_PATH = os.path.join(KHAN_DATA_PATH, "assessment_items.json")
+
 
 class Command(BaseCommand):
 
@@ -26,13 +38,12 @@ class Command(BaseCommand):
 
         zf = zipfile.ZipFile(f, "r")
 
+        extract_assessment_items_to_data_dir(zf)
         unpack_zipfile_to_khan_content(zf)
 
 
 def extract_assessment_items_to_data_dir(zf):
-    khan_data_path = os.path.join(settings.CONTENT_DATA_PATH, "khan")
-    assessment_items_path = os.path.join(khan_data_path, "assessment_items.json")
-    zf.extract("assessment_items.json", assessment_items_path)
+    zf.extract("assessment_items.json", KHAN_DATA_PATH)
 
 
 def unpack_zipfile_to_khan_content(zf):

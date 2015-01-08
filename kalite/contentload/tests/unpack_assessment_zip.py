@@ -1,7 +1,8 @@
+import StringIO
 import os
 import requests
 import zipfile
-from mock import patch, MagicMock, mock_open
+from mock import patch, MagicMock
 
 from django.conf import settings
 from django.core.management import call_command
@@ -9,28 +10,46 @@ from django.core.management import call_command
 from kalite.testing import KALiteTestCase
 from kalite.contentload.management.commands import unpack_assessment_zip as mod
 
+ASSESSMENT_ZIP_SAMPLE_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "fixtures",
+    "assessment_item_resources.sample.zip"
+)
+
 
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
-    @patch.object(mod, "unpack_zipfile_to_khan_content")
-    @patch.object(requests, "get")
-    def test_fetches_zip_if_given_url(self, get_method, unpack_method):
-        get_method.return_value = MagicMock(content="string")
+    @patch.object(requests, "get", autospec=True)
+    def test_command_with_url(self, get_method):
+        url = "http://fakeurl.com/test.zip"
 
-        url = "http://some-valid-url.com/test.zip"
+        with open(ASSESSMENT_ZIP_SAMPLE_PATH) as f:
+            zip_raw_data = f.read()
+            zf = zipfile.ZipFile(StringIO.StringIO(zip_raw_data))
+            get_method.return_value = MagicMock(content=zip_raw_data)
 
-        call_command("unpack_assessment_zip", url)
+            call_command("unpack_assessment_zip", url)
 
-        get_method.assert_called_once_with(url)
-        self.assertEqual(unpack_method.call_count, 1)
+            get_method.assert_called_once_with(url)
 
-    @patch("%s.open" % __name__, mock_open, create=True)
-    def test_opens_file_if_invalid_url(self):
-        loc = "/somewhere/test.zip"
+            # verify that the assessment json just extracted is written to the khan data dir
+            self.assertEqual(zf.open("assessment_items.json").read(),
+                             open(mod.ASSESSMENT_ITEMS_PATH).read())
 
-        call_command("unpack_assessment_zip", loc)
+            # TODO(aron): write test for verifying that assessment items are combined
+            # once the splitting code on the generate_assessment_zips side is written
 
-        mock_open.assert_called_once_with(loc, "r")
+            # verify that the other items are written to the content directory
+            for filename in zf.namelist():
+                # already verified above; no need to double-dip
+                if "assessment_items.json" in filename:
+                    continue
+                else:
+                    filename_path = os.path.join(mod.KHAN_CONTENT_PATH, filename)
+                    self.assertTrue(os.path.exists(filename_path), "%s wasn't extracted to %s" % (filename, mod.KHAN_CONTENT_PATH))
+
+    def test_command_with_local_path(self):
+        pass
 
 
 class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
