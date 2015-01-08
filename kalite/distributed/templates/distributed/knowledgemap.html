@@ -94,11 +94,60 @@
 {% endblock headjs %}
 
 {% block content %}
+var user_exercises_json;
+var url = "/api/coachreports/KnowledgeMapExerciselog/?"; 
+doRequest(url)
+        .success(function(user_json) {
+          user_exercises_json = user_json;
+          // console.log("user_exercises_json: ", user_exercises_json);
+
+//create the hashtatble 
+var user_hashtable = {};
+for (var key in user_exercises_json["objects"]) {
+  user_hashtable[user_exercises_json["objects"][key].exercise_id] = user_exercises_json["objects"][key];
+}
 var force = d3.layout.force()
   // // .theta(.0001)
   // .alpha(0.1)
   .size([width, height]);
   // .on("tick", tick);
+var initialized =false;
+
+d3.json(sprintf(TOPIC_DATA_URLS.Topics, {channel_name: "khan"}), function(error, json) {
+    root = json;
+
+    for(var c in root.children){
+      subject_list[c] = root.children[c].slug;
+
+      // //create subject buttons here:
+      // var subj_btn = document.createElement("div");
+      // subj_btn.className = "subj_btn"
+
+      // subj_btn.style.background=color_scheme_array[c];
+      // subj_btn.style.textAlign = "center";
+      // subj_btn.style.color = "white";
+      // subj_btn.style.width = "100px";
+      // subj_btn.style.height = "100px";
+      // subj_btn.style.border = "solid 5px white";
+      // subj_btn.style.borderRadius = "50%";
+      // subj_btn.style.position = 'absolute';
+      // subj_btn.style.top = subj_btn_top + 'px';
+      // subj_btn.style.left = subj_btn_left + 'px';
+      // subj_btn.innerHTML = "<span></span>" + "<h>" + root.children[c].title + "</h>";
+
+      // document.body.appendChild(subj_btn);
+      // subj_btn_top += 100;
+    }
+
+    // $(document).ready(function(){
+    //   $(".subj_btn").click(function(){
+    //     update();
+    //   });
+    // });
+    // subj_btn.onclick = function(){update()};
+    // console.log("topics_json: ", root);
+    update();
+});
 var links_table = {}; //for link look up
 var nodes;
   force.linkDistance(function(d){ 
@@ -130,6 +179,12 @@ var nodes;
   .chargeDistance(20000/unfold_scale_factor)
   .gravity(.912)
   .friction(0.2);
+  if(initialized){
+    nodes = flatten(root);
+  }else{
+    initialized = true;
+    nodes = initial(root);
+  }
     for(var l = 0; l < link[0].length; l++){
       links_table[link[0][l].__data__.source.slug + "," + link[0][l].__data__.target.slug] = link[0][l];
     }
@@ -301,5 +356,104 @@ if (d3.event.defaultPrevented) return; // ignore drag
       d._children = null;
   }
   update();
+}
+
+function initial(root) {
+    var nodes = [], index = 0;
+    function process_topics(node){
+      if(node.children) node.children.forEach(process_topics);
+      if(node.children){
+        var topic_progress = 0;
+        var unfold_flag = false;
+        var inprogress_node_encounter = 0;
+        var fresh_node_encounter = 0;
+        var complete_node_encounter = 0;
+        for(var i in node.children){
+
+          //because same exercise can appear under different topics, use the path + kind to define a unique id
+          node.children[i]["unique_id"] = node.children[i].path + node.children[i].kind;
+
+          if(node.children[i].progress){
+            var progress_val = node.children[i].progress;
+          }else{
+            var progress_val = 0;
+          }
+        
+          var match_hashtable = user_hashtable[node.children[i].id];
+          if(match_hashtable){
+            progress_val = match_hashtable.streak_progress;
+          }
+          //update topics.json's end node with personal streak_progress
+          if(!node.children[i].children){
+            node.children[i]["progress"] = progress_val;
+          }
+
+          topic_progress += progress_val;
+
+          if(!node.children[i].children){
+            if(progress_val == 100){
+              complete_node_encounter++;
+            }else if(progress_val == 0){
+              fresh_node_encounter++;
+            }else{
+              inprogress_node_encounter++;
+            }
+          }
+        }
+        if(inprogress_node_encounter > 0){
+          unfold_flag = true;
+        }else if(complete_node_encounter != 0 && fresh_node_encounter != 0){
+          unfold_flag = true;
+        }
+        var total_progress = node.children.length * 100;
+
+        node["progress"] = topic_progress / total_progress * 100;
+
+        node["unfold_flag"] = unfold_flag;
+      }
+    }
+    process_topics(root);
+
+    //prepare the subject nodes
+    for(var y in root.children){
+      root.children[y]["size"] = 50;   //make subject nodes larger
+      root.children[y]["kind"] = "Subject";   //update the kind
+      //prevent 100 or 0 progress subject node not shown #1
+      if(root.children[y].progress == 100 || root.children[y].progress == 0){
+        nodes.push(root.children[y]);
+      }
+    }
+
+    function recurse(node) {
+      if (node.children) node.children.forEach(recurse);
+      if(node.children){
+        if(node.unfold_flag){
+          nodes.push(node)
+          for(var t in node.children){
+            nodes.push(node.children[t]);
+          }
+        }else if(node.progress != 0 && node.progress != 100){
+          nodes.push(node);
+        }
+      }
+
+      if (node.children && !node.unfold_flag){
+        node["_children"] = [];
+        for(var h = node.children.length -1; h >= 0 ; h--){
+          if(node.children[h].progress == 0 || node.children[h].progress == 100){
+            node._children.push(node.children[h]);
+            node.children.splice(h, 1);
+          }
+        }
+      }
+    }
+  recurse(root);
+
+  //prevent 100 progress subject node not shown #2
+  if(root._children){
+    root.children = root.children.concat(root._children);
+    root._children = null;
+  }
+  return nodes;
 }
 {% endblock content %}
