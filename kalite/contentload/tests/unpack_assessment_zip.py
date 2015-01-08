@@ -61,8 +61,6 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
             self.assertTrue(zf.extract.call_args[0][0], "assessment_items.json")
 
     def test_is_valid_url_returns_true_for_valid_urls(self):
-        pass
-
         valid_urls = [
             "http://stackoverflow.com/questions/25259134/how-can-i-check-whether-a-url-is-valid-using-urlparse",
             "http://en.wikipedia.org/wiki/Internationalized_resource_identifier"
