@@ -74,5 +74,4 @@ class UtilityFunctionTests(KALiteTestCase):
         urls = ["http://test1.com", "http://test2.com"]
         mod.download_urls(urls)
 
-        for url in urls:
-            download_method.assert_any_call(zipfile_class.return_value, url)
+        self.assertEqual(download_method.call_count, len(urls))

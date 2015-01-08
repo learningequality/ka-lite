@@ -8,10 +8,10 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
-from fle_utils.general import ensure_dir
 
 logging = settings.LOG
 
+ZIP_FILE_PATH = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
 
 class Command(NoArgsCommand):
 
@@ -43,13 +43,11 @@ class Command(NoArgsCommand):
 
 def download_urls(urls):
     pool = ThreadPool(5)
-    zip_file_path = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
-    with open(zip_file_path, "w") as f:
-        zf = zipfile.ZipFile(f)
+    with zipfile.ZipFile(ZIP_FILE_PATH, "w") as zf:
         download_to_zip_func = lambda url: download_url_to_zip(zf, url)
         pool.map(download_to_zip_func, urls)
 
-    return zip_file_path
+    return ZIP_FILE_PATH
 
 
 def download_url_to_zip(zipfile, url):
