@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseServerError
-from django.shortcuts import get_object_or_404 
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.translation import ungettext, ugettext_lazy, ugettext as _
@@ -168,28 +168,37 @@ def tabular_view(request, facility, report_type="exercise"):
 
     # Get a list of topics (sorted) and groups
     topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics()]
+    playlists = Playlist.all()
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         # For translators: the following two translations are nouns
         "report_types": (_("exercise"), _("video")),
         "request_report_type": report_type,
         "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],
+        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag} for p in playlists if p],
     })
 
     # get querystring info
     topic_id = request.GET.get("topic", "")
+    playlist_id = request.GET.get("playlist", "")
     # No valid data; just show generic
-    if not topic_id or not re.match("^[\w\-]+$", topic_id):
+    # Exactly one of topic_id or playlist_id should be present
+    if not ((topic_id or playlist_id) and not (topic_id and playlist_id)):
         return context
 
     group_id = request.GET.get("group", "")
     users = get_user_queryset(request, facility, group_id)
+    playlist = (filter(lambda p: p.id==playlist_id, Playlist.all()) or [None])[0]
 
     # We have enough data to render over a group of students
     # Get type-specific information
     if report_type == "exercise":
         # Fill in exercises
-        exercises = get_topic_exercises(topic_id=topic_id)
+        if topic_id:
+            exercises = get_topic_exercises(topic_id=topic_id)
+        elif playlist:
+            exercises = playlist.get_playlist_entries("Exercise")
+
         exercises = sorted(exercises, key=lambda e: (e["h_position"], e["v_position"]))
         context["exercises"] = exercises
 
@@ -221,7 +230,10 @@ def tabular_view(request, facility, report_type="exercise"):
 
     elif report_type == "video":
         # Fill in videos
-        context["videos"] = get_topic_videos(topic_id=topic_id)
+        if topic_id:
+            context["videos"] = get_topic_videos(topic_id=topic_id)
+        elif playlist:
+            context["videos"] = playlist.get_playlist_entries("Video")
 
         # More code, but much faster
         video_ids = [vid["id"] for vid in context["videos"]]
@@ -309,14 +321,14 @@ def test_view(request, facility):
                         "title": status.title(),
                     })
                 else:
-                    # Case: has started, but has not finished => we display % score & # remaining in title 
+                    # Case: has started, but has not finished => we display % score & # remaining in title
                     n_remaining = test_object.total_questions - log_object.index
                     status = _("incomplete")
                     results_table[s].append({
                         "status": status,
                         "cell_display": display_score,
                         "title": status.title() + ": " + ungettext("%(n_remaining)d problem remaining",
-                                           "%(n_remaining)d problems remaining", 
+                                           "%(n_remaining)d problems remaining",
                                             n_remaining) % {
                                             'n_remaining': n_remaining,
                                            },
@@ -430,7 +442,7 @@ def test_detail_view(request, facility, test_id):
         results_table[s].append({
             'display_score': display_score,
             'raw_score': score,
-            'title': fraction_correct, 
+            'title': fraction_correct,
         })
 
     # This retrieves stats for individual exercises
@@ -498,7 +510,7 @@ def spending_report_detail_view(request, user_id):
     humanized_transactions = []
     for t in transactions:
         # Hydrate the store item object
-        item_key = t.item.strip("/").split("/")[-1] 
+        item_key = t.item.strip("/").split("/")[-1]
         humanized_transactions.append({
             "purchased_at": t.purchased_at,
             "item": store_items.get(item_key, ""),
