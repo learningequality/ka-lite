@@ -35,6 +35,14 @@ class UtilityFunctionTests(KALiteTestCase):
             self.assessment_sample = json.load(f)
         self.imgurl = "https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"
 
+    @patch.object(zipfile, "ZipFile", autospec=True)
+    def test_write_assessment_json_to_zip(self, zipfile_class):
+        with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
+            mod.write_assessment_to_zip(zf, self.assessment_sample)
+
+            self.assertEqual(zf.writestr.call_args[0][0]  # call_args[0] are the positional arguments
+                             , "assessment_items.json")
+
     def test_gets_images_urls_inside_item_data(self):
 
         result = list(mod.all_image_urls(self.assessment_sample))
@@ -45,7 +53,6 @@ class UtilityFunctionTests(KALiteTestCase):
         )
 
     def test_localhosted_image_urls_replaces_with_local_urls(self):
-        newimgurl = "/content/khan/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"  # replace with what's in settings
         new_assessment_items = mod.localhosted_image_urls(self.assessment_sample)
 
         all_images = list(mod.all_image_urls(new_assessment_items))
