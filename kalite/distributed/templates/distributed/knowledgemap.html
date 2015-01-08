@@ -156,6 +156,12 @@ d3.json(sprintf(TOPIC_DATA_URLS.Topics, {channel_name: "khan"}), function(error,
     // console.log("topics_json: ", root);
     update();
 });
+var loading = svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", height / 2)
+    .attr("dy", ".35em")
+    .style("text-anchor", "middle")
+    .text("Simulating. One moment please…");
 var links_table = {}; //for link look up
 var nodes;
   force.linkDistance(function(d){ 
@@ -187,6 +193,8 @@ var nodes;
   .chargeDistance(20000/unfold_scale_factor)
   .gravity(.912)
   .friction(0.2);
+    loading.remove();
+  }, 10);
   if(initialized){
     nodes = flatten(root);
   }else{
