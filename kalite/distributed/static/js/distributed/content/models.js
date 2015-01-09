@@ -89,18 +89,16 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
     },
 
     set_complete: function() {
-        var check_progress = this.get("progress");
-        if(check_progress == 1){
-            var already_complete = this.get("complete");
+        var already_complete = this.get("complete");
+        this.set({
+            progress: 1,
+            complete: true,
+            completion_counter: (this.get("completion_counter") || 0) + 1
+        });
+        if (!already_complete) {
             this.set({
-                complete: true,
-                completion_counter: (this.get("completion_counter") || 0) + 1
+                completion_timestamp: window.statusModel.get_server_time()
             });
-            if (!already_complete) {
-                this.set({
-                    completion_timestamp: window.statusModel.get_server_time()
-                });
-            }
         }
     }
 });

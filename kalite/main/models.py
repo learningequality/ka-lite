@@ -508,7 +508,7 @@ class ContentLog(DeferredCountSyncedModel):
     progress_timestamp = models.DateTimeField(blank=True, null=True)
     content_source = models.CharField(max_length=100, db_index=True)
     content_kind = models.CharField(max_length=100, db_index=True)
-    progress = models.FloatField(blank=True, null=True)  # (djallado): Changed this to Floatfield for percentage.
+    progress = models.FloatField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)
     extra_fields = models.TextField(blank=True)
 
