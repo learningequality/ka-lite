@@ -491,7 +491,6 @@ class AttemptLog(DeferredCountSyncedModel):
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
-
 class ContentLog(DeferredCountSyncedModel):
 
     minversion = "0.13.0"
@@ -504,15 +503,15 @@ class ContentLog(DeferredCountSyncedModel):
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
     time_spent = models.FloatField(blank=True, null=True)
-    content_source = models.CharField(max_length=100, db_index=True)
-    content_kind = models.CharField(max_length=100, db_index=True)
+    content_source = models.CharField(max_length=100, blank=True)
+    content_kind = models.CharField(max_length=100)
     progress = models.IntegerField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)
     extra_fields = models.TextField(blank=True)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         index_together = [
-            ["user", "id"],
+            ["user", "content_id"],
         ]
 
     @staticmethod
