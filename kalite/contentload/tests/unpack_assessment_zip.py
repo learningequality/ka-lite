@@ -1,8 +1,9 @@
 import StringIO
+import json
 import os
 import requests
 import zipfile
-from mock import patch, MagicMock
+from mock import patch, MagicMock, mock_open
 
 from django.conf import settings
 from django.core.management import call_command
@@ -72,12 +73,22 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         for url in invalid_urls:
             self.assertFalse(mod.is_valid_url(url))
 
-    @patch.object(zipfile, "ZipFile", autospec=True)
-    def test_extract_assessment_items_to_data_dir(self, zipfile_class):
-        with zipfile.ZipFile("mock.zip") as zf:
+    def test_extract_assessment_items_to_data_dir(self):
+        with open(mod.ASSESSMENT_ITEMS_PATH) as f:
+            old_assessment_items = json.load(f)
+
+        with zipfile.ZipFile(ASSESSMENT_ZIP_SAMPLE_PATH) as zf:
             mod.extract_assessment_items_to_data_dir(zf)
 
-            self.assertTrue(zf.extract.call_args[0][0], "assessment_items.json")
+
+        # test that it combines the new assessment items with the previous one
+        with open(mod.ASSESSMENT_ITEMS_PATH) as f:
+            items = json.load(f)
+
+            for old_item in old_assessment_items:
+                self.assertTrue(old_item in items)
+
+            # test that there are new items in the assessment items too
 
     def test_is_valid_url_returns_true_for_valid_urls(self):
         valid_urls = [

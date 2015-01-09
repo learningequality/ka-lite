@@ -1,4 +1,5 @@
 import StringIO
+import json
 import requests
 import os
 import urlparse
@@ -43,7 +44,15 @@ class Command(BaseCommand):
 
 
 def extract_assessment_items_to_data_dir(zf):
-    zf.extract("assessment_items.json", KHAN_DATA_PATH)
+    with open(ASSESSMENT_ITEMS_PATH) as f:
+        old_assessment_items = json.load(f)
+
+    zipped_assessment_items = zf.open("assessment_items.json")
+    new_assessment_items = json.load(zipped_assessment_items)
+    old_assessment_items.update(new_assessment_items)
+
+    with open(ASSESSMENT_ITEMS_PATH, "w") as f:
+        json.dump(old_assessment_items, f, indent=4)
 
 
 def unpack_zipfile_to_khan_content(zf):
