@@ -96,11 +96,11 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
                 complete: true,
                 completion_counter: (this.get("completion_counter") || 0) + 1
             });
-        }
-        if (!already_complete) {
-            this.set({
-                completion_timestamp: window.statusModel.get_server_time()
-            });
+            if (!already_complete) {
+                this.set({
+                    completion_timestamp: window.statusModel.get_server_time()
+                });
+            }
         }
     }
 });
