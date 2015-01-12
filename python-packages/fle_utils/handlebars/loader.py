@@ -13,6 +13,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils._os import safe_join
 from django.utils.importlib import import_module
 
+from fle_utils.platforms import is_windows
+
+
 # At compile time, cache the directories to search.
 fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
 app_hbtemplates_dirs = []
@@ -27,6 +30,7 @@ for app in settings.INSTALLED_APPS:
 
 # It won't change, so convert it to a tuple to save memory.
 app_hbtemplates_dirs = tuple(app_hbtemplates_dirs)
+
 
 def get_template_module_paths(module_name):
     """
@@ -49,12 +53,18 @@ def get_template_module_paths(module_name):
 
     return paths
 
+
 def load_template_sources(module_name):
 
     templates = []
 
+    if is_windows():
+        slash_character = "\\"
+    else:
+        slash_character = "/"
+
     for filepath in get_template_module_paths(module_name):
-        template_name = filepath.split("/")[-1].split(".handlebars")[0]
+        template_name = filepath.split(slash_character)[-1].split(".handlebars")[0]
         try:
             with open(filepath) as f:
                 # load the template text
