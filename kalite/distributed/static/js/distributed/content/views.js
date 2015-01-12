@@ -74,7 +74,7 @@ window.ContentWrapperView = BaseView.extend({
                 }
                 break;
 
-            case "Video";
+            case "Video":
                 ContentView = VideoPlayerView;
                 break;
         }

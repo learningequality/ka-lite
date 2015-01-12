@@ -548,13 +548,6 @@ window.TopicContainerOuterView = BaseView.extend({
                 this.content_view.show_view(view);
                 break;
 
-            case "Video":
-                view = new VideoWrapperView({
-                    video_id: id
-                });
-                this.content_view.show_view(view);
-                break;
-
             case "Quiz":
                 view = new ExerciseQuizView({
                     quiz_model: new QuizDataModel({entry: entry}),
