@@ -86,6 +86,10 @@ def localhosted_image_urls(items):
 
     for _, v in newitems.iteritems():
         old_item_data = v['item_data']
-        v['item_data'] = re.sub(url_to_replace, r'/content/khan/\g<filename>', old_item_data)
+        v['item_data'] = re.sub(url_to_replace, _old_item_url_to_content_url, old_item_data)
 
     return newitems
+
+
+def _old_item_url_to_content_url(matchobj):
+    return "/content/khan/%s" % matchobj.groupdict()["filename"]
