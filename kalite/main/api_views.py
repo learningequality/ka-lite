@@ -26,13 +26,9 @@ from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonRes
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
 
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes, get_exercise_data, get_video_data, get_assessment_item_data
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
 
 from kalite.dynamic_assets.decorators import dynamic_settings
-
-from kalite.student_testing.utils import get_current_unit_settings_value
-from kalite.playlist.models import VanillaPlaylist as Playlist
-
 
 class student_log_api(object):
     """
@@ -260,62 +256,6 @@ def get_content_logs(request):
 @backend_cache_page
 def flat_topic_tree(request, lang_code):
     return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
-
-UNIT_EXERCISES = {}
-
-@dynamic_settings
-@api_handle_error_with_json
-@backend_cache_page
-def exercise(request, exercise_id):
-    exercise = get_exercise_data(request, exercise_id)
-    if "facility_user" in request.session:
-        facility_id = request.session["facility_user"].facility.id
-        current_unit = get_current_unit_settings_value(facility_id)
-        student_grade = ds["ab_testing"].student_grade_level
-        if student_grade:
-            if not UNIT_EXERCISES.has_key(current_unit):
-                for playlist in Playlist.all():
-                    if not UNIT_EXERCISES.has_key(playlist.unit):
-                        UNIT_EXERCISES[playlist.unit] = {}
-                    # Assumes gx_pyy id for playlist.
-                    grade = int(playlist.id[1])
-                    if not UNIT_EXERCISES[playlist.unit].has_key(grade):
-                        UNIT_EXERCISES[playlist.unit][grade] = []
-                    for entry in playlist.entries:
-                        if entry["entity_kind"] == "Exercise":
-                            UNIT_EXERCISES[playlist.unit][grade].append(entry["entity_id"])
-
-            current_unit_exercises = UNIT_EXERCISES.get(current_unit, {}).get(student_grade, [])
-
-            if ds["distributed"].turn_off_points_for_exercises:
-                exercise["basepoints"] = 0
-            elif ds["distributed"].turn_off_points_for_noncurrent_unit:
-                # No points if it's not in the current unit
-                if not current_unit_exercises or exercise["exercise_id"] not in current_unit_exercises:
-                    exercise["basepoints"] = 0
-                # Otherwise, give the appropriate fraction of UNIT_POINTS to this question
-                else:
-                    # TODO-BLOCKER(rtibbles): Revisit this if we add quizzes back in at some point
-                    # (or, we could just dynamically check for quizzes, and factor them in)
-                    questions_per_exercise = ds["distributed"].streak_correct_needed \
-                                           + ds["distributed"].fixed_block_exercises #\
-                                           # + ds["distributed"].quiz_repeats
-                    total_question_count = len(current_unit_exercises) * questions_per_exercise
-                    uncorrected_basepoints = settings.UNIT_POINTS / float(total_question_count)
-                    # pre-correct for the adjustments to be made by calculate_points_per_question
-                    exercise["basepoints"] = math.ceil(uncorrected_basepoints / 10.0 * settings.STREAK_CORRECT_NEEDED)
-
-    return JsonResponse(exercise)
-
-
-@api_handle_error_with_json
-@backend_cache_page
-def video(request, video_id):
-    video = get_video_data(request, video_id)
-    if video:
-        return JsonResponse(video)
-    else:
-        return JsonResponseMessageError("Video with id %(video_id)s not found" % {"video_id": video_id}, status=404)
 
 
 @api_handle_error_with_json

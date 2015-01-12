@@ -6,7 +6,7 @@ they're imported into the project's urls.py file.
 """
 from django.conf.urls import include, patterns, url
 
-from .api_resources import ExerciseLogResource, AttemptLogResource, ContentLogResource, VideoResource, ExerciseResource, AssessmentItemResource, ContentResource
+from .api_resources import ExerciseLogResource, AttemptLogResource, ContentLogResource, ExerciseResource, AssessmentItemResource, ContentResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -22,8 +22,6 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^', include(ExerciseLogResource().urls)),
     url(r'^', include(AttemptLogResource().urls)),
     url(r'^', include(ContentLogResource().urls)),
-    # Retrieve video data to render a front-end video player
-    url(r'^', include(VideoResource().urls)),
     # Retrieve exercise data to render a front-end exercise
     url(r'^', include(ExerciseResource().urls)),
     # Retrieve assessment item data to render front-end Perseus Exercises

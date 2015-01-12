@@ -7,7 +7,7 @@ from django.conf.urls import url
 
 from .models import ExerciseLog, AttemptLog, ContentLog
 
-from kalite.topic_tools import get_video_data, get_exercise_data, get_assessment_item_cache, get_content_data
+from kalite.topic_tools import get_exercise_data, get_assessment_item_cache, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
