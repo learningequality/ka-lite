@@ -97,8 +97,6 @@ def build_full_cache(items, id_key="id"):
                 del item[attribute]
     return {item["id"]: whitewash_node_data(item) for item in items}
 
-hierarchy = ["Domain", "Subject", "Topic", "Tutorial"]
-
 def retrieve_API_data(channel=None):
     khan = Khan()
 
@@ -106,7 +104,7 @@ def retrieve_API_data(channel=None):
 
     exercises = khan.get_exercises()
 
-    videos = khan.get_videos()
+    content = khan.get_videos()
 
     assessment_items = []
 
@@ -114,9 +112,7 @@ def retrieve_API_data(channel=None):
     #     for assessment_item in exercise.all_assessment_items:
     #         assessment_items.append(khan.get_assessment_item(assessment_item["id"]))
 
-    content = []
-
-    return topic_tree, exercises, videos, assessment_items, content
+    return topic_tree, exercises, videos, assessment_items
 
 recurse_topic_tree_to_create_hierarchy = partial(base.recurse_topic_tree_to_create_hierarchy, hierarchy=hierarchy)
 

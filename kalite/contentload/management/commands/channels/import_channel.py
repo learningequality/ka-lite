@@ -220,9 +220,6 @@ def construct_node(location, parent_path, node_cache, channel):
 
     return node
 
-
-hierarchy = []
-
 path = ""
 
 channel_data_path = None
