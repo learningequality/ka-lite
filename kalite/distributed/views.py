@@ -179,7 +179,7 @@ def refresh_topic_cache(handler, force=False):
 #         return view_playlist(request, playlist_id=current_node['id'], channel='ka_playlist')
 
 
-@render_to("distributed/topic.html") # TODO(jamalex): rename topic.html to learn.html
+@render_to("distributed/learn.html")
 def learn(request):
     """
     Render the all-in-one sidebar navigation/content-viewing app.
