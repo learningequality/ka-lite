@@ -212,11 +212,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     failed_youtube_ids.append(video.youtube_id)
                     continue
 
-            # This can take a long time, without any further update, so ... best to avoid.
-            if options["auto_cache"] and caching.caching_is_enabled() and handled_youtube_ids:
-                self.update_stage(stage_name=self.video.youtube_id, stage_percent=0, notes=_("Generating all pages related to videos."))
-                caching.regenerate_all_pages_related_to_videos(video_ids=list(set([i18n.get_video_id(yid) or yid for yid in handled_youtube_ids])))
-
             # Update
             self.complete(notes=_("Downloaded %(num_handled_videos)s of %(num_total_videos)s videos successfully.") % {
                 "num_handled_videos": len(handled_youtube_ids),

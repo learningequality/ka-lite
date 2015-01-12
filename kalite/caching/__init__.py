@@ -85,23 +85,6 @@ def create_cache_entry(path=None, url_name=None, cache=None, force=False):
         logging.warn("Did not create cache entry for %s" % path)
 
 
-def regenerate_all_pages_related_to_videos(video_ids):
-    """Regenerate all webpages related to a specific list of videos.  This is good for increasing new server performance."""
-    paths_to_regenerate = set() # unique set
-    for video_id in video_ids:
-
-        for video_path in topic_tools.get_video_page_paths(video_id=video_id):
-            paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=video_path, base_path=topic_tools.get_topic_tree()['path']))  # start at the root
-        for exercise_path in topic_tools.get_exercise_page_paths(video_id=video_id):
-            paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=exercise_path, base_path=topic_tools.get_topic_tree()['path']))  # start at the root
-
-    # Now, regenerate any page.
-    for path in paths_to_regenerate:
-        create_cache_entry(path=path, force=True)
-
-    return paths_to_regenerate
-
-
 def invalidate_inmemory_caches():
     """
     Any variables that are invalidated by things like content being added or deleted
