@@ -80,7 +80,7 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         "views"
     ],
 
-    urlRoot: "/api/contentlog/",
+    urlRoot: GET_CONTENT_LOGS_URL,
 
     save: _.throttle(function(){this.saveNow();}, 30000),
 
@@ -113,7 +113,7 @@ window.ContentLogCollection = Backbone.Collection.extend({
     },
 
     url: function() {
-        return "/api/contentlog/?" + $.param({
+        return this.model.urlRoot + "?" + $.param({
             "content_id": this.content_model.get("id"),
             "user": window.statusModel.get("user_id")
         });
@@ -122,8 +122,8 @@ window.ContentLogCollection = Backbone.Collection.extend({
     get_first_log_or_new_log: function() {
         if (this.length > 0) {
             return this.at(0);
-        } else { // create a new exercise log if none existed
-            return new ContentLogModel({
+        } else {
+            return new this.model({
                 "content_id": this.content_model.get("id"),
                 "content_source": this.content_model.get("source") || "",
                 "content_kind": this.content_model.get("kind"),
