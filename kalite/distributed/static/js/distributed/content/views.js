@@ -130,16 +130,15 @@ window.ContentBaseView = BaseView.extend({
     },
 
     set_progress: function(progress) {
-        if ((this.log_model.get("progress") - (this.log_model.get("completion_counter") || 0)) > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
+        if (progress - (this.log_model.get("completion_counter") || 0) > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
             this.log_model.set_complete();
+            progress = 1;
         }
         this.log_model.set({
-            points: Math.min(this.possible_points, Math.floor(this.possible_points * progress))
-        });
-
-        this.log_model.set({
+            points: Math.min(this.possible_points, Math.floor(this.possible_points * progress)),
             progress: progress
         });
+
     },
 
     update_progress: function() {
