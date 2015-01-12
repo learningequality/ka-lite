@@ -85,14 +85,15 @@
         _V_.options.flash.swf = "{% static "video-js/video-js.swf" %}";
     </script>
     <!-- <![endif]-->
-    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
-    <script src="{% static "js/distributed/videoplayer.js" %}"></script>
-
     <script src="{% static "soundmanager/soundmanager2-nodebug-jsmin.js" %}"></script>
 
     <script src="{% url 'handlebars_templates' module_name='content' %}"></script>
     <script src="{% static 'js/distributed/content/models.js' %}"></script>
     <script src="{% static 'js/distributed/content/views.js' %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
+    <script src="{% static 'js/distributed/video/models.js' %}"></script>
+    <script src="{% static 'js/distributed/video/views.js' %}"></script>
     
     <script src="{% url 'handlebars_templates' module_name='audio' %}"></script>
     <script src="{% static 'js/distributed/audio/views.js' %}"></script>
