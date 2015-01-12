@@ -18,7 +18,16 @@ window.ContentWrapperView = BaseView.extend({
             if (self.data_model.get("id")) {
                 self.data_model.fetch().then(function() {
 
-                    self.log_collection = new ContentLogCollection([], {content_model: self.data_model});
+                    // This is a hack to support the legacy VideoLog, separate from other ContentLog
+                    // TODO-BLOCKER (rtibbles) 0.14: Remove this
+
+                    if (self.data_model.get("kind") == "Video") {
+                        LogCollection = VideoLogCollection;
+                    } else {
+                        LogCollection = ContentLogCollection;
+                    }
+
+                    self.log_collection = new LogCollection([], {content_model: self.data_model});
 
                     if (window.statusModel.get("is_logged_in")) {
 
@@ -40,7 +49,7 @@ window.ContentWrapperView = BaseView.extend({
 
     set_full_progress: function() {
         if (this.data_model.get("kind") === "Document" && !("PDFJS" in window)) {
-            this.content_view.set_progress(1.);
+            this.content_view.set_progress(1);
             this.content_view.log_model.save();
         }
     },
@@ -63,6 +72,10 @@ window.ContentWrapperView = BaseView.extend({
                 } else {
                     ContentView = ContentBaseView;
                 }
+                break;
+
+            case "Video";
+                ContentView = VideoPlayerView;
                 break;
         }
 
@@ -95,7 +108,7 @@ window.ContentBaseView = BaseView.extend({
 
         this.active = false;
 
-        this.possible_points = 500;
+        this.possible_points = ds.distributed.turn_off_points_for_videos ? 0 : ds.distributed.points_per_video;
 
         this.REQUIRED_PERCENT_FOR_FULL_POINTS = 0.95;
 
