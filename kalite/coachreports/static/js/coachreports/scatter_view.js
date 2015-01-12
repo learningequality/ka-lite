@@ -44,13 +44,23 @@ function json2dataTable(json, xaxis, yaxis) {
     // Given a dictionary, create a data table, one row at a time.
     var dataTable = [];
 
-    for (var user in json["data"]) {
-        var entry = json["data"][user];
-        entry["user"] = json['users'][user];
+    // for (var user in json["data"]) {
+    //     var entry = json["data"][user];
+    //     entry["user"] = json['users'][user];
+    //     entry["userid"] = user;
+    //     entry["tooltip"] = user2tooltip(json, user, xaxis, yaxis);
+    //     entry[xaxis] = obj2num(entry[xaxis], xaxis, json);
+    //     entry[yaxis] = obj2num(entry[yaxis], yaxis, json);
+    //     dataTable.push(entry);
+    // }
+    for (var user in json["objects"]) {
+        var entry = [];
         entry["userid"] = user;
-        entry["tooltip"] = user2tooltip(json, user, xaxis, yaxis);
-        entry[xaxis] = obj2num(entry[xaxis], xaxis, json);
-        entry[yaxis] = obj2num(entry[yaxis], yaxis, json);
+        entry["tooltip"] = user2tooltip(json, user, json["objects"][user]["total_attempts"], json["objects"][user]["mastered"]);
+
+        entry[xaxis] = json["objects"][user]["mastered"];
+        entry[yaxis] = json["objects"][user]["total_attempts"];
+       
         dataTable.push(entry);
     }
     return dataTable;
@@ -68,87 +78,37 @@ function tablifyThis(ex_data) {
     return table;
 }
 
-function user2tooltip2(json, user, xaxis, yaxis) {
-    // A test tooltip; currently unused (but could become useful again later)
-    var html = "<div class='tooltip'>";
-    html += "<div class='cleardiv'>" + json["users"][user] + "</div>";
-    html += "<a target='_new' href='" + setGetParam(generate_current_link(), "user_id", user).replace("scatter", "student") + "'>more details</a>";
-    html += "</div>";
-
-    return html;
-}
-
 function user2tooltip(json, user, xaxis, yaxis) {
     // Creating a HTML blob for the tooltip that shows when a user's is clicked.
     var axes = [xaxis];
-    var exercises = json['exercises'];
+    var exercises = json["objects"][user]["exercises"];
     var videos = json['videos'];
-    var tooltip = "<div class='tooltip'>";
-    tooltip += "<div id='legend'><div class='username'>" + json['users'][user] + "</div><div class='legend'><div class='struggling'></div>Struggling</div><div class='legend'><div class='notattempted'></div>Not Attempted</div><div class='legend'><div class='attempted'></div>Attempted</div></div>";
-    for (var ai in axes) {
-        if(axes[ai] == 'pct_mastery' || axes[ai] == 'effort'){
-            axes[ai] = 'ex:attempts';
+    var tooltip = "<div class='usertooltip'>";
+
+    var struggling = "<div class='struggling'>";
+    var attempted = "<div class='attempted'>";
+    var struggles = [];
+    var attempts = [];
+    tooltip += "<div id='legend'><div class='username'>" + json["objects"][user]["user_name"] + "</div><div class='legend'><div class='struggling'></div>Struggling</div><div class='legend'><div class='notattempted'></div>Not Attempted</div><div class='legend'><div class='attempted'></div>Attempted</div></div>";
+    for (var i in exercises){
+        if(exercises[i].struggling){
+            struggles.push({
+                "num": exercises[i].attempts,
+                "name": exercises[i].exercise_id,
+                "url": exercises[i].exercise_url
+            });
+        }else{
+            attempts.push({
+                "num": exercises[i].attempts,
+                "name": exercises[i].exercise_id,
+                "url": exercises[i].exercise_url
+            });
         }
-        // Some data don't have details, they're derived.
-        var row = json['data'][user][axes[ai]];
-        if (!row || typeof row == 'number')
-            continue;
-
-        // Get the prefix and stat name.
-        stat_types = axes[ai].split(":");
-        if (stat_types.length < 2)  // should never actually hit this
-            stat_types = ["[Derived]", "[Derived]"];
-
-        var struggling = "<div class='struggling'>";
-        var attempted = "<div class='attempted'>";
-        var notattempted = "<div class='notattempted'>";
-        var struggles = {};
-        var attempts = {};
-        var notattempts = {};
-        if (stat_types[0] == "ex") {
-            for (var i in exercises) {
-                if (exercises[i]["slug"] in row) {
-                    d = exercises[i]["slug"];
-                    if (parseInt(row[d], 10) >= 30) { // TODO: Get mastery and struggling data from API to check this more rigorously
-                        struggles[d] = {
-                            "num": parseInt(row[d], 10),
-                            "name": exercises[i]["full_name"],
-                            "url": exercises[i]["url"]
-                        };
-                    } else {
-                        attempts[d] = {
-                            "num": parseInt(row[d], 10),
-                            "name": exercises[i]["full_name"],
-                            "url": exercises[i]["url"]
-                        };
-                    }
-                } else {
-                    notattempts[exercises[i]["slug"]] = {
-                        "num": 0,
-                        "name": exercises[i]["full_name"],
-                        "url": exercises[i]["url"]
-                    };
-                }
-            }
-
-            struggling += tablifyThis(struggles) + "</div>"; 
-            attempted += tablifyThis(attempts) + "</div>"; 
-            notattempted += tablifyThis(notattempts) + "</div>"; 
-        } else {
-            attempted += "<tr><th>" + "Video" + "</th><th>" + stat_types[1] + "</th>";
-            notattempted += "<tr><th>" + "Video" + "</th>";
-            for (var i in videos) {
-                var url = "/videos/?youtube_id=" + videos[i];
-                if (videos[i] in row) {
-                    d = videos[i];
-                    attempted += "<tr><td><a href='" + url + "'>" + d + "</a></td>" + "<td>" + row[d] + "</td></tr>";
-                } else {
-                    notattempted += "<tr><td><a href='" + url + "'>" + videos[i] + "</a></td>";
-                }
-            }
-        }
-        tooltip += (stat_types[0] == "ex" ? struggling : "") + notattempted + attempted;
     }
+    struggling += tablifyThis(struggles) + "</div>"; 
+    attempted += tablifyThis(attempts) + "</div>"; 
+    tooltip += struggling + attempted;
+
     tooltip += "</div>";
 
     return tooltip;

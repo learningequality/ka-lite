@@ -1,8 +1,12 @@
 window.ContentWrapperView = BaseView.extend({
 
+    events: {
+        "click .download-link": "set_full_progress"
+    },
+
     template: HB.template("content/content-wrapper"),
 
-    initialize: function() {
+    initialize: function(options) {
 
         _.bindAll(this);
 
@@ -10,7 +14,7 @@ window.ContentWrapperView = BaseView.extend({
 
         window.statusModel.loaded.then(function() {
             // load the info about the content itself
-            self.data_model = new ContentDataModel({id: self.options.id});
+            self.data_model = new ContentDataModel({id: options.id});
             if (self.data_model.get("id")) {
                 self.data_model.fetch().then(function() {
 
@@ -31,8 +35,14 @@ window.ContentWrapperView = BaseView.extend({
 
     user_data_loaded: function() {
         this.log_model = this.log_collection.get_first_log_or_new_log();
-
         this.render();
+    },
+
+    set_full_progress: function() {
+        if (this.data_model.get("kind") === "Document" && !("PDFJS" in window)) {
+            this.content_view.set_progress(1.);
+            this.content_view.log_model.save();
+        }
     },
 
     render: function() {
@@ -48,7 +58,11 @@ window.ContentWrapperView = BaseView.extend({
                 break;
 
             case "Document":
-                ContentView = PDFViewerView;
+                if ("PDFJS" in window) {
+                    ContentView = PDFViewerView;
+                } else {
+                    ContentView = ContentBaseView;
+                }
                 break;
         }
 
@@ -116,11 +130,15 @@ window.ContentBaseView = BaseView.extend({
     },
 
     set_progress: function(progress) {
-        if ((progress - (this.log_model.get("completion_counter") || 0)) > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
+        if ((this.log_model.get("progress") - (this.log_model.get("completion_counter") || 0)) > this.REQUIRED_PERCENT_FOR_FULL_POINTS) {
             this.log_model.set_complete();
         }
         this.log_model.set({
             points: Math.min(this.possible_points, Math.floor(this.possible_points * progress))
+        });
+
+        this.log_model.set({
+            progress: progress
         });
     },
 
@@ -142,7 +160,6 @@ window.ContentBaseView = BaseView.extend({
         var progress = this.content_specific_progress.apply(this, arguments);
 
         this.set_progress(progress);
-
         this.log_model.save();
     },
 

@@ -8,13 +8,6 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/base.css' %}" />
     <!-- Override bootstrap here to fix up search bar -->
     <style type="text/css">
-        input#search {
-            font: -webkit-small-control;
-            margin: 0em;
-        }
-        #search-button {
-            height: 18px;
-        }
         .container {
             max-width: 1030px;
         }
@@ -54,7 +47,7 @@
                         {% endif %}
                     {% endif %}
                 {% if facility or device %}</a>
-                {% elif own_device_is_trusted %} 
+                {% elif own_device_is_trusted %}
                 <a class="edit-link" href="{% url 'zone_form' zone_id=zone_id %}">
                     <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></span>
                 </a>
@@ -71,9 +64,9 @@
                 / {% if group_id %}<a href="{% url 'facility_management' zone_id=zone_id facility_id=facility_id %}">{{ facility.name }}</a>
                 {% else %}
                 {{ facility.name }}
-                <a class="edit-link" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">
-                    <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></span>
-                </a>
+                <a class="edit-link edit-facility" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">
+                <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></span>
+              </a>
                 {% endif %}
             </li>
             {% endif %}

@@ -157,10 +157,12 @@ function generate_current_link() {
             url += "&topic_path=" + topic_paths[pi];
         }
         // Add axis information
-        url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
-        url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
-        url = setGetParam(url, "facility", $("#facility option:selected").val());
-        url = setGetParam(url, "group", $("#" + $("#facility option:selected").val() + "_group_select option:selected").val());
+        // url = setGetParam(url, "xaxis", $("#xaxis option:selected").val());
+        // url = setGetParam(url, "yaxis", $("#yaxis option:selected").val());
+        // url = setGetParam(url, "completion_timestamp__gte", $("#datepicker_end").val())
+        // url = setGetParam(url, "completion_timestamp__lte", $("#datepicker_start").val())
+        url = setGetParam(url, "facility", $("#facility-select option:selected").val());
+        url = setGetParam(url, "group", $("#group-select option:selected").val());
     }
 
     return url;

@@ -44,10 +44,10 @@ attribute_whitelists = {
 }
 
 denormed_attribute_list = {
-    "Video": ["kind", "description", "title", "duration", "youtube_id", "readable_id", "id", "y_pos", "x_pos", "path", "slug"],
-    "Exercise": ["kind", "description", "title", "display_name", "name", "id", "y_pos", "x_pos", "path", "slug"],
-    "Audio": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug"],
-    "Document": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug"],
+    "Video": ["kind", "description", "title", "duration", "id", "y_pos", "x_pos", "path", "slug", "organization"],
+    "Exercise": ["kind", "description", "title", "name", "id", "y_pos", "x_pos", "path", "slug", "organization"],
+    "Audio": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug", "organization"],
+    "Document": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug", "organization"],
 }
 
 kind_blacklist = [None]
@@ -125,7 +125,11 @@ def construct_node(location, parent_path, node_cache, channel):
         return None
     if not parent_path:
         base_name = channel["name"]
-    slug = slugify(unicode(base_name.split(".")[0]))
+    slug = slugify(unicode(".".join(base_name.split(".")[:-1])))
+    if not slug or slug in node_cache["Slugs"]:
+        slug = slugify(unicode(base_name))
+    # Note: It is assumed that any file with *exactly* the same file name is the same file.
+    node_cache["Slugs"].add(slug)
     current_path = os.path.join(parent_path, slug)
     try:
         with open(location + ".json", "r") as f:
@@ -135,7 +139,7 @@ def construct_node(location, parent_path, node_cache, channel):
         logging.warning("No metadata for file {base_name}".format(base_name=base_name))
     node = {
         "path": current_path,
-        "parent_id": os.path.basename(parent_path[:-1]),
+        "parent_id": os.path.basename(parent_path),
         "ancestor_ids": filter(None, parent_path.split("/")),
         "slug": slug,
     }
@@ -143,7 +147,7 @@ def construct_node(location, parent_path, node_cache, channel):
         node.update({
             "kind": "Topic",
             "id": slug,
-            "children": sorted([construct_node(os.path.join(location, s), current_path, node_cache, channel) for s in os.listdir(location)], key=lambda x: x.get("title", "") if x else ""),
+            "children": sorted([construct_node(os.path.join(location, s), current_path, node_cache, channel) for s in os.listdir(location)], key=lambda x: (not x.get("topic_spotlight", False) if x else True, x.get("title", "") if x else "")),
         })
 
         node["children"] = [child for child in node["children"] if child]
@@ -194,7 +198,16 @@ def construct_node(location, parent_path, node_cache, channel):
     # Verify some required fields:
     if "title" not in node:
         logging.warning("Title missing from file {base_name}, using file name instead".format(base_name=base_name))
-        node["title"] = os.path.splitext(base_name)[0]
+        if os.path.isdir(location):
+            node["title"] = base_name
+        else:
+            node["title"] = os.path.splitext(base_name)[0]
+
+    # Clean up some fields:
+    # allow tags and keywords to be a single item as a string, convert to list
+    for key in ["tags", "keywords"]:
+        if isinstance(node.get(key, []), basestring):
+            node[key] = [node[key]]
 
     if not os.path.isdir(location):
         nodecopy = copy.deepcopy(node)
@@ -254,6 +267,7 @@ def retrieve_API_data(channel=None):
         "Video": [],
         "Exercise": [],
         "Content": [],
+        "Slugs": set(),
     }
 
     topic_tree = construct_node(path, "", node_cache, channel)
@@ -265,6 +279,8 @@ def retrieve_API_data(channel=None):
     assessment_items = []
 
     content = node_cache["Content"]
+
+    del node_cache["Slugs"]
 
     annotate_related_content(node_cache)
 

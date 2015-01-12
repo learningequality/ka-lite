@@ -38,16 +38,28 @@ window.CurrentUnitRowView = Backbone.View.extend({
 
     increment_current_unit: function(amount) {
         var new_unit = this.model.get("current_unit") + amount;
-        if ((new_unit >= this.model.get("min_unit")) && (new_unit <= this.model.get("max_unit"))) {
-            this.set_unit(new_unit);
+        // constrain to the lower bound
+        if (new_unit < this.model.get("min_unit")) {
+            new_unit = this.model.get("min_unit");
         }
+        // constrain to the upper bound
+        if (new_unit > this.model.get("max_unit")) {
+            new_unit = this.model.get("max_unit");
+        }
+        this.set_unit(new_unit);
     },
 
     set_unit: function(unit) {
+        if (unit == this.model.get("current_unit")) {
+            // nothing to do
+            return;
+        }
+        // double-check with the user
         var check = confirm(gettext("Before changing units, make sure all students have finished purchasing items in the store, etc. Are you sure you want to change the current unit?"));
         if (!check) {
             return;
         }
+        // change and save
         this.model.set("current_unit", unit);
         this.model.save();
     }

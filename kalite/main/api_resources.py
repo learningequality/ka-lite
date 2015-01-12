@@ -80,10 +80,18 @@ class Video:
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
 
+        if not lang_code:
+            lang_code = "en"
+        selected_language = kwargs.get('selected_language')
+        if not selected_language:
+            selected_language = lang_code
+        # TODO(cpauya): Get the reason why we have this `lang_code` argument or why do we
+        # have the `selected_language` argument also?!  Which one is which?
+        lang_code = selected_language
         # the computed values
-        self.video_urls = kwargs.get('availability', {}).get(lang_code, {})
+        self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
         self.subtitle_urls = kwargs.get('availability', {}).get(lang_code, {}).get('subtitles', {})
-        self.selected_language = lang_code
+        self.selected_language = selected_language
         self.dubs_available = len(kwargs.get('availability', {})) > 1
         self.title = _(kwargs.get('title'))
         self.id = self.pk = self.video_id = kwargs.get('id')
@@ -108,8 +116,11 @@ class VideoResource(Resource):
     subtitle_urls = fields.ListField(attribute='subtitle_urls')
     title = fields.CharField(attribute='title')
     video_id = fields.CharField(attribute='video_id')
-    video_urls = fields.DictField(attribute='video_urls')
+    content_urls = fields.DictField(attribute='content_urls')
     youtube_id = fields.CharField(attribute='youtube_id', default="no_youtube_id")
+    related_content = fields.ListField(attribute='related_content', default=[])
+    tags = fields.ListField(attribute='tags', default=[])
+    organization = fields.CharField(attribute='organization', default="")
 
     class Meta:
         resource_name = 'video'

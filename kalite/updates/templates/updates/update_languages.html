@@ -16,9 +16,10 @@
     <script type="text/javascript">
         var start_languagepackdownload_url = "{% url 'start_languagepack_download' %}";
         var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}"
-        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ VERSION }}";
+        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ SHORTVERSION }}";
         var DELETE_LANGUAGEPACK_URL = "{% url 'delete_language_pack' %}";
         var defaultLanguage = "{{ default_language }}";
+        var BETA_BUTTON_URL = "{% static 'images/updates/beta-button.png' %}";
     </script>
     <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
@@ -28,8 +29,8 @@
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
     <div class="container">
-        
-        <div class="col-sm-8 col-md-7 col lg-5 download-actions-languages get-language vertical-shadow">            
+
+        <div class="col-sm-8 col-md-7 col lg-5 download-actions-languages get-language vertical-shadow">
             <div class="row">
                 <h4 class="button_text">{% trans "Download or Update Language Packs" %}</h4>
             </div>
@@ -45,8 +46,17 @@
             <div class="row">
                 <div id="langpacks">
                     <span class= "button_style">
-                        <select id="language-packs"></select>
+                        <div class="dropdown" id="language-packs">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="language-packs-selection" data-toggle="dropdown" aria-expanded="true">
+                                select language pack
+                                <span class="caret"></span>
+                            </button>
+                          <ul class="dropdown-menu" role="menu" id="language-packs-ul"></ul>
+                        </div>
                     </span>
+
+                    <label for="beta-checkbox">   {% trans "Show beta language packs" %}</label>
+                    <input type="checkbox" id="beta-checkbox">
 
                     <button class="btn btn-success btn-xs pull-right" id="get-language-button" type="button" disabled>{% trans "Get Language Pack" %}</button>
                 </div>
@@ -58,7 +68,7 @@
                     <span id="lp-disk-size"></span><label>&nbsp;({% trans "on disk" %})</label>
                     <span id="lp-num-exers"></span><label>&nbsp;{% trans "exercise(s)" %}</label>
                 </div>
-            </div>       
+            </div>
         </div>
 
         <div id="languagepackdownload-progressbar">
@@ -70,7 +80,7 @@
             <div class="row">
                 <h4>{% trans "Installed Languages" %}</h4>
             </div>
-            
+
             <div class="row table-responsive language-table">
                 <table class="installed-languages table"></table>
             </div>

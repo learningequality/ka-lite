@@ -21,9 +21,7 @@ footer {
     bottom: 0;
     left: 0;
 }
-.container {
-    max-width: 1000px;
-}
+
 a:hover, a:focus {
     text-decoration: none;
 }
@@ -358,7 +356,7 @@ form .input-group {
     font-weight: 300;
 }
 .panel-heading .borderwrapper {
-    border-bottom: 1px solid rgba(255,255,255,0.5);
+   /* border-bottom: 1px solid rgba(255,255,255,0.5);*/
 }
 .panel-default .content-description {
     color: white;

@@ -1,28 +1,29 @@
 """
 """
-import csv 
-import copy
 import datetime
+import dateutil
 import re
 import os
-from annoying.decorators import render_to, wraps
+from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from collections_local_copy import OrderedDict, namedtuple
+from collections_local_copy import OrderedDict
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db.models import Sum, Max
-from django.http import Http404, HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import Http404, HttpResponseRedirect, HttpResponseNotFound
+from django.db.models import Max
+from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
-from django.template import RequestContext
 from django.utils.translation import ugettext as _
 
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
-from fle_utils.internet import CsvResponse, render_to_csv
+from fle_utils.internet import render_to_csv
+from securesync.models import Device, Zone, SyncSession
+from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context
 from kalite.facility import get_users_from_group
 from kalite.facility.decorators import facility_required
@@ -30,13 +31,8 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
-
 from kalite.topic_tools import get_exercise_cache
-
-from kalite.student_testing.models import TestLog
-
 from kalite.version import VERSION, VERSION_INFO
-from securesync.models import DeviceZone, Device, Zone, SyncSession
 
 # TODO(dylanjbarth): this looks awful
 if settings.CENTRAL_SERVER:
@@ -311,7 +307,8 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
 @facility_required
 @require_authorized_admin
 @render_to("control_panel/facility_management.html")
-def facility_management(request, facility, group_id=None, zone_id=None, per_page=25):
+@dynamic_settings
+def facility_management(request, ds, facility, group_id=None, zone_id=None, per_page=25):
 
     ungrouped_id = UNGROUPED
 
@@ -370,6 +367,7 @@ def facility_management(request, facility, group_id=None, zone_id=None, per_page
         "groups": groups, # sends dict if group page, list of group data otherwise
         "student_pages": student_pages,  # paginated data
         "coach_pages": coach_pages,  # paginated data
+        "ds": ds,
         "page_urls": {
             "coaches": coach_urls,
             "students": student_urls,
@@ -442,15 +440,33 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     login_logs = UserLogSummary.objects.filter(user__in=users)
 
     # filter results
+    login_logs = login_logs.filter(total_seconds__gt=0)
     if period_start:
         exercise_logs = exercise_logs.filter(completion_timestamp__gte=period_start)
         video_logs = video_logs.filter(completion_timestamp__gte=period_start)
-        login_logs = login_logs.filter(start_datetime__gte=period_start)
     if period_end:
+        # MUST: Fix the midnight bug where period end covers up to the prior day only because
+        # period end is datetime(year, month, day, hour=0, minute=0), meaning midnight of previous day.
+        # Example:
+        #   If period_end == '2014-12-01', we cannot include the records dated '2014-12-01 09:30'.
+        #   So to fix this, we change it to '2014-12-01 23:59.999999'.
+        period_end = dateutil.parser.parse(period_end)
+        period_end = period_end + dateutil.relativedelta.relativedelta(days=+1, microseconds=-1)
         exercise_logs = exercise_logs.filter(completion_timestamp__lte=period_end)
         video_logs = video_logs.filter(completion_timestamp__lte=period_end)
-        login_logs = login_logs.filter(total_seconds__gt=0, start_datetime__lte=period_end)
+    if period_start and period_end:
+        exercise_logs = exercise_logs.filter(Q(completion_timestamp__gte=period_start) &
+                                             Q(completion_timestamp__lte=period_end))
 
+        q1 = Q(completion_timestamp__isnull=False) & \
+             Q(completion_timestamp__gte=period_start) & \
+             Q(completion_timestamp__lte=period_end)
+        q2 = Q(completion_timestamp__isnull=True)
+        video_logs = video_logs.filter(q1 | q2)
+
+        login_q1 = Q(start_datetime__gte=period_start) & Q(start_datetime__lte=period_end) & \
+                   Q(end_datetime__gte=period_start) & Q(end_datetime__lte=period_end)
+        login_logs = login_logs.filter(login_q1)
     # Force results in a single query
     exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
     video_logs = list(video_logs.values("video_id", "user__pk"))
@@ -567,4 +583,3 @@ def local_install_context(request):
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }
-

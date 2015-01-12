@@ -135,6 +135,8 @@ def timeline_view(request, xaxis="", yaxis=""):
 @render_to("coachreports/scatter_view.html")
 def scatter_view(request, xaxis="", yaxis=""):
     """Scatter view (scatter plot): just send metadata; data will be requested via AJAX"""
+    xaxis = "pct_mastery"
+    yaxis = "effort"
     facility, group_id, context = coach_nav_context(request, "scatter")
     context.update(plotting_metadata_context(request, facility=facility, xaxis=xaxis, yaxis=yaxis))
     context["title"] = _("Scatter plot")

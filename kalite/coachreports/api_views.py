@@ -205,8 +205,8 @@ def compute_data(data_types, who, where):
     search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
     query_topics = partial(lambda t, sf: t if t is not None else [t["id"] for t in filter(sf, get_node_cache('Topic').values())], sf=search_fun_single_path)
-    query_exercises = partial(lambda e, sf: e if e is not None else [ex["id"] for ex in filter(sf, get_exercise_cache().values())], sf=search_fun_multi_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid["id"] for vid in filter(sf, get_node_cache('Video').values())], sf=search_fun_multi_path)
+    query_exercises = partial(lambda e, sf: e if e is not None else [ex["id"] for ex in filter(sf, get_exercise_cache().values())], sf=search_fun_single_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid["id"] for vid in filter(sf, get_node_cache('Video').values())], sf=search_fun_single_path)
 
     # No users, don't bother.
     if len(who) > 0:
@@ -377,7 +377,13 @@ def api_data(request, xaxis="", yaxis=""):
         groups = FacilityGroup.objects.filter(facility__in=[form.data.get("facility")])
         users = FacilityUser.objects.filter(facility__in=[form.data.get("facility")], is_teacher=False).order_by("last_name", "first_name")
     else:
-        return HttpResponseNotFound(_("Did not specify facility, group, nor user."))
+        # Allow superuser to see the data.
+        if request.user.is_authenticated() and request.user.is_superuser:
+            facility = []
+            groups = []
+            users = FacilityUser.objects.all().order_by("last_name", "first_name")
+        else:
+            return HttpResponseNotFound(_("Did not specify facility, group, nor user."))
 
     # Query out the data: where?
     if not form.data.get("topic_path"):

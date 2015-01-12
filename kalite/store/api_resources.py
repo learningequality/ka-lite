@@ -43,7 +43,7 @@ class StoreItemResource(Resource):
 
     def _read_storeitems(self, storeitem_id=None, force=False):
         storeitemcache = StoreItem.all(force=force)
-        return sorted(storeitemcache.values(), key=lambda storeitem: storeitem.title)
+        return sorted(storeitemcache.values(), key=lambda storeitem: storeitem.cost)
 
     def prepend_urls(self):
         return [

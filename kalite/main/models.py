@@ -470,8 +470,7 @@ class AttemptLog(DeferredCountSyncedModel):
     Detailed instances of user exercise engagement.
     """
 
-    # TODO-BLOCKER(rtibbles): Update this to "0.13.0" (or whatever the release version number is at the time this goes upstream)
-    minversion = "0.12.0"
+    minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, db_index=True)
     exercise_id = models.CharField(max_length=100, db_index=True)
@@ -492,18 +491,24 @@ class AttemptLog(DeferredCountSyncedModel):
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
+
 class ContentLog(DeferredCountSyncedModel):
+
+    minversion = "0.13.0"
+
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     content_id = models.CharField(max_length=100, db_index=True)
     points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
+    start_timestamp = models.DateTimeField(auto_now_add=True, editable=False)  # this must NOT be null
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
     time_spent = models.FloatField(blank=True, null=True)
+    progress_timestamp = models.DateTimeField(blank=True, null=True)
     content_source = models.CharField(max_length=100, db_index=True)
     content_kind = models.CharField(max_length=100, db_index=True)
-    progress = models.IntegerField(blank=True, null=True)
+    progress = models.FloatField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)
     extra_fields = models.TextField(blank=True)
 
@@ -513,6 +518,11 @@ class ContentLog(DeferredCountSyncedModel):
     @staticmethod
     def get_points_for_user(user):
         return ContentLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+
+    def save(self, *args, **kwargs):
+        if self.content_id and not self.complete:
+            self.progress_timestamp = datetime.now()
+        super(ContentLog, self).save(*args, **kwargs)
 
 
 @receiver(pre_save, sender=UserLog)
@@ -560,6 +570,7 @@ def cull_records(sender, **kwargs):
             to_discard = current_models \
                 .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
             UserLog.objects.filter(pk__in=to_discard).delete()
+
 
 def logout_endlog(sender, request, user, **kwargs):
     if "facility_user" in request.session:

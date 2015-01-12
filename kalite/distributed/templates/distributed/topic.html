@@ -97,6 +97,7 @@
     <script src="{% url 'handlebars_templates' module_name='audio' %}"></script>
     <script src="{% static 'js/distributed/audio/views.js' %}"></script>
 
+    {% if pdfjs %}
     <script src="{% url 'handlebars_templates' module_name='pdf' %}"></script>
     <script src="{% static 'pdfjs/web/compatibility.js' %}"></script>
     <script src="{% static 'pdfjs/web/l10n.js' %}"></script>
@@ -110,17 +111,17 @@
     </script>
     <script src="{% static 'pdfjs/web/viewer.js' %}"></script>
     <script src="{% static 'js/distributed/pdf/views.js' %}"></script>
+    {% endif %}
 
     <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
     <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
-    <script src="{% static 'js/distributed/topics/bigSlide.js' %}"></script>
     <script src="{% static 'js/distributed/topics/models.js' %}"></script>
     <script src="{% static 'js/distributed/topics/views.js' %}"></script>
     <script src="{% static 'js/distributed/topics/router.js' %}"></script>
 
     <script type="text/javascript">
         $(function() {
-            window.channel_router = new ChannelRouter({default_channel: "{{ channel }}"})
+            window.channel_router = new TopicChannelRouter({default_channel: "{{ channel }}"})
             Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
         });
     </script>

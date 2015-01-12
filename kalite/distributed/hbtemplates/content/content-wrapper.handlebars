@@ -5,7 +5,10 @@
                 <div class="panel-heading">
                     <div class="pull-right">
                         <div class="points-wrapper"></div>
-                        <a href="{{ content_urls.stream }}" class="btn btn-primary download-link pull-right">{{_ "Download" }}</a>
+                        {{!-- TODO-BLOCKER 0.13 rtibbles enable this for other content types. --}}
+                        {{#ifcond kind "==" "Document" }}
+                        <a href="{{ content_urls.stream }}" class="btn btn-primary download-link pull-right">{{_ "Open PDF Reader" }}</a>
+                        {{/ifcond}}
                         <div class="clear"></div>
                     </div>
 
@@ -22,7 +25,7 @@
                     </h3>
 
                     <span class="title">{{ title }}</span>
-
+                    <span class="organization">by: {{ organization }}</span>
                     {{#if description }}
                     <div class="content-description">{{ description }}</div>
                     {{/if}}
@@ -36,32 +39,15 @@
                 </div>
                 {{#if related_content}}
                 <div class="panel-footer">
-                    <h4>
+                    <h3>
                         Related content:
-                    </h4>
+                    </h3>
                     <div class="row">
                         {{#each related_content }}
                             <div class="col-xs-4">
                                 <a href="/learn/{{ path }}" title="{{description}}" class="btn btn-success btn-related-content">
                                     <div class="related-content-header">
-                                        {{#ifcond kind "==" "Video"}}
-                                        <span class="icon-video"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Exercise"}}
-                                        <span class="icon-exercise"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Quiz"}}
-                                        <span class="icon-quiz"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Topic"}}
-                                        <span class="icon-list"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Audio"}}
-                                        <span class="icon-audio"></span>
-                                        {{/ifcond}}
-                                        {{#ifcond kind "==" "Document"}}
-                                        <span class="icon-document"></span>
-                                        {{/ifcond}}
+                                        <span class="icon-{{ kind }}"></span>
                                         <span class="related-content-title">{{ title }}</span>
                                     </div>
                                     <div class="related-content-body">
@@ -73,6 +59,20 @@
                             </div>
                         {{/each}}
                     </div>
+                </div>
+                {{/if}}
+                {{#if tags}}
+                <div class="panel-footer">
+                    <h3>
+                        Tags:
+                    </h3>
+                    {{#each tags }}
+                        <a href="/search/?query={{ this }}">
+                            <span class="btn btn-tag">
+                            {{ this }}
+                            </span>
+                        </a>
+                    {{/each}}
                 </div>
                 {{/if}}
             </div>
