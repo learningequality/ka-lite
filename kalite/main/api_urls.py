@@ -11,9 +11,6 @@ from .api_resources import ExerciseLogResource, AttemptLogResource, ContentLogRe
 
 urlpatterns = patterns(__package__ + '.api_views',
 
-    # For video / exercise pages
-    url(r'^save_video_log$', 'save_video_log', {}, 'save_video_log'),
-
     # For returning video / exercise progress for a given level within the topic tree
     url(r'^get_video_logs$', 'get_video_logs', {}, 'get_video_logs'),
     url(r'^get_exercise_logs$', 'get_exercise_logs', {}, 'get_exercise_logs'),
@@ -27,8 +24,6 @@ urlpatterns = patterns(__package__ + '.api_views',
     # Retrieve assessment item data to render front-end Perseus Exercises
     url(r'^', include(AssessmentItemResource().urls)),
     url(r'^', include(ContentResource().urls)),
-    url(r'^exercise_log/(?P<exercise_id>\w+)$', 'exercise_log', {}, 'exercise_log'),
-    url(r'^attempt_log/(?P<exercise_id>\w+)$', 'attempt_log', {}, 'attempt_log'),
 
     # Data used by the client (browser) for doing search
     url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),

@@ -2,33 +2,21 @@
 Views accessible as an API endpoint.  All should return JsonResponses.
 
 Here, these are focused on:
-* GET/save student progress (video, exercise)
+* GET student progress (video, exercise)
 * topic tree views (search, knowledge map)
 """
-import json
-import math
-import os
-import re
-import os
-import datetime
-
-from annoying.functions import get_object_or_None
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_lazy, string_concat
 
-from .api_forms import ExerciseLogForm, VideoLogForm, AttemptLogForm
-from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponseMessageWarning
+from .models import VideoLog, ExerciseLog, ContentLog
+from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.internet.webcache import backend_cache_page
 from fle_utils.testing.decorators import allow_api_profiling
 
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache, get_neighbor_nodes
-
-from kalite.dynamic_assets.decorators import dynamic_settings
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache
 
 class student_log_api(object):
     """
@@ -53,104 +41,6 @@ class student_log_api(object):
         return student_log_api_wrapper_fn
 
 
-@student_log_api(logged_out_message=ugettext_lazy("Video progress not saved."))
-def save_video_log(request):
-    """
-    Receives a video_id and relevant data,
-    saves it to the currently authorized user.
-    """
-
-    # Form does all the data validation, including the video_id
-    form = VideoLogForm(data=simplejson.loads(request.body))
-    if not form.is_valid():
-        raise ValidationError(form.errors)
-    data = form.data
-    user = request.session["facility_user"]
-    try:
-        complete = data.get("complete", False)
-        completion_timestamp = data.get("completion_timestamp", None)
-        videolog = VideoLog.update_video_log(
-            facility_user=user,
-            video_id=data["video_id"],
-            youtube_id=data["youtube_id"],
-            total_seconds_watched=data["total_seconds_watched"],  # don't set incrementally, to avoid concurrency issues
-            points=data["points"],
-            language=data.get("language") or request.language,
-            complete=complete,
-            completion_timestamp=completion_timestamp,
-        )
-
-    except ValidationError as e:
-        return JsonResponseMessageError(_("Could not save VideoLog: %(err)s") % {"err": e})
-
-    if "points" in request.session:
-        del request.session["points"]  # will be recomputed when needed
-
-    return JsonResponse({
-        "points": videolog.points,
-        "complete": videolog.complete,
-    })
-
-@allow_api_profiling
-@student_log_api(logged_out_message=ugettext_lazy("Exercise progress not logged."))
-def exercise_log(request, exercise_id):
-
-    if request.method == "POST":
-        """
-        Receives an exercise_id and relevant data,
-        saves it to the currently authorized user.
-        """
-
-        # Form does all data validation, including of the exercise_id
-        form = ExerciseLogForm(data=simplejson.loads(request.raw_post_data))
-        if not form.is_valid():
-            raise Exception(form.errors)
-        data = form.data
-
-        # More robust extraction of previous object
-        user = request.session["facility_user"]
-        (exerciselog, was_created) = ExerciseLog.get_or_initialize(user=user, exercise_id=exercise_id)
-
-        exerciselog.attempts = data["attempts"]  # don't increment, because we fail to save some requests
-        exerciselog.streak_progress = data["streak_progress"]
-        exerciselog.points = data["points"]
-        exerciselog.language = data.get("language") or request.language
-
-        try:
-            exerciselog.full_clean()
-            exerciselog.save()
-        except ValidationError as e:
-            return JsonResponseMessageError(_("Could not save ExerciseLog") + u": %s" % e)
-
-        if "points" in request.session:
-            del request.session["points"]  # will be recomputed when needed
-
-        # Special message if you've just completed.
-        #   NOTE: it's important to check this AFTER calling save() above.
-        # TODO (rtibbles): MOVE THIS TO THE CLIENT SIDE!
-        if not previously_complete and exerciselog.complete:
-            exercise = get_node_cache("Exercise").get(data["exercise_id"], None)
-            junk, next_exercise = get_neighbor_nodes(exercise, neighbor_kind="Exercise") if exercise else None
-            if not next_exercise:
-                return JsonResponseMessageSuccess(_("You have mastered this exercise and this topic!"))
-            else:
-                return JsonResponseMessageSuccess(_("You have mastered this exercise!  Please continue on to <a href='%(href)s'>%(title)s</a>") % {
-                    "href": next_exercise["path"],
-                    "title": _(next_exercise["title"]),
-                })
-
-        # Return no message in release mode; "data saved" message in debug mode.
-        return JsonResponse({})
-
-    if request.method == "GET":
-        """
-        Given an exercise_id, retrieve an exercise log for this user.
-        """
-        user = request.session["facility_user"]
-        log = get_object_or_None(ExerciseLog, user=user, exercise_id=exercise_id) or ExerciseLog()
-        return JsonResponse(log)
-
-
 # TODO(rtibbles): Refactor client side code for status rendering in knowledge map and topic pages
 # to use a more RESTful API call.
 @allow_api_profiling
@@ -168,53 +58,6 @@ def get_exercise_logs(request):
             .filter(user=user, exercise_id__in=data) \
             .values("exercise_id", "streak_progress", "complete", "points", "struggling", "attempts")
     return JsonResponse(list(logs))
-
-
-@allow_api_profiling
-@student_log_api(logged_out_message=ugettext_lazy("Attempt logs not active."))
-def attempt_log(request, exercise_id):
-    """
-    RESTful API endpoint for AttemptLogs.
-    """
-
-    if request.method == "POST":
-
-        form = AttemptLogForm(data=json.loads(request.raw_post_data))
-        if not form.is_valid():
-            raise Exception(form.errors)
-        data = form.data
-
-        # More robust extraction of previous object
-        user = request.session["facility_user"]
-
-        try:
-            AttemptLog.objects.create(
-                user=user,
-                exercise_id=data["exercise_id"],
-                random_seed=data["random_seed"],
-                answer_given=data["answer_given"],
-                points_awarded=data["points"],
-                correct=data["correct"],
-                context_type=data["context_type"],
-                language=data.get("language") or request.language,
-                )
-        except ValidationError as e:
-            return JsonResponseMessageError(_("Could not save AttemptLog") + u": %s" % e)
-
-        # Return no message in release mode; "data saved" message in debug mode.
-        return JsonResponse({})
-
-    if request.method == "GET":
-        """
-        Given an exercise_id, retrieve a list of the last ten attempt logs for this user.
-        """
-        user = request.session["facility_user"]
-        logs = AttemptLog.objects \
-                .filter(user=user, exercise_id=exercise_id, context_type="exercise") \
-                .order_by("-timestamp") \
-                .values("exercise_id", "correct", "context_type", "timestamp", "time_taken", "answer_given", "points_awarded")[:10]
-        return JsonResponse(list(reversed(logs)))
-
 
 
 @allow_api_profiling

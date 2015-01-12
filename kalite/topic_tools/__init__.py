@@ -17,8 +17,6 @@ and more.
 * get_video_cache() returns all videos
 * get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
-import glob
-import json
 import os
 import re
 from functools import partial
@@ -33,7 +31,6 @@ from kalite import i18n
 
 TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
 EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
-VIDEOS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "videos.json")
 ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
 KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "map_topics.json")
 CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
@@ -84,15 +81,6 @@ def get_exercise_cache(force=False):
         EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
 
     return EXERCISES
-
-VIDEOS          = None
-CACHE_VARS.append("VIDEOS")
-def get_video_cache(force=False):
-    global VIDEOS, VIDEOS_FILEPATH
-    if VIDEOS is None or force:
-        VIDEOS = softload_json(VIDEOS_FILEPATH, logger=logging.debug, raises=False)
-
-    return VIDEOS
 
 ASSESSMENT_ITEMS          = None
 CACHE_VARS.append("ASSESSMENT_ITEMS")
@@ -200,12 +188,12 @@ def generate_slug_to_video_id_map(node_cache=None):
     slug2id_map = dict()
 
     # Make a map from youtube ID to video slug
-    for video_id, v in node_cache.get('Video', {}).iteritems():
+    for content_id, c in node_cache.get('Content', {}).iteritems():
         try:
-            assert v["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
+            assert c["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and content_id"
         except AssertionError as e:
-            logging.warn(_("{slug} duplicated in topic tree - overwritten here.").format(slug=v["slug"]))
-        slug2id_map[v['slug']] = video_id
+            logging.warn(_("{slug} duplicated in topic tree - overwritten here.").format(slug=c["slug"]))
+        slug2id_map[c['slug']] = content_id
 
     return slug2id_map
 
@@ -239,7 +227,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
 
 def generate_node_cache(topictree=None):
     """
-    Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Video nodes.
+    Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Content nodes.
     """
 
     if not topictree:
@@ -261,7 +249,6 @@ def generate_node_cache(topictree=None):
     recurse_nodes(topictree)
 
     node_cache["Exercise"] = get_exercise_cache()
-    node_cache["Video"] = get_video_cache()
     node_cache["Content"] = get_content_cache()
 
     return node_cache
@@ -338,40 +325,6 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     return leaves
 
 
-def get_child_topics(topic_node):
-    """Return list of immediate children that are topics"""
-    topics = []
-    if "children" in topic_node:
-        for child in topic_node["children"]:
-            if child['kind'] == 'Topic':
-                topics.append(child['id'])
-    return topics
-
-
-def get_topic_hierarchy(topic_node=get_topic_tree()):
-    """
-    Return hierarchical list of topics for main nav
-    """
-    topic_hierarchy = {
-        "id": topic_node['id'],
-        "title": topic_node['title'],
-        "description": topic_node['description'],
-    }
-    if ("children" in topic_node) and ('Topic' in topic_node['contains']):
-        topic_hierarchy["children"] = []
-        for child in topic_node['children']:
-            if child['kind'] == 'Topic':
-                topic_hierarchy["children"].append(get_topic_hierarchy(child))
-
-    return topic_hierarchy
-
-def dump_topic_hierarchy():
-    """Dump topic hierarchy to JSON"""
-    topic_hierarchy = get_topic_hierarchy()
-    with open('topic_hierarchy.json', 'w') as outfile:
-        json.dump(topic_hierarchy, outfile, indent=4, sort_keys=True)
-
-
 def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
     """Given a topic (identified by topic_id or path), return all descendent leaf nodes"""
     assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
@@ -400,106 +353,6 @@ def get_topic_videos(*args, **kwargs):
     kwargs["leaf_type"] = "Video"
     return get_topic_leaves(*args, **kwargs)
 
-
-def get_related_exercises(videos):
-    """Given a set of videos, get all of their related exercises."""
-    related_exercises = []
-    for video in videos:
-        if video.get("related_exercise"):
-            related_exercises.append(video['related_exercise'])
-    return related_exercises
-
-
-def get_exercise_paths():
-    """This function retrieves all the exercise paths.
-    """
-    exercises = get_node_cache("Exercise").values()
-    return [n["path"] for exercise in exercises for n in exercise]
-
-
-def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
-    """Given a set of exercises, get all of the videos that say they're related.
-
-    possible_videos: list of videos to consider.
-    topics: if not possible_videos, then get the possible videos from a list of topics.
-    """
-    assert bool(topics) + bool(possible_videos) <= 1, "May specify possible_videos or topics, but not both."
-
-    related_videos = []
-
-    if not possible_videos:
-        possible_videos = []
-        for topic in (topics or get_node_cache('Topic').values()):
-            possible_videos += get_topic_videos(topic_id=topic['id'])
-
-    # Get exercises from videos
-    exercise_ids = [ex["id"] for ex in exercises]
-    for video in possible_videos:
-        if "related_exercise" in video and video["related_exercise"]['id'] in exercise_ids:
-            related_videos.append(video)
-    return related_videos
-
-
-def get_related_videos(exercise, limit_to_available=True):
-    """
-    Return topic tree cached data for each related video.
-    """
-    # Find related videos
-    related_videos = {}
-    for slug in exercise["related_video_slugs"]:
-        video_node = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), {})
-
-        # Make sure the IDs are recognized, and are available.
-        if video_node and (not limit_to_available or video_node.get("available", False)):
-            related_videos[slug] = video_node
-
-    return related_videos
-
-
-
-def is_base_leaf(node, is_base_leaf=True):
-    """Return true if the topic node has no child topic nodes"""
-    for child in node['children']:
-        if child['kind'] == 'Topic':
-            return False
-    return is_base_leaf
-
-
-def get_neighbor_nodes(node, neighbor_kind=None):
-
-    parent = get_parent(node)
-    prev = next = None
-    filtered_children = [ch for ch in parent["children"] if not neighbor_kind or ch["kind"] == neighbor_kind]
-
-    for idx, child in enumerate(filtered_children):
-        if child["path"] != node["path"]:
-            continue
-
-        if idx < (len(filtered_children) - 1):
-            next = filtered_children[idx + 1]
-        if idx > 0:
-            prev = filtered_children[idx - 1]
-        break
-
-    return prev, next
-
-def get_video_page_paths(video_id=None):
-    try:
-        return [n["path"] for n in get_node_cache("Video")[video_id]]
-    except:
-        return []
-
-
-def get_exercise_page_paths(video_id=None):
-
-    try:
-        exercise_paths = set()
-        for exercise in get_related_exercises(videos=get_node_cache("Video")[video_id]):
-            exercise_paths = exercise_paths.union(set([exercise["path"]]))
-        return list(exercise_paths)
-    except Exception as e:
-        logging.debug("Exception while getting exercise paths: %s" % e)
-        return []
 
 def get_exercise_data(request, exercise_id=None):
     exercise = get_exercise_cache().get(exercise_id, None)

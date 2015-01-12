@@ -50,22 +50,6 @@ def invalidate_on_video_delete(sender, **kwargs):
         invalidate_all_caches()
 
 
-def invalidate_all_pages_related_to_video(video_id=None):
-    """Given a video file, recurse backwards up the hierarchy and invalidate all pages.
-    Also include video pages and related exercise pages.
-    """
-
-    # Expire all video files and related paths
-    video_paths = topic_tools.get_video_page_paths(video_id=video_id)
-    exercise_paths = topic_tools.get_exercise_page_paths(video_id=video_id)
-    leaf_paths = set(video_paths).union(set(exercise_paths))
-
-    for leaf_path in leaf_paths:
-        all_paths = generate_all_paths(path=leaf_path, base_path=topic_tools.get_topic_tree()['path'])
-        for path in filter(has_cache_key, all_paths):  # start at the root
-            expire_page(path=path)
-
-
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
 
