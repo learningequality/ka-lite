@@ -26,7 +26,9 @@ from django.utils.translation import ugettext as _
 from fle_utils.general import softload_json
 from kalite import i18n
 
-TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
+TOPICS_FILEPATHS = {
+    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
+}
 EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
 ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
 KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "map_topics.json")
@@ -39,24 +41,26 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 
 
 # Globals that can be filled
-TOPICS          = None
+TOPICS          = {}
 CACHE_VARS.append("TOPICS")
-def get_topic_tree(force=False, props=None):
-    global TOPICS, TOPICS_FILEPATH
-    if TOPICS is None or force:
-        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug, raises=False)
-        validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
+def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
+    global TOPICS, TOPICS_FILEPATHS
+    if TOPICS.get(channel) is None or force:
+        TOPICS[channel] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+        validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
 
-        # Limit the memory footprint by unloading particular values
-        if props:
-            node_cache = get_node_cache()
-            for kind, list_by_kind in node_cache.iteritems():
-                for node_list in list_by_kind.values():
-                    for node in node_list:
-                        for att in node.keys():
-                            if att not in props:
-                                del node[att]
-    return TOPICS
+    if annotate:
+        content_cache = get_content_cache()
+        def recurse_nodes(node):
+            # By default this is very charitable, assuming if something has not been annotated it is available
+            if content_cache.get(node.get("id"), {}).get("languages", [""]):
+                node["available"] = True
+            # Do the recursion
+            for child in node.get("children", []):
+                recurse_nodes(child)
+        recurse_nodes(TOPICS[channel])
+
+    return TOPICS[channel]
 
 
 NODE_CACHE = None
@@ -125,12 +129,11 @@ def get_content_cache(force=False, annotate=False):
             languages = []
             default_thumbnail = create_thumbnail_url(content.get("id"))
             dubmap = i18n.get_id2oklang_map(content.get("id"))
-            for lang in dubmap:
+            for lang, dubbed_id in dubmap.items():
                 # TODO (rtibbles): Explicitly stamp "mp4" on KA videos in contentload
                 format = content.get("format", "mp4")
-                if is_content_on_disk(content.get("id"), format):
+                if is_content_on_disk(dubbed_id, format):
                     languages.append(lang)
-                    dubbed_id = dubmap.get(lang)
                     thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
                     content["lang_data_" + lang] = {
                         "stream": settings.CONTENT_URL + dubmap.get(lang) + "." + format,
@@ -430,7 +433,7 @@ def get_content_data(request, content_id=None):
     if not content:
         return None
 
-    content_lang = i18n.select_best_available_language(request.language, available_codes=content.get("languages", []))
+    content_lang = i18n.select_best_available_language(request.language, available_codes=content.get("languages", [])) or ""
     urls = content.get("lang_data_" + content_lang, None)
 
     if not urls:
