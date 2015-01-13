@@ -16,7 +16,7 @@ and more.
 """
 import os
 import re
-import simplejson
+import json
 from functools import partial
 
 from django.conf import settings; logging = settings.LOG
@@ -69,7 +69,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
         if settings.HARD_CONTENT_CACHE:
             try:
                 with open(TOPICS_FILEPATHS.get(channel) + ".cache", "w") as f:
-                    simplejson.dump(TOPICS[channel], f)
+                    json.dump(TOPICS[channel], f)
             except IOError as e:
                 logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
 
@@ -169,7 +169,7 @@ def get_content_cache(force=False, annotate=False):
         if settings.HARD_CONTENT_CACHE:
             try:
                 with open(CONTENT_FILEPATH + ".cache", "w") as f:
-                    simplejson.dump(CONTENT, f)
+                    json.dump(CONTENT, f)
             except IOError as e:
                 logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
 
