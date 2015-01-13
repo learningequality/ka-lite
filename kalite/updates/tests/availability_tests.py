@@ -5,8 +5,6 @@ from django.conf import settings
 
 from .base import UpdatesTestCase
 from kalite.topic_tools import get_content_cache, get_node_cache
-from kalite.caching import initialize_content_caches
-
 
 class TestTopicAvailability(UpdatesTestCase):
     """
@@ -15,7 +13,6 @@ class TestTopicAvailability(UpdatesTestCase):
 
     def setUp(self):
         super(TestTopicAvailability, self).setUp()
-        initialize_content_caches()
         self.n_content = len(glob.glob(os.path.join(settings.CONTENT_ROOT, "*.mp4")))
 
     def test_video_availability(self):
