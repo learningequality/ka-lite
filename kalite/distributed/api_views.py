@@ -130,7 +130,6 @@ def status(request):
         "messages": message_dicts,
         "status_timestamp": datetime.datetime.now(),
         "version": version.VERSION,
-        "is_config_package_nalanda": settings.CONFIG_PACKAGE == "Nalanda",
     }
 
     # Override properties using facility data

@@ -4,7 +4,7 @@ from django.conf import settings
 import kalite.student_testing.api_urls
 
 
-if getattr(settings, "CONFIG_PACKAGE", False) == "Nalanda":
+if "Nalanda" in settings.CONFIG_PACKAGE:
     urlpatterns = patterns(
         'student_testing.views',
         url(r'^api/', include(kalite.student_testing.api_urls)),

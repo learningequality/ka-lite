@@ -1,6 +1,7 @@
 import json
 import os
 from django.db import models
+from django.conf import settings
 
 from fle_utils.django_utils import ExtendedModel
 
@@ -130,7 +131,7 @@ class VanillaPlaylist:
 
             playlists.append(playlist)
 
-        return playlists
+        return playlists if "Nalanda" in settings.CONFIG_PACKAGE else []
 
 
 class VanillaPlaylistEntry:
