@@ -13,9 +13,6 @@ Each node in the topic tree comes with lots of metadata, including:
 * path (which is equivalent to a URL)
 * kind (Topic, Exercise, Video)
 and more.
-
-* get_video_cache() returns all videos
-* get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
 import os
 import re
@@ -108,14 +105,47 @@ def get_leafed_topics(force=False):
         LEAFED_TOPICS = [topic for topic in get_node_cache()["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
     return LEAFED_TOPICS
 
+def create_thumbnail_url(thumbnail):
+    if is_content_on_disk(thumbnail, "png"):
+        return settings.CONTENT_URL + thumbnail + ".png"
+    elif is_content_on_disk(thumbnail, "jpg"):
+        return settings.CONTENT_URL + thumbnail + ".jpg"
+    return None
+
 CONTENT          = None
 CACHE_VARS.append("CONTENT")
-def get_content_cache(force=False):
+def get_content_cache(force=False, annotate=False):
     global CONTENT, CONTENT_FILEPATH
 
     if CONTENT is None or force:
         CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
- 
+    
+    if annotate:
+        for content in CONTENT.values():
+            languages = []
+            default_thumbnail = create_thumbnail_url(content.get("id"))
+            dubmap = i18n.get_id2oklang_map(content.get("id"))
+            for lang in dubmap:
+                # TODO (rtibbles): Explicitly stamp "mp4" on KA videos in contentload
+                format = content.get("format", "mp4")
+                if is_content_on_disk(content.get("id"), format):
+                    languages.append(lang)
+                    dubbed_id = dubmap.get(lang)
+                    thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
+                    content["lang_data_" + lang] = {
+                        "stream": settings.CONTENT_URL + dubmap.get(lang) + "." + format,
+                        "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                        "thumbnail": thumbnail,
+                    }
+            content["languages"] = languages
+            subtitle_lang_codes = [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+            subtitle_urls = [{
+                "code": lc,
+                "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
+                "name": i18n.get_language_name(lc)
+                } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+            content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
+
     return CONTENT
 
 SLUG2ID_MAP = None
