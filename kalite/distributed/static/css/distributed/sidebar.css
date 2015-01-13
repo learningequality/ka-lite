@@ -64,6 +64,10 @@ div.fade {
     font-size: 1.2em;
 }
 
+.missing {
+    opacity: 0.4;
+}
+
 .sidebar-panel a:link,
 .sidebar-panel a:visited {
     color: #fff;

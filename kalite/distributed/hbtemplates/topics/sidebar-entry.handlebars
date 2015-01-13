@@ -1,7 +1,7 @@
 {{#ifcond entity_kind "==" "Divider"}}
 <span class="sidebar-entry sidebar-divider">{{ entity_id }}</span>
 {{else}}
-<a class="sidebar-entry sidebar-entry-link {{#if active }}active{{/if}}" href="#" title="{{ description }}">
+<a class="sidebar-entry sidebar-entry-link {{#if active }}active{{/if}} {{#unless available }}missing{{/unless}}" href="#" title="{{ description }}">
     <div class="sidebar-entry-header">
 
         <span class="sidebar-icon icon-{{ entity_kind }}" data-content-id="{{ content_id }}"></span>
