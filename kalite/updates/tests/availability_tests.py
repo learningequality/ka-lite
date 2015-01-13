@@ -2,11 +2,10 @@ import glob
 import os
 
 from django.conf import settings
-from django.utils import unittest
 
 from .base import UpdatesTestCase
-from .. import stamp_availability_on_topic, stamp_availability_on_video
-from kalite.topic_tools import get_node_cache, get_topic_tree
+from kalite.topic_tools import get_content_cache, get_node_cache
+from kalite.caching import initialize_content_caches
 
 
 class TestTopicAvailability(UpdatesTestCase):
@@ -16,14 +15,14 @@ class TestTopicAvailability(UpdatesTestCase):
 
     def setUp(self):
         super(TestTopicAvailability, self).setUp()
-        self.n_videos = len(glob.glob(os.path.join(settings.CONTENT_ROOT, "*.mp4")))
+        initialize_content_caches()
+        self.n_content = len(glob.glob(os.path.join(settings.CONTENT_ROOT, "*.mp4")))
 
     def test_video_availability(self):
-        nvids_local = sum([stamp_availability_on_video(node)["on_disk"] for node in get_node_cache("Video").values()])
-        self.assertEqual(self.n_videos, nvids_local, "# videos actually on disk should match # videos in topic tree")
+        ncontent_local = sum([node["languages"] for node in get_content_cache().values()])
+        self.assertEqual(self.n_content, ncontent_local, "# videos actually on disk should match # videos in topic tree")
 
     def test_topic_availability(self):
-
         for topic in get_node_cache("Topic").values():
             if "Exercise" in topic["contains"]:
                 self.assertTrue(topic["available"], "Make sure all topics containing exercises are shown as available.")
