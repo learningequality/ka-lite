@@ -15,8 +15,7 @@ from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
 from fle_utils.general import isnumeric
 from fle_utils.internet import get_ip_addresses
-from kalite.topic_tools import get_topic_tree
-from kalite.updates import stamp_availability_on_topic
+from kalite.topic_tools import get_content_cache
 from securesync.models import Device
 
 
@@ -89,8 +88,8 @@ class Command(BaseCommand):
 
         # Finally, pre-load global data
         def preload_global_data():
-            logging.info("Preloading topic data.")
-            stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
+            logging.info("Preloading content data.")
+            get_content_cache(force=True, annotate=True)
         preload_global_data()
 
 

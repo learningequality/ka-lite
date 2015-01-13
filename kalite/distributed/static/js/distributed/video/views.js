@@ -15,6 +15,8 @@ window.VideoPlayerView = ContentBaseView.extend({
 
         var that = this;
 
+        this.data_model.set("random_id", "video-" + Math.random().toString().slice(2));
+
         this.$el.html(this.template(this.data_model.attributes));
 
         this.$("video").bind("loadedmetadata", function() {
