@@ -4,7 +4,7 @@ from tastypie.resources import ModelResource, Resource
 
 from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
 from kalite.shared.contextmanagers.db import inside_transaction
-from kalite.topic_tools import get_slug2id_map
+from kalite.topic_tools import get_slug2id_map, get_content_cache
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization, tastypie_require_admin
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.student_testing.utils import get_current_unit_settings_value

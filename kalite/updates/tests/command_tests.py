@@ -23,7 +23,7 @@ class VideoScanTests(MainTestCase):
         super(VideoScanTests, self).setUp(*args, **kwargs)
 
         # Choose, and create, a video
-        self.fake_video_file, self.video_id, self.youtube_id = self.create_random_video_file()
+        self.fake_video_file, self.video_id, self.youtube_id = self.create_random_content_file()
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are no VideoFile objects, to start.")
 
     def tearDown(self, *args, **kwargs):
