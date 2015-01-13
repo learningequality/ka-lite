@@ -283,8 +283,6 @@ def retrieve_API_data(channel=None):
 
     return topic_tree, exercises, videos, assessment_items, content
 
-recurse_topic_tree_to_create_hierarchy = partial(base.recurse_topic_tree_to_create_hierarchy, hierarchy=hierarchy)
-
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
 
 def channel_data_files(dest=None):
