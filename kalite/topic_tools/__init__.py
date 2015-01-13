@@ -400,7 +400,10 @@ def get_content_data(request, content_id=None):
     if not content:
         return None
 
-    if not content["available"]:
+    content_lang = i18n.select_best_available_language(request.language, available_codes=content.get("languages", []))
+    urls = content.get("lang_data_" + content_lang, None)
+
+    if not urls:
         if request.is_admin:
             # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
             messages.warning(request, _("This content was not found! You can download it by going to the Update page."))
@@ -409,19 +412,10 @@ def get_content_data(request, content_id=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This content was not found! You must login as an admin/teacher to download the content."))
 
-    # Fallback mechanism
-    available_urls = dict([(lang, avail) for lang, avail in content["availability"].iteritems() if avail["on_disk"]])
-    if content["available"] and not available_urls:
-        content_lang = "en"
-        messages.success(request, "Got content content from %s" % content["availability"]["en"]["stream"])
-    else:
-        content_lang = i18n.select_best_available_language(request.language, available_codes=available_urls.keys())
-
     # TODO(jamalex): clean this up; we're flattening it here so handlebars can handle it more easily
     content = content.copy()
-    content["content_urls"] = content["availability"].get(content_lang)
+    content["content_urls"] = urls
     content["selected_language"] = content_lang
-    content["trans_available"] = len(content["availability"]) > 1
     content["title"] = _(content["title"])
     content["description"] = _(content.get("description", ""))
 
@@ -453,3 +447,7 @@ def convert_leaf_url_to_id(leaf_url):
     return leaf_id[0]
 
 
+def is_content_on_disk(content_id, format="mp4", content_path=None):
+    content_path = content_path or settings.CONTENT_ROOT
+    content_file = os.path.join(content_path, content_id + ".%s" % format)
+    return os.path.isfile(content_file)

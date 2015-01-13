@@ -8,10 +8,6 @@ from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
 
-from kalite.i18n import get_srt_path, get_srt_url, get_id2oklang_map, get_youtube_id, get_langs_with_subtitle, get_language_name
-from kalite.topic_tools import get_topic_tree, get_videos
-
-
 REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.UPDATES_DATA_PATH, "video_file_sizes.json")
 AVERAGE_VIDEO_SIZE = 14000000
 
@@ -50,10 +46,4 @@ def get_downloaded_youtube_ids(videos_path=None, format="mp4"):
 
 def delete_downloaded_files(youtube_id):
     return videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
-
-
-def is_content_on_disk(content_id, format="mp4", content_path=None):
-    content_path = content_path or settings.CONTENT_ROOT
-    content_file = os.path.join(content_path, content_id + ".%s" % format)
-    return os.path.isfile(content_file)
 
