@@ -286,39 +286,6 @@ def generate_node_cache(topictree=None):
 
     return node_cache
 
-
-def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
-    potential_parents = get_node_cache(ancestor_type).get(ancestor_id)
-    if not potential_parents:
-        return None
-    elif len(potential_parents) == 1:
-        return potential_parents
-    else:
-        for pp in potential_parents:
-            if node["path"].startswith(pp["path"]):  # find parent by path
-                return pp
-        return None
-
-def get_parent(node, parent_type="Topic"):
-    return get_ancestor(node, ancestor_id=node["parent_id"], ancestor_type=parent_type)
-
-def get_videos(topic):
-    """Given a topic node, returns all video node children (non-recursively)"""
-    return filter(lambda node: node["kind"] == "Video", topic["children"])
-
-
-def get_exercises(topic):
-    """Given a topic node, returns all exercise node children (non-recursively)"""
-    # Note: "live" is currently not stamped on any nodes, but could be in the future, so keeping here.
-    return filter(lambda node: node["kind"] == "Exercise" and node.get("live", True), topic["children"])
-
-
-def get_live_topics(topic):
-    """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
-    # Note: "hide" is currently not stamped on any nodes, but could be in the future, so keeping here.
-    return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and (set(node["contains"]) - set(["Topic"])), topic["children"])
-
-
 def get_topic_by_path(path, root_node=None):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
 
