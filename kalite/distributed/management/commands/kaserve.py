@@ -15,7 +15,7 @@ from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
 from fle_utils.general import isnumeric
 from fle_utils.internet import get_ip_addresses
-from kalite.topic_tools import get_content_cache, get_topic_tree
+from kalite.caching import initialize_content_caches
 from securesync.models import Device
 
 
@@ -87,12 +87,7 @@ class Command(BaseCommand):
         call_command("videoscan")
 
         # Finally, pre-load global data
-        def preload_global_data():
-            logging.info("Preloading content data.")
-            get_content_cache(force=True, annotate=True)
-            logging.info("Preloading topic tree data.")
-            get_topic_tree(force=True, annotate=True)
-        preload_global_data()
+        initialize_content_caches()
 
 
     def handle(self, *args, **options):

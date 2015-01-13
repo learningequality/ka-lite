@@ -91,6 +91,17 @@ def invalidate_all_caches():
     call in here.
     """
     invalidate_inmemory_caches()
+    initialize_content_caches()
     if caching_is_enabled():
         invalidate_web_cache()
     logging.debug("Great success emptying all caches.")
+
+def initialize_content_caches():
+    """
+    Catch all function to regenerate any content caches in memory that need annotation
+    with file availability
+    """
+    logging.info("Preloading content data.")
+    get_content_cache(force=True, annotate=True)
+    logging.info("Preloading topic tree data.")
+    get_topic_tree(force=True, annotate=True)

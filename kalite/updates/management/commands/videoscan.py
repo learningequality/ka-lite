@@ -100,3 +100,6 @@ class Command(CronCommand):
                 self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % len(deleted_video_ids))
             return deleted_video_ids
         touched_video_ids += delete_objects_for_missing_videos(youtube_ids_in_filesystem, videos_marked_at_all)
+
+        if len(touched_video_ids):
+            caching.initialize_content_caches()

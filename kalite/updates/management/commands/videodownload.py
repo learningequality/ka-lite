@@ -177,9 +177,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
                     # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.youtube_id)
+                    caching.initialize_content_caches()
                     self.stdout.write(_("Download is complete!") + "\n")
-
-                    # caching.invalidate_all_caches()  # Unnecessary; we have a database listener for this.
 
                 except DownloadCancelled:
                     # Cancellation event
