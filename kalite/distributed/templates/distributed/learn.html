@@ -75,7 +75,7 @@
     {% endif %}
 
     <script type="text/javascript">
-        var ALL_TOPICS_URL = '{{ topics_url }}';
+        var ALL_TOPICS_URL = "{% url 'topic_tree' channel='%(channel_name)s' %}";
     </script>
 
     <!--[if !IE]> -->
