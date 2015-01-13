@@ -11,3 +11,4 @@ INSTALLED_APPS = (
 #######################
 # Set module settings
 #######################
+HARD_CONTENT_CACHE = getattr(local_settings, "HARD_CONTENT_CACHE", False)

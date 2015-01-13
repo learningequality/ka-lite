@@ -16,6 +16,7 @@ and more.
 """
 import os
 import re
+import simplejson
 from functools import partial
 
 from django.conf import settings; logging = settings.LOG
@@ -50,6 +51,12 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
         validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
 
     if annotate:
+        if settings.HARD_CONTENT_CACHE and not force:
+            topics = softload_json(TOPICS_FILEPATHS.get(channel) + ".cache", logger=logging.debug, raises=False)
+            if topics:
+                TOPICS[channel] = topics
+                return TOPICS[channel]
+
         content_cache = get_content_cache()
         def recurse_nodes(node):
             # By default this is very charitable, assuming if something has not been annotated it is available
@@ -59,6 +66,12 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
             for child in node.get("children", []):
                 recurse_nodes(child)
         recurse_nodes(TOPICS[channel])
+        if settings.HARD_CONTENT_CACHE:
+            try:
+                with open(TOPICS_FILEPATHS.get(channel) + ".cache", "w") as f:
+                    simplejson.dump(TOPICS[channel], f)
+            except IOError as e:
+                logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
 
     return TOPICS[channel]
 
@@ -125,6 +138,11 @@ def get_content_cache(force=False, annotate=False):
         CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
     
     if annotate:
+        if settings.HARD_CONTENT_CACHE and not force:
+            content = softload_json(CONTENT_FILEPATH + ".cache", logger=logging.debug, raises=False)
+            if content:
+                CONTENT = content
+                return CONTENT
         for content in CONTENT.values():
             languages = []
             default_thumbnail = create_thumbnail_url(content.get("id"))
@@ -148,6 +166,12 @@ def get_content_cache(force=False, annotate=False):
                 "name": i18n.get_language_name(lc)
                 } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
+        if settings.HARD_CONTENT_CACHE:
+            try:
+                with open(CONTENT_FILEPATH + ".cache", "w") as f:
+                    simplejson.dump(CONTENT, f)
+            except IOError as e:
+                logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
 
     return CONTENT
 
