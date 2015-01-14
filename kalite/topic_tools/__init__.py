@@ -53,7 +53,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
         validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
 
     if annotate:
-        if settings.HARD_CONTENT_CACHE and not force:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             topics = softload_json(TOPICS_FILEPATHS.get(channel) + ".cache", logger=logging.debug, raises=False)
             if topics:
                 TOPICS[channel] = topics
@@ -68,7 +68,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
             for child in node.get("children", []):
                 recurse_nodes(child)
         recurse_nodes(TOPICS[channel])
-        if settings.HARD_CONTENT_CACHE:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
                 with open(TOPICS_FILEPATHS.get(channel) + ".cache", "w") as f:
                     json.dump(TOPICS[channel], f)
@@ -140,7 +140,7 @@ def get_content_cache(force=False, annotate=False):
         CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
     
     if annotate:
-        if settings.HARD_CONTENT_CACHE and not force:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             content = softload_json(CONTENT_FILEPATH + ".cache", logger=logging.debug, raises=False)
             if content:
                 CONTENT = content
@@ -168,7 +168,7 @@ def get_content_cache(force=False, annotate=False):
                 "name": i18n.get_language_name(lc)
                 } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
-        if settings.HARD_CONTENT_CACHE:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
                 with open(CONTENT_FILEPATH + ".cache", "w") as f:
                     json.dump(CONTENT, f)

@@ -11,4 +11,4 @@ INSTALLED_APPS = (
 #######################
 # Set module settings
 #######################
-HARD_CONTENT_CACHE = getattr(local_settings, "HARD_CONTENT_CACHE", False)
+DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = getattr(local_settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False)
