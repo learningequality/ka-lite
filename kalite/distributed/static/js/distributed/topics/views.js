@@ -305,25 +305,27 @@ window.TopicContainerInnerView = BaseView.extend({
         var self = this;
 
         // load progress data for all videos
-        var video_ids = $.map(this.$("[data-video-id]"), function(el) { return $(el).data("video-id"); });
+        var video_ids = $.map(this.$(".icon-Video[data-content-id]"), function(el) { return $(el).data("content-id"); });
         if (video_ids.length > 0) {
-            doRequest(GET_VIDEO_LOGS_URL, video_ids)
-                .success(function(data) {
-                    $.each(data, function(ind, video) {
-                        var newClass = video.complete ? "complete" : "partial";
-                        self.$("[data-video-id='" + video.video_id + "']").removeClass("complete partial").addClass(newClass);
+            videologs = new VideoLogCollection([], {content_ids: video_ids});
+            videologs.fetch()
+                .then(function() {
+                    $.each(videologs.models, function(model) {
+                        var newClass = model.get("complete") ? "complete" : "partial";
+                        self.$("[data-video-id='" + model.get("video_id") + "']").removeClass("complete partial").addClass(newClass);
                     });
                 });
         }
 
         // load progress data for all exercises
-        var exercise_ids = $.map(this.$("[data-exercise-id]"), function(el) { return $(el).data("exercise-id"); });
+        var exercise_ids = $.map(this.$(".icon-Exercise[data-content-id]"), function(el) { return $(el).data("content-id"); });
         if (exercise_ids.length > 0) {
-            doRequest(GET_EXERCISE_LOGS_URL, exercise_ids)
-                .success(function(data) {
-                    $.each(data, function(ind, exercise) {
-                        var newClass = exercise.complete ? "complete" : "partial";
-                        self.$("[data-exercise-id='" + exercise.exercise_id + "']").removeClass("complete partial").addClass(newClass);
+            exerciselogs = new ExerciseLogCollection([], {exercise_ids: exercise_ids});
+            exerciselogs.fetch()
+                .then(function() {
+                    $.each(exerciselogs.models, function(model) {
+                        var newClass = model.get("complete") ? "complete" : "partial";
+                        self.$("[data-exercise-id='" + model.get("exercise_id") + "']").removeClass("complete partial").addClass(newClass);
                     });
                 });
         }
@@ -343,14 +345,15 @@ window.TopicContainerInnerView = BaseView.extend({
                 });
         }
 
-        // load progress data for all exercises
-        var content_ids = $.map(this.$("[data-content-id]"), function(el) { return $(el).data("content-id"); });
+        // load progress data for all content
+        var content_ids = $.map(this.$(".sidebar-icon:not(.icon-Exercise, .icon-Video, .icon-Topic)"), function(el) { return $(el).data("content-id"); });
         if (content_ids.length > 0) {
-            doRequest(GET_CONTENT_LOGS_URL, content_ids)
-                .success(function(data) {
-                    $.each(data, function(ind, content) {
-                        var newClass = content.complete ? "complete" : "partial";
-                        self.$("[data-content-id='" + content.exercise_id + "']").removeClass("complete partial").addClass(newClass);
+            contentlogs = new ContentLogCollection([], {content_ids: content_ids});
+            contentlogs.fetch()
+                .then(function() {
+                    $.each(contentlogs.models, function(model) {
+                        var newClass = model.get("complete") ? "complete" : "partial";
+                        self.$("[data-content-id='" + content.get("content_id") + "']").removeClass("complete partial").addClass(newClass);
                     });
                 });
         }

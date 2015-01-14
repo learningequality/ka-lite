@@ -6,6 +6,8 @@ window.VideoLogModel = ContentLogModel.extend({
 
 window.VideoLogCollection = ContentLogCollection.extend({
 
-    model: VideoLogModel
+    model: VideoLogModel,
+
+    model_id_key: "video_id"
 
 });

@@ -108,23 +108,33 @@ window.ContentLogCollection = Backbone.Collection.extend({
 
     model: ContentLogModel,
 
+    model_id_key: "content_id",
+
     initialize: function(models, options) {
+        options = typeof options !== "undefined" && options !== null ? options : {};
         this.content_model = options.content_model;
+        this.content_ids = options.content_ids;
     },
 
     url: function() {
-        return this.model.urlRoot + "?" + $.param({
-            "content_id": this.content_model.get("id"),
+        data = {
             "user": window.statusModel.get("user_id")
-        });
+        };
+        if (typeof this.content_model !== "undefined") {
+            data[this.model_id_key] = this.content_model.get("id");
+        } else if (typeof this.content_ids !== "undefined") {
+            data[this.model_id_key + "__in"] = this.content_ids;
+        }
+        return setGetParamDict(this.model.prototype.urlRoot, data);
     },
 
     get_first_log_or_new_log: function() {
         if (this.length > 0) {
             return this.at(0);
         } else {
+            var id_key = this.model_id_key;
             return new this.model({
-                "content_id": this.content_model.get("id"),
+                id_key: this.content_model.get("id"),
                 "content_source": this.content_model.get("source") || "",
                 "content_kind": this.content_model.get("kind"),
                 "user": window.statusModel.get("user_uri")
