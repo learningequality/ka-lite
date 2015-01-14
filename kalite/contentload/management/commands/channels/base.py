@@ -91,7 +91,7 @@ def rebuild_topictree(
     Denorms content data to reduce the bulk of the topic tree.
     Adds position data to every node in the topic tree.
     """
-
+    
     topic_tree, exercises, assessment_items, contents = retrieve_API_data(channel=channel)
 
     exercise_lookup = dict((exercise["id"], exercise) for exercise in exercises)

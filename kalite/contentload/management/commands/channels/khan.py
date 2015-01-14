@@ -112,6 +112,6 @@ def retrieve_API_data(channel=None):
     #     for assessment_item in exercise.all_assessment_items:
     #         assessment_items.append(khan.get_assessment_item(assessment_item["id"]))
 
-    return topic_tree, exercises, videos, assessment_items
+    return topic_tree, exercises, assessment_items, content
 
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
