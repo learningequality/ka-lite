@@ -147,6 +147,10 @@ def get_content_cache(force=False, annotate=False):
             if content:
                 CONTENT = content
                 return CONTENT
+
+        # Loop through all content items and put thumbnail urls, content urls,
+        # and subtitle urls on the content dictionary, and list all languages
+        # that the content is available in.
         for content in CONTENT.values():
             languages = []
             default_thumbnail = create_thumbnail_url(content.get("id"))
@@ -163,13 +167,20 @@ def get_content_cache(force=False, annotate=False):
                         "thumbnail": thumbnail,
                     }
             content["languages"] = languages
+
+            # Get list of subtitle language codes currently available
             subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+
+            # Generate subtitle URLs for any subtitles that do exist for this content item
             subtitle_urls = [{
                 "code": lc,
                 "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
                 "name": i18n.get_language_name(lc)
                 } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+
+            # Sort all subtitle URLs by language code
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
+
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
                 with open(CONTENT_FILEPATH + ".cache", "w") as f:
