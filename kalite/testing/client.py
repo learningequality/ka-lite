@@ -93,7 +93,9 @@ class KALiteClient(Client):
         return self.post_json(url_name="delete_videos", data={"youtube_ids": youtube_ids})
 
     def save_video_log(self, **kwargs):
-        return self.post_json(url_name="save_video_log", data=kwargs)
+        path = reverse('api_dispatch_list', resource_name="videolog")
+        return self.post_json(path=path, data=kwargs)
 
     def save_exercise_log(self, **kwargs):
-        return self.post_json(url_name="save_exercise_log", data=kwargs)
+        path = reverse('api_dispatch_list', resource_name="exerciselog")
+        return self.post_json(path=path, data=kwargs)
