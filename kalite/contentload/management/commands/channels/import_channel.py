@@ -211,10 +211,8 @@ def construct_node(location, parent_path, node_cache, channel):
 
     if not os.path.isdir(location):
         nodecopy = copy.deepcopy(node)
-        if kind == "Video":
-            node_cache["Video"].append(nodecopy)
-        elif kind == "Exercise":
-            node_cache["Video"].append(nodecopy)
+        if kind == "Exercise":
+            node_cache["Exercise"].append(nodecopy)
         else:
             node_cache["Content"].append(nodecopy)
 
@@ -261,7 +259,6 @@ def retrieve_API_data(channel=None):
         raise Exception("The specified path is not a valid directory")
 
     node_cache = {
-        "Video": [],
         "Exercise": [],
         "Content": [],
         "Slugs": set(),
@@ -271,8 +268,6 @@ def retrieve_API_data(channel=None):
 
     exercises = node_cache["Exercise"]
 
-    videos = node_cache["Video"]
-
     assessment_items = []
 
     content = node_cache["Content"]
@@ -281,7 +276,7 @@ def retrieve_API_data(channel=None):
 
     annotate_related_content(node_cache)
 
-    return topic_tree, exercises, videos, assessment_items, content
+    return topic_tree, exercises, assessment_items, content
 
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
 
