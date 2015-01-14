@@ -157,14 +157,21 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
     model: ExerciseLogModel,
 
     initialize: function(models, options) {
+        options = typeof options !== "undefined" && options !== null ? options : {};
         this.exercise_id = options.exercise_id;
+        this.exercise_ids = options.exercise_ids;
     },
 
     url: function() {
-        return "/api/exerciselog/?" + $.param({
-            "exercise_id": this.exercise_id,
+        data = {
             "user": window.statusModel.get("user_id")
-        });
+        };
+        if (typeof this.exercise_id !== "undefined") {
+            data["exercise_id"] = this.exercise_id;
+        } else if (typeof this.exercise_ids !== "undefined") {
+            data["exercise_id__in"] = this.exercise_ids;
+        }
+        return setGetParamDict(this.model.urlRoot, data);
     },
 
     get_first_log_or_new_log: function() {

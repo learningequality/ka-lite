@@ -35,7 +35,6 @@ from kalite.i18n import select_best_available_language
 from kalite.main.models import VideoLog, ExerciseLog
 from kalite.playlist.views import view_playlist
 from kalite.shared.decorators import require_admin
-from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 
@@ -79,113 +78,12 @@ def check_setup_status(handler):
     return check_setup_status_wrapper_fn
 
 
-def refresh_topic_cache(handler, force=False):
-
-    def strip_counts_from_ancestors(node):
-        """
-        Remove relevant counts from all ancestors
-        """
-        for ancestor_id in node.get("ancestor_ids", []):
-            ancestor = topic_tools.get_ancestor(node, ancestor_id)
-            if "nvideos_local" in ancestor:
-                del ancestor["nvideos_local"]
-            if "nvideos_known" in ancestor:
-                del ancestor["nvideos_known"]
-        return node
-
-    def recount_videos_and_invalidate_parents(node, force=False, stamp_urls=False):
-        """
-        Call stamp_video_availability (if necessary); if a change has been detected,
-        then check parents to see if their counts should be invalidated.
-        """
-        do_it = force
-        do_it = do_it or "nvideos_local" not in node
-        do_it = do_it or any(["nvideos_local" not in child for child in node.get("children", [])])
-        if do_it:
-            logging.debug("Adding video counts %s%sto topic (and all descendants) %s" % (
-                "(and urls) " if stamp_urls else "",
-                "(forced) " if force else "",
-                node["path"],
-            ))
-            (_a, _b, _c, _d, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
-            if changed:
-                strip_counts_from_ancestors(node)
-        return node
-
-    def refresh_topic_cache_wrapper_fn(request, cached_nodes={}, force=False, *args, **kwargs):
-        """
-        Centralized logic for how to refresh the topic cache, for each type of object.
-
-        When the object is desired to be used, this code runs to refresh data,
-        balancing between correctness and efficiency.
-        """
-        if not cached_nodes:
-            cached_nodes = {"topics": topic_tools.get_topic_tree()}
-
-        def has_computed_urls(node):
-            return "subtitles" in node.get("availability", {}).get("en", {})
-
-        for node in cached_nodes.values():
-            if not node:
-                continue
-            has_children = bool(node.get("children"))
-
-            # Propertes not yet marked
-            if node["kind"] == "Video":
-                if force or not has_computed_urls(node):
-                    recount_videos_and_invalidate_parents(topic_tools.get_parent(node), force=True, stamp_urls=True)
-
-            elif node["kind"] == "Exercise":
-                for video in topic_tools.get_related_videos(exercise=node).values():
-                    if not has_computed_urls(node):
-                        stamp_availability_on_video(video, force=True)  # will be done by force below
-
-            elif node["kind"] == "Topic":
-                bottom_layer_topic =  "Topic" not in node["contains"]
-                # always run do_video_counts_need_update_question_mark(), to make sure the (internal) counts stay up to date.
-                force = do_video_counts_need_update_question_mark() or force or bottom_layer_topic
-                recount_videos_and_invalidate_parents(
-                    node,
-                    force=force,
-                    stamp_urls=bottom_layer_topic,
-                )
-
-        kwargs.update(cached_nodes)
-        return handler(request, *args, **kwargs)
-    return refresh_topic_cache_wrapper_fn
-
-# @backend_cache_page
-# def splat_handler(request, splat):
-#     slugs = filter(lambda x: x, splat.split("/"))
-#     topic_tree = topic_tools.get_topic_tree()
-#     current_node = topic_tree
-
-#     # Parse out actual current node
-#     while current_node:
-#         match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
-#         if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
-#             match = [m for m in match if request.path == m["path"]]
-#         if not match:
-#             raise Http404
-#         current_node = match
-#         if request.path == current_node["path"]:
-#             break
-
-#     # render topic list or playlist of base node
-#     if not topic_tools.is_base_leaf(current_node):
-#         return topic_handler(request, cached_nodes={"topic_tree": topic_tree})
-#         # return topic_handler(request)
-#     else:
-#         return view_playlist(request, playlist_id=current_node['id'], channel='ka_playlist')
-
-
-@render_to("distributed/topic.html") # TODO(jamalex): rename topic.html to learn.html
+@render_to("distributed/learn.html")
 def learn(request):
     """
     Render the all-in-one sidebar navigation/content-viewing app.
     """
     context = {
-        "topics_url": settings.CONTENT_DATA_URL + "%(channel_name)s/topics.json",
         "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
         "channel": settings.CHANNEL,
         "pdfjs": settings.PDFJS,
@@ -223,20 +121,6 @@ def watch_home(request):
     """Dummy wrapper function for topic_handler with url=/"""
     return topic_handler(request, cached_nodes={"topic": topic_tools.get_topic_tree()})
 
-
-# @check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
-# @backend_cache_page
-# @render_to("distributed/homepage.html")
-# @refresh_topic_cache
-# def homepage(request, topics):
-#     """
-#     Homepage.
-#     """
-#     context = topic_context(topics)
-#     context.update({
-#         "title": "Home",
-#     })
-#     return context
 
 def help(request):
     if request.is_admin:
@@ -287,8 +171,7 @@ def device_redirect(request):
 
 
 @render_to('distributed/search_page.html')
-@refresh_topic_cache
-def search(request, topics):  # we don't use the topics variable, but this setup will refresh the node cache
+def search(request):
     # Inputs
     query = request.GET.get('query')
     category = request.GET.get('category')

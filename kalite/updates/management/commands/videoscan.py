@@ -101,5 +101,5 @@ class Command(CronCommand):
             return deleted_video_ids
         touched_video_ids += delete_objects_for_missing_videos(youtube_ids_in_filesystem, videos_marked_at_all)
 
-        if options["auto_cache"] and caching_enabled and touched_video_ids:
-            caching.regenerate_all_pages_related_to_videos(video_ids=list(set(touched_video_ids)))
+        if len(touched_video_ids):
+            caching.initialize_content_caches()
