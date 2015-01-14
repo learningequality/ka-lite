@@ -1,6 +1,6 @@
-from .. import stamp_availability_on_topic
 from kalite.testing import KALiteTestCase
 from kalite.topic_tools import get_topic_tree
+from kalite.caching import initialize_content_caches
 
 
 class UpdatesTestCase(KALiteTestCase):
@@ -11,5 +11,5 @@ class UpdatesTestCase(KALiteTestCase):
         super(UpdatesTestCase, self).setUp()
 
         # Set up the topic tree
-        stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
+        initialize_content_caches(force=True)
 

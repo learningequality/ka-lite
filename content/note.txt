@@ -1,1 +1,0 @@
-This is where content files (jpg, mp4, png, and json) should be. If you are copying content from a downloaded torrent file or a USB stick, the files should be put in here.

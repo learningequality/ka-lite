@@ -1,4 +1,4 @@
-<div id="video-player"{{#unless content_urls.on_disk }} class="client-online-only"{{/unless}}>
+<div id="video-player"{{#unless content_urls }} class="client-online-only"{{/unless}}>
     <video class="video-js vjs-default-skin" id="{{ random_id }}" controls preload="auto" width="100%" height="600" {{#if content_urls.thumbnail }}poster="{{ content_urls.thumbnail }}" {{/if}}data-setup="{}">
         <source src="{{ content_urls.stream }}" type="{{ content_urls.stream_type }}" />
         {{#each subtitle_urls }}
@@ -8,4 +8,4 @@
     {{#if content_urls.thumbnail}}<img class="video-thumb" src="{{ content_urls.thumbnail }}" style="position: absolute; left: -9999999px;">{{/if}}
 </div>
 
-{{#unless content_urls.on_disk }}<div class="not-client-online-only">{{_ "Sorry, this video has not been downloaded." }}</div>{{/unless}}
+{{#unless content_urls }}<div class="not-client-online-only">{{_ "Sorry, this video has not been downloaded." }}</div>{{/unless}}

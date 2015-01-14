@@ -17,7 +17,7 @@ from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
-from kalite.topic_tools import get_exercise_paths, get_node_cache
+from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
 
@@ -287,32 +287,6 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         self.assertEqual(elog.attempts, self.nanswers, "Student should have %s attempts. Got %s" % (self.nanswers, elog.attempts))
         self.assertTrue(elog.complete, "Student should have completed the exercise.")
         self.assertEqual(elog.attempts_before_completion, self.nanswers, "Student should have %s attempts for completion." % self.nanswers)
-
-
-@unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
-class LoadExerciseTest(BrowserActionMixins, KALiteBrowserTestCase):
-    """Tests if the exercise is loaded without any JS error.
-
-    The test is run over all urls and check for any JS error.
-    """
-    student_username = 'test_student'
-    student_password =  'socrates'
-
-    def setUp(self):
-        super(LoadExerciseTest, self).setUp()
-        self.student = self.create_student()
-        self.browser_login_student(self.student_username, self.student_password)
-
-    def test_get_exercise_load_status(self):
-        for path in get_exercise_paths():
-            logging.debug("Testing path : " + path)
-            self.browser.get(self.live_server_url + path)
-            error_list = self.browser.execute_script("return window.js_errors;")
-            if error_list:
-                logging.error("Found JS error(s) while loading path: " + path)
-                for e in error_list:
-                    logging.error(e)
-            self.assertFalse(error_list)
 
 
 class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase):

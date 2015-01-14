@@ -108,8 +108,6 @@ def build_full_cache(items, id_key="id"):
                 del item[attribute]
     return {item["id"]: whitewash_node_data(item) for item in items}
 
-hierarchy = ["Domain", "Subject", "Topic", "Tutorial"]
-
 def retrieve_API_data(channel=None):
     khan = Khan()
 
@@ -123,7 +121,7 @@ def retrieve_API_data(channel=None):
 
     logging.info("Fetching Khan videos")
 
-    videos = khan.get_videos()
+    content = khan.get_videos()
 
     assessment_items = []
 
@@ -171,10 +169,6 @@ def retrieve_API_data(channel=None):
     for thread in threads:
         thread.join()
 
-    content = []
-
-    return topic_tree, exercises, videos, assessment_items, content
-
-recurse_topic_tree_to_create_hierarchy = partial(base.recurse_topic_tree_to_create_hierarchy, hierarchy=hierarchy)
+    return topic_tree, exercises, assessment_items, content
 
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)

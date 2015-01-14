@@ -36,15 +36,9 @@ def validate_data(topic_tree, node_cache, slug2id_map):
         if not os.path.exists(exercise_path) and not exercise.get("uses_assessment_items", False):
             logging.warning("Could not find exercise HTML file: %s\n" % exercise_path)
         for vid_slug in exercise.get("related_video_slugs", []):
-            if vid_slug not in slug2id_map or slug2id_map[vid_slug] not in node_cache["Video"]:
+            if vid_slug not in slug2id_map or slug2id_map[vid_slug] not in node_cache["Content"]:
                 logging.warning("Could not find related video %s in node_cache (from exercise %s)\n" % (vid_slug, exercise["slug"]))
-
-    # Validate related exercises
-    for video in node_cache["Video"].values():
-        ex = video.get("related_exercise", None)
-        if ex:
-            if ex["slug"] not in node_cache["Exercise"]:
-                logging.warning("Could not find related exercise %s in node_cache (from video %s)\n" % (ex["slug"], video["slug"]))
+        
 
     # Validate all topics have leaves
     for topic in node_cache["Topic"].values():
@@ -58,6 +52,10 @@ def validate_data(topic_tree, node_cache, slug2id_map):
             for cont in related:
                 if cont["id"] not in node_cache["Content"] and cont["id"] not in node_cache["Video"] and cont["id"] not in node_cache["Exercise"]:
                     logging.warning("Could not find related content %s in node_cache (from content %s)\n" % (cont["id"], content["slug"]))
+        ex = content.get("related_exercise", None)
+        if ex:
+            if ex["slug"] not in node_cache["Exercise"]:
+                logging.warning("Could not find related exercise %s in node_cache (from content %s)\n" % (ex["slug"], content["slug"]))
 
 def scrub_topic_tree(node_cache, channel_data):
     # Now, remove unnecessary values
@@ -128,22 +126,18 @@ class Command(NoArgsCommand):
             "path": channel_path,
         }
 
-        topic_tree, exercises, videos, assessment_items, content = channel_tools.rebuild_topictree(channel=channel_dict)
+        topic_tree, exercises, assessment_items, content = channel_tools.rebuild_topictree(channel=channel_dict)
 
         exercise_cache = channel_tools.build_full_cache(exercises, id_key=channel_tools.id_key["Exercise"])
-        video_cache = channel_tools.build_full_cache(videos, id_key=channel_tools.id_key["Video"])
         assessment_item_cache = channel_tools.build_full_cache(assessment_items)
         content_cache = channel_tools.build_full_cache(content)
         
         node_cache = topic_tools.generate_node_cache(topic_tree)
         
         node_cache["Exercise"] = exercise_cache
-        node_cache["Video"] = video_cache
         node_cache["Content"] = content_cache
         node_cache["AssessmentItem"] = assessment_item_cache
         slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
-        
-        level_cache = channel_tools.recurse_topic_tree_to_create_hierarchy(topic_tree)
         
         if channel_tools.channel_data["temp_ok_atts"]:
             scrub_topic_tree(node_cache=node_cache, channel_data=channel_tools.channel_data)
@@ -152,11 +146,8 @@ class Command(NoArgsCommand):
 
         save_cache_file("Topic", cache_object=topic_tree, data_path=channel_path)
         save_cache_file("Exercise", cache_object=exercise_cache, data_path=channel_path)
-        save_cache_file("Video", cache_object=video_cache, data_path=channel_path)
         save_cache_file("AssessmentItem", cache_object=assessment_item_cache, data_path=channel_path)
         save_cache_file("Content", cache_object=content_cache, data_path=channel_path)
-        for level in channel_tools.hierarchy:
-            save_cache_file("Map_" + level, cache_object=level_cache[level], data_path=channel_path)
 
         if hasattr(channel_tools, "channel_data_files"):
             channel_tools.channel_data_files(dest=channel_path)
@@ -164,13 +155,11 @@ class Command(NoArgsCommand):
         sys.stdout.write(
             """Downloaded topic_tree data for
             {topics} topics
-            {videos} videos
             {exercises} exercises
             {contents} content files
             {assessments} assessment items
             """.format(
             topics=len(node_cache["Topic"]),
-            videos=len(node_cache["Video"]),
             exercises=len(node_cache["Exercise"]),
             contents=len(node_cache["Content"]),
             assessments=len(node_cache["AssessmentItem"],)
