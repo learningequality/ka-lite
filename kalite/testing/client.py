@@ -4,6 +4,9 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import Client
 
+from kalite.facility.models import FacilityUser
+from kalite.facility.api_resources import FacilityUserResource
+
 
 logging = settings.LOG
 
@@ -92,10 +95,21 @@ class KALiteClient(Client):
     def delete_videos(self, youtube_ids):
         return self.post_json(url_name="delete_videos", data={"youtube_ids": youtube_ids})
 
+    def convert_user_name_to_resource_uri(self, data):
+        if data.get("user"):
+            username = data.get("user")
+            user = FacilityUser.objects.get(username=username)
+            resource = FacilityUserResource()
+            uri = resource.dehydrate_resource_uri(user)
+            data["user"] = uri
+        return data
+
     def save_video_log(self, **kwargs):
-        path = reverse('api_dispatch_list', resource_name="videolog")
+        path = reverse('api_dispatch_list', kwargs={"resource_name": "videolog"})
+        kwargs = self.convert_user_name_to_resource_uri(kwargs)
         return self.post_json(path=path, data=kwargs)
 
     def save_exercise_log(self, **kwargs):
-        path = reverse('api_dispatch_list', resource_name="exerciselog")
+        path = reverse('api_dispatch_list', kwargs={"resource_name": "exerciselog"})
+        kwargs = self.convert_user_name_to_resource_uri(kwargs)
         return self.post_json(path=path, data=kwargs)

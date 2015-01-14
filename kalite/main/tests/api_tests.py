@@ -52,8 +52,9 @@ class TestSaveVideoLog(KALiteTestCase):
             youtube_id=self.YOUTUBE_ID2,
             total_seconds_watched=self.ORIGINAL_SECONDS_WATCHED,
             points=self.NEW_POINTS,
+            user=self.USERNAME,
         )
-        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
+        self.assertEqual(result.status_code, 201, "An error (%d) was thrown while saving the video log." % result.status_code)
 
         # get a reference to the newly created VideoLog
         videolog = VideoLog.objects.get(video_id=self.VIDEO_ID2, user__username=self.USERNAME)
@@ -83,8 +84,9 @@ class TestSaveVideoLog(KALiteTestCase):
             youtube_id=self.YOUTUBE_ID,
             total_seconds_watched=self.ORIGINAL_SECONDS_WATCHED + self.NEW_SECONDS_WATCHED,
             points=self.ORIGINAL_POINTS + self.NEW_POINTS,
+            user=self.USERNAME,
         )
-        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while saving the video log." % result.status_code)
+        self.assertEqual(result.status_code, 201, "An error (%d) was thrown while saving the video log." % result.status_code)
 
         # get a reference to the updated VideoLog
         videolog = VideoLog.objects.get(video_id=self.VIDEO_ID, user__username=self.USERNAME)
