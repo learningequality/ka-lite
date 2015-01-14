@@ -23,6 +23,6 @@ class TestTopicAvailability(UpdatesTestCase):
         for topic in get_node_cache("Topic").values():
             if "Exercise" in topic["contains"]:
                 self.assertTrue(topic["available"], "Make sure all topics containing exercises are shown as available.")
-            if topic["children"] and len(topic["contains"]) == 1 and "Video" in topic["contains"]:
-                any_on_disk = bool(sum([len(v.get("languages", [])) for v in topic["children"]]))
-                self.assertEqual(topic["available"], any_on_disk, "Make sure topic availability matches video availability when only videos are available.")
+            if topic["children"] and "Video" in topic["contains"]:
+                    any_available = bool(sum([v.get("available", False) for v in topic["children"]]))
+                    self.assertEqual(topic["available"], any_available, "Make sure topic availability matches video availability when only videos are available.")

@@ -66,12 +66,23 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
         # and cross reference with the content_cache to check availability.
         content_cache = get_content_cache()
         def recurse_nodes(node):
-            # By default this is very charitable, assuming if something has not been annotated it is available
-            if content_cache.get(node.get("id"), {}).get("languages", True):
-                node["available"] = True
+
+            child_availability = []
+
             # Do the recursion
             for child in node.get("children", []):
                 recurse_nodes(child)
+                child_availability.append(child.get("available", False))
+
+            # If child_availability is empty then node has no children so we can determine availability
+            if child_availability:
+                node["available"] = any(child_availability)
+            else:
+                # By default this is very charitable, assuming if something has not been annotated
+                # it is available - needs to be updated for exercises.
+                if content_cache.get(node.get("id"), {}).get("languages", True):
+                    node["available"] = True
+
         recurse_nodes(TOPICS[channel])
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
