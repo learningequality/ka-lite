@@ -9,6 +9,12 @@
     <div class="exercises-body col-sm-12">
         <div class="exercises-card current-card">
             <div class="current-card-container card-type-problem">
+                <br/>
+                <div>
+                    <button class="simple-button" id="scratchpad-show" href style>{{_ "Show scratchpad" }}</button>
+                    <span id="scratchpad-not-available" style="display: none;">{{_ "Scratchpad not available" }}</span>
+                </div>
+                <br/>
                 <div class="current-card-container-inner vertical-shadow">
                     <div class="current-card-contents">
                         <div id="problem-and-answer">
@@ -46,14 +52,6 @@
                         <div class="clear"></div>
                     </div>
                 </div>
-            </div>
-            <div>
-                <ul>
-                    <li>
-                        <a id="scratchpad-show" href style>{{_ "Show scratchpad" }}</a>
-                        <span id="scratchpad-not-available" style="display: none;">{{_ "Scratchpad not available" }}</span>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
