@@ -59,10 +59,12 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
                 TOPICS[channel] = topics
                 return TOPICS[channel]
 
+        # Loop through all the nodes in the topic tree
+        # and cross reference with the content_cache to check availability.
         content_cache = get_content_cache()
         def recurse_nodes(node):
             # By default this is very charitable, assuming if something has not been annotated it is available
-            if content_cache.get(node.get("id"), {}).get("languages", [""]):
+            if content_cache.get(node.get("id"), {}).get("languages", True):
                 node["available"] = True
             # Do the recursion
             for child in node.get("children", []):
@@ -438,7 +440,6 @@ def get_content_data(request, content_id=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This content was not found! You must login as an admin/teacher to download the content."))
 
-    # TODO(jamalex): clean this up; we're flattening it here so handlebars can handle it more easily
     content = content.copy()
     content["content_urls"] = urls
     content["selected_language"] = content_lang
