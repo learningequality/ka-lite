@@ -42,10 +42,12 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 
 
 # Globals that can be filled
-TOPICS          = {}
+TOPICS          = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
     global TOPICS, TOPICS_FILEPATHS
+    if not TOPICS:
+        TOPICS = {}
     if TOPICS.get(channel) is None or force:
         TOPICS[channel] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
         validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
