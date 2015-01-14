@@ -5,7 +5,7 @@ from tastypie.exceptions import NotFound
 from django.utils.translation import ugettext as _
 from django.conf.urls import url
 
-from .models import ExerciseLog, AttemptLog, ContentLog
+from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
 from kalite.topic_tools import get_exercise_data, get_assessment_item_cache, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
@@ -20,7 +20,7 @@ class ExerciseLogResource(ModelResource):
         queryset = ExerciseLog.objects.all()
         resource_name = 'exerciselog'
         filtering = {
-            "exercise_id": ('exact', ),
+            "exercise_id": ('exact', 'in', ),
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
@@ -65,11 +65,23 @@ class ContentLogResource(ModelResource):
         queryset = ContentLog.objects.all()
         resource_name = 'contentlog'
         filtering = {
-            "content_id": ('exact', ),
+            "content_id": ('exact', 'in', ),
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
 
+class VideoLogResource(ModelResource):
+
+    user = fields.ForeignKey(FacilityUserResource, 'user')
+
+    class Meta:
+        queryset = VideoLog.objects.all()
+        resource_name = 'videolog'
+        filtering = {
+            "video_id": ('exact', 'in', ),
+            "user": ('exact', ),
+        }
+        authorization = UserObjectsOnlyAuthorization()
 
 class Exercise():
 
