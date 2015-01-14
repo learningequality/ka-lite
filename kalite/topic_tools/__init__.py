@@ -48,9 +48,12 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
     global TOPICS, TOPICS_FILEPATHS
     if not TOPICS:
         TOPICS = {}
-    if TOPICS.get(channel) is None or force:
+    if TOPICS.get(channel) is None:
         TOPICS[channel] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
         validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
+
+        # Just loaded from disk, so have to restamp.
+        annotate = True
 
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
@@ -138,8 +141,9 @@ CACHE_VARS.append("CONTENT")
 def get_content_cache(force=False, annotate=False):
     global CONTENT, CONTENT_FILEPATH
 
-    if CONTENT is None or force:
+    if CONTENT is None:
         CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
+        annotate = True
     
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
