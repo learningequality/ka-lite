@@ -161,7 +161,7 @@ def get_content_cache(force=False, annotate=False):
                         "thumbnail": thumbnail,
                     }
             content["languages"] = languages
-            subtitle_lang_codes = [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+            subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
             subtitle_urls = [{
                 "code": lc,
                 "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
