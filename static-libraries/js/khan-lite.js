@@ -291,7 +291,7 @@ function setGetParam(href, name, val) {
         vars[key] = value;
     });
 
-    if (val == "" || val == "----" || val === undefined) {
+    if (val === "" || val == "----" || val === undefined) {
         delete vars[name];
     } else {
         vars[name] = val;
@@ -299,8 +299,8 @@ function setGetParam(href, name, val) {
 
     var url = base;
     var idx = 0;
-    for (key in vars) {
-        url += (idx == 0) ? "?" : "&";
+    for (var key in vars) {
+        url += (idx === 0) ? "?" : "&";
         url += key + "=" + vars[key];//         + $.param(vars);
         idx++;
     }
@@ -308,7 +308,7 @@ function setGetParam(href, name, val) {
 }
 
 function setGetParamDict(href, dict) {
-    for (key in dict) {
+    for (var key in dict) {
          href = setGetParam(href, key, dict[key]);
     }
     return href;
