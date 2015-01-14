@@ -14,7 +14,7 @@ from .models import StoreTransactionLog, playlist_group_mapping_reset_for_a_faci
 
 logging = settings.LOG
 
-
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BaseTest(FacilityMixins, KALiteTestCase):
 
     client_class = KALiteClient
@@ -32,7 +32,7 @@ class BaseTest(FacilityMixins, KALiteTestCase):
         self.teacher = self.create_teacher(**self.teacher_data)
         self.student = self.create_student(**self.student_data)
 
-
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class SwitchTest(BaseTest):
 
     def setUp(self):
