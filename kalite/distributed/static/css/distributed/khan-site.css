@@ -543,3 +543,6 @@ a.big-button:active > div {
     width: 753px;
 }
 
+#scratchpad-btn-container {
+    margin-top: 10px;
+}
