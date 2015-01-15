@@ -219,11 +219,11 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
     class Meta:
         queryset = ExerciseLog.objects.all()
         resource_name = 'TimelineReportExerciselog'
-        # excludes = ['attempts_before_completion', 
-        #     'complete', 'counter', 'attempts', 'signed_version', 'signature', 'resource_uri', 'id', 'language', 
-        #     'resource_uri', 'user', 'streak_progress', 'points', 'completion_counter', 'completion_timestamp',
-        #     'exercise_id', 'mastered', 'struggling', 'deleted'
-        #     ]
+        excludes = ['attempts_before_completion', 
+            'complete', 'counter', 'attempts', 'signed_version', 'signature', 'resource_uri', 'id', 'language', 
+            'resource_uri', 'user', 'streak_progress', 'points', 'completion_counter', 'completion_timestamp',
+            'exercise_id', 'mastered', 'struggling', 'deleted'
+            ]
         authorization = UserObjectsOnlyAuthorization()
 
     user_info = []
