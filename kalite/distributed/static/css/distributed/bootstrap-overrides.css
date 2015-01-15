@@ -1,3 +1,5 @@
+/* Antriksh: changed the dark green #5C8547 to #5AA685, a color picked from the KA website */
+
 /* ===================================
     Global
 =================================== */
@@ -77,9 +79,9 @@ input[type="submit"] {
 .navbar ul li a {
     color: white;
     text-transform: uppercase;
-    border-left: 2px solid #5C8547;
-    border-top: 2px solid #5C8547;
-    border-right: 2px solid #5C8547;
+    border-left: 2px solid #5AA685;
+    border-top: 2px solid #5AA685;
+    border-right: 2px solid #5AA685;
     padding-bottom: 13px;
 }
 .navbar ul li {
@@ -91,7 +93,7 @@ input[type="submit"] {
     top: 5px;
 }
 .navbar ul.nav-tabs {
-    border-bottom: 2px solid #5C8547;
+    border-bottom: 2px solid #5AA685;
 }
 .nav-tabs li a,
 .nav-tabs li.active a,
@@ -99,7 +101,7 @@ input[type="submit"] {
     border: 0;
     border-radius: 5px 15px 0 0;
     margin: 0;
-    background-color: #5C8547;
+    background-color: #5AA685;
     color: white;
 }
 #points {
@@ -109,10 +111,10 @@ input[type="submit"] {
 .nav-tabs li a:hover,
 .nav-tabs li.active a {
     background-color: white;
-    border-left: 2px solid #5C8547;
-    border-top: 2px solid #5C8547;
-    border-right: 2px solid #5C8547;
-    color: #5C8547;
+    border-left: 2px solid #5AA685;
+    border-top: 2px solid #5AA685;
+    border-right: 2px solid #5AA685;
+    color: #5AA685;
 }
 .navbar ul li.dropdown {
     padding-right: 0;
@@ -121,7 +123,7 @@ input[type="submit"] {
     padding: 9px 0;
 }
 .navbar ul li.dropdown.open a {
-    color: #5C8547;
+    color: #5AA685;
 }
 .navbar ul li.dropdown.open ul.dropdown-menu li a {
     text-transform: none;
@@ -170,7 +172,7 @@ form .input-group {
 }
 #search-button {
     color: #fff !important;
-    background: #4cae4c !important;
+    background: #5AA685 !important;
     position: relative;
     left: 188px;
     top: -2px;
