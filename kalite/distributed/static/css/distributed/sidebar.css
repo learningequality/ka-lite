@@ -1,7 +1,8 @@
 .sidebar-icon {
+    font-size: 10pt;
     padding-right: 10px;
     background-color: rgba(219, 219, 219, 0.19);
-    /*border-radius: 6px;*/
+    border-radius: 3px;
     padding: 7px;
 }
 .sidebar-icon.partial {
@@ -23,7 +24,7 @@ Nav Panel
 
 .sidebar-panel {
     -webkit-transform: translateZ(0);
-    background: #5F832E;
+    background: #5AA685;
     z-index: 9999;
     position: fixed;
     height: 130%;
@@ -80,7 +81,7 @@ div.fade {
 }
 */
 .sidebar-panel .active-entry {
-    background: #77AA31;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-divider {
@@ -94,19 +95,20 @@ div.fade {
     position: fixed;
     left: 0;
     top: 40%;
-    background: #8dc63f;
+    background: #5AA685;
     color: #fff;
     font-weight: bold;
-    font-size: 60px;
+    font-size: 30px;
     padding: 15px 20px;
     padding-bottom: 25px; /* centers the arrow */
     border-color: black;
     border-style: solid;
     border-width: 2px 2px 2px 0;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
     cursor: pointer;
-    box-shadow: inset 0 0 15px #4d8600
+    box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
+
 }
 
 .sidebar-tab a {
@@ -156,7 +158,7 @@ div.fade {
     line-height: 1.1em;
     margin-bottom: -10px;
     padding-top: 10px;
-    color: #A3CCA3; 
+    color: #ffffff; 
     word-wrap: break-word;
 }
 

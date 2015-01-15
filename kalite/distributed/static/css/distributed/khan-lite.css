@@ -899,6 +899,10 @@ to items you want to have the icon appear with.
 .icon-Document:before {
     content: "\e605";
 }
+
+/*ea42 circle-right*/
+/*ea44 circle-left*/
+
 /* BEGIN styles for modal dialog */
 
 div#modal {
