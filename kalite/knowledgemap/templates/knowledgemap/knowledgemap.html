@@ -68,17 +68,17 @@ window.statusModel.loaded.then(function() {
   });
 
   var svg = d3.select("kmap").append("svg")
-    .attr("width", width - 20)
-    .attr("height",height - 100)
-    .call(d3.behavior.zoom().scaleExtent([0.1, 3]).on("zoom", zoomHandler))
+    .attr("width", "100%")
+    .attr("height", window.innerHeight - 180)
+    .call(d3.behavior.zoom().scaleExtent([0.01, 30]).on("zoom", zoomHandler))
     .append("g");
 
-  var label_tanslate;
+  var label_translate;
   var label_scale;
   function zoomHandler() {
-    label_tanslate = d3.event.translate;
+    label_translate = d3.event.translate;
     label_scale = d3.event.scale;
-    svg.attr("transform", "translate(" + label_tanslate + ")scale(" + label_scale + ")");
+    svg.attr("transform", "translate(" + label_translate + ")scale(" + label_scale + ")");
   }
 
   var link = svg.selectAll(".link"),
@@ -137,6 +137,7 @@ window.statusModel.loaded.then(function() {
   var links_table = {}; //for link look up
   var nodes;
   var unfold_scale_factor = 1;
+  var scale_factor = 1; //for initial map size
 
   function update() {
 
@@ -235,7 +236,28 @@ window.statusModel.loaded.then(function() {
           .on("mouseover", highlight_path)
           .on("mouseout", recover_highlight);
 
-  console.log("node count:: ", nodeEnter[0].length);
+      //this is not a very smooth way to do adaptive zooming
+      num_of_nodes = nodeEnter[0].length;
+      console.log("node count:: ", nodeEnter[0].length);
+      if(num_of_nodes <= subject_list.length){
+       //don't zoom
+      }else{
+        if(num_of_nodes < 40){
+          scale_factor = 1.2;
+        }else if(num_of_nodes<100){
+          scale_factor = 2;
+        }else if(num_of_nodes<400){
+          scale_factor = 3;
+        }else if(num_of_nodes<1000){
+          scale_factor = 4;
+        }else if(num_of_nodes<3000){
+          scale_factor = 5;
+        }
+        var map = document.getElementsByTagName("svg")[0];
+
+        map.setAttribute("viewBox", (map.getBBox().width - window.innerWidth*scale_factor/2) + " " +  (map.getBBox().height 
+          - window.innerHeight*scale_factor/2) + " " + window.innerWidth*scale_factor +" "+ window.innerHeight*scale_factor); 
+      }
       n_tick = nodeEnter[0].length;
 
       nodeEnter.append("circle")
@@ -494,29 +516,11 @@ window.statusModel.loaded.then(function() {
   function click(d) {
     d.fixed = true;
     setTimeout(function(){ d.fixed = false; }, 3000);
-  if (d3.event.defaultPrevented) return; // ignore drag
-    var update_color = text_fill(d);
-    d3.select(this).select("text")
-      .style("fill", update_color);
-
-      if (d.children) {
-        if(d._children && d._children[0] != null){
-          for(var i in d._children){
-            d.children.push(d._children[i]);
-          }
-          d._children = null;
-        }else{
-          d._children = d.children;
-          d.children = null;
-      }
-    } else {
-        if(!d._children){
-            location.href = "http://localhost:9011/learn/"+ d.path;
-        }
-        d.children = d._children;
-        d._children = null;
+    if (d3.event.defaultPrevented) return; // ignore drag
+     
+    if(d.kind !== "Topic" && d.kind !== "Subject"){
+        location.href = "http://localhost:9011/learn/"+ d.path;
     }
-    update();
   }
 
   function initial(root) {
