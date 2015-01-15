@@ -103,34 +103,36 @@ class VanillaPlaylist:
 
     @classmethod
     def all(cls, limit_to_shown=True):
+        if "Nalanda" not in settings.CONFIG_PACKAGE:
+            return []
+
+        with open(cls.playlistjson) as f:
+            raw_playlists = json.load(f)
+
+        # Coerce each playlist dict into a Playlist object
+        # also add in the group IDs that are assigned to view this playlist
         playlists = []
-        if "Nalanda" in settings.CONFIG_PACKAGE:
-            with open(cls.playlistjson) as f:
-                raw_playlists = json.load(f)
+        for playlist_dict in raw_playlists:
+            # don't include playlists without show: True attribute
+            if limit_to_shown and not playlist_dict.get("show"):
+                continue
 
-            # Coerce each playlist dict into a Playlist object
-            # also add in the group IDs that are assigned to view this playlist
-            for playlist_dict in raw_playlists:
-                # don't include playlists without show: True attribute
-                if limit_to_shown and not playlist_dict.get("show"):
-                    continue
+            playlist = cls(title=playlist_dict['title'],
+                           description='',
+                           show=playlist_dict.get('show', False),
+                           id=playlist_dict['id'],
+                           tag=playlist_dict['tag'],
+                           unit=playlist_dict['unit'])
 
-                playlist = cls(title=playlist_dict['title'],
-                               description='',
-                               show=playlist_dict.get('show', False),
-                               id=playlist_dict['id'],
-                               tag=playlist_dict['tag'],
-                               unit=playlist_dict['unit'])
+            # instantiate the groups assigned to this playlist
+            groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
+            playlist.groups_assigned = groups_assigned
 
-                # instantiate the groups assigned to this playlist
-                groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
-                playlist.groups_assigned = groups_assigned
+            # instantiate the playlist entries
+            raw_entries = playlist_dict['entries']
+            playlist.entries = [VanillaPlaylistEntry._clean_playlist_entry_id(e) for e in raw_entries]
 
-                # instantiate the playlist entries
-                raw_entries = playlist_dict['entries']
-                playlist.entries = [VanillaPlaylistEntry._clean_playlist_entry_id(e) for e in raw_entries]
-
-                playlists.append(playlist)
+            playlists.append(playlist)
 
         return playlists
 

@@ -152,16 +152,17 @@ class CoachNavigationTest(FacilityMixins,
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
         # list of urls of all report types for the coach reports
-        test_view_url = self.reverse('test_view')
-
         self.urls = [
             self.reverse('tabular_view'),
             self.reverse('scatter_view'),
             self.reverse('timeline_view'),
         ]
 
+        #Student-Testing is only the feature of Nalanda.
+        #So tests related coachreports would be available with nalanda only.
+        #Reverse of test_view with argument won't be available unless Nalanda.
         if "Nalanda" in settings.CONFIG_PACKAGE:
-            self.urls.append(test_view_url)
+            self.urls.append(self.reverse('test_view'))
 
         self.browser_login_admin(**self.admin_data)
 

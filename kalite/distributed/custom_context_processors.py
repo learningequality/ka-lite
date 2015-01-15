@@ -11,7 +11,6 @@ from kalite import version
 
 
 def custom(request):
-    is_config_package_nalanda = "Nalanda" in settings.CONFIG_PACKAGE
     return {
         "central_server_host": settings.CENTRAL_SERVER_HOST,
         "securesync_protocol": settings.SECURESYNC_PROTOCOL,
@@ -24,5 +23,5 @@ def custom(request):
         "SHORTVERSION": version.SHORTVERSION,
         "True": True,
         "False": False,
-        "is_config_package_nalanda": is_config_package_nalanda
+        "is_config_package_nalanda": "Nalanda" in settings.CONFIG_PACKAGE
     }
