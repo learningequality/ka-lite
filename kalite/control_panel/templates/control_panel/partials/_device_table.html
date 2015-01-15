@@ -67,9 +67,11 @@
                                         <a href="#" id="force-sync" class="registered-only">
                                             {% trans "Sync Now!" %}
                                         </a></br> 
-                                        <a href="{% url 'update_software' %}" id="update-link" class=" registered-only">
-                                            {% trans "Update" %}
-                                        </a>
+                                        {% if is_config_package_nalanda %}
+                                            <a href="{% url 'update_software' %}" id="update-link" class=" registered-only">
+                                                {% trans "Update" %}
+                                            </a>
+                                        {% endif %}
                                         <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">
                                             {% trans "Register device" %}
                                         </a>
