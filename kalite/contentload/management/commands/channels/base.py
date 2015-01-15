@@ -32,9 +32,6 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     if not kind:
         return node
 
-    node["x_pos"] = node.get("x_pos", 0) or node.get("h_position", 0)
-    node["y_pos"] = node.get("y_pos", 0) or node.get("v_position", 0)
-
     # Only keep key data we can use
     if kind in channel_data["attribute_whitelists"]:
         for key in node.keys():
@@ -55,9 +52,10 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
         node["title"] = (node.get(channel_data["title_key"][kind], ""))
     node["title"] = (node["title"] or "").strip()
 
-    # Add some attribute that should have been on there to start with.
-    node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
-    node["ancestor_ids"] = ancestor_ids
+    if ancestor_ids:
+        # Add some attribute that should have been on there to start with.
+        node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
+        node["ancestor_ids"] = ancestor_ids
 
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
