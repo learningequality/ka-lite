@@ -4,6 +4,7 @@ from django.conf import settings
 logging = settings.LOG
 
 from datetime import datetime, timedelta
+from django.utils import unittest
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
@@ -155,8 +156,14 @@ class CoachNavigationTest(FacilityMixins,
             self.reverse('tabular_view'),
             self.reverse('scatter_view'),
             self.reverse('timeline_view'),
-            self.reverse('test_view')
         ]
+
+        #Student-Testing is only the feature of Nalanda.
+        #So tests related coachreports would be available with nalanda only.
+        #Reverse of test_view with argument won't be available unless Nalanda.
+        if "Nalanda" in settings.CONFIG_PACKAGE:
+            self.urls.append(self.reverse('test_view'))
+
         self.browser_login_admin(**self.admin_data)
 
     def test_dropdown_all_facilities(self):
@@ -256,6 +263,7 @@ class CoachNavigationTest(FacilityMixins,
         self.assertEqual(expected, result)
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
@@ -350,6 +358,7 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(overall[0:4], '100%')
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistProgressTest(FacilityMixins,
                            CreateAdminMixin,
                            CreatePlaylistProgressMixin,

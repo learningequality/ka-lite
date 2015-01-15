@@ -185,12 +185,21 @@
                             <!-- End for all users -->
 
                             <!-- For logged in admins -->
-                            {# Teach for admins => assigning playlists #}
-                            <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
-                              <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
-                                {% trans "Teach" %}
-                              </a>
-                            </li>
+                            {% if is_config_package_nalanda %}
+                              {# Teach for admins => assigning playlists #}
+                              <li class="{% block teach_active_admins-nalanda %}{% endblock teach_active_admins-nalanda %}">
+                                <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
+                                  {% trans "Teach" %}
+                                </a>
+                              </li>
+                            {% else %}
+                              {# Teach for admins => coachreports #}
+                              <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
+                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
+                                  {% trans "Teach" %}
+                                </a>
+                              </li>
+                            {% endif %}
 
                             {# Manage for admins => zone control panel #}
                             <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">

@@ -5,13 +5,14 @@ from django.conf import settings
 logging = settings.LOG
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
+from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 
 PLAYLIST_ID = "g3_p1"
 
-
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
 
     """
