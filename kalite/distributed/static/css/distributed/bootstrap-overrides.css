@@ -67,7 +67,8 @@ input[type="submit"] {
     border-bottom: none;
 }
 .faded-green-bg {
-    background: #c6d1ad; /* Also controls footer color */
+    /*background: #c6d1ad; Previous color */
+    background: #CDE4B7; /* Also controls footer color */
 }
 .kalite-navbar {
     width: 100%;
@@ -217,6 +218,13 @@ form .input-group {
     opacity: 0.7;
 }
 
+/* ===================================
+    Buttons
+=================================== */
+
+.btn-success {
+    background-color: #5AA685;
+}
 
 /* ===================================
     Home & Coach Pages
