@@ -1,3 +1,27 @@
+/************** khan-site.css overrides ***************/
+
+.simple-button.green,
+.simple-button.primary {
+    background-color: #5AA685 !important;
+    background-image: none !important;
+    border-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.simple-button.green:hover,
+.simple-button.primary:hover,
+.simple-button.green:active,
+.simple-button.primary:active,
+.simple-button.green.active,
+.simple-button.primary.active,
+.simple-button.green.disabled,
+.simple-button.primary.disabled,
+.simple-button.green[disabled],
+.simple-button.primary[disabled] {
+    background-color: #40775F !important;
+}
+
+/********** End of khan-site.css overrides ***********/
+
 /*body {
     min-width: 600px;
 }*/
