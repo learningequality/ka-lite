@@ -117,14 +117,14 @@ window.VideoPlayerView = ContentBaseView.extend({
             .on("pause", function() {
                 self.set_player_state(VideoPlayerState.PAUSED);
             })
-            // .on("timeupdate", function() {
-
-            // })
+            .on("timeupdate", function() {
+                self.update_progress();
+            })
             .on("ended", function() {
                 self.set_player_state(VideoPlayerState.ENDED);
             })
             .on("durationchange", function() {
-                self.update_progress();
+
             })
             .on("progress", function() {
 
