@@ -4,6 +4,7 @@ from django.conf import settings
 logging = settings.LOG
 
 from datetime import datetime, timedelta
+from django.utils import unittest
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
@@ -151,12 +152,17 @@ class CoachNavigationTest(FacilityMixins,
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
         # list of urls of all report types for the coach reports
+        test_view_url = self.reverse('test_view')
+
         self.urls = [
             self.reverse('tabular_view'),
             self.reverse('scatter_view'),
             self.reverse('timeline_view'),
-            self.reverse('test_view')
         ]
+
+        if "Nalanda" in settings.CONFIG_PACKAGE:
+            self.urls.append(test_view_url)
+
         self.browser_login_admin(**self.admin_data)
 
     def test_dropdown_all_facilities(self):
@@ -256,6 +262,7 @@ class CoachNavigationTest(FacilityMixins,
         self.assertEqual(expected, result)
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
@@ -350,6 +357,7 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(overall[0:4], '100%')
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistProgressTest(FacilityMixins,
                            CreateAdminMixin,
                            CreatePlaylistProgressMixin,
