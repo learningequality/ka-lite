@@ -28,7 +28,7 @@ Nav Panel
     z-index: 9999;
     position: fixed;
     height: 130%;
-    border-right: 2px solid black;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
     top: 0;
     bottom: 0;
     left: 0;
@@ -49,14 +49,13 @@ div.fade {
 }
 
 .sidebar-panel ul {
-    border-top: 2px solid #587448;
     list-style-type: none;
-    margin-left: -35px;
+    margin-left: -40px;
 }
 
 .sidebar-panel li {
     /*box-shadow: 0 -1px 0 rgba(0, 0, 0, .20) inset, 0 1px 0 rgba(255, 255, 255, .05);*/
-    border-bottom: 1px solid #4b6824;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-panel .sidebar-entry {
@@ -73,7 +72,7 @@ div.fade {
 .sidebar-panel a:visited {
     color: #fff;
     display: block;
-    margin: 2px 5px 2px 0;
+    margin: 3px 3px 3px 0;
 }
 
 /*.sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
@@ -99,16 +98,15 @@ div.fade {
     color: #fff;
     font-weight: bold;
     font-size: 30px;
-    padding: 15px 20px;
-    padding-bottom: 25px; /* centers the arrow */
-    border-color: black;
+    padding: 30px 10px;
+    padding-left: 12px;
+    border-color: rgba(0, 0, 0, 0.5);
     border-style: solid;
-    border-width: 2px 2px 2px 0;
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
+    border-width: 1px 1px 1px 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
     cursor: pointer;
     box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
-
 }
 
 .sidebar-tab a {
@@ -143,8 +141,7 @@ div.fade {
 .topic-container-inner {
     float: left;
     width: 200px;
-    border-right: 3px solid #3C531D;
-    /*box-shadow: 1px 0px 7px rgb(55, 55, 55) inset;*/
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
 }
 .topic-container-inner:last-child {
     width: 400px;

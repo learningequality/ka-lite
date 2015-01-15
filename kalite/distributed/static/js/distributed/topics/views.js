@@ -146,11 +146,11 @@ window.SidebarView = BaseView.extend({
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
             this.sidebar.css({left: 0});
-            this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width()}).html("&lt");
+            this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width()}).html('<span class="icon-circle-left"></span>');
             this.$(".fade").show();
         } else {
             this.sidebar.css({left: - this.width});
-            this.$(".sidebar-tab").css({left: 0}).html("&gt");
+            this.$(".sidebar-tab").css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".fade").hide();
         }
     },
