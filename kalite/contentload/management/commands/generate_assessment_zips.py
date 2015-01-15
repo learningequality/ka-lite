@@ -92,4 +92,4 @@ def localhosted_image_urls(items):
 
 
 def _old_item_url_to_content_url(matchobj):
-    return "/content/khan/%s" % matchobj.groupdict()["filename"]
+    return "/content/khan/%s" % matchobj.group("filename")
