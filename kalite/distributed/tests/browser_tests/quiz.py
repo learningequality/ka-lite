@@ -5,6 +5,7 @@ from django.conf import settings
 logging = settings.LOG
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
+from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins

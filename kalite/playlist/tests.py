@@ -1,5 +1,6 @@
 import json
 from tastypie.exceptions import NotFound, Unauthorized
+from django.utils import unittest
 
 from django.core.urlresolvers import reverse
 

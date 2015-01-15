@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.test.utils import override_settings
+from django.utils import unittest
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
