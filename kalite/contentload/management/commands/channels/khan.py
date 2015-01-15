@@ -38,9 +38,9 @@ iconextension = "-40x40.png"
 defaulticon = "default"
 
 attribute_whitelists = {
-    "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "y_pos", "x_pos", "icon_src", "child_data", "render_type", "path", "slug"],
-    "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id", "y_pos", "x_pos", "in_knowledge_map", "path", "slug"],
-    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "y_pos", "x_pos", "in_knowledge_map", "all_assessment_items", "uses_assessment_items", "path", "slug"],
+    "Topic": ["kind", "hide", "description", "id", "topic_page_url", "title", "extended_slug", "children", "node_slug", "in_knowledge_map", "icon_src", "child_data", "render_type", "path", "slug"],
+    "Video": ["kind", "description", "title", "duration", "keywords", "youtube_id", "download_urls", "readable_id", "in_knowledge_map", "path", "slug", "format"],
+    "Exercise": ["kind", "description", "related_video_readable_ids", "display_name", "live", "name", "seconds_per_fast_problem", "prerequisites", "all_assessment_items", "uses_assessment_items", "path", "slug"],
     "AssessmentItem": ["kind", "name", "item_data", "author_names", "sha", "id"]
 }
 
@@ -122,6 +122,10 @@ def retrieve_API_data(channel=None):
     logging.info("Fetching Khan videos")
 
     content = khan.get_videos()
+
+    # Hack to hardcode the mp4 format flag on Videos.
+    for con in content:
+        con["format"] = "mp4"
 
     assessment_items = []
 
