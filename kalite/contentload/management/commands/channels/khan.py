@@ -129,12 +129,6 @@ def retrieve_API_data(channel=None):
 
     assessment_items = []
 
-    image_dir = os.path.join(settings.CONTENT_DATA_PATH, "khan/assessment_item_images")
-
-    ensure_dir(image_dir)
-
-    data_uri_regex = re.compile("(data:[^,]*,)(.*)")
-
     # Limit number of simultaneous requests
     semaphore = threading.BoundedSemaphore(100)
 
