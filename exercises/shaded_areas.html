@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie word-problems">
+<head>
+    <title>Shaded areas</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="two-rectangles">
+                <div class="vars">
+                    <var id="L2">randRange(2, 9)</var>
+                    <var id="W2">randRange(2, 9)</var>
+                    <var id="L1">randRange(L2 + 2, 12)</var>
+                    <var id="W1">randRange(W2 + 2, 12)</var>
+                    <var id="A1">L1 * W1</var>
+                    <var id="A2">L2 * W2</var>
+                </div>
+
+                <p class="problem">
+                    A <code>\green{<var>L2</var> \times <var>W2</var>}</code> rectangle
+                    sits inside a <code>\blue{<var>L1</var> \times <var>W1</var>}</code> rectangle.
+                </p>
+                <p class="question">
+                    What is the area of the shaded region?
+                </p>
+                <div class="render-answer-area-here"></div>
+
+                <div class="graphie" id="area">
+                    init({ range: [[-1, L1 + 1], [-1, W1 + 1]], scale: 30 });
+                    rect(0, 0, L1, W1, { stroke: BLUE, fill: BLUE, "fill-opacity": 0.5 });
+                    label([L1 / 2, W1], L1, "above");
+                    label([L1, W1 / 2], W1, "right");
+
+                    var x = (L1 - L2) / 2;
+                    var y = (W1 - W2) / 2;
+                    rect(x, y, L2, W2, { stroke: GREEN, fill: '#fdfdfd' });
+                    label([x + L2 / 2, y + W2], L2, "above");
+                    label([x + L2, y + W2 / 2], W2, "right");
+                </div>
+
+                <div class="solution" data-forms="integer"><var>A1 - A2</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>First, calculate the area of the <span class="hint_blue">whole figure</span>, including the unshaded area.</p>
+                        <div class="graphie" data-update="area">
+                            rect(0, 0, L1, W1, { stroke: BLUE, fill: BLUE, opacity: 0.5 });
+                        </div>
+                    </div>
+                    <div>
+                        <p>The area of a rectangle is the length times the width.<br/>
+                        <code>\qquad \blue{<var>L1</var> \times <var>W1</var> = <var>A1</var>}</code></p>
+                    </div>
+                    <div>
+                        <p>Next, calculate the area of the <span class="hint_green">inner figure</span>.</p>
+                        <div class="graphie" data-update="area">
+                            rect((L1 - L2) / 2, (W1 - W2) / 2, L2, W2, { stroke: GREEN, fill: '#fdfdfd' });
+                        </div>
+                    </div>
+                    <p><code>\qquad \green{<var>L2</var> \times <var>W2</var> = <var>A2</var>}</code></p>
+
+                    <p>Finally, subtract the area of the inner rectangle from the area of the outer rectangle.</p>
+                    <p><code>\qquad \blue{<var>A1</var>} - \green{<var>A2</var>} = <var>A1 - A2</var></code></p>
+                </div>
+            </div>
+            <div id="two-circles">
+                <div class="vars">
+                    <var id="R2">randRange(2, 9)</var>
+                    <var id="R1">randRange(R2 + 2, 12)</var>
+                    <var id="A1">R1 * R1</var>
+                    <var id="A2">R2 * R2</var>
+                </div>
+
+                <p class="problem">
+                    A circle with radius of <code>\green{<var>R2</var>}</code> sits inside a circle with radius of <code>\blue{<var>R1</var>}</code>.
+                </p>
+                <p class="question">
+                    What is the area of the shaded region?
+                </p>
+                <div class="render-answer-area-here"></div>
+                <div class="graphie" id="area">
+                    var d = R1 + 1;
+                    init({ range: [[-d, d], [-d, d]], scale: 15 });
+                    ellipse([0, 0], [R1, R1], { stroke: BLUE, fill: BLUE, "fill-opacity": 0.5 });
+                    ellipse([0, 0], [R2, R2], { stroke: BLUE, fill: '#fdfdfd', });
+                    path([[0, 0], [R1, 0]], { stroke: BLUE });
+                    path([[0, 0], [0, R2]], { stroke: GREEN });
+                    label([(R1 + R2) / 2, 0], R1, "above");
+                    label([0, R2 / 2], R2, "right");
+                </div>
+
+                <div class="solution" data-forms="integer, proper, improper, mixed, decimal, pi"><var>(A1 - A2) * Math.PI</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>First, calculate the area of the <span class="hint_blue">whole figure</span>, including the unshaded area.</p>
+                        <div class="graphie" data-update="area">
+                            ellipse([0, 0], [R1, R1], { stroke: BLUE, fill: BLUE, opacity: 0.5 });
+                        </div>
+                    </div>
+                    <div>
+                        <p>The area of a circle is <code>\pi r^2</code>.<br/>
+                        <code>\qquad \blue{\pi \times <var>R1</var> \times <var>R1</var> = <var>A1</var>\pi}</code></p>
+                    </div>
+                    <div>
+                        <p>Next, calculate the area of the <span class="hint_green">inner figure</span>.</p>
+                        <div class="graphie" data-update="area">
+                            ellipse([0, 0], [R2, R2], { stroke: GREEN, fill: '#fdfdfd' });
+                            path([[0, 0], [0, R2]], { stroke: GREEN });
+                            label([0, R2 / 2], R2, "right");
+                        </div>
+                    </div>
+                    <p><code>\qquad \green{\pi \times <var>R2</var> \times <var>R2</var> = <var>A2</var>\pi}</code></p>
+
+                    <p>Finally, subtract the area of the inner circle from the area of the outer circle.</p>
+                    <p><code>\qquad \blue{<var>A1</var>\pi} - \green{<var>A2</var>\pi} = <var>A1 - A2</var>\pi</code></p>
+                </div>
+            </div>
+
+            <div id="circle-in-rect" data-calculator="">
+                <div class="vars">
+                    <var id="R">randRange(1, 5)</var>
+                    <var id="L">randRange(2 * R + 1, 12)</var>
+                    <var id="W">randRange(2 * R + 1, 12)</var>
+                    <var id="A1">L * W</var>
+                    <var id="A2">R * R</var>
+                    <var id="A">roundTo(2, A1 - A2 * Math.PI)</var>
+                </div>
+
+                <p class="problem">
+                    A circle with radius of <code>\green{<var>R</var>}</code> sits inside a <code>\blue{<var>L</var> \times <var>W</var>}</code> rectangle.
+                </p>
+                <p class="question">
+                    What is the area of the shaded region?
+                </p>
+                <p>
+                    <em>Round to the nearest hundredth.</em>
+                </p>
+                <div class="render-answer-area-here"></div>
+                <div class="graphie" id="area">
+                    init({ range: [[-1, L + 1], [-1, W + 1]], scale: 30 });
+                    rect(0, 0, L, W, { stroke: BLUE, fill: BLUE, "fill-opacity": 0.5 });
+                    label([L / 2, W], L, "above");
+                    label([L, W / 2], W, "right");
+
+                    ellipse([L / 2, W / 2], [R, R], { stroke: GREEN, fill: '#fdfdfd', });
+                    path([[L / 2, W / 2], [L / 2 + R, W / 2]], { stroke: GREEN });
+                    label([(L + R) / 2, W / 2], R, "above");
+                </div>
+
+                <div class="solution" data-inexact="" data-max-error="0.01" data-type="decimal"><var>A1 - A2 * Math.PI</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>First, calculate the area of the <span class="hint_blue">whole figure</span>, including the unshaded area.</p>
+                        <div class="graphie" data-update="area">
+                            rect(0, 0, L, W, { stroke: BLUE, fill: BLUE, opacity: 0.5 });
+                        </div>
+                    </div>
+                    <div>
+                        <p>The area of a rectangle is the length times the width.<br/>
+                        <code>\qquad \blue{<var>L</var> \times <var>W</var> = <var>A1</var>}</code></p>
+                    </div>
+                    <div>
+                        <p>Next, calculate the area of the <span class="hint_green">inner figure</span>.</p>
+                        <div class="graphie" data-update="area">
+                            ellipse([L / 2, W / 2], [R, R], { stroke: GREEN, fill: '#fdfdfd', });
+                            path([[L / 2, W / 2], [L / 2 + R, W / 2]], { stroke: GREEN });
+                        </div>
+                    </div>
+                    <div>
+                        <p>The area of a circle is <code>\pi r^2</code>.<br/>
+                        <code>\qquad \green{\pi \times <var>R</var> \times <var>R</var> = <var>A2</var>\pi}</code></p>
+                    </div>
+                    <p>Finally, subtract the area of the inner circle from the area of the outer rectangle.</p>
+                    <p><code>\qquad \blue{<var>A1</var>} - \green{<var>A2</var>\pi} \approx <var>A</var></code></p>
+                </div>
+            </div>
+
+            <div id="rect-in-circle" data-calculator="">
+                <div class="vars">
+                    <var id="L">randRange(2, 12)</var>
+                    <var id="W">randRange(2, 12)</var>
+                    <var id="D">ceil(sqrt(L * L + W * W) / 2) + 1</var>
+                    <var id="R">randRange(D, 12)</var>
+                    <var id="A1">R * R</var>
+                    <var id="A2">L * W</var>
+                    <var id="A">roundTo(2, A1 * Math.PI - A2)</var>
+                </div>
+
+                <p class="problem">
+                    A <code>\green{<var>L</var> \times <var>W</var>}</code> rectangle sits inside a circle with radius of <code>\blue{<var>R</var>}</code>.
+                </p>
+                <p class="question">
+                    What is the area of the shaded region?
+                </p>
+                <p>
+                    <em>Round to the nearest hundredth.</em>
+                </p>
+                <div class="render-answer-area-here"></div>
+                <div class="graphie" id="area">
+                    var d = R + 1;
+                    init({ range: [[-d, d], [-d, d]], scale: 15 });
+                    ellipse([0, 0], [R, R], { stroke: BLUE, fill: BLUE, "fill-opacity": 0.5 });
+
+                    rect(-L / 2, - W / 2, L, W, { stroke: GREEN, fill: '#fdfdfd' });
+
+                    label([0, W / 2], L, "above");
+                    label([-L / 2, 0], W, "left");
+
+                    path([[0, 0], [R, 0]], { stroke: BLUE });
+                    label([L / 4 + R / 2, 0], R, "above");
+                </div>
+
+                <div class="solution" data-inexact="" data-max-error="0.01" data-type="decimal"><var>A1 * Math.PI - A2</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>First, calculate the area of the <span class="hint_blue">whole figure</span>, including the unshaded area.</p>
+                        <div class="graphie" data-update="area">
+                            ellipse([0, 0], [R, R], { stroke: BLUE, fill: BLUE, opacity: 0.5 });
+                        </div>
+                    </div>
+                    <div>
+                        <p>The area of a circle is <code>\pi r^2</code>.<br/>
+                        <code>\qquad \blue{\pi \times <var>R</var> \times <var>R</var> = <var>A1</var>\pi}</code></p>
+                    </div>
+                    <div>
+                        <p>Next, calculate the area of the <span class="hint_green">inner figure</span>.</p>
+                        <div class="graphie" data-update="area">
+                            rect(-L / 2, - W / 2, L, W, { stroke: GREEN, fill: '#fdfdfd' });
+                        </div>
+                    </div>
+                    <div>
+                        <p>The area of a rectangle is the length times the width.<br/>
+                        <code>\qquad \green{<var>L</var> \times <var>W</var> = <var>A2</var>}</code></p>
+                    </div>
+
+                    <p>Finally, subtract the area of the inner rectangle from the area of the outer circle.</p>
+                    <p><code>\qquad \blue{<var>A1</var>\pi} - \green{<var>A2</var>} \approx <var>A</var></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

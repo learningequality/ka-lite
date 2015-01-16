@@ -1,0 +1,5 @@
+*.pyc
+.bundle
+node_modules
+exercises-packed
+exercises-packed.zip

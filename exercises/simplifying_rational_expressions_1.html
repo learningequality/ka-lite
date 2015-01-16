@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html data-require="math math-format rational-expressions">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Simplifying rational expression with exponent properties</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <script type="text/javascript">
+        function getExpression(coefficient1, coefficient2, degree1, degree2, vari) {
+            var numerator = new KhanUtil.Term(coefficient1, vari, degree1);
+            var denominator = new KhanUtil.Term(coefficient2, vari, degree2);
+
+            if (denominator.toString() !== "1") {
+                return "\\dfrac{" + numerator.toString() + "}{" + denominator.toString() + "}";
+            } else {
+                return numerator.toString();
+            }
+        }
+
+        function getSolution(coefficient1, coefficient2, degree1, degree2, vari) {
+            var numerator = new KhanUtil.Term(coefficient1, vari, degree1);
+            var denominator = new KhanUtil.Term(coefficient2, vari, degree2);
+
+            if (denominator.toString() !== "1") {
+                return "(" + numerator.toString() + ")/(" + denominator.toString() + ")";
+            } else {
+                return numerator.toString();
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars">
+                <var id="X">randVar()</var>
+                <var id="FACTOR">randRange(1, 12)</var>
+                <div data-ensure="COEFFICIENT1 !== COEFFICIENT2">
+                    <var id="COEFFICIENT1">randRange(1, 12) * FACTOR</var>
+                    <var id="COEFFICIENT2">randRange(1, 12) * FACTOR</var>
+                </div>
+                <var id="GCD">getGCD(COEFFICIENT1, COEFFICIENT2)</var>
+                <var id="DEGREE1">randRange(1, 5)</var>
+                <var id="DEGREE2">randRange(1, 5)</var>
+                <var id="VARIABLE1">[X, X, X, X, X].slice(0, DEGREE1)</var>
+                <var id="VARIABLE2">[X, X, X, X, X].slice(0, DEGREE2)</var>
+                <var id="SOL_DEGREES">DEGREE1 &gt; DEGREE2 ? [DEGREE1 - DEGREE2, 0] : [0, DEGREE2 - DEGREE1]</var>
+                <var id="NUMERATOR">new Term(COEFFICIENT1, X, DEGREE1)</var>
+                <var id="DENOMINATOR">new Term(COEFFICIENT2, X, DEGREE2)</var>
+                <var id="POWERFRACTION">getExpression(1, 1, SOL_DEGREES[0], SOL_DEGREES[1], X)</var>
+                <var id="SOLUTIONFRACTION">getExpression(COEFFICIENT1 / GCD, COEFFICIENT2 / GCD, SOL_DEGREES[0], SOL_DEGREES[1], X)</var>
+                <var id="SOLUTION">getSolution(COEFFICIENT1 / GCD, COEFFICIENT2 / GCD, SOL_DEGREES[0], SOL_DEGREES[1], X)</var>
+            </div>
+
+            <p class="problem">Simplify the following expression:</p>
+            <p class="question"><code>\dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>}</code></p>
+            <p><em>You can assume <code><var>X</var> \neq 0</code>.</em></p>
+
+            <p class="solution" data-type="expression" data-simplify><var>SOLUTION</var></p>
+
+            <div class="hints">
+                <p><code>
+                    \dfrac{<var>NUMERATOR</var>}{<var>DENOMINATOR</var>} = 
+                    \dfrac{<var>COEFFICIENT1</var>}{<var>COEFFICIENT2</var>} \cdot
+                    \dfrac{<var>X</var>^<var>DEGREE1</var>}{<var>X</var>^<var>DEGREE2</var>}
+                </code></p>
+
+                <p>
+                    To simplify <code>\frac{<var>COEFFICIENT1</var>}{<var>COEFFICIENT2</var>}</code>, find the greatest common factor (GCF) of 
+                    <code><var>COEFFICIENT1</var></code> and <code><var>COEFFICIENT2</var></code>.
+                </p>
+
+                <div>
+                    <p>
+                        <code><var>COEFFICIENT1</var> = <var>getPrimeFactorization(COEFFICIENT1).join(" \\cdot ")</var></code><br>
+                        <code><var>COEFFICIENT2</var> = <var>getPrimeFactorization(COEFFICIENT2).join(" \\cdot ")</var></code>
+                    </p>
+                    <p><code>
+                        \mbox{GCD}(<var>COEFFICIENT1</var>, <var>COEFFICIENT2</var>)
+                        <span data-if="!isPrime(GCD)"> = <var>getPrimeFactorization(GCD).join(" \\cdot ")</var></span> = <var>GCD</var>
+                    </code></p>
+                </div>
+
+                <p><code>
+                    \dfrac{<var>COEFFICIENT1</var>}{<var>COEFFICIENT2</var>} \cdot
+                    \dfrac{<var>X</var>^<var>DEGREE1</var>}{<var>X</var>^<var>DEGREE2</var>} = 
+                    \dfrac{<var>GCD</var> \cdot <var>COEFFICIENT1 / GCD</var>}{<var>GCD</var> \cdot <var>COEFFICIENT2 / GCD</var>}
+                    \cdot \dfrac{<var>X</var>^<var>DEGREE1</var>}{<var>X</var>^<var>DEGREE2</var>}
+                </code></p>
+
+                <p><code>\phantom{
+                    \dfrac{<var>COEFFICIENT1</var>}{<var>COEFFICIENT2</var>} \cdot \dfrac{<var>DEGREE1</var>}{<var>DEGREE2</var>}} = 
+                    <var>fractionReduce(COEFFICIENT1 / GCD, COEFFICIENT2 / GCD)</var>
+                    \cdot \dfrac{<var>X</var>^<var>DEGREE1</var>}{<var>X</var>^<var>DEGREE2</var>}
+                </code></p>
+
+                <p><code>
+                    \dfrac{<var>X</var>^<var>DEGREE1</var>}{<var>X</var>^<var>DEGREE2</var>} = 
+                    <span data-if="DEGREE1 * DEGREE2 !== 1">\dfrac{<var>VARIABLE1.join(" \\cdot ")</var>}{<var>VARIABLE2.join(" \\cdot ")</var>} =</span>
+                    <var>POWERFRACTION</var>
+                </code></p>
+
+                <p><code>
+                    <var>fractionReduce(COEFFICIENT1 / GCD, COEFFICIENT2 / GCD)</var> \cdot <var>POWERFRACTION</var> = <var>SOLUTIONFRACTION</var>
+                </code></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

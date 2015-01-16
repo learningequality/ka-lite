@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Ordering decimals</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRangeWeighted(0, 9, 0, 0.5)</var>
+            <var id="B">randRange(1, 9)</var>
+            <var id="C" data-ensure="C !== B">randRange(1, 9)</var>
+            <var id="NUMS">(function() {
+                var digits = [A, B, C, 0];
+                var array = [];
+                var used = {};
+
+                while (array.length &lt; 5) {
+                    var digitForNumber = digitsToInteger(shuffle(digits));
+                    var decimalPlaces = randRange(2, 4);
+                    var decimal = roundTo(decimalPlaces, digitForNumber / 10000);
+                    var tenthousandths = round(decimal * 10000);
+
+                    if (tenthousandths !== 0 &amp;&amp; !used[tenthousandths]) {
+                        used[tenthousandths] = true;
+                        array.push([decimal, round(decimal * pow(10, decimalPlaces)), decimalPlaces, localeToFixed(decimal, decimalPlaces)]);
+                    }
+                }
+
+                return array;
+            })()</var>
+
+            <var id="MAX_P">(function() {
+                var p = 1;
+                for (var i=0; i &lt; NUMS.length; i++) {
+                    if (NUMS[i][2] &gt; p) {
+                        p = NUMS[i][2];
+                    }
+                }
+                return p;
+            })()</var>
+            <var id="P">pow(10, MAX_P)</var>
+            <var id="NUMS_SORT">$.extend(true, [], NUMS).sort(function(a, b) {
+                return a[0] - b[0];
+            })</var>
+            <var id="NUMS_SORT_TEX">$.map(NUMS_SORT, function(el) {
+                return round(el[0] * P, 4);
+            }).join( ",\\ " )</var>
+            <var id="DECIMAL_SORT_TEX">$.map(NUMS_SORT, function(el) {
+                return el[3];
+            }).join( ",\\ " )</var>
+
+            <var id="SORTER">createSorter()</var>
+        </div>
+
+        <div class="problems">
+
+            <div>
+                <div class="question">
+                    <p>Order the following numbers from least to greatest:</p>
+                    <ul id="sortable">
+                        <li data-each="NUMS as NUM">
+                            <span class="sort-key"><var>NUM[3]</var></span>
+                            <code><var>NUM[3]</var></code>
+                        </li>
+                    </ul>
+                    <p><var>SORTER.init("sortable")</var></p>
+
+                </div>
+
+                <div class="solution" data-type="custom">
+                    <div class="guess">SORTER.getContent()</div>
+                    <div class="validator-function">
+                        return guess.join( ",\\ " ) === DECIMAL_SORT_TEX;
+                    </div>
+                    <div class="show-guess">
+                        SORTER.setContent( guess );
+                    </div>
+                </div>
+
+                <div class="hints">
+                    <p><code>\qquad \begin{align*}
+                        <span data-each="NUMS as NUM">
+                            <var>NUM[3]</var> &amp;= <var>NUM[1]</var> \text{ <var>plural_form(decimalPlaceNames[NUM[2]], NUM[1])</var>} \\</span>
+                    \end{align*}</code></p>
+
+                    <p>Get each number in <var>plural_form(decimalPlaceNames[MAX_P], 2)</var>.</p>
+
+                    <p><code>\qquad \begin{align*}
+                        <span data-each="NUMS as NUM">
+                            <var>NUM[3]</var> &amp;= <var>round(NUM[0] * P)</var>\text{ <var>plural_form(decimalPlaceNames[MAX_P], 2)</var>} \\</span>
+                    \end{align*}</code></p>
+
+                    <p>Order the numbers: <code><var>NUMS_SORT_TEX</var></code>.</p>
+
+                    <div>
+                        <p>Convert back to decimals.</p>
+                        <p><code><var>DECIMAL_SORT_TEX</var></code>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

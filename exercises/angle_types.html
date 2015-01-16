@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html data-require="math graphie angles interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Angle types</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <script>
+        function protractorHint( pro, rot, angle ) {
+            pro.translate( 0, 0, true );
+            pro.rotate( rot, true );
+            pro.translatable( false );
+            pro.rotatable( false );
+
+            pro.drawAngle( angle, 2, "green", "green" );
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="acute">
+            <div class="vars">
+                <var id="ANGLE_ONE">randRange(0, 359)</var>
+                <var id="DIFF">randRange(20, 70)</var>
+            </div>
+
+            <div class="question">
+                <p>Is the shown angle acute, right, or obtuse?</p>
+
+                <div class="render-answer-area-here"></div>
+
+                <div class="graphie" id="angle">
+                    var ANGLE_TWO = ANGLE_ONE + DIFF;
+                    var ANGLE_ONE_R = toRadians(ANGLE_ONE);
+                    var ANGLE_TWO_R = toRadians(ANGLE_TWO);
+                    angle.COS1 = cos(ANGLE_ONE_R);
+                    angle.SIN1 = sin(ANGLE_ONE_R);
+                    angle.COS2 = cos(ANGLE_TWO_R);
+                    angle.SIN2 = sin(ANGLE_TWO_R);
+
+                    init({
+                        range: [ [-11, 31], [-10, 10] ],
+                        scale: 20
+                    });
+
+                    line([0, 0], [5 * angle.COS1, 5 * angle.SIN1], { arrows: "-&gt;"});
+                    line([0, 0], [5 * angle.COS2, 5 * angle.SIN2], { arrows: "-&gt;"});
+
+                    if (DIFF === 90) {
+                        path([[angle.COS1, angle.SIN1], [sqrt(2) * cos(ANGLE_ONE_R + PI / 4), sqrt(2) * sin(ANGLE_ONE_R + PI / 4)], [angle.COS2, angle.SIN2]]);
+                    } else {
+                        arc([0, 0], 1, ANGLE_ONE, ANGLE_TWO);
+                    }
+
+                    addMouseLayer();
+                    graph.protractor = protractor([14, -8]);
+                </div>
+            </div>
+
+            <div class="solution">Acute</div>
+            <ul class="choices" data-category="true">
+                <li>Acute</li>
+                <li>Right</li>
+                <li>Obtuse</li>
+            </ul>
+
+            <div class="hints">
+                <div class="graphie" data-update="angle">
+                    graph.protractor.moveTo( 0, 0 );
+                    graph.protractor.rotateTo( 540 - ANGLE_ONE - DIFF );
+                </div>
+                <div>
+                    <p>The shown angle measures less than <code>90^\circ</code>.</p>
+                    <div class="graphie" data-update="angle">
+                        label([9 * angle.COS1, 9 * angle.SIN1], "\\color{" + PINK + "}{" + DIFF + "^{\\circ}}");
+                    </div>
+                </div>
+                <p>Therefore, it is an acute angle.</p>
+            </div>
+        </div>
+
+        <div id="right" data-type="acute">
+            <div class="vars">
+                <var id="DIFF">90</var>
+            </div>
+
+            <div class="solution">Right</div>
+
+            <div class="hints">
+                <div class="graphie" data-update="angle">
+                    graph.protractor.moveTo( 0, 0 );
+                    graph.protractor.rotateTo( 540 - ANGLE_ONE - DIFF );
+                </div>
+                <div>
+                    <p>The shown angle measures <code>90^\circ</code>.</p>
+                    <div class="graphie" data-update="angle">
+                        label([9 * angle.COS1, 9 * angle.SIN1], "\\color{" + PINK + "}{" + DIFF + "^{\\circ}}");
+                    </div>
+                </div>
+                <p>Therefore, it is a right angle.</p>
+            </div>
+        </div>
+
+        <div id="obtuse" data-type="acute">
+            <div class="vars">
+                <var id="DIFF">randRange(110, 160)</var>
+            </div>
+
+            <div class="solution">Obtuse</div>
+
+            <div class="hints">
+                <div class="graphie" data-update="angle">
+                    graph.protractor.moveTo( 0, 0 );
+                    graph.protractor.rotateTo( 540 - ANGLE_ONE - DIFF );
+                </div>
+                <div>
+                    <p>The shown angle measures more than <code>90^\circ</code>.</p>
+                    <div class="graphie" data-update="angle">
+                        label([9 * angle.COS1, 9 * angle.SIN1], "\\color{" + PINK + "}{" + DIFF + "^{\\circ}}");
+                    </div>
+                </div>
+                <p>Therefore, it is an obtuse angle.</p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

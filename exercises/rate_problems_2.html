@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Rate problems 2</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="average-speed">
+            <div class="vars">
+                <var id="DISTANCE">randRange( 2, 6 )</var>
+                <var id="FACTORS">shuffle( getPrimeFactorization( 60 ).concat( getPrimeFactorization( DISTANCE ) ) )</var>
+                <var id="MULTIPLY">
+                    function( factors ) {
+                        var product = 1;
+                        for ( var i = 0; i &lt; factors.length; i++ ) {
+                            product *= factors[ i ];
+                        }
+                        return product;
+                    }
+                </var>
+                <var id="SPLIT">randRange( 3, FACTORS.length - 2 )</var>
+                <var id="TIME_UP">MULTIPLY( FACTORS.slice( 0, SPLIT ) )</var>
+                <var id="RATE_UP">MULTIPLY( FACTORS.slice( SPLIT ) )</var>
+                <var id="RATE_DOWN">(RATE_UP % 3 === 0 ? 2 : 3) * RATE_UP</var>
+                <var id="TIME_DOWN">60 * DISTANCE / RATE_DOWN</var>
+                <var id="RATE_AVG">60 * 2 * DISTANCE / ( TIME_UP + TIME_DOWN )</var>
+
+                <var id="AVERAGE_SPEED_TEXT">$._("average speed")</var>
+                <var id="TOTAL_DISTANCE_TEXT">$._("total distance")</var>
+                <var id="TOTAL_TIME_TEXT">$._("total time")</var>
+                <var id="DISTANCE_UPHILL">$._("distance uphill")</var>
+                <var id="DISTANCE_DOWNHILL">$._("distance downhill")</var>
+                <var id="SPEED_UPHILL">$._("speed uphill")</var>
+                <var id="TIME_UPHILL_TEXT">$._("time uphill")</var>
+                <var id="MPH_TEXT">$._("mph")</var>
+                <var id="MINUTES_TEXT">$._("minutes")</var>
+                <var id="HOUR_TEXT">$._("hour")</var>
+                <var id="TIME_DOWNHILL_TEXT">$._("time downhill")</var>
+                <var id="SPEED_DOWNHILL_TEXT">$._("speed downhill")</var>
+                <var id="MILES_TEXT">$._("miles")</var>
+            </div>
+            <p class="problem" data-if="isMale(1)">
+                Starting at home, <var>person(1)</var> traveled uphill to the <var>store(1)</var> store
+                for <code><var>TIME_UP</var></code> minutes at just <code><var>RATE_UP</var></code> mph.
+                He then traveled back home along the same path downhill at a speed of <code><var>RATE_DOWN</var></code> mph.
+            </p><p class="problem" data-else="">
+                Starting at home, <var>person(1)</var> traveled uphill to the <var>store(1)</var> store
+                for <code><var>TIME_UP</var></code> minutes at just <code><var>RATE_UP</var></code> mph.
+                She then traveled back home along the same path downhill at a speed of <code><var>RATE_DOWN</var></code> mph.
+            </p>
+            <p class="question" data-if="isMale(1)">What is his average speed for the entire trip from home to the <var>store( 1 )</var> store and back?</p><p class="question" data-else="">What is her average speed for the entire trip from home to the <var>store( 1 )</var> store and back?</p>
+
+            <div class="solution" data-type="multiple">
+                <p><span class="sol"><var>RATE_AVG</var></span> mph</p>
+            </div>
+
+            <div class="hints">
+                <p>The average speed is not just the average of <code><var>RATE_UP</var></code> mph and <code><var>RATE_DOWN</var></code> mph.</p>
+                <p data-if="isMale(1)">
+                    He traveled for a longer time uphill (since he was going slower),
+                    so we can estimate that the average speed is closer to
+                    <code><var>RATE_UP</var></code> mph than <code><var>RATE_DOWN</var></code> mph.
+                </p><p data-else="">
+                    She traveled for a longer time uphill (since she was going slower),
+                    so we can estimate that the average speed is closer to
+                    <code><var>RATE_UP</var></code> mph than <code><var>RATE_DOWN</var></code> mph.
+                </p>
+                <div>
+                    <p>To calculate the average speed, we will make use of the following:</p>
+                    <p><code>
+                        \text{<var>AVERAGE_SPEED_TEXT</var>} =
+                        \dfrac{\blue{\text{<var>TOTAL_DISTANCE_TEXT</var>}}}{\pink{\text{<var>TOTAL_TIME_TEXT</var>}}}
+                    </code></p>
+                    <p><code>\text{<var>DISTANCE_UPHILL</var>} = \text{<var>DISTANCE_DOWNHILL</var>}</code></p>
+                </div>
+                <p>What was the total distance traveled?</p>
+                <div>
+                    <p><code>
+                        \blue{\begin{align*}
+                        \text{<var>TOTAL_DISTANCE_TEXT</var>}
+                        &amp;= \text{<var>DISTANCE_UPHILL</var>} + \text{<var>DISTANCE_DOWNHILL</var>} \\
+                        &amp;= 2 \times \text{<var>DISTANCE_UPHILL</var>}
+                        \end{align*}}
+                    </code></p>
+                    <p><code>
+                        \begin{align*}
+                        \text{<var>DISTANCE_UPHILL</var>}
+                        &amp;= \text{<var>SPEED_UPHILL</var>} \times \text{<var>TIME_UPHILL_TEXT</var>} \\
+                        &amp;= <var>RATE_UP</var>\text{ <var>MPH_TEXT</var>} \times <var>TIME_UP</var>\text{ <var>MINUTES_TEXT</var>}
+                        \times \dfrac{1 \text{ <var>HOUR_TEXT</var>}}{60 \text{ <var>MINUTES_TEXT</var>}}\\
+                        &amp;= <var>DISTANCE</var>\text{ <var>MILES_TEXT</var>}
+                        \end{align*}
+                    </code></p>
+                </div>
+                <div>
+                    <p>Substituting to find the total distance:</p>
+                    <p><code>\blue{\text{<var>TOTAL_DISTANCE_TEXT</var>} = <var>2 * DISTANCE</var>\text{ <var>MILES_TEXT</var>}}</code></p>
+                </div>
+                <p>What was the total time spent traveling?</p>
+                <div>
+                    <p><code>
+                        \pink{\text{<var>TOTAL_TIME_TEXT</var>} = \text{<var>TIME_UPHILL_TEXT</var>} + \text{<var>TIME_DOWNHILL_TEXT</var>}}
+                    </code></p>
+                    <p><code>
+                        \begin{align*}
+                        \text{<var>TIME_DOWNHILL_TEXT</var>}
+                        &amp;= \dfrac{\text{<var>DISTANCE_DOWNHILL</var>}}{\text{<var>SPEED_DOWNHILL_TEXT</var>}} \\
+                        &amp;= \dfrac{<var>DISTANCE</var>\text{ <var>MILES_TEXT</var>}}{<var>RATE_DOWN</var>\text{ <var>MPH_TEXT</var>}}
+                        \times \dfrac{60 \text{ <var>MINUTES_TEXT</var>}}{1 \text{ <var>HOUR_TEXT</var>}}\\
+                        &amp;= <var>TIME_DOWN</var>\text{ <var>MINUTES_TEXT</var>}
+                        \end{align*}
+                    </code></p>
+                </div>
+                <p><code>
+                    \pink{\begin{align*}
+                    \text{<var>TOTAL_TIME_TEXT</var>}
+                    &amp;= <var>TIME_UP</var>\text{ <var>MINUTES_TEXT</var>} + <var>TIME_DOWN</var>\text{ <var>MINUTES_TEXT</var>} \\
+                    &amp;= <var>TIME_UP + TIME_DOWN</var>\text{ <var>MINUTES_TEXT</var>}
+                    \end{align*}}
+                </code></p>
+                <p>Now that we know both the total distance and total time, we can find the average speed.</p>
+                <p><code>
+                    \begin{align*}
+                    \text{<var>AVERAGE_SPEED_TEXT</var>}
+                    &amp;= \dfrac{\blue{\text{<var>TOTAL_DISTANCE_TEXT</var>}}}{\pink{\text{<var>TOTAL_TIME_TEXT</var>}}} \\
+                    &amp;= \dfrac{\blue{<var>2 * DISTANCE</var>\text{ <var>MILES_TEXT</var>}}}
+                    {\pink{<var>TIME_UP + TIME_DOWN</var>\text{ <var>MINUTES_TEXT</var>}}}
+                    \times \dfrac{60 \text{ <var>MINUTES_TEXT</var>}}{1 \text{ <var>HOUR_TEXT</var>}} \\
+                    &amp;= <var>RATE_AVG</var>\text{ <var>MPH_TEXT</var>}
+                    \end{align*}
+                </code></p>
+                <p>
+                    The average speed is <code><var>RATE_AVG</var></code> mph, and which is closer to
+                    <code><var>RATE_UP</var></code> mph than <code><var>RATE_DOWN</var></code> mph as we expected.</p>
+            </div>
+        </div>
+        <div id="collective-action-same">
+            <div class="vars">
+                <var id="PEOPLE_INIT">randRange( 5, 10 )</var>
+                <var id="WALL_INIT">PEOPLE_INIT</var>
+                <var id="TIME_INIT">randRange( 20, 59 )</var>
+                <var id="PEOPLE_FINAL">randRange( PEOPLE_INIT + 3, 20 )</var>
+                <var id="WALL_FINAL">PEOPLE_FINAL</var>
+                <var id="TIME_FINAL">TIME_INIT</var>
+            </div>
+            <p class="problem">
+                It takes <code><var>TIME_INIT</var></code> minutes for <code><var>PEOPLE_INIT</var></code>
+                people to paint <code><var>WALL_INIT</var></code> walls.
+            </p>
+            <p class="question">
+                How many minutes does it take <code><var>PEOPLE_FINAL</var></code> people to paint <code><var>WALL_FINAL</var></code> walls?
+            </p>
+
+            <div class="solution" data-type="multiple">
+                <p><span class="sol"><var>TIME_FINAL</var></span> minutes</p>
+            </div>
+            <div class="hints">
+                <p>Imagine that each person is assigned one wall, and all <code><var>PEOPLE_INIT</var></code> people begin painting at the same time.</p>
+                <p>
+                    Since everyone will finish painting their assigned wall after <code><var>TIME_INIT</var></code> minutes,
+                    it takes one person <code><var>TIME_INIT</var></code> minutes to paint one wall.
+                </p>
+                <p>
+                    If we have <code><var>PEOPLE_FINAL</var></code> people and <code><var>WALL_FINAL</var></code> walls,
+                    we can again assign one wall to each person.
+                </p>
+                <p>Everyone will take <code><var>TIME_FINAL</var></code> minutes to paint their assigned wall.</p>
+                <p>
+                    In other words, it takes <code><var>TIME_FINAL</var></code> minutes for
+                    <code><var>PEOPLE_FINAL</var></code> people to paint <code><var>WALL_FINAL</var></code> walls.
+                </p>
+            </div>
+        </div>
+        <div id="collective-action-calculate">
+            <div class="vars" data-ensure="TIME_INIT > 0">
+                <var id="PEOPLE_INIT, WALL_INIT">randRangeUnique(3, 10, 2)</var>
+                <var id="PEOPLE_FINAL">randRangeExclude(3, 10, [PEOPLE_INIT])</var>
+                <var id="WALL_FINAL">randRangeExclude(3, 10, [WALL_INIT])</var>
+                <var id="DENOM">WALL_INIT * PEOPLE_FINAL / getGCD(WALL_FINAL * PEOPLE_INIT, WALL_INIT * PEOPLE_FINAL)</var>
+                <var id="TIME_INIT">randRange(floor(30 / DENOM), ceil(60 / DENOM)) * DENOM</var>
+                <var id="TIME_FINAL">WALL_FINAL * TIME_INIT * PEOPLE_INIT / (WALL_INIT * PEOPLE_FINAL)</var>
+            </div>
+            <p class="problem">
+                It takes <code><var>TIME_INIT</var></code> minutes for <code><var>PEOPLE_INIT</var></code>
+                people to paint <code><var>WALL_INIT</var></code> walls.
+            </p>
+            <p class="question">
+                How many minutes does it take <code><var>PEOPLE_FINAL</var></code> people to paint <code><var>WALL_FINAL</var></code> walls?<br>
+            </p>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="integer"><var>TIME_FINAL</var></span> minutes</p>
+            </div>
+            <div class="hints">
+                <p>First calculate how long it will take one person to paint one wall.</p>
+                <p>
+                    It will take <code>\dfrac{1}{<var>WALL_INIT</var>}</code> of the time to paint one wall.
+                    So it will take <code><var>fractionReduce(TIME_INIT, WALL_INIT)</var></code> minutes for <code><var>PEOPLE_INIT</var></code> people to paint one wall.
+                </p>
+                <p>
+                    For only one person, it will take <code><var>PEOPLE_INIT</var></code> times as long,
+                    so it will take <code><var>fractionReduce(TIME_INIT, WALL_INIT)</var> \cdot <code><var>PEOPLE_INIT</var></code>
+                    = <var>fractionReduce(TIME_INIT * PEOPLE_INIT, WALL_INIT)</var></code> minutes for one person to paint one wall.
+                </p>
+                <p>
+                    So, the number of minutes it will take for one person to paint <code><var>WALL_FINAL</var></code> walls is
+                    <code><var>fractionReduce(TIME_INIT * PEOPLE_INIT, WALL_INIT)</var> \cdot <code><var>WALL_FINAL</var></code>
+                    = <var>fractionReduce(TIME_INIT * PEOPLE_INIT * WALL_FINAL, WALL_INIT)</var></code>.
+                </p>
+                <p>
+                    The number of minutes it will take for <code><var>PEOPLE_FINAL</var></code> people to paint <code><var>WALL_FINAL</var></code> walls is
+                    <code><var>fractionReduce(TIME_INIT * PEOPLE_INIT * WALL_FINAL, WALL_INIT)</var> \div <code><var>PEOPLE_FINAL</var></code>
+                    = <var>TIME_FINAL</var></code>.
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

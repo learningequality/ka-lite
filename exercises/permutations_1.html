@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Permutations</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="letters" data-weight="3">
+                <div class="vars" data-ensure="WORD != PERM">
+                    <var id="WORD">randFromArray(["APE", "DEN", "CLAW", "FEAT", "IRON", "OPAL", "SONG", "RULES", "ANGER", "SLIME", "FANCY", "TIGER"])</var>
+                    <var id="PERM">shuffle(WORD).join("")</var>
+                    <var id="LENGTH">WORD.length</var>
+                    <var id="BLANKS">_.map(_.range(LENGTH), function(l){ return "_ "; }).join("")</var>
+                    <var id="ANSWER">factorial(LENGTH)</var>
+                </div>
+                <p class="question">How many unique ways are there to arrange the letters in the word <var>WORD</var>?</p>
+                <p class="solution" data-forms="integer"><var>ANSWER</var></p>
+                <div class="hints">
+                    <div>
+                        <p>
+                            Let's try building the re-arrangements (or permutations) letter by letter.
+                            The word is <code><var>LENGTH</var></code> letters long:</p>
+                        <p><var>BLANKS</var></p>
+                        <p>For the first blank, we have <code><var>LENGTH</var></code> choices of letters.</p>
+                    </div>
+                    <div>
+                        <p>
+                            After we put in the first letter, let's say it's <code>\text{<var>PERM[0]</var>}</code>,
+                            we have <code><var>LENGTH - 1</var></code> blanks left.
+                        </p>
+                        <p><code>\text{<var>PERM[0]</var>}</code> <var>BLANKS.slice(2)</var></p>
+                        <p>
+                            For the second blank, we only have <code><var>LENGTH - 1</var></code> choices of letters left.
+                            So far, there are <code><var>LENGTH</var> \cdot <var>LENGTH - 1</var></code> unique choices we can make.
+                        </p>
+                    </div>
+                    <p>
+                        We can continue in this fashion to put in a third letter, and so on.
+                        At each step, we have one fewer unique choice to make, until we get to the last letter, and there's only one we can put in.
+                    </p>
+                    <p>
+                        So, the total number of unique re-arrangements must be
+                        <code><var>_.map(_.range(LENGTH), function(i){ return LENGTH - i;}).join("\\cdot")</var></code>.
+                        Another way of writing this is <code><var>LENGTH</var>!</code>,
+                        or <code><var>LENGTH</var></code> factorial, which is <code><var>ANSWER</var></code>.
+                    </p>
+                </div>
+            </div>
+
+            <div id="reindeer" data-weight="2">
+                <div class="vars">
+                    <var id="NUM_NAMES">randRange(4, 6)</var>
+                    <var id="ALL_NAMES">["Bloopin", "Gloopin", "Prancer", "Lancer", "Quentin", "Balthazar", "Ezekiel", "Jebediah", "Rudy"]</var>
+                    <var id="NAMES">shuffle(ALL_NAMES).slice(0, NUM_NAMES)</var>
+                    <var id="SLOTS">randRange(3, NUM_NAMES - 1)</var>
+                    <var id="ANSWER">factorial(NUM_NAMES) / factorial(NUM_NAMES - SLOTS)</var>
+                </div>
+                <p>
+                    You have <code><var>NUM_NAMES</var></code> reindeer, <var>toSentence(NAMES)</var>,
+                    and you want to have <code><var>SLOTS</var></code> fly your sleigh.
+                    You always have your reindeer fly in a single-file line.
+                </p>
+
+                <p class="question">How many different ways can you arrange your reindeer?</p>
+                <p class="solution" data-forms="integer"><var>ANSWER</var></p>
+
+                <div class="hints">
+                    <p>
+                        We can build our line of reindeer one by one: there are <code><var>SLOTS</var></code> slots,
+                        and we have <code><var>NUM_NAMES</var></code> different reindeer we can put in the first slot.
+                    </p>
+                    <p>
+                        Once we fill the first slot, we only have <code><var>NUM_NAMES - 1</var></code> reindeer left,
+                        so we only have <code><var>NUM_NAMES - 1</var></code> choices for the second slot.
+                        So far, there are <code><var>NUM_NAMES</var> \cdot <var>NUM_NAMES - 1</var> = <var>NUM_NAMES * (NUM_NAMES - 1)</var></code>
+                        unique choices we can make.
+                    </p>
+                    <p data-if="SLOTS === 3">
+                        We can continue in this way for the third reindeer, where we will have <code><var>NUM_NAMES - SLOTS + 1</var></code> choices.
+                    </p><p data-else="">
+                        We can continue in this way for the third reindeer, and so on, until we reach the last slot, where we will
+                        have <code><var>NUM_NAMES - SLOTS + 1</var></code> choices for the last reindeer.
+                    </p>
+                    <p>
+                        So, the total number of unique choices we could make to get to an arrangement of reindeer is
+                        <code><var>_.map(_.range(SLOTS), function(l){ return (NUM_NAMES - l);}).join("\\cdot")</var></code>.
+                        Another way of writing this is
+                        <code>\dfrac{<var>NUM_NAMES</var>!}{(<var>NUM_NAMES</var>-<var>SLOTS</var>)!} = <var>ANSWER</var></code>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Dividing polynomials by binomials 1</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+
+            <div id="perfect-square">
+                <div class="vars">
+                    <var id="X">randVar()</var>
+                    <var id="Y" data-ensure="X !== Y">randVar()</var>
+                    <var id="A">randRangeExclude(-9, 9, [-1, 0, 1])</var>
+                    <var id="CONSTANT">-A * A</var>
+                </div>
+
+                <p class="problem">Simplify the right-hand side of the equation below and state the condition under which the simplification is valid.</p>
+                <p class="question"><code><var>Y</var> = \dfrac{<var>X</var>^2 + <var>CONSTANT</var>}{<var>X</var> + <var>A</var>}</code></p>
+
+                <div class="solution" data-type="multiple">
+                    <span><code><var>Y</var> = </code></span>
+                    <div class="sol" data-type="expression" data-same-form="">
+                        <var>X</var> - <var>A</var>
+                    </div>
+                    <span><code>\space <var>X</var> \neq \space </code>
+                    <span class="sol" data-type="number"><var>-A</var></span>
+                </div>
+
+                <div class="hints" data-apply="appendContents">
+                    <p>
+                        The numerator is in the form <code>\pink{a^2} - \blue{b^2}</code>,
+                        which is a difference of two squares so we can factor it as
+                        <code>(\pink{a} + \blue{b})(\pink{a} - \blue{b})</code>.
+                    </p>
+
+                    <div>
+                        <p><code>\qquad \pink{a = <var>X</var>}</code></p>
+                        <p><code>\qquad \blue{b = \sqrt{<var>A * A</var>} = <var>abs(A)</var>}</code></p>
+                    </div>
+
+                    <div>
+                        <p>So we can rewrite the expression as:</p>
+                        <p><code><var>Y</var> =
+                            <span data-if="A > 0">\dfrac{(\pink{<var>X</var>} + \blue{<var>A</var>})(\pink{<var>X</var>} \blue{<var>-A</var>})}</span>
+                            <span data-else="">\dfrac{(\pink{<var>X</var>} \blue{<var>A</var>})(\pink{<var>X</var>} + \blue{<var>-A</var>})}</span>
+                            {<var>X</var> + <var>A</var>}
+                        </code></p>
+                    </div>
+
+                    <div>
+                        <p>We can divide the numerator and denominator by <code>(<var>X</var> + <var>A</var>)</code>:</p>
+                        <p><code><var>Y</var> =
+                            <span data-if="A > 0">
+                                \dfrac{\cancel{(\pink{<var>X</var>} + \blue{<var>A</var>})}(\pink{<var>X</var>} \blue{<var>-A</var>})}
+                            </span><span data-else="">
+                                \dfrac{\cancel{(\pink{<var>X</var>} \blue{<var>A</var>})}(\pink{<var>X</var>} + \blue{<var>-A</var>})}
+                            </span>
+                            {\cancel{<var>X</var> + <var>A</var>}} = <var>X</var> + <var>-A</var>
+                        </code></p>
+                    </div>
+
+                    <div>
+                        <p>Because we divided by <code>(<var>X</var> + <var>A</var>)</code>,</p>
+                        <p><code>\begin{align}
+                            <var>X</var> + <var>A</var> &amp;\neq 0 \\
+                            <var>X</var> &amp;\neq <var>-A</var>
+                            \end{align}
+                        </code></p>
+                    </div>
+
+                    <div>
+                        <p>Therefore,</p>
+                        <p>
+                            <code>\qquad <var>Y</var> = <var>X</var> - <var>A</var></code><br>
+                            <code>\qquad <var>X</var> \neq <var>-A</var></code>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="not-perfect-square">
+                <div class="vars">
+                    <var id="X">randVar()</var>
+                    <var id="Y" data-ensure="X !== Y">randVar()</var>
+                    <var id="A">randRangeNonZero(-10, 10)</var>
+                    <var id="B" data-ensure="abs(A) !== abs(B)">randRangeNonZero(-10, 10)</var>
+                    <var id="CONSTANT">A * B</var>
+                    <var id="LINEAR">-A - B</var>
+                </div>
+
+                <p class="problem">Simplify the right-hand side of the equation below and state the condition under which the simplification is valid.</p>
+                <p class="question"><code><var>Y</var> =
+                    \dfrac{<var>X</var>^2 + <var>plus(LINEAR + X)</var> + <var>CONSTANT</var>}{<var>X</var> - <var>A</var>}
+                </code></p>
+
+                <div class="solution" data-type="multiple">
+                    <span><code><var>Y</var> = </code></span>
+                    <div class="sol" data-type="expression" data-simplify="">
+                        <var>X</var> - <var>B</var>
+                    </div>
+                    <span><code>\space <var>X</var> \neq \space </code>
+                    <span class="sol" data-type="number"><var>A</var></span>
+                </div>
+
+                <div class="hints" data-apply="appendContents">
+                    <p><code>
+                        <var>X</var>^2 + <var>plus(LINEAR + X)</var> + <var>CONSTANT</var> = (<var>X</var> - <var>A</var>)(<var>X</var> - <var>B</var>)
+                    </code></p>
+
+                    <div>
+                        <p>So we can rewrite the expression as:</p>
+                        <p><code><var>Y</var> =
+                            \dfrac{(<var>X</var> + <var>-A</var>)(<var>X</var> + <var>-B</var>)}{<var>X</var> + <var>-A</var>}
+                        </code></p>
+                    </div>
+
+                    <div>
+                        <p>We can divide the numerator and denominator by <code>(<var>X</var> - <var>A</var>)</code>:</p>
+                        <p><code><var>Y</var> =
+                            \dfrac{\cancel{(<var>X</var> - <var>A</var>)}(<var>X</var> - <var>B</var>)}{\cancel{<var>X</var> - <var>A</var>}}
+                            = <var>X</var> - <var>B</var>
+                        </code></p>
+                    </div>
+
+                    <div>
+                        <p>Because we divided by <code>(<var>X</var> - <var>A</var>)</code>,</p>
+                        <p><code>\begin{align}
+                            <var>X</var> + <var>-A</var> &amp;\neq 0 \\
+                            <var>X</var> &amp;\neq <var>A</var>
+                            \end{align}
+                        </code></p>
+                    </div>
+
+                    <div>
+                        <p>Therefore,</p>
+                        <p>
+                            <code>\qquad <var>Y</var> = <var>X</var> - <var>B</var></code><br>
+                            <code>\qquad <var>X</var> \neq <var>A</var></code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hints">
+            <p>First factor the polynomial in the numerator.</p>
+        </div>
+
+    </div>
+</body>
+</html>

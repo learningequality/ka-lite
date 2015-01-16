@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Rounding numbers</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+
+    <div class="problems">
+        <div data-weight="2">
+            <div class="vars">
+                <var id="DIGITS">shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9], 5)</var>
+                <var id="NUM">+DIGITS.join("")</var>
+                <var id="PLACE">randFromArray([-2, -3])</var>
+                <var id="TPLACE">numberPlaceNames[-PLACE]</var>
+                <var id="TPLACES">plural_form(numberPlaceNames[-PLACE - 1], 2)</var>
+                <var id="KEYDIGIT">DIGITS[5 + PLACE]</var>
+                <var id="ROUNDED">roundTo(PLACE, NUM)</var>
+            </div>
+
+            <div class="question">
+                <p>Round <code><var>NUM</var></code> to the nearest <var>TPLACE</var>.</p>
+            </div>
+            <div class="solution" data-forms="integer, decimal"><var>ROUNDED</var></div>
+
+            <div class="hints">
+                <p>
+                    Because we want to round to the <var>plural_form(TPLACE, 2)</var> place, we need to look at the digit in the <var>TPLACES</var> place.
+                </p>
+                <p>The digit in the <var>TPLACES</var> place is <code><var>KEYDIGIT</var></code>.</p>
+                <p data-if="KEYDIGIT > 5">
+                    Because <code><var>KEYDIGIT</var></code> is more than <code>5</code>, we round up to <code><var>ROUNDED</var></code>.
+                </p>
+                <p data-else-if="KEYDIGIT === 5">
+                    Because the <var>TPLACES</var> place digit is <code><var>KEYDIGIT</var></code>,
+                    we round up to <code><var>ROUNDED</var></code>.
+                </p>
+                <p data-else="">
+                    Because <code><var>KEYDIGIT</var></code> is less than <code>5</code>, we round down to <code><var>ROUNDED</var></code>.
+                </p>
+            </div>
+        </div>
+
+        <div data-weight="3">
+            <div class="vars">
+                <var id="DIGITS">shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9], 6)</var>
+                <var id="NUM">+DIGITS.join("") / 10000</var>
+                <var id="PLACE">randFromArray([0, 1, 2])</var>
+                <var id="TPLACE">decimalPlaceNames[PLACE]</var>
+                <var id="TPLACES">plural_form(decimalPlaceNames[PLACE + 1], 2)</var>
+                <var id="KEYDIGIT">DIGITS[2 + PLACE]</var>
+                <var id="ROUNDED">roundTo( PLACE, NUM )</var>
+            </div>
+
+            <div class="question">
+                <p>Round <code><var>NUM</var></code> to the nearest <var>TPLACE</var>.</p>
+            </div>
+            <div class="solution" data-forms="integer, decimal"><var>ROUNDED</var></div>
+
+            <div class="hints">
+                <p>
+                    Because we want to round to the <var>plural_form(TPLACE, 2)</var> place, we need to look at the digit in the <var>TPLACES</var> place.
+                </p>
+                <p>The digit in the <var>TPLACES</var> place is <code><var>KEYDIGIT</var></code>.</p>
+                <p data-if="KEYDIGIT > 5">
+                    Because <code><var>KEYDIGIT</var></code> is more than <code>5</code>, we round up to <code><var>ROUNDED</var></code>.
+                </p>
+                <p data-else-if="KEYDIGIT === 5">
+                    Because the <var>TPLACES</var> place digit is <code><var>KEYDIGIT</var></code>,
+                    we round up to <code><var>ROUNDED</var></code>.
+                </p>
+                <p data-else="">
+                    Because <code><var>KEYDIGIT</var></code> is less than <code>5</code>, we round down to <code><var>ROUNDED</var></code>.
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

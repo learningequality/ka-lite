@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie expressions">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Inverse trig functions</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <!-- whether we present the question as arcsin(x) = ? or sin^-1(x) = ? -->
+            <var id="ARC">random() &lt; 0.5</var>
+
+            <!-- whether we expect the answer in terms of degrees or radians -->
+            <var id="DEG">random() &lt; 0.5</var>
+
+            <var id="FN">randFromArray([ "sin", "cos", "tan" ])</var>
+            <var id="FN_INV">"\\" + FN + "^{-1}"</var>
+            <var id="FN_ARC">"\\arc" + FN</var>
+            <var id="FN_TEX">function( x, arc ) {
+                return ( ( typeof arc === "undefined" ? ARC : arc ) ? FN_ARC : FN_INV ) + "\\left(" + x + "\\right)";
+            }</var>
+
+            <var id="SIN_RANGE">[ 0, 1/2, sqrt(2)/2, sqrt(3)/2 ]</var>
+            <var id="TAN_RANGE">[ 0, sqrt(3)/3, 1, sqrt(3) ]</var>
+
+            <var id="X">( random() &lt; 0.5 ? -1 : 1 ) * {
+                sin: randFromArray( SIN_RANGE ),
+                cos: randFromArray( SIN_RANGE ),
+                tan: randFromArray( TAN_RANGE )
+            }[ FN ]</var>
+
+            <var id="Y">{
+                sin: asin,
+                cos: acos,
+                tan: atan
+            }[ FN ]( X )</var>
+
+            <var id="Y_DEGREES">round( Y * 180 / PI )</var>
+            <var id="Y_RADIANS">KhanUtil.toFraction( Y / Math.PI, 0.001 )</var>
+
+            <var id="PRETTY">function( n ) {
+
+                var sign = n &lt; 0 ? "-" : "";
+                n = abs( n );
+
+                var o = {};
+                o[ 1/2 ] = "\\frac{1}{2}";
+                o[ sqrt(2)/2 ] = "\\dfrac{\\sqrt{2}}{2}";
+                o[ sqrt(3)/2 ] = "\\dfrac{\\sqrt{3}}{2}";
+                o[ sqrt(3)/3 ] = "\\dfrac{\\sqrt{3}}{3}";
+                o[ sqrt(3) ] = "\\sqrt{3}";
+
+                return sign + ( o[n] || n );
+
+            }</var>
+
+            <var id="DOMAIN">{
+                sin: [ DEG ? "-90^\\circ" : "-\\dfrac{\\pi}{2}", DEG ? "90^\\circ" : "\\dfrac{\\pi}{2}" ],
+                cos: [ "0", DEG ? "180^\\circ" : "\\pi" ],
+                tan: [ DEG ? "-90^\\circ" : "-\\dfrac{\\pi}{2}", DEG ? "90^\\circ" : "\\dfrac{\\pi}{2}" ]
+            }[ FN ]</var>
+
+            <var id="ANSWER">DEG ? Y_DEGREES + "^\\circ" : fractionReduce(Y_RADIANS[0], Y_RADIANS[1]) + "\\pi"</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">
+                    <p data-if="DEG">What is the principal value of <code><var>FN_TEX(PRETTY(X))</var></code> in degrees?</p>
+                    <p data-else="">What is the principal value of <code><var>FN_TEX(PRETTY(X))</var></code> in radians?</p>
+                </div>
+                <div class="solution" data-type="multiple">
+                    <p data-if="DEG">
+                        <span class="sol" data-forms="integer"><var>Y_DEGREES</var></span><code>\Large{{}^\circ}</code>
+                    </p>
+                    <p data-else="">
+                        <span class="sol" data-forms="pi"><var>Y</var></span> <span>radians</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hints">
+            <p data-if="ARC">
+                <code><var>FN_TEX(PRETTY(X))</var> = <var>FN_TEX(PRETTY(X), false)</var></code>
+            </p>
+            <p>
+                If <code><var>FN_TEX( PRETTY( X ), false )</var> = \theta</code>,
+                then <code><var>"\\" + FN</var>\left( \theta \right) = <var>PRETTY(X)</var></code>
+            </p>
+            <div>
+                <p>The range of <code><var>FN_TEX("x")</var></code> is <code>\left[ <var>DOMAIN[0]</var>, <var>DOMAIN[1]</var> \right]</code>.</p>
+                <p>Therefore <code><var>DOMAIN[0]</var> \leq \theta \leq <var>DOMAIN[1]</var></code>.</p>
+            </div>
+            <p><code><var>"\\" + FN</var> \left( <var>ANSWER</var> \right) = <var>PRETTY(X)</var></code></p>
+            <p>So <code><var>FN_TEX( PRETTY( X ) )</var> = <var>ANSWER</var></code>.</p>
+        </div>
+    </div>
+</body>
+</html>
