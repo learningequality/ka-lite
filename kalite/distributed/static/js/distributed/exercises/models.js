@@ -1,23 +1,3 @@
-// add some dummy features onto the Exercises object to make khan-exercises.js happy
-window.Exercises = {
-    completeStack: {
-        getUid: function() { return 0; },
-        getCustomStackID: function() { return 0; }
-    },
-    currentCard: {
-        attributes: {},
-        get: function() {}
-    },
-    RelatedVideos: {
-        render: function() {}
-    },
-    getCurrentFramework: function() { return "khan-exercises"; },
-    incompleteStack: [0],
-    PerseusBridge: {
-        cleanupProblem: function() {}
-    }
-};
-
 window.ExerciseParams = {
     STREAK_CORRECT_NEEDED: ds.distributed.streak_correct_needed || 8,
     STREAK_WINDOW: 10,
@@ -145,6 +125,10 @@ window.ExerciseLogModel = Backbone.Model.extend({
             return 0;
         }
         return this.get("attempts") - this.get("attempts_before_completion");
+    },
+
+    fixed_block_questions_remaining: function() {
+        return ExerciseParams.FIXED_BLOCK_EXERCISES - this.attempts_since_completion();
     },
 
     urlRoot: "/api/exerciselog/"
@@ -446,7 +430,7 @@ window.TestLogCollection = Backbone.Collection.extend({
 var QuizDataModel = Backbone.Model.extend({
 
     defaults: {
-        repeats: 3
+        repeats: ds.distributed.quiz_repeats || 3
     },
 
     initialize: function() {
@@ -633,7 +617,8 @@ window.QuizLogCollection = Backbone.Collection.extend({
             return this.at(0);
         } else { // create a new exercise log if none existed
             return new QuizLogModel({
-                "user": window.statusModel.get("user_uri")
+                "user": window.statusModel.get("user_uri"),
+                "quiz": this.quiz
             });
         }
     }
