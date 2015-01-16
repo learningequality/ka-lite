@@ -808,20 +808,15 @@ a.disabled {
     font-size: 12px;
 }
 
+input#search {
+    width: 150px;
+}
+
 #show-keyboard {
     font-size: 10px;
     width: 90px;
     float: right;
 }
-
-/* END styles for software-keyboard */
-
-input#search {
-    width: 150px;
-}
-
-
-/* BEGIN styles for software-keyboard */
 
 #software-keyboard {
     border: 2px solid #cfcfcf;

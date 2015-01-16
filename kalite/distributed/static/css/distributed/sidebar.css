@@ -154,6 +154,10 @@ div.fade {
     float: left;
     width: 200px;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
 }
 .topic-container-inner:last-child {
     width: 400px;
