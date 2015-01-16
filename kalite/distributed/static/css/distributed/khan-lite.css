@@ -11,8 +11,6 @@
 .simple-button.primary:hover,
 .simple-button.green:active,
 .simple-button.primary:active,
-.simple-button.green.active,
-.simple-button.primary.active,
 .simple-button.green.disabled,
 .simple-button.primary.disabled,
 .simple-button.green[disabled],
@@ -112,7 +110,7 @@ a:hover {
 /********** "Teacher" Sub-Navigation bar ***********/
 .teach-nav {
     width: 100%;
-    border-bottom: 4px solid #5C8547;
+    border-bottom: 4px solid #5AA685;
     margin-bottom: 25px;
 }
 .teach-nav ul {
@@ -120,12 +118,12 @@ a:hover {
     margin-bottom: 0;
 }
 .teach-nav li {
-    background-color: #5C8547;
+    background-color: #5AA685;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-    border-top: 3px solid #5C8547;
-    border-right: 3px solid #5C8547;
-    border-left: 3px solid #5C8547;
+    border-top: 3px solid #5AA685;
+    border-right: 3px solid #5AA685;
+    border-left: 3px solid #5AA685;
     width: 110px;
     text-align: center;
     font-weight: bold;
@@ -145,13 +143,13 @@ a:hover {
     margin: -24px 0px -47px -3px;
 }
 .teach-nav li div:hover {
-    color: #5C8547;
+    color: #5AA685;
 }
 .teach-nav li:hover {
     background-color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 16px;
-    color: #5C8547;
+    color: #5AA685;
     font-weight: bold;
     -webkit-transition: all 115ms ease-out;
     -moz-transition: all 115ms ease-out;
@@ -167,7 +165,7 @@ a:hover {
     height: 87px;
 }
 .teach-nav li a:hover {
-    color: #5C8547;
+    color: #5AA685;
 }
 .teach-nav li img {
     height: 40px;
@@ -180,7 +178,7 @@ a:hover {
     width: 90px;
 }
 .active-nav {
-    color: #5C8547 !important;
+    color: #5AA685 !important;
     background-color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 16px;
@@ -191,7 +189,7 @@ a:hover {
     width: 110px;
 }
 .active-tab div {
-    color: #5C8547 !important;
+    color: #5AA685 !important;
 }
 .reports {
     background: url("../../images/distributed/reports-icon.png") no-repeat;
@@ -202,7 +200,7 @@ a:hover {
     background: url("../../images/distributed/reports-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
-    color: #5C8547 !important;
+    color: #5AA685 !important;
 }
 .playlist {
     background: url("../../images/distributed/playlist-icon.png") no-repeat;
@@ -251,7 +249,7 @@ a:hover {
 .manage-nav {
     display: inline-block;
     width: 100%;
-    border-bottom: 4px solid #5C8547;
+    border-bottom: 4px solid #5AA685;
     margin-bottom: 25px;
 }
 .manage-nav ul {
@@ -260,12 +258,12 @@ a:hover {
     height: 87px;
 }
 .manage-nav li {
-    background-color: #5C8547;
+    background-color: #5AA685;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-    border-top: 3px solid #5C8547;
-    border-right: 3px solid #5C8547;
-    border-left: 3px solid #5C8547;
+    border-top: 3px solid #5AA685;
+    border-right: 3px solid #5AA685;
+    border-left: 3px solid #5AA685;
     width: 110px;
     text-align: center;
     font-weight: bold;
@@ -298,12 +296,12 @@ a:hover {
     margin-top: -3px;
 }
 .manage-nav li div:hover {
-    color: #5C8547;
+    color: #5AA685;
 }
 .manage-nav li a:hover {
     border-top-left-radius: 5px !important;
     border-top-right-radius: 16px !important;
-    color: #5C8547;
+    color: #5AA685;
     font-weight: bold;
     text-decoration: none;
 }
@@ -371,7 +369,7 @@ a:hover {
 .sub-active {
     border: 0;
     margin: 0;
-    background-color: #5C8547;
+    background-color: #5AA685;
     color: white;
     padding: 0;
 }
@@ -397,7 +395,7 @@ a:hover {
     width: 150px;
     height: 80px;
     text-decoration: none;
-    color: #5C8547;
+    color: #5AA685;
     font-weight: bold;
     -webkit-transition: all 115ms ease-out !important;
     -moz-transition: all 115ms ease-out !important;

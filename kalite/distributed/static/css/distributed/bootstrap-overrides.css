@@ -223,7 +223,13 @@ form .input-group {
 =================================== */
 
 .btn-success {
-    background-color: #5AA685;
+    background-color: #5AA685 !important;
+    background-image: none !important;
+}
+
+.btn-success:hover,
+.btn-success:active, {
+    background-color: #40775F !important;
 }
 
 /* ===================================
