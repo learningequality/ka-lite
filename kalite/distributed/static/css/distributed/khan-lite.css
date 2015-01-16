@@ -801,6 +801,9 @@ a.disabled {
 }
 
 #search-box input {
+    width: 150px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
     position: relative;
     top: -2px;
     float: right;
@@ -808,8 +811,9 @@ a.disabled {
     font-size: 12px;
 }
 
-input#search {
-    width: 150px;
+#search-button {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
 }
 
 #show-keyboard {
