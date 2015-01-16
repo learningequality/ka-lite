@@ -104,6 +104,10 @@ input[type="submit"] {
     margin: 0;
     background-color: #5AA685;
     color: white;
+    -webkit-transition: all 80ms linear;
+    -moz-transition: all 80ms linear;
+    -o-transition: all 80ms linear;
+    transition: all 80ms linear;
 }
 #points {
     margin-left: 20px;
@@ -116,6 +120,10 @@ input[type="submit"] {
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
     color: #5AA685;
+    -webkit-transition: all 80ms linear;
+    -moz-transition: all 80ms linear;
+    -o-transition: all 80ms linear;
+    transition: all 80ms linear;
 }
 .navbar ul li.dropdown {
     padding-right: 0;
