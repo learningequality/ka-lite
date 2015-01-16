@@ -280,7 +280,7 @@ window.VideoPlayerView = Backbone.View.extend({
 
         this.$("video").bind("loadedmetadata", function() {
 
-            var width = $(this).prop("videoWidth");
+            var width = $(this).prop("videoWidth") * 2;
             var height = $(this).prop("videoHeight");
 
             that._initializePlayer(width, height);
