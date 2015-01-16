@@ -1,0 +1,345 @@
+// Override the float: left on input[type=radio]s in the
+// #answer_area from khan-exercise.css, because it breaks our
+// margin-left: -20px positioning
+.perseus-widget-radio,
+#answer_area .perseus-widget-radio {
+    li span.checkbox input[type=radio] {
+        float: none;
+        margin: 3px;
+    }
+}
+
+.perseus-widget-radio {
+    // Avoid centering
+    width: 100%;
+
+    div,
+    div > p {
+        /* TODO(alpert): Find a better way of doing inline renderers */
+        display: inline;
+    }
+
+    .svg-image div {
+        // The divs in an svg image shouldn't be inline
+        display: block;
+    }
+
+    li {
+        padding: 7px 0;
+        margin-left: 20px;
+
+        &.inline {
+            display: inline-block;
+            padding-left: 20px;
+        }
+
+        span.checkbox {
+            .perseus-interactive;
+            display: inline-block;
+            width: 20px;
+            margin-left: -20px;
+            margin-right: 0;
+        }
+
+        div.instructions {
+            margin-bottom: 5px;
+        }
+
+        .value {
+            display: block;
+            margin-left: 18px;
+            min-height: 22px;
+        }
+
+        img, table {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        table {
+            border: 1px solid #ccc;
+        }
+    }
+
+   .perseus-radio-clue {
+        color: @clueColor;
+        display: block;
+    }
+
+    .perseus-textarea-pair,
+    .perseus-textarea-underlay {
+        display: block;
+    }
+}
+
+
+// Styles specifically for mobile
+body.mobile {
+    .framework-perseus #problemarea input[type=radio],
+    .framework-perseus #problemarea input[type=checkbox] {
+        float: left;
+        margin-right: 7px;
+    }
+    .perseus-widget-radio {
+        background: none;
+        color: @gray;
+        margin-left: 0;
+
+        span.checkbox {
+            .perseus-interactive;
+            position: absolute;
+            margin-right: 26px;
+            display: block;
+            top: 50%;
+            margin: -14px 0 0 0;
+            width: auto;
+        }
+
+        // General styles for the li
+        .perseus-radio-option {
+            background: white;
+            position: relative;
+            border: 2px solid @gray;
+            border-radius: 28px;
+            box-sizing: border-box;
+            cursor: pointer;
+            display: block;
+            font: 700 14pt/30px "Avenir", "Helvetica", "Arial", sans-serif;
+            margin-left: 0;
+            margin-bottom: 10px;
+            overflow: hidden;
+            padding: 8px 10px !important; // Being overwritten by khan-exercises.css
+
+            &:active {
+                background-color: @blue;
+                border-color: @blue;
+                color: white;
+
+                input[type=radio],
+                input[type=checkbox] {
+                    border-color: @gray;
+                    background-color: white;
+                }
+            }
+
+            &.perseus-radio-selected {
+                border-color: @blue;
+                color: @blue;
+                font-weight: bold;
+
+                &:active {
+                    color: white;
+                }
+            }
+
+            .perseus-radio-option-content {
+                margin-left: 40px;
+                display: inline-block;
+            }
+        }
+
+        input[type=radio],
+        input[type=checkbox] {
+            -webkit-appearance: none;
+            appearance: none;
+            border: 2px solid @gray;
+            border-radius: 25px;
+            float: left;
+        }
+
+        input[type=radio] {
+            height: 25px;
+            margin-right: 10px;
+            outline: none;
+            width: 25px;
+            &:checked {
+                background: @blue;
+                border: 2px solid @blue;
+            }
+        }
+
+        input[type=checkbox] {
+            position: absolute;
+            outline: none;
+
+            &:before {
+                color: @gray;
+                font: 15pt "FontAwesome";
+                left: 0;
+                position: relative;
+                top: 1px;
+            }
+            &:checked {
+                border-color: @blue;
+                &:before {
+                    color: @blue;
+                    content: "\f00c";
+                }
+            }
+        }
+    }
+}
+
+body.sat-section {
+    .framework-perseus #problemarea input[type=radio],
+    .framework-perseus #problemarea input[type=checkbox] {
+        float: left;
+        margin-right: 7px;
+    }
+    .perseus-widget-radio {
+        background: none;
+        margin-left: 0;
+        margin-top: 24px;
+        user-select: none;
+
+        .perseus-radio-option-content {
+            user-select: all;
+        }
+
+        span.checkbox {
+            .perseus-interactive;
+            position: absolute;
+            display: block;
+            top: 50%;
+            margin: -16px 0 0 0;
+            width: auto;
+
+            &:before {
+                border-radius: 25px;
+                border: 2px solid @satBlue;
+                content: '';
+                height: 25px;
+                left: 1px;
+                position: absolute;
+                top: 1px;
+                width: 25px;
+            }
+
+            &:after {
+                color: @satBlue;
+                font-family: @boldFontFamily;
+                font-size: 13px;
+                left: 0;
+                position: absolute;
+                text-align: center;
+                top: 7px;
+                width: 32px;
+            }
+        }
+
+        // General styles for the li
+        .perseus-radio-option {
+            position: relative;
+            border-top: 1px solid #ccc;
+            &:last-child {
+                border-bottom: 1px solid #ccc;
+            }
+            box-sizing: border-box;
+            cursor: pointer;
+            display: block;
+            margin-left: 0;
+            overflow: hidden;
+            padding: 17px 14px !important; // Being overwritten by khan-exercises.css
+
+            &.perseus-radio-selected,
+            &:active {
+                // TODO(kitt): Clean up these decorators.
+                border-color: @satBlue;
+                span.checkbox {
+                    &:after {
+                        color: #fff;
+                    }
+                    &:before {
+                        background: @satBlue;
+                    }
+                }
+                // Make the top border of the next section (which acts
+                // as this element's bottom border) the highlight color.
+                & + .perseus-radio-option {
+                    border-top-color: @satBlue;
+                }
+            }
+
+            &.perseus-correct {
+                color: @satCorrectColor;
+
+                span.checkbox:before {
+                    border-color: @satCorrectColor;
+                }
+                &.perseus-radio-selected {
+                    background-color: @satCorrectBackgroundColor;
+                    border-color: @satCorrectBorderColor;
+
+                    & + .perseus-radio-option {
+                        border-top-color: @satCorrectBorderColor;
+                    }
+
+                    span.checkbox:before {
+                        background: @satCorrectColor;
+                    }
+                }
+            }
+
+            &.perseus-radio-selected.perseus-incorrect {
+                color: @satIncorrectColor;
+                background-color: @satIncorrectBackgroundColor;
+                border-color: @satIncorrectBorderColor;
+
+                & + .perseus-radio-option {
+                    border-top-color: @satIncorrectBorderColor;
+                }
+
+                span.checkbox:before {
+                    border-color: @satIncorrectColor;
+                    background: @satIncorrectColor;
+                }
+            }
+
+            &:active {
+                background-color: @satActiveBackgroundColor !important;
+            }
+
+            &.perseus-radio-selected {
+                background-color: @satSelectedBackgroundColor;
+            }
+
+            .perseus-radio-option-content {
+                display: block;
+                margin-left: 45px;
+                // Overriding here, not sure why typically set to
+                // "cursor: default" in js.
+                cursor: inherit !important;
+            }
+
+            &.perseus-correct:not(.perseus-radio-selected) span.checkbox:after {
+                color: @satCorrectColor;
+            }
+
+            &:nth-child(1) span.checkbox:after {
+                content: 'A';
+            }
+            &:nth-child(2) span.checkbox:after {
+                content: 'B';
+            }
+            &:nth-child(3) span.checkbox:after {
+                content: 'C';
+            }
+            &:nth-child(4) span.checkbox:after {
+                content: 'D';
+            }
+            &:nth-child(5) span.checkbox:after {
+                content: 'E';
+            }
+        }
+
+        input[type=radio] {
+            display: none;
+        }
+    }
+    .review-mode {
+        input,
+        .perseus-radio-option {
+            pointer-events: none;
+        }
+    }
+}
