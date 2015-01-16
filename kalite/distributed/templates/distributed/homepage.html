@@ -65,23 +65,18 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-3"></div>
-            <div class="col-sm-6">
-                <div class="vertical-shadow suggested-action">
-                    <a href="{% url 'learn' %}">
-                        <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
-                        <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/learning-image.png">
-                    </a>
-                </div>
+            <div class="col-lg-2 col-lg-push-4 col-md-4 col-md-push-4 col-sm-6 col-sm-push-3 col-xs-8 col-xs-push-2 vertical-shadow suggested-action">
+                <a href="{% url 'learn' %}">
+                    <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
+                    <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/learning-image.png">
+                </a>
             </div>
-            <div class="col-sm-3"></div>
-
-
-            <div class="row col-sm-12" id="homepage-p-div">
+        </div>
+        <div class="row">
+            <div class="col-sm-12" id="homepage-p-div">
                 <p class="homepage-p">{{ channel_data.tag_line }}</p>
             </div>
         </div>
-    
     </div>
 
     <div class="not-admin-only">
