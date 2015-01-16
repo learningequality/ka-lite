@@ -9,6 +9,8 @@ from django.utils.translation import ugettext as _
 
 from ..browser import browse_to, setup_browser, wait_for_page_change
 
+from kalite.facility.models import Facility
+from django.contrib.auth.models import User 
 
 class BrowserActionMixins(object):
 
@@ -246,7 +248,14 @@ class BrowserActionMixins(object):
     def browser_register_user(self, username, password, first_name="firstname",
                               last_name="lastname", facility_name=None,
                               stay_logged_in=False):
-        """Tests that a user can register"""
+        """
+        Tests that a user can register.
+        This method will fail if you haven't created an admin and a facility.
+        (See CreateAdminMixin and CreateFacilityMixin.)
+        """
+
+        assert self._admin_exists(), "No admin user exists"
+        assert self._facility_exists(), "No facility exists"
 
         # Expected results vary based on whether a user is logged in or not.
         if not stay_logged_in:
@@ -370,3 +379,11 @@ class BrowserActionMixins(object):
             inputElement.clear()
             inputElement.send_keys(input_id_dict[key])
             time.sleep(0.5)
+
+    @classmethod
+    def _admin_exists(cls):
+        return User.objects.filter(is_superuser=True).exists()
+    
+    @classmethod
+    def _facility_exists(cls):
+        return Facility.objects.all().exists()
