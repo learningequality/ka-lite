@@ -19,6 +19,7 @@ script:
 - bin/kalite manage syncdb --migrate --noinput --traceback
 - bin/kalite test --traceback -v 2
 - grunt jshint
+- karma start --single-run --browsers PhantomJS
 notifications:
   email:
     - aron@learningequality.org
