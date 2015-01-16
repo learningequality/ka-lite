@@ -23,6 +23,13 @@
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-less": "~0.6.4",
-    "grunt-contrib-jshint": "^0.10.0"
+    "grunt-contrib-jshint": "^0.10.0",
+    "karma": "~0.12.31",
+    "qunit": "~0.7.5",
+    "sinon": "~1.12.2",
+    "qunitjs": "~1.16.0",
+    "karma-qunit": "~0.1.4",
+    "karma-sinon": "~1.0.4",
+    "karma-phantomjs-launcher": "~0.1.4"
   }
 }
