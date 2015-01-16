@@ -18,7 +18,7 @@ script:
 - python kalite/manage.py syncdb --migrate --noinput --traceback
 - python kalite/manage.py test --traceback -v 2
 - grunt jshint
-- ./node_modules/.bin/karma start --single-run --browsers PhantomJS
+- ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS
 notifications:
   email:
     - aron@learningequality.org
