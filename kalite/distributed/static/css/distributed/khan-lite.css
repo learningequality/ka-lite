@@ -105,6 +105,10 @@ a:hover {
     display: none;
 }
 
+.dropdown-menu span#points {
+    cursor: default;
+}
+
 /********** End of Top Navigation bar ***********/
 
 /********** "Teacher" Sub-Navigation bar ***********/

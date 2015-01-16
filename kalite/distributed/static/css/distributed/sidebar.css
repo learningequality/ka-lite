@@ -107,18 +107,18 @@ div.fade {
     border-bottom-right-radius: 5px;
     cursor: pointer;
     box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
-    -webkit-transition: all 80ms linear;
-    -moz-transition: all 80ms linear;
-    -o-transition: all 80ms linear;
-    transition: all 80ms linear;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
 }
 
 .sidebar-tab:hover {
     padding-left: 20px;
-    -webkit-transition: all 80ms linear;
-    -moz-transition: all 80ms linear;
-    -o-transition: all 80ms linear;
-    transition: all 80ms linear;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
 }
 
 .sidebar-tab a {
