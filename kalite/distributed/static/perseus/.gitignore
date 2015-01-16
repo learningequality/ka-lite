@@ -1,4 +1,4 @@
-build
+
 
 # ignore everything in node_modules, of course
 node_modules/*

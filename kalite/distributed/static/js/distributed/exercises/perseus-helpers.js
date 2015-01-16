@@ -77,7 +77,7 @@ Exercises.PerseusBridge = {
                 STATIC_URL + "perseus/ke-deps.js"
                 // STATIC_URL + "perseus/ke/main.js",
             ], function() {
-                require([STATIC_URL + "perseus/build/perseus-1.js"], Exercises.PerseusBridge._initialize);
+                require([STATIC_URL + "perseus/build/perseus-2.js"], Exercises.PerseusBridge._initialize);
             }
         );
 
