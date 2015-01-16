@@ -20,6 +20,7 @@ script:
 - bin/kalite test --traceback -v 2
 - grunt jshint
 - ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS
+
 notifications:
   email:
     - aron@learningequality.org
