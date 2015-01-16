@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers-arithmetic">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Adding decimals 2</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRange( 100, 999 )</var>
+            <var id="B">randRange( 100, 999 )</var>
+            <var id="A_DECIMAL">randRange( 1, 3 )</var>
+            <var id="B_DECIMAL" data-ensure="B_DECIMAL!==A_DECIMAL">randRange(1, 3)</var>
+            <var id="A_VALUE">roundTo(A_DECIMAL, A * pow(10, -A_DECIMAL))</var>
+            <var id="B_VALUE">roundTo(B_DECIMAL, B * pow(10, -B_DECIMAL))</var>
+            <var id="DUMMY">[]</var>
+        </div>
+
+    <div class="problems">
+        <div>
+            <p class="question">
+                <code>\Huge{
+                    <var>localeToFixed(A_VALUE, A_DECIMAL)</var> +
+                    <var>localeToFixed(B_VALUE, B_DECIMAL)</var> = ?}</code></p>
+            <div class="solution" data-type="decimal"><var>A_VALUE + B_VALUE</var></div>
+            <div class="graphie" id="numbers">
+                graph.adder = new Adder(A, B, A_DECIMAL, B_DECIMAL);
+                DUMMY = Array(graph.adder.getNumHints());
+            </div>
+        </div>
+    </div>
+    <div class="hints">
+        <div class="graphie" data-update="numbers">
+            graph.adder.show();
+        </div>
+        <div class="graphie" data-each="DUMMY as dummy" data-update="numbers">
+            graph.adder.showHint();
+        </div>
+    </div>
+    </div>
+</body>
+</html>

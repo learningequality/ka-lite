@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers graphie-geometry math-format">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Congruent triangles 2</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+
+<body>
+    <div class="exercise">
+        <p class="question">
+            What is the value of the angle <code>x</code>?
+        </p>
+        <div class="vars" data-ensure="TR_A.niceSideLengths[0] !== TR_A.niceSideLengths[2]">
+            <var id="RAND_ANG">rand(3)</var>
+            <var id="NEW_ANG">""</var>
+            <var id="ANGLE_LABELS">["CAB", "ABC", "BCA"]</var>
+            <var id="ANG_FIRST">""</var>
+            <var id="ANG_LEFT">""</var>
+            <var id="ANGLES">randomTriangleAngles.triangle()</var>
+            <var id="ANG">""</var>
+            <var id="ANGLES_A">[RAND_ANG]</var>
+            <var id="ANGLES_B">clearArray(["x", "x", "x"], [RAND_ANG])</var>
+            <var id="SIDES_A">[0, 2]</var>
+            <var id="SIDES_B">[0, 2]</var>
+
+            <var id="TR_A">
+                function(){
+                    var trA = new Triangle([0, 0], ANGLES, 8, {});
+                    trA.labels = {
+                        "points": ["A", "B", "C"],
+                        "sides": clearArray(trA.niceSideLengths, SIDES_A),
+                        "angles": clearArray(trA.niceAngles, ANGLES_A)
+                    };
+                    return trA;
+                }()
+            </var>
+            <var id="TR_B">
+                function(){
+                    var trB = new Triangle( [ TR_A.centroid[ 0 ],  TR_A.centroid[ 1  ] ], ANGLES, 8, {} );
+                    trB.rotate( 180 );
+                    trB.labels = { "points" : [ "D", "", "" ], "sides" : clearArray( trB.niceSideLengths, SIDES_B ),"angles" : ANGLES_B };
+                    return trB;
+                }()
+            </var>
+            <var id="ANSWER">ANGLES[ RAND_ANG ]</var>
+        </div>
+        <p class="render-answer-area-here"></p>
+        <div class="problem">
+            <div class="graphie" id="triangle">
+                var minX = min(0, min(TR_A.points[1][0], TR_A.points[2][0]));
+                var maxX = TR_A.points[1][0] + max(0, TR_A.points[2][0]);
+                var scale = min(60, 400 / (maxX - minX + 2));
+
+                init({
+                    range: [[minX - 1, maxX + 1], [-1, TR_A.points[2][1] + 1]],
+                    scale: scale
+                })
+                TR_A.draw();
+                TR_A.drawLabels();
+                TR_B.draw();
+                TR_B.drawLabels();
+            </div>
+        </div>
+        <div class="solution" data-type="multiple">
+            <p><code>x = </code> <span class="sol short40" data-type="number"><var>ANSWER</var></span> <code>^\circ</code></p>
+        </div>
+
+        <div class="problems">
+            <div id="parr">
+                <div class="vars">
+                    <var id="ANG_FIRST">randRangeUnique(0, 2, 2)</var>
+                    <var id="ANG_LEFT">randFromArray(ANG_FIRST)</var>
+                    <var id="ANGLES_A">ANG_FIRST</var>
+                    <var id="ANGLES_B">clearArray(["x", "x", "x"], [ANG_LEFT])</var>
+                    <var id="ANSWER">TR_B.angles[ANG_LEFT]</var>
+                </div>
+                <div class="hints">
+                    <p>
+                        <code>\triangle ABC</code> and <code>\triangle BCD</code> have three sides equal.<br>
+                        They share side <code>BC</code>.<br>
+                        <code>AB = CD</code><br>
+                        <code>AC = BD</code>
+                    </p>
+                    <p>Therefore <code>\triangle ABC</code> and <code>\triangle BCD</code> are congruent.</p>
+                    <p>Congruent triangles also have congruent (equal) angles.</p>
+                    <p>
+                        If we superimpose these two triangles, by rotating <code>\triangle ABC</code>,
+                        we see that angle <code>x</code> corresponds to <code>\angle <var>ANGLE_LABELS[ANG_LEFT]</var></code>.
+                    </p>
+                    <p>Angle <code>x</code> is therefore equal to <code><var>ANSWER</var>^\circ</code>.</p>
+                </div>
+            </div>
+
+            <div id="parr2">
+                <div class="vars">
+                    <var id="ANG_FIRST">randRangeUnique( 0, 2, 2 )</var>
+                    <var id="ANG_LEFT">randRangeExclude( 0, 2, ANG_FIRST )</var>
+                    <var id="ANGLES_A">ANG_FIRST</var>
+                    <var id="ANGLES_B">clearArray( [ "x", "x", "x" ], [ ANG_LEFT ] )</var>
+                    <var id="ANSWER">TR_B.angles[ANG_LEFT]</var>
+                </div>
+                <div class="solution" data-type="multiple">
+                    <p><code>x = </code> <span class="sol short40" data-type="number"><var>ANSWER</var></span> <code>^\circ</code></p>
+                </div>
+                <div class="hints">
+                    <p>
+                        <code>\triangle ABC</code> and <code>\triangle BCD</code> have three sides equal.<br>
+                        They share side <code>BC</code>.<br>
+                        <code>AB = CD</code><br>
+                        <code>AC = BD</code>
+                    </p>
+                    <p>Therefore <code>\triangle ABC</code> and <code>\triangle BCD</code> are congruent.</p>
+                    <p>Congruent triangles also have congruent (equal) angles.</p>
+                    <p>
+                        If we superimpose these two triangles, by rotating <code>\triangle ABC</code>,
+                        we see that angle <code>x</code> corresponds to <code>\angle <var>ANGLE_LABELS[ANG_LEFT]</var></code>.
+                    </p>
+                    <p><code>
+                        <var>ANGLE_LABELS[ANG_LEFT]</var> = 180^\circ - <var>TR_A.angles[ANG_FIRST[0]]</var>^\circ - <var>TR_A.angles[ANG_FIRST[1]]</var>^\circ
+                    </code></p>
+                    <div>
+                        <p><code><var>ANGLE_LABELS[ ANG_LEFT ]</var> = x = <var>ANSWER</var>^\circ</code></p>
+                        <div class="graphie" data-update="triangle">
+                            TR_A.labels.angles = TR_A.niceAngles;
+                            TR_A.labels = {"angles" : clearArray(TR_A.niceAngles, [ANG_LEFT])};
+                            TR_A.drawLabels();
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="opposite">
+                <div class="vars"  data-ensure="TR_A.niceSideLengths[0] !== TR_A.niceSideLengths[2]">
+                    <var id="NEW_ANG">RAND_ANG === 2 ? 2 : 1 - RAND_ANG</var>
+                    <var id="SIDES_B">[0, 1]</var>
+                    <var id="ANG_FIRST">randRangeUnique(0, 2, 2)</var>
+                    <var id="ANG_LEFT">randFromArray([0, 2])</var>
+                    <var id="SHOW_ANGLE">ANG_LEFT === 2 ? 2 : 1 - ANG_LEFT</var>
+                    <var id="SAME_ANGLE">($.inArray( SHOW_ANGLE, ANG_FIRST) !== -1)</var>
+                    <var id="ANGLES_A">ANG_FIRST</var>
+                    <var id="ANGLES_B">clearArray(["x", "x", "x"], [ANG_LEFT])</var>
+                    <var id="ANG">ANGLES[0] / 2</var>
+                    <var id="TR_A">
+                        function(){
+                            var trA = new Triangle([0, 0], ANGLES ,6, {});
+                            trA.rotationCenter = trA.points[0];
+                            trA.rotate(ANG);
+                            trA.labels = {
+                                "points": ["", "B", "C"],
+                                "sides": clearArray(trA.niceSideLengths, SIDES_A),
+                                "angles": clearArray(trA.niceAngles, ANGLES_A)
+                            };
+                            return trA;
+                        }()
+                    </var>
+                    <var id="TR_B">
+                        function(){
+                            var rad = ANG * PI / 180;
+                            var trB = new Triangle([-cos(rad) * TR_A.sideLengths[0], -sin(rad) * TR_A.sideLengths[0]], [ANGLES[1], ANGLES[0], ANGLES[2]], 6, {});
+                            trB.rotationCenter = trB.points[0];
+                            trB.rotate(-ANG);
+                            trB.labels = { "points" : [ "D", "", "E" ], "sides" : clearArray( trB.niceSideLengths, SIDES_B ), "angles" : ANGLES_B };
+                            return trB;
+                        }()
+                    </var>
+                    <var id="ANSWER">TR_B.angles[ANG_LEFT]</var>
+                </div>
+                <div class="problem">
+                    <div class="graphie" id="oppTriangle">
+                    var maxX = max(TR_A.points[1][0], TR_A.points[2][0]) + 1;
+                    var minY = TR_A.points[1][1] - 1;
+                    var maxY = TR_A.points[2][1] + 1;
+                    var scale = min(500 / (maxY - minY), 220 / maxX);
+
+                    init({
+                        range: [[-maxX, maxX], [minY, maxY]],
+                        scale: scale
+                    })
+                    TR_A.draw();
+                    TR_A.drawLabels();
+                    TR_B.draw();
+                    TR_B.drawLabels();
+                    label(TR_B.points[1], "A", "above");
+                    </div>
+                </div>
+                <div class="solution" data-type="multiple">
+                    <p><code>x = </code> <span class="sol short40" data-type="number"><var>ANSWER</var></span> <code>^\circ</code></p>
+                </div>
+
+                <div class="hints">
+                    <p><code>\angle DAE</code> forms a vertical angle with <code>\angle BAC</code>, so <code>\angle DAE = \angle BAC</code>.</p>
+                    <p><code>\triangle ABC</code> and <code>\triangle ADE</code> also have two sides equal.</p>
+                    <p>Therefore <code>\triangle ABC</code> and <code>\triangle ADE</code> are congruent.</p>
+                    <p>Congruent triangles also have congruent (equal) angles.</p>
+                    <p>
+                        If we superimpose these two triangles, by flipping <code>\triangle EDA</code>,
+                        we see that angle <code>x</code> corresponds to <code>\angle <var>ANGLE_LABELS[SHOW_ANGLE]</var></code>.
+                    </p>
+                    <div data-if="!SAME_ANGLE">
+                        <p><code>
+                            <var>ANGLE_LABELS[SHOW_ANGLE]</var> = 180 - <var>TR_A.angles[ANG_FIRST[0]]</var> - <var>TR_A.angles[ANG_FIRST[1]]</var>
+                        </code></p>
+                        <div class="graphie" data-update="oppTriangle">
+                            TR_A.labels.angles = TR_A.niceAngles;
+                            TR_B.labels.angles = mergeArray(TR_B.labels.angles, [TR_A.niceAngles[1], TR_A.niceAngles[0], TR_A.niceAngles[2]]);
+                            TR_A.drawLabels();
+                            TR_B.drawLabels();
+                        </div>
+                        <p><code><var>ANGLE_LABELS[SHOW_ANGLE]</var> = x = <var>TR_B.angles[ANG_LEFT]</var></code></p>
+                    </div>
+                    <p>Angle <code>x</code> is therefore equal to <code><var>ANSWER</var>^\circ</code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

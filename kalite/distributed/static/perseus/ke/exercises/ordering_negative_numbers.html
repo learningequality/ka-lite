@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Ordering negative numbers</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+
+    <style type="text/css">
+        .number-list {
+            font-size: 1.7em;
+            text-align: center
+        }
+
+        body.mobile .number-list {
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <div data-ensure="NUMS_SORT[0] < 0 && !_.isEqual(NUMS, NUMS_SORT)">
+                <var id="NUMS">randRangeUnique(-100, 100, randRange(4, 6))</var>
+                <var id="NUMS_SORT">sortNumbers(NUMS)</var>
+            </div>
+            <var id="COLORS">KhanUtil.shuffle(["blue", "green", "red", "purple", "orange", "brown", "gray", "teal", "olive"])</var>
+            <var id="NUM_COLORS">(function() {
+                var mapping = {};
+                for (var i = 0; i &lt; NUMS.length; i++) {
+                    mapping[NUMS[i]] = COLORS[i];
+                }
+                return mapping;
+            })()</var>
+            <var id="NUMS_COLOR">$.map(NUMS, function(n) {
+                return "\\color{" + NUM_COLORS[n] + "}{" + n + "}";
+            } ).join( "," )</var>
+            <var id="NUMS_SORT_COLOR">$.map(NUMS_SORT, function(n) {
+                return "\\color{" + NUM_COLORS[n] + "}{" + n + "}";
+            } ).join( "," )</var>
+            <var id="SORTER">createSorter()</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">
+                    <p>Order the following integers from least to greatest:</p>
+                    <ul id="sortable">
+                        <li data-each="NUMS as NUM">
+                            <span class="sort-key"><var>NUM</var></span>
+                            <code><var>NUM</var></code>
+                        </li>
+                    </ul>
+                    <p><var>SORTER.init("sortable")</var></p>
+                </div>
+
+                <div class="solution" data-type="custom">
+                    <div class="guess">SORTER.getContent()</div>
+                    <div class="validator-function">
+                        if (SORTER.hasAttempted) {
+                            return guess.join(",") === NUMS_SORT.join(",");
+                        } else {
+                            return "";
+                        }
+                    </div>
+                    <div class="show-guess">
+                        SORTER.setContent(guess);
+                    </div>
+                </div>
+
+                <div class="hints">
+                    <div>
+                        <p>Let's use different colors for each number.</p>
+                        <p class="number-list"><code><var>NUMS_COLOR</var></code></p>
+                    </div>
+                    <p>Plot these numbers on a number line. Then we can see which ones are lower and which ones are higher.</p>
+                    <div class="graphie" id="number-line">
+                        init({
+                            range: [[-1, 201], [-1, 1]],
+                            scale: [2.2, 40]
+                        });
+
+                        style({
+                            stroke: "#666"
+                        }, function() {
+                            graph.nl = numberLine(-100, 100, 25);
+                        });
+                    </div>
+                    <div class="graphie" data-update="number-line">
+                        _.each(graph.nl.labels.slice(1, -1), function(label) {
+                            label.remove();
+                        });
+
+                        var position = "above";
+                        $.each(NUMS_SORT, function(i, n) {
+                            ellipse([100 + n, 0], [1.88, 0.1], { "stroke-width": 0, fill: NUM_COLORS[n] });
+                            label([100 + n, 0], "\\color{" + NUM_COLORS[n] + "}{" + n + "}", position, { labelDistance: 5 });
+                            position = (position === "above" ? "below" : "above");
+                        } );
+                    </div>
+                    <div>
+                        <p>Now just read the numbers from left to right on the number line.</p>
+                        <p>The leftmost numbers are least, and the rightmost numbers are greatest.</p>
+                    </div>
+                    <p class="number-list"><code><var>NUMS_SORT_COLOR</var></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

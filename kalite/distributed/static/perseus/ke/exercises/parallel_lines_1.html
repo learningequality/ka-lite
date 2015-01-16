@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers angles">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Parallel lines 1</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars">
+        <var id="ANCHOR">randRange(30, 150)</var>
+        <var id="ROTATION">randRange(0, 8) * Math.PI / 8</var>
+    </div>
+
+    <div class="problems">
+        <div id="corresponding-angles">
+            <div class="vars">
+                <var id="KNOWN_INDEX">randRange(0, 7)</var>
+                <var id="UNKNOWN_INDEX">(KNOWN_INDEX + 4) % 8</var>
+                <var id="MEASURE">KNOWN_INDEX % 2 === 0 ? ANCHOR : 180 - ANCHOR</var>
+                <var id="SOLUTION">MEASURE</var>
+            </div>
+
+            <div class="hints" data-apply="prependContents">
+                <p>Notice that the two angles are in the same position but at different intersections.</p>
+                <p>One way to describe the angles is to say that they are corresponding angles.</p>
+                <p>Corresponding angles are always equal.</p>
+            </div>
+        </div>
+
+        <div id="alternate-interior-angles">
+            <div class="vars">
+                <var id="KNOWN_INDEX, UNKNOWN_INDEX">shuffle(randFromArray([[0, 6], [1, 7]]))</var>
+                <var id="MEASURE">KNOWN_INDEX % 2 === 0 ? ANCHOR : 180 - ANCHOR</var>
+                <var id="SOLUTION">MEASURE</var>
+            </div>
+
+            <div class="hints" data-apply="prependContents">
+                <div>
+                    <p>Vertical angles are equal, so the pink angle measures <code><var>MEASURE</var></code> degrees.</p>
+                    <div class="graphie" data-update="parallel-lines">
+                        graph.pl.drawVerticalAngle(KNOWN_INDEX, true, PINK);
+                    </div>
+                </div>
+                <p>The pink and green angles are corresponding angles, so they are also equal.</p>
+            </div>
+        </div>
+
+        <div id="alternate-exterior-angles">
+            <div class="vars">
+                <var id="KNOWN_INDEX, UNKNOWN_INDEX">shuffle( randFromArray([[2, 4], [3, 5]]))</var>
+                <var id="MEASURE">KNOWN_INDEX % 2 === 0 ? ANCHOR : 180 - ANCHOR</var>
+                <var id="SOLUTION">MEASURE</var>
+            </div>
+
+            <div class="hints" data-apply="prependContents">
+                <div>
+                    <p>Vertical angles are equal, so the pink angle measures <code><var>MEASURE</var></code> degrees.</p>
+                    <div class="graphie" data-update="parallel-lines">
+                        graph.pl.drawVerticalAngle( KNOWN_INDEX, true, PINK );
+                    </div>
+                </div>
+                <p>The pink and green angles are corresponding angles, so they are also equal.</p>
+            </div>
+        </div>
+
+        <div id="same-side-interior-angles">
+            <div class="vars">
+                <var id="KNOWN_INDEX, UNKNOWN_INDEX">shuffle(randFromArray([[1, 6], [0, 7]]))</var>
+                <var id="MEASURE">KNOWN_INDEX % 2 === 0 ? ANCHOR : 180 - ANCHOR</var>
+                <var id="SOLUTION">180 - MEASURE</var>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <p>
+                        The pink angles are adjacent to the blue angle and form a straight line,
+                        so they measure <code>180^\circ - <var>MEASURE</var>^\circ = <var>180 - MEASURE</var>^\circ</code>.
+                    </p>
+                    <div class="graphie" data-update="parallel-lines">
+                        graph.pl.drawAdjacentAngles( KNOWN_INDEX, true, PINK );
+                    </div>
+                </div>
+                <p>The pink angles are equal because they are opposite each other.</p>
+                <p>One of the pink angles corresponds with the green angle, and the other pink angle forms an alternate interior angle.</p>
+                <div>
+                    <p>Angle <code>x</code> equals the pink angles and measures <code><var>SOLUTION</var>^\circ</code>.</p>
+                    <div class="graphie" data-update="parallel-lines">
+                        graph.pl.drawAngle(UNKNOWN_INDEX, true, GREEN);
+                    </div>
+                    <p>Note that the blue and green angles are supplementary.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="same-side-exterior-angles">
+            <div class="vars">
+                <var id="KNOWN_INDEX, UNKNOWN_INDEX">shuffle( randFromArray([[3, 4], [2, 5]]))</var>
+                <var id="MEASURE">KNOWN_INDEX % 2 === 0 ? ANCHOR : 180 - ANCHOR</var>
+                <var id="SOLUTION">180 - MEASURE</var>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <p>
+                        The pink angles are adjacent to the blue angle and form a straight line,
+                        so they measure <code>180^\circ - <var>MEASURE</var>^\circ = <var>180 - MEASURE</var>^\circ</code>.
+                    </p>
+                    <div class="graphie" data-update="parallel-lines">
+                        graph.pl.drawAdjacentAngles(KNOWN_INDEX, true, PINK);
+                    </div>
+                </div>
+                <p>The pink angles are equal because they are vertical angles.</p>
+                <p>One of the pink angles corresponds with the green angle, and the other pink angle forms an alternate exterior angle.</p>
+                <div>
+                    <p>Angle <code>x</code> equals the pink angles and measures <code><var>SOLUTION</var>^\circ</code>.</p>
+                    <div class="graphie" data-update="parallel-lines">
+                        graph.pl.drawAngle(UNKNOWN_INDEX, true, GREEN);
+                    </div>
+                    <p>Note that the blue and green angles are supplementary.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>Below are two parallel lines with a third line intersecting them.</p>
+    <p class="question">
+        If we know that the <span class="hint_blue">blue angle is <code><var>MEASURE</var>^\circ</code></span>,
+        what is the measure of <span class="hint_green">angle <code>x</code></span>?
+        <span class="render-answer-area-here"></span>
+    </p>
+    <div class="graphie" id="parallel-lines">
+        init({
+            range: [[-4, 3], [-3, 3]],
+            scale: 60
+        });
+
+        graph.pl = new ParallelLines(0, 0, 5.5, 2, ROTATION);
+        graph.pl.draw();
+        graph.pl.drawMarkers(ANCHOR);
+        graph.pl.drawTransverse(ANCHOR);
+        graph.pl.drawAngle(KNOWN_INDEX, true);
+        graph.pl.drawAngle(UNKNOWN_INDEX, "x", GREEN);
+    </div>
+
+    <p class="solution" data-type="multiple">
+        <span class="sol short40" data-forms="integer"><var>SOLUTION</var></span> <code>^\circ</code>
+    </p>
+
+    <div class="hints">
+        <div>
+            <p>Angle <code>x</code> is <code><var>SOLUTION</var>^\circ</code>
+            <div class="graphie" data-update="parallel-lines">
+                graph.pl.drawAngle(UNKNOWN_INDEX, true, GREEN);
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
