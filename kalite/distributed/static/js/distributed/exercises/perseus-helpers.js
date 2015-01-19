@@ -1,24 +1,35 @@
 // $(Exercises).trigger("clearExistingProblem");
 
-var KhanUtil = window.KhanUtil || {
-    debugLog: function() {}
+var icu = {
+    getDecimalFormatSymbols: function() {
+        return {
+            decimal_separator: ".",
+            grouping_separator: ",",
+            minus: "-"
+        };
+    },
+    getLanguage: function() {
+        return "en";
+    }
 };
 
 var Khan = window.Khan || {
-    Util: KhanUtil,
     error: function() {},
     query: {debug: ""},
     imageBase: STATIC_URL + "perseus/ke/images/",
+    urlBase: STATIC_URL + "perseus/ke/",
     scratchpad: {
         disable: function() {},
         enable: function() {},
-        clear: function() {}
+        clear: function() {},
+        resize: function() {}
     },
     cleanupProblem: function() {}
 };
 
 window.Exercises = {
     localMode: true,
+    embeddedMode: true,
     useKatex: true,
     khanExercisesUrlBase: STATIC_URL + "perseus/ke/",
     _current_framework: "khan-exercises",
@@ -73,7 +84,7 @@ Exercises.PerseusBridge = {
         }
 
         // Load khan-exercises modules, then perseus
-        require([
+        requirejs([
                 STATIC_URL + "perseus/ke-deps.js"
                 // STATIC_URL + "perseus/ke/main.js",
             ], function() {

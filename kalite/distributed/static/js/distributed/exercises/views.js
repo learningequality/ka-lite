@@ -192,22 +192,29 @@ window.ExerciseView = Backbone.View.extend({
             framework: "khan-exercises"
         };
 
-        var question_data = $.extend(defaults, question_data);
+        question_data = $.extend(defaults, question_data);
 
         this.data_model.set(question_data);
 
         this.$("#workarea").html("<center>" + gettext("Loading...") + "</center>");
 
+
+        // Khan Exercises now moves the solution area around and fails to put it back again after
+        // So put it back if it is missing
+        if (this.$("#solutionarea").length === 0) {
+            $(".solutionarea-placeholder").after('<div id="solutionarea" class="solutionarea fancy-scrollbar"></div>');
+        }
+
         this.data_model.update_if_needed_then(function() {
 
-            var framework = self.data_model.get("framework");
+            var framework = self.data_model.get_framework();
 
             Exercises.setCurrentFramework(framework);
 
             if (framework == "khan-exercises") {
 
                 if (Khan.loaded === undefined) {
-                    $.getScript(KHAN_EXERCISES_SCRIPT_URL, self.load_exercises_when_ready);
+                    require([KHAN_EXERCISES_SCRIPT_URL], self.load_exercises_when_ready);
                 } else {
                     self.load_exercises_when_ready();
                 }
