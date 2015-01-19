@@ -145,6 +145,8 @@ window.ExerciseView = Backbone.View.extend({
 
     initialize_khan_exercises_listeners: function() {
 
+        var self = this;
+
         // TODO-BLOCKER(jamalex): does this need to wait on something, to avoid race conditions?
         _.defer(this.khan_loaded);
         if (Khan.loaded) {
@@ -159,9 +161,15 @@ window.ExerciseView = Backbone.View.extend({
         // TODO (rtibbles): Make this nice, not horrible.
         $(Exercises).bind("newProblem", function (ev, data) {
             if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
-                self.software_keyboard_view = new SoftwareKeyboardView({
-                    el: self.$("#solutionarea")
-                });
+                if (typeof self.software_keyboard_view === "undefined") {
+                    self.software_keyboard_view = new SoftwareKeyboardView({
+                        el: self.$("#software-keyboard-container")
+                    });
+                }
+
+                self.software_keyboard_view.show();
+            } else if (typeof self.software_keyboard_view !== "undefined") {
+                self.software_keyboard_view.hide();
             }
         });
 
