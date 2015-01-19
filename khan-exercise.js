@@ -1973,7 +1973,7 @@ function loadExercise(exerciseId, fileName) {
 
     debugLog("loadExercise start " + fileName);
     // Packing occurs on the server but at the same "exercises/" URL
-    $.get(urlBase + "exercises/" + fileName).done(function(data) {
+    $.get(Khan.urlBase + "exercises/" + fileName).done(function(data) {
         debugLog("loadExercise got " + fileName);
 
         // Get rid of any external scripts in data before we shove data
@@ -2121,7 +2121,7 @@ function loadMathJax() {
     if (window.MathJax) {
         waitForMathJaxReady();
     } else {
-        loadScript(urlBase + "third_party/MathJax/2.1/MathJax.js?config=KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d", waitForMathJaxReady);
+        loadScript(Khan.urlBase + "third_party/MathJax/2.1/MathJax.js?config=KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d", waitForMathJaxReady);
     }
 
     function waitForMathJaxReady() {
