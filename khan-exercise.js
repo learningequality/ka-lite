@@ -73,6 +73,10 @@ var primes = [197, 3, 193, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,
     // Check to see if we're in local mode
     localMode = Exercises.localMode,
 
+    // This is an additional flag to trigger certain behaviour that is helpful when
+    // running Khan Exercises while embedded inside another app
+    embeddedMode = Exercises.embeddedMode || false,
+
     // Set in prepareSite when Exercises.init() has already been called
     assessmentMode,
 
@@ -158,7 +162,7 @@ var primes = [197, 3, 193, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,
     failureRetryCount = 0;
 
 // Add in the site stylesheets
-if (localMode) {
+if (localMode && !embeddedMode) {
     (function() {
         var addLink = function(url) {
             var link = document.createElement("link");
@@ -174,7 +178,11 @@ if (localMode) {
 }
 
 // The main Khan Module
-var Khan = {
+// Extend any existing Khan module in the window, rather than overwriting
+var Khan = $.extend({
+
+    // Add a reference to the Deferred that gets resolved when modules have finished loading
+    loaded: initialModulesPromise,
 
     // Set of modules currently in use -- keys are module names, value is
     // always true
@@ -771,7 +779,7 @@ var Khan = {
     cleanupProblem: function() {
         $("#workarea, #hintsarea").runModules(problem, "Cleanup");
     }
-};
+}, window.Khan || {});
 // see line 178. this ends the main Khan module
 
 // Assign these here so that when we load the base modules, `Khan` is already
@@ -861,6 +869,7 @@ function onjQueryLoaded() {
             return this;
         }
     });
+
 }
 
 function loadAndRenderExercise(nextUserExercise) {
@@ -1540,11 +1549,15 @@ function renderExerciseBrowserPreview() {
 }
 
 function renderNextProblem(data) {
-    if (localMode) {
+    if (localMode && !embeddedMode) {
         // Just generate a new problem from existing exercise
         $(Exercises).trigger("clearExistingProblem");
         makeProblem(currentExerciseId);
     } else {
+        if (embeddedMode) {
+            randomSeed = data.userExercise.seed;
+        }
+
         loadAndRenderExercise(data.userExercise);
     }
 }
@@ -1828,7 +1841,7 @@ function prepareSite() {
         });
 
     $(Khan).bind("gotoNextProblem", function() {
-        if (localMode) {
+        if (localMode && !embeddedMode) {
             // Automatically advance to the next problem
             nextProblem(1);
             renderNextProblem();
@@ -2122,7 +2135,7 @@ function loadLocalModeSite() {
     // TODO(alpert): Is the DOM really not yet ready?
     $(function() {
         // Inject the site markup
-        if (localMode) {
+        if (localMode && !embeddedMode) {
             $.get(urlBase + "exercises/khan-site.html", function(site) {
                 $.get(urlBase + "exercises/khan-exercise.html",
                     function(ex) {
