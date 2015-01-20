@@ -240,7 +240,7 @@ window.statusModel.loaded.then(function() {
       }
 
 
-      n_tick = nodeEnter[0].length * 3;
+      n_tick = nodeEnter[0].length;
 
       nodeEnter.append("circle")
           .attr("r", function(d) { 
@@ -366,7 +366,7 @@ window.statusModel.loaded.then(function() {
                     .attr("y", y)
                     .attr("dy", lineHeight + dy + "em")
                     .text(word);
-          y += y;
+          y = 7;
         }
       }
     });
