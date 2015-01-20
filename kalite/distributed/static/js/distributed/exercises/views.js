@@ -196,7 +196,7 @@ window.ExerciseView = Backbone.View.extend({
         var self = this;
 
         var defaults = {
-            seed: Math.floor(Math.random() * 200),
+            seed: Math.floor(Math.random() * 200)
         };
 
         question_data = $.extend(defaults, question_data);
