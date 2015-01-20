@@ -179,7 +179,8 @@ if (localMode && !embeddedMode) {
 
 // The main Khan Module
 // Extend any existing Khan module in the window, rather than overwriting
-var Khan = $.extend({
+// Do this deeply/recursively to allow for Khan.Utils to already have components
+var Khan = $.extend(true, {
 
     // Add a reference to the Deferred that gets resolved when modules have finished loading
     loaded: initialModulesPromise,
