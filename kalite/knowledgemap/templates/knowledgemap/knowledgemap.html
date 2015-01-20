@@ -30,6 +30,15 @@
 <script>
 window.statusModel.loaded.then(function() {
 
+  //add map explanation
+  var graph_explain_img=document.createElement("img");
+  graph_explain_img.style.position="absolute";
+  graph_explain_img.style.top="70px";
+  graph_explain_img.style.left="10px";
+  graph_explain_img.style.width="100px";
+  graph_explain_img.setAttribute('src', "{% static 'images/distributed/map_explain_img.png' %}");
+  document.body.appendChild(graph_explain_img);
+
   var user_exercises_json;
   var url = setGetParamDict("/api/knowledgemap/KnowledgeMapExerciselog/", {
     user: statusModel.get("user_id"), 
