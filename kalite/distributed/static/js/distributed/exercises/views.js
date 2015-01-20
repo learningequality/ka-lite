@@ -197,7 +197,6 @@ window.ExerciseView = Backbone.View.extend({
 
         var defaults = {
             seed: Math.floor(Math.random() * 200),
-            framework: "khan-exercises"
         };
 
         question_data = $.extend(defaults, question_data);
@@ -253,10 +252,9 @@ window.ExerciseView = Backbone.View.extend({
 
     },
 
-
     check_answer: function() {
         var data;
-        if (this.data_model.get("framework") == "khan-exercises") {
+        if (this.data_model.get_framework() == "khan-exercises") {
             data = Khan.scoreInput();
         } else {
             data = Exercises.PerseusBridge.scoreInput();
