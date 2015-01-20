@@ -1,5 +1,8 @@
 // $(Exercises).trigger("clearExistingProblem");
 
+
+// Variable now needed for some internationalisation functions.
+// This needs to be modified for i18n compatibility.
 var icu = {
     getDecimalFormatSymbols: function() {
         return {
@@ -87,7 +90,7 @@ Exercises.PerseusBridge = {
         }
 
         // Load khan-exercises modules, then perseus
-        requirejs([
+        require([
                 STATIC_URL + "perseus/ke-deps.js"
                 // STATIC_URL + "perseus/ke/main.js",
             ], function() {
