@@ -14,10 +14,12 @@
             {{#ifcond selected "===" "timeline" }}selected{{/ifcond}}>
                 {{_ "Timeline Report" }}
             </option>
-            <option value="test"
+            {{!-- Nalanda Specific Only
+             <option value="test"
             {{#ifcond selected "===" "test" }}selected{{/ifcond}}>
                 {{_ "Test Report" }}
             </option>
+            --}}
         </select>
     </div> 
     <div id="facility-select-container" class="form-group">
