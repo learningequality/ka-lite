@@ -49,7 +49,6 @@ window.statusModel.loaded.then(function() {
   doRequest(url)
           .success(function(user_json) {
             user_exercises_json = user_json;
-            // console.log("user_exercises_json: ", user_exercises_json);
 
   //create the hashtatble 
   var user_hashtable = {};
@@ -103,34 +102,7 @@ window.statusModel.loaded.then(function() {
 
       for(var c in root.children){
         subject_list[c] = root.children[c].slug;
-
-        // //create subject buttons here:
-        // var subj_btn = document.createElement("div");
-        // subj_btn.className = "subj_btn"
-
-        // subj_btn.style.background=color_scheme_array[c];
-        // subj_btn.style.textAlign = "center";
-        // subj_btn.style.color = "white";
-        // subj_btn.style.width = "100px";
-        // subj_btn.style.height = "100px";
-        // subj_btn.style.border = "solid 5px white";
-        // subj_btn.style.borderRadius = "50%";
-        // subj_btn.style.position = 'absolute';
-        // subj_btn.style.top = subj_btn_top + 'px';
-        // subj_btn.style.left = subj_btn_left + 'px';
-        // subj_btn.innerHTML = "<span></span>" + "<h>" + root.children[c].title + "</h>";
-
-        // document.body.appendChild(subj_btn);
-        // subj_btn_top += 100;
       }
-
-      // $(document).ready(function(){
-      //   $(".subj_btn").click(function(){
-      //     update();
-      //   });
-      // });
-      // subj_btn.onclick = function(){update()};
-      // console.log("topics_json: ", root);
       update();
   });
 
@@ -142,7 +114,6 @@ window.statusModel.loaded.then(function() {
       .text("Simulating. One moment please…");
 
   var n_tick = 1;
-
   var links_table = {}; //for link look up
   var nodes;
   var unfold_scale_factor = 1;
@@ -210,6 +181,7 @@ window.statusModel.loaded.then(function() {
       initialized = true;
       nodes = initial(root);
     }
+
       nodes.pop(); //remove the root node since we don't want to render it.
       var links = d3.layout.tree().links(nodes);
 
@@ -247,7 +219,6 @@ window.statusModel.loaded.then(function() {
 
       //this is not a very smooth way to do adaptive zooming
       num_of_nodes = nodeEnter[0].length;
-      console.log("node count:: ", nodeEnter[0].length);
       if(num_of_nodes <= subject_list.length){
        //don't zoom
       }else{
@@ -267,12 +238,15 @@ window.statusModel.loaded.then(function() {
         map.setAttribute("viewBox", (map.getBBox().width - window.innerWidth*scale_factor/2) + " " +  (map.getBBox().height 
           - window.innerHeight*scale_factor/2) + " " + window.innerWidth*scale_factor +" "+ window.innerHeight*scale_factor); 
       }
-      n_tick = nodeEnter[0].length;
+
+
+      n_tick = nodeEnter[0].length * 3;
 
       nodeEnter.append("circle")
           .attr("r", function(d) { 
             if(d.kind !== "Topic"){
             return d.size || 10; }});
+
 
       nodeEnter.append("rect")
           .attr("width", function(d) { 
@@ -359,7 +333,6 @@ window.statusModel.loaded.then(function() {
                 }
               } 
       });
-
   }
 
   function text_wrap(text){
@@ -398,7 +371,6 @@ window.statusModel.loaded.then(function() {
       }
     });
   }
-
 
   function tick() { 
     link.attr("x1", function(d) { return d.source.x; })
@@ -513,9 +485,6 @@ window.statusModel.loaded.then(function() {
     recover_link_holder.length = 0;
   }
 
-
-
-  // Toggle children on click.
   function click(d) {
     d.fixed = true;
     setTimeout(function(){ d.fixed = false; }, 3000);
