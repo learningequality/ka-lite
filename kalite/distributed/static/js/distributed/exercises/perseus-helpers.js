@@ -13,6 +13,9 @@ var icu = {
     }
 };
 
+
+var KhanUtil = window.KhanUtil || {};
+
 var Khan = window.Khan || {
     error: function() {},
     query: {debug: ""},
@@ -110,25 +113,17 @@ Exercises.PerseusBridge = {
     render_item: function(item_data) {
 
         Exercises.PerseusBridge.itemMountNode = document.createElement("div");
-        var itemRenderer = Exercises.PerseusBridge.itemRenderer = Perseus.ItemRenderer({
+
+        var ItemRenderer = React.createFactory(Perseus.ItemRenderer);
+        Exercises.PerseusBridge.itemRenderer = zk = React.render(ItemRenderer({
             item: item_data,
             problemNum: Math.floor(Math.random() * 50) + 1,
-            initialHintsVisible: false, //&& item_data.hints && item_data.hints.length,
+            initialHintsVisible: false,
             enabledFeatures: {
                 highlight: true,
-                toolTipFormats: true//,
-                //useMathQuill: true
-            },
-            apiOptions: {
-                // interceptInputFocus: function() {}, // do nothing here; prevent keyboard from popping up
-                // fancyDropdowns: true // needed?
-                // staticRender: true // don't want; iOS mode, blocks input box rendering
+                toolTipFormats: true
             }
-        }, null);
-        zk = React.renderComponent(
-            Exercises.PerseusBridge.itemRenderer,
-            Exercises.PerseusBridge.itemMountNode
-        );
+        }, null), Exercises.PerseusBridge.itemMountNode);
         zk.focus();
 
     }
