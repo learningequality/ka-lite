@@ -154,12 +154,12 @@ window.ExerciseView = Backbone.View.extend({
         }
 
 
-        $(Exercises).bind("checkAnswer", this.check_answer);
+        this.listenTo(Exercises, "checkAnswer", this.check_answer);
 
-        $(Exercises).bind("gotoNextProblem", this.goto_next_problem);
+        this.listenTo(Exercises, "gotoNextProblem", this.goto_next_problem);
 
         // TODO (rtibbles): Make this nice, not horrible.
-        $(Exercises).bind("newProblem", function (ev, data) {
+        this.listenTo(Exercises, "newProblem", function (ev, data) {
             if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
                 if (typeof self.software_keyboard_view === "undefined") {
                     self.software_keyboard_view = new SoftwareKeyboardView({
@@ -175,8 +175,8 @@ window.ExerciseView = Backbone.View.extend({
 
         // some events we only care about if the user is logged in
         if (statusModel.get("is_logged_in")) {
-            $(Exercises).bind("hintUsed", this.hint_used);
-            $(Exercises).bind("newProblem", this.problem_loaded);
+            this.listenTo(Exercises, "hintUsed", this.hint_used);
+            this.listenTo(Exercises, "newProblem", this.problem_loaded);
         }
 
     },

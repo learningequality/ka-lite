@@ -30,7 +30,7 @@ var Khan = window.Khan || {
     cleanupProblem: function() {}
 };
 
-window.Exercises = {
+window.Exercises = _.extend({
     localMode: true,
     embeddedMode: true,
     useKatex: true,
@@ -54,7 +54,7 @@ window.Exercises = {
         render: function() {}
     },
     incompleteStack: [0]
-};
+}, Backbone.Events);
 
 // React.initializeTouchEvents(true);
 
