@@ -297,12 +297,8 @@ window.statusModel.loaded.then(function() {
                 return d.title.length * -8/2;
               }}})
           .attr("y", -17)
-          .attr("rx", function(d) { 
-            if(d.kind == "Topic"){
-            return 10; }})
-          .attr("ry", function(d) { 
-            if(d.kind == "Topic"){
-            return 10; }});
+          .attr("rx", 10)
+          .attr("ry", 10);
 
       node.select("rect")
           .attr("stroke-width", 4)
@@ -318,16 +314,18 @@ window.statusModel.loaded.then(function() {
               return d.title; 
             }
           })
-          .call(wrap, 130);
+          .call(text_wrap);
+
 
       nodeEnter.append("text")
           .attr("dy", function(d) { 
             if(d.title.length > 10){
-              return "-0.15em"; 
+              return "0.1em"; 
             }else{
               return "0.35em";
             }
           })
+          .attr("y", -10)
           .style("font-size", "16")
           .style("font-weight", "bold")
           .style("fill", "white")
@@ -336,7 +334,7 @@ window.statusModel.loaded.then(function() {
               return d.title + " " + "%" + d.progress.toFixed(2); 
             }
           })
-          .call(wrap, 90);
+          .call(text_wrap);
 
       node.select("circle")
           .attr("stroke-width", 4)
@@ -344,10 +342,10 @@ window.statusModel.loaded.then(function() {
           .style("fill", colornode_fill);
 
       $(".node").tipsy({ 
-        gravity: 's',
+        gravity: 'w',
         className: 'desc-tip',
         // fade: true,
-        offset: 0,
+        offset: 10,
         opacity: 0.7,
         html: true, 
         title: function() {
@@ -364,42 +362,38 @@ window.statusModel.loaded.then(function() {
 
   }
 
-  //this wrap function probably not flexable enough for longer string.
-  function wrap(text, width) {
+  function text_wrap(text){
     text.each(function() {
+      var rect_width;
+      if(d3.select(this).text().length * 8 > 150){
+        rect_width = d3.select(this).text().length * 8/2 + 6;
+      }else{
+        rect_width = d3.select(this).text().length * 8;
+      }
+
       var text = d3.select(this),
           words = text.text().split(/\s+/).reverse(),
           word,
           line = [],
           lineNumber = 0,
-          lineHeight = 1.1, // ems
+          lineHeight = 1, // ems
           y = text.attr("y"),
           dy = parseFloat(text.attr("dy")),
           tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
       while (word = words.pop()) {
-        if(word.indexOf('%') !== -1){
-          line.push(word);
-          tspan.text(line.join(" "));
-          if(text.text().length > 15){
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + -1.15 + "em").text(word);
-          }else{
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + 0.1 + "em").text(word);
-          }
-        }else{
-          line.push(word);
-          tspan.text(line.join(" "));
-        }
-        if (tspan.node().getComputedTextLength() > width) {
+        line.push(word);
+        tspan.text(line.join(" "));
+        
+        if (tspan.node().getComputedTextLength() > rect_width) {
           line.pop();
           tspan.text(line.join(" "));
           line = [word];
-          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+          tspan = text.append("tspan")
+                    .attr("x", 0)
+                    .attr("y", y)
+                    .attr("dy", lineHeight + dy + "em")
+                    .text(word);
+          y += y;
         }
       }
     });
