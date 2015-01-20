@@ -42,7 +42,7 @@ window.statusModel.loaded.then(function() {
   var user_exercises_json;
   var url = setGetParamDict("/api/knowledgemap/KnowledgeMapExerciselog/", {
     user: statusModel.get("user_id"), 
-    completion_timestamp__gte: '2014-10-20',   //because the topic.json contain repetitive object under same parent, which cause problem for displaying knowledge map
+    completion_timestamp__gte: '2011-10-20',   //because the topic.json contain repetitive object under same parent, which cause problem for displaying knowledge map
     completion_timestamp__lte: '2017-12-22'     //use this time filter to avoid encounter repetitive objects
   }); 
 
@@ -526,6 +526,7 @@ window.statusModel.loaded.then(function() {
     }
   }
 
+  var incr_id = 0;
   function initial(root) {
       var nodes = [], index = 0;
       function process_topics(node){
@@ -539,7 +540,9 @@ window.statusModel.loaded.then(function() {
           for(var i in node.children){
 
             //because same exercise can appear under different topics, use the path + kind to define a unique id
-            node.children[i]["unique_id"] = node.children[i].path + node.children[i].kind;
+            // node.children[i]["unique_id"] = node.children[i].path + node.children[i].kind;
+            node.children[i]["unique_id"] = incr_id;
+            incr_id ++;
 
             if(node.children[i].progress){
               var progress_val = node.children[i].progress;
