@@ -279,7 +279,10 @@ class UserLogSummary(DeferredCountSyncedModel):
             start_datetime__lte=user_log.end_datetime,
             end_datetime__gte=user_log.end_datetime,
         )
-        assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
+
+        if log_summary.count() > 1:
+            for log in log_summary[1:]:
+                log.soft_delete()
 
         # Get (or create) the log item
         log_summary = log_summary[0] if log_summary.count() else cls(
