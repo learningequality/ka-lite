@@ -1,22 +1,3 @@
-// $(Exercises).trigger("clearExistingProblem");
-
-
-// Variable now needed for some internationalisation functions.
-// This needs to be modified for i18n compatibility.
-var icu = {
-    getDecimalFormatSymbols: function() {
-        return {
-            decimal_separator: ".",
-            grouping_separator: ",",
-            minus: "-"
-        };
-    },
-    getLanguage: function() {
-        return "en";
-    }
-};
-
-
 var KhanUtil = window.KhanUtil || {};
 
 var Khan = window.Khan || {
