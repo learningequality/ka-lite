@@ -1,5 +1,11 @@
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 
+class FacilityMixins(CreateTeacherMixin, CreateStudentMixin, CreateGroupMixin, CreateFacilityMixin):
+    '''
+    Toplevel class that has all the mixin methods defined below.
+    Inherit from this and not the other classes.
+    '''
+    pass
 
 class CreateFacilityMixin(object):
     DEFAULTS = {
@@ -68,10 +74,3 @@ class CreateTeacherMixin(CreateStudentMixin):
         fields = CreateTeacherMixin.DEFAULTS.copy()
         fields.update(**kwargs)
         return cls.create_student(**fields)  # delegate to the create_student method, which has the right logic
-
-
-class FacilityMixins(CreateTeacherMixin, CreateStudentMixin, CreateGroupMixin, CreateFacilityMixin):
-    '''
-    Toplevel class that has all the mixin methods defined above
-    '''
-    pass
