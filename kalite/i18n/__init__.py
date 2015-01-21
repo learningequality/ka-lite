@@ -367,8 +367,12 @@ def update_jsi18n_file(code="en"):
     request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
     response = javascript_catalog(request, packages=('ka-lite.locale',))
+    icu_js = ""
     for path in settings.LOCALE_PATHS:
-        icu_js = open(os.path.join(path, code, "%s_icu.js" % code), "r").read()
+        try:
+            icu_js = open(os.path.join(path, code, "%s_icu.js" % code), "r").read()
+        except IOError:
+            logging.warn("No {code}_icu.js file found in locale_path {path}".format(code=code, path=path))
     output_js = response.content + "\n" + icu_js
     with open(output_file, "w") as fp:
         fp.write(output_js)
