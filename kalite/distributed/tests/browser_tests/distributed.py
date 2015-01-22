@@ -6,6 +6,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
+from selenium.common.exceptions import TimeoutException
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -203,12 +204,13 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         self.browser_send_keys(unicode(answer))
         self.browser.find_element_by_id('check-answer-button').click()
 
-        # Convert points to a number, when appropriate
-        ui.WebDriverWait(self.browser, 10).until(
-            expected_conditions.visibility_of_element_located((By.ID, 'next-question-button'))
-        )
-        correct = self.browser.find_element_by_id('next-question-button').get_attribute("value")=="Correct! Next question..."
-        
+        try:
+            ui.WebDriverWait(self.browser, 10).until(
+                expected_conditions.visibility_of_element_located((By.ID, 'next-question-button'))
+            )
+            correct = self.browser.find_element_by_id('next-question-button').get_attribute("value")=="Correct! Next question..."
+        except TimeoutException:
+            correct = False
         return correct
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
@@ -232,12 +234,15 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         self.assertEqual(elog.attempts_before_completion, None, "Student should not have a value for attempts_before_completion.")
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
-    def test_question_incorrect_no_points_are_added(self):
+    def test_question_incorrect_false(self):
         """
         Answer an exercise incorrectly.
         """
-        points = self.browser_submit_answer('this is a wrong answer')
-        self.assertEquals(points, "", "points text should be empty")
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'mord'))
+        )
+        correct = self.browser_submit_answer(0)
+        self.assertFalse(correct, "answer was correct")
 
         elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
         self.assertEqual(elog.streak_progress, 0, "Streak progress should be 0%")
@@ -251,11 +256,15 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         Answer an exercise incorrectly, and make sure button text changes.
         """
-        self.browser_submit_answer('this is a wrong answer')
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'mord'))
+        )
+
+        self.browser_submit_answer(0)
 
         answer_button_text = self.browser.find_element_by_id("check-answer-button").get_attribute("value")
 
-        self.assertTrue(answer_button_text == "Try Again!", "Answer button did not change to 'Try Again' on incorrect answer!")
+        self.assertTrue(answer_button_text == "Check Answer", "Answer button changed on incorrect answer!")
 
     # @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
