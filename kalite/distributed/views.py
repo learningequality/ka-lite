@@ -92,7 +92,7 @@ def learn(request):
 
 
 @backend_cache_page
-@render_to("distributed/knowledgemap.html")
+@render_to("knowledgemap/knowledgemap.html")
 def exercise_dashboard(request):
     slug = request.GET.get("topic")
     if not slug:

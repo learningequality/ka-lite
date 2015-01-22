@@ -119,7 +119,7 @@ class PlaylistProgressDetailResource(PlaylistParentResource):
         self.permission_check(bundle.request)
         return self.get_object_list(bundle.request)
 
-class ExerciseSummaryResource(ModelResource):
+class ExerciseSummaryResource(ModelResource, PlaylistParentResource):
     user = fields.ForeignKey(FacilityUserResource, 'user')
 
     def obj_create(self, bundle, **kwargs):
