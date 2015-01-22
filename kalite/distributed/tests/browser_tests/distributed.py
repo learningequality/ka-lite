@@ -384,9 +384,13 @@ class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, 
         play_method = ".play();"
         self.browser.execute_script(video_js_object + play_method)
         # Don't want to overshoot the video length and get an error
-        seek_time_expr = video_js_object + ".get_duration() * 0.95"
-        seek_method = ".seek(%s);" % seek_time_expr
-        self.browser.execute_script(video_js_object + seek_method)
+        #seek_time_expr = video_js_object + ".get_duration() * 0.95"
+        #seek_method = ".seek(%s);" % seek_time_expr
+        #self.browser.execute_script(video_js_object + seek_method)
+        # this hurts but it's necessary... the seek method is somehow unwieldy
+        time.sleep(1)
+        pause_method = ".pause()" 
+        self.browser.execute_script(video_js_object + pause_method)
         updated_points = self._get_points()
         assert (updated_points - points > 0), "Points were not increased after video seek position was changed"
 
