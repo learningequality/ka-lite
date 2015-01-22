@@ -280,6 +280,8 @@ class UserLogSummary(DeferredCountSyncedModel):
             end_datetime__gte=user_log.end_datetime,
         )
 
+        # TODO(anuragkanungo): Figure out and fix the issue for duplicate entries and enable assert check with if condition removed.
+        #assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
         if log_summary.count() > 1:
             for log in log_summary[1:]:
                 log.soft_delete()
