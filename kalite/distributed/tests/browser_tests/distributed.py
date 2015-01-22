@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -15,11 +16,13 @@ from django.test.utils import override_settings
 from django.utils.translation import ugettext as _
 
 from fle_utils.general import isnumeric
-from kalite.facility.models import FacilityUser
+from kalite.facility.models import FacilityUser, Facility
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
-from kalite.topic_tools import get_node_cache
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins, CreateFacilityMixin
+from kalite.topic_tools import get_node_cache, get_content_cache
+
+from random import choice
 
 logging = settings.LOG
 
@@ -360,3 +363,54 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         time.sleep(3)
         self.browse_to(self.reverse("homepage"))
         self.assertTrue(self.browser_is_logged_in(), "Timeout should not logout teacher")
+
+class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase, CreateFacilityMixin):
+    """
+    Addresses issue 2864. Ensure that watching a video accumulates points for a student.
+    """
+
+    def setUp(self):
+        super(WatchingVideoAccumulatesPointsTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+        self.browser_login_student(username="johnduck", password="superpassword")
+
+    def test_watching_video_increases_points(self):
+        self._browse_to_random_video()
+        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
+        self.browser_wait_for_js_object_exists(video_js_object)
+        points = self._get_points()
+        play_method = ".play();"
+        self.browser.execute_script(video_js_object + play_method)
+        # Don't want to overshoot the video length and get an error
+        seek_time_expr = video_js_object + ".get_duration() * 0.95"
+        seek_method = ".seek(%s);" % seek_time_expr
+        self.browser.execute_script(video_js_object + seek_method)
+        updated_points = self._get_points()
+        assert (updated_points - points > 0), "Points were not increased after video seek position was changed"
+
+    def test_points_update(self):
+        self._browse_to_random_video()
+        points = self._get_points()
+        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
+        self.browser_wait_for_js_object_exists(video_js_object)
+        update_pts_script = video_js_object + ".set_progress(1);"
+        self.browser.execute_script(update_pts_script)
+        updated_points = self._get_points()
+        assert (updated_points - points > 0), "Points were not increased after video progress was updated"
+
+    def _browse_to_random_video(self):
+        available = False
+        while not available:
+            video = get_content_cache()[choice(get_content_cache().keys())]
+            available = (len(video['languages']) > 0)
+        video_url = video['path']
+        self.browse_to(self.reverse("learn") + video_url) 
+
+    def _get_points(self):
+        # The following commented line of code returns an element with blank text,
+        # possibly due to a race condition, hence querying the element with js which "just works"
+        #points_elem = self.browser.find_element_by_id("points")    
+        points_text = self.browser.execute_script("return $('#points').text();")
+        return int(re.search(r"(\d+)", points_text).group(1))

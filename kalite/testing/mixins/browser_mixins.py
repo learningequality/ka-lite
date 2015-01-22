@@ -1,5 +1,5 @@
 import time
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -176,6 +176,23 @@ class BrowserActionMixins(object):
                 pass
             except:
                 break
+    
+    def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=4, step_time=0.25):
+        total_wait_time = 0
+        exists_script = "return typeof(%s) != 'undefined'" % obj_name
+        while total_wait_time < max_wait_time:
+
+            time.sleep(step_time)
+            total_wait_time += step_time
+            try:
+                if self.browser.execute_script(exists_script):
+                    break
+                else:
+                    pass
+            except WebDriverException as e:
+                # possible if the object you want to exist is an attribute of an object
+                # tht doesn't yet exist, e.g. does_not_exist_yet.i_want_to_test_this_one
+                pass
 
     # Actual testing methods
     def empty_form_test(self, url, submission_element_id):
