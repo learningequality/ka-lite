@@ -25,6 +25,14 @@
 {% endblock headjs %}
 
 {% block content %}
+  <img id="map-explanation" src="{% static 'images/knowledgemap/map_explain_img.png' %}" 
+  style="width:100px; top:70px; left:10px; position:absolute">
+  <h4 style="top:60px; left:37px; position:absolute">{% trans "not-started" %}</h4>
+  <h4 style="top:90px; left:37px; position:absolute">{% trans "in-progress" %}</h4>
+  <h4 style="top:120px; left:37px; position:absolute">{% trans "completed" %}</h4>
+  <h8 style="top:165px; left:35px; position:absolute; color:white">{% trans "partially" %}</h8>
+  <h8 style="top:180px; left:32px; position:absolute; color:white">{% trans "unfolded" %}</h8>
+  <h8 style="top:220px; left:18px; position:absolute">{% trans "fully unfolded" %}</h8>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
 <script>
