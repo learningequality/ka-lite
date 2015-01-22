@@ -310,7 +310,7 @@ window.TopicContainerInnerView = BaseView.extend({
             videologs = new VideoLogCollection([], {content_ids: video_ids});
             videologs.fetch()
                 .then(function() {
-                    $.each(videologs.models, function(model) {
+                    videologs.models.forEach(function(model) {
                         var newClass = model.get("complete") ? "complete" : "partial";
                         self.$("[data-video-id='" + model.get("video_id") + "']").removeClass("complete partial").addClass(newClass);
                     });
@@ -323,7 +323,7 @@ window.TopicContainerInnerView = BaseView.extend({
             exerciselogs = new ExerciseLogCollection([], {exercise_ids: exercise_ids});
             exerciselogs.fetch()
                 .then(function() {
-                    $.each(exerciselogs.models, function(model) {
+                    exerciselogs.models.forEach(function(model) {
                         var newClass = model.get("complete") ? "complete" : "partial";
                         self.$("[data-exercise-id='" + model.get("exercise_id") + "']").removeClass("complete partial").addClass(newClass);
                     });
@@ -337,7 +337,7 @@ window.TopicContainerInnerView = BaseView.extend({
             var quiz_id = this.model.get("id");
             doRequest("/api/playlists/quizlog/?user=" + statusModel.get("user_id") + "&quiz=" + quiz_id)
                 .success(function(data) {
-                    $.each(data.objects, function(ind, quiz) {
+                    data.objects.forEach(function(ind, quiz) {
                         var newClass = quiz.complete ? "complete" : "partial";
                         // TODO(jamalex): see above; just assume we only have 1 quiz
                         self.$("[data-quiz-id]").removeClass("complete partial").addClass(newClass);
@@ -351,7 +351,7 @@ window.TopicContainerInnerView = BaseView.extend({
             contentlogs = new ContentLogCollection([], {content_ids: content_ids});
             contentlogs.fetch()
                 .then(function() {
-                    $.each(contentlogs.models, function(model) {
+                    contentlogs.models.forEach(function(model) {
                         var newClass = model.get("complete") ? "complete" : "partial";
                         self.$("[data-content-id='" + content.get("content_id") + "']").removeClass("complete partial").addClass(newClass);
                     });
