@@ -419,7 +419,7 @@ window.statusModel.loaded.then(function() {
     if (d3.event.defaultPrevented) return; // ignore drag
      
     if(d.kind !== "Topic" && d.kind !== "Subject"){
-        location.href = "http://localhost:9013/learn/"+ d.path;
+        location.href = "/learn/"+ d.path;
     }
   }
 
