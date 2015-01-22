@@ -40,7 +40,7 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
 def get_video_node_by_youtube_id(youtube_id):
     """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
     video_id = i18n.get_video_id(youtube_id=youtube_id)
-    return topic_tools.get_node_cache("Video").get(video_id, [None])
+    return topic_tools.get_node_cache("Content").get(video_id, [None])
 
 
 class Command(UpdatesDynamicCommand, CronCommand):
