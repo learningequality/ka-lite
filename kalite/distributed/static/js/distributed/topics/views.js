@@ -115,7 +115,7 @@ window.SidebarView = BaseView.extend({
         // width of their parents. 
         this.width = (current_level-1) * column_width + last_column_width + 10;
         this.$(".sidebar-panel").width(this.width);
-        this.$(".sidebar-tab").css({left: this.width});
+        this.$(".sidebar-tab").css({'-webkit-transform': 'translate3d(' + this.width + 'px, 0, 0)'});
         this.update_sidebar_visibility();
 
         // TODO(dylanjbarth): Resize sidebar to not cover top nav
@@ -145,12 +145,12 @@ window.SidebarView = BaseView.extend({
 
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
-            this.sidebar.css({left: 0});
-            this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width()}).html("&lt");
+            this.sidebar.css({'-webkit-transform': 'translate3d(0, 0, 0)'});
+            this.$(".sidebar-tab").css({'-webkit-transform': 'translate3d(' + this.$(".sidebar-panel").width() + 'px, 0, 0)'}).html("&lt");
             this.$(".fade").show();
         } else {
-            this.sidebar.css({left: - this.width});
-            this.$(".sidebar-tab").css({left: 0}).html("&gt");
+            this.sidebar.css({'-webkit-transform': 'translate3d(' + - this.width + 'px, 0, 0)'});
+            this.$(".sidebar-tab").css({'-webkit-transform': 'translate3d( 0, 0, 0)'}).html("&gt");
             this.$(".fade").hide();
         }
     },
