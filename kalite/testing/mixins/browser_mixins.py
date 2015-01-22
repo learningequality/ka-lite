@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from ..browser import browse_to, setup_browser, wait_for_page_change
 
-from kalite.facility.models import Facility
+from kalite.facility.models import Facility, FacilityUser
 from kalite.topic_tools import get_content_cache
 
 from django.contrib.auth.models import User
