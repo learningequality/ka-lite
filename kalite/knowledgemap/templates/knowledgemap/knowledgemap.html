@@ -14,6 +14,7 @@
     <script src="{% static 'js/d3.v3.min.js' %}"></script>
     <script type="text/javascript">
         var ALL_TOPICS_URL = '{{ data_url }}/topics.json';
+        var K_MAP_URL = "{% url 'api_dispatch_list' resource_name='KnowledgeMapExerciselog' %}";
     </script>
     <script src="{% static 'js/knowledgemap/d3.knowledgemap.js' %}"></script>
 {% endblock headjs %}
