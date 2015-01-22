@@ -11,7 +11,7 @@
 
 {% block headjs %}{{ block.super }}
     <script src="{% static 'js/distributed/jquery.tipsy.js' %}"></script>
-
+    <script src="{% static 'js/d3.v3.min.js' %}"></script>
     <script type="text/javascript">
         var TOPIC_DATA_URLS = {
             Domains: '{{ data_url }}/map_domains.json',
