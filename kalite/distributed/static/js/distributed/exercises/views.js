@@ -234,12 +234,14 @@ window.ExerciseView = Backbone.View.extend({
                 var item = new AssessmentItemModel({id: self.data_model.get("all_assessment_items")[i].id});
 
                 item.fetch().then(function() {
-                    Exercises.PerseusBridge.load().then(function() {
-                        Exercises.PerseusBridge.render_item(item.get_item_data());
-                        // Exercises.PerseusBridge.render_item(item_data);
-                        $(Exercises).trigger("newProblem", {
-                            userExercise: null,
-                            numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
+                    require([KHAN_EXERCISES_SCRIPT_URL], function() {
+                        Exercises.PerseusBridge.load().then(function() {
+                            Exercises.PerseusBridge.render_item(item.get_item_data());
+                            // Exercises.PerseusBridge.render_item(item_data);
+                            $(Exercises).trigger("newProblem", {
+                                userExercise: null,
+                                numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
+                            });
                         });
                     });
                 });
