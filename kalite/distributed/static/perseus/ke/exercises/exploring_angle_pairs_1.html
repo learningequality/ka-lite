@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html data-require="math graphie word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Exploring angle pairs</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars">
+        <var id="VERTICES">["A", "B", "C", "D", "E", "F"]</var>
+        <var id="START">randRange(0, 5)</var>
+        <var id="SIZE">randRange(1, 2)</var>
+        <var id="END">(START + SIZE) % 6</var>
+        <var id="ANGLE_START">VERTICES[START]</var>
+        <var id="ANGLE_END">VERTICES[END]</var>
+
+        <var id="OPP_START"> VERTICES[(START + 3) % 6] </var>
+        <var id="OPP_END"> VERTICES[(END + 3) % 6] </var>
+        <var id="ADJ_ANGLES">(function() {
+            var startName = VERTICES[START];
+            var endName = VERTICES[END];
+            var notStart = "[" + _.without(VERTICES, startName).join("") + "]";
+            var notEnd = "[" + _.without(VERTICES, endName).join("") + "]";
+            var startAsFirst = startName + "G" + notStart;
+            var startAsLast = notStart + "G" + startName;
+
+            var endAsFirst = endName + "G" + notEnd;
+            var endAsLast = notEnd + "G" + endName;
+
+            var sharingStart = startAsFirst + "|" + startAsLast;
+            var sharingEnd = endAsFirst + "|" + endAsLast;
+
+            return "^\\s*" + sharingStart + "|" + sharingEnd + "\\s*$";
+        })()</var>
+
+        <var id="TILT">rand(-20, 20)</var>
+        <var id="LENGTH">8</var>
+        <var id="INNER_LENGTH">6.5</var>
+        <var id="BASE_ANGLES">[30, 45, 135, 210, 225, 315]</var>
+        <var id="ANGLES">_.map(BASE_ANGLES, function(el) {
+            return ((el + TILT) % 360) * PI / 180;
+        })</var>
+        <var id="ENDPOINTS">_.map(ANGLES, function(el) {
+            return [LENGTH * cos(el), LENGTH * sin(el)];
+        })</var>
+        <var id="INNER_ENDPOINTS">_.map(ANGLES, function(el) {
+            return [INNER_LENGTH * cos(el), INNER_LENGTH * sin(el)];
+        })</var>
+    </div>
+
+    <div class="problem">
+        <div class="graphie" id="graph">
+            init({
+                range: [[-10, 10], [-10, 10]],
+                scale: 20
+            });
+
+            var dotStyle = { r: 0.2, fill: BLUE, stroke: "none" };
+            for (var i = 0; i &lt; 6; i++) {
+                line([0, 0], ENDPOINTS[i], { arrows: "-&gt;" });
+                circle(INNER_ENDPOINTS[i], dotStyle);
+                label(INNER_ENDPOINTS[i], VERTICES[i], "above");
+            }
+
+            var p1 = ENDPOINTS[START];
+            var p2 = ENDPOINTS[END];
+            var angle1 = atan2(p1[1], p1[0]) * 180 / PI;
+            var angle2 = atan2(p2[1], p2[0]) * 180 / PI;
+            graph.angle = arc([0, 0], LENGTH / 6, angle1, angle2, { stroke: RED });
+            graph.angle.hide();
+
+            label([0, 0], "G", "above");
+            circle([0, 0], dotStyle);
+        </div>
+    </div>
+
+    <div class="problems">
+        <div id="vertical">
+            <div class="question">
+                <p>Name an angle vertical to <code>\angle <var>ANGLE_START</var>G<var>ANGLE_END</var></code>.</p>
+            </div>
+
+            <div class="solution" data-type="set">
+                <div class="set-sol" data-type="text"><var>OPP_START</var>G<var>OPP_END</var></div>
+                <div class="set-sol" data-type="text"><var>OPP_END</var>G<var>OPP_START</var></div>
+
+                <div class="input-format">
+                    <p><code>\angle </code><span class="entry"></span></p>
+                </div>
+            </div>
+
+            <div class="hints" data-apply="appendContents">
+                <p>Vertical angles are formed at the intersection of two straight lines.</p>
+                <p>Name the angle opposite <code>\red{\angle <var>ANGLE_START</var>G<var>ANGLE_END</var>}</code>.</p>
+                <div>
+                    <p>
+                        The angle vertical to <code>\red{\angle <var>ANGLE_START</var>G<var>ANGLE_END</var>}</code> is
+                        <code>\green{\angle <var>OPP_START</var>G<var>OPP_END</var>}</code>.
+                    </p>
+                    <div class="graphie" data-update="graph">
+                        var p1 = ENDPOINTS[(START + 3) % 6];
+                        var p2 = ENDPOINTS[(END + 3) % 6];
+                        var angle1 = atan2(p1[1], p1[0]) * 180 / PI;
+                        var angle2 = atan2(p2[1], p2[0]) * 180 / PI;
+                        arc([0, 0], LENGTH / 6, angle1, angle2, { stroke: GREEN });
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="adjacent">
+            <div class="question">
+                <p>Name an angle adjacent to <code>\angle <var>ANGLE_START</var>G<var>ANGLE_END</var></code>.</p>
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <code>\angle</code><span class="sol" data-type="regex"><var>ADJ_ANGLES</var></span>
+            </div>
+
+            <div class="hints" data-apply="appendContents">
+                <p>Adjacent angles share a ray and have a common vertex, but do not overlap.</p>
+                <p>Name an angle that is next to <code>\red{\angle <var>ANGLE_START</var>G<var>ANGLE_END</var>}</code>.</p>
+                <div>
+                    <p>
+                        One angle adjacent to <code>\red{\angle <var>ANGLE_START</var>G<var>ANGLE_END</var>}</code> is
+                        <code>\green{\angle <var>ANGLE_START</var>G<var>VERTICES[(START + 5) % 6]</var>}</code>.
+                    </p>
+                    <div class="graphie" data-update="graph">
+                        var p1 = ENDPOINTS[(START + 5) % 6];
+                        var p2 = ENDPOINTS[START];
+                        var angle1 = atan2(p1[1], p1[0]) * 180 / PI;
+                        var angle2 = atan2(p2[1], p2[0]) * 180 / PI;
+                        arc([0, 0], LENGTH / 6, angle1, angle2, { stroke: GREEN });
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="linear">
+            <div class="question">
+                <p>Name an angle that forms a linear pair with <code>\angle <var>ANGLE_START</var>G<var>ANGLE_END</var></code>.</p>
+            </div>
+
+            <div class="solution" data-type="set">
+                <div class="set-sol" data-type="text"><var>ANGLE_START</var>G<var>OPP_END</var></div>
+                <div class="set-sol" data-type="text"><var>ANGLE_END</var>G<var>OPP_START</var></div>
+                <div class="set-sol" data-type="text"><var>OPP_END</var>G<var>ANGLE_START</var></div>
+                <div class="set-sol" data-type="text"><var>OPP_START</var>G<var>ANGLE_END</var></div>
+            
+                <div class="input-format">
+                    <p> <code> \angle </code> <span class="entry"></span> </p> 
+                </div>
+
+            </div>
+
+            <div class="hints" data-apply="appendContents">
+                <p>A linear pair is two adjacent angles that form a straight angle.</p>
+                <p>
+                    Name an angle that shares a ray with <code>\angle <var>ANGLE_START</var>G<var>ANGLE_END</var></code>
+                    and will add to <code>180^{\circ}</code>
+                </p>
+                <div>
+                    <p>
+                        One angle that forms a linear pair with <code>\red{\angle <var>ANGLE_START</var>G<var>ANGLE_END</var>}</code> is
+                        <code>\green{\angle <var>ANGLE_END</var>G<var>OPP_START</var>}</code>.
+                    </p>
+                    <div class="graphie" data-update="graph">
+                        var p1 = ENDPOINTS[END];
+                        var p2 = ENDPOINTS[(START + 3) % 6];
+                        var angle1 = atan2(p1[1], p1[0]) * 180 / PI;
+                        var angle2 = atan2(p2[1], p2[0]) * 180 / PI;
+                        arc([0, 0], LENGTH / 6, angle1, angle2, { stroke: GREEN });
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <div>
+            <p>First, identify <code>\red{\angle <var>ANGLE_START</var>G<var>ANGLE_END</var>}</code>.</p>
+            <div class="graphie" data-update="graph">
+                graph.angle.show();
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

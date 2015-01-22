@@ -103,6 +103,7 @@ class FacilityUserForm(forms.ModelForm):
                 if hasattr(ve, 'messages') and isinstance(ve.messages, list) and ve.messages:
                     message = ve.messages[0]
                 self.set_field_error(field_name='password_first', message=message)
+
         elif (self.instance and not self.instance.password) or password_first or password_recheck:
             # Only perform check on a new user or a password change
             if password_first != password_recheck:
@@ -129,6 +130,7 @@ class FacilityUserForm(forms.ModelForm):
 
 
 class FacilityForm(forms.ModelForm):
+    name = forms.CharField(label=_("Name (required)"))
 
     class Meta:
         model = Facility

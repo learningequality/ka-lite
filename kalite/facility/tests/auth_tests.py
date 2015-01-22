@@ -67,11 +67,7 @@ class FacilityUserPermissionsTests(CreateAdminMixin,
         edit_data = self.teacher_form_data.copy()
         edit_data['id_username'] = 'changed_teacher'
         self.fill_form(edit_data)
-        try:
-            self.submit_and_wait(self.reverse('facility_management', kwargs={'zone_id': 'None', 'facility_id': self.facility.id}), "success", message_contains)
-        except:
-            import pdb; pdb.set_trace()
-            print 'hi'
+        self.submit_and_wait(self.reverse('facility_management', kwargs={'zone_id': 'None', 'facility_id': self.facility.id}), "success", message_contains)
 
     def test_admin_permissions(self):
         self.browser_login_admin(**self.admin_data)

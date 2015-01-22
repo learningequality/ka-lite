@@ -17,16 +17,15 @@ from .utils import get_exam_mode_on, set_exam_mode_on, \
 
 logging = settings.LOG
 
-
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
-
     exam_id = 'g4_u401_t1'  # needs to be the first exam in the test list UI
     login_url = reverse('login')
     logout_url = reverse('logout')
-    test_list_url = reverse('test_list')
-    exam_page_url = reverse('test', args=[exam_id])
+    test_list_url = reverse('test_list') if "Nalanda" in settings.CONFIG_PACKAGE else  ""
+    exam_page_url = reverse('test', args=[exam_id]) if "Nalanda" in settings.CONFIG_PACKAGE else  ""
     put_url = '/test/api/test/%s/' % exam_id
 
     def setUp(self):
@@ -74,6 +73,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
         return response
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class CoreTests(BaseTest):
 
     def setUp(self):
@@ -111,6 +111,7 @@ class CoreTests(BaseTest):
         self.get_page_redirects_to_login_url(self.test_list_url)
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
 
     CSS_TEST_ROW_BUTTON = '.test-row-button'
@@ -204,7 +205,7 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         # Logout and login student to check exam redirect no longer in place
         self.browser_logout_user(browser=self.student_browser)
         self.login_student_in_browser(browser=self.student_browser)
-        self.assertEqual(self.reverse("homepage"), self.student_browser.current_url)
+        self.assertEqual(self.reverse("learn") + "{channel}/".format(channel=settings.CHANNEL), self.student_browser.current_url)
         self.student_browser.quit()
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally but fails on travis")
@@ -246,14 +247,14 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         # Check that the Test Log is started.
         self.assertEqual(testlog.started, True)
 
-    def exam_off_on_teacher_logout(self):
+    def test_exam_off_on_teacher_logout(self):
         self.login_teacher_in_browser()
         set_exam_mode_on(self.exam_id)
         self.assertEqual(get_exam_mode_on(), self.exam_id)
         self.browser_logout_user()
         self.assertEqual(get_exam_mode_on(), '')
 
-    def exam_enabled_on_student_logout(self):
+    def test_exam_enabled_on_student_logout(self):
         self.login_student_in_browser()
         set_exam_mode_on(self.exam_id)
         self.assertEqual(get_exam_mode_on(), self.exam_id)
@@ -261,6 +262,7 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         self.assertEqual(get_exam_mode_on(), self.exam_id)
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
 
     def setUp(self):
@@ -328,6 +330,7 @@ class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
         self._check_url(response, self.login_url)
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrowserTestCase):
 
     CSS_CURRENT_UNIT_NEXT_BUTTON = '.current-unit-button.next'

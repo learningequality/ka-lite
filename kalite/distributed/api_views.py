@@ -39,7 +39,7 @@ from fle_utils.testing.decorators import allow_api_profiling
 from kalite import version
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import lcode_to_ietf
-from kalite.main.models import ExerciseLog, VideoLog
+from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 from kalite.shared.decorators import require_admin
 from kalite.store.models import StoreTransactionLog
 
@@ -81,7 +81,10 @@ def compute_total_points(user):
     if user.is_teacher:
         return None
     else:
-        return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user) + StoreTransactionLog.get_points_for_user(user)
+        return (VideoLog.get_points_for_user(user) +
+           ExerciseLog.get_points_for_user(user) +
+           StoreTransactionLog.get_points_for_user(user) +
+           ContentLog.get_points_for_user(user))
 
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST

@@ -13,8 +13,9 @@ class MetacriticIE(InfoExtractor):
 
     _TEST = {
         'url': 'http://www.metacritic.com/game/playstation-4/infamous-second-son/trailers/3698222',
-        'file': '3698222.mp4',
         'info_dict': {
+            'id': '3698222',
+            'ext': 'mp4',
             'title': 'inFamous: Second Son - inSide Sucker Punch: Smoke & Mirrors',
             'description': 'Take a peak behind-the-scenes to see how Sucker Punch brings smoke into the universe of inFAMOUS Second Son on the PS4.',
             'duration': 221,
@@ -27,7 +28,7 @@ class MetacriticIE(InfoExtractor):
         webpage = self._download_webpage(url, video_id)
         # The xml is not well formatted, there are raw '&'
         info = self._download_xml('http://www.metacritic.com/video_data?video=' + video_id,
-            video_id, 'Downloading info xml', transform_source=fix_xml_ampersands)
+                                  video_id, 'Downloading info xml', transform_source=fix_xml_ampersands)
 
         clip = next(c for c in info.findall('playList/clip') if c.find('id').text == video_id)
         formats = []
@@ -43,7 +44,7 @@ class MetacriticIE(InfoExtractor):
         self._sort_formats(formats)
 
         description = self._html_search_regex(r'<b>Description:</b>(.*?)</p>',
-            webpage, 'description', flags=re.DOTALL)
+                                              webpage, 'description', flags=re.DOTALL)
 
         return {
             'id': video_id,

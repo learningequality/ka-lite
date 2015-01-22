@@ -75,6 +75,13 @@ class Facility(DeferredCountSyncedModel):
             # Use an existing facility as the default, if one of them isn't the default already.
             Settings.set("default_facility", facilities[0].id)
 
+    @property
+    def has_ungrouped_students(self):
+        """
+        Checks if this facility has ungrouped students or not.
+        """
+        return len(FacilityUser.objects.filter(facility=self, is_teacher=False, group__isnull=True)) > 0
+
 
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))

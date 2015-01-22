@@ -12,7 +12,7 @@ import kalite.i18n.api_urls
 import kalite.coachreports.api_urls
 import kalite.control_panel.api_urls
 import kalite.playlist.api_urls
-import kalite.khanload.api_urls
+import kalite.contentload.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
 import kalite.store.api_urls
@@ -28,7 +28,7 @@ urlpatterns = patterns(__package__ + '.api_views',
 
 # Khanload allows users to download data from a Khan Academy account
 urlpatterns += patterns('kalite.khanload.api_views',
-    url(r'^khanload/', include(kalite.khanload.api_urls)),
+    url(r'^contentload/', include(kalite.contentload.api_urls)),
 )
 
 # Cherrpyserver allows querying the PID

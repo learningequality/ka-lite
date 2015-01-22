@@ -40,9 +40,9 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 (If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
 
-To start the server, run the `start.sh` script in the `ka-lite` directory.
+To start the server, run the `start.sh` script in the `ka-lite/scripts` directory.
 
-You may want to have this script run automatically when you start the computer. If you are running Ubuntu or another Debian variant, the setup script should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you can do it later by running `sudo ./runatboot.sh` from inside the `ka-lite/kalite` directory.
+You may want to have this script run automatically when you start the computer. If you are running Ubuntu or another Debian variant, the setup script should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you can do it later by running `sudo scripts/runatboot.sh` from inside the `ka-lite` root directory.
 
 Wait for the script to show the following:
 

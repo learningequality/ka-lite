@@ -11,7 +11,6 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
@@ -240,7 +239,7 @@ def login(request, facility):
     if request.method != 'POST':  # render the unbound login form
         referer = urlparse.urlparse(request.META["HTTP_REFERER"]).path if request.META.get("HTTP_REFERER") else None
         # never use the homepage as the referer
-        if referer in [reverse("homepage"), reverse("add_facility_student")]:
+        if referer in [reverse("homepage"), reverse("add_facility_student"), reverse("add_facility_teacher"), reverse("facility_user_signup")]:
             referer = None
         form = LoginForm(initial={"facility": facility_id, "callback_url": referer})
 
@@ -282,15 +281,16 @@ def login(request, facility):
             landing_page = form.cleaned_data["callback_url"] if form.cleaned_data["callback_url"] != reverse("facility_user_signup") else None
             if not landing_page or landing_page == reverse("login"):
                 # Just going back to the homepage?  We can do better than that.
-                landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
-                landing_page = landing_page or (reverse("account_management") if False else reverse("homepage"))  # TODO: pass the redirect as a parameter.
+                if form.get_user().is_teacher:
+                    landing_page = reverse("tabular_view")
+                else:
+                    landing_page = reverse("learn")
 
-            return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
+            return HttpResponseRedirect(request.next or landing_page)
 
     return {
         "form": form,
         "facilities": facilities,
-        "sign_up_url": reverse("facility_user_signup"),
     }
 
 

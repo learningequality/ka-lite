@@ -17,9 +17,9 @@
 
 .suggested-action:hover {
     border-color: #C3CA7D;
-    -webkit-box-shadow: 0 0 10px #76A005;
-    -moz-box-shadow: 0 0 10px #76a005;
-    box-shadow: 0 0 10px #76A005;
+    -webkit-box-shadow: 0 0 6px 3px #5AA685;
+    -moz-box-shadow: 0 0 6px 3px #5AA685;
+    box-shadow: 0 0 6px 3px #5AA685;
 }
 
 .suggested-action a:hover {

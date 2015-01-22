@@ -13,8 +13,9 @@ def assign_playlists(request):
 
 
 @render_to("playlist/view_playlist.html")
-def view_playlist(request, playlist_id):
+def view_playlist(request, playlist_id, channel='playlist'):
     context = {
-        'playlist_id': playlist_id
+        'playlist_id': playlist_id,
+        'channel': channel,
     }
     return context

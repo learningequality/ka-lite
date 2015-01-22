@@ -22,6 +22,12 @@ VERSION_INFO = {
             "coaches": [],
             "admins": [],
         },
+        "bugs_fixed": {
+            "all": ["Mark registration process result immediately", ],
+            "students": [],
+            "coaches": [],
+            "admins": ["Fix Export CSV", "Validate username during installation for Windows"],
+        },
 
     },
 

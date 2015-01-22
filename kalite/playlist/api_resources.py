@@ -1,12 +1,10 @@
-from django.conf import settings
-
 from tastypie import fields
-from tastypie.exceptions import NotFound, Unauthorized
+from tastypie.exceptions import NotFound
 from tastypie.resources import ModelResource, Resource
 
 from .models import PlaylistToGroupMapping, QuizLog, VanillaPlaylist as Playlist, VanillaPlaylistEntry as PlaylistEntry
 from kalite.shared.contextmanagers.db import inside_transaction
-from kalite.topic_tools import video_dict_by_video_id, get_slug2id_map
+from kalite.topic_tools import get_slug2id_map, get_content_cache
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization, tastypie_require_admin
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.student_testing.utils import get_current_unit_settings_value
@@ -42,11 +40,9 @@ class PlaylistResource(Resource):
         playlists = None
 
         # here, we limit the returned playlists depending on the logged in user's privileges
-
         if not request.is_logged_in:
             # not logged in, allow no playlists for them
             playlists = []
-
         elif request.is_logged_in and request.is_admin:  # either actual admin, or a teacher
             # allow access to all playlists
             playlists = Playlist.all()
@@ -75,11 +71,11 @@ class PlaylistResource(Resource):
     def obj_get(self, bundle, **kwargs):
         playlists = Playlist.all()
         pk = kwargs['pk']
-        video_dict = video_dict_by_video_id()
+        content_dict = get_content_cache()
         for playlist in playlists:
             if str(playlist.id) == pk:
                 # Add the full titles onto the playlist entries
-                playlist.entries = [PlaylistEntry.add_full_title_from_topic_tree(entry, video_dict) for entry in playlist.entries]
+                playlist.entries = [PlaylistEntry.add_full_title_from_topic_tree(entry, content_dict) for entry in playlist.entries]
 
                 for entry in playlist.entries:
                     if entry["entity_kind"] == "Video":

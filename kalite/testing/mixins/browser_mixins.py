@@ -1,5 +1,6 @@
 import time
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -83,13 +84,10 @@ class BrowserActionMixins(object):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
 
-        self.browser_wait_for_ajax_calls_to_finish()
-        time.sleep(1)  # wait for the message to get created
+        WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
 
         # Get messages (and limit by type)
         messages = self.browser.find_elements_by_class_name("alert")
-        if message_type:
-            messages = [m for m in messages if message_type in m.get_attribute("class")]
 
         # Check that we got as many as expected
         if num_messages is not None:
@@ -337,32 +335,29 @@ class BrowserActionMixins(object):
         # 2. Admin: #logout contains username
         browser = browser or self.browser
         try:
-            logged_in_name = browser.find_element_by_id("logged-in-name").text.strip()
-            logout_text = browser.find_element_by_id("nav_logout").text.strip()
+            logged_in_name = browser.find_element_by_css_selector("#username").text.strip()
         except NoSuchElementException:
             # We're on an unrecognized webpage
             return False
 
-        username_text = logged_in_name or logout_text[0:-len(" (%s)" % _("Logout"))]
-
         # Just checking to see if ANYBODY is logged in
         if not expected_username:
-            return username_text != ""
+            return logged_in_name != ""
         # Checking to see if Django user, or user with missing names is logged in
         #   (then username displays)
-        elif username_text.lower() == expected_username.lower():
+        elif logged_in_name.lower() == expected_username.lower():
             return True
         # Checking to see if a FacilityUser with a filled-in-name is logged in
         else:
             user_obj = FacilityUser.objects.filter(username=expected_username)
             if user_obj.count() != 0:  # couldn't find the user, they can't be logged in
-                return username_text.lower() == user_obj[0].get_name().lower()
+                return logged_in_name.lower() == user_obj[0].get_name().lower()
 
             user_obj = FacilityUser.objects.filter(username__iexact=expected_username)
             if user_obj.count() != 0:  # couldn't find the user, they can't be logged in
-                return username_text.lower() == user_obj[0].get_name().lower()
+                return logged_in_name.lower() == user_obj[0].get_name().lower()
             else:
-                assert username_text == "", "Impossible for anybody to be logged in."
+                assert logged_in_name == "", "Impossible for anybody to be logged in."
 
 
     def fill_form(self, input_id_dict):

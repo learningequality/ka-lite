@@ -1,11 +1,11 @@
 <div class="form-group">
-    <label for="facility-name" class="col-xs-2">Facility</label>
+    <label for="facility-name" class="col-xs-2">{{_ "Facility" }}</label>
     <div class="col-xs-8">
         {{#if loading}}
             <img src="/static/images/loading.gif" class="float-center float-over-select loading"/>
         {{/if}}
         <select class="form-control {{#if loading}}loading-transparency{{/if}}" id="facility-name" {{#if is_disabled}}disabled{{/if}}>
-            <option value="">All</option>{{!-- Default to all --}} 
+            <option value="">{{_ "All" }}</option>{{!-- Default to all --}}
             {{#each facilities}}
                 <option value="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
             {{/each}}

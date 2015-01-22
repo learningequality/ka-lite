@@ -3,6 +3,8 @@
 {% load staticfiles %}
 {% load include_block %}
 
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
+
 {% block title %}{{ zone.name }} - {% trans "Data Export" %} {{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
@@ -71,11 +73,11 @@
                 {% endif %}
                 {% if zone %}
                     <li>
-                        <a href="{% url 'zone_management' zone_id=zone.id %}"> {{ zone.name }}</a> > 
+                        <a href="{% url 'zone_management' zone_id=zone.id %}"> {{ zone.name }}</a> / 
                     </li>
                 {% endif %}
                 <li>
-                    Data Export
+                    {% trans "Data Export" %}
                 </li>
             {% endblock titlebar_title %}
             </ul>

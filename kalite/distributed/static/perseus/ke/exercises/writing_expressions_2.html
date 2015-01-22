@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html data-require="math expressions">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Writing expressions 2</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+
+    <div class="exercise">
+        <div class="vars" data-ensure="getGCD(A, B) === 1">
+            <var id="A">randRange(1, 9)</var>
+            <var id="B" data-ensure="A !== B">randRange(2, 9)</var>
+            <var id="C" data-ensure="C !== B">randRange(2, 9)</var>
+            <var id="D" data-ensure="C !== D">randRange(1, 9)</var>
+            <var id="CODE_A">"&lt;code&gt;\\blue{" + A + "}&lt;/code&gt;"</var>
+            <var id="CODE_B">"&lt;code&gt;\\green{" + B + "}&lt;/code&gt;"</var>
+            <var id="CODE_C">"&lt;code&gt;\\red{" + C + "}&lt;/code&gt;"</var>
+            <var id="CODE_D">"&lt;code&gt;\\pink{" + D + "}&lt;/code&gt;"</var>
+            
+            <var id="PRODUCT1">rand(2)</var>
+            <var id="SUM1">rand(3)</var>
+            <var id="TERM1">"\\green{" + B + "x}"</var>
+
+            <var id="SUM_TEXT1">[
+                $._("The sum of %(A)s and &lt;code&gt;%(TERM)s&lt;/code&gt; is:", { A: CODE_A, TERM: TERM1 }),
+                $._("%(A)s plus &lt;code&gt;%(TERM)s&lt;/code&gt; is:", { A: CODE_A, TERM: TERM1 }),
+                $._("&lt;code&gt;%(TERM)s&lt;/code&gt; add %(A)s is:", { A: CODE_A, TERM: TERM1 })
+            ][SUM1]
+            </var>
+            <var id="PRODUCT_TEXT1">[
+                $._("The product of %(B)s and &lt;code&gt;\\green{x}&lt;/code&gt; is:", { B: CODE_B }),
+                $._("The quantity of %(B)s times &lt;code&gt;\\green{x}&lt;/code&gt; is:", { B: CODE_B })
+            ][PRODUCT1]
+            </var>
+            <var id="SENTENCE1">[
+                $._("The sum of %(A)s and the product of %(B)s and &lt;code&gt;x&lt;/code&gt;.", { A: CODE_A, B: CODE_B }),
+                $._("The sum of %(A)s and the quantity of %(B)s times &lt;code&gt;x&lt;/code&gt;.", { A: CODE_A, B: CODE_B }),
+                $._("%(A)s plus the product of %(B)s and &lt;code&gt;x&lt;/code&gt;.", { A: CODE_A, B: CODE_B }),
+                $._("%(A)s plus the quantity of %(B)s times &lt;code&gt;x&lt;/code&gt;.", { A: CODE_A, B: CODE_B }),
+                $._("Take the product of %(B)s and &lt;code&gt;x&lt;/code&gt; and add %(A)s.", { A: CODE_A, B: CODE_B }),
+                $._("Take the quantity of %(B)s times &lt;code&gt;x&lt;/code&gt; and add %(A)s.", { A: CODE_A, B: CODE_B })
+            ][SUM1 * 2 + PRODUCT1]
+            </var>
+        </div>
+
+        <div class="problems">
+            <div id="product">
+                <!-- C(A + Bx) + D -->
+                <div class="vars">
+                    <var id="PRODUCT2">rand(2)</var>
+                    <var id="SUM2">rand(3)</var>
+                    <var id="TERM2">"\\red{" + C + "}(\\green{" + B + "x} \\blue{+ " + A + "})"</var>
+
+                    <var id="PRODUCT_TEXT2">[
+                        $._("The product of %(C)s and the above expression is:", { C: CODE_C }),
+                        $._("The quantity of %(C)s times the above expression is:", { C: CODE_C })
+                    ][PRODUCT2]
+                    </var>
+                    <var id="SUM_TEXT2">[
+                        $._("The sum of %(D)s and &lt;code&gt;%(TERM)s&lt;/code&gt; is:", { D: CODE_D, TERM: TERM2 }),
+                        $._("%(D)s plus &lt;code&gt;%(TERM)s&lt;/code&gt; is:", { D: CODE_D, TERM: TERM2 }),
+                        $._("&lt;code&gt;%(TERM)s&lt;/code&gt; add %(D)s is:", { D: CODE_D, TERM: TERM2 })
+                    ][SUM1]
+                    </var>
+                    <var id="SENTENCE2">[
+                        $._("The sum of %(D)s and the product of %(C)s and the above expression.", { C: CODE_C, D: CODE_D }),
+                        $._("The sum of %(D)s and the quantity of %(C)s times the above expression.", { C: CODE_C, D: CODE_D }),
+                        $._("%(D)s plus the product of %(C)s and the above expression.", { C: CODE_C, D: CODE_D }),
+                        $._("%(D)s plus the quantity of %(C)s times the above expression.", { C: CODE_C, D: CODE_D }),
+                        $._("Take the product of %(C)s and the above expression, and then add %(D)s.", { C: CODE_C, D: CODE_D }),
+                        $._("Take the quantity of %(C)s times the above expression, and then add %(D)s.", { C: CODE_C, D: CODE_D })
+                    ][SUM2 * 2 + PRODUCT2]
+                    </var>
+                </div>
+
+                <p class="problem"><p>First consider the expression for:</p>
+                <p class="question"><var>SENTENCE1</var></p>
+                <p class="middle">Now select the answer that matches the following:</p>
+                <p class="part-two"><b><var>SENTENCE2</var></b></p>
+
+                <p class="solution"><code><var>expr(["+", ["*", C, ["+", ["*", B, "x"], A]], D])</var></code></p>
+                <!--
+                    Solution: C ( A + Bx ) + D
+                    wrong 1:  C ( B + Ax ) + D
+                    wrong 2:  D ( A + Bx ) + C
+                    wrong 3:  D ( B + Ax ) + C
+                    wrong 4:  B ( D + Cx ) + A
+                -->
+                <ul class="choices" data-none="true" data-show="5">
+                    <li><code><var>expr(["+", ["*", C, ["+", ["*", A, "x"], B]], D])</var></code></li>
+                    <li><code><var>expr(["+", ["*", D, ["+", ["*", A, "x"], B]], C])</var></code></li>
+                    <li><code><var>expr(["+", ["*", D, ["+", ["*", B, "x"], A]], C])</var></code></li>
+                    <li><code><var>expr(["+", ["*", A, ["+", ["*", D, "x"], C]], B])</var></code></li>
+                </ul>
+
+                <div class="hints">
+                    <p>
+                        <var>PRODUCT_TEXT1</var><br>
+                        <code>\qquad \green{<var>B</var>} \times \green{x} = <var>TERM1</var></code>
+                    </p>
+                    <p>
+                        <var>SUM_TEXT1</var><br>
+                        <code>\qquad <var>TERM1</var> \blue{+ <var>A</var>}</code>
+                    </p>
+                    <p>
+                        <var>PRODUCT_TEXT2</var><br>
+                        <code>\qquad
+                            \red{<var>C</var>} \times (\green{<var>B</var>x} \blue{+ <var>A</var>}) = <var>TERM2</var>
+                        </code>
+                    </p>
+
+                    <p>
+                        <var>SUM_TEXT2</var><br>
+                        <code>\qquad <var>TERM2</var> + \pink{<var>D</var>}</code>
+                    </p>
+                </div>
+            </div>
+
+            <div id="quotient">
+                <!-- (A + Bx) / C -->
+                <div class="vars">
+                    <var id="ORDER">rand(2)</var>
+                    <var id="SOLUTION">ORDER === 0 ? 
+                        "\\dfrac{" + B + "x + " + A + "}{" + C + "}" :
+                        "\\dfrac{" + C + "}{" + B + "x + " + A + "}"
+                    </var>
+                    <var id="INCORRECT">ORDER === 0 ? 
+                        "\\dfrac{" + C + "}{" + B + "x + " + A + "}" :
+                        "\\dfrac{" + B + "x + " + A + "}{" + C + "}"
+                    </var>
+                </div>
+
+                <p class="problem"><p>First consider the expression for:</p>
+                <p class="question"><var>SENTENCE1</var></p>
+                <p class="middle">Now select the answer that matches the following:</p>
+                <p class="part-two"><b>
+                    <span data-if="ORDER === 0">The quotient of the above expression and <var>CODE_C</var>.</span>
+                    <span data-else="">The quotient of <var>CODE_C</var> and the above expression.</span>
+                </b></p>
+
+                <p class="solution"><code><var>SOLUTION</var></code></p>
+                <!--
+                    Solution: (A + Bx) / C
+                    wrong 1:  C ( B + Ax ) + D,
+                    wrong 2:  D ( A + Bx ) + C,
+                    wrong 3:  D ( B + Ax ) + C,
+                    wrong 4:  B ( D + Cx ) + A
+                -->
+                <ul class="choices" data-none="true" data-show="5">
+                    <li><code><var>INCORRECT</var></code></li>
+                    <li><code>\dfrac{<var>B</var> + <var>expr(["*", A, "x"])</var>}{<var>C</var>}</code></li>
+                    <li><code>\dfrac{<var>C</var>}{<var>expr(["*", A, "x"])</var> + <var>B</var>}</code></li>
+                    <li><code>\dfrac{<var>expr(["*", B, "x"])</var>}{<var>C</var>} + <var>A</var></code></li>
+                </ul>
+
+                <div class="hints">
+                    <p>
+                        <var>PRODUCT_TEXT1</var><br>
+                        <code>\qquad \green{<var>B</var>} \times \green{x} = <var>TERM1</var></code>
+                    </p>
+                    <p>
+                        <var>SUM_TEXT1</var><br>
+                        <code>\qquad <var>TERM1</var> \blue{+ <var>A</var>}</code>
+                    </p>
+                    <div data-if="ORDER === 0">
+                        <p>The quotient of <code><var>TERM1</var> \blue{+ <var>A</var>}</code> and <code><var>CODE_C</var></code> is:</p>
+                        <p><code>\dfrac{<var>TERM1</var> \blue{+ <var>A</var>}}{<var>CODE_C</var>}</code></p>
+                    </div>
+                    <div data-else="">
+                        <p>The quotient of <code><var>CODE_C</var></code> and <code><var>TERM1</var> \blue{+ <var>A</var>}</code> is:</p>
+                        <p><code>\dfrac{<var>CODE_C</var>}{<var>TERM1</var> \blue{+ <var>A</var>}}</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

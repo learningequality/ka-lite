@@ -1,0 +1,11 @@
+<label for="facility-select">{{_ "Facility" }}</label>
+<select id="facility-select">
+    {{#if facilities}}
+        <option value="">{{_ "All" }}</option>
+        {{#each facilities}}
+            <option value="{{ id }}" {{#ifcond ../selected "===" id }}selected{{/ifcond}}>{{ name }}</option>
+        {{/each}}
+    {{else}}
+        <option value="">{{_ "this device" }}</option>
+    {{/if}}
+</select>

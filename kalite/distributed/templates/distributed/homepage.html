@@ -1,13 +1,13 @@
-{% extends base_template %}
+{% extends "distributed/base_teach.html" %}
 
 {% load i18n %}
 {% load kalite_staticfiles %}
 
 {% block home_active %}active{% endblock home_active %}
 
+
 {% block headcss %}{{ block.super }}
-    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" /> -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}?{{ BUILD_ID }}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -57,45 +57,36 @@
 {% endblock headjs %}
 
 {% block content %}
-    <div class="front-page" id="homepage">
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
+    <div class="container">
 
-        <h2 class="main-headline">{% trans "A free world-class education for anyone anywhere." %}</h2>
-
-        <div class="vertical-shadow suggested-action">
-            <h2 class="suggested-action-title">{% trans "Learn by watching videos!" %}</h2>
-            <p class="topic-list">
-                {% for subtopic in topics %}
-                <span class="topic">
-                    <a href="{{ subtopic.path }}" class="topic-link topic-{% if not subtopic.available %}un{% endif %}available" title="{% blocktrans with avail=subtopic.nvideos_available known=subtopic.nvideos_known local=subtopic.nvideos_local %}{{ avail }} / {{ known }} video(s) are available ({{ local }} locally).{% endblocktrans %}">
-                        {% trans subtopic.title %}
-                    </a>
-                </span>
-                <br />
-                {% endfor %}
-            </p>
+        <div class="row">
+            <h2 class="main-headline hidden-xs">{{ channel_data.head_line }}</h2>
         </div>
 
-        <div class="vertical-shadow suggested-action">
-            <a href="{% url 'exercise_dashboard' %}">
-                <h2 class="suggested-action-title">{% trans "Learn by doing exercises!" %}</h2>
-                <p>{% trans "Practice your math skills from addition to calculus and everything in between." %}</p>
-                <div class="suggested-action-image-link" style="background-image: url({% static 'images/distributed/knowledge-map-derivative-intuition.png' %});"></div>
-            </a>
+        <div class="row">
+            <div class="col-lg-2 col-lg-push-4 col-md-4 col-md-push-4 col-sm-6 col-sm-push-3 col-xs-8 col-xs-push-2 vertical-shadow suggested-action">
+                <a href="{% url 'learn' %}">
+                    <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
+                    <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/learning-image.png">
+                </a>
+            </div>
         </div>
-
-        <div class="clear"></div>
+        <div class="row">
+            <div class="col-sm-12" id="homepage-p-div">
+                <p class="homepage-p">{{ channel_data.tag_line }}</p>
+            </div>
+        </div>
     </div>
-
-    <p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
 
     <div class="not-admin-only">
         <div class="logged-in-only">
 
             <img src="/static/images/loading.gif" class="float-center loading"/>
 
-            <div id="playlist-table-container">
+            <!--<div id="playlist-table-container">
 
-            </div>
+            </div> -->
 
         </div>
     </div>

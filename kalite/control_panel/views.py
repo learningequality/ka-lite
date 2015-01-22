@@ -22,6 +22,7 @@ from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
 from fle_utils.internet import render_to_csv
+from securesync.models import Device, Zone, SyncSession
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context
 from kalite.facility import get_users_from_group
@@ -30,9 +31,8 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
-from securesync.models import Device, Zone, SyncSession
 
 # TODO(dylanjbarth): this looks awful
 if settings.CENTRAL_SERVER:
@@ -433,7 +433,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # compute period start and end
     # Now compute stats, based on queried data
-    num_exercises = len(get_node_cache('Exercise'))
+    num_exercises = len(get_exercise_cache())
     user_data = OrderedDict()
     group_data = OrderedDict()
 

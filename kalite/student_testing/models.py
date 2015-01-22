@@ -74,6 +74,9 @@ class Test():
 
     @classmethod
     def all(cls, force=False, show_all=False):
+        if "Nalanda" not in settings.CONFIG_PACKAGE:
+            return {}
+
         if not cls._testscache or force:
             for testfile in glob.iglob(STUDENT_TESTING_DATA_PATH + "/*.json"):
 

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems stat">
+<head>
+    <meta charset="UTF-8">
+    <title>Variance</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="DATA_POINTS">randRange( 4, 6 )</var>
+            <var id="POPULATION">randRange( 20, 50 )</var>
+            <var id="TGT_MEAN">animalAvgLifespan( 1 )</var>
+            <var id="TGT_STDDEV">animalStddevLifespan( 1 )</var>
+            <var id="DATA">$.map( randGaussian( TGT_MEAN, TGT_STDDEV, DATA_POINTS ), function( lifespan ) {
+                lifespan = lifespan &lt; 1 ? 1 : round( lifespan );
+                return randRange( 1, lifespan );
+            } )</var>
+            <var id="MEAN">roundTo( 2, mean( DATA ) )</var>
+            <var id="SQR_DEV">$.map( DATA, function( x ) { return roundTo( 2, ( x - MEAN ) * ( x - MEAN ) ); })</var>
+            <var id="VARIANCE">sum(SQR_DEV) / (DATA_POINTS - 1)</var>
+            <var id="VARIANCE_POP">sum(SQR_DEV) / DATA_POINTS</var>
+            <var id="YEAR">new Plural(function(num) {
+                return $.ngettext("year", "years", num);
+            })</var>
+        <var id="YEARS_OLD">$._("%(years)s old", {years: plural_form(YEAR, MEAN)})</var>
+        <var id="YEAR_TEXT">$._("year")</var>
+        <var id="YEARS_TEXT">$._("years")</var>
+        </div>
+
+        <div class="problems">
+
+            <div id="population" data-calculator="">
+                <div class="problem" data-else="">
+                    <p>You have found the following ages (in years) of all <var>DATA_POINTS</var> <var>plural_form(animal(1), DATA_POINTS)</var> at your local zoo:</p>
+                    <p><code>\qquad<var>DATA.join( ",\\enspace " )</var></code></p>
+                </div>
+
+                <p class="question">
+                    What is the average age of the <var>plural_form(animal( 1 ))</var> at your zoo? What is the variance?<br>
+                    <em>Round your answers to the nearest tenth.</em>
+                </p>
+
+                <div class="solution" data-type="multiple">
+                    <p>
+                        Average age:<br><code>\quad</code>
+                        <span class="sol short40" data-inexact="" data-max-error="0.15"><var>mean(DATA)</var></span> years old
+                    </p>
+                    <p>
+                        Variance:<br><code>\quad</code>
+                        <span class="sol short40" data-inexact="" data-max-error="0.15"><var>VARIANCE_POP</var></span> years<code>^2</code>
+                    </p>
+                    <div class="example">decimals, like <code>7.5</code></div>
+                    <div class="example">answers within <code>\pm 0.15</code> are accepted to allow for rounding part-way through</div>
+                </div>
+
+                <div class="hints">
+                    <p>
+                        Because we have data for all <code><var>DATA_POINTS</var></code> <var>plural_form(animal( 1 ), DATA_POINTS)</var> at the zoo,
+                        we are able to calculate the <span class="hint_blue">population mean</span> <code>(\blue{\mu})</code> and
+                        <span class="hint_red">population variance</span> <code>(\red{\sigma^2})</code>.
+                    </p>
+
+                    <div>
+                        <p>
+                            To find the <span class="hint_blue">population mean</span>, add up the values of all
+                            <code class="hint_green"><var>DATA_POINTS</var></code>
+                            ages and divide by <code class="hint_green"><var>DATA_POINTS</var></code>.
+                        </p>
+                        <p>
+                            <code>
+                                \blue{\mu} \quad = \quad
+                                \dfrac{\sum\limits_{i=1}^{\green{N}} x_i}{\green{N}} \quad = \quad
+                                \dfrac{\sum\limits_{i=1}^{\green{<var>DATA_POINTS</var>}} x_i}{\green{<var>DATA_POINTS</var>}}
+                            </code>
+                        </p>
+                    </div>
+
+                    <p>
+                        <code>
+                            \blue{\mu} \quad = \quad
+                            \dfrac{<var>plus.apply( KhanUtil, DATA )</var>}{\green{<var>DATA_POINTS</var>}} \quad = \quad
+                            \blue{<var>MEAN</var>\text{ <var>YEARS_OLD</var>}}
+                        </code>
+                    </p>
+
+                    <div>
+                        <p>
+                            Find the <span class="hint_purple">squared deviations from the mean</span> for each <var>animal(1)</var>.
+                        </p>
+                        <div class="fake_header">
+                            <span style="width: 100px;">
+                                Age<br>
+                                <code>x_i</code>
+                            </span><span style="width: 150px;">
+                                <span class="hint_gray">Distance from the mean</span>
+                                <code>(x_i - \blue{\mu})</code>
+                            </span><span style="width: 150px;">
+                                <code>(x_i - \blue{\mu})^2</code>
+                            </span>
+                        </div>
+                        <div class="fake_row" data-each="DATA as i, POINT">
+                            <span style="width: 100px;">
+                                <code><var>POINT</var></code> <var>plural_form(YEAR, POINT )</var>
+                            </span><span class="hint_gray" style="width: 150px;">
+                                <code><var>roundTo( 2, POINT - MEAN )</var></code> <var>plural_form(YEAR, roundTo( 2, POINT - MEAN ) )</var>
+                            </span><span class="hint_purple" style="width: 150px;">
+                                <code><var>SQR_DEV[ i ]</var></code> <var>plural_form(YEAR, SQR_DEV[ i ] )</var><code>^2</code>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
+                            Because we used the <span class="hint_blue">population mean</span> <code>(\blue{\mu})</code> to compute the
+                            <span class="hint_purple">squared deviations from the mean</span>, we can find the
+                            <span class="hint_red">population variance</span>
+                            <code>(\color{red}{\sigma^2})</code>, without introducing any bias, by simply averaging the
+                            <span class="hint_purple">squared deviations from the mean</span>:
+                        </p>
+                        <p>
+                            <code>
+                                \color{red}{\sigma^2} \quad = \quad
+                                \dfrac{\sum\limits_{i=1}^{\green{N}} (x_i - \blue{\mu})^2}{\green{N}}
+                            </code>
+                        </p>
+                    </div>
+
+                    <p>
+                        <code>
+                            \color{red}{\sigma^2} \quad = \quad
+                            \dfrac{<var>plus.apply( KhanUtil, $.map( SQR_DEV, function( x ) { return "\\color{purple}{" + x + "}"; }) )</var>}
+                            {\green{<var>DATA_POINTS</var>}}
+                        </code>
+                    </p>
+
+                    <p>
+                        <code>
+                            \color{red}{\sigma^2} \quad = \quad
+                            \dfrac{\color{purple}{<var>roundTo( 2, sum( SQR_DEV ) )</var>}}{\green{<var>DATA_POINTS</var>}} \quad = \quad
+                            \color{red}{<var>roundTo(2, VARIANCE_POP)</var>\text{ <var>plural_form(YEAR, VARIANCE_POP )</var>}^2}
+                        </code>
+                    </p>
+
+                    <p>
+                        <span data-if="isSingular(MEAN)">
+                            The average <var>animal( 1 )</var> at the zoo is <code><var>roundTo(1, MEAN)</var></code> year old.
+                        </span><span data-else="">
+                            The average <var>animal( 1 )</var> at the zoo is <code><var>roundTo(1, MEAN)</var></code> years old.
+                        </span>
+                        <span data-if="isSingular(VARIANCE_POP)">
+                            The population variance is <code><var>roundTo(1, VARIANCE_POP)</var></code> year<code>^2</code>.
+                        </span><span data-else="">
+                            The population variance is <code><var>roundTo(1, VARIANCE_POP)</var></code> years<code>^2</code>.
+                        </span>
+                    </p>
+
+                </div>
+            </div>
+
+            <div id="sample" data-calculator="">
+                <div class="problem" data-else="">
+                    <p>
+                        You have found the following ages (in years) of <code><var>DATA_POINTS</var></code> 
+                        <var>plural_form(animal( 1 ), DATA_POINTS)</var>.
+                        The <var>plural_form(animal( 1 ))</var> are randomly selected from the
+                        <code><var>POPULATION</var></code> <var>plural_form(animal( 1 ), POPULATION)</var> at your local zoo:
+                    </p>
+                    <p><code>\qquad<var>DATA.join( ",\\enspace " )</var></code></p>
+                </div>
+
+                <p class="question">
+                    Based on your sample, what is the average age of the <var>plural_form(animal( 1 ))</var>?
+                    What is the estimated variance of the ages?<br>
+                    <em>You may round your answers to the nearest tenth.</em>
+                </p>
+
+                <div class="solution" data-type="multiple">
+                    <p>
+                        Average age:<br><code>\quad</code>
+                        <span class="sol short40" data-inexact="" data-max-error="0.15"><var>mean(DATA)</var></span> years old
+                    </p>
+                    <p>
+                        Variance:<br><code>\quad</code>
+                        <span class="sol short40" data-inexact="" data-max-error="0.15"><var>sum(SQR_DEV) / (DATA_POINTS - 1)</var></span> years<code>^2</code>
+                    </p>
+                    <div class="example">decimals, like <code>0.75</code></div>
+                    <div class="example">answers within <code>\pm 0.15</code> are accepted to allow for rounding part-way through</div>
+                </div>
+
+                <div class="hints">
+                    <p>
+                        Because we only have data for a small sample of the
+                        <code><var>POPULATION</var></code> <var>plural_form(animal(1), POPULATION)</var>,
+                        we are only able to estimate the population mean and variance by finding the <span class="hint_blue">sample mean</span>
+                        <code>(\blue{\overline{x}})</code> and <span class="hint_red">sample variance</span> <code>(\red{s^2})</code>.
+                    </p>
+
+                    <div>
+                        <p>
+                            To find the <span class="hint_blue">sample mean</span>, add up the values of all <code class="hint_green"><var>DATA_POINTS</var></code>
+                            samples and divide by <code class="hint_green"><var>DATA_POINTS</var></code>.
+                        </p>
+                        <p>
+                            <code>
+                                \blue{\overline{x}} \quad = \quad
+                                \dfrac{\sum\limits_{i=1}^{\green{n}} x_i}{\green{n}} \quad = \quad
+                                \dfrac{\sum\limits_{i=1}^{\green{<var>DATA_POINTS</var>}} x_i}{\green{<var>DATA_POINTS</var>}}
+                            </code>
+                        </p>
+                    </div>
+
+                    <p>
+                        <code>
+                            \blue{\overline{x}} \quad = \quad
+                            \dfrac{<var>plus.apply( KhanUtil, DATA )</var>}{\green{<var>DATA_POINTS</var>}} \quad = \quad
+                            \blue{<var>MEAN</var>\text{ <var>YEARS_OLD</var>}}
+                        </code>
+                    </p>
+
+                    <p data-if="isSingular(MEAN)">
+                        Find the <span class="hint_purple">squared deviations from the mean</span> for each sample. Since we don't know the
+                        population mean, estimate the mean by using the <span class="hint_blue">sample mean</span> we just calculated
+                        <code>(\blue{\overline{x}} = \blue{<var>MEAN</var>\text{ <var>YEAR_TEXT</var>}})</code>.
+                    </p><p data-else="">
+                        Find the <span class="hint_purple">squared deviations from the mean</span> for each sample. Since we don't know the
+                        population mean, estimate the mean by using the <span class="hint_blue">sample mean</span> we just calculated
+                        <code>(\blue{\overline{x}} = \blue{<var>MEAN</var>\text{ <var>YEARS_TEXT</var>}})</code>.
+                    </p>
+
+                    <div>
+                        <div class="fake_header">
+                            <span style="width: 100px;">
+                                Age<br>
+                                <code>x_i</code>
+                            </span><span style="width: 150px;">
+                                <span class="hint_gray">Distance from the mean</span>
+                                <code>(x_i - \blue{\overline{x}})</code>
+                            </span><span style="width: 150px;">
+                                <code>(x_i - \blue{\overline{x}})^2</code>
+                            </span>
+                        </div>
+                        <div class="fake_row" data-each="DATA as i, POINT">
+                            <span style="width: 100px;">
+                                <code><var>POINT</var></code> <var>plural_form(YEAR, POINT )</var>
+                            </span><span class="hint_gray" style="width: 150px;">
+                                <code><var>roundTo( 2, POINT - MEAN )</var></code> <var>plural_form(YEAR, roundTo( 2, POINT - MEAN ) )</var>
+                            </span><span class="hint_purple" style="width: 150px;">
+                                <code><var>SQR_DEV[ i ]</var></code> <var>plural_form(YEAR, SQR_DEV[ i ] )</var><code>^2</code>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
+                            Normally we can find the variance <code>(\color{red}{s^2})</code> by averaging the
+                            <span class="hint_purple">squared deviations from the mean</span>. But remember we don't know the real
+                            population mean—we had to estimate it by using the <span class="hint_blue">sample mean</span>.
+                        </p>
+                        <p>
+                            The age of any <var>animal( 1 )</var> in our sample is likely to be closer to the average
+                            of the <code><var>DATA_POINTS</var></code> <var>plural_form(animal( 1 ), DATA_POINTS)</var> we looked at
+                            instead of the average of all the <var>plural_form(animal( 1 ), POPULATION)</var> in the zoo.
+                            Because of that, the <span class="hint_purple">squared deviations from the mean</span> we calculated will
+                            probably underestimate the actual deviations from the population mean.
+                        </p>
+                        <p>
+                            To compensate for this underestimation, rather than simply averaging the
+                            <span class="hint_purple">squared deviations from the mean</span>,
+                            we total them and divide by <code class="hint_green">n - 1</code>.
+                        </p>
+                        <p>
+                            <code>
+                                \color{red}{s^2} \quad = \quad
+                                \dfrac{\sum\limits_{i=1}^{\green{n}} (x_i - \blue{\overline{x}})^2}{\green{n - 1}}
+                            </code>
+                        </p>
+                    </div>
+
+                    <p>
+                        <code>
+                            \color{red}{s^2} \quad = \quad
+                            \dfrac{<var>plus.apply( KhanUtil, $.map( SQR_DEV, function( x ) { return "\\color{purple}{" + x + "}"; }) )</var>}
+                            {\green{<var>DATA_POINTS</var> - 1}}
+                        </code>
+                    </p>
+
+                    <p>
+                        <code>
+                            \color{red}{s^2} \quad = \quad
+                            \dfrac{\color{purple}{<var>roundTo( 2, sum( SQR_DEV ) )</var>}}{\green{<var>DATA_POINTS - 1</var>}} \quad = \quad
+                            \color{red}{<var>roundTo(2, VARIANCE)</var>\text{ <var>plural_form(YEAR, VARIANCE )</var>}^2}
+                        </code>
+                    </p>
+
+                    <p>
+                        <span data-if="isSingular(MEAN)">
+                            We can estimate that the average <var>animal(1)</var> at the zoo is <code><var>roundTo(1, MEAN)</var></code> year old.
+                        </span><span data-else="">
+                            We can estimate that the average <var>animal(1)</var> at the zoo is <code><var>roundTo(1, MEAN)</var></code> years old.
+                        </span>
+                        <span data-if="isSingular(VARIANCE)">
+                            The estimated variance of the <var>plural_form(animal( 1 ), DATA_POINTS)</var> is
+                            <code><var>roundTo(1, VARIANCE)</var></code> year<code>^2</code>.
+                        </span><span data-else="">
+                            The estimated variance of the <var>plural_form(animal( 1 ), DATA_POINTS)</var> is
+                            <code><var>roundTo(1, VARIANCE)</var></code> years<code>^2</code>.
+                        </span>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

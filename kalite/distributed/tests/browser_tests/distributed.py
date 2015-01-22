@@ -17,7 +17,7 @@ from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
-from kalite.topic_tools import get_exercise_paths, get_node_cache
+from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
 
@@ -161,7 +161,7 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
     student_username = 'test_student'
     student_password =  'socrates'
     EXERCISE_SLUG = 'addition_1'
-    MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG][0]["basepoints"]
+    MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG]["basepoints"]
     MAX_POINTS = 2 * MIN_POINTS
 
     def setUp(self):
@@ -176,7 +176,7 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
                                            facility=self.facility)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
-        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG][0]["path"])
+        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG]["path"])
         self.nanswers = self.browser.execute_script('return window.ExerciseParams.STREAK_CORRECT_NEEDED;')
 
     def browser_get_current_points(self):
@@ -289,32 +289,6 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         self.assertEqual(elog.attempts_before_completion, self.nanswers, "Student should have %s attempts for completion." % self.nanswers)
 
 
-@unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
-class LoadExerciseTest(BrowserActionMixins, KALiteBrowserTestCase):
-    """Tests if the exercise is loaded without any JS error.
-
-    The test is run over all urls and check for any JS error.
-    """
-    student_username = 'test_student'
-    student_password =  'socrates'
-
-    def setUp(self):
-        super(LoadExerciseTest, self).setUp()
-        self.student = self.create_student()
-        self.browser_login_student(self.student_username, self.student_password)
-
-    def test_get_exercise_load_status(self):
-        for path in get_exercise_paths():
-            logging.debug("Testing path : " + path)
-            self.browser.get(self.live_server_url + path)
-            error_list = self.browser.execute_script("return window.js_errors;")
-            if error_list:
-                logging.error("Found JS error(s) while loading path: " + path)
-                for e in error_list:
-                    logging.error(e)
-            self.assertFalse(error_list)
-
-
 class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase):
     """
     Submit forms with no values, make sure there are no errors.
@@ -352,11 +326,14 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         """Students should be auto-logged out"""
         student_username = 'test_student'
         student_password =  'socrates'
+        self.create_admin()
         self.student = self.create_student(username=student_username, password=student_password)
         self.browser_login_student(student_username, student_password)
         time.sleep(3)
         self.browse_to(self.reverse("exercise_dashboard"))
-        self.browser_check_django_message(message_type="error", contains="Your session has been timed out.")
+        self.browser_check_django_message(message_type="error", contains="Your session has been timed out")
+        # Check if user redirects to login page after session timeout.
+        self.assertEquals(self.browser.current_url, self.reverse("login") )
 
     def test_admin_no_logout_after_interval(self):
         """Admin should not be auto-logged out"""

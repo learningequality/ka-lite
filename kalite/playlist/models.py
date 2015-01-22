@@ -1,6 +1,7 @@
 import json
 import os
 from django.db import models
+from django.conf import settings
 
 from fle_utils.django_utils import ExtendedModel
 
@@ -102,6 +103,9 @@ class VanillaPlaylist:
 
     @classmethod
     def all(cls, limit_to_shown=True):
+        if "nalanda" not in settings.CONFIG_PACKAGE:
+            return []
+
         with open(cls.playlistjson) as f:
             raw_playlists = json.load(f)
 
@@ -141,7 +145,7 @@ class VanillaPlaylist:
         unprepared = filter(lambda e: e["entity_kind"]==entry_type, playlist.entries)
         prepared = []
         for entry in unprepared:
-            new_item = get_node_cache()[entry_type].get(entry['entity_id'], [None])[0]
+            new_item = get_node_cache()[entry_type].get(entry['entity_id'], None)
             if new_item:
                 prepared.append(new_item)
         return prepared

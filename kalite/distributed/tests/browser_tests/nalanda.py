@@ -4,6 +4,7 @@ These use a web-browser, along with selenium, to simulate user actions.
 import time
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
@@ -14,7 +15,7 @@ PLAYLIST_ID = "g4_u403_p1"
 
 logging = settings.LOG
 
-
+@unittest.skipIf(settings.CONFIG_PACKAGE!="Nalanda", "Test only when testing RCT3")
 class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
     """
     Tests that dynamic settings are properly set for different units.
@@ -39,7 +40,7 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         """
 
         set_current_unit_settings_value(self.facility.id, unit)
-        self.browse_to(self.live_server_url + get_node_cache("Exercise")[exercise_id][0]["path"])
+        self.browse_to(self.live_server_url + get_node_cache("Exercise")[exercise_id]["path"])
 
     def test_nalanda_control_exercise(self):
         """

@@ -8,6 +8,8 @@
 function toggle_state(state, status){
     $("." + (status ? "not-" : "") + state + "-only").hide();
     $("." + (!status ? "not-" : "") + state + "-only").show();
+    // Use display block setting instead of inline to prevent misalignment of navbar items.
+    $(".nav ." + (!status ? "not-" : "") + state + "-only").css("display", "block");
 }
 
 function show_api_messages(messages) {
@@ -36,7 +38,7 @@ function show_api_messages(messages) {
 function show_modal(msg_class, msg_text) {
     clear_modal();
 
-    var msg_html = sprintf("<div class='alert alert-%1$s' id='overlay'><a class='close' data-dismiss='alert' href='#''>&times;</a>%2$s</div><div id='fade'></div>", msg_class, msg_text);
+    var msg_html = sprintf("<div class='alert alert-%1$s' id='modal'><a class='close' data-dismiss='alert' href='#''>&times;</a>%2$s</div><div id='fade'></div>", msg_class, msg_text);
 
     window.modal = $(msg_html).appendTo("body");
     $(".close").click(clear_modal);
@@ -114,6 +116,7 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("teacher", self.get("is_admin") && !self.get("is_django_user"));
             toggle_state("student", !self.get("is_admin") && !self.get("is_django_user") && self.get("is_logged_in"));
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
+            $('.navbar-right').show();
         });
 
         this.update_total_points();
@@ -139,15 +142,40 @@ var TotalPointView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this);
         this.model.bind("change:totalpoints", this.render);
-        this.model.bind("change:username", this.render);
         this.render();
     },
 
     render: function() {
 
         var points = this.model.get("totalpoints");
-        var username_span = sprintf("<span id='logged-in-name'>%s</span>", this.model.get("username"));
         var message = null;
+
+        // only display the points if they are greater than zero, and the user is logged in
+        if (!this.model.get("is_logged_in")) {
+            return;
+        }
+
+        message = sprintf(gettext("Points: %(points)d "), { points : points });
+        if (ds.store.show_store_link_once_points_earned) {
+            message += " | <a href='/store/'>Store!</a>";
+        }
+
+        this.$el.html(message);
+        this.$el.show();
+    }
+
+});
+
+var UsernameView = Backbone.View.extend({
+
+    initialize: function() {
+        this.listenTo(this.model, "change:username", this.render);
+        this.render();
+    },
+
+    render: function() {
+
+        var username_span = this.model.get("username");
 
         // only display the points if they are greater than zero, and the user is logged in
         if (!this.model.get("is_logged_in")) {
@@ -159,16 +187,7 @@ var TotalPointView = Backbone.View.extend({
             username_span += sprintf(" (%s)", this.model.get("user_id").slice(0, 8));
         }
 
-        if (points > 0) {
-            message = sprintf("%s<span> | %s</span>", username_span, sprintf(gettext("Total Points: %(points)d "), { points : points }));
-            if (ds.store.show_store_link_once_points_earned) {
-                message += " | <a href='/store/'>Store!</a>";
-            }
-        } else {
-            message = sprintf(gettext("Welcome, %(username)s!"), {username: username_span});
-        }
-
-        this.$el.html(message);
+        this.$el.html(username_span);
         this.$el.show();
     }
 
@@ -182,7 +201,11 @@ function sanitize_string(input_string) {
 $(function(){
 
     // create an instance of the total point view, which encapsulates the point display in the top right of the screen
-    var totalPointView = new TotalPointView({model: statusModel, el: "#sitepoints"});
+    var usernameView = new UsernameView({model: statusModel, el: "#username"});
+    var totalPointView = new TotalPointView({model: statusModel, el: "#points"});
+
+    // For mobile (Bootstrap xs) view
+    var totalPointViewXs = new TotalPointView({model: statusModel, el: "#points-xs"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
@@ -197,7 +220,6 @@ $(function(){
 
     // Hide stuff with "-only" classes by default
     //$("[class$=-only]").hide();
-
 });
 
 
@@ -376,6 +398,25 @@ $(function() {
                 toggle_state(server_or_client + "-online", is_online);
 
             });
+        }
+    });
+
+});
+
+
+// Hides/shows nav bar search input field/button when user clicks on search glyphicon
+$(function() {
+
+    var glyphicon_search = $('#glyphicon-search-js'); // Search glyphicon
+    var search = $('.search-js'); // Search input field/button
+
+    search.hide(); // Search input field/button are hidden upon page load
+
+    glyphicon_search.click(function() { // When user clicks on search glyphicon,
+        if (search.is(':hidden')) { // if search input field/button are hidden,
+            search.show(); // search input field/button are displayed;
+        } else { // if user clicks on search glyphicon and search input field/button are displayed,
+            search.hide(); // search input field/button are hidden.
         }
     });
 

@@ -1,0 +1,142 @@
+{% extends base_template %}
+{% load i18n %}
+{% load kalite_staticfiles %}
+
+{% block practice_active %}active{% endblock practice_active %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'perseus/ke/css/khan-exercise.css' True %}">
+
+    <style type="text/css">
+        /* Overridding bootstrap back to defaults to make perseus looking good */
+        ul {
+            list-style-type: none;
+            margin-left: -8px;
+        }
+        .checkbox, .checkbox > input {
+            padding-left: 0;
+            float: none !important;
+        }
+        #workarea .perseus-widget-container ul.blank-background {
+            background-color: #F7F7F7 !important;
+        }
+    </style>
+
+    <!-- Used by KA to dynamically add styling to the exercise -->
+    <style id="exercise-inline-style"></style>
+
+    <link rel="stylesheet" type="text/css" href="{% static "perseus/lib/katex/fonts/fonts.css" %}" />
+    <link rel="stylesheet/less" type="text/css" href="{% static "perseus/lib/katex/katex.less" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "perseus/lib/mathquill/mathquill.css" %}" />
+
+    <link rel="stylesheet/less" type="text/css" href="{% static "perseus/stylesheets/exercise-content-package/perseus.less" %}" />
+
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+
+    <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
+    <script src="{% static "perseus/lib/marked.js" %}"></script>
+    <script src="{% static "perseus/lib/react-with-addons.js" %}"></script>
+    <script src="{% static "perseus/ke/third_party/MathJax/2.1/MathJax.js" True %}?config={% static "perseus/ke/third_party/MathJax/2.1/config/KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d" %}"></script>
+    <script src="{% static "perseus/lib/katex/katex.js" %}"></script>
+    <script src="{% static "perseus/lib/mathquill/mathquill.js" %}"></script>
+    <script src="{% static "perseus/lib/kas.js" %}"></script>
+
+    <script src="{% static "perseus/ke/local-only/jed.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/i18n.js" %}"></script>
+    <script src="{% static "perseus/ke/local-only/jquery.qtip.js" %}"></script>
+    <!-- // <script src="{% static "perseus/ke/exercises-stub.js" %}"></script> -->
+    <script src="{% static "perseus/ke/local-only/require.js" %}"></script>
+
+    <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
+
+    <!-- Import below is for testing/debug purposes only. rtibbles to remove !-->
+    <!-- // <script src="{% static 'js/seedrandom.min.js' %}"></script> -->
+
+    <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
+    <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
+
+    <!-- // <script src="{% static 'khan-exercises/khan-exercise.js' %}"></script> -->
+
+    <script src="{% static 'perseus/ke/interface.js' %}"></script>
+
+    <!-- // <script src="{% static 'js/ke.js' %}"></script> -->
+
+    <script>
+
+        $(function() {
+
+            // require(["{% static 'perseus/ke/khan-exercise.js' %}"]);
+
+            window.exercise_practice_view = new ExercisePracticeView({
+                el: $(".exercise-wrapper"),
+                context_type: "exercise",
+                // exercise_id: "{{ exercise_id }}"
+
+                // render correctly 
+                // exercise_id: "count-from-any-number"
+                exercise_id: "count-to-100"  
+                // exercise_id: "writing-and-interpreting-decimals"  
+                // exercise_id: "hypothesis-testing-with-simulations" 
+                // exercise_id: "trends-in-categorical-data"  
+                // exercise_id: "recognizing_rays_lines_and_line_segments"  
+                // exercise_id: "palette-of-narmer-quiz"  
+
+                // won't load (js error)
+                // exercise_id: "graphing_systems_of_equations"  
+                // exercise_id: "graphing_systems_of_inequalities" 
+                // exercise_id: "dividing_fractions_2"  
+                // exercise_id: "one_step_equation_intuition" 
+                // exercise_id: "subtraction_1" 
+                // exercise_id: "subtraction_1" 
+                // exercise_id: "recognizing_fractions_0.5" 
+                // exercise_id: "telling_time" 
+                // exercise_id: "dice_probability" 
+                // exercise_id: "graphing_systems_of_equations"  
+                
+                // ID not found
+                // exercise_id: "compound-events"  
+
+
+                
+            });
+
+        });
+
+    </script>
+
+{% endblock headjs %}
+
+{% block content %}
+    <div class="container">
+
+        <div class="row">
+            <div class="exercises-header">
+                <div class="row col-xs-12">
+                    {% if prev %}
+                    <div class="vidprev">
+                        <a href="{{ prev.path }}">
+                            &lt; {% trans prev.title %} <span class="progress-circle" data-exercise-id="{{ prev.id }}"></span>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    {% if next %}
+                    <div class="vidnext pull-right">
+                        <a href="{{ next.path }}"><span class="progress-circle" data-exercise-id="{{ next.id }}"></span> {% trans next.title %} &gt;
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="exercise-wrapper"></div>
+
+{% endblock content %}

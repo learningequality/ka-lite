@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Interpreting linear relationships</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars"></div>
+        <div class="problems">
+            <div id="increase" data-weight="3">
+                <div class="vars">
+                    <var id="INDEX">randRange( 0, 2 )</var>
+                    <var id="M">1 / randRange( 2, 5 )</var>
+                    <var id="B">randRange( 1, 3 )</var>
+                    <var id="UNIT">[ deskItem( 0 ), fruit( 0 ), "X" ][ INDEX ]</var>
+                    <var id="X_AXIS_LABEL">[
+                        $._("# of %(unit)s", {unit: plural_form( UNIT )}),
+                        $._("# of %(unit)s", {unit: plural_form( UNIT )}),
+                        "X"
+                    ][ INDEX ]</var>
+                    <var id="Y_AXIS_LABEL">[
+                        $._("Cost of producing %(unit)s", {unit: plural_form( UNIT )}),
+                        $._("Cost of producing %(unit)s", {unit: plural_form( UNIT )}),
+                        "Y"
+                    ][ INDEX ]</var>
+
+                    <var id="BLACK_ARROW">$._("black arrow")</var>
+                    <var id="GREEN_ARROW">$._("green arrow")</var>
+                </div>
+                <div class="question">
+                    <p data-if="INDEX === 2"><b>How does <code>Y</code> change as <code>X</code> increases?</b></p>
+                    <p data-else><b>How does the cost of producing <var>plural_form(UNIT)</var> change as the number of <var>plural_form(UNIT)</var> increases?</b></p>
+                    <div class="graphie" id="grid">
+                        init({
+                            range: [[-3, 10], [-1, 10]],
+                            scale: [30, 30]
+                        });
+
+                        grid( [10, 10], [10, 10], {
+                            stroke: "#ccc"
+                        });
+
+                        style({
+                            stroke: "#888",
+                            strokeWidth: 2,
+                            arrows: "-&gt;"
+                        });
+                        path( [ [-0.5, 0], [10, 0] ] );
+                        path( [ [0, -0.5], [0, 10] ] );
+
+                        style({
+
+                            stroke: BLACK,
+                            strokeWidth: 0.9,
+                            arrows: "-&gt;"
+                        });
+
+                        label( [ 0, 9.2 ], "\\text{" + Y_AXIS_LABEL + "}", "right");
+                        label( [ 8.5, 0], "\\text{" + X_AXIS_LABEL + "}", "below");
+
+                        style({
+                            stroke: BLUE,
+                            strokeWidth: 2,
+                            arrows: "-&gt;"
+                        });
+
+                        plot( function( x ) {
+                            return ( M ) * x + B;
+                        }, [0, 10]);
+                    </div>
+                </div>
+
+                <div class="solution">Increases</div>
+                <ul class="choices" data-category="true">
+                    <li>Increases</li>
+                    <li>Decreases</li>
+                    <li>Stays the same</li>
+                </ul>
+                <div class="hints">
+                    <div>
+                        <div class="graphie" data-update="grid">
+                            style({ fill: "", stroke: BLACK });
+                            line( [ 4, 4 * M + B ], [ 7, 4 * M + B ] );
+                            style({ stroke: GREEN });
+                            line( [ 7, 4 * M + B ], [ 7, 7 * M + B ] );
+                        </div>
+                        <p>Looking at the graph, we see that as <code>x</code> increases (<code>\text{<var>BLACK_ARROW</var>}</code>), <code>y</code> also increases (<code>\green{\text{<var>GREEN_ARROW</var>}}</code>).</p>
+                    </div>
+                    <p>We can say that the slope of the line is positive, or that the variables have a direct relationship.</p>
+                    <p data-if="INDEX === 2">Thus, as <code>X</code> increases, <code>Y</code> also <b>increases</b>.</p>
+                    <p data-else>Thus, as the number of <var>plural_form(UNIT)</var> increases, the price of <var>plural_form(UNIT)</var> also <b>increases</b>.</p>
+                </div>
+            </div>
+            <div id="decrease" data-type="increase" data-weight="3">
+                <div class="vars">
+                    <var id="M">1 / randRange( 2, 5 ) * -1</var>
+                    <var id="B">randRange( 6, 8 )</var>
+                    <var id="BLACK_ARROW">$._("black arrow")</var>
+                    <var id="RED_ARROW">$._("red arrow")</var>
+                </div>
+                <div class="solution">Decreases</div>
+                <div class="hints">
+                    <div>
+                        <div class="graphie" data-update="grid">
+                            style({ fill: "", stroke: "#000000" });
+                            line( [ 4, 4 * M + B ], [ 7, 4 * M + B ] );
+                            style({ stroke: "#ff0000" });
+                            line( [ 7, 4 * M + B ], [ 7, 7 * M + B ] );
+                        </div>
+                        <p>Looking at the graph, we see that as <code>x</code> increases (<code>\text{<var>BLACK_ARROW</var>}</code>), <code>y</code> decreases (<code>\red{\text{<var>RED_ARROW</var>}}</code>).</p>
+                    </div>
+                    <p>We can say that the slope of the line is negative, or that the variables have an inverse relationship.</p>
+                    <p data-if="INDEX === 2">Thus, as <code>X</code> increases, <code>Y</code> <b>decreases</b>.</p>
+                    <p data-else>Thus, as the number of <var>plural_form(UNIT)</var> increases, the price of <var>plural_form(UNIT)</var> <b>decreases</b>.</p>
+                </div>
+            </div>
+            <div id="stays" data-type="increase" data-weight="1">
+                <div class="vars">
+                    <var id="M">0</var>
+                    <var id="B">randRange( 2, 8 )</var>
+                </div>
+                <div class="solution">Stays the same</div>
+                <div class="hints">
+                    <p>Looking at the graph, we see that as <code>x</code> increases, there is no change in <code>y</code>.</p>
+                    <p>We can say that the slope of the line is zero, or that the variables have no correlation.</p>
+                    <p data-if="INDEX === 2">Thus, as <code>X</code> increases, <code>Y</code> <b>stays the same</b>.</p>
+                    <p data-else>Thus, as the number of <var>plural_form(UNIT)</var> increases, the price of <var>plural_form(UNIT)</var> <b>stays the same</b>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

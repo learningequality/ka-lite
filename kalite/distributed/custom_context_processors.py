@@ -15,9 +15,13 @@ def custom(request):
         "central_server_host": settings.CENTRAL_SERVER_HOST,
         "securesync_protocol": settings.SECURESYNC_PROTOCOL,
         "base_template": "distributed/base.html",
+        "channel_data": settings.CHANNEL_DATA,
+        "channel": settings.CHANNEL,
         "is_central": False,
         "settings": settings,
         "VERSION": version.VERSION,
+        "SHORTVERSION": version.SHORTVERSION,
         "True": True,
-        "False": False
+        "False": False,
+        "is_config_package_nalanda": "Nalanda" in settings.CONFIG_PACKAGE
     }

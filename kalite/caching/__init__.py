@@ -50,22 +50,6 @@ def invalidate_on_video_delete(sender, **kwargs):
         invalidate_all_caches()
 
 
-def invalidate_all_pages_related_to_video(video_id=None):
-    """Given a video file, recurse backwards up the hierarchy and invalidate all pages.
-    Also include video pages and related exercise pages.
-    """
-
-    # Expire all video files and related paths
-    video_paths = topic_tools.get_video_page_paths(video_id=video_id)
-    exercise_paths = topic_tools.get_exercise_page_paths(video_id=video_id)
-    leaf_paths = set(video_paths).union(set(exercise_paths))
-
-    for leaf_path in leaf_paths:
-        all_paths = generate_all_paths(path=leaf_path, base_path=topic_tools.get_topic_tree()['path'])
-        for path in filter(has_cache_key, all_paths):  # start at the root
-            expire_page(path=path)
-
-
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
 
@@ -83,23 +67,6 @@ def create_cache_entry(path=None, url_name=None, cache=None, force=False):
 
     if not has_cache_key(path=path, cache=cache):
         logging.warn("Did not create cache entry for %s" % path)
-
-
-def regenerate_all_pages_related_to_videos(video_ids):
-    """Regenerate all webpages related to a specific list of videos.  This is good for increasing new server performance."""
-    paths_to_regenerate = set() # unique set
-    for video_id in video_ids:
-
-        for video_path in topic_tools.get_video_page_paths(video_id=video_id):
-            paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=video_path, base_path=topic_tools.get_topic_tree()['path']))  # start at the root
-        for exercise_path in topic_tools.get_exercise_page_paths(video_id=video_id):
-            paths_to_regenerate = paths_to_regenerate.union(generate_all_paths(path=exercise_path, base_path=topic_tools.get_topic_tree()['path']))  # start at the root
-
-    # Now, regenerate any page.
-    for path in paths_to_regenerate:
-        create_cache_entry(path=path, force=True)
-
-    return paths_to_regenerate
 
 
 def invalidate_inmemory_caches():
@@ -124,6 +91,17 @@ def invalidate_all_caches():
     call in here.
     """
     invalidate_inmemory_caches()
+    initialize_content_caches(force=True)
     if caching_is_enabled():
         invalidate_web_cache()
     logging.debug("Great success emptying all caches.")
+
+def initialize_content_caches(force=False):
+    """
+    Catch all function to regenerate any content caches in memory that need annotation
+    with file availability
+    """
+    logging.info("Preloading content data.")
+    topic_tools.get_content_cache(force=force, annotate=True)
+    logging.info("Preloading topic tree data.")
+    topic_tools.get_topic_tree(force=force, annotate=True)

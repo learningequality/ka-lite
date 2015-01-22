@@ -1,22 +1,22 @@
 <form class="form-horizontal" role="form" id="data-export-form" method="GET">
     <div id="student-select-container">{{!insert student select template here}}</div>
     <div class="form-group">
-        <label for="resource-name" class="col-xs-2">Resource</label>
+        <label for="resource-name" class="col-xs-2">{{_ "Resource" }}</label>
         <div class="col-xs-8">
             <select class="form-control" id="resource-id">
-                <option value="facility_user">Facility User Logs</option>
-                <option value="test_log">Test Logs</option>
-                <option value="attempt_log">Attempt Logs</option>
-                <option value="exercise_log">Exercise Logs</option>
-                <option value="store_log">Store Transaction Logs</option>
+                <option value="facility_user">{{_ "Facility User Logs" }}</option>
+                <option value="test_log">{{_ "Test Logs" }}</option>
+                <option value="attempt_log">{{_ "Attempt Logs" }}</option>
+                <option value="exercise_log">{{_ "Exercise Logs" }}</option>
+                <option value="store_log">{{_ "Store Transaction Logs" }}</option>
                 {{#if is_central}}
-                <option value="device_log">Device Logs</option>                
+                <option value="device_log">{{_ "Device Logs" }}</option>
                 {{/if}}
             </select>
         </div>
     </div>
     <div class="form-group">
-        <label for="data-type" class="col-xs-2">Data Type</label>
+        <label for="data-type" class="col-xs-2">{{_ "Data Type" }}</label>
         <div class="col-xs-8">
             <select class="form-control" id="test-name" disabled>
                 <option>CSV</option>
@@ -27,7 +27,7 @@
         <div class="col-xs-2"></div>
         <div class="col-xs-8">
             <button id="export-button" class="btn btn-success">
-                Export
+                {{_ "Export" }}
             </button>
         </div>
     </div>

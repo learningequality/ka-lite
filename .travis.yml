@@ -16,7 +16,7 @@ script:
 - cd $TRAVIS_BUILD_DIR
 - python python-packages/fle_utils/tests.py
 - python kalite/manage.py syncdb --migrate --noinput --traceback
-- python kalite/manage.py test --traceback
+- python kalite/manage.py test --traceback -v 2
 - grunt jshint
 notifications:
   email:

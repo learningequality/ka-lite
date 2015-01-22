@@ -26,10 +26,6 @@
             $("#test").change(function(){
                 window.location.href = setGetParamDict($("#test option:selected").val(), {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
             });
-
-            $(window).resize(function() {
-                $('.student-header').height($('.data-header').height()+1);
-            }).resize();
         })
     </script>
 {% endblock headjs %}
@@ -38,7 +34,7 @@
     {{ test_obj.title }}&nbsp;{% trans "Results" %}
 {% endblock report_title %}
 
-{% block content %}
+{% block report_content %}
     {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
     <p class="unpadded-p">
         <a class="changeable-link" href="{% url 'test_view' %}">&#x2190; {% trans "Back" %}</a>
@@ -102,10 +98,8 @@
             <tbody>
                 {% for student in results_table.keys %}
                     <tr>
-                        <th class="username">
-                            <span title="{{ student.name }} ({{ student.username }})">
-                                <div class="student-name"><a href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a></div>
-                            </span>
+                        <th>
+                            <a title="{{ student.name }} ({{ student.username }})" href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a>
                         </th>
                     </tr>
                 {% endfor %} 
@@ -123,8 +117,8 @@
                 <thead>
                     <tr>
                         {% for ex in ex_cols %}
-                            <th class="data-header">
-                                {{ ex }}
+                            <th title="{% trans ex %}" class="data-header">
+                                {% trans ex %}
                             </th>
                         {% endfor %}
                         <th class="summary-stat-header">
@@ -161,5 +155,4 @@
         </div>
     </div>
     {% endif %}
-{% endblock content %}
-
+{% endblock report_content %}

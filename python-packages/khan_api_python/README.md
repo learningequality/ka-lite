@@ -32,16 +32,28 @@ Khan session object methods available for most documented items in the API.
 ```python 
 khan.get_badge_category()
 khan.get_badges()
-khan.get_exercise()
+khan.get_exercise("<exercise_id>")
 khan.get_exercises()
-khan.get_topic_exercises()
+khan.get_topic_exercises("<topic_id>")
+khan.get_topic_videos("<topic_id>")
 khan.get_topic_tree()
-khan.get_topic_videos()
-khan.get_user()
-khan.get_video()
+khan.get_user("<user_id=current-user>")
+khan.get_video("<video_id>")
+khan.get_playlists()
+khan.get_playlist_exercises("<playlist_id>")
+khan.get_playlist_videos("<playlist_id>")
 ```
 
 No authentication is required for anything but user data. In order to authenticate to retrieve user data, the secrets.py.template needs to be copied to secrets.py and a CONSUMER_KEY and CONSUMER_SECRET entered.
+
+In addition to documented API endpoints, this wrapper also exposes the following functions.
+
+```python
+khan.get_videos()
+khan.get_assessment_item("<assessment_item_id>")
+khan.get_tags()
+```
+
 
 You can register your app with the Khan Academy API here to get these two items:
 https://www.khanacademy.org/api-apps/register

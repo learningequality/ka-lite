@@ -13,15 +13,10 @@ Each node in the topic tree comes with lots of metadata, including:
 * path (which is equivalent to a URL)
 * kind (Topic, Exercise, Video)
 and more.
-
-The node cache is flat, and stores nodes from the topic tree first by kind, and then by slug.
-so
-* get_node_cache()["Video"] and get_node_cache("Video") both return all videos
-* get_node_cache()["Video"][video_slug] returns all video nodes that contain that video slug.
 """
-import glob
 import os
 import re
+import json
 from functools import partial
 
 from django.conf import settings; logging = settings.LOG
@@ -31,33 +26,72 @@ from django.utils.translation import ugettext as _
 
 from fle_utils.general import softload_json
 from kalite import i18n
-from kalite import khanload  # should be removed ASAP, to make more generic and separate apps.
-                             # Required because of odd KA URL structure that makes sibling detection impossible otherwise.
 
-TOPICS_FILEPATH = os.path.join(settings.TOPICS_DATA_PATH, "topics.json")
+TOPICS_FILEPATHS = {
+    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
+}
+EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
+ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
+KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "map_topics.json")
+CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
+
+if not os.path.exists(settings.CHANNEL_DATA_PATH):
+    logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
 
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
-def get_topic_tree(force=False, props=None):
-    global TOPICS, TOPICS_FILEPATH
-    if TOPICS is None or force:
-        TOPICS = softload_json(TOPICS_FILEPATH, logger=logging.debug, raises=True)
-        validate_ancestor_ids(TOPICS)  # make sure ancestor_ids are set properly
+def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
+    global TOPICS, TOPICS_FILEPATHS
+    if not TOPICS:
+        TOPICS = {}
+    if TOPICS.get(channel) is None:
+        TOPICS[channel] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+        validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
 
-        # Limit the memory footprint by unloading particular values
-        if props:
-            node_cache = get_node_cache()
-            for kind, list_by_kind in node_cache.iteritems():
-                for node_list in list_by_kind.values():
-                    for node in node_list:
-                        for att in node.keys():
-                            if att not in props:
-                                del node[att]
-    return TOPICS
+        # Just loaded from disk, so have to restamp.
+        annotate = True
+
+    if annotate:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            topics = softload_json(TOPICS_FILEPATHS.get(channel) + ".cache", logger=logging.debug, raises=False)
+            if topics:
+                TOPICS[channel] = topics
+                return TOPICS[channel]
+
+        # Loop through all the nodes in the topic tree
+        # and cross reference with the content_cache to check availability.
+        content_cache = get_content_cache()
+        def recurse_nodes(node):
+
+            child_availability = []
+
+            # Do the recursion
+            for child in node.get("children", []):
+                recurse_nodes(child)
+                child_availability.append(child.get("available", False))
+
+            # If child_availability is empty then node has no children so we can determine availability
+            if child_availability:
+                node["available"] = any(child_availability)
+            else:
+                # By default this is very charitable, assuming if something has not been annotated
+                # it is available - needs to be updated for exercises.
+                if content_cache.get(node.get("id"), {}).get("languages", True):
+                    node["available"] = True
+
+        recurse_nodes(TOPICS[channel])
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+            try:
+                with open(TOPICS_FILEPATHS.get(channel) + ".cache", "w") as f:
+                    json.dump(TOPICS[channel], f)
+            except IOError as e:
+                logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
+
+    return TOPICS[channel]
 
 
 NODE_CACHE = None
@@ -71,6 +105,23 @@ def get_node_cache(node_type=None, force=False):
     else:
         return NODE_CACHE[node_type]
 
+EXERCISES          = None
+CACHE_VARS.append("EXERCISES")
+def get_exercise_cache(force=False):
+    global EXERCISES, EXERCISES_FILEPATH
+    if EXERCISES is None or force:
+        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
+
+    return EXERCISES
+
+ASSESSMENT_ITEMS          = None
+CACHE_VARS.append("ASSESSMENT_ITEMS")
+def get_assessment_item_cache(force=False):
+    global ASSESSMENT_ITEMS, ASSESSMENT_ITEMS_FILEPATH
+    if ASSESSMENT_ITEMS is None or force:
+        ASSESSMENT_ITEMS = softload_json(ASSESSMENT_ITEMS_FILEPATH, logger=logging.debug, raises=False)
+
+    return ASSESSMENT_ITEMS
 
 KNOWLEDGEMAP_TOPICS = None
 CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
@@ -83,6 +134,79 @@ def get_knowledgemap_topics(force=False):
         KNOWLEDGEMAP_TOPICS = sorted(all_nodes, key=lambda k: (k.get("v_position", 0), k.get("h_position", 0)))
     return KNOWLEDGEMAP_TOPICS
 
+
+LEAFED_TOPICS = None
+CACHE_VARS.append("LEAFED_TOPICS")
+def get_leafed_topics(force=False):
+    global LEAFED_TOPICS
+    if LEAFED_TOPICS is None or force:
+        LEAFED_TOPICS = [topic for topic in get_node_cache()["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
+    return LEAFED_TOPICS
+
+def create_thumbnail_url(thumbnail):
+    if is_content_on_disk(thumbnail, "png"):
+        return settings.CONTENT_URL + thumbnail + ".png"
+    elif is_content_on_disk(thumbnail, "jpg"):
+        return settings.CONTENT_URL + thumbnail + ".jpg"
+    return None
+
+CONTENT          = None
+CACHE_VARS.append("CONTENT")
+def get_content_cache(force=False, annotate=False):
+    global CONTENT, CONTENT_FILEPATH
+
+    if CONTENT is None:
+        CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
+        annotate = True
+    
+    if annotate:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            content = softload_json(CONTENT_FILEPATH + ".cache", logger=logging.debug, raises=False)
+            if content:
+                CONTENT = content
+                return CONTENT
+
+        # Loop through all content items and put thumbnail urls, content urls,
+        # and subtitle urls on the content dictionary, and list all languages
+        # that the content is available in.
+        for content in CONTENT.values():
+            languages = []
+            default_thumbnail = create_thumbnail_url(content.get("id"))
+            dubmap = i18n.get_id2oklang_map(content.get("id"))
+            for lang, dubbed_id in dubmap.items():
+                # TODO (rtibbles): Explicitly stamp "mp4" on KA videos in contentload
+                format = content.get("format", "mp4")
+                if is_content_on_disk(dubbed_id, format):
+                    languages.append(lang)
+                    thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
+                    content["lang_data_" + lang] = {
+                        "stream": settings.CONTENT_URL + dubmap.get(lang) + "." + format,
+                        "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                        "thumbnail": thumbnail,
+                    }
+            content["languages"] = languages
+
+            # Get list of subtitle language codes currently available
+            subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+
+            # Generate subtitle URLs for any subtitles that do exist for this content item
+            subtitle_urls = [{
+                "code": lc,
+                "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
+                "name": i18n.get_language_name(lc)
+                } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+
+            # Sort all subtitle URLs by language code
+            content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
+
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+            try:
+                with open(CONTENT_FILEPATH + ".cache", "w") as f:
+                    json.dump(CONTENT, f)
+            except IOError as e:
+                logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
+
+    return CONTENT
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
@@ -154,9 +278,12 @@ def generate_slug_to_video_id_map(node_cache=None):
     slug2id_map = dict()
 
     # Make a map from youtube ID to video slug
-    for video_id, v in node_cache.get('Video', {}).iteritems():
-        assert v[0]["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and video_id"
-        slug2id_map[v[0]['slug']] = video_id
+    for content_id, c in node_cache.get('Content', {}).iteritems():
+        try:
+            assert c["slug"] not in slug2id_map, "Make sure there's a 1-to-1 mapping between slug and content_id"
+        except AssertionError as e:
+            logging.warn(_("{slug} duplicated in topic tree - overwritten here.").format(slug=c["slug"]))
+        slug2id_map[c['slug']] = content_id
 
     return slug2id_map
 
@@ -170,8 +297,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
     # to avoid redundancy
     for category_name, category in categories.iteritems():
         result[category_name] = {}
-        for node_name, node_list in category.iteritems():
-            node = node_list[0]
+        for node_name, node in category.iteritems():
             if alldata:
                 relevant_data = node
             else:
@@ -180,6 +306,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
                     'path': node['path'],
                     'kind': node['kind'],
                     'available': node.get('available', True),
+                    'keywords': node.get('keywords', []),
                 }
             result[category_name][node_name] = relevant_data
 
@@ -190,62 +317,31 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
 
 def generate_node_cache(topictree=None):
     """
-    Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Video nodes.
+    Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Content nodes.
     """
 
     if not topictree:
         topictree = get_topic_tree()
     node_cache = {}
+    node_cache["Topic"] = {}
 
 
     def recurse_nodes(node):
         # Add the node to the node cache
-        kind = node["kind"]
-        node_cache[kind] = node_cache.get(kind, {})
+        kind = node.get("kind", None)
+        if kind == "Topic":
+            if node["id"] not in node_cache[kind]:
+                node_cache[kind][node["id"]] = node
 
-        if node["id"] not in node_cache[kind]:
-            node_cache[kind][node["id"]] = []
-        node_cache[kind][node["id"]] += [node]        # Append
-
-        # Do the recursion
-        for child in node.get("children", []):
-            recurse_nodes(child)
+            # Do the recursion
+            for child in node.get("children", []):
+                recurse_nodes(child)
     recurse_nodes(topictree)
 
+    node_cache["Exercise"] = get_exercise_cache()
+    node_cache["Content"] = get_content_cache()
+
     return node_cache
-
-
-def get_ancestor(node, ancestor_id, ancestor_type="Topic"):
-    potential_parents = get_node_cache(ancestor_type).get(ancestor_id)
-    if not potential_parents:
-        return None
-    elif len(potential_parents) == 1:
-        return potential_parents[0]
-    else:
-        for pp in potential_parents:
-            if node["path"].startswith(pp["path"]):  # find parent by path
-                return pp
-        return None
-
-def get_parent(node, parent_type="Topic"):
-    return get_ancestor(node, ancestor_id=node["parent_id"], ancestor_type=parent_type)
-
-def get_videos(topic):
-    """Given a topic node, returns all video node children (non-recursively)"""
-    return filter(lambda node: node["kind"] == "Video", topic["children"])
-
-
-def get_exercises(topic):
-    """Given a topic node, returns all exercise node children (non-recursively)"""
-    # Note: "live" is currently not stamped on any nodes, but could be in the future, so keeping here.
-    return filter(lambda node: node["kind"] == "Exercise" and node.get("live", True), topic["children"])
-
-
-def get_live_topics(topic):
-    """Given a topic node, returns all children that are not hidden and contain at least one video (non-recursively)"""
-    # Note: "hide" is currently not stamped on any nodes, but could be in the future, so keeping here.
-    return filter(lambda node: node["kind"] == "Topic" and not node.get("hide") and (set(node["contains"]) - set(["Topic"])), topic["children"])
-
 
 def get_topic_by_path(path, root_node=None):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
@@ -254,25 +350,15 @@ def get_topic_by_path(path, root_node=None):
     path_withslash = path + ("/" if not path.endswith("/") else "")
     path_noslash = path_withslash[:-1]
 
-    # Make sure the root fits
-    if not root_node:
-        root_node = get_topic_tree()
-    if path_withslash == root_node["path"] or path_noslash == root_node["path"]:
-        return root_node
-    elif not path_withslash.startswith(root_node["path"]):
-        return {}
+    if path_noslash:
+        slug = path_noslash.split("/")[-1]
+    else:
+        slug = "root"
 
-    # split into parts (remove trailing slash first)
-    parts = path_noslash[len(root_node["path"]):].split("/")
-    cur_node = root_node
-    for part in parts:
-        cur_node = filter(partial(lambda n, p: n["slug"] == p, p=part), cur_node["children"])
-        if cur_node:
-            cur_node = cur_node[0]
-        else:
-            break
+    cur_node = get_node_cache()["Topic"].get(slug, {})
 
-    return cur_node or {}
+
+    return cur_node
 
 
 def get_all_leaves(topic_node=None, leaf_type=None):
@@ -284,7 +370,6 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     if not topic_node:
         topic_node = get_topic_tree()
     leaves = []
-
     # base case
     if not "children" in topic_node:
         if leaf_type is None or topic_node['kind'] == leaf_type:
@@ -306,7 +391,7 @@ def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
         if not topic_node:
             return []
         else:
-            path = topic_node[0]['path']
+            path = topic_node['path']
 
     topic_node = get_topic_by_path(path)
     exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
@@ -326,125 +411,15 @@ def get_topic_videos(*args, **kwargs):
     return get_topic_leaves(*args, **kwargs)
 
 
-def get_related_exercises(videos):
-    """Given a set of videos, get all of their related exercises."""
-    related_exercises = []
-    for video in videos:
-        if video.get("related_exercise"):
-            related_exercises.append(video['related_exercise'])
-    return related_exercises
-
-
-def get_exercise_paths():
-    """This function retrieves all the exercise paths.
-    """
-    exercises = get_node_cache("Exercise").values()
-    return [n["path"] for exercise in exercises for n in exercise]
-
-
-def garbage_get_related_videos(exercises, topics=None, possible_videos=None):
-    """Given a set of exercises, get all of the videos that say they're related.
-
-    possible_videos: list of videos to consider.
-    topics: if not possible_videos, then get the possible videos from a list of topics.
-    """
-    assert bool(topics) + bool(possible_videos) <= 1, "May specify possible_videos or topics, but not both."
-
-    related_videos = []
-
-    if not possible_videos:
-        possible_videos = []
-        for topic in (topics or get_node_cache('Topic').values()):
-            possible_videos += get_topic_videos(topic_id=topic[0]['id'])
-
-    # Get exercises from videos
-    exercise_ids = [ex["id"] for ex in exercises]
-    for video in possible_videos:
-        if "related_exercise" in video and video["related_exercise"]['id'] in exercise_ids:
-            related_videos.append(video)
-    return related_videos
-
-
-def get_related_videos(exercise, limit_to_available=True):
-    """
-    Return topic tree cached data for each related video,
-    favoring videos that are sibling nodes to the exercises.
-    """
-    def find_most_related_video(videos, exercise):
-        # Search for a sibling video node to add to related exercises.
-        for video in videos:
-            if is_sibling({"path": video["path"], "kind": "Video"}, exercise):
-                return video
-        # failed to find a sibling; just choose the first one.
-        return videos[0] if videos else None
-
-    # Find related videos
-    related_videos = {}
-    for slug in exercise["related_video_slugs"]:
-        video_nodes = get_node_cache("Video").get(get_slug2id_map().get(slug, ""), [])
-
-        # Make sure the IDs are recognized, and are available.
-        if video_nodes and (not limit_to_available or video_nodes[0].get("available", False)):
-            related_videos[slug] = find_most_related_video(video_nodes, exercise)
-
-    return related_videos
-
-
-def is_sibling(node1, node2):
-    """
-    """
-    parse_path = lambda n: n["path"] if not khanload.kind_slugs[n["kind"]] else n["path"].split("/" + khanload.kind_slugs[n["kind"]])[0]
-
-    parent_path1 = parse_path(node1)
-    parent_path2 = parse_path(node2)
-
-    return parent_path1 == parent_path2
-
-
-def get_neighbor_nodes(node, neighbor_kind=None):
-
-    parent = get_parent(node)
-    prev = next = None
-    filtered_children = [ch for ch in parent["children"] if not neighbor_kind or ch["kind"] == neighbor_kind]
-
-    for idx, child in enumerate(filtered_children):
-        if child["path"] != node["path"]:
-            continue
-
-        if idx < (len(filtered_children) - 1):
-            next = filtered_children[idx + 1]
-        if idx > 0:
-            prev = filtered_children[idx - 1]
-        break
-
-    return prev, next
-
-def get_video_page_paths(video_id=None):
-    try:
-        return [n["path"] for n in get_node_cache("Video")[video_id]]
-    except:
-        return []
-
-
-def get_exercise_page_paths(video_id=None):
-
-    try:
-        exercise_paths = set()
-        for exercise in get_related_exercises(videos=get_node_cache("Video")[video_id]):
-            exercise_paths = exercise_paths.union(set([exercise["path"]]))
-        return list(exercise_paths)
-    except Exception as e:
-        logging.debug("Exception while getting exercise paths: %s" % e)
-        return []
-
 def get_exercise_data(request, exercise_id=None):
-    exercise = get_node_cache()["Exercise"][exercise_id][0]
+    exercise = get_exercise_cache().get(exercise_id, None)
 
-    lang = request.session[settings.LANGUAGE_COOKIE_NAME]
+    if not exercise:
+        return None
+
     exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
     exercise_file = exercise["slug"] + ".html"
     exercise_template = exercise_file
-    exercise_localized_template = os.path.join(lang, exercise_file)
 
     # Get the language codes for exercise templates that exist
     exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
@@ -461,49 +436,47 @@ def get_exercise_data(request, exercise_id=None):
     exercise["lang"] = exercise_lang
     exercise["template"] = exercise_template
 
-    exercise["related_videos"] = get_related_videos(exercise, limit_to_available=True).values()
-
     return exercise
 
 
-def get_video_data(request, video_id=None):
+def get_assessment_item_data(request, assessment_item_id=None):
+    assessment_item = get_assessment_item_cache().get(assessment_item_id, None)
 
-    topictree = get_flat_topic_tree(alldata=True)
-    videos_dict = video_dict_by_video_id(topictree)
-    video = videos_dict.get(video_id)
+    if not assessment_item:
+        return None
 
-    # TODO-BLOCKER(jamalex): figure out why this video data is not prestamped, and remove this:
-    # from kalite.updates import stamp_availability_on_video
-    # video = stamp_availability_on_video(video)
+    # TODO (rtibbles): Enable internationalization for the assessment_items.
 
-    if not video["available"]:
+    return assessment_item
+
+def get_content_data(request, content_id=None):
+
+    content_cache = get_content_cache()
+    content = content_cache.get(content_id, None)
+
+    if not content:
+        return None
+
+    content_lang = i18n.select_best_available_language(request.language, available_codes=content.get("languages", [])) or ""
+    urls = content.get("lang_data_" + content_lang, None)
+
+    if not urls:
         if request.is_admin:
-            # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
-            messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
+            # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
+            messages.warning(request, _("This content was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
-            messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
+            messages.warning(request, _("This content was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
-            messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
+            messages.warning(request, _("This content was not found! You must login as an admin/teacher to download the content."))
 
-    # Fallback mechanism
-    available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
-    if video["available"] and not available_urls:
-        vid_lang = "en"
-        messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
-    else:
-        vid_lang = i18n.select_best_available_language(request.language, available_codes=available_urls.keys())
+    content = content.copy()
+    content["content_urls"] = urls
+    content["selected_language"] = content_lang
+    content["title"] = _(content["title"])
+    content["description"] = _(content.get("description", ""))
 
-    # TODO(jamalex): clean this up; we're flattening it here so handlebars can handle it more easily
-    video = video.copy()
-    video["video_urls"] = video["availability"].get(vid_lang)
-    video["subtitle_urls"] = video["availability"].get(vid_lang, {}).get("subtitles")
-    video["selected_language"] = vid_lang
-    video["dubs_available"] = len(video["availability"]) > 1
-    video["title"] = _(video["title"])
-    video["description"] = _(video["description"])
-    video["video_id"] = video["id"]
+    return content
 
-    return video
 
 
 def video_dict_by_video_id(flat_topic_tree=None):
@@ -525,8 +498,12 @@ def video_dict_by_video_id(flat_topic_tree=None):
 
 def convert_leaf_url_to_id(leaf_url):
     """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""
-    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1] 
+    leaf_id = [x for x in leaf_url.split("/") if len(x) > 1]
     assert(len(leaf_id) == 1), "Something in leaf ID is malformed: %s" % leaf_url
     return leaf_id[0]
 
 
+def is_content_on_disk(content_id, format="mp4", content_path=None):
+    content_path = content_path or settings.CONTENT_ROOT
+    content_file = os.path.join(content_path, content_id + ".%s" % format)
+    return os.path.isfile(content_file)

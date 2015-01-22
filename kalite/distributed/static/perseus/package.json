@@ -1,0 +1,32 @@
+{
+  "name": "perseus",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "./node_modules/.bin/beefy src/editor-page-shim.js test/test.js 9000 -- -t reactiscriptsixify -d",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "beefy": "~0.6.0",
+    "browserify": "~3.4.1",
+    "jest-cli": "~0.1.17",
+    "jsdom": "^0.10.5",
+    "mocha": "^1.19.0",
+    "node-jsx": "^0.10.0",
+    "react-tools": "0.10.0",
+    "reactiscriptsixify": "~0.8.2",
+    "requirejs": "~2.1.11",
+    "less": "~1.7.0",
+    "react-components": "0.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Khan/perseus.git"
+  },
+  "jest": {
+    "scriptPreprocessor": "jest/preprocessor.js",
+    "setupEnvScriptFile": "jest/environment.js",
+    "testFileExtensions": ["js", "jsx"],
+    "testPathDirs": ["src"],
+    "unmockedModulePathPatterns": [""]
+  }
+}

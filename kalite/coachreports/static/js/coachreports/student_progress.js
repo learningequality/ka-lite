@@ -25,28 +25,21 @@ var PlaylistProgressDetailCollection = Backbone.Collection.extend({
 });
 
 // Views
-var StudentProgressContainerView = Backbone.View.extend({
-    // The containing view
-    template: HB.template('student_progress/student-progress-container'),
+
+var PlaylistProgressDetailView = Backbone.View.extend({
+
+    template: HB.template('student_progress/playlist-progress-details'),
 
     initialize: function() {
-        this.listenTo(this.collection, 'add', this.add_one);
-
-        this.render();
-
-        this.collection.fetch();
+        this.listenTo(this.collection, 'sync', this.render);
     },
 
     render: function() {
-        // Only render container once
-        this.$el.html(this.template());
-    },
+        this.$el.html(this.template({
+            data: this.collection.models
+        }));
 
-    add_one: function(playlist) {
-        var view  = new PlaylistProgressView({
-            model: playlist
-        });
-        this.$("#playlists-container").append(view.render().el);
+        return this;
     }
 });
 
@@ -102,22 +95,30 @@ var PlaylistProgressView = Backbone.View.extend({
     }
 });
 
-var PlaylistProgressDetailView = Backbone.View.extend({
-
-    template: HB.template('student_progress/playlist-progress-details'),
+var StudentProgressContainerView = Backbone.View.extend({
+    // The containing view
+    template: HB.template('student_progress/student-progress-container'),
 
     initialize: function() {
-        this.listenTo(this.collection, 'sync', this.render);
+        this.listenTo(this.collection, 'add', this.add_one);
+
+        this.render();
+
+        this.collection.fetch();
     },
 
     render: function() {
-        this.$el.html(this.template({
-            data: this.collection.models
-        }));
+        // Only render container once
+        this.$el.html(this.template());
+    },
 
-        return this;
+    add_one: function(playlist) {
+        var view  = new PlaylistProgressView({
+            model: playlist
+        });
+        this.$("#playlists-container").append(view.render().el);
     }
-})
+});
 
 // Start the app on page load
 $(function() {

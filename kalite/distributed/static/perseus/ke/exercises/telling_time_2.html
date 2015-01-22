@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie interactive time">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Telling time 2</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="set-hands">
+            <div class="vars">
+                <div data-ensure="!(HOUR === 1 &amp;&amp; MINUTE === 0)">
+                    <var id="HOUR">randRange(1, 12)</var>
+                    <var id="MINUTE_INCREMENT">randFromArray([15, 20])</var>
+                    <var id="MINUTE">randRange(0, (60 / MINUTE_INCREMENT) - 1) * MINUTE_INCREMENT</var>
+                </div>
+                <var id="MINUTE_IS_ZERO">MINUTE === 0</var>
+                <var id="NICE_MINUTE">MINUTE &gt; 5 ? MINUTE : "0" + MINUTE</var>
+                <var id="TIME">HOUR + ":" + NICE_MINUTE</var>
+            </div>
+
+            <p class="question">Set the clock to <var>TIME</var>.</p>
+
+            <div class="problem">
+
+                <div class="graphie" id="clock">
+                    init({ range: [[-4.5, 4.5], [-4.5, 4.5]], scale: 30 });
+
+                    clock = addInteractiveAnalogClock({
+                        radius: 3.75,
+                        minuteTicks: 60,
+                        minuteIncrement: MINUTE_INCREMENT
+                    });
+                </div>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    Drag the two hands so the clock reads <var>HOUR</var>:<var>NICE_MINUTE</var>.
+                </div>
+                <div class="guess">clock.getHandPositions()</div>
+                <div class="validator-function">
+                    return clock.validate(guess, MINUTE, HOUR);
+                </div>
+                <div class="show-guess">
+                    clock.minutePoint.moveTo(guess[0][0], guess[0][1], true);
+                    clock.hourPoint.moveTo(guess[1][0], guess[1][1], true);
+                </div>
+            </div>
+
+            <div class="hints">
+                <p>
+                    The <span class="hint_blue" style="font-weight: bold">hour</span> hand is the short
+                    <span class="hint_blue" style="font-weight: bold">blue</span> bar and the
+                    <span class="hint_red" style="font-weight: bold">minute</span> hand is the long
+                    <span class="hint_red" style="font-weight: bold">red</span> bar.
+                </p>
+
+                <p>
+                    The number after the <code>\Large{:}</code> symbol represents the number of minutes past
+                    the hour. So <code><var>TIME</var></code> represents <code>\red{<var>MINUTE</var>}</code>
+                    minutes past hour <code>\blue{<var>HOUR</var>}</code>.
+                </p>
+
+                <p data-if="MINUTE_IS_ZERO">
+                    Since it's <code><var>MINUTE</var></code> minutes past the hour, the minute hand should
+                    be at the mark numbered <code>\red{12}</code>.
+                </p>
+                <p data-else>
+                    Since it's <code><var>MINUTE</var></code> minutes past the hour, and there are <code>5</code> minutes
+                    per tick mark, the minute hand should be at the mark numbered
+                    <code>\red{<var>fraction(MINUTE, 5)</var> = <var>MINUTE/5</var>}</code>
+                </p>
+
+                <div>
+                    <p data-if="MINUTE_IS_ZERO">
+                        Since it's <code>0</code> minutes past the hour, the hour hand should be right on the
+                        <code>\blue{<var>HOUR</var>}</code> hour mark.
+                    </p>
+                    <div data-else="" data-unwrap="">
+                        <p>
+                            Since it's <code><var>MINUTE</var></code> minutes past the hour, the hour hand will have traveled
+                            <code>\blue{<var>fraction(MINUTE, 60)</var> = <var>fraction(MINUTE, 60, false, true)</var>}</code>
+                            of the way to the <code><var>HOUR + 1 === 13 ? 1 : HOUR + 1</var></code> hour mark.
+                        </p>
+                        <p data-if="MINUTE === 20">
+                            So the hour hand needs to be placed just before the second small tick mark past the
+                            <code>\blue{<var>HOUR</var>}</code> hour mark.
+                        </p>
+                        <p data-else-if="MINUTE === 40">
+                            So the hour hand needs to be placed just past the third small tick mark past the
+                            <code>\blue{<var>HOUR</var>}</code> hour mark.
+                        </p>
+                        <p data-else-if="MINUTE === 15">
+                            So the hour hand needs to be placed just past the first small tick mark past the
+                            <code>\blue{<var>HOUR</var>}</code> hour mark.
+                        </p>
+                        <p data-else-if="MINUTE === 30">
+                            So the hour hand needs to be placed between the second and third small tick mark past the
+                            <code>\blue{<var>HOUR</var>}</code> hour mark.
+                        </p>
+                        <p data-else>
+                            So the hour hand needs to be placed just before the fourth small tick mark past the
+                            <code>\blue{<var>HOUR</var>}</code> hour mark.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="graphie" data-update="clock">clock.showCorrectTime(MINUTE, HOUR);</div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

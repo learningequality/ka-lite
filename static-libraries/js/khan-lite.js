@@ -1,3 +1,10 @@
+$.ajaxSetup({dataFilter: function(data, type) {
+    if (type === "json" && data === "") {
+        data = null;
+    }
+    return data;
+}});
+
 function assert(val, msg) {
     if (!val) {
         show_message("error", msg);
@@ -7,7 +14,7 @@ function assert(val, msg) {
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
+    if (document.cookie && document.cookie !== '') {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);
@@ -132,14 +139,16 @@ function handleFailedAPI(resp, error_prefix) {
             break;
 
         case 200:  // return JSON messages
-        case 201:
+
+        case 201:  // return JSON messages
+
         case 500:  // also currently return JSON messages
 
             // handle empty responses gracefully
             resp.responseText = resp.responseText || "{}";
 
             try {
-                messages = $.parseJSON(resp.responseText);
+                messages = $.parseJSON(resp.responseText || "{}");
             } catch (e) {
                 var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
@@ -219,6 +228,9 @@ function show_message(msg_class, msg_text, msg_id) {
 
     var x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
 
+    if (msg_class === "error") {
+        msg_class = "danger"
+    };
     var msg_html = "<div class='alert alert-" + msg_class + "'";
 
     if (msg_id) {
@@ -243,6 +255,34 @@ function get_message(msg_id) {
     return $("#" + msg_id).text();
 }
 
+var getParamValue = (function() {
+    var params;
+    var resetParams = function() {
+            var query = window.location.search;
+            var regex = /[?&;](.+?)=([^&;]+)/g;
+            var match;
+
+            params = {};
+
+            if (query) {
+                while (match = regex.exec(query)) {
+                    params[match[1]] = decodeURIComponent(match[2]);
+                }
+            }    
+        };
+
+    window.addEventListener && window.addEventListener('popstate', resetParams);
+
+    resetParams();
+
+    function getParam(param) {
+        return params.hasOwnProperty(param) ? params[param] : null;
+    }
+    
+    return getParam;
+
+})();
+
 function setGetParam(href, name, val) {
     // Generic function for changing a querystring parameter in a url
     var vars = {};
@@ -251,7 +291,7 @@ function setGetParam(href, name, val) {
         vars[key] = value;
     });
 
-    if (val == "" || val == "----" || val === undefined) {
+    if (val === "" || val == "----" || val === undefined) {
         delete vars[name];
     } else {
         vars[name] = val;
@@ -259,8 +299,8 @@ function setGetParam(href, name, val) {
 
     var url = base;
     var idx = 0;
-    for (key in vars) {
-        url += (idx == 0) ? "?" : "&";
+    for (var key in vars) {
+        url += (idx === 0) ? "?" : "&";
         url += key + "=" + vars[key];//         + $.param(vars);
         idx++;
     }
@@ -268,7 +308,7 @@ function setGetParam(href, name, val) {
 }
 
 function setGetParamDict(href, dict) {
-    for (key in dict) {
+    for (var key in dict) {
          href = setGetParam(href, key, dict[key]);
     }
     return href;

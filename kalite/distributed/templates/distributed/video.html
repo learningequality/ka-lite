@@ -5,6 +5,8 @@
 {% load i18n_filters %}
 {% block watch_active %}active{% endblock watch_active %}
 
+{% block title %}KA Lite{% endblock title %}
+
 {% block headcss %}{{ block.super }}
     <style>
 
@@ -78,7 +80,7 @@
     {% endif %}
 
     {% if next %}
-    <div class="vidnext"><a href="{{ next.path }}?lang={{ video.selected_language }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
+    <div class="vidnext pull-right"><a href="{{ next.path }}?lang={{ video.selected_language }}"><span class="progress-circle" data-video-id="{{ next.id }}"></span> {% trans next.title %} &gt;</a></div>
     {% endif %}
 
     <div class="clear"></div>
