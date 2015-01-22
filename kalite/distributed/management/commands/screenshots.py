@@ -14,8 +14,8 @@ from selenium.webdriver.common.keys import Keys
 
 from fle_utils.general import ensure_dir
 
-from kalite.distributed.tests.browser_tests.base import KALiteDistributedBrowserTestCase
-
+from kalite.testing.base import KALiteBrowserTestCase
+from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
 
 try:
     from local_settings import *
@@ -104,7 +104,7 @@ def delete_sqlite_database(database=None):
         log.error('====> EXCEPTION: %s' % exc)
 
 
-class Screenshot(KALiteDistributedBrowserTestCase):
+class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
     """
     Override the values from base class for better looking screenshot data.
     """
@@ -120,6 +120,7 @@ class Screenshot(KALiteDistributedBrowserTestCase):
     KEY_START_URL = 'start_url'
     KEY_INPUTS = 'inputs'
     KEY_PAGES = 'pages'
+    # Notes aren't used anywhere...
     KEY_NOTES = 'notes'
 
     KEY_CMD_SLUG = '<slug>'
@@ -129,7 +130,19 @@ class Screenshot(KALiteDistributedBrowserTestCase):
 
     database = getattr(settings, 'SCREENSHOTS_DATABASE_PATH', None)
 
+    def _fake_test():
+        # Fools django.utils.unittest.case.TestCase.__init__
+        # See the small novel comment under __init__ below
+        pass
+    
     def __init__(self, *args, **kwargs):
+        # It's not good to override __init__ for classes that inherit from TestCase
+        # Since we're hackily inheriting here, we have to hackily invoke __init__
+        # Perhaps better would be to decouple this class from the testing framework
+        # by ditching the various mixins (they invoke TestCase methods) and just calling
+        # selenium methods directly, as the mixins are a thin wrapper for that.
+        # -- M.C. Gallaspy, 1/21/2015
+        KALiteBrowserTestCase.__init__(self, "_fake_test")
 
         # make sure output path exists and is empty
         output_path = settings.SCREENSHOTS_OUTPUT_PATH
@@ -152,18 +165,18 @@ class Screenshot(KALiteDistributedBrowserTestCase):
             raise Exception("==> Did not successfully setup database!")
 
         self.facility = self.create_facility()
-        self.create_student(self.student_username, self.default_password, self.facility.name)
-        self.create_teacher(self.coach_username, self.default_password, self.facility.name)
+        self.create_student(username=self.student_username, password=self.default_password)
+        self.create_teacher(username=self.coach_username, password=self.default_password)
 
         self.persistent_browser = True
         self.max_wait_time = kwargs.get('max_wait_time', 30)
 
         self.setUpClass()
 
-        # self.browser = webdriver.PhantomJS()
         log.info("==> Setting-up browser ...")
-        self.browser = webdriver.Firefox()
-        self.browser.set_window_size(1024, 768)
+        #self.browser = webdriver.Firefox()
+        #self.browser.set_window_size(1024, 768)
+        super(Screenshot, self).setUp()
 
         log.info("==> Browser %s successfully setup with live_server_url %s." %
                  (self.browser.name, self.live_server_url,))
@@ -194,17 +207,19 @@ class Screenshot(KALiteDistributedBrowserTestCase):
 
         start_url = '/'
         try:
+            # Let's just always start logged out
+            if self.browser_is_logged_in():
+                self.browser_logout_user()
+
             if USER_TYPE_STUDENT in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.student_username):
                 self.browser_login_student(self.student_username, self.default_password, self.facility.name)
             elif USER_TYPE_COACH in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.coach_username):
-                # MUST: `expect_success=False` is needed here to prevent this error:
-                # exception:  'Screenshot' object has no attribute '_type_equality_funcs'
-                self.browser_login_teacher(self.coach_username, self.default_password, self.facility.name, False)
+                self.browser_login_teacher(self.coach_username, self.default_password, self.facility.name)
             elif USER_TYPE_ADMIN in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.admin_username):
                 self.browser_login_user(self.admin_username, self.default_password)
             elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.browser_is_logged_in():
                 self.browser_logout_user()
-
+            
             start_url = "%s%s" % (self.live_server_url, shot["start_url"],)
             if self.browser.current_url != start_url:
                 self.browse_to(start_url)
@@ -231,6 +246,7 @@ class Screenshot(KALiteDistributedBrowserTestCase):
                 self.snap(slug=shot[self.KEY_SLUG])
         except Exception as exc:
             log.error("====> EXCEPTION snapping url %s: %s" % (start_url, exc,))
+            log.error("'shot' object: %s" % repr(shot))
             raise
 
     def snap_all(self, browser=None):
@@ -247,3 +263,4 @@ class Screenshot(KALiteDistributedBrowserTestCase):
         except Exception as exc:
             log.error("Cannot open `screenshots.json` at %s:\n  exception:  %s" %
                       (settings.SCREENSHOTS_JSON_FILE, exc,))
+            raise
