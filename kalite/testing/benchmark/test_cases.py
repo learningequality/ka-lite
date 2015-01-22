@@ -159,8 +159,8 @@ class OneHundredRandomLogUpdates(base.UserCommon):
         VideoLog.objects.filter(user=self.user).delete()
         for x in range(num_logs):
             while True:
-                vid_idx = int(self.random.random() * len(node_cache["Video"].keys()))
-                vid_id = node_cache["Video"].keys()[vid_idx]
+                vid_idx = int(self.random.random() * len(node_cache["Content"].keys()))
+                vid_id = node_cache["Content"].keys()[vid_idx]
                 if not VideoLog.objects.filter(user=self.user, video_id=vid_id):
                     break
             vid = VideoLog(user=self.user, video_id=vid_id)

@@ -76,7 +76,7 @@ def update_all_distributed_callback(request):
         youtube_id = video['youtube_id']
 
         # Only save video logs for videos that we recognize.
-        if video_id not in node_cache["Video"]:
+        if video_id not in node_cache["Content"]:
             logging.warn("Skipping unknown video %s" % video_id)
             continue
 
