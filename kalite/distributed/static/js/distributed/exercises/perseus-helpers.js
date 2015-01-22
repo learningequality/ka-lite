@@ -37,8 +37,23 @@ window.Exercises = _.extend({
     RelatedVideos: {
         render: function() {}
     },
-    incompleteStack: [0]
+    incompleteStack: [0],
+    proxyTrigger: function () {
+        Array.prototype.unshift.apply(arguments, [arguments[0].type]);
+        this.trigger.apply(this, arguments);
+    }
 }, Backbone.Events);
+
+
+// This is necessary as DOM events (as fired by jQuery) are not listenedTo by Backbone listenTo
+// Our pass through listenToDOM does not work for Javascript objects, only for true DOM objects.
+// So we must manually proxy any triggered events on the Exercises object to Backbone triggers.
+$(Exercises).bind({
+    checkAnswer: Exercises.proxyTrigger,
+    gotoNextProblem: Exercises.proxyTrigger,
+    newProblem: Exercises.proxyTrigger,
+    newProblemhintUsed: Exercises.proxyTrigger
+});
 
 // React.initializeTouchEvents(true);
 
