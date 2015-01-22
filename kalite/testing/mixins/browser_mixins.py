@@ -177,22 +177,30 @@ class BrowserActionMixins(object):
             except:
                 break
     
-    def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_js_condition(self, condition, max_wait_time=4, step_time=0.25):
+        """
+        Waits for the script in condition to return True.
+        Warning: don't preface condition with "return"
+        """
         total_wait_time = 0
-        exists_script = "return typeof(%s) != 'undefined'" % obj_name
+        script = "return " + condition
         while total_wait_time < max_wait_time:
 
             time.sleep(step_time)
             total_wait_time += step_time
             try:
-                if self.browser.execute_script(exists_script):
+                if self.browser.execute_script(script):
                     break
                 else:
                     pass
-            except WebDriverException as e:
+            except WebDriverException:
                 # possible if the object you want to exist is an attribute of an object
-                # tht doesn't yet exist, e.g. does_not_exist_yet.i_want_to_test_this_one
+                # that doesn't yet exist, e.g. does_not_exist_yet.i_want_to_test_this_one
                 pass
+    
+    def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=4, step_time=0.25):
+        exists_condition = "typeof(%s) != 'undefined'" % obj_name
+        self.browser_wait_for_js_condition(exists_condition, max_wait_time, step_time)
 
     # Actual testing methods
     def empty_form_test(self, url, submission_element_id):
