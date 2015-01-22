@@ -351,21 +351,6 @@ def set_default_language(lang_code):
     Settings.set("default_language", lcode_to_ietf(lang_code))
 
 
-def get_langs_with_subtitle(youtube_id):
-    """
-    Returns a list of all language codes that contain subtitles for this video.
-
-    Central and distributed servers store in different places, so loop differently
-    """
-
-    subtitles_path = get_srt_path()
-    if os.path.exists(subtitles_path):
-        installed_subtitles = [lc for lc in os.listdir(subtitles_path) if os.path.exists(get_srt_path(lc, youtube_id))]
-    else:
-        installed_subtitles = []
-    return sorted(installed_subtitles)
-
-
 def update_jsi18n_file(code="en"):
     """
     For efficieny's sake, we want to cache Django's

@@ -6,9 +6,6 @@ from django.conf import settings; logging = settings.LOG
 
 from django.utils.text import slugify
 
-video_paths = {}
-exercise_paths = {}
-
 # For specification of channel_data dictionary, please see CHANNELDATA.md
 def retrieve_API_data(channel=None):
 
@@ -16,13 +13,11 @@ def retrieve_API_data(channel=None):
 
     exercises = []
 
-    videos = []
-
     assessment_items = []
 
     content = []
 
-    return topic_tree, exercises, videos, assessment_items, content
+    return topic_tree, exercises, assessment_items, content
 
 
 def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
@@ -67,8 +62,6 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
         node["video_id"] = node.get("youtube_id", "")
-        video_paths[str(node["id"])] = node["path"]
-
 
     elif kind == "Exercise":
         # For each exercise, need to set the exercise_id
@@ -79,7 +72,6 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
         # compute base points
         # Minimum points per exercise: 5
         node["basepoints"] = ceil(7 * log(max(exp(5. / 7), node.get("seconds_per_fast_problem", 0))))
-        exercise_paths[str(node["id"])] = node["path"]
 
     return node
 
@@ -99,12 +91,12 @@ def rebuild_topictree(
     Denorms content data to reduce the bulk of the topic tree.
     Adds position data to every node in the topic tree.
     """
-
-    topic_tree, exercises, videos, assessment_items, contents = retrieve_API_data(channel=channel)
+    
+    topic_tree, exercises, assessment_items, contents = retrieve_API_data(channel=channel)
 
     exercise_lookup = dict((exercise["id"], exercise) for exercise in exercises)
 
-    video_lookup = dict((video["id"], video) for video in videos)
+    content_lookup = dict((content["id"], content) for content in contents)
 
     def recurse_nodes(node, path="", ancestor_ids=[]):
         """
@@ -145,7 +137,7 @@ def rebuild_topictree(
                 if child_datum["kind"] == "Exercise":
                     child_denormed_data = exercise_lookup[str(child_datum["id"])]
                 elif child_datum["kind"] == "Video":
-                    child_denormed_data = video_lookup[str(child_datum["id"])]
+                    child_denormed_data = content_lookup[str(child_datum["id"])]
                 else:
                     child_denormed_data = None
                 if child_denormed_data:
@@ -215,41 +207,7 @@ def rebuild_topictree(
             del node["children"][ci]
     recurse_nodes_to_remove_childless_nodes(topic_tree)
 
-    def recurse_nodes_to_add_position_data(node):
-        """
-        Only exercises have position data associated with them.
-        To get position data for higher level topics, averaging of
-        lower level positions can be used to give a center of mass.
-        """
-        if "kind" in node and node.get("hide", True):
-            if node["kind"] == "Topic":
-                x_pos = []
-                y_pos = []
-                contents = []
-                for child in node.get("children", []):
-                    if not (child.get("x_pos", 0) and child.get("y_pos", 0)):
-                        recurse_nodes_to_add_position_data(child)
-                    if child.get("x_pos", 0) and child.get("y_pos", 0):
-                        x_pos.append(child["x_pos"])
-                        y_pos.append(child["y_pos"])
-                    elif child["kind"] in ["Video", "Audio", "Document"]:
-                        contents.append(child)
-                if len(x_pos) and len(y_pos):
-                    node["x_pos"] = sum(x_pos) / float(len(x_pos))
-                    node["y_pos"] = sum(y_pos) / float(len(y_pos))
-                    for i, content in enumerate(contents):
-                        content["y_pos"] = min(y_pos) + (max(y_pos) - min(y_pos)) * i / float(len(videos))
-                        content["x_pos"] = min(x_pos) + (max(x_pos) - min(x_pos)) * i / float(len(videos))
-
-    recurse_nodes_to_add_position_data(topic_tree)
-
-    for exercise in exercises:
-        exercise["path"] = exercise_paths.get(exercise.get(channel_data.get("id_key", {}).get("Exercise"), ""))
-
-    for video in videos:
-        video["path"] = video_paths.get(video.get(channel_data.get("id_key", {}).get("Video"), ""))
-
-    return topic_tree, exercises, videos, assessment_items, contents
+    return topic_tree, exercises, assessment_items, contents
 
 
 def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):

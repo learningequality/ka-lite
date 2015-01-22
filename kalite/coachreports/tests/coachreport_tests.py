@@ -3,7 +3,8 @@ import json
 from django.conf import settings
 logging = settings.LOG
 
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils import unittest
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
@@ -95,23 +96,13 @@ class TestScatterReport(FacilityMixins,
         facility_option = facility_options[0]
         self.assertEqual("All", facility_option.text)
         # check if the xaxis is mastery and yaxis is effort
-        xaxis_select = self.browser.find_element_by_id("xaxis")
-        yaxis_select = self.browser.find_element_by_id("yaxis")
+        datepicker_start = self.browser.find_element_by_id("datepicker_start")
+        datepicker_end = self.browser.find_element_by_id("datepicker_end")
 
-        xaxis_options = xaxis_select.find_elements_by_tag_name("option")
-        xaxis_option = xaxis_options[1]
-        self.assertEqual("Mastery", xaxis_option.text)
-
-        yaxis_options = yaxis_select.find_elements_by_tag_name("option")
-        yaxis_option = yaxis_options[2]
-        self.assertEqual("Effort", yaxis_option.text)
-
-        self.browser.find_elements_by_class_name("dynatree-checkbox")[1].click()
-        self.browser.find_element_by_xpath('//button[@id="content_tree_toggle"]').click()
-        facility_user = self.browser.find_elements_by_class_name("dot")
-        for user_option in facility_user:
-            user_option.click()
-
+        now = datetime.now()
+        current_date = datetime.now() - timedelta(days=31)
+        self.assertEqual(current_date.strftime("%Y-%m-%d"), datepicker_start.get_attribute("value"))
+        self.assertEqual(now.strftime("%Y-%m-%d"), datepicker_end.get_attribute("value"))
 
 class CoachNavigationTest(FacilityMixins,
                           StudentProgressMixin,
@@ -165,8 +156,14 @@ class CoachNavigationTest(FacilityMixins,
             self.reverse('tabular_view'),
             self.reverse('scatter_view'),
             self.reverse('timeline_view'),
-            self.reverse('test_view')
         ]
+
+        #Student-Testing is only the feature of Nalanda.
+        #So tests related coachreports would be available with nalanda only.
+        #Reverse of test_view with argument won't be available unless Nalanda.
+        if "Nalanda" in settings.CONFIG_PACKAGE:
+            self.urls.append(self.reverse('test_view'))
+
         self.browser_login_admin(**self.admin_data)
 
     def test_dropdown_all_facilities(self):
@@ -266,6 +263,7 @@ class CoachNavigationTest(FacilityMixins,
         self.assertEqual(expected, result)
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
@@ -360,6 +358,7 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(overall[0:4], '100%')
 
 
+@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistProgressTest(FacilityMixins,
                            CreateAdminMixin,
                            CreatePlaylistProgressMixin,

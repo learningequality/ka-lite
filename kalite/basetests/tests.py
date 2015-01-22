@@ -232,7 +232,7 @@ class PackagesTests(DependenciesTests):
         "tastypie": "0.11.0",
         "unittest2": "0.7.1",
         "werkzeug": "0.8.3",
-        "youtube_dl": "2014.02.21.1",
+        "youtube_dl": "2014.12.10.3",
         "collections_local_copy": NO_VERSION,
         "memory_profiler": "0.26",
         "mimeparse": "0.1.4",
@@ -312,9 +312,8 @@ class PathsTests(DependenciesTests):
     Check that we have access to all paths and files we need read or write access to.
     """
 
-    JSON_FILES = ("assessmentitems.json", "channel_data.json", "content.json", "contents.json", "exercises.json",
-                  "map_domains.json", "map_subjects.json", "map_topics.json", "map_tutorials.json",
-                  "topic_hierarchy.json", "topics.json", "videos.json",)
+    JSON_FILES = ("assessmentitems.json", "channel_data.json", "contents.json", "exercises.json",
+                  "topic_hierarchy.json", "topics.json",)
 
     def test_content_path(self):
         content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))

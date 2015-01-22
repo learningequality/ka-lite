@@ -1,11 +1,11 @@
 {{#ifcond entity_kind "==" "Divider"}}
 <span class="sidebar-entry sidebar-divider">{{ entity_id }}</span>
 {{else}}
-<a class="sidebar-entry sidebar-entry-link {{#if active }}active{{/if}}" href="#" title="{{ description }}">
+<a class="sidebar-entry sidebar-entry-link {{#if active }}active{{/if}} {{#unless available }}missing{{/unless}}" href="#" title="{{ description }}">
     <div class="sidebar-entry-header">
 
-        <span class="sidebar-icon icon-{{ entity_kind }}" data-content-id="{{ content_id }}"></span>
-        <span class="sidebar-title" data-content-id="{{ content_id }}">{{ title }}</span>
+        <span class="sidebar-icon icon-{{ entity_kind }}" data-content-id="{{ id }}"></span>
+        <span class="sidebar-title" data-content-id="{{ id }}">{{ title }}</span>
     </div>
 
     {{#unless organization}}
@@ -13,6 +13,6 @@
     {{else}}
         <span class="sidebar-organization">by: {{ organization }}</span>
     {{/unless}}
-    <span class="sidebar-description sidebar-topic-description" data-topic-id="{{ id }}">{{#truncate description 100 }}{{/truncate}}</span>
+    <span class="sidebar-description sidebar-topic-description" data-content-id="{{ id }}">{{#truncate description 100 }}{{/truncate}}</span>
 </a>
 {{/ifcond}}

@@ -100,6 +100,3 @@ class Command(CronCommand):
                 self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % len(deleted_video_ids))
             return deleted_video_ids
         touched_video_ids += delete_objects_for_missing_videos(youtube_ids_in_filesystem, videos_marked_at_all)
-
-        if options["auto_cache"] and caching_enabled and touched_video_ids:
-            caching.regenerate_all_pages_related_to_videos(video_ids=list(set(touched_video_ids)))

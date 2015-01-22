@@ -255,6 +255,34 @@ function get_message(msg_id) {
     return $("#" + msg_id).text();
 }
 
+var getParamValue = (function() {
+    var params;
+    var resetParams = function() {
+            var query = window.location.search;
+            var regex = /[?&;](.+?)=([^&;]+)/g;
+            var match;
+
+            params = {};
+
+            if (query) {
+                while (match = regex.exec(query)) {
+                    params[match[1]] = decodeURIComponent(match[2]);
+                }
+            }    
+        };
+
+    window.addEventListener && window.addEventListener('popstate', resetParams);
+
+    resetParams();
+
+    function getParam(param) {
+        return params.hasOwnProperty(param) ? params[param] : null;
+    }
+    
+    return getParam;
+
+})();
+
 function setGetParam(href, name, val) {
     // Generic function for changing a querystring parameter in a url
     var vars = {};
@@ -263,7 +291,7 @@ function setGetParam(href, name, val) {
         vars[key] = value;
     });
 
-    if (val == "" || val == "----" || val === undefined) {
+    if (val === "" || val == "----" || val === undefined) {
         delete vars[name];
     } else {
         vars[name] = val;
@@ -271,8 +299,8 @@ function setGetParam(href, name, val) {
 
     var url = base;
     var idx = 0;
-    for (key in vars) {
-        url += (idx == 0) ? "?" : "&";
+    for (var key in vars) {
+        url += (idx === 0) ? "?" : "&";
         url += key + "=" + vars[key];//         + $.param(vars);
         idx++;
     }
@@ -280,7 +308,7 @@ function setGetParam(href, name, val) {
 }
 
 function setGetParamDict(href, dict) {
-    for (key in dict) {
+    for (var key in dict) {
          href = setGetParam(href, key, dict[key]);
     }
     return href;

@@ -49,8 +49,10 @@ function d3_scatter(data, options, appendtohtml) {
         .attr("id", "summary");
 
   // Set x and y range
-  x.domain([0, 100]);
-  y.domain([0, 100]);
+  // x.domain([0, 100]);
+  // y.domain([0, 100]);
+  x.domain(d3.extent(data, function(d) { return d[xCoordinate]; })).nice();
+  y.domain(d3.extent(data, function(d) { return d[yCoordinate]; })).nice();
 
   // Click anywhere on SVG object to hide tooltip
   svg.on("click", function() {

@@ -5,9 +5,9 @@ from tastypie.exceptions import NotFound
 from django.utils.translation import ugettext as _
 from django.conf.urls import url
 
-from .models import ExerciseLog, AttemptLog, ContentLog
+from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
-from kalite.topic_tools import get_video_data, get_exercise_data, get_assessment_item_cache, get_content_data
+from kalite.topic_tools import get_exercise_data, get_assessment_item_cache, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -20,7 +20,7 @@ class ExerciseLogResource(ModelResource):
         queryset = ExerciseLog.objects.all()
         resource_name = 'exerciselog'
         filtering = {
-            "exercise_id": ('exact', ),
+            "exercise_id": ('exact', 'in', ),
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
@@ -65,107 +65,23 @@ class ContentLogResource(ModelResource):
         queryset = ContentLog.objects.all()
         resource_name = 'contentlog'
         filtering = {
-            "content_id": ('exact', ),
+            "content_id": ('exact', 'in', ),
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
 
+class VideoLogResource(ModelResource):
 
-class Video:
-
-    def __init__(self, lang_code="en", **kwargs):
-
-        self.on_disk = False
-
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
-
-        # the computed values
-        self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
-        self.subtitle_urls = kwargs.get('availability', {}).get(lang_code, {}).get('subtitles', {})
-        self.selected_language = lang_code
-        self.dubs_available = len(kwargs.get('availability', {})) > 1
-        self.title = _(kwargs.get('title'))
-        self.id = self.pk = self.video_id = kwargs.get('id')
-        self.description = _(kwargs.get('description', ''))
-        if self.description == "None":
-            self.description = ""
-
-
-class VideoResource(Resource):
-    # TODO(jamalex): this seems very un-DRY (since it's replicating all the model fields again). DRY it out!
-    availability = fields.DictField(attribute='availability')
-    description = fields.CharField(attribute='description')
-    download_urls = fields.DictField(attribute='download_urls', default={})
-    dubs_available = fields.BooleanField(attribute='dubs_available')
-    duration = fields.IntegerField(attribute='duration', default=-1)
-    id = fields.CharField(attribute='id')
-    kind = fields.CharField(attribute='kind')
-    on_disk = fields.BooleanField(attribute='on_disk')
-    path = fields.CharField(attribute='path')
-    related_exercise = fields.DictField(attribute='related_exercise', default={})
-    selected_language = fields.CharField(attribute='selected_language')
-    subtitle_urls = fields.ListField(attribute='subtitle_urls')
-    title = fields.CharField(attribute='title')
-    video_id = fields.CharField(attribute='video_id')
-    content_urls = fields.DictField(attribute='content_urls')
-    youtube_id = fields.CharField(attribute='youtube_id', default="no_youtube_id")
-    related_content = fields.ListField(attribute='related_content', default=[])
-    tags = fields.ListField(attribute='tags', default=[])
-    organization = fields.CharField(attribute='organization', default="")
+    user = fields.ForeignKey(FacilityUserResource, 'user')
 
     class Meta:
-        resource_name = 'video'
-        object_class = Video
-
-    def prepend_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)/(?P<id>[\w\d_.-]+)/$" % self._meta.resource_name,
-                self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail"),
-        ]
-
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if getattr(bundle_or_obj, 'obj', None):
-            kwargs['pk'] = bundle_or_obj.obj.id
-        else:
-            kwargs['pk'] = bundle_or_obj.id
-        return kwargs
-
-    def get_object_list(self, request):
-        """
-        Get the list of videos.
-        """
-        raise NotImplemented("Operation not implemented yet for videos.")
-
-    def obj_get_list(self, bundle, **kwargs):
-        return self.get_object_list(bundle.request)
-
-    def obj_get(self, bundle, **kwargs):
-        id = kwargs.get("id", None)
-        video = get_video_data(bundle.request, id)
-
-        if video:
-            return Video(**video)
-        else:
-            raise NotFound('Video with id %s not found' % id)
-
-    def obj_create(self, bundle, **kwargs):
-        raise NotImplementedError
-
-    def obj_update(self, bundle, **kwargs):
-        raise NotImplementedError
-
-    def obj_delete_list(self, bundle, **kwargs):
-        raise NotImplementedError
-
-    def obj_delete(self, bundle, **kwargs):
-        raise NotImplementedError
-
-    def rollback(self, bundles):
-        raise NotImplementedError
-
+        queryset = VideoLog.objects.all()
+        resource_name = 'videolog'
+        filtering = {
+            "video_id": ('exact', 'in', ),
+            "user": ('exact', ),
+        }
+        authorization = UserObjectsOnlyAuthorization()
 
 class Exercise():
 
