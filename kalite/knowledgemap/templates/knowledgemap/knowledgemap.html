@@ -22,10 +22,9 @@
 {% block content %}
   <img id="map-explanation" src="{% static 'images/knowledgemap/map_explain_img.png' %}" 
   style="width:100px; top:70px; left:10px; position:absolute">
-  <h4 style="top:60px; left:37px; position:absolute">{% trans "not-started" %}</h4>
-  <h4 style="top:90px; left:37px; position:absolute">{% trans "in-progress" %}</h4>
-  <h4 style="top:120px; left:37px; position:absolute">{% trans "completed" %}</h4>
-  <h8 style="top:165px; left:35px; position:absolute; color:white">{% trans "partially" %}</h8>
-  <h8 style="top:180px; left:32px; position:absolute; color:white">{% trans "unfolded" %}</h8>
-  <h8 style="top:220px; left:18px; position:absolute">{% trans "fully unfolded" %}</h8>
+  <h5 style="top:65px; left:37px; position:absolute">{% trans "not-started" %}</h5>
+  <h5 style="top:93px; left:37px; position:absolute">{% trans "in-progress" %}</h5>
+  <h5 style="top:121px; left:37px; position:absolute">{% trans "completed" %}</h5>
+  <h5 style="font-size: 80%; top:165px; left:16px; position:absolute; color:white">{% trans "partially unfolded" %}</h5>
+  <h5 style="font-size: 80%; top:214px; left:25px; position:absolute">{% trans "fully unfolded" %}</h5>
 {% endblock content %}
