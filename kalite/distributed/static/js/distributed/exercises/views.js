@@ -195,8 +195,24 @@ window.ExerciseView = Backbone.View.extend({
 
         var self = this;
 
+        var item_index;
+
+        var assessment_items = self.data_model.get("all_assessment_items") || [{id: ""}];
+
+        if (typeof question_data.attempts !== "undefined") {
+
+            item_index = question_data.attempts % assessment_items.length;
+            delete question_data.attempts;
+
+        } else {
+
+            item_index = Math.floor(Math.random() * assessment_items.length);
+
+        }
+
         var defaults = {
-            seed: Math.floor(Math.random() * 200)
+            seed: Math.floor(Math.random() * 200),
+            assessment_item_id: (assessment_items)[item_index].id
         };
 
         question_data = $.extend(defaults, question_data);
@@ -220,6 +236,7 @@ window.ExerciseView = Backbone.View.extend({
 
             if (framework == "khan-exercises") {
 
+
                 if (Khan.loaded === undefined) {
                     require([KHAN_EXERCISES_SCRIPT_URL], self.load_exercises_when_ready);
                 } else {
@@ -229,15 +246,13 @@ window.ExerciseView = Backbone.View.extend({
             } else if (framework == "perseus") {
 
                 $(Exercises).trigger("clearExistingProblem");
-
-                var i = Math.floor(Math.random() * self.data_model.get("all_assessment_items").length);
-                var item = new AssessmentItemModel({id: self.data_model.get("all_assessment_items")[i].id});
+                
+                var item = new AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
 
                 item.fetch().then(function() {
                     require([KHAN_EXERCISES_SCRIPT_URL], function() {
                         Exercises.PerseusBridge.load().then(function() {
                             Exercises.PerseusBridge.render_item(item.get_item_data());
-                            // Exercises.PerseusBridge.render_item(item_data);
                             $(Exercises).trigger("newProblem", {
                                 userExercise: null,
                                 numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
@@ -385,8 +400,6 @@ window.ExercisePracticeView = Backbone.View.extend({
             denominator: ExerciseParams.STREAK_WINDOW
         };
 
-        var msg;
-
         if (!this.log_model.get("complete")) {
             if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
                 msg = "";
@@ -410,7 +423,7 @@ window.ExercisePracticeView = Backbone.View.extend({
                 }
             } else {
                 msg = gettext("You have finished this exercise!");
-                if (context.remaining == 0) {
+                if (context.remaining === 0) {
                     show_modal("info", sprintf(msg, context));
                 }
             }
@@ -590,7 +603,11 @@ window.ExercisePracticeView = Backbone.View.extend({
                 // if this is the first attempt, or the previous attempt was complete, start a new attempt log
                 if (!self.current_attempt_log || self.current_attempt_log.get("complete")) {
 
-                    self.exercise_view.load_question(); // will generate a new random seed to use
+                    // will generate a new random seed to use
+                    // or in the case of an assessment item exercise, will use number of attempts
+                    // to index into next assessment item.
+
+                    self.exercise_view.load_question({attempts: self.log_model.get("attempts")});
 
                     // determine the suffix to add to context_type, to indicate what stage we're in
                     var context_type_suffix = "";
@@ -604,11 +621,15 @@ window.ExercisePracticeView = Backbone.View.extend({
 
                     self.initialize_new_attempt_log({
                         seed: self.exercise_view.data_model.get("seed"),
+                        assessment_item_id: self.exercise_view.data_model.get("assessment_item_id"),
                         context_type: self.options.context_type + context_type_suffix
                     });
 
                 } else { // use the seed already established for this attempt
-                    self.exercise_view.load_question({seed: self.current_attempt_log.get("seed")});
+                    self.exercise_view.load_question({
+                        seed: self.current_attempt_log.get("seed"),
+                        assessment_item_id: self.current_attempt_log.get("assessment_item_id")
+                    });
                 }
 
                 self.$(".hint-reminder").show(); // show message about hints
@@ -923,7 +944,8 @@ window.ExerciseQuizView = Backbone.View.extend({
             context_id: this.options.context_id || "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version"),
-            seed: this.exercise_view.data_model.seed
+            seed: this.exercise_view.data_model.seed,
+            assessment_item_id: this.exercise_view.data_model.assessment_item_id
         };
 
         data = $.extend(defaults, data);
