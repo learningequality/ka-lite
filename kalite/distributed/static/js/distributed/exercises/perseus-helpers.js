@@ -38,8 +38,15 @@ window.Exercises = _.extend({
         render: function() {}
     },
     incompleteStack: [0],
+    // This method allows an event triggered by jQuery to be retriggered as a Backbone Event.
     proxyTrigger: function () {
+        // Get the type of event from the first argument (which is the event object itself)
+        // Add this as the first argument of the arguments object
         Array.prototype.unshift.apply(arguments, [arguments[0].type]);
+        // Call Backbone event trigger with the event name as the first argument
+        // and the other arguments as the remainders.
+        // Using/modifying the arguments object in this way means we can just pass
+        // any arguments seamlessly through to the event.
         this.trigger.apply(this, arguments);
     }
 }, Backbone.Events);
