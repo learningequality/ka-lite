@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var TextInput = React.createClass({
     propTypes: {
         value: React.PropTypes.string,
@@ -16,14 +14,19 @@ var TextInput = React.createClass({
     },
 
     render: function() {
-        return React.DOM.input(_.extend({}, this.props, {
-            type: "text",
-            onChange: (e) => this.props.onChange(e.target.value)
-        }));
+        return <input
+            {...this.props}
+            type="text"
+            onChange={(e) => this.props.onChange(e.target.value)}
+        />;
     },
 
     focus: function() {
         this.getDOMNode().focus();
+    },
+
+    blur: function() {
+        this.getDOMNode().blur();
     }
 });
 

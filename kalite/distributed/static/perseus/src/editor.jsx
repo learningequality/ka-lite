@@ -1,15 +1,62 @@
-/** @jsx React.DOM */
-
 var React = require('react');
+var _ = require("underscore");
+
+var ApiOptions = require("./perseus-api.jsx").Options;
+var DragTarget = require("react-components/drag-target.jsx");
+var EnabledFeatures = require("./enabled-features.jsx");
 var PropCheckBox = require("./components/prop-check-box.jsx");
 var Util = require("./util.js");
 var Widgets = require("./widgets.js");
-var DragTarget = require("react-components/drag-target");
+
+var WIDGET_PROP_BLACKLIST = require("./mixins/widget-prop-blacklist.jsx");
 
 // like [[snowman input-number 1]]
-var rWidgetSplit = /(\[\[\u2603 [a-z-]+ [0-9]+\]\])/g;
+var widgetPlaceholder = "[[\u2603 {id}]]";
+var widgetRegExp = "(\\[\\[\u2603 {id}\\]\\])";
+var rWidgetSplit = new RegExp(widgetRegExp.replace('{id}', '[a-z-]+ [0-9]+'),
+                              'g');
+
+var shortcutRegexp = /^\[\[([a-z]+)$/; // like [[nu, [[int, etc
+
+var ENDS_WITH_A_PARAGRAPH = /(?:\n{2,}|^\n*)$/;
+var TRAILING_NEWLINES = /(\n*)$/;
+var LEADING_NEWLINES = /^(\n*)/;
+
+var makeEndWithAParagraphIfNecessary = (content) => {
+    if (!ENDS_WITH_A_PARAGRAPH.test(content)) {
+        var newlines = TRAILING_NEWLINES.exec(content)[1];
+        return content + "\n\n".slice(0, 2 - newlines.length);
+    } else {
+        return content;
+    }
+};
+var makeStartWithAParagraphAlways = (content) => {
+    var newlines = LEADING_NEWLINES.exec(content)[1];
+    return "\n\n".slice(0, 2 - newlines.length) + content;
+};
 
 var WidgetSelect = React.createClass({
+    shouldComponentUpdate: function() {
+        return false;
+    },
+
+    render: function() {
+        var widgets = Widgets.getPublicWidgets();
+        var orderedWidgetNames = _.sortBy(_.keys(widgets), (name) => {
+            return widgets[name].displayName;
+        });
+
+        return <select value="" onChange={this.handleChange}>
+            <option value="">Add a widget{"\u2026"}</option>
+            <option disabled>--</option>
+            {_.map(orderedWidgetNames, (name) => {
+                return <option key={name} value={name}>
+                    {widgets[name].displayName}
+                </option>;
+            })}
+        </select>;
+    },
+
     handleChange: function(e) {
         var widgetType = e.target.value;
         if (widgetType === "") {
@@ -17,30 +64,10 @@ var WidgetSelect = React.createClass({
             // but might as well be safe
             return;
         }
-        e.target.value = "";
         if (this.props.onChange) {
             this.props.onChange(widgetType);
         }
     },
-    shouldComponentUpdate: function() {
-        return false;
-    },
-    render: function() {
-        var widgets = Widgets.getPublicWidgets();
-        var orderedWidgetNames = _.sortBy(_.keys(widgets), (name) => {
-            return widgets[name].displayName;
-        });
-
-        return <select onChange={this.handleChange}>
-            <option value="">Add a widget{"\u2026"}</option>
-            <option disabled>--</option>
-            {_.map(orderedWidgetNames, (name) => {
-                return <option value={name} key={name}>
-                    {widgets[name].displayName}
-                </option>;
-            })}
-        </select>;
-    }
 });
 
 
@@ -49,7 +76,8 @@ var WidgetEditor = React.createClass({
         type: React.PropTypes.string,
         id: React.PropTypes.string,
         graded: React.PropTypes.bool,
-        onChange: React.PropTypes.func
+        onChange: React.PropTypes.func,
+        apiOptions: ApiOptions.propTypes,
     },
 
     getDefaultProps: function() {
@@ -66,7 +94,7 @@ var WidgetEditor = React.createClass({
     },
 
     render: function() {
-        // We can't call our widget's `toJSON` here, because on
+        // We can't call our widget's `serialize` here, because on
         // first render that ref hasn't mounted yet.
         // This means that on first render we'll send in
         // `options: {}` to `upgradeWidgetInfoToLatestVersion`, but
@@ -77,7 +105,7 @@ var WidgetEditor = React.createClass({
         );
         var type = upgradedWidgetInfo.type;
 
-        var cls = Widgets.getEditor(type);
+        var Ed = Widgets.getEditor(type);
 
         var isUngradedEnabled = (type === "transformer");
         var direction = this.state.showWidget ? "down" : "right";
@@ -87,19 +115,31 @@ var WidgetEditor = React.createClass({
                                 onChange={this.props.onChange} />;
 
         return <div className="perseus-widget-editor">
-            <a href="#" className={"perseus-widget-editor-title " +
-                    (this.state.showWidget ? "open" : "closed")}
-                    onClick={this.toggleWidget}>
-                {this.props.id}
-                <i className={"icon-chevron-" + direction} />
-            </a>
+            <div className={"perseus-widget-editor-title " +
+                    (this.state.showWidget ? "open" : "closed")}>
+                <a href="#" onClick={this.toggleWidget}>
+                    {this.props.id}
+                    <i className={"icon-chevron-" + direction} />
+                </a>
+                <a href="#" className={
+                            "remove-widget " +
+                            "simple-button simple-button--small orange"
+                        }
+                        onClick={(e) => {
+                            e.preventDefault();
+                            this.props.onRemove();
+                        }}>
+                    <span className="icon-trash" />
+                </a>
+            </div>
             <div className={"perseus-widget-editor-content " +
                     (this.state.showWidget ? "enter" : "leave")}>
                 {isUngradedEnabled && gradedPropBox}
-                {cls(_.extend({
-                    ref: "widget",
-                    onChange: this._handleWidgetChange
-                }, upgradedWidgetInfo.options))}
+                <Ed
+                    ref="widget"
+                    onChange={this._handleWidgetChange}
+                    apiOptions={this.props.apiOptions}
+                    {...upgradedWidgetInfo.options} />
             </div>
         </div>;
     },
@@ -109,28 +149,34 @@ var WidgetEditor = React.createClass({
         this.setState({showWidget: !this.state.showWidget});
     },
 
-    _handleWidgetChange: function(newProps, cb) {
-        // TODO(jack): It is unfortunate to call toJSON here, but is
-        // important so that the widgetInfo we pass to our upgrade
-        // functions is always complete. If we just sent this.props in,
-        // we could run into situations where we would send things like
-        // { answerType: "decimal" } to our upgrade functions, without
-        // the rest of the props representing the widget.
-        var currentWidgetInfo = _.extend({}, this.props, {
-            options: this.refs.widget.toJSON(true)
-        });
+    _handleWidgetChange: function(newProps, cb, silent) {
+        // TODO(jack): It is unfortunate to call serialize here, but is
+        // important so that the widgetInfo we pass to our upgrade functions is
+        // always complete. If we just sent this.props in, we could run into
+        // situations where we would send things like { answerType: "decimal" }
+        // to our upgrade functions, without the rest of the props representing
+        // the widget.
+        var currentWidgetInfo = _.extend(
+            _.omit(this.props, WIDGET_PROP_BLACKLIST),
+            { options: this.refs.widget.serialize() }
+        );
         var newWidgetInfo = Widgets.upgradeWidgetInfoToLatestVersion(
             currentWidgetInfo
         );
         newWidgetInfo.options = _.extend(newWidgetInfo.options, newProps);
-        this.props.onChange(newWidgetInfo, cb);
+        this.props.onChange(newWidgetInfo, cb, silent);
     },
 
-    toJSON: function(skipValidation) {
+    getSaveWarnings: function() {
+        var issuesFunc = this.refs.widget.getSaveWarnings;
+        return issuesFunc ? issuesFunc() : [];
+    },
+
+    serialize: function() {
         return {
             type: this.props.type,
             graded: this.props.graded,
-            options: this.refs.widget.toJSON(skipValidation),
+            options: this.refs.widget.serialize(),
             version: Widgets.getVersion(this.props.type)
         };
     }
@@ -178,22 +224,10 @@ var imageUrlsFromContent = function(content) {
     );
 };
 
-/**
- * Sends the dimensions of the image located at the given url to `callback`
- */
-var sizeImage = function(url, callback) {
-    var image = new Image();
-    image.onload = () => {
-        var width = image.naturalWidth || image.width;
-        var height = image.naturalHeight || image.height;
-        callback(width, height);
-    };
-    image.src = url;
-};
-
 var Editor = React.createClass({
     propTypes: {
-        imageUploader: React.PropTypes.func
+        imageUploader: React.PropTypes.func,
+        apiOptions: ApiOptions.propTypes,
     },
 
     getDefaultProps: function() {
@@ -203,7 +237,8 @@ var Editor = React.createClass({
             widgets: {},
             images: {},
             widgetEnabled: true,
-            immutableWidgets: false
+            immutableWidgets: false,
+            apiOptions: ApiOptions.defaults,
         };
     },
 
@@ -211,18 +246,27 @@ var Editor = React.createClass({
         if (!Widgets.getEditor(type)) {
             return;
         }
-        return WidgetEditor(_.extend({
-            ref: id,
-            id: id,
-            type: type,
-            onChange: this._handleWidgetEditorChange.bind(this, id)
-        }, this.props.widgets[id]));
+        return <WidgetEditor
+            ref={id}
+            id={id}
+            type={type}
+            onChange={this._handleWidgetEditorChange.bind(this, id)}
+            onRemove={this._handleWidgetEditorRemove.bind(this, id)}
+            apiOptions={this.props.apiOptions}
+            {...this.props.widgets[id]} />;
     },
 
-    _handleWidgetEditorChange: function(id, newProps, cb) {
+    _handleWidgetEditorChange: function(id, newProps, cb, silent) {
         var widgets = _.clone(this.props.widgets);
         widgets[id] = _.extend({}, widgets[id], newProps);
-        this.props.onChange({widgets: widgets}, cb);
+        this.props.onChange({widgets: widgets}, cb, silent);
+    },
+
+    _handleWidgetEditorRemove: function(id) {
+        var re = new RegExp(widgetRegExp.replace('{id}', id), 'gm');
+        var textarea = this.refs.textarea.getDOMNode();
+
+        this.props.onChange({content: textarea.value.replace(re, '')});
     },
 
     /**
@@ -246,7 +290,7 @@ var Editor = React.createClass({
         // TODO(jack): Q promises would make this nicer and only
         // fire once.
         _.each(newImageUrls, (url) => {
-            sizeImage(url, (width, height) => {
+            Util.getImageSize(url, (width, height) => {
                 // We keep modifying the same image object rather than a new
                 // copy from this.props because all changes here are additive.
                 // Maintaining old changes isn't strictly necessary if
@@ -258,8 +302,11 @@ var Editor = React.createClass({
                     height: height
                 };
                 props.onChange({
-                    images: _.clone(images)
-                });
+                        images: _.clone(images)
+                    },
+                    null, // callback
+                    true // silent
+                );
             });
         });
     },
@@ -322,12 +369,15 @@ var Editor = React.createClass({
             // }, this);
 
             this.widgetIds = _.keys(widgets);
-            widgetsDropDown = <WidgetSelect onChange={this.addWidget} />;
+            widgetsDropDown = <WidgetSelect
+                    ref="widgetSelect"
+                    onChange={this._addWidget} />;
 
             templatesDropDown = <select onChange={this.addTemplate}>
                 <option value="">Insert template{"\u2026"}</option>
                 <option disabled>--</option>
                 <option value="table">Table</option>
+                <option value="titledTable">Titled table</option>
                 <option value="alignment">Aligned equations</option>
                 <option value="piecewise">Piecewise function</option>
             </select>;
@@ -358,6 +408,7 @@ var Editor = React.createClass({
                 <textarea ref="textarea"
                           key="textarea"
                           onChange={this.handleChange}
+                          onKeyDown={this._handleKeyDown}
                           placeholder={this.props.placeholder}
                           value={this.props.content} />
             ];
@@ -470,28 +521,95 @@ var Editor = React.createClass({
         this.props.onChange({content: textarea.value});
     },
 
-    addWidget: function(widgetType) {
-        var oldContent = this.props.content;
+    _handleKeyDown: function(e) {
+        if (e.key === "Tab") {
+            var textarea = this.refs.textarea.getDOMNode();
 
-        // Add newlines before "big" widgets like graphs
-        if (widgetType !== "input-number" && widgetType !== "dropdown") {
-            oldContent = oldContent.replace(/\n*$/, "\n\n");
+            var word = Util.textarea.getWordBeforeCursor(textarea);
+            var matches = word.string.toLowerCase().match(shortcutRegexp);
+
+            if (matches != null) {
+                var text = matches[1];
+                var widgets = Widgets.getAllWidgetTypes();
+                var matchingWidgets = _.filter(widgets, (name) => {
+                    return name.substring(0, text.length) === text;
+                });
+
+                if (matchingWidgets.length === 1) {
+                    var widgetType = matchingWidgets[0];
+
+                    this._addWidgetToContent(
+                        this.props.content,
+                        [word.pos.start, word.pos.end + 1],
+                        widgetType
+                    );
+                }
+
+                e.preventDefault();
+            }
         }
+    },
 
-        for (var i = 1; oldContent.indexOf("[[\u2603 " + widgetType + " " + i +
-                "]]") > -1; i++) {
-            // pass
-        }
+    _addWidgetToContent(oldContent, cursorRange, widgetType) {
+        var textarea = this.refs.textarea.getDOMNode();
 
-        var id = widgetType + " " + i;
-        var newContent = oldContent + "[[\u2603 " + id + "]]";
+        // Note: we have to use _.map here instead of Array::map
+        // because the results of a .match might be null if no
+        // widgets were found.
+        var allWidgetIds = _.map(oldContent.match(rWidgetSplit), (syntax) => {
+            var match = Util.rWidgetParts.exec(syntax);
+            var type = match[2];
+            var num = +match[3];
+            return [type, num];
+        });
 
-        var widgets = _.clone(this.props.widgets);
-        widgets[id] = {type: widgetType};
+        var widgetNum = _.reduce(allWidgetIds, (currentNum, otherId) => {
+            var [otherType, otherNum] = otherId;
+            if (otherType === widgetType) {
+                return Math.max(otherNum + 1, currentNum);
+            } else {
+                return currentNum;
+            }
+        }, 1);
+
+        var id = widgetType + " " + widgetNum;
+        var widgetContent = widgetPlaceholder.replace("{id}", id);
+
+        // Add newlines before block-display widgets like graphs
+        var Widget = Widgets.getWidget(widgetType, EnabledFeatures.defaults);
+        var isBlock = Widget.displayMode === "block";
+        var prelude = oldContent.slice(0, cursorRange[0]);
+        var postlude = oldContent.slice(cursorRange[1]);
+
+        var newPrelude = isBlock ?
+            makeEndWithAParagraphIfNecessary(prelude) :
+            prelude;
+        var newPostlude = isBlock ?
+            makeStartWithAParagraphAlways(postlude) :
+            postlude;
+
+        var newContent = newPrelude + widgetContent + newPostlude;
+
         this.props.onChange({
-            content: newContent,
-            widgets: widgets
-        }, this.focusAndMoveToEnd);
+            content: newContent
+        }, function() {
+            Util.textarea.moveCursor(
+                textarea,
+                // We want to put the cursor after the widget
+                // and after any added newlines
+                newContent.length - postlude.length
+            );
+        });
+    },
+
+    _addWidget: function(widgetType) {
+        var textarea = this.refs.textarea.getDOMNode();
+        this._addWidgetToContent(
+            this.props.content,
+            [textarea.selectionStart, textarea.selectionEnd],
+            widgetType
+        );
+        textarea.focus();
     },
 
     addTemplate: function(e) {
@@ -515,6 +633,13 @@ var Editor = React.createClass({
                        "data 1 | data 2 | data 3\n" +
                        "data 4 | data 5 | data 6\n" +
                        "data 7 | data 8 | data 9";
+        } else if (templateType === "titledTable") {
+            template = "|| **Table title** ||\n" +
+                       "header 1 | header 2 | header 3\n" +
+                       "- | - | -\n" +
+                       "data 1 | data 2 | data 3\n" +
+                       "data 4 | data 5 | data 6\n" +
+                       "data 7 | data 8 | data 9";
         } else if (templateType === "alignment") {
             template = "$\\begin{align} x+5 &= 30 \\\\\n" +
                        "x+5-5 &= 30-5 \\\\\n" +
@@ -533,19 +658,46 @@ var Editor = React.createClass({
         this.props.onChange({content: newContent}, this.focusAndMoveToEnd);
     },
 
-    toJSON: function(skipValidation) {
-        // Could be _.pick(this.props, "content", "widgets"); but validation!
+    getSaveWarnings: function() {
+        var widgetIds = _.intersection(this.widgetIds, _.keys(this.refs));
+        return _(widgetIds)
+            .chain()
+            .map(id => {
+                var issuesFunc = this.refs[id].getSaveWarnings;
+                return issuesFunc ? issuesFunc() : [];
+            })
+            .flatten(true)
+            .value();
+    },
+
+    serialize: function(options) {
+        // need to serialize the widgets since the state might not be
+        // completely represented in props. ahem //transformer// (and
+        // interactive-graph and plotter).
         var widgets = {};
         var widgetIds = _.intersection(this.widgetIds, _.keys(this.refs));
+        _.each(widgetIds, id => {
+            widgets[id] = this.refs[id].serialize();
+        });
 
-        _.each(widgetIds, function(id) {
-            widgets[id] = this.refs[id].toJSON(skipValidation);
-        }, this);
+        // Preserve the data associated with deleted widgets in their last
+        // modified form. This is only intended to be useful in the context of
+        // immediate cut and paste operations if Editor.serialize() is called
+        // in between the two (which ideally should not be happening).
+        // TODO(alex): Remove this once all widget.serialize() methods
+        //             have been fixed to only return props,
+        //             and the above no longer applies.
+        if (options && options.keepDeletedWidgets) {
+            _.chain(this.props.widgets)
+                .keys()
+                .reject((id) => _.contains(widgetIds, id))
+                .each((id) => { widgets[id] = this.props.widgets[id]; });
+        }
 
         return {
             content: this.props.content,
             images: this.props.images,
-            widgets: widgets
+            widgets: widgets,
         };
     },
 

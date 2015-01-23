@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 // TODO(alex): Package MathQuill
 var MathQuill = window.MathQuill;
 var React     = require("react");
@@ -29,6 +27,10 @@ var MathInput = React.createClass({
             "mq-editable-field": true,
             "mq-math-mode": true
         });
+
+        if (this.props.className) {
+            className = className + " " + this.props.className;
+        }
 
         var buttons = null;
         if (this._shouldShowButtons()) {
@@ -149,9 +151,9 @@ var MathInput = React.createClass({
         // trig functions; those are always interpreted as commands.
         MathQuill.addAutoCommands("pi theta phi sqrt");
 
-        // Pop the cursor out of super/subscripts on addition or (in)equalities
-        // Avoid popping on '-' to allow negative exponents
-        MathQuill.addCharsThatBreakOutOfSupSub("+=<>≠≤≥");
+        // Pop the cursor out of super/subscripts on arithmetic operators or
+        // (in)equalities.
+        MathQuill.addCharsThatBreakOutOfSupSub("+-*/=<>≠≤≥");
 
         // Prevent excessive super/subscripts or fractions from being created
         // without operands, e.g. when somebody holds down a key
@@ -231,6 +233,11 @@ var MathInput = React.createClass({
     focus: function() {
         this.mathField().focus();
         this.setState({ focused: true });
+    },
+
+    blur: function() {
+        this.mathField().blur();
+        this.setState({ focused: false });
     }
 });
 

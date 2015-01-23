@@ -17,6 +17,7 @@ and more.
 import os
 import re
 import json
+import copy
 from functools import partial
 
 from django.conf import settings; logging = settings.LOG
@@ -123,12 +124,27 @@ def get_assessment_item_cache(force=False):
 
     return ASSESSMENT_ITEMS
 
+def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):
+    if not level_cache:
+        for hier in hierarchy:
+            level_cache[hier] = []
+    render_type = node.get("render_type", "")
+    if render_type in hierarchy:
+        node_copy = copy.deepcopy(dict(node))
+        for child in node_copy.get("children", []):
+            if "children" in child:
+                del child["children"]
+        level_cache[render_type].append(node_copy)
+    for child in node.get("children", []):
+        recurse_topic_tree_to_create_hierarchy(child, level_cache, hierarchy=hierarchy)
+    return level_cache
+
 KNOWLEDGEMAP_TOPICS = None
 CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
-        KNOWLEDGEMAP_TOPICS =  softload_json(KNOWLEDGEMAP_TOPICS_FILEPATH, logger=logging.debug, raises=False)
+        KNOWLEDGEMAP_TOPICS = recurse_topic_tree_to_create_hierarchy(get_topic_tree(), {}, hierarchy=["Domain", "Subject", "Topic", "Tutorial"])["Topic"]
     return KNOWLEDGEMAP_TOPICS
 
 

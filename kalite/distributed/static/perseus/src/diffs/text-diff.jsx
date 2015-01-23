@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var diff = require("../../lib/jsdiff");
 var splitDiff = require("./split-diff.jsx");
 var stringArrayDiff = require("./string-array-diff.jsx");
@@ -13,11 +11,6 @@ var IMAGE_REGEX = /http.*?\.png/g;
 
 var imagesInString = function(str) {
     return str.match(IMAGE_REGEX) || [];
-};
-
-var COLORS = {
-  "before": "#FFAAAA",
-  "after": "#AAFFAA"
 };
 
 var classFor = function(entry, ifAdded, ifRemoved) {

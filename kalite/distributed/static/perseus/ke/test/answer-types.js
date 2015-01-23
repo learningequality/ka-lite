@@ -223,7 +223,7 @@
         start();
     });
 
-    asyncTest("number pi", 39, function() {
+    asyncTest("number pi", 60, function() {
         setupSolutionArea();
         var $problem = jQuery("#qunit-fixture .problem").append(
             "<p class='solution' data-type='number' data-forms='pi'>-6.283185307179586<\/p>"
@@ -245,6 +245,13 @@
         testAnswer(answerData, "" + (-2 * Math.PI), "empty-message", "approximately right answer provides a message");
         testAnswer(answerData, "-2/1 pi", "empty-message", "unsimplified answer provides a message");
         testAnswer(answerData, "-9.42", "wrong", "totally wrong answer gives no message");
+        testAnswer(answerData, "-\\tau", "right", "\\tau is interpreted as tau");
+        testAnswer(answerData, "-2\\pi", "right", "\\pi is interpreted as pi");
+        testAnswer(answerData, "-t", "right", "t is interpreted as tau");
+        testAnswer(answerData, "-2p", "right", "p is interpreted as pi");
+        testAnswer(answerData, "-2\\p", "empty-message", "\\p is not interpreted as pi");
+        testAnswer(answerData, " - 2 pi", "right", "spacing is arbitrary");
+        testAnswer(answerData, " -4 pau /  3", "right", "spacing is arbitrary with fractions");
 
         start();
     });
@@ -996,6 +1003,104 @@
         testAnswer(answerData, "3 * 2 * 5 * 2", "right", "right answer is right");
         testAnswer(answerData, "2 ^ 2 * 5 * 3", "right", "right answer is right");
         testAnswer(answerData, "2^2*3^1*5^1", "right", "right answer is right");
+
+        start();
+    });
+
+    asyncTest("expression", 12, function() {
+        setupSolutionArea();
+        var $problem = jQuery("#qunit-fixture .problem").append(
+            "<p class='solution' data-type='expression'>(x+3)(x-3)<\/p>"
+        );
+
+        var answerData = Khan.answerTypes.expression.setup($("#solutionarea"),
+                $problem.children(".solution"));
+
+        testAnswer(answerData, "", "empty", "empty answer is empty");
+        testAnswer(answerData, "(x+3)(x+3)", "wrong", "wrong answer is wrong");
+        testAnswer(answerData, "(x-3)(x+3)", "right", "right answer is right");
+        testAnswer(answerData, "x^2-9", "right", "right answer is right");
+
+        start();
+    });
+
+    asyncTest("expression-same-form", 12, function() {
+        setupSolutionArea();
+        var $problem = jQuery("#qunit-fixture .problem").append(
+            "<p class='solution' data-type='expression' data-same-form>(x+3)(x-3)<\/p>"
+        );
+
+        var answerData = Khan.answerTypes.expression.setup($("#solutionarea"),
+                $problem.children(".solution"));
+
+        testAnswer(answerData, "", "empty", "empty answer is empty");
+        testAnswer(answerData, "(x+3)(x+3)", "wrong", "wrong answer is wrong");
+        testAnswer(answerData, "(x-3)(x+3)", "right", "right answer is right");
+        testAnswer(answerData, "x^2-9", "wrong-message", "wrong form is wrong with message");
+
+        start();
+    });
+
+    asyncTest("expression-simplified", 15, function() {
+        setupSolutionArea();
+        var $problem = jQuery("#qunit-fixture .problem").append(
+            "<p class='solution' data-type='expression' data-simplify>x^2-9<\/p>"
+        );
+
+        var answerData = Khan.answerTypes.expression.setup($("#solutionarea"),
+                $problem.children(".solution"));
+
+        testAnswer(answerData, "", "empty", "empty answer is empty");
+        testAnswer(answerData, "x^2+9", "wrong", "wrong answer is wrong");
+        testAnswer(answerData, "(x+3)(x+3)", "wrong", "wrong answer is wrong");
+        testAnswer(answerData, "x^2-9", "right", "right answer is right");
+        testAnswer(answerData, "(x-3)(x+3)", "wrong-message", "unsimplified answer is wrong with message");
+
+        start();
+    });
+
+    asyncTest("expression-multiple", 12, function() {
+        setupSolutionArea();
+        var $problem = jQuery("#qunit-fixture .problem").append(
+            "<p class='solution' data-type='multiple'>" +
+                "<span><code>f(x) = </code><\/span>" +
+                "<span class='sol' data-type='expression'>(x+3)(x-3)<\/span>" +
+            "<\/p>"
+        );
+
+        var answerData = Khan.answerTypes.multiple.setup($("#solutionarea"),
+                $problem.children(".solution"));
+
+        testMultipleAnswer(answerData, [""], "empty", "empty answer is empty");
+        testMultipleAnswer(answerData, ["(x+3)(x+3)"], "wrong", "wrong answer is wrong");
+        testMultipleAnswer(answerData, ["(x-3)(x+3)"], "right", "right answer is right");
+        testMultipleAnswer(answerData, ["x^2-9"], "right", "right answer is right");
+
+        start();
+    });
+
+    asyncTest("expression-set-in-multiple", 15, function() {
+        setupSolutionArea();
+        var $problem = jQuery("#qunit-fixture .problem").append(
+            "<div class='solution' data-type='multiple'>" +
+                "<span><code>f(x) = </code></span>" +
+                "<div class='sol' data-type='set'>" +
+                    "<div class='set-sol' data-type='expression' data-same-form>5x+45</div>" +
+                    "<div class='set-sol' data-type='expression' data-same-form>5(x+9)</div>" +
+                    "<div class='input-format'><div class='entry' data-type='expression'></div></div>" +
+                "</div>" +
+            "</div>"
+        );
+
+        var answerData = Khan.answerTypes.multiple.setup($("#solutionarea"),
+                $problem.children(".solution"));
+
+        testMultipleAnswer(answerData, [""], "empty", "empty answer is empty");
+        testMultipleAnswer(answerData, ["5x+45"], "right", "right answer is right");
+        testMultipleAnswer(answerData, ["5(x+9)"], "right", "other right answer is right");
+        testMultipleAnswer(answerData, ["5x+9"], "wrong", "wrong answer is wrong");
+        testMultipleAnswer(answerData, ["(5x^2+25x-180)/(x-4)"], "wrong-message",
+                "unsimplified answer is wrong with message");
 
         start();
     });

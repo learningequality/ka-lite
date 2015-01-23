@@ -7,10 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.playlist.models import VanillaPlaylist as Playlist, QuizLog
-from kalite.topic_tools import get_slug2id_map, get_id2slug_map, get_node_cache, convert_leaf_url_to_id, get_leafed_topics
+from kalite.topic_tools import get_slug2id_map, get_id2slug_map, convert_leaf_url_to_id, get_leafed_topics, get_content_cache, get_exercise_cache
 
-
-FLAT_TOPIC_TREE = get_node_cache()
 ID2SLUG_MAP = get_id2slug_map()
 SLUG2ID_MAP = get_slug2id_map()
 
@@ -205,9 +203,9 @@ class PlaylistProgressDetail(PlaylistProgressParent):
     def create_empty_entry(cls, entity_id, kind, playlist):
         if kind != "Quiz":
             if kind == "Video":
-                topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
+                topic_node = get_content_cache().get(entity_id)
             elif kind == "Exercise":
-                topic_node = FLAT_TOPIC_TREE[kind].get(entity_id)
+                topic_node = get_exercise_cache().get(entity_id)
             title = topic_node["title"]
             path = topic_node["path"][1:] # remove pre-prended slash
         else:
@@ -260,7 +258,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     else:
                         status = "notstarted"
 
-                    leaf_node = FLAT_TOPIC_TREE["Video"].get(vid_log["video_id"])
+                    leaf_node = get_content_cache().get(vid_log["video_id"])
 
                     entry = {
                         "id": entity_id,
@@ -283,7 +281,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                         status = "inprogress"
 
                     ex_log_id = ex_log.get("exercise_id")
-                    leaf_node = FLAT_TOPIC_TREE["Exercise"].get(ex_log_id)
+                    leaf_node = get_exercise_cache().get(ex_log_id)
 
                     entry = {
                         "id": ex_log_id,

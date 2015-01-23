@@ -86,6 +86,7 @@
                 What is the volume of this object?
                 Drag on the object to rotate it.
             </p>
+            <p class="render-answer-area-here"></p>
             <div class="problem">
                 <div class="graphie" id="main">
                     init({range: [[-2, 2], [-2, 2]], scale: [100, 100]});
@@ -148,15 +149,14 @@
                 </div>
             </div>
 
-            <div class="solution" data-type="decimal">
-                <var>DEPTH * BASE * HEIGHT / 2</var>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-type="decimal"><var>DEPTH * BASE * HEIGHT / 2</var></span> cubic units</p>
             </div>
 
             <div class="hints">
-                <p>The volume of a prism is the area of the base
-                    <code>\times</code> depth.</p>
+                <p>The volume of a prism is the area of the base <code>\times</code> depth.</p>
                 <p>In this object, one of the triangles is the base.</p>
-                <p>We know the area of a triangle is
+                <p>The area of a triangle is
                     <code>\frac{1}{2}\ \text{<var>BASE_TEXT</var>} \times \text{<var>HEIGHT_TEXT</var>}</code>.
                 </p>
                 <div>
@@ -199,9 +199,10 @@
                     <code><var>DEPTH</var></code>.
                 </p>
                 <p>
-                    Then, the final volume is
+                    So, the final volume is
                     <code><var>BASE * HEIGHT / 2</var> \times <var>DEPTH</var>
-                        = <var>BASE * HEIGHT * DEPTH / 2</var>.</code>
+                        = <var>BASE * HEIGHT * DEPTH / 2</var></code>
+                    cubic units.
                 </p>
             </div>
         </div>
@@ -263,32 +264,21 @@
                 What is the volume of this box? Drag on the box to rotate it.
             </p>
 
-            <div class="solution" data-forms="integer">
-                <var>LENGTH * WIDTH * HEIGHT</var>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-type="decimal"><var>LENGTH * WIDTH * HEIGHT</var></span> cubic units</p>
             </div>
 
             <div class="hints">
-                <p>The volume of a box is the
-                    length <code>\times</code>
-                    width <code>\times</code>
-                    height.</p>
-                <p>From the figure, we can find that the
-                    lengths of the sides are
-                    <code><var>LENGTH</var></code>,
-                    <code><var>WIDTH</var></code>,
-                    and <code><var>HEIGHT</var></code>.</p>
-                <p>To find the volume, we just multiply
-                    these side lengths together.</p>
+                <p>The volume of a box is the length <code>\times</code> width <code>\times</code> height.</p>
                 <p>
-                    <code><var>LENGTH</var> \times
-                        <var>WIDTH</var> \times
-                        <var>HEIGHT</var></code>
+                    From the figure, we can find that the lengths of the sides are
+                    <code><var>LENGTH</var></code>, <code><var>WIDTH</var></code>, and <code><var>HEIGHT</var></code>.
                 </p>
                 <p>
-                    <code>\qquad= <var>LENGTH * WIDTH * HEIGHT</var></code>
+                    <code><var>LENGTH</var> \times <var>WIDTH</var> \times <var>HEIGHT</var> =
+                    <var>LENGTH * WIDTH * HEIGHT</var></code>
                 </p>
-                <p>Thus, the volume of the box is
-                    <code><var>LENGTH * WIDTH * HEIGHT</var></code>.</p>
+                <p>So, the volume of the box is <code><var>LENGTH * WIDTH * HEIGHT</var></code> cubic units.</p>
             </div>
         </div>
 
@@ -298,10 +288,10 @@
                 Drag on the box to rotate it.
             </p>
 
-            <div class="solution" data-forms="integer">
-                <var>2 * LENGTH * WIDTH +
-                    2 * LENGTH * HEIGHT +
-                    2 * WIDTH * HEIGHT</var>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-type="decimal">
+                    <var>2 * (LENGTH * WIDTH + LENGTH * HEIGHT + WIDTH * HEIGHT)</var>
+                </span> square units</p>
             </div>
 
             <div class="hints">
@@ -447,8 +437,7 @@
                 </div>
                 <div id="unwrapped" data-unwrap="">
                     <div>
-                        <p>We can group the faces together
-                            based on size and color:</p>
+                        <p>We can group the faces together based on size and color:</p>
                         <div class="graphie">
                             var width = WIDTH + 2 + LENGTH + 2 + HEIGHT + 2;
                             var height = max(max(WIDTH, LENGTH), HEIGHT) + 1;
@@ -503,10 +492,9 @@
                     </code>
                     </p>
                     <p>
-                        Thus, the total surface area of the box is
-                        <code><var>2 * WIDTH * HEIGHT +
-                                2 * LENGTH * WIDTH +
-                                2 * HEIGHT * LENGTH</var></code>.
+                        So, the total surface area of the box is
+                        <code><var>2 * WIDTH * HEIGHT + 2 * LENGTH * WIDTH + 2 * HEIGHT * LENGTH</var></code>
+                        square units.
                     </p>
                 </div>
             </div>
@@ -536,13 +524,10 @@
                     <code><var>WIDTH</var>^3 =
                         <var>WIDTH</var> \times
                         <var>WIDTH</var> \times
-                        <var>WIDTH</var></code>
+                        <var>WIDTH</var> = 
+                        <var>WIDTH * WIDTH * WIDTH</var></code>
                 </p>
-                <p>
-                    <code>\qquad= <var>WIDTH * WIDTH * WIDTH</var></code>
-                </p>
-                <p>Thus, the volume of the cube is
-                    <code><var>WIDTH * WIDTH * WIDTH</var></code>.</p>
+                <p>So, the volume of the cube is <code><var>WIDTH * WIDTH * WIDTH</var></code> cubic units.</p>
             </div>
         </div>
 
@@ -590,8 +575,9 @@
                         <code>\qquad= <var>6 * WIDTH * WIDTH</var></code>
                     </p>
                     <p>
-                        Thus, the total surface area of the cube is
-                        <code><var>6 * WIDTH * WIDTH</var></code>.
+                        So, the total surface area of the cube is
+                        <code><var>6 * WIDTH * WIDTH</var></code>
+                        square units.
                     </p>
                 </div>
             </div>
@@ -607,6 +593,8 @@
                 <p>What is the volume of a cylinder with base radius
                     <code><var>r</var></code> and height
                     <code><var>h</var></code>?</p>
+
+                <p class="render-answer-area-here"></p>
 
                 <div class="graphie">
                     init({
@@ -628,21 +616,19 @@
                 </div>
             </div>
 
-            <div class="solution" data-forms="pi">
-                <var>Math.PI * r * r * h</var>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="pi">
+                    <var>Math.PI * r * r * h</var>
+                </span> cubic units</p>
             </div>
 
             <div class="hints">
+                <p>The volume of a cylinder is the area of the base <code>\times</code> height.</p>
+                <p>The area of a circle is <code>\pi r^2</code>.</p>
+                <p>So the area the base is <code>\pi \cdot <var>r</var>^2 = <var>r * r</var> \pi</code>.</p>
                 <p>
-                    The area of the base is simply the area of a circle:
-                    <code>\pi r^2 = \pi \cdot <var>r</var>^2 =
-                        <var>r * r</var> \pi</code>.
-                </p>
-                <p>
-                    The volume of the cylinder is the area of the base
-                    times the height:
-                    <code>B \cdot h = <var>r * r</var>\pi \cdot <var>h</var>
-                        = <var>r * r * h</var>\pi</code>.
+                    The height of the cylinder is <code><var>h</var></code>, so the volume is
+                    <code><var>r * r</var>\pi \cdot <var>h</var> = <var>r * r * h</var>\pi</code> cubic units.
                 </p>
             </div>
         </div>
@@ -657,6 +643,8 @@
                 <p>What is the surface area of a cylinder with
                     base radius <code><var>r</var></code> and
                     height <code><var>h</var></code>?</p>
+
+                <p class="render-answer-area-here"></p>
 
                 <div class="graphie">
                     init({
@@ -678,8 +666,10 @@
                 </div>
             </div>
 
-            <div class="solution" data-forms="pi">
-                <var>Math.PI * 2 * r * ( r + h )</var>
+            <div class="solution" data-type="multiple">
+                <p><span class="sol" data-forms="pi">
+                    <var>Math.PI * 2 * r * ( r + h )</var>
+                </span> square units</p>
             </div>
 
             <div class="hints">
@@ -708,8 +698,8 @@
                 <p>
                     The total surface area is
                     <code><var>r * r</var> \pi + <var>r * r</var> \pi +
-                        <var>2 * r * h</var> \pi =
-                        <var>2 * r * ( r + h )</var>\pi</code>.
+                        <var>2 * r * h</var> \pi = <var>2 * r * ( r + h )</var>\pi</code>
+                    square units.
                 </p>
             </div>
         </div>
