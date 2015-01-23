@@ -380,28 +380,25 @@ class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, 
         video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
         self.browser_wait_for_js_object_exists(video_js_object)
         points = self.browser_get_points()
-        play_method = ".play();"
-        self.browser.execute_script(video_js_object + play_method)
+        self.browser.execute_script(video_js_object + ".play()")
         # Don't want to overshoot the video length and get an error
         #seek_time_expr = video_js_object + ".get_duration() * 0.95"
         #seek_method = ".seek(%s);" % seek_time_expr
         #self.browser.execute_script(video_js_object + seek_method)
         # this hurts but it's necessary... the seek method is somehow unwieldy
         time.sleep(1)
-        pause_method = ".pause()" 
-        self.browser.execute_script(video_js_object + pause_method)
+        self.browser.execute_script(video_js_object + ".pause()")
         updated_points = self.browser_get_points()
-        assert (updated_points - points > 0), "Points were not increased after video seek position was changed"
+        self.assertNotEqual(updated_points, points, "Points were not increased after video seek position was changed")
 
     def test_points_update(self):
         self.browse_to_random_video()
         points = self.browser_get_points()
         video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
         self.browser_wait_for_js_object_exists(video_js_object)
-        update_pts_script = video_js_object + ".set_progress(1);"
-        self.browser.execute_script(update_pts_script)
+        self.browser.execute_script(video_js_object + ".set_progress(1);")
         updated_points = self.browser_get_points()
-        assert (updated_points - points > 0), "Points were not increased after video progress was updated"
+        self.assertNotEqual(updated_points, points, "Points were not increased after video progress was updated")
 
 class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin):
     """
@@ -426,7 +423,7 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         points = self.browser_get_points()
         self.browse_to_random_video()
         updated_points = self.browser_get_points()
-        assert (updated_points - points > 0), "Points were not updated after a backbone navigation event."
+        self.assertNotEqual(updated_points, points, "Points were not updated after a backbone navigation event.")
     
     def test_points_update_after_non_backbone_navigation(self):
         """
@@ -437,5 +434,5 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         points = self.browser_get_points()
         self.browse_to(self.reverse("homepage"))
         updated_points = self.browser_get_points()
-        assert (updated_points - points > 0), "Points were not updated after a non-backbone navigation event."
+        self.assertNotEqual(updated_points, points, "Points were not updated after a non-backbone navigation event.")
 
