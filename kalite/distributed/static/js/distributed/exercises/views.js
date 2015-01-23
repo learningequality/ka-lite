@@ -195,13 +195,9 @@ window.ExerciseView = Backbone.View.extend({
 
         var self = this;
 
-        var item_index;
-
-        var assessment_items = self.data_model.get("all_assessment_items") || [{id: ""}];
-
         if (typeof question_data.attempts !== "undefined") {
 
-            item_index = question_data.attempts % assessment_items.length;
+            var attempts = question_data.attempts;
             delete question_data.attempts;
 
         } else {
@@ -211,8 +207,7 @@ window.ExerciseView = Backbone.View.extend({
         }
 
         var defaults = {
-            seed: Math.floor(Math.random() * 200),
-            assessment_item_id: (assessment_items)[item_index].id
+            seed: Math.floor(Math.random() * 200)
         };
 
         question_data = $.extend(defaults, question_data);
@@ -244,6 +239,22 @@ window.ExerciseView = Backbone.View.extend({
                 }
 
             } else if (framework == "perseus") {
+
+                var item_index;
+
+                var assessment_items = self.data_model.get("all_assessment_items") || [{id: ""}];
+
+                if (typeof attempts !== "undefined") {
+
+                    item_index = attempts % assessment_items.length;
+
+                } else {
+                    
+                    item_index = Math.floor(Math.random() * assessment_items.length);
+
+                }
+
+                self.data_model.set("assessment_item_id", assessment_items[item_index].id);
 
                 $(Exercises).trigger("clearExistingProblem");
                 
