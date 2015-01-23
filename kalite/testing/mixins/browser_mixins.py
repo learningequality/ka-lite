@@ -10,7 +10,9 @@ from django.utils.translation import ugettext as _
 from ..browser import browse_to, setup_browser, wait_for_page_change
 
 from kalite.facility.models import Facility
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
+
+from random import choice
 
 class BrowserActionMixins(object):
 
@@ -412,3 +414,12 @@ class BrowserActionMixins(object):
     @classmethod
     def _facility_exists(cls):
         return Facility.objects.all().exists()
+
+    def browse_to_random_video(self):
+        available = False
+        while not available:
+            video = get_content_cache()[choice(get_content_cache().keys())]
+            available = (len(video['languages']) > 0)
+        video_url = video['path']
+        self.browse_to(self.reverse("learn") + video_url) 
+
