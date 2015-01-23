@@ -205,7 +205,7 @@ class PackagesTests(DependenciesTests):
         "async": NO_VERSION,
         "cherrypy": "3.2.2",
         "dateutil": "1.5",
-        "debug_toolbar": "1.2.1",
+        "debug_toolbar": "unknown",
         "decorator": NO_VERSION,
         "django": DependenciesTests.DJANGO_VERSION_STR,
         "django_extensions": "1.0.1",
