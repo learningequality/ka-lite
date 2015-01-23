@@ -1,4 +1,6 @@
 import time
+import re
+
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -10,6 +12,8 @@ from django.utils.translation import ugettext as _
 from ..browser import browse_to, setup_browser, wait_for_page_change
 
 from kalite.facility.models import Facility
+from kalite.topic_tools import get_content_cache
+
 from django.contrib.auth.models import User
 
 from random import choice
@@ -423,3 +427,9 @@ class BrowserActionMixins(object):
         video_url = video['path']
         self.browse_to(self.reverse("learn") + video_url) 
 
+    def browser_get_points(self):
+        # The following commented line of code returns an element with blank text,
+        # possibly due to a race condition, hence querying the element with js which "just works"
+        #points_elem = self.browser.find_element_by_id("points")    
+        points_text = self.browser.execute_script("return $('#points').text();")
+        return int(re.search(r"(\d+)", points_text).group(1))

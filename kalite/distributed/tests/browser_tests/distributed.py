@@ -20,9 +20,7 @@ from kalite.facility.models import FacilityUser, Facility
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins, CreateFacilityMixin
-from kalite.topic_tools import get_node_cache, get_content_cache
-
-from random import choice
+from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
 
@@ -371,16 +369,17 @@ class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, 
 
     def setUp(self):
         super(WatchingVideoAccumulatesPointsTest, self).setUp()
+        self.browser.set_page_load_timeout(30)
         self.create_admin()
         self.create_facility()
         self.browser_register_user(username="johnduck", password="superpassword")
         self.browser_login_student(username="johnduck", password="superpassword")
 
     def test_watching_video_increases_points(self):
-        self._browse_to_random_video()
+        self.browse_to_random_video()
         video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
         self.browser_wait_for_js_object_exists(video_js_object)
-        points = self._get_points()
+        points = self.browser_get_points()
         play_method = ".play();"
         self.browser.execute_script(video_js_object + play_method)
         # Don't want to overshoot the video length and get an error
@@ -391,30 +390,52 @@ class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, 
         time.sleep(1)
         pause_method = ".pause()" 
         self.browser.execute_script(video_js_object + pause_method)
-        updated_points = self._get_points()
+        updated_points = self.browser_get_points()
         assert (updated_points - points > 0), "Points were not increased after video seek position was changed"
 
     def test_points_update(self):
-        self._browse_to_random_video()
-        points = self._get_points()
+        self.browse_to_random_video()
+        points = self.browser_get_points()
         video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
         self.browser_wait_for_js_object_exists(video_js_object)
         update_pts_script = video_js_object + ".set_progress(1);"
         self.browser.execute_script(update_pts_script)
-        updated_points = self._get_points()
+        updated_points = self.browser_get_points()
         assert (updated_points - points > 0), "Points were not increased after video progress was updated"
 
-    def _browse_to_random_video(self):
-        available = False
-        while not available:
-            video = get_content_cache()[choice(get_content_cache().keys())]
-            available = (len(video['languages']) > 0)
-        video_url = video['path']
-        self.browse_to(self.reverse("learn") + video_url) 
+class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin):
+    """
+    A regression test for issue 2858. When a user with X points gets Y more points and 
+    navigates to a new item, the points display reamins X. Only after a third navigation 
+    event are the points updated correctly to X + Y + any other points accumulated in the meantime.
+    We need to test two different backbone router events here (under distributed/topics/router.js)
+    """
 
-    def _get_points(self):
-        # The following commented line of code returns an element with blank text,
-        # possibly due to a race condition, hence querying the element with js which "just works"
-        #points_elem = self.browser.find_element_by_id("points")    
-        points_text = self.browser.execute_script("return $('#points').text();")
-        return int(re.search(r"(\d+)", points_text).group(1))
+    def setUp(self):
+        super(PointsDisplayUpdatesCorrectlyTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+        self.browser_login_student(username="johnduck", password="superpassword")
+
+    def test_points_update_after_backbone_navigation(self):
+        """
+        Tests a navigation event caught by loading another backbone view.
+        """
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        self.browse_to_random_video()
+        updated_points = self.browser_get_points()
+        assert (updated_points - points > 0), "Points were not updated after a backbone navigation event."
+    
+    def test_points_update_after_non_backbone_navigation(self):
+        """
+        Tests navigation event not triggered by loading another backbone view, e.g.
+        refreshing the page.
+        """
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        self.browse_to(self.reverse("homepage"))
+        updated_points = self.browser_get_points()
+        assert (updated_points - points > 0), "Points were not updated after a non-backbone navigation event."
+
