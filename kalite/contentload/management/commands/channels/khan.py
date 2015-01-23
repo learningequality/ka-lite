@@ -1,6 +1,7 @@
 import base
 import os
 import re
+import json
 import requests
 import threading
 import time
@@ -95,17 +96,33 @@ def build_full_cache(items, id_key="id"):
                 if isinstance(item[attribute], list):
                     for subitem in item[attribute]:
                         if isinstance(subitem, dict):
+                            try:
+                                subitem = json.loads(subitem.toJSON())
+                            except AttributeError:
+                                True
                             if subitem.has_key("kind"):
                                 subitem = whitewash_node_data(
                                     {key: value for key, value in subitem.items()})
                                 denorm_data(subitem)
                 elif isinstance(item[attribute], dict):
+                    try:
+                        item[attribute] = json.loads(item[attribute].toJSON())
+                    except AttributeError:
+                        True
                     if item[attribute].has_key("kind"):
                         item[attribute] = whitewash_node_data(
                             {key: value for key, value in item.attribute.items()})
                         denorm_data(item[attribute])
             except APIError as e:
                 del item[attribute]
+        try:
+            item = json.loads(item.toJSON())
+        except AttributeError:
+            True
+        for key in item.keys():
+            if hasattr(item[key], '__call__'):
+                logging.warn('{kind}: {item} had a function on key {key}'.format(kind=item.get('kind', ''), item=item.get('id', ''), key=key))
+                del item[key]
     return {item["id"]: whitewash_node_data(item) for item in items}
 
 def retrieve_API_data(channel=None):
