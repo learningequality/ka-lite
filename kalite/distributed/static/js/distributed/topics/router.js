@@ -5,7 +5,10 @@ ChannelRouter = Backbone.Router.extend({
 
     routes: {
         "":   "navigate_default_channel",
+        // This will catch any navigation events to other content items, and...
         ":channel/(*splat)":    "navigate_channel",
+        // ...this will catch any other navigation events. We want to make sure
+        // points are updated correctly in either case.
         "/(.*)/": "trigger_navigation_callback"
     },
 

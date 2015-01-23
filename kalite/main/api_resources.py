@@ -270,6 +270,7 @@ class Content:
         self.selected_language = lang_code
         if self.description == "None":
             self.description = ""
+        # TODO-BLOCKER (MCGallaspy) this is inappropriate if multiple channels are active at once
         self.source = settings.CHANNEL
 
 
