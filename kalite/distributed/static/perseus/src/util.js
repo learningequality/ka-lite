@@ -1,3 +1,5 @@
+var _ = require("underscore");
+
 var nestedMap = function(children, func, context) {
     if (_.isArray(children)) {
         return _.map(children, function(child) {
@@ -12,6 +14,9 @@ var Util = {
     nestedMap: nestedMap,
 
     rWidgetParts: /^\[\[\u2603 (([a-z-]+) ([0-9]+))\]\]$/,
+    rWidgetRule:  /^\[\[\u2603 (([a-z-]+) ([0-9]+))\]\]/,
+    rTypeFromWidgetId: /^([a-z-]+) ([0-9]+)$/,
+    snowman: "\u2603",
 
     noScore: {
         type: "points",
@@ -133,6 +138,26 @@ var Util = {
                 type: "invalid",
                 message: message
             };
+        }
+    },
+
+    keScoreFromPerseusScore: function(score, guess) {
+        if (score.type === "points") {
+            return {
+                empty: false,
+                correct: score.earned >= score.total,
+                message: score.message,
+                guess: guess
+            };
+        } else if (score.type === "invalid") {
+            return {
+                empty: true,
+                correct: false,
+                message: score.message,
+                guess: guess
+            };
+        } else {
+            throw new Error("Invalid score type: " + score.type);
         }
     },
 
@@ -369,12 +394,15 @@ var Util = {
             return true;
         } else if (_.isArray(x) || _.isArray(y)) {
             return false;
+        } else if (_.isFunction(x) && _.isFunction(y)) {
+            return Util.eq(x, y);
+        } else if (_.isFunction(x) || _.isFunction(y)) {
+            return false;
         } else if (_.isObject(x) && _.isObject(y)) {
-            return _.all(x, function(value, key) {
-                return Util.deepEq(y[key], value);
-            }) && _.all(y, function(value, key) {
-                return Util.deepEq(x[key], value);
-            });
+            return x === y || (
+                _.all(x, function(v, k) { return Util.deepEq(y[k], v); }) &&
+                _.all(y, function(v, k) { return Util.deepEq(x[k], v); })
+            );
         } else if (_.isObject(x) || _.isObject(y)) {
             return false;
         } else {
@@ -529,6 +557,66 @@ var Util = {
      */
     captureScratchpadTouchStart: function(e) {
         e.stopPropagation();
+    },
+
+    getImageSize: function(url, callback) {
+        var img = new Image();
+        img.onload = function() {
+            // IE 11 seems to have problems calculating the heights of svgs
+            // if they're not in the DOM. To solve this, we add the element to
+            // the dom, wait for a rerender, and use `.clientWidth` and
+            // `.clientHeight`. I think we could also solve the problem by
+            // adding the image to the document before setting the src, but then
+            // the experience would be worse for other browsers.
+            if (img.width === 0 && img.height === 0) {
+                document.body.appendChild(img);
+                _.defer(function() {
+                    callback(img.clientWidth, img.clientHeight);
+                    document.body.removeChild(img);
+                });
+            } else {
+                callback(img.width, img.height);
+            }
+        };
+
+        // Require here to prevent recursive imports
+        var SvgImage = require("./components/svg-image.jsx");
+        img.src = SvgImage.getRealImageUrl(url);
+    },
+
+    textarea: {
+
+        /**
+         * Gets the word right before where the textarea cursor is
+         *
+         * @param {Element} textarea - The textarea DOM element
+         * @return {JSON} - An object with the word and its starting and ending positions in the textarea
+         */
+        getWordBeforeCursor: function(textarea) {
+            var text = textarea.value;
+
+            var endPos = textarea.selectionStart - 1;
+            var startPos = Math.max(text.lastIndexOf("\n", endPos), text.lastIndexOf(' ', endPos)) + 1;
+
+            return {
+                string: text.substring(startPos, endPos + 1),
+                pos: {
+                    start: startPos,
+                    end: endPos
+                }
+            };
+        },
+
+        /**
+         * Moves the textarea cursor at the specified position
+         *
+         * @param {Element} textarea - The textarea DOM element
+         * @param {int} pos - The position where the cursor will be moved
+         */
+        moveCursor: function(textarea, pos) {
+            textarea.selectionStart = pos;
+            textarea.selectionEnd = pos;
+        }
     }
 };
 

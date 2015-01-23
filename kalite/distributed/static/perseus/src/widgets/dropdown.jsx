@@ -1,11 +1,11 @@
-/** @jsx React.DOM */
-
 var React = require('react');
-var InfoTip = require("react-components/info-tip");
+var InfoTip = require("react-components/info-tip.jsx");
 var FancySelect = require("../components/fancy-select.jsx");
 var FancyOption = FancySelect.Option;
+var _ = require("underscore");
 
-var JsonifyProps = require("../mixins/jsonify-props.jsx");
+var EditorJsonify = require("../mixins/editor-jsonify.jsx");
+var ApiClassNames = require("../perseus-api.jsx").ClassNames;
 var ApiOptions = require("../perseus-api.jsx").Options;
 
 var captureScratchpadTouchStart =
@@ -31,10 +31,15 @@ var Dropdown = React.createClass({
     render: function() {
         var choices = this.props.choices.slice();
 
+        var selectClasses = React.addons.classSet({
+            "perseus-widget-dropdown": true,
+            "perseus-fancy-dropdown": this.props.apiOptions.fancyDropdowns
+        });
+
         if (this.props.apiOptions.fancyDropdowns) {
             return <FancySelect
                     onChange={this._handleChange}
-                    className="perseus-widget-dropdown"
+                    className={selectClasses + " " + ApiClassNames.INTERACTIVE}
                     value={this.props.selected}>
                 <FancyOption value={0} visible={false}>
                     <span className="placeholder">
@@ -51,10 +56,10 @@ var Dropdown = React.createClass({
 
         } else {
             return <select
-                        onChange={this._handleChangeEvent}
-                        onTouchStart={captureScratchpadTouchStart}
-                        className="perseus-widget-dropdown"
-                        value={this.props.selected}>
+                    onChange={this._handleChangeEvent}
+                    onTouchStart={captureScratchpadTouchStart}
+                    className={selectClasses + " " + ApiClassNames.INTERACTIVE}
+                    value={this.props.selected}>
                 <option value={0} disabled>
                     {this.props.placeholder}
                 </option>
@@ -82,12 +87,12 @@ var Dropdown = React.createClass({
         this.props.onChange({selected: selected});
     },
 
-    toJSON: function(skipValidation) {
+    getUserInput: function() {
         return {value: this.props.selected};
     },
 
     simpleValidate: function(rubric) {
-        return Dropdown.validate(this.toJSON(), rubric);
+        return Dropdown.validate(this.getUserInput(), rubric);
     },
 
     statics: {
@@ -116,7 +121,7 @@ _.extend(Dropdown, {
 });
 
 var DropdownEditor = React.createClass({
-    mixins: [JsonifyProps],
+    mixins: [EditorJsonify],
 
     propTypes: {
         choices: React.PropTypes.arrayOf(React.PropTypes.shape({

@@ -5,8 +5,9 @@ require("./expressions.js");
 
 $.extend(KhanUtil, {
     /* Wraps a number in paretheses if it's negative. */
-    negParens: function(n) {
-        return n < 0 ? "(" + n + ")" : n;
+    negParens: function(n, color) {
+        var n2 = color ? "\\" + color + "{" + n + "}" : n;
+        return n < 0 ? "(" + n2 + ")" : n2;
     },
 
     /* Wrapper for `fraction` which takes a decimal instead of a numerator and
@@ -536,11 +537,11 @@ $.extend(KhanUtil, {
                 equation = radius;
             } else {
                 var angleRep = KhanUtil.piFraction(angle, true);
-                var cis = "\\cos(" + angleRep + ") + i \\sin(" + angleRep + ")";
+                var cis = "\\cos \\left(" + angleRep + "\\right) + i \\sin \\left(" + angleRep + "\\right)";
 
                 // Special case to circumvent ugly "*1* (sin(...) + i cos(...))"
                 if (radius !== 1) {
-                    equation = KhanUtil.expr(["*", radius, cis]);
+                    equation = radius + "\\left(" + cis + "\\right)";
                 } else {
                     equation = cis;
                 }
@@ -560,6 +561,8 @@ $.extend(KhanUtil, {
     },
 
     fractionVariable: function(numerator, denominator, variable) {
+        variable = variable || "";
+        
         if (denominator === 0) {
             return "\\text{undefined}";
         }
@@ -568,17 +571,19 @@ $.extend(KhanUtil, {
             return 0;
         }
 
-        if (denominator < 0) {
-            numerator *= -1;
-            denominator *= -1;
-        }
+        if (typeof denominator === "number") {
+            if (denominator < 0) {
+                numerator *= -1;
+                denominator *= -1;
+            }
 
-        var GCD = KhanUtil.getGCD(numerator, denominator);
-        numerator /= GCD;
-        denominator /= GCD;
+            var GCD = KhanUtil.getGCD(numerator, denominator);
+            numerator /= GCD;
+            denominator /= GCD;
 
-        if (denominator === 1) {
-            return KhanUtil.coefficient(numerator) + variable;
+            if (denominator === 1) {
+                return KhanUtil.coefficient(numerator) + variable;
+            }
         }
 
         if (numerator < 0) {
@@ -638,7 +643,7 @@ $.extend(KhanUtil, {
 
     scientific: function(precision, num) {
         var exponent = KhanUtil.scientificExponent(num);
-        var mantissa = KhanUtil.localeToFixed(KhanUtil.scientificMantissa(precision, num), precision);
+        var mantissa = KhanUtil.localeToFixed(KhanUtil.scientificMantissa(precision, num), precision - 1);
         return "" + mantissa + "\\times 10^{" + exponent + "}";
     }
 });

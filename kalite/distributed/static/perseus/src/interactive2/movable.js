@@ -9,13 +9,13 @@
  * let this class handle all of the virtual mouse events, and then
  * take appropriate action in onMoveStart, onMove, onMoveEnd
  */
+var _ = require("underscore");
 
 var InteractiveUtil = require("./interactive-util.js");
 var normalizeOptions = InteractiveUtil.normalizeOptions;
 
 var assert = InteractiveUtil.assert;
-var knumber = KhanUtil.knumber;
-var kpoint = KhanUtil.kpoint;
+var kpoint = require("kmath").point;
 
 // state parameters that should be converted into an array of
 // functions
@@ -176,7 +176,12 @@ _.extend(Movable.prototype, {
 
         // the invisible shape in front of the point that gets mouse events
         if (state.mouseTarget && !prevState.mouseTarget) {
-            var $mouseTarget = $(state.mouseTarget[0]);
+            var $mouseTarget;
+            if (state.mouseTarget.getMouseTarget) {
+                $mouseTarget = $(state.mouseTarget.getMouseTarget());
+            } else {
+                $mouseTarget = $(state.mouseTarget[0]);
+            }
 
             var isMouse = !('ontouchstart' in window);
 
@@ -216,8 +221,15 @@ _.extend(Movable.prototype, {
         }
 
         if (state.mouseTarget && state.cursor !== undefined) {
+            var $mouseTarget;
+            if (state.mouseTarget.getMouseTarget) {
+                $mouseTarget = $(state.mouseTarget.getMouseTarget());
+            } else {
+                $mouseTarget = $(state.mouseTarget[0]);
+            }
+
             // "" removes the css cursor if state.cursor is null
-            $(state.mouseTarget[0]).css("cursor", state.cursor || "");
+            $mouseTarget.css("cursor", state.cursor || "");
         }
 
 
