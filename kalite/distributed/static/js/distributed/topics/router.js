@@ -5,7 +5,8 @@ ChannelRouter = Backbone.Router.extend({
 
     routes: {
         "":   "navigate_default_channel",
-        ":channel/(*splat)":    "navigate_channel"
+        ":channel/(*splat)":    "navigate_channel",
+        "/(.*)/": "trigger_navigation_callback"
     },
 
     navigate_default_channel: function() {
@@ -48,6 +49,10 @@ ChannelRouter = Backbone.Router.extend({
             this.navigate(Backbone.history.getFragment() + "/");
         }
         this.control_view.navigate_paths(splat.split("/"));
+    },
+
+    trigger_navigation_callback: function() {
+        this.trigger("navigation");
     }
 });
 
