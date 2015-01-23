@@ -2,6 +2,8 @@
 Startmigration command, version 2.
 """
 
+from __future__ import print_function
+
 import sys
 import os
 import re
@@ -17,6 +19,7 @@ except NameError:
 
 from django.core.management.base import BaseCommand
 from django.core.management.color import no_style
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.conf import settings
 
@@ -29,7 +32,7 @@ from south.management.commands.datamigration import Command as DataCommand
 class Command(DataCommand):
     option_list = DataCommand.option_list + (
         make_option('--add-model', action='append', dest='added_model_list', type='string',
-            help='Generate a Create Table migration for the specified model.  Add multiple models to this migration with subsequent --model parameters.'),
+            help='Generate a Create Table migration for the specified model.  Add multiple models to this migration with subsequent --add-model parameters.'),
         make_option('--add-field', action='append', dest='added_field_list', type='string',
             help='Generate an Add Column migration for the specified modelname.fieldname - you can use this multiple times to add more than one column.'),
         make_option('--add-index', action='append', dest='added_index_list', type='string',
@@ -71,7 +74,15 @@ class Command(DataCommand):
         
         if not app:
             self.error("You must provide an app to create a migration for.\n" + self.usage_str)
-        
+	    
+        # See if the app exists
+        app = app.split(".")[-1]
+        try:
+            app_module = models.get_app(app)
+        except ImproperlyConfigured:
+            print("There is no enabled application matching '%s'." % app)
+            return
+	
         # Get the Migrations for this app (creating the migrations dir if needed)
         migrations = Migrations(app, force_creation=True, verbose_creation=int(verbosity) > 0)
         
@@ -117,7 +128,7 @@ class Command(DataCommand):
             elif empty:
                 change_source = None
             else:
-                print >>sys.stderr, "You have not passed any of --initial, --auto, --empty, --add-model, --add-field or --add-index."
+                print("You have not passed any of --initial, --auto, --empty, --add-model, --add-field or --add-index.", file=sys.stderr)
                 sys.exit(1)
 
         # Validate this so we can access the last migration without worrying
@@ -147,7 +158,7 @@ class Command(DataCommand):
                     action = action_class(**params)
                     action.add_forwards(forwards_actions)
                     action.add_backwards(backwards_actions)
-                    print >>sys.stderr, action.console_line()
+                    print(action.console_line(), file=sys.stderr)
         
         # Nowt happen? That's not good for --auto.
         if auto and not forwards_actions:
@@ -157,7 +168,7 @@ class Command(DataCommand):
         apps_to_freeze = self.calc_frozen_apps(migrations, freeze_list)
         
         # So, what's in this file, then?
-        file_contents = MIGRATION_TEMPLATE % {
+        file_contents = self.get_migration_template() % {
             "forwards": "\n".join(forwards_actions or ["        pass"]),
             "backwards": "\n".join(backwards_actions or ["        pass"]),
             "frozen_models":  freezer.freeze_apps_to_string(apps_to_freeze),
@@ -169,7 +180,7 @@ class Command(DataCommand):
         if update:
             last_migration = migrations[-1]
             if MigrationHistory.objects.filter(applied__isnull=False, app_name=app, migration=last_migration.name()):
-                print >>sys.stderr, "Migration to be updated, %s, is already applied, rolling it back now..." % last_migration.name()
+                print("Migration to be updated, %s, is already applied, rolling it back now..." % last_migration.name(), file=sys.stderr)
                 migrate_app(migrations, 'current-1', verbosity=verbosity)
             for ext in ('py', 'pyc'):
                 old_filename = "%s.%s" % (os.path.join(migrations.migrations_dir(), last_migration.filename), ext)
@@ -182,7 +193,7 @@ class Command(DataCommand):
 
         # - is a special name which means 'print to stdout'
         if name == "-":
-            print file_contents
+            print(file_contents)
         # Write the migration file if the name isn't -
         else:
             fp = open(os.path.join(migrations.migrations_dir(), new_filename), "w")
@@ -190,13 +201,16 @@ class Command(DataCommand):
             fp.close()
             verb = 'Updated' if update else 'Created'
             if empty:
-                print >>sys.stderr, "%s %s. You must now edit this migration and add the code for each direction." % (verb, new_filename)
+                print("%s %s. You must now edit this migration and add the code for each direction." % (verb, new_filename), file=sys.stderr)
             else:
-                print >>sys.stderr, "%s %s. You can now apply this migration with: ./manage.py migrate %s" % (verb, new_filename, app)
+                print("%s %s. You can now apply this migration with: ./manage.py migrate %s" % (verb, new_filename, app), file=sys.stderr)
+
+    def get_migration_template(self):
+        return MIGRATION_TEMPLATE
 
 
 MIGRATION_TEMPLATE = """# -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models

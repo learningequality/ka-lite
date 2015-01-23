@@ -228,7 +228,7 @@ class PackagesTests(DependenciesTests):
         "rsa": "3.1.1",
         "securesync": "0.13.0",
         "smmap": "0.8.2",
-        "south": "0.7.6",
+        "south": "0.8.4",
         "tastypie": "0.11.0",
         "unittest2": "0.7.1",
         "werkzeug": "0.8.3",
