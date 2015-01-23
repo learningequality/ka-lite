@@ -1,24 +1,22 @@
-// $(Exercises).trigger("clearExistingProblem");
-
-var KhanUtil = window.KhanUtil || {
-    debugLog: function() {}
-};
+var KhanUtil = window.KhanUtil || {};
 
 var Khan = window.Khan || {
-    Util: KhanUtil,
     error: function() {},
     query: {debug: ""},
     imageBase: STATIC_URL + "perseus/ke/images/",
+    urlBase: STATIC_URL + "perseus/ke/",
     scratchpad: {
         disable: function() {},
         enable: function() {},
-        clear: function() {}
+        clear: function() {},
+        resize: function() {}
     },
     cleanupProblem: function() {}
 };
 
-window.Exercises = {
+window.Exercises = _.extend({
     localMode: true,
+    embeddedMode: true,
     useKatex: true,
     khanExercisesUrlBase: STATIC_URL + "perseus/ke/",
     _current_framework: "khan-exercises",
@@ -39,8 +37,30 @@ window.Exercises = {
     RelatedVideos: {
         render: function() {}
     },
-    incompleteStack: [0]
-};
+    incompleteStack: [0],
+    // This method allows an event triggered by jQuery to be retriggered as a Backbone Event.
+    proxyTrigger: function () {
+        // Get the type of event from the first argument (which is the event object itself)
+        // Add this as the first argument of the arguments object
+        Array.prototype.unshift.apply(arguments, [arguments[0].type]);
+        // Call Backbone event trigger with the event name as the first argument
+        // and the other arguments as the remainders.
+        // Using/modifying the arguments object in this way means we can just pass
+        // any arguments seamlessly through to the event.
+        this.trigger.apply(this, arguments);
+    }
+}, Backbone.Events);
+
+
+// This is necessary as DOM events (as fired by jQuery) are not listenedTo by Backbone listenTo
+// Our pass through listenToDOM does not work for Javascript objects, only for true DOM objects.
+// So we must manually proxy any triggered events on the Exercises object to Backbone triggers.
+$(Exercises).bind({
+    checkAnswer: Exercises.proxyTrigger,
+    gotoNextProblem: Exercises.proxyTrigger,
+    newProblem: Exercises.proxyTrigger,
+    newProblemhintUsed: Exercises.proxyTrigger
+});
 
 // React.initializeTouchEvents(true);
 
@@ -77,7 +97,7 @@ Exercises.PerseusBridge = {
                 STATIC_URL + "perseus/ke-deps.js"
                 // STATIC_URL + "perseus/ke/main.js",
             ], function() {
-                require([STATIC_URL + "perseus/build/perseus-1.js"], Exercises.PerseusBridge._initialize);
+                require([STATIC_URL + "perseus/build/perseus-2.js"], Exercises.PerseusBridge._initialize);
             }
         );
 
@@ -99,25 +119,17 @@ Exercises.PerseusBridge = {
     render_item: function(item_data) {
 
         Exercises.PerseusBridge.itemMountNode = document.createElement("div");
-        var itemRenderer = Exercises.PerseusBridge.itemRenderer = Perseus.ItemRenderer({
+
+        var ItemRenderer = React.createFactory(Perseus.ItemRenderer);
+        Exercises.PerseusBridge.itemRenderer = zk = React.render(ItemRenderer({
             item: item_data,
             problemNum: Math.floor(Math.random() * 50) + 1,
-            initialHintsVisible: false, //&& item_data.hints && item_data.hints.length,
+            initialHintsVisible: false,
             enabledFeatures: {
                 highlight: true,
-                toolTipFormats: true//,
-                //useMathQuill: true
-            },
-            apiOptions: {
-                // interceptInputFocus: function() {}, // do nothing here; prevent keyboard from popping up
-                // fancyDropdowns: true // needed?
-                // staticRender: true // don't want; iOS mode, blocks input box rendering
+                toolTipFormats: true
             }
-        }, null);
-        zk = React.renderComponent(
-            Exercises.PerseusBridge.itemRenderer,
-            Exercises.PerseusBridge.itemMountNode
-        );
+        }, null), Exercises.PerseusBridge.itemMountNode);
         zk.focus();
 
     }

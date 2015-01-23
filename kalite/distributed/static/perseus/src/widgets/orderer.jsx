@@ -1,11 +1,12 @@
-/** @jsx React.DOM */
+var InfoTip = require("react-components/info-tip.jsx");
+var React = require('react');
+var _ = require("underscore");
 
-var React          = require('react');
-var InfoTip        = require("react-components/info-tip");
-
-var Util           = require("../util.js");
-var Renderer       = require("../renderer.jsx");
+var Renderer = require("../renderer.jsx");
 var TextListEditor = require("../components/text-list-editor.jsx");
+var Util = require("../util.js");
+
+var ApiClassNames = require("../perseus-api.jsx").ClassNames;
 
 var PlaceholderCard = React.createClass({
     propTypes: {
@@ -14,7 +15,9 @@ var PlaceholderCard = React.createClass({
     },
 
     render: function() {
-        return <div className="card-wrap" style={{width: this.props.width}}>
+        return <div
+                className={"card-wrap " + ApiClassNames.INTERACTIVE}
+                style={{width: this.props.width}}>
             <div
                 className="card placeholder"
                 style={{height: this.props.height}} />
@@ -24,7 +27,7 @@ var PlaceholderCard = React.createClass({
 
 var DragHintCard = React.createClass({
     render: function() {
-        return <div className="card-wrap">
+        return <div className={"card-wrap " + ApiClassNames.INTERACTIVE}>
             <div className="card drag-hint" />
         </div>;
     }
@@ -92,14 +95,15 @@ var Card = React.createClass({
 
         var onMouseDown = (this.props.animating) ? $.noop : this.onMouseDown;
 
-        return <div className="card-wrap" style={style}
+        return <div className={"card-wrap " + ApiClassNames.INTERACTIVE}
+                    style={style}
                     onMouseDown={onMouseDown}
                     onTouchStart={onMouseDown}
                     onTouchMove={this.onMouseMove}
                     onTouchEnd={this.onMouseUp}
                     onTouchCancel={this.onMouseUp}>
                 <div className={className.join(" ")}>
-                    {Renderer(rendererProps)}
+                    <Renderer {...rendererProps} />
                 </div>
             </div>;
     },
@@ -113,7 +117,7 @@ var Card = React.createClass({
         return this.props.floating || nextProps.floating ||
             this.props.content !== nextProps.content ||
             // TODO(alpert): Remove ref here after fixing facebook/react#1392.
-            this.props.ref !== nextProps.ref;
+            this.props.fakeRef !== nextProps.fakeRef;
     },
 
     componentDidMount: function() {
@@ -260,6 +264,7 @@ var Orderer = React.createClass({
         var sortableCards = _.map(this.state.current, function(opt, i) {
             return <Card
                 ref={"sortable" + i}
+                fakeRef={"sortable" + i}
                 floating={false}
                 content={opt.content}
                 width={opt.width}
@@ -308,7 +313,7 @@ var Orderer = React.createClass({
                         "height-" + this.props.height + " " +
                         "layout-" + this.props.layout + " " +
                         "above-scratchpad blank-background " +
-                        "ui-helper-clearfix"}
+                        "ui-helper-clearfix " + ApiClassNames.INTERACTIVE}
                     ref="orderer">
                    {bank}
                    {sortable}
@@ -495,14 +500,14 @@ var Orderer = React.createClass({
         }
     },
 
-    toJSON: function(skipValidation) {
+    getUserInput: function() {
         return {current: _.map(this.props.current, function(v) {
             return v.content;
         })};
     },
 
     simpleValidate: function(rubric) {
-        return Orderer.validate(this.toJSON(), rubric);
+        return Orderer.validate(this.getUserInput(), rubric);
     },
 
     statics: {
@@ -631,7 +636,7 @@ var OrdererEditor = React.createClass({
         this.props.onChange({height: e.target.value});
     },
 
-    toJSON: function(skipValidation) {
+    serialize: function() {
         // We combine the correct answer and the other cards by merging them,
         // removing duplicates and empty cards, and sorting them into
         // categories based on their content

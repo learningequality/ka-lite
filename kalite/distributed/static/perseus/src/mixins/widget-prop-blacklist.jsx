@@ -8,5 +8,10 @@ module.exports = [
     "onChange",
     "problemNum",
     "enabledFeatures",
-    "apiOptions"
+    "apiOptions",
+    "questionCompleted",
+    "interWidgets",
+    // added by src/editor.jsx, for widgets removing themselves
+    // this is soooo not the right place for this, but alas.
+    "onRemove",
 ];

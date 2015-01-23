@@ -1,4 +1,4 @@
-var React = require('react');
+var _ = require("underscore");
 
 var init = function(options) {
     _.defaults(options, {
@@ -7,13 +7,6 @@ var init = function(options) {
     });
 
     var deferred = $.Deferred();
-
-    markedReact.setOptions({
-        sanitize: true,
-        paragraphFn: function(text) {
-            return React.DOM.div(null, text);
-        }
-    });
 
     if (options.skipMathJax) {
         deferred.resolve();

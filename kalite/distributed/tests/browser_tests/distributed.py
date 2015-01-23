@@ -6,8 +6,10 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
+from selenium.common.exceptions import TimeoutException
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils import unittest
 from django.test.utils import override_settings
 from django.utils.translation import ugettext as _
@@ -176,7 +178,7 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
                                            facility=self.facility)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
-        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG]["path"])
+        self.browse_to(self.live_server_url + reverse("learn") + get_node_cache("Exercise")[self.EXERCISE_SLUG]["path"])
         self.nanswers = self.browser.execute_script('return window.ExerciseParams.STREAK_CORRECT_NEEDED;')
 
     def browser_get_current_points(self):
@@ -195,14 +197,21 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         From an exercise page, insert an answer into the text box and submit.
         """
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.ID, 'solutionarea'))
+        )
         self.browser.find_element_by_id('solutionarea').find_element_by_css_selector('input[type=text]').click()
         self.browser_send_keys(unicode(answer))
-        self.browser_send_keys(Keys.RETURN)
+        self.browser.find_element_by_id('check-answer-button').click()
 
-        # Convert points to a number, when appropriate
-        time.sleep(0.25)
-        points = self.browser_get_current_points()
-        return float(points) if isnumeric(points) else points
+        try:
+            ui.WebDriverWait(self.browser, 10).until(
+                expected_conditions.visibility_of_element_located((By.ID, 'next-question-button'))
+            )
+            correct = self.browser.find_element_by_id('next-question-button').get_attribute("value")=="Correct! Next question..."
+        except TimeoutException:
+            correct = False
+        return correct
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
     @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
@@ -210,14 +219,13 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         Answer an exercise correctly
         """
-        numbers = self.browser.find_elements_by_class_name('mn')
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'mord'))
+        )
+        numbers = self.browser.find_elements_by_css_selector("span[class=mord][style]")
         answer = sum(int(num.text) for num in numbers)
-        points = self.browser_submit_answer(answer)
-        self.assertTrue(self.MIN_POINTS <= points <= self.MAX_POINTS,
-                        "point update is wrong: %s. Should be %s <= points <= %s" % (points,
-                                                                                     self.MIN_POINTS,
-                                                                                     self.MAX_POINTS))
-
+        correct = self.browser_submit_answer(answer)
+        self.assertTrue(correct, "answer was incorrect")
         elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
         self.assertEqual(elog.streak_progress, 100 / self.nanswers, "Streak progress should be 10%")
         self.assertFalse(elog.struggling, "Student is not struggling.")
@@ -226,12 +234,15 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         self.assertEqual(elog.attempts_before_completion, None, "Student should not have a value for attempts_before_completion.")
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
-    def test_question_incorrect_no_points_are_added(self):
+    def test_question_incorrect_false(self):
         """
         Answer an exercise incorrectly.
         """
-        points = self.browser_submit_answer('this is a wrong answer')
-        self.assertEquals(points, "", "points text should be empty")
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'mord'))
+        )
+        correct = self.browser_submit_answer(0)
+        self.assertFalse(correct, "answer was correct")
 
         elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
         self.assertEqual(elog.streak_progress, 0, "Streak progress should be 0%")
@@ -245,11 +256,15 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         Answer an exercise incorrectly, and make sure button text changes.
         """
-        self.browser_submit_answer('this is a wrong answer')
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'mord'))
+        )
+
+        self.browser_submit_answer(0)
 
         answer_button_text = self.browser.find_element_by_id("check-answer-button").get_attribute("value")
 
-        self.assertTrue(answer_button_text == "Try Again!", "Answer button did not change to 'Try Again' on incorrect answer!")
+        self.assertTrue(answer_button_text == "Check Answer", "Answer button changed on incorrect answer!")
 
     # @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
@@ -258,7 +273,6 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         Answer an exercise til mastery
         """
-        points = 0
         for ai in range(1, 1 + self.nanswers):
             # Hey future maintainer! The visibility_of_element_located
             # requires that the element be ACTUALLY visible on the screen!
@@ -266,17 +280,12 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
             # the side while you have the world cup occupying a big part of your
             # screen.
             ui.WebDriverWait(self.browser, 10).until(
-                expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'mn'))
+                expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'mord'))
             )
-            numbers = self.browser.find_elements_by_class_name('mn')
+            numbers = self.browser.find_elements_by_css_selector("span[class=mord][style]")
             answer = sum(int(num.text) for num in numbers)
-            expected_min_points = points + self.MIN_POINTS
-            expected_max_points = points + self.MAX_POINTS
-            points = self.browser_submit_answer(answer)
-            self.assertGreaterEqual(points, expected_min_points, "Too few points were given: %s < %s" % (points,
-                                                                                                         expected_min_points))
-            self.assertLessEqual(points, expected_max_points, "Too many points were given: %s > %s" % (points,
-                                                                                                       expected_max_points))
+            correct = self.browser_submit_answer(answer)
+            self.assertTrue(correct, "answer was incorrect")
 
             self.browser_send_keys(Keys.RETURN)  # move on to next question.
 

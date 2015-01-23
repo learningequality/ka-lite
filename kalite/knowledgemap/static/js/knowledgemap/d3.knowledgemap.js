@@ -1,7 +1,7 @@
 $(function(){
 window.statusModel.loaded.then(function() {
   var user_exercises_json;
-  var url = setGetParamDict("/api/knowledgemap/KnowledgeMapExerciselog/", {
+  var url = setGetParamDict(K_MAP_URL, {
     user: statusModel.get("user_id"), 
     completion_timestamp__gte: '1001-10-20',
     completion_timestamp__lte: '3017-12-22'     //include all exerciselog
@@ -419,7 +419,7 @@ window.statusModel.loaded.then(function() {
     if (d3.event.defaultPrevented) return; // ignore drag
      
     if(d.kind !== "Topic" && d.kind !== "Subject"){
-        location.href = "http://localhost:9013/learn/"+ d.path;
+        location.href = "/learn/"+ d.path;
     }
   }
 

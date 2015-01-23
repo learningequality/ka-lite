@@ -17,6 +17,7 @@ and more.
 import os
 import re
 import json
+import copy
 from functools import partial
 
 from django.conf import settings; logging = settings.LOG
@@ -123,15 +124,27 @@ def get_assessment_item_cache(force=False):
 
     return ASSESSMENT_ITEMS
 
+def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):
+    if not level_cache:
+        for hier in hierarchy:
+            level_cache[hier] = []
+    render_type = node.get("render_type", "")
+    if render_type in hierarchy:
+        node_copy = copy.deepcopy(dict(node))
+        for child in node_copy.get("children", []):
+            if "children" in child:
+                del child["children"]
+        level_cache[render_type].append(node_copy)
+    for child in node.get("children", []):
+        recurse_topic_tree_to_create_hierarchy(child, level_cache, hierarchy=hierarchy)
+    return level_cache
+
 KNOWLEDGEMAP_TOPICS = None
 CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
 def get_knowledgemap_topics(force=False):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None or force:
-        root_node = get_topic_tree(force=force)
-        math_node = [child for child in root_node["children"] if child.get("title", "") == "Math"][0]
-        all_nodes = [child for subnode in math_node["children"] for child in subnode["children"] if "Exercise" in child["contains"]]
-        KNOWLEDGEMAP_TOPICS = sorted(all_nodes, key=lambda k: (k.get("v_position", 0), k.get("h_position", 0)))
+        KNOWLEDGEMAP_TOPICS = recurse_topic_tree_to_create_hierarchy(get_topic_tree(), {}, hierarchy=["Domain", "Subject", "Topic", "Tutorial"])["Topic"]
     return KNOWLEDGEMAP_TOPICS
 
 

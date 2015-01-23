@@ -1,25 +1,29 @@
-/** @jsx React.DOM */
-
 var React         = require("react");
-var TeX           = require("../tex.jsx");
+var TeX           = require("react-components/tex.jsx");
 var ApiClassNames = require("../perseus-api.jsx").ClassNames;
+var Tooltip       = require("react-components/tooltip.jsx");
+var ModifyTex     = require("../tex-wrangler.js").modifyTex;
 
 var MathOutput = React.createClass({
     propTypes: {
-        value: React.PropTypes.string,
+        value: React.PropTypes.oneOfType([
+            React.PropTypes.string,
+            React.PropTypes.number
+        ]),
+        className: React.PropTypes.string,
         onFocus: React.PropTypes.func,
         onBlur: React.PropTypes.func
     },
 
-    getDefaultProps: function () {
+    getDefaultProps: function() {
         return {
             value: "",
-            onFocus: function () { },
-            onBlur: function () { }
+            onFocus: function() { },
+            onBlur: function() { }
         };
     },
 
-    getInitialState: function () {
+    getInitialState: function() {
         return {
             focused: false,
             selectorNamespace: _.uniqueId("math-output")
@@ -27,47 +31,71 @@ var MathOutput = React.createClass({
     },
 
     _getInputClassName: function() {
-        var className = "math-output " + ApiClassNames.INPUT;
+        var className = "math-output " + ApiClassNames.INPUT + " " +
+            ApiClassNames.INTERACTIVE;
         if (this.state.focused) {
             className += " " + ApiClassNames.FOCUSED;
+        }
+        if (this.props.className) {
+            className += " " + this.props.className;
         }
         return className;
     },
 
-    render: function () {
+    _getDisplayValue: function(value) {
+        // Cast from (potentially a) number to string
+        var displayText;
+        if (value != null) {
+            displayText = "" + value;
+        } else {
+            displayText = "";
+        }
+        return ModifyTex(displayText);
+    },
+
+    render: function() {
         var divStyle = {
             textAlign: "center"
         };
+
         return <span ref="input"
                 className={this._getInputClassName()}
                 onMouseDown={this.focus}
                 onTouchStart={this.focus}>
             <div style={divStyle}>
                 <TeX>
-                    {this.props.value}
+                    {this._getDisplayValue(this.props.value)}
                 </TeX>
             </div>
         </span>;
     },
 
+    getValue: function() {
+        return this.props.value;
+    },
+
     focus: function() {
-        this.props.onFocus();
-        this._bindBlurHandler();
-        this.setState({
-            focused: true
-        });
+        if (!this.state.focused) {
+            this.props.onFocus();
+            this._bindBlurHandler();
+            this.setState({
+                focused: true
+            });
+        }
     },
 
     blur: function() {
-        this.props.onBlur();
-        this._unbindBlurHandler();
-        this.setState({
-            focused: false
-        });
+        if (this.state.focused) {
+            this.props.onBlur();
+            this._unbindBlurHandler();
+            this.setState({
+                focused: false
+            });
+        }
     },
 
     _bindBlurHandler: function() {
-        $(document).bind("vmousedown." + this.state.selectorNamespace, (e) => {
+        $(document).bind("vclick." + this.state.selectorNamespace, (e) => {
             // Detect whether the target has our React DOM node as a parent
             var $closestWidget = $(e.target).closest(this.getDOMNode());
             if (!$closestWidget.length) {
@@ -82,14 +110,6 @@ var MathOutput = React.createClass({
 
     componentWillUnmount: function() {
         this._unbindBlurHandler();
-    },
-
-    // For consistency with the API that Expression and NumericInput use to
-    // get their current input element. Perhaps this should have a different
-    // name, and those should explicitly use a different method when they need
-    // to get its DOM node?
-    getInputDOMNode: function() {
-        return this.refs.input.getDOMNode();
     }
 });
 

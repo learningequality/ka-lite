@@ -1,13 +1,18 @@
-/** @jsx React.DOM */
+var _ = require("underscore");
+var Util = require("../util.js");
 
-var BlurInput    = require("react-components/blur-input");
-var InfoTip      = require("react-components/info-tip");
+var BlurInput    = require("react-components/blur-input.jsx");
+var Editor       = require("../editor.jsx");
+var InfoTip      = require("react-components/info-tip.jsx");
+var Renderer     = require("../renderer.jsx");
 
 var Changeable   = require("../mixins/changeable.jsx");
-var JsonifyProps = require("../mixins/jsonify-props.jsx");
+var EditorJsonify = require("../mixins/editor-jsonify.jsx");
+var WidgetJsonifyDeprecated = require("../mixins/widget-jsonify-deprecated.jsx");
 
 var Graphie      = require("../components/graphie.jsx");
 var RangeInput   = require("../components/range-input.jsx");
+var SvgImage     = require("../components/svg-image.jsx");
 
 var defaultBoxSize = 400;
 var defaultRange = [0, 10];
@@ -41,9 +46,10 @@ function blankLabel() {
 }
 
 var ImageWidget = React.createClass({
-    mixins: [Changeable, JsonifyProps],
+    mixins: [Changeable, WidgetJsonifyDeprecated],
 
     propTypes: {
+        title: React.PropTypes.string,
         range: React.PropTypes.arrayOf(
             React.PropTypes.arrayOf(React.PropTypes.number
             )
@@ -60,15 +66,18 @@ var ImageWidget = React.createClass({
                 coordinates: React.PropTypes.arrayOf(React.PropTypes.number),
                 alignment: React.PropTypes.string
             })
-        )
+        ),
+        caption: React.PropTypes.string
     },
 
     getDefaultProps: function() {
         return {
+            title: "",
             range: [defaultRange, defaultRange],
             box: [defaultBoxSize, defaultBoxSize],
             backgroundImage: defaultBackgroundImage,
-            labels: []
+            labels: [],
+            caption: ""
         };
     },
 
@@ -76,29 +85,39 @@ var ImageWidget = React.createClass({
         var image;
         var backgroundImage = this.props.backgroundImage;
         if (backgroundImage.url) {
-            var style = {
-                width: backgroundImage.width,
-                height: backgroundImage.height
-            };
-            image = <img style={style} src={backgroundImage.url} />;
+            image = <SvgImage src={backgroundImage.url}
+                              width={backgroundImage.width}
+                              height={backgroundImage.height} />;
         }
 
         var box = this.props.box;
 
-        return <div
-                className="graphie-container"
-                style={{
-                    width: box[0],
-                    height: box[1]
-                }}>
-            {image}
-            <Graphie
-                ref="graphie"
-                box={this.props.box}
-                range={this.props.range}
-                options={_.pick(this.props, "box", "range", "labels")}
-                setup={this.setupGraphie}>
-            </Graphie>
+        return <div className="perseus-image-widget">
+            {this.props.title &&
+                <div className="perseus-image-title">
+                    <Renderer content={this.props.title} />
+                </div>
+            }
+            <div
+                    className="graphie-container"
+                    style={{
+                        width: box[0],
+                        height: box[1]
+                    }}>
+                {image}
+                <Graphie
+                    ref="graphie"
+                    box={this.props.box}
+                    range={this.props.range}
+                    options={_.pick(this.props, "box", "range", "labels")}
+                    setup={this.setupGraphie}>
+                </Graphie>
+            </div>
+            {this.props.caption &&
+                <div className="perseus-image-caption">
+                <Renderer content={this.props.caption} />
+                </div>
+            }
         </div>;
     },
 
@@ -109,7 +128,7 @@ var ImageWidget = React.createClass({
     },
 
     simpleValidate: function(rubric) {
-        return ImageWidget.validate(this.toJSON(), rubric);
+        return ImageWidget.validate(this.getUserInput(), rubric);
     },
 
     focus: $.noop,
@@ -131,20 +150,24 @@ _.extend(ImageWidget, {
 });
 
 var ImageEditor = React.createClass({
-    mixins: [Changeable, JsonifyProps],
+    mixins: [Changeable, EditorJsonify],
 
     componentDidMount: function() {
-        // If URL already provided on page load, should display image
-        var url = this.props.backgroundImage.url;
-        this.onUrlChange(url);
+        // defer this because it can call a change handler synchronously
+        _.defer(() => {
+            var url = this.props.backgroundImage.url;
+            this.onUrlChange(url, true);
+        });
     },
 
     getDefaultProps: function() {
         return {
+            title: "",
             range: [defaultRange, defaultRange],
             box: [defaultBoxSize, defaultBoxSize],
             backgroundImage: defaultBackgroundImage,
-            labels: []
+            labels: [],
+            caption: "",
         };
     },
 
@@ -152,8 +175,8 @@ var ImageEditor = React.createClass({
         var imageSettings = <div className="image-settings">
             <div>Background image:</div>
             <div>Url:{' '}
-                <BlurInput value={this.props.backgroundImage.url}
-                           onChange={this.onUrlChange} />
+                <BlurInput value={this.props.backgroundImage.url || ''}
+                           onChange={url => this.onUrlChange(url, false)} />
                 <InfoTip>
                     <p>Create an image in graphie, or use the "Add image"
                     function to create a background.</p>
@@ -195,9 +218,27 @@ var ImageEditor = React.createClass({
                 </table>}
         </div>;
 
-        return <div className="perseus-widget-image">
+        return <div className="perseus-image-editor">
+            <div>Title:</div>
+            <Editor
+                content={this.props.title}
+                onChange={(props) => {
+                    if (props.content != null) {
+                        this.change("title", props.content);
+                    }
+                }}
+                widgetEnabled={false} />
             {imageSettings}
             {graphSettings}
+            <div>Caption:</div>
+            <Editor
+                content={this.props.caption}
+                onChange={(props) => {
+                    if (props.content != null) {
+                        this.change("caption", props.content);
+                    }
+                }}
+                widgetEnabled={false} />
         </div>;
     },
 
@@ -282,26 +323,47 @@ var ImageEditor = React.createClass({
         this.props.onChange({labels: labels});
     },
 
-    setUrl: function(url, width, height) {
+    setUrl: function(url, width, height, silent) {
+        // Because this calls into WidgetEditor._handleWidgetChange, which
+        // checks for this widget's ref to serialize it.
+        //
+        // Errors if you switch items before the `Image` from `onUrlChange`
+        // loads.
+        if (!this.isMounted()) {
+            return;
+        }
+
         var image = _.clone(this.props.backgroundImage);
         image.url = url;
         image.width = width;
         image.height = height;
         var box = [image.width, image.height];
         this.props.onChange({
-            backgroundImage: image,
-            box: box
-        });
+                backgroundImage: image,
+                box: box,
+            },
+            null,
+            silent
+        );
     },
 
-    onUrlChange: function(url) {
+    // silently update the url when the component mounts
+    // silently update sizes when the image loads
+    // noisily update the url in response to the author changing it
+    onUrlChange: function(url, silent) {
+        // Immediately set the url, then set the image width and height
+        // (silently) later when the image loads.
+
+        var width = 0;
+        var height = 0;
+
         if (url) {
-            var img = new Image();
-            img.onload = () => this.setUrl(url, img.width, img.height);
-            img.src = url;
-        } else {
-            this.setUrl(url, 0, 0);
+            Util.getImageSize(url, (width, height) => {
+                this.setUrl(url, width, height, true);
+            });
         }
+
+        this.setUrl(url, width, height, silent);
     },
 
     onRangeChange: function(type, newRange) {
