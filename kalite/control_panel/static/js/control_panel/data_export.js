@@ -203,15 +203,16 @@ window.FacilitySelectView = Backbone.View.extend({
     },
 
     render: function() {
+        var template_context;
 
-        if (this.model.get("facility_id") != "") {
-            var template_context = {
+        if (this.model.get("facility_id") !== "") {
+            template_context = {
                 facilities: this.facility_list.toJSON(),
                 selection: this.model.get("facility_id"),
                 is_disabled: true
             };
         } else {
-            var template_context = {
+            template_context = {
                 facilities: this.facility_list.toJSON(),
                 selection: this.model.get("facility_id"),
                 // Facility select is enabled only if zone_id has been set
