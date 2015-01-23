@@ -15,6 +15,7 @@ window.VideoPlayerView = ContentBaseView.extend({
 
         var that = this;
 
+        this.log_model.set("youtube_id", this.log_model.get("video_id"));
         this.data_model.set("random_id", "video-" + Math.random().toString().slice(2));
 
         this.$el.html(this.template(this.data_model.attributes));
@@ -113,11 +114,11 @@ window.VideoPlayerView = ContentBaseView.extend({
             })
             .on("play", function() {
                 self.set_player_state(VideoPlayerState.PLAYING);
-                self.activate()
+                self.activate();
             })
             .on("pause", function() {
                 self.set_player_state(VideoPlayerState.PAUSED);
-                self.deactivate()
+                self.deactivate();
             })
             .on("timeupdate", function() {
                 self.update_progress();
@@ -151,6 +152,8 @@ window.VideoPlayerView = ContentBaseView.extend({
         var percent = this.get_video_position() / this.get_duration();
 
         this.log_model.set("last_percent", percent);
+
+        this.log_model.set("total_seconds_watched", this.get_video_position());
 
         var progress = this.log_model.get("time_spent") / (this.get_duration());
 

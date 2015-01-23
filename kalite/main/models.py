@@ -517,7 +517,7 @@ class ContentLog(DeferredCountSyncedModel):
     completion_counter = models.IntegerField(blank=True, null=True)
     time_spent = models.FloatField(blank=True, null=True)
     progress_timestamp = models.DateTimeField(blank=True, null=True)
-    content_source = models.CharField(max_length=100, db_index=True)
+    content_source = models.CharField(max_length=100, db_index=True, default=settings.CHANNEL)
     content_kind = models.CharField(max_length=100, db_index=True)
     progress = models.FloatField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)

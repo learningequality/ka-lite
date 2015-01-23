@@ -4,6 +4,7 @@ from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
 from django.utils.translation import ugettext as _
 from django.conf.urls import url
+from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
@@ -269,6 +270,7 @@ class Content:
         self.selected_language = lang_code
         if self.description == "None":
             self.description = ""
+        self.source = settings.CHANNEL
 
 
 class ContentResource(Resource):
@@ -280,6 +282,7 @@ class ContentResource(Resource):
     selected_language = fields.CharField(attribute='selected_language')
     title = fields.CharField(attribute='title')
     extra_fields = fields.CharField(attribute='extra_fields')
+    source = fields.CharField(attribute='source')
 
     class Meta:
         resource_name = 'content'
