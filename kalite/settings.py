@@ -233,3 +233,8 @@ if package_selected("Demo"):
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
     MIDDLEWARE_CLASSES += ('distributed.demo_middleware.StopAdminAccess','distributed.demo_middleware.LinkUserManual','distributed.demo_middleware.ShowAdminLogin',)
+
+if DEBUG:
+    """Show DeprecationWarning messages when in debug"""
+    import warnings
+    warnings.simplefilter('always', DeprecationWarning)
