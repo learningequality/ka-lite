@@ -893,7 +893,6 @@ class _BaseEntry(object):
         ret = ['%s%s%s "%s"' % (delflag, fieldname, plural_index,
                                 escape(lines.pop(0)))]
         for mstr in lines:
-            #import pdb; pdb.set_trace()
             ret.append('%s"%s"' % (delflag, escape(mstr)))
         return ret
 # }}}

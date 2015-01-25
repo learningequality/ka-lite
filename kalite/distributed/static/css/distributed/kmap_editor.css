@@ -1,4 +1,4 @@
-div#map-container {
+div#map {
     position: relative;
     top: 0;
     left: 0;
@@ -12,7 +12,7 @@ div#map-container {
     -ms-user-select: none;
     user-select: none;
     line-height: 11px;
-    min-height: 1100px;
+    min-height: 600px;
     min-width: 700px;
 }
 
@@ -36,12 +36,6 @@ a.topic-button:visited {
     color: white;
 }
 
-div#map {
-    position: absolute;
-    left: 0;
-    top: 0;
-}
-
 div.exercise {
     position: absolute;
     font-family: "Lucida Grande", Arial, sans-serif;
@@ -59,4 +53,47 @@ div.exercise {
 
 div.exercise-label {
     background-color: rgba(0, 0, 0, 0.8);
+}
+
+.map-icon {
+    position: absolute;
+    background:#ff8800;
+    border:5px solid rgba(255,255,255,0.5);
+    color:#fff;
+    font-weight:bold;
+    font-size: 1.25em;
+    border-radius:50%;
+}
+
+.map-icon div {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+}
+
+div#overlay {
+    display: none; /* ensures it’s invisible until it’s called */
+    position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
+    margin: 0 auto;
+    top: 60px;
+    padding: 1% 5%; 
+    border: 2px solid black;
+    background-color: #ffffff;
+    width: 75%;
+    z-index: 1100; /* makes the div the top layer, so it’ll lay on top of the other content */
+}
+
+div#fade {
+    display: none;  /* ensures it’s invisible until it’s called */
+    position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
+    left: 0%; /* makes the div span all the way across the viewing area */
+    top: 0%; /* makes the div span all the way across the viewing area */
+    background-color: black;
+    -moz-opacity: 0.7; /* makes the div transparent, so you have a cool overlay effect */
+    opacity: .70;
+    filter: alpha(opacity=70);
+    width: 100%;
+    height: 100%;
+    z-index: 1010; /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */
 }

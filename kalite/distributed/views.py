@@ -33,8 +33,8 @@ from kalite import topic_tools
 from kalite.facility.models import Facility, FacilityUser,FacilityGroup
 from kalite.i18n import select_best_available_language
 from kalite.main.models import VideoLog, ExerciseLog
+from kalite.playlist.views import view_playlist
 from kalite.shared.decorators import require_admin
-from kalite.updates import stamp_availability_on_topic, stamp_availability_on_video, do_video_counts_need_update_question_mark
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 
@@ -46,9 +46,13 @@ def check_setup_status(handler):
     so that it is run even when there is a cache hit.
     """
     def check_setup_status_wrapper_fn(request, *args, **kwargs):
+
+        if "registered" not in request.session:
+            logging.error("Key 'registered' not defined in session, but should be by now.")
+
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
-            if not request.session["registered"] and BaseClient().test_connection() == "success":
+            if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 messages.warning(request, mark_safe("Please <a href='%s'>follow the directions to register your device</a>, so that it can synchronize with the central server." % reverse("register_public_key")))
             elif not request.session["facility_exists"]:
@@ -56,7 +60,7 @@ def check_setup_status(handler):
                 messages.warning(request, mark_safe("Please <a href='%s'>create a facility</a> now. Users will not be able to sign up for accounts until you have made a facility." % reverse("add_facility", kwargs={"zone_id": zone_id})))
 
         elif not request.is_logged_in:
-            if not request.session["registered"] and BaseClient().test_connection() == "success":
+            if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
                 # Being able to register is more rare, so prioritize.
                 redirect_url = reverse("register_public_key")
             elif not request.session["facility_exists"]:
@@ -74,271 +78,56 @@ def check_setup_status(handler):
     return check_setup_status_wrapper_fn
 
 
-def refresh_topic_cache(handler, force=False):
-
-    def strip_counts_from_ancestors(node):
-        """
-        Remove relevant counts from all ancestors
-        """
-        for ancestor_id in node.get("ancestor_ids", []):
-            ancestor = topic_tools.get_ancestor(node, ancestor_id)
-            if "nvideos_local" in ancestor:
-                del ancestor["nvideos_local"]
-            if "nvideos_known" in ancestor:
-                del ancestor["nvideos_known"]
-        return node
-
-    def recount_videos_and_invalidate_parents(node, force=False, stamp_urls=False):
-        """
-        Call stamp_video_availability (if necessary); if a change has been detected,
-        then check parents to see if their counts should be invalidated.
-        """
-        do_it = force
-        do_it = do_it or "nvideos_local" not in node
-        do_it = do_it or any(["nvideos_local" not in child for child in node.get("children", [])])
-        if do_it:
-            logging.debug("Adding video counts %s%sto topic (and all descendants) %s" % (
-                "(and urls) " if stamp_urls else "",
-                "(forced) " if force else "",
-                node["path"],
-            ))
-            (_a, _b, _c, _d, changed) = stamp_availability_on_topic(topic=node, force=force, stamp_urls=stamp_urls)
-            if changed:
-                strip_counts_from_ancestors(node)
-        return node
-
-    def refresh_topic_cache_wrapper_fn(request, cached_nodes={}, force=False, *args, **kwargs):
-        """
-        Centralized logic for how to refresh the topic cache, for each type of object.
-
-        When the object is desired to be used, this code runs to refresh data,
-        balancing between correctness and efficiency.
-        """
-        if not cached_nodes:
-            cached_nodes = {"topics": topic_tools.get_topic_tree()}
-
-        def has_computed_urls(node):
-            return "subtitles" in node.get("availability", {}).get("en", {})
-
-        for node in cached_nodes.values():
-            if not node:
-                continue
-            has_children = bool(node.get("children"))
-
-            # Propertes not yet marked
-            if node["kind"] == "Video":
-                if force or not has_computed_urls(node):
-                    recount_videos_and_invalidate_parents(topic_tools.get_parent(node), force=True, stamp_urls=True)
-
-            elif node["kind"] == "Exercise":
-                for video in topic_tools.get_related_videos(exercise=node).values():
-                    if not has_computed_urls(node):
-                        stamp_availability_on_video(video, force=True)  # will be done by force below
-
-            elif node["kind"] == "Topic":
-                bottom_layer_topic =  "Topic" not in node["contains"]
-                # always run do_video_counts_need_update_question_mark(), to make sure the (internal) counts stay up to date.
-                force = do_video_counts_need_update_question_mark() or force or bottom_layer_topic
-                recount_videos_and_invalidate_parents(
-                    node,
-                    force=force,
-                    stamp_urls=bottom_layer_topic,
-                )
-
-        kwargs.update(cached_nodes)
-        return handler(request, *args, **kwargs)
-    return refresh_topic_cache_wrapper_fn
-
-@backend_cache_page
-def splat_handler(request, splat):
-    slugs = filter(lambda x: x, splat.split("/"))
-    current_node = topic_tools.get_topic_tree()
-    while current_node:
-        match = [ch for ch in (current_node.get('children') or []) if request.path.startswith(ch["path"])]
-        if len(match) > 1:  # can only happen for leaf nodes (only when one node is blank?)
-            match = [m for m in match if request.path == m["path"]]
-        if not match:
-            raise Http404
-        current_node = match[0]
-        if request.path == current_node["path"]:
-            break
-
-    if current_node["kind"] == "Topic":
-        return topic_handler(request, cached_nodes={"topic": current_node})
-    elif current_node["kind"] == "Video":
-        prev, next = topic_tools.get_neighbor_nodes(current_node, neighbor_kind=current_node["kind"])
-        return video_handler(request, cached_nodes={"video": current_node, "prev": prev, "next": next})
-    elif current_node["kind"] == "Exercise":
-        cached_nodes = topic_tools.get_related_videos(current_node, limit_to_available=False)
-        cached_nodes["exercise"] = current_node
-        cached_nodes["prev"], cached_nodes["next"] = topic_tools.get_neighbor_nodes(current_node, neighbor_kind=current_node['kind'])
-        return exercise_handler(request, cached_nodes=cached_nodes)
-    else:
-        raise Http404
-
-
-@backend_cache_page
-@render_to("distributed/topic.html")
-@refresh_topic_cache
-def topic_handler(request, topic):
-    return topic_context(topic)
-
-
-def topic_context(topic):
+@render_to("distributed/learn.html")
+def learn(request):
     """
-    Given a topic node, create all context related to showing that topic
-    in a template.
+    Render the all-in-one sidebar navigation/content-viewing app.
     """
-    videos    = topic_tools.get_videos(topic)
-    exercises = topic_tools.get_exercises(topic)
-    topics    = topic_tools.get_live_topics(topic)
-    my_topics = [dict((k, t[k]) for k in ('title', 'path', 'nvideos_local', 'nvideos_known', 'nvideos_available', 'available')) for t in topics]
-
-    exercises_path = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
-    exercise_langs = dict([(exercise["id"], ["en"]) for exercise in exercises])
-
-    # Determine what exercises (and languages) are available
-    exercise_all_lang_codes = os.listdir(exercises_path) if os.path.exists(exercises_path) else []
-    exercise_all_lang_codes = set(exercise_all_lang_codes) - set(["test"])
-    for lang_code in exercise_all_lang_codes:  # hard-code out test
-        loc_path = os.path.join(exercises_path, lang_code)
-        if not os.path.isdir(loc_path):
-            continue
-
-        for exercise in exercises:
-            ex_path = os.path.join(loc_path, "%s.html" % exercise["id"])
-            if not os.path.exists(ex_path):
-                continue
-            exercise_langs[exercise["id"]].append(lang_code)
-
-
     context = {
-        "topic": topic,
-        "title": topic["title"],
-        "description": re.sub(r'<[^>]*?>', '', topic["description"] or ""),
-        "videos": videos,
-        "exercises": exercises,
-        "exercise_langs": exercise_langs,
-        "topics": my_topics,
+        "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
+        "channel": settings.CHANNEL,
+        "pdfjs": settings.PDFJS,
     }
     return context
 
 
 @backend_cache_page
-@render_to("distributed/video.html")
-@refresh_topic_cache
-def video_handler(request, video, format="mp4", prev=None, next=None):
-
-    if not video["available"]:
-        if request.is_admin:
-            # TODO(bcipolli): add a link, with querystring args that auto-checks this video in the topic tree
-            messages.warning(request, _("This video was not found! You can download it by going to the Update page."))
-        elif request.is_logged_in:
-            messages.warning(request, _("This video was not found! Please contact your teacher or an admin to have it downloaded."))
-        elif not request.is_logged_in:
-            messages.warning(request, _("This video was not found! You must login as an admin/teacher to download the video."))
-
-    # Fallback mechanism
-    available_urls = dict([(lang, avail) for lang, avail in video["availability"].iteritems() if avail["on_disk"]])
-    if video["available"] and not available_urls:
-        vid_lang = "en"
-        messages.success(request, "Got video content from %s" % video["availability"]["en"]["stream"])
-    else:
-        vid_lang = select_best_available_language(request.language, available_codes=available_urls.keys())
-
-
-    context = {
-        "video": video,
-        "title": video["title"],
-        "num_videos_available": len(video["availability"]),
-        "selected_language": vid_lang,
-        "video_urls": video["availability"].get(vid_lang),
-        "subtitle_urls": video["availability"].get(vid_lang, {}).get("subtitles"),
-        "prev": prev,
-        "next": next,
-        "backup_vids_available": bool(settings.BACKUP_VIDEO_SOURCE),
-    }
-    return context
-
-
-@backend_cache_page
-@render_to("distributed/exercise.html")
-@refresh_topic_cache
-def exercise_handler(request, exercise, prev=None, next=None, **related_videos):
-    """
-    Display an exercise
-    """
-    lang = request.session[settings.LANGUAGE_COOKIE_NAME]
-    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
-    exercise_file = exercise["slug"] + ".html"
-    exercise_template = exercise_file
-    exercise_localized_template = os.path.join(lang, exercise_file)
-
-    # Get the language codes for exercise teplates that exist
-    exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
-    code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
-    available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
-
-    # Return the best available exercise template
-    exercise_lang = select_best_available_language(request.language, available_codes=available_langs)
-    if exercise_lang == "en":
-        exercise_template = exercise_file
-    else:
-        exercise_template = exercise_path(exercise_lang)[(len(exercise_root) + 1):]
-
-    context = {
-        "exercise": exercise,
-        "title": exercise["title"],
-        "exercise_template": exercise_template,
-        "exercise_lang": exercise_lang,
-        "related_videos": [v for v in related_videos.values() if v["available"]],
-        "prev": prev,
-        "next": next,
-    }
-    return context
-
-
-@backend_cache_page
-@render_to("distributed/knowledgemap.html")
+@render_to("knowledgemap/knowledgemap.html")
 def exercise_dashboard(request):
     slug = request.GET.get("topic")
     if not slug:
         title = _("Your Knowledge Map")
     elif slug in topic_tools.get_node_cache("Topic"):
-        title = _(topic_tools.get_node_cache("Topic")[slug][0]["title"])
+        title = _(topic_tools.get_node_cache("Topic")[slug]["title"])
     else:
         raise Http404
 
     context = {
         "title": title,
+        "data_url": settings.CONTENT_DATA_URL + settings.CHANNEL,
     }
+
     return context
 
+@check_setup_status
+@render_to("distributed/homepage.html")
+def homepage(request):
+    """
+    Homepage.
+    """
+    return {}
 
 def watch_home(request):
     """Dummy wrapper function for topic_handler with url=/"""
     return topic_handler(request, cached_nodes={"topic": topic_tools.get_topic_tree()})
 
 
-@check_setup_status  # this must appear BEFORE caching logic, so that it isn't blocked by a cache hit
-@backend_cache_page
-@render_to("distributed/homepage.html")
-@refresh_topic_cache
-def homepage(request, topics):
-    """
-    Homepage.
-    """
-    context = topic_context(topics)
-    context.update({
-        "title": "Home",
-    })
-    return context
-
 def help(request):
     if request.is_admin:
         return help_admin(request)
     else:
         return help_student(request)
+
 
 @require_admin
 @render_to("distributed/help_admin.html")
@@ -382,8 +171,7 @@ def device_redirect(request):
 
 
 @render_to('distributed/search_page.html')
-@refresh_topic_cache
-def search(request, topics):  # we don't use the topics variable, but this setup will refresh the node cache
+def search(request):
     # Inputs
     query = request.GET.get('query')
     category = request.GET.get('category')
@@ -410,16 +198,19 @@ def search(request, topics):  # we don't use the topics variable, but this setup
                 continue
 
             possible_matches[node_type] = []  # make dict only for non-skipped categories
-            for nodearr in node_dict.values():
-                node = nodearr[0]
+            for node in node_dict.values():
                 title = _(node['title']).lower()  # this could be done once and stored.
+                keywords = [x.lower() for x in node.get('keywords', [])]
+                tags = [x.lower() for x in node.get('tags', [])]
                 if title == query:
                     # Redirect to an exact match
-                    return HttpResponseRedirect(node['path'])
+                    return HttpResponseRedirect(reverse('learn') + node['path'])
 
-                elif len(possible_matches[node_type]) < max_results_per_category and query in title:
+                elif (len(possible_matches[node_type]) < max_results_per_category and
+                    (query in title or query in keywords or query in tags)):
                     # For efficiency, don't do substring matches when we've got lots of results
                     possible_matches[node_type].append(node)
+
 
             hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
 
@@ -432,7 +223,6 @@ def search(request, topics):  # we don't use the topics variable, but this setup
         'max_results': max_results_per_category,
         'category': category,
     }
-
 
 def crypto_login(request):
     """
@@ -468,6 +258,9 @@ def handler_403(request, *args, **kwargs):
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
 
+@render_to("distributed/perseus.html")
+def perseus(request):
+    return {}
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("distributed/404.html", {}, context_instance=RequestContext(request)))

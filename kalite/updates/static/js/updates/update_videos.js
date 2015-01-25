@@ -87,7 +87,6 @@ $(function() {
 
     doRequest(URL_GET_ANNOTATED_TOPIC_TREE, {})
         .success(function(treeData) {
-
             if ($.isEmptyObject(treeData)) {
                 $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
             }
@@ -253,7 +252,7 @@ $(function() {
                 // Update the UI
                 $("#download-videos").removeAttr("disabled");
                 $("#cancel-download").hide();
-            })
+            });
 
         // Update the UI
 

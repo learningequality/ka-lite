@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html data-require="math graphie">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Midpoint formula</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <script>
+
+        function getPos(refPoint, otherPoint, flip) {
+            var pos = "";
+            if (refPoint[1] > otherPoint[1]) {
+                pos += flip ? "below" : "above";
+            } else {
+                pos += flip ? "above" : "below";
+            }
+
+            if (refPoint[0] !== otherPoint[0]) {
+                pos += " ";
+            } else if (flip) {
+                return "above";
+            }
+
+            if (refPoint[0] > otherPoint[0]) {
+                pos += "right";
+            } else {
+                pos += "left";
+            }
+            return pos;
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="X1 &lt; X2 &amp;&amp; Y1 !== Y2">
+            <var id="X1" data-ensure="X1 &lt; 0 || X1 &gt; 2">randRange( -8, 7 )</var>
+            <var id="X2" data-ensure="X2 &gt; 0 || X2 &lt; -2">randRange( -7, 8 )</var>
+            <var id="Y1" data-ensure="abs( Y1 ) &gt; 2">randRange( -9, 8 )</var>
+            <var id="Y2" data-ensure="abs( Y2 ) &gt; 2">randRange( -9, 8 )</var>
+            <var id="XM">( X1 + X2 ) / 2</var>
+            <var id="YM">( Y1 + Y2 ) / 2</var>
+            <var id="point1Style">{
+                color: BLUE,
+                stroke: BLUE,
+                fill: BLUE
+            }</var>
+            <var id="point2Style">{
+                color: GREEN,
+                stroke: GREEN,
+                fill: GREEN,
+                strokeWidth: 1.5
+            }</var>
+            <var id="midPtStyle">{
+                color: PURPLE,
+                stroke: PURPLE,
+                fill: PURPLE,
+                strokeWidth: 1.5
+            }</var>
+        </div>
+
+        <div class="problems">
+            <div id="find-midpoint">
+                <p class="problem">
+                    Point <code>\blue{A}</code> is at <code>\blue{(<var>X1</var>, <var>Y1</var>)}</code> and
+                    point <code>\green{B}</code> is at <code>\green{(<var>X2</var>, <var>Y2</var>)}</code>.
+                </p>
+                <p class="question">What is the midpoint of line segment <code>\overline{AB}</code>?</p>
+                <p class="render-answer-area-here"></p>
+                <div class="graphie" id="graph">
+                    graphInit({
+                        range: 10,
+                        scale: 20,
+                        tickStep: 1,
+                        labelStep: 1,
+                        unityLabels: false,
+                        labelFormat: function( s ) { return "\\small{" + s + "}"; },
+                        axisArrows: "&lt;-&gt;",
+                    });
+
+                    path([ [ X1, Y1 ], [ X2, Y2 ] ], {stroke:"#000000"});
+
+                    style(point1Style);
+                    label([X1, Y1], "A", getPos([X1, Y1], [X2, Y2]));
+                    circle([X1, Y1], 0.15);
+
+                    style(point2Style);
+                    label([X2, Y2], "B", getPos([X2, Y2], [X1, Y1]));
+                    circle([X2, Y2], 0.15);
+                </div>
+
+
+                <div class="solution" data-type="multiple">
+                    <p><code>(</code><span class="sol short40"><var>XM</var></span>, <span class="sol short40"><var>YM</var></span><code>)</code></p>
+                </div>
+
+                <div class="hints">
+                    <p>
+                        The <span class="hint_purple"><code>x</code> coordinate of the midpoint</span> is the average of the
+                        <code>x</code> coordinates of <code>\blue{A}</code> and <code>\green{B}</code>.
+                    </p>
+                    <div>
+                        <p><code>x = \dfrac{1}{2}(\blue{<var>X1</var>} + \green{<var>X2</var>})</code></p>
+                        <p><code>x = \dfrac{1}{2}(<var>X1 + X2</var>)</code></p>
+                        <p><code>x = \purple{<var>XM</var>}</code></p>
+                    </div>
+                    <span class="graphie" data-update="graph">
+                        style( midPtStyle );
+                        graph.vert = path( [ [ XM, -10], [ XM, 10] ] );
+                    </span>
+                    <p>The <span class="hint_purple"><code>y</code> coordinate of the midpoint</span> is the average of the
+                        <code>y</code> coordinates <code>\blue{A}</code> and <code>\green{B}</code>.</p>
+                    <div>
+                        <p><code>y = \dfrac{1}{2}(\blue{<var>Y1</var>} + \green{<var>Y2</var>})</code></p>
+                        <p><code>y = \dfrac{1}{2}(<var>Y1 + Y2</var>)</code></p>
+                        <p><code>y = \purple{<var>YM</var>}</code></p>
+                    </div>
+                    <span class="graphie" data-update="graph">
+                        graph.horiz = path( [ [ -10, YM], [ 10, YM ] ] );
+                    </span>
+                    <div>
+                        <p>The midpoint is <code>(\purple{<var>XM</var>}, \purple{<var>YM</var>})</code>.</p>
+
+                        <div class="graphie" data-update="graph">
+                            circle([XM, YM], 0.15);
+                            label([XM, YM], "M", getPos([XM, YM], [X1, Y1], true));
+                        </div>
+                    </div>
+                    <div class="graphie" data-update="graph">
+                        graph.vert.remove();
+                        graph.horiz.remove();
+                    </div>
+                </div>
+            </div>
+
+            <div id="find-point">
+                <p class="problem">
+                    Point <code>\blue{A}</code> is at <code>\blue{(<var>X1</var>, <var>Y1</var>)}</code> and
+                    point <code>\purple{M}</code> is at <code>\purple{(<var>XM</var>, <var>YM</var>)}</code>.<br>
+                    Point <code>\purple{M}</code> is the midpoint of point <code>\blue{A}</code> and point <code>\green{B}</code>.
+                </p>
+                <p class="question">What are the coordinates of point <code>\green{B}</code>?</p>
+                <p class="render-answer-area-here"></p>
+                <div class="graphie" id="graph">
+                    graphInit({
+                        range: 10,
+                        scale: 20,
+                        tickStep: 1,
+                        labelStep: 1,
+                        unityLabels: false,
+                        labelFormat: function( s ) { return "\\small{" + s + "}"; },
+                        axisArrows: "&lt;-&gt;",
+                    });
+
+                    style(point1Style);
+                    label([X1, Y1], "A", getPos([X1, Y1], [XM, YM]));
+                    graph.first = circle([X1, Y1], 0.15);
+
+                    style(midPtStyle);
+                    label([XM, YM], "M", getPos([XM, YM], [X1, Y1], true));
+                    graph.midpoint = circle([XM, YM], 0.15);
+                </div>
+
+                <div class="solution" data-type="multiple">
+                    <p><code>(</code><span class="sol short40"><var>X2</var></span>, <span class="sol short40"><var>Y2</var></span><code>)</code></p>
+                </div>
+
+                <div class="hints">
+                    <p>
+                        The average of the <code>x</code> coordinates of point <code>\blue{A}</code> and point <code>\green{B}</code> 
+                        should be <code>\purple{<var>XM</var>}</code>.
+                    </p>
+                    <div>
+                        <p><code>\dfrac{1}{2}(\blue{<var>X1</var>} + \green{x}) = \purple{<var>XM</var>}</code></p>
+                        <p>Solving for <code>\green{x}</code>:</p>
+                        <p><code>\blue{<var>X1</var>} + \green{x} = <var>2 * XM</var></code></p>
+                        <p><code>\green{x} = <var>X2</var></code></p>
+
+                        <span class="graphie" data-update="graph">
+                            style( point2Style );
+                            graph.vert = path( [ [ X2, -10], [ X2, 10] ] );
+                        </span>
+                    </div>
+                    <p>
+                        The average of the <code>y</code> coordinates of point <code>\blue{A}</code> and point <code>\green{B}</code> 
+                        should be <code>\purple{<var>YM</var>}</code>.
+                    </p>
+                    <div>
+                        <p><code>\dfrac{1}{2}(\blue{<var>Y1</var>} + \green{y}) = \purple{<var>YM</var>}</code></p>
+                        <p>Solving for <code>\green{y}</code>:</p>
+                        <p><code>\blue{<var>Y1</var>} + \green{y} = <var>2 * YM</var></code></p>
+                        <p><code>\green{y} = <var>Y2</var></code></p>
+
+                        <span class="graphie" data-update="graph">
+                            graph.horiz = path( [ [ -10, Y2 ], [ 10, Y2 ] ] );
+                        </span>
+                    </div>
+                    <div>
+                        <p>Point <code>\green{B}</code> is <code>(\green{<var>X2</var>}, \green{<var>Y2</var>})</code>.</p>
+
+                        <span class="graphie" data-update="graph">
+                            path([[X1, Y1], [X2, Y2]], {stroke:"#000000"});
+                            circle([X2, Y2], 0.15);
+                            label([X2, Y2], "B", getPos([X2, Y2], [XM, YM]));
+
+                            graph.first.toFront();
+                            graph.midpoint.toFront();
+                        </span>
+                    </div>
+                    <div class="graphie" data-update="graph">
+                        graph.vert.remove();
+                        graph.horiz.remove();
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

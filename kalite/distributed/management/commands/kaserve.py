@@ -3,22 +3,19 @@ This is a command-line tool to execute functions helpful to testing.
 """
 import os
 import sys
+import time
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
-from django.utils.translation import ugettext as _
 
 from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
-from fle_utils.django_utils import call_command_with_output
 from fle_utils.general import isnumeric
 from fle_utils.internet import get_ip_addresses
-from kalite.facility.models import Facility
-from kalite.topic_tools import get_topic_tree
-from kalite.updates import stamp_availability_on_topic
+from kalite.caching import initialize_content_caches
 from securesync.models import Device
 
 
@@ -90,10 +87,7 @@ class Command(BaseCommand):
         call_command("videoscan")
 
         # Finally, pre-load global data
-        def preload_global_data():
-            logging.info("Preloading topic data.")
-            stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
-        preload_global_data()
+        initialize_content_caches()
 
 
     def handle(self, *args, **options):
@@ -132,6 +126,11 @@ class Command(BaseCommand):
 
 
         call_command("collectstatic", interactive=False)
+
+        # set the BUILD_HASH to the current time, so assets get refreshed to their newest versions
+        build_hash = str(time.mktime(time.gmtime()))
+        logging.debug("Writing %s as BUILD_HASH" % build_hash)
+        Settings.set('BUILD_HASH', build_hash)
 
         # Now call the proper command
         if not options["production"]:

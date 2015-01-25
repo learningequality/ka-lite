@@ -1,0 +1,86 @@
+tr {
+    height: 30px;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 4px;
+    vertical-align: middle;
+}
+
+.table-container {
+    width: 100%;
+    min-width: 680px;
+    padding-top: 2%;
+}
+.table-container th {
+    max-width: 80px;
+    min-width: 60px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.student-table {
+    float: left;
+    width: 11%;
+    margin-right: 1px;
+    text-align: left;
+}
+.results-table {
+    overflow: auto;
+    width: 88%;
+}
+.pass {
+    background-color: #2F942F;
+}
+.borderline {
+    background-color: #94BE48;
+}
+.fail {
+    background-color: #CA4D4D;
+}
+.incomplete {
+    background-color: #999999;
+}
+#legend {
+    float:right;
+    vertical-align:middle;
+    margin:12px 25px 2px 10px;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+.legend {
+    float:right;
+    width:120px;
+    text-align:center;
+    vertical-align:middle;
+    white-space:nowrap;
+    overflow:hidden;
+    padding:2px;
+    margin-right: 2px;
+}
+.summary-stat-header {
+    background-color: rgb(238, 238, 238);
+}
+.unpadded-p {
+    margin: 0;
+    padding: 0;
+}
+.status-circle {
+    position: relative;
+    float: left;
+    border-radius: 50%;
+}
+.status-circle-sm {
+    height: 10px;
+    width: 10px;
+    top: 6px;
+    margin-right: 7px;
+}
+.status-circle-md {
+    height: 15px;
+    width: 15px;
+    top: 3px;
+    left: 10px;
+}

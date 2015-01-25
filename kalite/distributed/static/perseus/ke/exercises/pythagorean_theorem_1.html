@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html data-require="math graphie math-format">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Pythagorean theorem</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <script>
+        function betterTriangle(width, height, A, B, C, a, b, c) {
+            var scale = 5 / Math.sqrt(width * width + height * height);
+            width *= scale;
+            height *= scale;
+
+            with ( KhanUtil.currentGraph ) {
+                // Leave some space for the labels
+                init({ range: [[-1.5, width + 1], [-1, height + 1]] });
+
+                path([ [0, 0], [width, 0], [0, height], true ]);
+
+                label( [0, height], A, "above left" );
+                label( [0, 0], C, "below left" );
+                label( [width, 0], B, "below right" );
+
+                label( [0, height/2], b, "left" );
+                label( [width/2, 0], a, "below" );
+                label( [width/2, height/2], c, "above right", {
+                    labelDistance: 3
+                } );
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="find-hypotenuse">
+            <div class="vars">
+                <var id="AC">randRange(3, 8)</var>
+                <var id="BC">randRange(3, 8)</var>
+                <var id="AB2">AC * AC + BC * BC</var>
+            </div>
+
+            <div class="question">
+                <p>In the right triangle shown, <code>AC = <var>AC</var></code> and
+                <code>BC = <var>BC</var></code>.</p>
+                <p>What is <code>AB</code>?</p>
+                <div class="render-answer-area-here"></div>
+
+                <div class="graphie">
+                    betterTriangle( BC, AC, "A", "B", "C", BC, AC, "?" );
+                </div>
+            </div>
+
+            <div class="solution" data-type="radical" data-simplify="optional"><var>AB2</var></div>
+
+            <div class="hints" data-apply="appendContents">
+                <p>We want to find <code>c</code>; let <code>a = <var>BC</var></code> and <code>b = <var>AC</var></code>.</p>
+                <p><code>
+                    \begin{align}
+                    c^2 &amp;= <var>BC</var>^2 + <var>AC</var>^2 \\
+                    c^2 &amp;= <var>BC * BC</var> + <var>AC * AC</var> \\
+                    c^2 &amp;= <var>AB2</var> \\
+                    c &amp;= \sqrt{<var>AB2</var>}
+                    \end{align}
+                </code></p>
+                <div data-if="squareRootCanSimplify(AB2)">
+                    <p>Simplifying the radical gives <code>c = <var>formattedSquareRootOf(AB2)</var>.</code></p>
+                    <p>So <code>c = <var>formattedSquareRootOf(AB2)</var>.</code></p>
+                </div>
+                <p data-else="">
+                    The radical cannot be simplified, so <code>c = 1\sqrt{<var>AB2</var>}</code> or just <code>\sqrt{<var>AB2</var>}</code>.
+                </p>
+            </div>
+        </div>
+
+        <div id="find-a-leg">
+            <div class="vars">
+                <var id="AC">randRange(3, 5)</var>
+                <var id="AB">randRange(6, 10)</var>
+                <var id="BC2">AB * AB - AC * AC</var>
+
+                <var id="legs">shuffle([["a", "?", "BC", sqrt(BC2)], ["b", AC, "AC", AC]])</var>
+
+                <var id="a, alabel, aside, alen">legs[0]</var>
+                <var id="b, blabel, bside, blen">legs[1]</var>
+            </div>
+
+            <div class="question">
+                <p>In the right triangle shown, <code><var>bside</var> = <var>AC</var></code> and
+                <code>AB = <var>AB</var></code>.</p>
+                <p>What is <code><var>aside</var></code>?</p>
+                <div class="render-answer-area-here"></div>
+
+                <div class="graphie">
+                    betterTriangle( alen, blen, "A", "B", "C", alabel, blabel, AB );
+                </div>
+            </div>
+
+            <div class="solution" data-type="radical" data-simplify="optional"><var>BC2</var></div>
+
+            <div class="hints" data-apply="appendContents">
+                <p>We want to find <code><var>a</var></code>; let <code><var>b</var> = <var>AC</var></code> and <code>c = <var>AB</var></code>.</p>
+                <p>So <code><var>a</var>^2 = c^2 - <var>b</var>^2</code>
+                <p><code>
+                    \begin{align}
+                    <var>a</var>^2 &amp;= <var>AB</var>^2 - <var>AC</var>^2 \\
+                    <var>a</var>^2 &amp;= <var>AB * AB</var> - <var>AC * AC</var> \\
+                    <var>a</var>^2 &amp;= <var>BC2</var> \\
+                    <var>a</var> &amp;= \sqrt{<var>BC2</var>}
+                    \end{align}
+                </code></p>
+                <div data-if="squareRootCanSimplify(BC2)">
+                    <p>Simplifying the radical gives <code><var>a</var> = <var>formattedSquareRootOf(BC2)</var>.</code></p>
+                    <p>So <code><var>aside</var> = <var>formattedSquareRootOf(BC2)</var>.</code></p>
+                </div>
+                <p data-else="">
+                    The radical cannot be simplified, so <code><var>aside</var> = 1\sqrt{<var>BC2</var>}</code> or just <code>\sqrt{<var>BC2</var>}</code>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <p>We know <code>a^2 + b^2 = c^2</code>.</p>
+    </div>
+    </div>
+</body>
+</html>

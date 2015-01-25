@@ -1,0 +1,158 @@
+{% extends "coachreports/base.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+{% load my_filters %}
+
+{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block title %}{{ test_obj.title }} {{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/test_view.css' %}" />
+{% endblock headcss %}
+
+{% block headjs %}
+    {{block.super}}
+    <script>
+        $(function(){
+            $("#facility").change(function(){
+                window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
+
+            $(".group_select").change(function(event){
+                window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
+            });
+
+            $("#test").change(function(){
+                window.location.href = setGetParamDict($("#test option:selected").val(), {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
+        })
+    </script>
+{% endblock headjs %}
+
+{% block report_title %}
+    {{ test_obj.title }}&nbsp;{% trans "Results" %}
+{% endblock report_title %}
+
+{% block report_content %}
+    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+    <p class="unpadded-p">
+        <a class="changeable-link" href="{% url 'test_view' %}">&#x2190; {% trans "Back" %}</a>
+    </p>
+    <div id="selection-bar">
+        <div class="selection">
+
+        {# Select the test to view #}
+        {% if test_options %}
+            <div class="subtitle">{% trans "Select Exam" %}</div>
+            <select id="test">
+                {% for test in test_options %}
+                    <option value="{{test.url}}" {% if test.id == test_obj.test_id %}selected{% endif %}>{{test.title}}</option>
+                {% endfor %}
+            </select>
+        {% else %}
+            <div class="subtitle">
+                {% trans "No other tests available to view" %}
+            </div>
+        {% endif %}
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="legend">
+            <div class="legend"><span class="status-circle status-circle-md pass"></span>80-100%</div>
+            <div class="legend"><span class="status-circle status-circle-md borderline"></span>60-79%</div>
+            <div class="legend"><span class="status-circle status-circle-md fail"></span>0-59%</div>
+
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+
+    {% if not results_table %}
+        <p><div class="subtitle error" id="error_message">
+        {% if not groups.0.groups and not groups.1 and request.GET.topic %}
+            {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
+            {% trans "No student accounts have been created." %}
+        {% elif not results_table %}
+            {% comment %}Group was selected, but data not queried because a topic was not selected
+            (NOTE: this required knowledge of how the view queries data){% endcomment %}
+            {% trans "No exam results for this group." %}
+        {% else %}
+            {% comment %}Everything specified, but no users fit the query.{% endcomment %}
+            {% trans "No student accounts in this group have been created." %}
+        {% endif %}
+        </div></p>
+
+    {% else %}
+
+        {# Student Table #}
+    <div class="table-container">
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th class="student-header">
+                        {% trans "Student" %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in results_table.keys %}
+                    <tr>
+                        <th>
+                            <a title="{{ student.name }} ({{ student.username }})" href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a>
+                        </th>
+                    </tr>
+                {% endfor %} 
+                {% for stat in stats_dict.keys %}
+                    <tr>
+                        <th class="summary-stat-header">
+                            {{ stat }}
+                        </th>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="results-table">
+            <table>
+                <thead>
+                    <tr>
+                        {% for ex in ex_cols %}
+                            <th title="{% trans ex %}" class="data-header">
+                                {% trans ex %}
+                            </th>
+                        {% endfor %}
+                        <th class="summary-stat-header">
+                            {% trans "Overall" %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for results in results_table.values %}
+                        <tr>
+                        {% for r in results %}
+                            {% if r.raw_score == '' %}
+                                <td title="{% trans 'Not Started' %}"></td>
+                            {% else %}
+                                <td {% if r.title %}title="{{r.title}}"{% endif %}>
+                                    <span class="status-circle status-circle-sm {% if r.raw_score > 79 %}pass{% elif r.raw_score > 59 %}borderline{% else %}fail{% endif %}"></span>
+                                    {{ r.display_score }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>    
+                    {% endfor %}
+                    {% for stats in stats_dict.values %}
+                        <tr>
+                            {% for stat in stats %}
+                                <td>
+                                    {{stat}}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+{% endblock report_content %}

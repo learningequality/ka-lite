@@ -351,21 +351,6 @@ def set_default_language(lang_code):
     Settings.set("default_language", lcode_to_ietf(lang_code))
 
 
-def get_langs_with_subtitle(youtube_id):
-    """
-    Returns a list of all language codes that contain subtitles for this video.
-
-    Central and distributed servers store in different places, so loop differently
-    """
-
-    subtitles_path = get_srt_path()
-    if os.path.exists(subtitles_path):
-        installed_subtitles = [lc for lc in os.listdir(subtitles_path) if os.path.exists(get_srt_path(lc, youtube_id))]
-    else:
-        installed_subtitles = []
-    return sorted(installed_subtitles)
-
-
 def update_jsi18n_file(code="en"):
     """
     For efficieny's sake, we want to cache Django's
@@ -382,8 +367,15 @@ def update_jsi18n_file(code="en"):
     request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
     response = javascript_catalog(request, packages=('ka-lite.locale',))
+    icu_js = ""
+    for path in settings.LOCALE_PATHS:
+        try:
+            icu_js = open(os.path.join(path, code, "%s_icu.js" % code), "r").read()
+        except IOError:
+            logging.warn("No {code}_icu.js file found in locale_path {path}".format(code=code, path=path))
+    output_js = response.content + "\n" + icu_js
     with open(output_file, "w") as fp:
-        fp.write(response.content)
+        fp.write(output_js)
 
 
 def select_best_available_language(target_code, available_codes=None):

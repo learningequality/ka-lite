@@ -11,12 +11,10 @@ ul.dynatree-container li, .ui-widget-content {
 }
 
 .download-actions {
-    float: left;
     margin-right: 10px;
     margin-top: 5px;
     min-height: 109px;
     padding: 10px;
-    width: 45%;
 }
 
 #download-legend-selected, #download-videos, #delete-videos {
@@ -34,11 +32,11 @@ ul.dynatree-container li, .ui-widget-content {
 }
 
 #download-videos:enabled {
-    color: #52A852;
+    color: white;
 }
 
 #delete-videos:enabled {
-    color: #AC4343;
+    color: whitef;
 }
 
 #retry-video-download:enabled {
@@ -57,6 +55,7 @@ ul.dynatree-container li, .ui-widget-content {
 #download-videos {
     display:none;
 }
+
 .progress-waiting {
     padding: 5px 0px 0px 0px;
     display: none;
@@ -64,4 +63,17 @@ ul.dynatree-container li, .ui-widget-content {
 
 #download_language_selector {
     display: none;
+}
+
+h4.videos {
+    font-size: 20px;
+    margin-top: 0;
+}
+
+#download-videos-text, #delete-videos-text {
+    font-size: 11px;
+}
+
+@media only screen and (max-width: 680px) {
+    .download-actions { display: block; float: none; width: 100%; }
 }

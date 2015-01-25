@@ -5,23 +5,62 @@
 
 {% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
 
+{% block users_active %}active{% endblock users_active %}
+{% block manage_active %}active{% endblock manage_active %}
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
+
 {% block headcss %}{{ block.super }}
+    <style>
+        .toggle-sync-details {
+            cursor: pointer;
+        }
+        .sync-details {
+            font-size: 0.7em;
+            padding-left: 20px;
+            position: relative;
+            display: none;
+        }
+        .sync-stderr {
+            color: red;
+        }
+    </style>
 {% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+<script>
+    $(function() {
+        $(".toggle-sync-details a").click(function() {
+            // Toggle text 
+            var toggle_text = $(".sync-details").is(":visible") ? gettext('show details') : gettext('hide details');
+            $(".show-detail-text").text(toggle_text);
+            // Flip caret
+            $(".caret-indicator").toggleClass("caret-reversed");
+            // Show and hide details
+            $(".sync-details").slideToggle();
+            return false;
+        });
+    });
+</script>
+{% endblock headjs %}
 
 {% block buttons %}{{ block.super }}
     {% if is_own_device %}
         <div class="server-online-only">
-            <a class="registered-only green_button" href="javascript:force_sync()">{% trans "Sync Now!" %}</a>
-            <a class="not-registered-only green_button" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
+            <a class="registered-only btn btn-success" href="javascript:force_sync()">{% trans "Sync to central server!" %}</a>
+            <a class="not-registered-only btn btn-success" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
         </div>
     {% endif %}
 {% endblock buttons %}
 
-{% block control_panel_content %}
-    <div id="zone_container">
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
-        <div class="device_metadata">
-            <h2>{% trans "Device Metadata" %}</h2>
+{% block control_panel_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h3>
+                {% trans "Device Metadata" %}
+            </h3>
 
             <dl class="dl-horizontal">
             {% if software_version %}
@@ -50,16 +89,45 @@
             {% endif %}
             </dl>
         </div>
-
-        <div class="sync_sessions">
-            <div>
-                <h2>{% trans "Sync Sessions" %}</h2>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <h3>
+                {% trans "Sync Sessions" %}
+            </h3>
 
             {% if not session_pages %}
-                <p class="registered-only">{% trans "This device has never synced with the central server." %}</p>
-                <p class="not-registered-only">{% trans "This device is not registered, and so cannot sync data with the central server." %}</p>
+                <p class="registered-only">
+                    {% trans "This device has never synced with the central server." %}
+                </p>
+                <p class="not-registered-only">
+                    {% trans "This device is not registered, and so cannot sync data with the central server." %}
+                </p>
             {% else %}
+
+                {% if sync_job %}
+                    {% if sync_job.is_running %}
+                        <h3>
+                            {% trans "A sync is currently in progress..." %} <a href=".">{% trans "(refresh)" %}</a>
+                        </h3>
+                    {% else %}
+                        <h3>
+                            {% if sync_job.last_run_successful %}
+                                <span class="glyphicon glyphicon-ok-circle text-success"></span>
+                                {% trans "The last sync completed successfully" %}
+                            {% else %}
+                                <span class="glyphicon glyphicon-remove-circle text-danger"></span>
+                                {% trans "There was an error during the last sync" %}
+                            {% endif %}
+                            <small class="toggle-sync-details"><a><span class="show-detail-text">{% trans "show details" %}</span> <span class="caret-indicator caret"></span></a></small>
+                        </h3>
+                        <div class="sync-details">
+                            <div class="sync-stdout">{{ sync_job.log_set.all.0.stdout|linebreaksbr }}</div>
+                            <div class="sync-stderr">{{ sync_job.log_set.all.0.stderr|linebreaksbr }}</div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+
                 <table class="table">
                     <thead>
                         <tr class="success">
@@ -83,24 +151,24 @@
                     </tbody>
                 </table>
                 {% if session_pages.num_listed_pages > 1 %}
-                <div class="pagination">
-                        <a title="{% trans 'Browse to the previous page of sync sessions.' %}" {% if session_pages.has_previous %}href="{{ page_urls.prev_page }}"{% endif %}>&lt&lt</a>
-                        {% for listed_page in session_pages.listed_pages %}
-                            {% if listed_page == -1 %}
-                                <span class="disabled">&hellip;</span>
-                            {% elif listed_page == session_pages.number %}
-                                <span class="current">
-                                   {{ session_pages.number }}
-                                </span>
-                            {% else %}
-                                <a title="{% blocktrans %}Browse to page # {{ listed_page }} of sessions.{% endblocktrans %}" href="{{ page_urls|get_item:listed_page }}">{{ listed_page }}</a>
-                            {% endif %}
-                        {% endfor %}
-                        <a title="{% trans 'Browse to the next page of sessions.' %}" {% if session_pages.has_next %}href="{{ page_urls.next_page }}"{% endif %}>&gt&gt</a>
-                </div>
+                    <div class="pagination">
+                            <a title="{% trans 'Browse to the previous page of sync sessions.' %}" {% if session_pages.has_previous %}href="{{ page_urls.prev_page }}"{% endif %}>&lt&lt</a>
+                            {% for listed_page in session_pages.listed_pages %}
+                                {% if listed_page == -1 %}
+                                    <span class="disabled">&hellip;</span>
+                                {% elif listed_page == session_pages.number %}
+                                    <span class="current">
+                                       {{ session_pages.number }}
+                                    </span>
+                                {% else %}
+                                    <a title="{% blocktrans %}Browse to page # {{ listed_page }} of sessions.{% endblocktrans %}" href="{{ page_urls|get_item:listed_page }}">{{ listed_page }}</a>
+                                {% endif %}
+                            {% endfor %}
+                            <a title="{% trans 'Browse to the next page of sessions.' %}" {% if session_pages.has_next %}href="{{ page_urls.next_page }}"{% endif %}>&gt&gt</a>
+                    </div>
                 {% endif %}
-            {% endif %}
+            {% endif%}
         </div>
-
-    </div><!-- zone_container -->
+    </div>
+</div>
 {% endblock control_panel_content %}

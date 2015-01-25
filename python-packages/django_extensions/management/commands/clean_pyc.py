@@ -19,7 +19,7 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         from django.conf import settings
-        if settings.BUILT:
+        if getattr(settings, "BUILT", False):
             settings.LOG.info("Installation built by build process; skipping clean_pyc")
             return
 

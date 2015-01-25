@@ -1,5 +1,6 @@
 $(function () {
-    $("#force-sync").click(function(){
+    $("#force-sync").click(function(ev){
+        ev.preventDefault();
         force_sync();
     });
 
@@ -11,7 +12,7 @@ $(function () {
             return false; // cancel
         }
         else if (confirmDelete === facilityName) {
-            var delete_facility_url = event.target.parentNode.getAttribute("value");
+            var delete_facility_url = event.target.getAttribute("value");
             var data = {facility_id: null};
             // MUST: provide the data argument to make this a POST request
             doRequest(delete_facility_url, data)

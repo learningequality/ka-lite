@@ -22,6 +22,9 @@
 {% load my_filters %}
 {% load staticfiles %}
 
+{% block teacher_active %}active{% endblock teacher_active %}
+{% block admin_active %}active{% endblock admin_active %}
+
 {% block headcss %} {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
@@ -35,24 +38,32 @@
         }
         .google-chart {
             width: 900px;
-            height: 500px;
+            height: 450px;
         }
         .subtitle {
             float: left;
         }
-
         #summary {
             border: 1px black solid;
             position: absolute;
             background-color: white;
         }
         #topic_header {
+            border-bottom: 1px dotted #bbb;
+            color: #333;
+            margin-bottom: 40px;
             margin-left: 25px;
             margin-bottom: 0px;
         }
+        #content_tree_template {
+            margin-left: 21px;
+        }
         #topic_paths_note {
-            font-weight:normal;
-            color:red;
+            font-weight: normal;
+            color: red;
+        }
+        #content_tree_toggle {
+            margin-bottom: 5px;
         }
     </style>
 {% endblock headcss %}
@@ -63,7 +74,9 @@
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/d3.v3.min.js' %}"></script>
     <script type="text/javascript">
-        var API_DATA_URL = "{% url 'api_data' %}";
+        var API_DATA_URL = "{% url 'api_dispatch_list' resource_name='ScatterReportExerciselog' %}";
+        var TIMELINE_API_DATA_URL = "{% url 'api_dispatch_list' resource_name='TimelineReportExerciselog' %}";
+
         var GET_TOPIC_TREE_URL = "{% url 'get_topic_tree_by_kinds' topic_path='/' %}";
         var IMAGES_URL = "{% static 'images/' %}";
 
@@ -84,55 +97,51 @@
     <script type="text/javascript" src="{% static 'js/coachreports/base_d3_visualization.js' %}"></script>
 {% endblock headjs %}
 
+
+
 {% block navbar_topics %}
-    <h3 id="topic_header">
-        {% trans "Topics Selected" %}:
-        <a id="topic_paths" href="javascript:toggle_tree()"></a>
-        <span id="topic_paths_note"></span>
-    </h3>
+    <div class="container">
+        <div class="row">
+            <h5 id="topic_header">
+                {% trans "Topics Selected" %}:
+                <a id="topic_paths" href="javascript:toggle_tree()"></a>
+                <span id="topic_paths_note"></span>
+            </h5>
+        </div>
 {% endblock navbar_topics %}
 
-{% block content %}
-    {% block navbar %}{{ block.super }}{% endblock navbar %}
 
+
+{% block report_content %}
     <!-- a good way to do this would be to create these elements dynamically (in script),
          and move this all to javascript. -->
-    <div id="content_tree_template">
-        <button id="content_tree_toggle">
-            {% trans "View Report" %}
-        </button>
-        <div id="content_tree">
-            <br/>
-            <h2>{% trans "Loading topic tree... Please wait!" %}</h2>
+         {% trans "Starting-Time" %}:
+        <input type="text" id="datepicker_start">
+        {% trans "Ending-Time" %}:
+        <input type="text" id="datepicker_end">
+        <br/>
+       <!--  <div id="content_tree_template">
+            <div class="row col-xs-12">
+                <button class="btn btn-default btn-xs" id="content_tree_toggle">
+                    {% trans "View Report" %}
+                </button>
+            </div>
+            <div class="row col-xs-12" id="content_tree">
+                <br/>
+                <h4>{% trans "Loading topic tree... Please wait!" %}</h4>
+            </div>
+        </div> -->
+
+        <div id="google-chart">
+        {% block chart_div %}
+            <div id="loading"></div>
+            <div id="chart_div" class="google-chart"></div>
+        {% endblock chart_div %}
         </div>
-    </div>
 
-    <div id="google-chart">
-    {% block chart_div %}
-        <div id="loading"></div>
-        <div id="chart_div" class="google-chart"></div>
-    {% endblock chart_div %}
-    </div>
+        {% block data_table %}
+            <div id="data_table"></div>
+        {% endblock data_table %}
 
-    {% block data_table %}
-        <div id="data_table"></div>
-    {% endblock data_table %}
-
-    <div id="choose">
-        <form id="select_data" name="select_data">
-        {% block axis_dropdown %}
-        [You must fill me in!!]
-            {% comment "Stick this in here, as it will be silenced (but available as a block) %}{% endcomment %}
-            {% block data_options %}
-                <option value="">----</option>
-                {% for stat in stats %}
-                {% if stat.type == "number" %}
-                <option value="{{ stat.key }}"{% if stat.key = form|get_item:axis_value %} selected{% endif %}>{% trans stat.name %}</option>
-                {% endif %}
-                {% endfor %}
-            {% endblock data_options %}
-        {% endblock axis_dropdown %}
-        </form>
-    </div>
-{% endblock content %}
+{% endblock report_content %}
 

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html data-require="math word-problems math-format">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Expected value</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+
+    <div class="problems">
+        <div id="game" data-weight="2">
+            <div class="vars">
+                <var id="RESULT_DESC, MAKE_COUNT">randFromArray([
+                    ["a &lt;code&gt;1&lt;/code&gt;", 1],
+                    ["a &lt;code&gt;2&lt;/code&gt;", 1],
+                    ["a &lt;code&gt;3&lt;/code&gt;", 1],
+                    ["a &lt;code&gt;4&lt;/code&gt;", 1],
+                    ["a &lt;code&gt;5&lt;/code&gt;", 1],
+                    ["a &lt;code&gt;6&lt;/code&gt;", 1],
+                    ["a &lt;code&gt;7&lt;/code&gt;", 1],
+                    ["an &lt;code&gt;8&lt;/code&gt;", 1],
+                    ["a &lt;code&gt;9&lt;/code&gt;", 1],
+                    ["a &lt;code&gt;10&lt;/code&gt;", 1],
+                    ["at least a &lt;code&gt;2&lt;/code&gt;", 9],
+                    ["at least a &lt;code&gt;5&lt;/code&gt;", 6],
+                    ["at least a &lt;code&gt;7&lt;/code&gt;", 4],
+                    ["more than a &lt;code&gt;2&lt;/code&gt;", 8],
+                    ["more than a &lt;code&gt;6&lt;/code&gt;", 4],
+                    ["more than an &lt;code&gt;8&lt;/code&gt;", 2],
+                    ["less than a &lt;code&gt;4&lt;/code&gt;", 3],
+                    ["less than a &lt;code&gt;7&lt;/code&gt;", 6],
+                    ["less than an &lt;code&gt;8&lt;/code&gt;", 7],
+                    ["an even number", 5],
+                    ["an even number", 5],
+                    ["an odd number", 5],
+                    ["an odd number", 5]
+                ])</var>
+                <var id="LOSE_COUNT">10 - MAKE_COUNT</var>
+                <var id="MAKE_FR">fraction(MAKE_COUNT, 10, true, false)</var>
+                <var id="LOSE_FR">fraction(LOSE_COUNT, 10, true, false)</var>
+                <var id="MAKE">randRange(5, 10)</var>
+                <var id="LOSE">randRange(5, 10)</var>
+                <var id="PROFIT">MAKE_COUNT * MAKE - LOSE_COUNT * LOSE</var>
+                <var id="ANS_F">fraction(PROFIT, 10, true, false)</var>
+                <var id="ANS">PROFIT / 10</var>
+            </div>
+
+            <p>
+                For a game at the carnival you get to roll a ten-sided die, numbered from <code>1</code> to <code>10</code>.
+                If you roll <var>RESULT_DESC</var>, you win <code>$<var>MAKE</var></code>.
+                Unfortunately, if you roll anything else, you lose <code>$<var>LOSE</var></code>.
+            </p>
+
+            <p class="question">
+                How much money do you expect to make (or lose) per game?
+            </p>
+
+            <div class="solution" data-type="multiple">
+                <code>$</code>
+                <span class="sol" data-forms="integer, decimal"><var>ANS</var></span>
+            </div>
+
+            <div class="hints">
+                <p>
+                    The expected value is a weighted average of the possible values with
+                    the weights determined by the probability of observing that value.
+                </p>
+                <p>
+                    There are two events that can happen in this game: either
+                    you roll <var>RESULT_DESC</var>, or you don't. So, the
+                    expected value will look like this:
+                    <br><br>
+                    <code>E = </code>
+                    (money gained when you roll <var>RESULT_DESC</var>)
+                    <code>\cdot</code>
+                    (probability of rolling <var>RESULT_DESC</var>)
+                    <code>+</code>
+                    (money gained when you don't roll <var>RESULT_DESC</var>)
+                    <code>\cdot</code>
+                    (probability of not rolling <var>RESULT_DESC</var>).
+                </p>
+                <p>
+                    The money you gain when you win is <code>$<var>MAKE</var></code>.
+                    The probability of winning is the probability
+                    that you roll <var>RESULT_DESC</var>.
+                </p>
+                <p>
+                    This probability is the number of winning outcomes
+                    divided by the total number of
+                    outcomes, <code><var>MAKE_FR</var></code>.
+                </p>
+                <p>
+                    The money you gain when you lose is <code>-$<var>LOSE</var></code>
+                    (since you actually lose money). The probability that
+                    you lose is the probability that you don't roll
+                    <var>RESULT_DESC</var>.
+                </p>
+                <p>
+                    This probability must be
+                    <code>1 - <var>MAKE_FR</var> = <var>LOSE_FR</var></code>.
+                </p>
+                <p>
+                    So, if we take the average of the amount of money you make
+                    on each outcome, weighted by how probable each outcome is,
+                    we get the expected amount of money you will make:
+                    <code>(<var>MAKE</var>\cdot<var>MAKE_FR</var>) +
+                        (-<var>LOSE</var>\cdot<var>LOSE_FR</var>) =
+                        <var>ANS_F</var> = <span data-if="ANS < 0">-$<var>localeToFixed(-ANS, 2)</var></span>
+                        <span data-else="">$<var>localeToFixed(ANS, 2)</var></span>.
+                    </code>
+                </p>
+            </div>
+        </div>
+        <div id="die" data-weight="1">
+            <div class="vars">
+                <var id="SIDES">randFromArray([4,6,10,12])</var>
+                <var id="SUM">
+                    (function(){
+                        if(SIDES &lt; 7) {
+                            return _.map(_.range(SIDES), function(i){
+                                    return "\\dfrac{"+(i+1)+"}{"+SIDES+"}"; })
+                                    .join("+");
+                        }
+
+                        first = _.map(_.range(3), function(i){
+                                return "\\dfrac{"+(i+1)+"}{"+SIDES+"}"; })
+                                .join("+");
+                        last = _.map(_.range(3), function(i){
+                                return "\\dfrac{"+(SIDES-2+i)+"}{"+SIDES+"}"; }).join("+");
+                        return [first,"\\cdots",last].join("+");
+                    })()
+                </var>
+                <var id="ANS_N">
+                    _.reduce(_.range(SIDES), function(n,i){ return n+i+1; }, 0)
+                </var>
+            </div>
+            <p class="question">
+                If you roll a <var>SIDES</var>-sided die, what is the expected
+                value you will roll?
+            </p>
+
+            <div class="solution" data-forms="mixed, improper, decimal">
+                <var>ANS_N/SIDES</var>
+            </div>
+
+            <div class="hints">
+                <p>
+                    The expected value is a weighted average of the possible values with
+                    the weights determined by the probability of observing that value.
+                </p>
+                <p>
+                    In this case, there are <var>SIDES</var> outcomes:
+                    the first outcome is rolling a 1, the second outcome is
+                    rolling a 2, and so on. The value of each of these outcomes
+                    is just the number you roll.
+                </p>
+                <p>
+                    So, the value of the first outcome is 1, and its
+                    probability is <code>\dfrac{1}{<var>SIDES</var>}</code>.
+                </p>
+                <p>
+                    The value of the second outcome is 2, the value of
+                    the third outcome is 3, and so on. There are
+                    <var>SIDES</var> outcomes altogether, and each of them
+                    occurs with probability
+                    <code>\dfrac{1}{<var>SIDES</var>}</code>.
+                </p>
+                <p>
+                    So, if we average the values of each of these outcomes,
+                    we get the expected value we will roll, which is
+                    <code><var>SUM</var> =
+                        <var>mixedFractionFromImproper(ANS_N,SIDES,true,true)</var></code>.
+                </p>
+            </div>
+        </div>
+        <div id="lottery" data-weight="2">
+            <div class="vars">
+                <var id="BUY">random() &lt; 0.4</var>
+                <var id="COST">randRange(2,5)</var>
+                <var id="ODDS">randRange(1,5)*100</var>
+                <var id="PRIZE">BUY ?
+                    COST*ODDS + randRange(1,3)*100 :
+                    COST*ODDS - randRange(1,3)*100
+                </var>
+                <var id="ODD_F">fraction(1,ODDS,true,true)</var>
+                <var id="ANS">BUY ?
+                    "Yes, the expected value is positive." :
+                    "No, the expected value is negative."
+                </var>
+            </div>
+
+            <p>
+                You decide you're only going to buy a lottery ticket if your
+                expected winnings are larger than the ticket price. Tickets
+                cost <code>$<var>COST</var></code>, and you get
+                <code>$<var>PRIZE</var></code> if you win. The odds of
+                winning are <code>1</code> in <code><var>ODDS</var></code>,
+                meaning that you will win with probability
+                <code><var>ODD_F</var></code>.
+            </p>
+
+            <p class="question">Should you buy a ticket for this lottery?</p>
+
+            <div class="solution"><var>ANS</var></div>
+
+            <ul class="choices" data-category="true">
+                <li>Yes, the expected value is positive.</li>
+                <li>No, the expected value is negative.</li>
+            </ul>
+
+            <div class="hints">
+                <p>
+                    The expected value is a weighted average of the possible values with
+                    the weights determined by the probability of observing that value.
+                </p>
+                <p>
+                    This means the expected value, considering both the price
+                    of the ticket and the possible winnings is
+                    <code>E = </code> (money gained when you win)
+                    <code>\cdot</code> (probability of winning) <code>+</code>
+                    (money gained when you lose)
+                    <code>\cdot</code> (probability of losing).
+                </p>
+                <p>
+                    Let's figure out each of these terms one at a time. The
+                    money you gain when you win is
+                    <code>$<var>PRIZE</var></code> and from the question, we
+                    know the probability of winning is
+                    <code><var>ODD_F</var></code>.
+                </p>
+                <p>
+                    When you lose, you gain no money, or
+                    <code>$0</code>, and the probability of losing is <code>1
+                    - <var>ODD_F</var></code>.
+                </p>
+                <p>
+                    Putting it all together, the expected value is
+                    <code>E = ($<var>PRIZE</var>)
+                    (<var>ODD_F</var>) + ($0) (1 - <var>ODD_F</var>) =
+                    $ \dfrac{<var>PRIZE</var>}{<var>ODDS</var>} =
+                    $<var>fraction(PRIZE,ODDS,true,true)</var></code>.
+                </p>
+                <p data-if="PRIZE/ODDS - COST > 0">
+                    <code>$<var>fraction(PRIZE,ODDS,true,true)</var> -
+                    $<var>COST</var></code> is positive.
+                    <br><br>
+                    So, we expect to make money by buying a lottery ticket, because
+                    the expected value is positive.
+                </p><p data-else="">
+                    <code>$<var>fraction(PRIZE,ODDS,true,true)</var> -
+                    $<var>COST</var></code> is negative.
+                    <br><br>
+                    So, we expect to lose money by buying a lottery ticket, because
+                    the expected value is negative.
+                </p>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

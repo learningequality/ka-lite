@@ -1,0 +1,13 @@
+.student-grp-row {
+    cursor: move;
+}
+
+#student-groups {
+    position: fixed;
+    width: auto;
+}
+
+.remove {
+    position: relative;
+    top: -2px;
+}

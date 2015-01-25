@@ -8,6 +8,8 @@ import uuid
 
 from django.conf import settings
 
+logging = settings.LOG
+
 
 class BaseClient(object):
 
@@ -33,7 +35,7 @@ class BaseClient(object):
         payload["_"] = uuid.uuid4().hex
         query = urllib.urlencode(payload)
         if self.verbose:
-            print "CLIENT: get %s" % path
+            logging.debug("CLIENT: get %s" % path)
         return requests.get(self.path_to_url(path) + "?" + query, *args, **kwargs)
 
     def test_connection(self):

@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "facility/facility.html" %}
 {% load i18n %}
 {% load my_filters %}
 
@@ -6,31 +6,36 @@
 
 {% block headcss %}{{ block.super }}
     <style>
-        .default-setter {
+/*        .default-setter {
             font-size: 14px;
+        }*/
+        section#facility_list {
+            margin-bottom: 20px;
         }
-        .title {
-            font-size: 20pt;
+        .facility_title a {
+            font-size: 1.25em;
+        }
+        #id_default_language {
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
     </style>
 {% endblock headcss %}
 
 
 {% block content %}
+{% block manage_nav %}{{block.super}}{% endblock manage_nav %}
     {{ path_template }}
     <div id="facility_list_container">
-        <div style="margin-bottom: 20px">
-            <span class="title">{% trans "Please select a facility" %}</span><br/>
-            <span>
-                {% trans "A facility is a physical location where students learn." %}
-            </span>
-        </div>
+        <section id="facility_list">
+            <h2>{% trans "Please select a facility" %}</h2>
+            <p>{% trans "A facility is a physical location where students learn." %}</p>
+        </section>
         <div>
-            <ul id="facility_list">
+            <ul>
                 {% if facilities %}
                     {% for facility in facilities %}
                     <li class="facility_title">
-                        <h2>
                             <a href="{{ selection_paths|get_item:facility.id }}">{{ facility }}</a>
                             {% if request.is_admin and facilities.count > 1 %}
                                 {% if facility.is_default %}
@@ -41,7 +46,6 @@
                                 </a>
                                 {% endif %}
                             {% endif %}
-                        </h2>
                     </li>
                     {% endfor %}
                 {% else %}

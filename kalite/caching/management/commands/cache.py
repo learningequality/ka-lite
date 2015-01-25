@@ -41,7 +41,7 @@ class Command(BaseCommand):
 
 
     def create_cache(self, force=False):
-        for node_type in ['Topic', 'Video', 'Exercise']:
+        for node_type in ['Topic', 'Content', 'Exercise']:
             self.stdout.write("Caching %ss:\n" % node_type)
             for narr in topic_tools.get_node_cache(node_type).values():
                 for n in narr:
@@ -74,7 +74,7 @@ class Command(BaseCommand):
     def show_cache(self, force=False):
         """Go through each cacheable page, and show which are cached and which are NOT"""
 
-        for node_type in ['Topic', 'Video', 'Exercise']:
+        for node_type in ['Topic', 'Content', 'Exercise']:
             self.stdout.write("Cached %ss:\n" % node_type)
             for narr in topic_tools.get_node_cache(node_type).values():
                 for n in narr:
@@ -90,7 +90,7 @@ class Command(BaseCommand):
     def clear_cache(self):
         """Go through each cacheable page, and show which are cached and which are NOT"""
 
-        for node_type in ['Topic', 'Video', 'Exercise']:
+        for node_type in ['Topic', 'Content', 'Exercise']:
             self.stdout.write("Clearing %ss:\n" % node_type)
             for narr in topic_tools.get_node_cache(node_type).values():
                 for n in narr:

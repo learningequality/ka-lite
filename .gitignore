@@ -11,6 +11,7 @@
 *~
 *.sublime-*
 *.zip
+/build/
 locale/
 node_modules/
 tmp/
@@ -28,15 +29,20 @@ writeup/
 /content/*.mp4
 /content/*.mp4.part
 /content/*.srt
+/content/*.mp3
+/content/*.pdf
 /data/logs
 /data/i18n
 /data/subtitles
 /kalite/*.jpg
 /kalite/*.mp4.part
 /kalite/i18n/data/dubbed_video_mappings.json
+/kalite/updates/data/video_file_sizes.json
 /kalite/kalite-*.zip
 /kalite/local_settings.py
 /kalite/media
+/data/*
+!/data/khan/
 /kalite/private_key.pem
 /kalite/secrets.py
 /kalite/static
@@ -44,5 +50,6 @@ writeup/
 /TAGS
 .tags
 /kalite/i18n/static/
+/.vagrant/
 ghostdriver.log
 /kalite/_built.touch

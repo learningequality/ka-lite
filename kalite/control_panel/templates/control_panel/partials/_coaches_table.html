@@ -1,0 +1,100 @@
+{% load my_filters %}
+{% load i18n %}
+{% load staticfiles %}
+
+<!-- Begin Coaches -->
+<div id="coaches">
+    {% if not group_id %}
+        <div class="row">
+            <div class="col-md-12">
+                <h2>{% trans "Coaches" %} 
+                <small>
+                    <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "Coaches assist students to learn, and can be teachers, parents, or fellow students." %}'></span>
+                </small>
+            </div>
+        </div>
+        {% if not coach_pages %}
+        <div class="row">
+            <div class="col-md-12">
+                <p class="no-data">{% trans "You currently have no coaches for this facility." %}</p>
+            </div>
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-md-2">
+                {% if not request.is_teacher %}
+                    {# Note: teachers can create other teachers but cannot delete them. #}
+                    <p>
+                        <button class="btn btn-success action delete" id="delete-coaches" disabled="disabled" value="#coaches">{% trans "Delete Coaches" %}</button>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table selectable-table">
+                        <thead>
+                            <tr class="success">
+                                <th><input class="select-all" type="checkbox" value="#coaches"></th>
+                                <th>{% trans "Coach" %}</th>
+                                <th>{% trans "Edit" %}</th>
+                                <th>{% trans "Logins" %}</th>
+                                <th>{% trans "Login Time" %}</th>
+                                <th>{% trans "Coach Report Views" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for coach in coach_pages %}
+                            <tr class="selectable" value="{{ coach.id }}" type="coaches">
+                                <td><input type="checkbox" value="#coaches"></td>
+                                <td>
+                                    {{ coach|format_name:"last_first" }}
+
+                                </td>
+                                <td>
+                                    <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                </td>
+                                <td>{{ coach.total_logins }}</td>
+                                <td>{{ coach.total_hours|floatformat }}</td>
+                                <td>{{ coach.total_report_views }}</td>
+                            </tr>
+                            {% endfor %}
+                            {# Note: teachers can create other teachers but cannot delete them. #}
+                            <tr>
+                                {# 6x empty td elements for extending table formatting #}
+                                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> 
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row table-bottom-options">
+            <div class="col-sm-4 col-xs-12">
+                <p class="add-new-table-item">
+                    <a href="{% url  'add_facility_teacher' %}?facility={{ facility_id }}"><span class="glyphicon glyphicon-plus-sign"></span> {% trans 'Add a new coach.' %}</a>
+                </p>
+            </div>
+            <div class="col-sm-4 col-xs-12">
+                {% if coach_pages.num_listed_pages > 1 %}
+                    <ul class="pagination pagination-sm">
+                        <li><a title="{% trans 'Browse to the previous page of coaches.' %}" {% if coach_pages.has_previous %}href="{{ page_urls.coaches.prev_page }}#coaches"{% endif %}>&laquo;</a></li>
+                        {% for listed_page in coach_pages.listed_pages %}
+                            <li {% if listed_page == coach_pages.number %} class="active"><a disabled="disabled">{{coach_pages.number}}</a>
+                                {% else %}>
+                                    <a title="{% blocktrans %}Browse to page # {{ listed_page }} of coaches.{% endblocktrans %}" href="{{ page_urls.coaches|get_item:listed_page }}#coaches">{{ listed_page }}</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                        <li><a title="{% trans 'Browse to the next page of coaches.' %}" {% if coach_pages.has_next %}href="{{ page_urls.coaches.next_page }}#coaches"{% endif %}>&raquo;</a></li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+
+    {% endif %}
+</div> <!-- End Coaches -->

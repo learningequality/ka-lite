@@ -9,10 +9,14 @@ from django.http import HttpResponseServerError
 
 import kalite.django_cherrypy_wsgiserver.api_urls
 import kalite.i18n.api_urls
-import kalite.khanload.api_urls
+import kalite.coachreports.api_urls
+import kalite.knowledgemap.api_urls
+import kalite.control_panel.api_urls
+import kalite.playlist.api_urls
+import kalite.contentload.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
-
+import kalite.store.api_urls
 
 urlpatterns = patterns(__package__ + '.api_views',
     # For manipulating the static webpage to show data based on user state
@@ -25,7 +29,7 @@ urlpatterns = patterns(__package__ + '.api_views',
 
 # Khanload allows users to download data from a Khan Academy account
 urlpatterns += patterns('kalite.khanload.api_views',
-    url(r'^khanload/', include(kalite.khanload.api_urls)),
+    url(r'^contentload/', include(kalite.contentload.api_urls)),
 )
 
 # Cherrpyserver allows querying the PID
@@ -43,9 +47,33 @@ urlpatterns += patterns('kalite.updates.api_views',
     url(r'^', include(kalite.updates.api_urls)),
 )
 
+# Playlist endpoints for updating playlist info
+urlpatterns += patterns('kalite.playlist.api_views',
+    url(r'^playlists/', include(kalite.playlist.api_urls)),
+)
+
+# Control panel data export endpoints
+urlpatterns += patterns('kalite.control_panel.api_views',
+    url(r'^control_panel/', include(kalite.control_panel.api_urls)),
+)
+
+# Coach report endpoints for lazily getting data for reporting 
+urlpatterns += patterns('kalite.coachreports.api_views',
+    url(r'^coachreports/', include(kalite.coachreports.api_urls)),
+)
+
+urlpatterns += patterns('kalite.knowledgemap.api_views',
+    url(r'^knowledgemap/', include(kalite.knowledgemap.api_urls)),
+)
+
 # i18n allows changing default languages for users
 urlpatterns += patterns('kalite.i18n.api_views',
     url(r'^i18n/', include(kalite.i18n.api_urls)),
+)
+
+# store allows purchasing of user items with points
+urlpatterns += patterns('',
+    url(r'^store/', include(kalite.store.api_urls)),
 )
 
 

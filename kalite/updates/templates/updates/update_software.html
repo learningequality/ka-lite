@@ -1,9 +1,11 @@
-{% extends "updates/base.html" %}
+{% extends "distributed/base_manage.html" %}
 {% load i18n %}
 {% load staticfiles %}
 {% load my_filters %}
 
 {% block title %}{% trans "Update Software" %} {{ block.super }}{% endblock %}
+
+{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
@@ -42,6 +44,11 @@
         img {
             margin-left: 15px;
         }
+
+        .row-container {
+            padding-left: 20px;
+        }
+
     </style>
 {% endblock headcss %}
 
@@ -56,9 +63,10 @@
 
 {% block content %}
 
+    {{ block.super }}
     <!---Current System status -->
     <div>
-        <div class="">
+        <div class="row-container">
             <div class= "row">
                 <div class="span6 vertical-shadow">
                     <h2>{% trans "Current Installation" %}</h2>
@@ -84,28 +92,35 @@
                     </dl>
                 </div>
 
+<!--
                 <div id="update_info" class="span6 offset6 vertical-shadow" style="display:none">
                     <h2>{% trans "Available Update" %}</h2>
                     <dl class="dl-horizontal">
                         <dt>{% trans "Latest Version" %}:</dt>
                         <dd><span id="remote_version"></span></dd>
                         <dt>{% trans "Released Date" %}:</dt>
-                        <dd><span id="remote_release_date"></span></dd>
+                        <dd><span id="remote_release_date">&nbsp;</span></dd>
                         <dt>{% trans "Description" %}:</dt>
-                        <dd>{% trans "New Features" %}:
+                        <dd>&nbsp;</dd>
+                        <dt>{% trans "New Features" %}:</dt>
+                        <dd>
                             <ul id="new_features"></ul>
+                        </dd>
+                        <dt>
                             {% trans "Bugs fixed" %}:
+                        </dt>
+                        <dd>
                             <ul id="bugs_fixed"></ul>
                         </dd>
                     </dl>
                 </div>
-
+ -->
                 <div class="span4 offset2">
                     <div id="internet_update" style="display:none">
                         {# Translators: this text specifies where admins can get an update from #}
                         {% if is_git_repo %}
                             <h4>{% trans "Through Git" %}:</h4>
-                            <button type="button" class="btn" id="git-update-kalite" mechanism="git" disabled>{% trans "Fetch through Git" %}</button>
+                            <button type="button" class="btn" id="git-update-kalite" mechanism="git" disabled>{% trans "Update Now!" %}</button>
                         {% else %}
                             <h4>{% trans "From the internet" %}:</h4>
                             <button type="button" class="btn" id="download-update-kalite" mechanism="internet" disabled>{% trans "Download and update" %}</button>

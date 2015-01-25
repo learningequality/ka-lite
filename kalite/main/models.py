@@ -23,11 +23,11 @@ from fle_utils.django_utils import ExtendedModel
 from fle_utils.general import datediff, isnumeric
 from kalite import i18n
 from kalite.facility.models import FacilityUser
+from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
 
 
 class VideoLog(DeferredCountSyncedModel):
-    POINTS_PER_VIDEO = 750
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
@@ -64,12 +64,6 @@ class VideoLog(DeferredCountSyncedModel):
         if not kwargs.get("imported", False):
             self.full_clean()
 
-            # Compute learner status
-            already_complete = self.complete
-            self.complete = (self.points >= VideoLog.POINTS_PER_VIDEO)
-            if not already_complete and self.complete:
-                self.completion_timestamp = datetime.now()
-
             # Tell logins that they are still active (ignoring validation failures).
             #   TODO(bcipolli): Could log video information in the future.
             if update_userlog:
@@ -88,7 +82,6 @@ class VideoLog(DeferredCountSyncedModel):
         # can be video_id because that's set to the english youtube_id, to match past code.
         return uuid.uuid5(namespace, self.video_id.encode("utf-8")).hex
 
-
     @staticmethod
     def get_points_for_user(user):
         return VideoLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
@@ -98,8 +91,10 @@ class VideoLog(DeferredCountSyncedModel):
         return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
 
     @classmethod
-    def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, points=0, new_points=0):
+    def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, complete, completion_timestamp, points=0):
         assert facility_user and video_id and youtube_id, "Updating a video log requires a facility user, video ID, and a YouTube ID"
+
+        ds = load_dynamic_settings(user=facility_user)
 
         # retrieve the previous video log for this user for this video, or make one if there isn't already one
         (videolog, _) = cls.get_or_initialize(user=facility_user, video_id=video_id)
@@ -109,9 +104,11 @@ class VideoLog(DeferredCountSyncedModel):
         # Set total_seconds_watched directly, rather than incrementally, for robustness
         #   as sometimes an update request fails, and we'd miss the time update!
         videolog.total_seconds_watched = total_seconds_watched
-        videolog.points = min(max(points, videolog.points + new_points), cls.POINTS_PER_VIDEO)
+        videolog.points = min(max(points, videolog.points), ds["distributed"].points_per_video)
         videolog.language = language
         videolog.youtube_id = youtube_id
+        videolog.complete = complete
+        videolog.completion_timestamp = completion_timestamp
 
         # write the video log to the database, overwriting any old video log with the same ID
         # (and since the ID is computed from the user ID and YouTube ID, this will behave sanely)
@@ -188,6 +185,9 @@ class ExerciseLog(DeferredCountSyncedModel):
     def get_points_for_user(user):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
+    def get_attempt_logs(self):
+        return AttemptLog.objects.filter(user=self.user, exercise_id=self.exercise_id, context_type__in=["playlist", "exercise"])
+
 
 class UserLogSummary(DeferredCountSyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
@@ -242,7 +242,6 @@ class UserLogSummary(DeferredCountSyncedModel):
         else:
             raise NotImplementedError("Unrecognized summary frequency period: %s" % summary_freq_period)
 
-
     @classmethod
     def get_period_end_datetime(cls, log_time, summary_freq):
         start_datetime = cls.get_period_start_datetime(log_time, summary_freq)
@@ -264,7 +263,6 @@ class UserLogSummary(DeferredCountSyncedModel):
         else:
             raise NotImplementedError("Unrecognized summary frequency period: %s" % summary_freq_period)
 
-
     @classmethod
     def add_log_to_summary(cls, user_log, device=None):
         """Adds total_time to the appropriate user/device/activity's summary log."""
@@ -281,7 +279,12 @@ class UserLogSummary(DeferredCountSyncedModel):
             start_datetime__lte=user_log.end_datetime,
             end_datetime__gte=user_log.end_datetime,
         )
-        assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
+
+        # TODO(anuragkanungo): Figure out and fix the issue for duplicate entries and enable assert check with if condition removed.
+        #assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
+        if log_summary.count() > 1:
+            for log in log_summary[1:]:
+                log.soft_delete()
 
         # Get (or create) the log item
         log_summary = log_summary[0] if log_summary.count() else cls(
@@ -469,6 +472,70 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             cur_log.save()  # total-seconds will be computed here.
         return cur_log
 
+
+class AttemptLog(DeferredCountSyncedModel):
+    """
+    Detailed instances of user exercise engagement.
+    """
+
+    minversion = "0.13.0"
+
+    user = models.ForeignKey(FacilityUser, db_index=True)
+    exercise_id = models.CharField(max_length=100, db_index=True)
+    seed = models.IntegerField(default=0)
+    answer_given = models.TextField(blank=True) # first answer given to the question
+    points = models.IntegerField(default=0)
+    correct = models.BooleanField(default=False) # indicates that the first answer given was correct
+    complete = models.BooleanField(default=False) # indicates that the question was eventually answered correctly
+    context_type = models.CharField(max_length=20, blank=True) # e.g. "exam", "quiz", "playlist", "topic"
+    context_id = models.CharField(max_length=100, blank=True) # e.g. the exam ID, quiz ID, playlist ID, topic ID, etc
+    language = models.CharField(max_length=8, blank=True)
+    timestamp = models.DateTimeField() # time at which the question was first loaded (that led to the initial response)
+    time_taken = models.IntegerField(blank=True, null=True) # time spent on exercise before initial response (in ms)
+    version = models.CharField(blank=True, max_length=100) # the version of KA Lite at the time the answer was given
+    response_log = models.TextField(default="[]")
+    response_count = models.IntegerField(default=0),
+    assessment_item_id = models.CharField(max_length=100, blank=True, default="")
+
+    class Meta:
+        index_together = [
+            ["user", "exercise_id", "context_type"],
+        ]
+
+
+class ContentLog(DeferredCountSyncedModel):
+
+    minversion = "0.13.0"
+
+    user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
+    content_id = models.CharField(max_length=100, db_index=True)
+    points = models.IntegerField(default=0)
+    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
+    complete = models.BooleanField(default=False)
+    start_timestamp = models.DateTimeField(auto_now_add=True, editable=False)  # this must NOT be null
+    completion_timestamp = models.DateTimeField(blank=True, null=True)
+    completion_counter = models.IntegerField(blank=True, null=True)
+    time_spent = models.FloatField(blank=True, null=True)
+    progress_timestamp = models.DateTimeField(blank=True, null=True)
+    content_source = models.CharField(max_length=100, db_index=True)
+    content_kind = models.CharField(max_length=100, db_index=True)
+    progress = models.FloatField(blank=True, null=True)
+    views = models.IntegerField(blank=True, null=True)
+    extra_fields = models.TextField(blank=True)
+
+    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
+        pass
+
+    @staticmethod
+    def get_points_for_user(user):
+        return ContentLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
+
+    def save(self, *args, **kwargs):
+        if self.content_id and not self.complete:
+            self.progress_timestamp = datetime.now()
+        super(ContentLog, self).save(*args, **kwargs)
+
+
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
     assert UserLog.is_enabled(), "We shouldn't be saving unless UserLog is enabled."
@@ -500,6 +567,7 @@ def add_to_summary(sender, **kwargs):
         # Save only completed log items to the UserLogSummary
         UserLogSummary.add_log_to_summary(instance)
 
+
 @receiver(post_save, sender=UserLog)
 def cull_records(sender, **kwargs):
     """
@@ -513,6 +581,7 @@ def cull_records(sender, **kwargs):
             to_discard = current_models \
                 .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
             UserLog.objects.filter(pk__in=to_discard).delete()
+
 
 def logout_endlog(sender, request, user, **kwargs):
     if "facility_user" in request.session:

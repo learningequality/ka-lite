@@ -1,5 +1,8 @@
+from __future__ import print_function
+
 from collections import deque
 import datetime
+from imp import reload
 import os
 import re
 import sys
@@ -14,7 +17,7 @@ from south.migration.utils import depends, dfs, flatten, get_app_label
 from south.orm import FakeORM
 from south.utils import memoize, ask_for_it_by_name, datetime_utils
 from south.migration.utils import app_label_to_app_module
-
+from south.utils.py3 import string_types, with_metaclass
 
 def all_migrations(applications=None):
     """
@@ -34,7 +37,7 @@ def all_migrations(applications=None):
 
 def application_to_app_label(application):
     "Works out the app label from either the app label, the app name, or the module"
-    if isinstance(application, basestring):
+    if isinstance(application, string_types):
         app_label = application.split('.')[-1]
     else:
         app_label = application.__name__.split('.')[-1]
@@ -67,12 +70,10 @@ class MigrationsMetaclass(type):
         self.instances = {}
 
 
-class Migrations(list):
+class Migrations(with_metaclass(MigrationsMetaclass, list)):
     """
     Holds a list of Migration objects for a particular app.
     """
-    
-    __metaclass__ = MigrationsMetaclass
     
     if getattr(settings, "SOUTH_USE_PYC", False):
         MIGRATION_FILENAME = re.compile(r'(?!__init__)' # Don't match __init__.py
@@ -94,14 +95,14 @@ class Migrations(list):
         # Make the directory if it's not already there
         if not os.path.isdir(migrations_dir):
             if verbose:
-                print "Creating migrations directory at '%s'..." % migrations_dir
+                print("Creating migrations directory at '%s'..." % migrations_dir)
             os.mkdir(migrations_dir)
         # Same for __init__.py
         init_path = os.path.join(migrations_dir, "__init__.py")
         if not os.path.isfile(init_path):
             # Touch the init py file
             if verbose:
-                print "Creating __init__.py in '%s'..." % migrations_dir
+                print("Creating __init__.py in '%s'..." % migrations_dir)
             open(init_path, "w").close()
     
     def migrations_dir(self):
@@ -190,7 +191,7 @@ class Migrations(list):
         return self._cache[name]
 
     def __getitem__(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, string_types):
             return self.migration(value)
         return super(Migrations, self).__getitem__(value)
 
@@ -270,7 +271,7 @@ class Migration(object):
         return self.app_label() + ':' + self.name()
 
     def __repr__(self):
-        return u'<Migration: %s>' % unicode(self)
+        return '<Migration: %s>' % str(self)
 
     def __eq__(self, other):
         return self.app_label() == other.app_label() and self.name() == other.name()
@@ -299,9 +300,9 @@ class Migration(object):
         except KeyError:
             try:
                 migration = __import__(full_name, {}, {}, ['Migration'])
-            except ImportError, e:
+            except ImportError as e:
                 raise exceptions.UnknownMigration(self, sys.exc_info())
-            except Exception, e:
+            except Exception as e:
                 raise exceptions.BrokenMigration(self, sys.exc_info())
         # Override some imports
         migration._ = lambda x: x  # Fake i18n
