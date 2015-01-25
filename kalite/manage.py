@@ -1,66 +1,35 @@
 #!/usr/bin/env python
-import glob
-import logging
 import os
 import sys
 import warnings
 
+# Q: Why was this moved?
+# A: Because it doesn't match a normal Django project layout to put the
+#    manage.py script in the project package and leads to unnecessary
+#    mangling of the project path (see below)
 
-def clean_pyc(PROJECT_PATH):
-    for root, dirs, files in os.walk(os.path.join(PROJECT_PATH, "..")):
-        for pyc_file in glob.glob(os.path.join(root, "*.py[oc]")):
-            try:
-                os.remove(pyc_file)
-            except:
-                pass
+warning_txt = (
+    "You should not run kalite/manage.py, it's gone in kalite 0.14. Instead, "
+    "use the 'kalite' command."
+)
 
-if __name__ == "__main__":
-    import warnings
+# Explicitly print it because warnings are suppressed
+print warning_txt
 
-    BUILD_INDICATOR_FILE = os.path.join(".", "_built.touch")
-    BUILT = os.path.exists(BUILD_INDICATOR_FILE)  # whether this installation was processed by the build server
+warnings.warn(
+    warning_txt,
+    DeprecationWarning,
+    stacklevel=1
+)
 
-    # We are overriding a few packages (like Django) from the system path.
-    #   Suppress those warnings
-    warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.path', append=True)
+# Add the parent directory to the path because we're running manage.py from
+# a non-conventional location
 
-    # Now build the paths that point to all of the project pieces
-    PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
-    PROJECT_PYTHON_PATHS = [
-        os.path.join(PROJECT_PATH, "..", "python-packages"),
-        os.path.join(PROJECT_PATH, ".."),
-    ]
-    sys.path = [os.path.realpath(p) for p in PROJECT_PYTHON_PATHS] + sys.path
+# Now build the paths that point to all of the project pieces
+PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
+sys.path = [os.path.join(PROJECT_PATH, ".."), os.path.join(PROJECT_PATH, "..", "python-packages")] + sys.path
 
-    ########################
-    # kaserve
-    ########################
+# Now build the paths that point to all of the project pieces
+my_path = os.path.dirname(os.path.realpath(__file__))
 
-    # Force all commands to run through our own serve command, which does auto-config if necessary
-    # TODO(bcipolli): simplify start scripts, just force everything through kaserve directly.
-    if "runserver" in sys.argv:
-        logging.info("You requested to run runserver; instead, we're funneling you through our 'kaserve' command.")
-        sys.argv[sys.argv.index("runserver")] = "kaserve"
-
-    elif "runcherrypyserver" in sys.argv and "stop" not in sys.argv:
-        logging.info("You requested to run runcherrypyserver; instead, we're funneling you through our 'kaserve' command.")
-        sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
-
-
-    ########################
-    # manual clean_pyc
-    ########################
-
-    # Manually clean all pyc files before entering any real codepath
-    if not BUILT:
-        clean_pyc(PROJECT_PATH)
-
-
-    ########################
-    # Run it.
-    ########################
-
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
-
-    from django.core.management import execute_from_command_line
-    execute_from_command_line(sys.argv)
+execfile(os.path.join(my_path, "..", "manage.py"))

@@ -10,9 +10,6 @@ if exist "%SCRIPT_DIR%\python.bat" (
     set "KALITE_DIR=%SCRIPT_DIR%\kalite"
 )
 
-REM transfer any previously downloaded content from the old location to the new
-move "%KALITE_DIR%\static\videos\*" "%KALITE_DIR%\..\content" > nul 2> nul
-
 set "file_exist="
 if exist "%KALITE_DIR%\cronserver.pid" set file_exist=0
 if exist "%KALITE_DIR%\runcherrypyserver.pid" set file_exist=0
