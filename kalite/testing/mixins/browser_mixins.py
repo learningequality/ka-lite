@@ -16,7 +16,7 @@ from kalite.topic_tools import get_content_cache
 
 from django.contrib.auth.models import User
 
-from random import shuffle
+from random import choice
 
 class BrowserActionMixins(object):
 
@@ -422,7 +422,7 @@ class BrowserActionMixins(object):
     def browse_to_random_video(self):
         available = False
         while not available:
-            video = shuffle(get_content_cache())[0]
+            video = get_content_cache()[choice(get_content_cache().keys())]
             available = (len(video['languages']) > 0)
         video_url = video['path']
         self.browse_to(self.reverse("learn") + video_url) 
