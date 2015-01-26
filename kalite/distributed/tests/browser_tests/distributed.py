@@ -426,6 +426,7 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         """
         self.browse_to_random_video()
         points = self.browser_get_points()
+        self._play_video()
         self.browse_to_random_video()
         updated_points = self.browser_get_points()
         self.assertNotEqual(updated_points, points, "Points were not updated after a backbone navigation event.")
@@ -437,7 +438,18 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         """
         self.browse_to_random_video()
         points = self.browser_get_points()
+        self._play_video()
         self.browse_to(self.reverse("homepage"))
         updated_points = self.browser_get_points()
         self.assertNotEqual(updated_points, points, "Points were not updated after a non-backbone navigation event.")
+
+    def _play_video(self, seconds=1):
+        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
+        self.browser_wait_for_js_object_exists(video_js_object)
+        self.browser.execute_script(video_js_object + ".play()")
+        time.sleep(seconds)
+        self.browser.execute_script(video_js_object + ".pause()")
+        # Points are persisted to the server only in long intervals (30+ seconds?)
+        # So we'll circumvent that here to make tests run quickly
+        self.assertTrue(False, "Implement this after determining which js object persists points to the server...")
 
