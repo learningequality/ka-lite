@@ -495,7 +495,8 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
                                    facility_name=self.teacher.facility.name)
         self.browse_to(self.distributed_data_export_url)
 
-        self.browser_wait_for_ajax_calls_to_finish()
+        # Why is this here? Is the intention to wait for the page to load?
+        #self.browser_wait_for_ajax_calls_to_finish()
 
         facility_select = self.browser.find_element_by_id("facility-name")
         self.assertFalse(facility_select.is_enabled(), "UI error")
@@ -505,8 +506,7 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
                 self.assertTrue(option.is_selected(), "Invalid Facility Selected")
                 break
 
-
-        self.browser_wait_for_ajax_calls_to_finish()
+        # self.browser_wait_for_ajax_calls_to_finish()
 
         # Check that group is enabled now
         group_select = self.browser.find_element_by_id("group-name")
