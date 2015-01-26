@@ -78,9 +78,14 @@ class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase):
 
 
 @unittest.skipIf(settings.DISABLE_SELF_ADMIN, "Registration not allowed when DISABLE_SELF_ADMIN set.")
-class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase):
+class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin, CreateFacilityMixin):
     username = "user1"
     password = "password"
+
+    def setUp(self):
+        super(UserRegistrationCaseTest, self).setUp();
+        self.create_admin()
+        self.create_facility()
 
     def test_register_login_exact(self):
         """Tests that a user can login with the exact same email address as registered"""
