@@ -45,7 +45,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
         teacher.set_password(passwd)
         teacher.save()
 
-        with self.assertNumQueries(FuzzyInt(25, 34) + 3 * UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(25, 43) + 3 * UserLog.is_enabled()):
             self.browser_login_teacher("t1", passwd, self.facility)
 
     def test_query_login_student(self):
@@ -68,7 +68,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
     def test_query_status_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(FuzzyInt(2, 6)):
+        with self.assertNumQueries(FuzzyInt(2, 8)):
             self.browse_to(self.reverse("status"))
 
     def test_query_status_student(self):
