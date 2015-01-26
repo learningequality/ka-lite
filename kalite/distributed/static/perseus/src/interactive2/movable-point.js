@@ -49,15 +49,16 @@
  *   remove:
  *     removes the point from graphie
  */
+var _ = require("underscore");
 
 var MovablePointOptions = require("./movable-point-options.js");
+var WrappedEllipse = require("./wrapped-ellipse.js");
 var InteractiveUtil = require("./interactive-util.js");
 var objective_ = require("./objective_.js");
 var assert = InteractiveUtil.assert;
 var normalizeOptions = InteractiveUtil.normalizeOptions;
 
-var knumber = KhanUtil.knumber;
-var kpoint = KhanUtil.kpoint;
+var kpoint = require("kmath").point;
 
 // State parameters that should be converted into an array of
 // functions
@@ -177,11 +178,13 @@ _.extend(MovablePoint.prototype, {
         if (!state.static) {
             // the invisible shape in front of the point that gets mouse events
             if (!state.mouseTarget) {
-                state.mouseTarget = graphie.mouselayer.circle(
-                    graphie.scalePoint(self.state.coord)[0],
-                    graphie.scalePoint(self.state.coord)[1],
-                    15
-                );
+                var center = self.state.coord;
+                var radii = graphie.unscaleVector(15);
+                var options = {
+                    mouselayer: true
+                };
+                state.mouseTarget = new WrappedEllipse(graphie, center, radii,
+                    options);
                 state.mouseTarget.attr({fill: "#000", opacity: 0.0});
             }
         }
@@ -204,27 +207,7 @@ _.extend(MovablePoint.prototype, {
                 self._fireEvent(state.onMoveStart, startCoord, startCoord);
                 self.draw();
             },
-            onMove: function(coord) {
-                // The caller has the option of adding an onMove() method to the
-                // movablePoint object we return as a sort of event handler
-                // By returning false from onMove(), the move can be vetoed,
-                // providing custom constraints on where the point can be moved.
-                // By returning array [x, y], the move can be overridden
-
-                var result = self._applyConstraints(coord, state.coord);
-                if (result === false) {
-                    return;
-                } else if (kpoint.is(result)) {
-                    coord = result;
-                }
-                if (!kpoint.equal(coord, state.coord)) {
-                    var prevCoord = state.coord;
-                    state.coord = coord;
-                    state.hasMoved = true;
-                    self._fireEvent(state.onMove, state.coord, prevCoord);
-                    self.draw();
-                }
-            },
+            onMove: self.moveTo.bind(self),
             onMoveEnd: function() {
                 if (self.isHovering() && !state.hasMoved) {
                     self._fireEvent(state.onClick, state.coord, startCoord);
@@ -277,9 +260,34 @@ _.extend(MovablePoint.prototype, {
 
     setCoordConstrained: function(coord) {
         assert(kpoint.is(coord, 2));
-        var result = this._applyConstraints(coord, coord);
-        this.state.coord = _.clone(result);
-        this.draw();
+        var result = this._applyConstraints(coord, this.coord());
+        if (result !== false) {
+            this.state.coord = _.clone(result);
+            this.draw();
+        }
+    },
+
+    moveTo: function(coord) {
+        // The caller has the option of adding an onMove() method to the
+        // movablePoint object we return as a sort of event handler
+        // By returning false from onMove(), the move can be vetoed,
+        // providing custom constraints on where the point can be moved.
+        // By returning array [x, y], the move can be overridden
+
+        var state = this.state;
+        var result = this._applyConstraints(coord, state.coord);
+        if (result === false) {
+            return;
+        } else if (kpoint.is(result)) {
+            coord = result;
+        }
+        if (!kpoint.equal(coord, state.coord)) {
+            var prevCoord = state.coord;
+            state.coord = coord;
+            state.hasMoved = true;
+            this._fireEvent(state.onMove, state.coord, prevCoord);
+            this.draw();
+        }
     },
 
     // Clone these for use with raphael, which modifies the input
@@ -325,6 +333,7 @@ _.extend(MovablePoint.prototype, {
 
     grab: function(coord) {
         this.movable.grab(coord);
+        this.moveTo(coord);
     }
 });
 

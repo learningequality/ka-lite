@@ -50,7 +50,7 @@ def validate_data(topic_tree, node_cache, slug2id_map):
         related = content.get("related_content", [])
         if related:
             for cont in related:
-                if cont["id"] not in node_cache["Content"] and cont["id"] not in node_cache["Video"] and cont["id"] not in node_cache["Exercise"]:
+                if cont["id"] not in node_cache["Content"] and cont["id"] not in node_cache["Content"] and cont["id"] not in node_cache["Exercise"]:
                     logging.warning("Could not find related content %s in node_cache (from content %s)\n" % (cont["id"], content["slug"]))
         ex = content.get("related_exercise", None)
         if ex:

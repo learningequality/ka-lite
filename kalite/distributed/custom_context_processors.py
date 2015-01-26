@@ -22,5 +22,6 @@ def custom(request):
         "VERSION": version.VERSION,
         "SHORTVERSION": version.SHORTVERSION,
         "True": True,
-        "False": False
+        "False": False,
+        "is_config_package_nalanda": "Nalanda" in settings.CONFIG_PACKAGE
     }

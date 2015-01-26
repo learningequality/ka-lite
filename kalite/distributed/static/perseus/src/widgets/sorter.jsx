@@ -1,7 +1,7 @@
-/** @jsx React.DOM */
-
 var React          = require('react');
-var InfoTip        = require("react-components/info-tip");
+var InfoTip        = require("react-components/info-tip.jsx");
+var _ = require("underscore");
+
 var PropCheckBox   = require("../components/prop-check-box.jsx");
 var Sortable       = require("../components/sortable.jsx");
 var TextListEditor = require("../components/text-list-editor.jsx");
@@ -47,12 +47,12 @@ var Sorter = React.createClass({
         </div>;
     },
 
-    toJSON: function(skipValidation) {
+    getUserInput: function() {
         return {options: this.refs.sortable.getOptions()};
     },
 
     simpleValidate: function(rubric) {
-        return Sorter.validate(this.toJSON(), rubric);
+        return Sorter.validate(this.getUserInput(), rubric);
     },
 
     statics: {
@@ -139,7 +139,7 @@ var SorterEditor = React.createClass({
         this.props.onChange({layout: e.target.value});
     },
 
-    toJSON: function(skipValidation) {
+    serialize: function() {
         return _.pick(this.props, "correct", "layout", "padding");
     }
 });

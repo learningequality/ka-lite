@@ -1,10 +1,10 @@
-/** @jsx React.DOM */
-
 var React = require('react');
+var _ = require("underscore");
+
 var firstNumericalParse = require("../util.js").firstNumericalParse;
 var captureScratchpadTouchStart =
         require("../util.js").captureScratchpadTouchStart;
-var knumber = KhanUtil.knumber;
+var knumber = require("kmath").number;
 var toNumericString = KhanUtil.toNumericString;
 var getNumericFormat = KhanUtil.getNumericFormat;
 
@@ -53,7 +53,7 @@ var NumberInput = React.createClass({
     },
 
     render: function() {
-        cx = React.addons.classSet;
+        var cx = React.addons.classSet;
 
         var classes = cx({
             "number-input": true,
@@ -67,20 +67,23 @@ var NumberInput = React.createClass({
             classes = [classes, this.props.className].join(" ");
         }
 
-        var input = React.DOM.input(_.extend({}, this.props, {
-            className: classes,
-            type: "text",
-            ref: "input",
-            onChange: this._handleChange,
-            onBlur: this._handleBlur,
-            onKeyPress: this._handleBlur,
-            onKeyDown: this._onKeyDown,
-            onTouchStart: captureScratchpadTouchStart,
-            defaultValue: toNumericString(this.props.value, this.state.format),
-            value: undefined
-        }));
+        var input = <input
+            {...this.props}
+            className={classes}
+            type="text"
+            ref="input"
+            onChange={this._handleChange}
+            onFocus={this._handleFocus}
+            onBlur={this._handleBlur}
+            onKeyPress={this._handleBlur}
+            onKeyDown={this._onKeyDown}
+            onTouchStart={captureScratchpadTouchStart}
+            defaultValue={toNumericString(this.props.value, this.state.format)}
+            value={undefined} />;
 
         if (this.props.label) {
+            // TODO(aria): Remove this prop and option. Put your labels
+            // outside your inputs
             return <label>{this.props.label}{input}</label>;
         } else {
             return input;
@@ -113,6 +116,12 @@ var NumberInput = React.createClass({
     /* Set text input focus to this input */
     focus: function() {
         this.refs.input.getDOMNode().focus();
+        this._handleFocus();
+    },
+
+    blur: function() {
+        this.refs.input.getDOMNode().blur();
+        this._handleBlur();
     },
 
     _checkValidity: function(value) {
@@ -138,16 +147,29 @@ var NumberInput = React.createClass({
         }
     },
 
+    _handleFocus: function() {
+        if (this.props.onFocus) {
+            this.props.onFocus();
+        }
+    },
+
     _handleBlur: function(e) {
         // Only continue on blur or "enter"
-        if (e.type === "keypress" && e.keyCode !== 13) {
+        if (e && e.type === "keypress" && e.keyCode !== 13) {
             return;
         }
 
         this._setValue(this.props.value, this.state.format);
+        if (this.props.onBlur) {
+            this.props.onBlur();
+        }
     },
 
     _onKeyDown: function(e) {
+        if (this.props.onKeyDown) {
+            this.props.onKeyDown(e);
+        }
+
         if (!this.props.useArrowKeys ||
             !_.contains(["ArrowUp", "ArrowDown"], e.key)) {
             return;

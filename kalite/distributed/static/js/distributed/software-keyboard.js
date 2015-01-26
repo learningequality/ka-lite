@@ -26,7 +26,6 @@ window.SoftwareKeyboardView = Backbone.View.extend({
             return !value;
         });
         this.$("#show-keyboard").text(function(i, text){
-            // TODO
             return text === gettext("Show Keypad") ? gettext("Hide Keypad") : gettext("Show Keypad");
         });
         return false;
@@ -71,7 +70,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
     },
 
     render: function () {
-        self = this;
+        var self = this;
 
         // TODO-BLOCKER (rtibbles): 0.13 - Turn this into a handlebars template, conditionally render templates based on exercise types.
 
@@ -106,6 +105,14 @@ window.SoftwareKeyboardView = Backbone.View.extend({
             this.toggle_keypad();
         }
 
+    },
+
+    hide: function() {
+        this.$el.hide();
+    },
+
+    show: function() {
+        this.$el.show();
     }
 
 });

@@ -7,6 +7,9 @@ ul.ui-autocomplete  {
     padding-right: 0;
     padding-top: 1px;
     padding-bottom: 1px;
+    margin: 0 3px;
+    border-color: rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
     z-index: 1500;
 }
 .ui-state-hover,
@@ -15,9 +18,9 @@ ul.ui-autocomplete  {
 .ui-state-focus,
 .ui-widget-content .ui-state-focus,
 .ui-widget-header .ui-state-focus {
-    background: #8dc63f;
+    background: #5AA685;
     border: 0;
-    border-radius: 0;
+    border-radius: 6px;
     color: white;
 }
 a.ui-corner-all.ui-state-focus span.autocomplete.icon-Topic.available,
@@ -28,9 +31,9 @@ a.ui-corner-all.ui-state-focus span.autocomplete.icon-Document.available {
 }
 .ui-menu .ui-menu-item a{
     outline: 0;
-    padding-top: 6px;
+    padding-top: 10px;
     padding-bottom: 0;
-    margin: 0;
+    border-radius: 6px;
 }
 .ui-menu .ui-menu-item span {
     font-weight: 300;
@@ -38,10 +41,10 @@ a.ui-corner-all.ui-state-focus span.autocomplete.icon-Document.available {
     padding-right: 0;
 }
 .available {
-    color: black;
+    color: #000;
 }
 .unavailable {
-    color:gray;
+    color: rgba(0, 0, 0, 0.5);
 }
 
 /* Misc visuals
