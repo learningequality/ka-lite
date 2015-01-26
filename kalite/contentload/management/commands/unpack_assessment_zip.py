@@ -19,7 +19,7 @@ KHAN_CONTENT_PATH = os.path.join(
     "khan"
 )
 
-ASSESSMENT_ITEMS_PATH = os.path.join(KHAN_DATA_PATH, "assessment_items.json")
+ASSESSMENT_ITEMS_PATH = os.path.join(KHAN_DATA_PATH, "assessmentitems.json")
 
 
 class Command(BaseCommand):
@@ -44,15 +44,7 @@ class Command(BaseCommand):
 
 
 def extract_assessment_items_to_data_dir(zf):
-    with open(ASSESSMENT_ITEMS_PATH) as f:
-        old_assessment_items = json.load(f)
-
-    zipped_assessment_items = zf.open("assessment_items.json")
-    new_assessment_items = json.load(zipped_assessment_items)
-    old_assessment_items.update(new_assessment_items)
-
-    with open(ASSESSMENT_ITEMS_PATH, "w") as f:
-        json.dump(old_assessment_items, f, indent=4)
+    zf.extract("assessmentitems.json", KHAN_DATA_PATH)
 
 
 def unpack_zipfile_to_khan_content(zf):
