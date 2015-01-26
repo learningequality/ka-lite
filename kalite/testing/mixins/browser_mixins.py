@@ -285,8 +285,8 @@ class BrowserActionMixins(object):
         (See CreateAdminMixin and CreateFacilityMixin.)
         """
 
-        assert self._admin_exists(), "No admin user exists"
-        assert self._facility_exists(), "No facility exists"
+        self.assertTrue(self._admin_exists(), "No admin user exists")
+        self.assertTrue(self._facility_exists(), "No facility exists")
 
         # Expected results vary based on whether a user is logged in or not.
         if not stay_logged_in:
