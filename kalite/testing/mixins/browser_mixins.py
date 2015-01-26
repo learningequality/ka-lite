@@ -431,5 +431,8 @@ class BrowserActionMixins(object):
         # The following commented line of code returns an element with blank text,
         # possibly due to a race condition, hence querying the element with js which "just works"
         #points_elem = self.browser.find_element_by_id("points")    
+        # Ensure the element has been populated by triggering an event
+        self.browser_wait_for_js_object_exists("window.statusModel");
+        self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
         points_text = self.browser.execute_script("return $('#points').text();")
         return int(re.search(r"(\d+)", points_text).group(1))
