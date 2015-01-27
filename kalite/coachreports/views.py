@@ -198,7 +198,7 @@ def tabular_view(request, report_type="exercise"):
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics() if report_type.title() in tid["contains"]]
+    topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics(language=request.language) if report_type.title() in tid["contains"]]
     playlists = Playlist.all()
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)

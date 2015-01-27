@@ -146,11 +146,13 @@ def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):
 
 KNOWLEDGEMAP_TOPICS = None
 CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
-def get_knowledgemap_topics(force=False):
+def get_knowledgemap_topics(force=False, language="en"):
     global KNOWLEDGEMAP_TOPICS
-    if KNOWLEDGEMAP_TOPICS is None or force:
-        KNOWLEDGEMAP_TOPICS = recurse_topic_tree_to_create_hierarchy(get_topic_tree(), {}, hierarchy=["Domain", "Subject", "Topic", "Tutorial"])["Topic"]
-    return KNOWLEDGEMAP_TOPICS
+    if KNOWLEDGEMAP_TOPICS is None:
+        KNOWLEDGEMAP_TOPICS = {}
+    if KNOWLEDGEMAP_TOPICS.get(language) is None or force:
+        KNOWLEDGEMAP_TOPICS[language] = recurse_topic_tree_to_create_hierarchy(get_topic_tree(language=language), {}, hierarchy=["Domain", "Subject", "Topic", "Tutorial"])["Topic"]
+    return KNOWLEDGEMAP_TOPICS[language]
 
 
 LEAFED_TOPICS = None
