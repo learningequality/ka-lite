@@ -2,8 +2,6 @@ language: python
 python:
 - '2.6'
 - '2.7'
-addons:
-  firefox: '31.0'
 before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
@@ -14,6 +12,8 @@ install:
 - pushd $TRAVIS_BUILD_DIR; npm install -g grunt-cli; popd
 script:
 - cd $TRAVIS_BUILD_DIR
+- bin/kalite start --traceback -v 2
+- bin/kalite stop --traceback -v 2
 - python python-packages/fle_utils/tests.py
 - bin/kalite manage syncdb --migrate --noinput --traceback
 - bin/kalite test --traceback -v 2
