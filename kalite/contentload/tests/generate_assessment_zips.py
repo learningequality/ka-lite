@@ -46,7 +46,7 @@ class UtilityFunctionTests(KALiteTestCase):
 
     def setUp(self):
 
-        with open(os.path.join(HTTREPLAY_RECORDINGS_DIR, "assessment_items_sample.json")) as f:
+        with open(os.path.join(TEST_FIXTURES_DIR, "assessment_items_sample.json")) as f:
             self.assessment_sample = json.load(f)
         self.imgurl = "https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"
 
