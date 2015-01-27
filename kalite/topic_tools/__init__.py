@@ -430,7 +430,7 @@ def get_exercise_data(request, exercise_id=None):
     if not exercise:
         return None
 
-    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH)
     exercise_file = exercise["slug"] + ".html"
     exercise_template = exercise_file
 
