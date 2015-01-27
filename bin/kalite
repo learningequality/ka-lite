@@ -32,8 +32,8 @@ kalite_path = None
 # Yay! The path is set!
 if 'KALITE_DIR' in os.environ:
     kalite_path = os.environ['KALITE_DIR']
-    if os.path.exists(kalite_path):
-        raise RuntimeError("KALITE_DIR environment var not set, check your installation.")
+    if not os.path.exists(kalite_path):
+        raise RuntimeError("KALITE_DIR environment var is invalid: {:s}".format(kalite_path))
 
 # Path not set, try to guess it
 else:
