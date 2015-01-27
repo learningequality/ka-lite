@@ -5,11 +5,15 @@ import json
 import requests
 import threading
 import time
+
+from multiprocessing.dummy import Pool as ThreadPool
+
+from django.conf import settings
+
 from fle_utils.general import ensure_dir
 from functools import partial
 from khan_api_python.api_models import Khan, APIError
-
-from django.conf import settings
+from kalite.updates.videos import REMOTE_VIDEO_SIZE_FILEPATH
 
 logging = settings.LOG
 
@@ -144,6 +148,21 @@ def retrieve_API_data(channel=None):
     for con in content:
         con["format"] = "mp4"
 
+    # Compute and save file sizes
+    logging.info("Checking remote content file sizes...")
+    try:
+        with open(REMOTE_VIDEO_SIZE_FILEPATH, "r") as fp:
+            old_sizes = json.load(fp)
+    except:
+        old_sizes = {}
+    blacklist = [key for key, val in old_sizes.items() if val > 0] # exclude any we already know about
+    sizes_by_id, sizes = query_remote_content_file_sizes(content, blacklist=blacklist)
+    ensure_dir(os.path.dirname(REMOTE_VIDEO_SIZE_FILEPATH))
+    old_sizes.update(sizes_by_id)
+    with open(REMOTE_VIDEO_SIZE_FILEPATH, "w") as fp:
+        json.dump(old_sizes, fp, indent=2)
+    logging.info("Finished checking remote content file sizes...")
+
     assessment_items = []
 
     # Limit number of simultaneous requests
@@ -185,5 +204,49 @@ def retrieve_API_data(channel=None):
         thread.join()
 
     return topic_tree, exercises, assessment_items, content
+
+def query_remote_content_file_sizes(content_items, threads=10, blacklist=[]):
+    """
+    Query and store the file sizes for downloadable videos, by running HEAD requests against them,
+    and reading the `content-length` header. Right now, this is only for the "khan" channel, and hence lives here.
+    TODO(jamalex): Generalize this to other channels once they're centrally hosted and downloadable.
+    """
+    sizes_by_id = {}
+
+    if isinstance(content_items, dict):
+        content_items = content_items.values()
+
+    content_items = [content for content in content_items if content["format"] in content.get("download_urls", {}) and content["youtube_id"] not in blacklist]
+
+    pool = ThreadPool(threads)
+    sizes = pool.map(get_content_length, content_items)
+
+    for content, size in zip(content_items, sizes):
+        # TODO(jamalex): This should be generalized from "youtube_id" to support other content types
+        if size:
+            sizes_by_id[content["youtube_id"]] = size
+
+    return sizes_by_id, sizes
+
+
+def get_content_length(content):
+    url = content["download_urls"][content["format"]].replace("http://fastly.kastatic.org/", "http://s3.amazonaws.com/") # because fastly is SLOWLY
+    logging.info("Checking remote file size for content '{title}' at {url}...".format(title=content.get("title"), url=url))
+    size = 0
+    for i in range(5):
+        try:
+            size = int(requests.head(url, timeout=60).headers["content-length"])
+            break
+        except requests.Timeout:
+            logging.warning("Timed out on try {i} while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
+        except TypeError:
+            logging.warning("No numeric content-length returned while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
+            break
+    if size:
+        logging.info("Finished checking remote file size for content '{title}'!".format(title=content.get("title")))
+    else:
+        logging.error("No file size retrieved (timeouts?) for content '{title}'!".format(title=content.get("title")))
+    return size
+
 
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
