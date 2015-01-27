@@ -203,13 +203,22 @@ window.FacilitySelectView = Backbone.View.extend({
     },
 
     render: function() {
+        var template_context;
 
-        var template_context = {
-            facilities: this.facility_list.toJSON(),
-            selection: this.model.get("facility_id"),
-            // Facility select is enabled only if zone_id has been set
-            is_disabled: this.is_disabled()
-        };
+        if (this.model.get("facility_id") !== "") {
+            template_context = {
+                facilities: this.facility_list.toJSON(),
+                selection: this.model.get("facility_id"),
+                is_disabled: true
+            };
+        } else {
+            template_context = {
+                facilities: this.facility_list.toJSON(),
+                selection: this.model.get("facility_id"),
+                // Facility select is enabled only if zone_id has been set
+                is_disabled: this.is_disabled()
+            };
+        }
 
         this.$el.html(this.template(template_context));
 
@@ -219,7 +228,7 @@ window.FacilitySelectView = Backbone.View.extend({
     is_disabled: function() {
         // Helper function to quickly check whether the facility select input
         // should be enabled or disabled based on conditions that matter to it.
-        if (this.model.get("resource_id") === "device_log"){
+        if (this.model.get("resource_id") === "device_log") {
             return true;
         }
         return ((this.model.get("zone_id") === undefined || this.model.get("zone_id") === "") && this.model.get("is_central"));
@@ -280,6 +289,7 @@ window.GroupSelectView = Backbone.View.extend({
         // Create collections
         this.group_list = new GroupCollection();
 
+        this.fetch_by_facility();
         // Re-render self when the fetch returns or state model changes
         this.listenTo(this.group_list, 'sync', this.render);
         this.listenTo(this.group_list, 'reset', this.render);

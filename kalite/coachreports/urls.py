@@ -29,7 +29,7 @@ urlpatterns = patterns(__package__ + '.views',
 
 #Else block url patterns can't be empty because we have a reverse match for test_view/test_detail_view
 
-if "Nalanda" in settings.CONFIG_PACKAGE:
+if "nalanda" in settings.CONFIG_PACKAGE:
     urlpatterns += patterns(__package__ + '.views',
         url(r'^test/$', 'test_view', {}, 'test_view'),
         url(r'^test/(?P<test_id>\w+)/$', 'test_detail_view', {}, 'test_detail_view'),

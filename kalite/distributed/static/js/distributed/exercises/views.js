@@ -195,16 +195,16 @@ window.ExerciseView = Backbone.View.extend({
 
     load_question: function(question_data) {
 
+        if (typeof question_data === "undefined" || question_data === null) {
+            question_data = {};
+        }
+
         var self = this;
 
         if (typeof question_data.attempts !== "undefined") {
 
             var attempts = question_data.attempts;
             delete question_data.attempts;
-
-        } else {
-
-            item_index = Math.floor(Math.random() * assessment_items.length);
 
         }
 
