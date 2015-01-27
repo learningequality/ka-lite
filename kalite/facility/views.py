@@ -11,7 +11,6 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
@@ -292,7 +291,6 @@ def login(request, facility):
     return {
         "form": form,
         "facilities": facilities,
-        "sign_up_url": reverse("facility_user_signup"),
     }
 
 

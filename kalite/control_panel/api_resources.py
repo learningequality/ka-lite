@@ -16,11 +16,10 @@ from kalite.coachreports.views import get_accessible_objects_from_logged_in_user
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog
 from kalite.shared.api_auth import ObjectAdminAuthorization
-from kalite.store.models import StoreTransactionLog 
+from kalite.store.models import StoreTransactionLog, StoreItem
 from kalite.student_testing.models import TestLog
 
 from .api_serializers import CSVSerializer
-from store.models import StoreItem 
 
 
 # This constant is used as a key for the all facilties drop down in the frontend
@@ -46,7 +45,7 @@ class FacilityResource(ModelResource):
 
         # call super to trigger auth
         return super(FacilityResource, self).authorized_read_list(facility_list, bundle)
-        
+
 
 class FacilityGroupResource(ModelResource):
     class Meta:
@@ -116,7 +115,7 @@ class ParentFacilityUserResource(ModelResource):
         group_id = bundle.request.GET.get('group_id')
 
         # They must have a zone_id, and may have a facility_id and group_id.
-        # Try to filter from most specific, to least 
+        # Try to filter from most specific, to least
         facility_user_objects = []
         if group_id:
             facility_user_objects = FacilityUser.objects.filter(group__id=group_id)
@@ -349,4 +348,3 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
             bundle.data.pop("user")
 
         return to_be_serialized
-

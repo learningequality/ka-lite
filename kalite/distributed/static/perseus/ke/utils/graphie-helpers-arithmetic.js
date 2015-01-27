@@ -2,12 +2,51 @@ define(function(require) {
 
 var decimalPointSymbol = icu.getDecimalFormatSymbols().decimal_separator;
 
-function Adder(a, b, digitsA, digitsB) {
+function Adder(a, b, decimalA, decimalB) {
     var graph = KhanUtil.currentGraph;
-    digitsA = digitsA || KhanUtil.digits(a);
-    digitsB = digitsB || KhanUtil.digits(b);
-    var highlights = [];
-    var carry = 0;
+    decimalA = decimalA || 0;
+    decimalB = decimalB || 0;
+    var decimalPos = Math.max(decimalA, decimalB);
+
+    // Remove trailing zeros from decimals
+    if (decimalPos) {
+        while (a % 10 === 0 && a !== 0) {
+            a /= 10;
+            decimalA--;
+        }
+
+        while (b % 10 === 0 && b !== 0) {
+            b /= 10;
+            decimalB--;
+        }
+
+        // Add trailing zeros so decimals line up
+        if (decimalB > decimalA) {
+            a *= Math.pow(10, decimalB - decimalA);
+            decimalA = decimalB;
+        } else if (decimalA > decimalB) {
+            b *= Math.pow(10, decimalA - decimalB);
+            decimalB = decimalA;
+        }
+        
+        decimalPos = decimalA;
+    }
+
+    var digitsA = KhanUtil.digits(a);
+    var digitsB = KhanUtil.digits(b);
+    var digitDiff = digitsA.length - digitsB.length;
+
+    // Add leading zeros to decimals
+    if (decimalPos) {
+        for (var i = 0; i < -digitDiff || digitsA.length < decimalA + 1; i++) {
+            digitsA.push(0);
+        }
+
+        for (var i = 0; i < digitDiff || digitsB.length < decimalB + 1; i++) {
+            digitsB.push(0);
+        }
+    }
+
     var pos = { max: Math.max(digitsA.length, digitsB.length, KhanUtil.digits(a + b).length),
         carry: 3,
         first: 2,
@@ -17,6 +56,8 @@ function Adder(a, b, digitsA, digitsB) {
         sideY: 1.5 };
 
     var index = 0;
+    var carry = 0;
+    var highlights = [];
     var numHints = Adder.numHintsFor(a, b);
 
     this.show = function() {
@@ -30,6 +71,17 @@ function Adder(a, b, digitsA, digitsB) {
 
         graph.path([[-0.5, pos.second - 0.5], [pos.max + 0.5, pos.second - 0.5]]);
         graph.label([0, 1] , "\\LARGE{+\\vphantom{0}}");
+
+        if (decimalPos !== 0) {
+            for (var i = 0; i < 3; i++) {
+                graph.style({ fill: "#000" }, function() {
+                    graph.label([pos.max - decimalPos + 0.5, i - 0.1],
+                        "\\LARGE{" + decimalPointSymbol + "}", "center", true);
+                });
+            }
+            this.showSideLabel("\\text{Make sure digits are lined up by place value.}");
+            this.showSideLabel("\\text{Use the decimal points to help you.}", -0.6);
+        }
     };
 
     this.showHint = function() {
@@ -43,17 +95,17 @@ function Adder(a, b, digitsA, digitsB) {
         }
         var prevCarry = carry;
         var prevCarryStr = "";
-        var carryStr = "";
+        var resultStr = "";
         var addendStr = "";
         var sum;
 
         var x = pos.max - index;
-        var power = Math.pow(10, index);
-        var zeros = new Array(index + 1).join("0");
+        var power = Math.pow(10, index - decimalPos);
+        var decimalPlaces = Math.max(0, decimalPos - index);
 
         if (prevCarry !== 0) {
             highlights.push(graph.label([x, pos.carry], "\\blue{" + prevCarry + "}", "below"));
-            prevCarryStr = "\\blue{" + (prevCarry * power) + "} + ";
+            prevCarryStr = "\\blue{" + KhanUtil.localeToFixed(prevCarry * power,  decimalPlaces) + "} + ";
         }
 
         sum = digitsA[index] + carry;
@@ -61,7 +113,7 @@ function Adder(a, b, digitsA, digitsB) {
 
         if (index < digitsB.length) {
             highlights = highlights.concat(drawDigits([digitsB[index]], x, pos.second, KhanUtil.BLUE));
-            addendStr = " + \\blue{" + (digitsB[index] * power) + "}";
+            addendStr = " + \\blue{" + KhanUtil.localeToFixed(digitsB[index] * power, decimalPlaces) + "}";
             sum += digitsB[index];
         }
 
@@ -69,19 +121,32 @@ function Adder(a, b, digitsA, digitsB) {
         highlights = highlights.concat(drawDigits([sum % 10], x, pos.sum, KhanUtil.GREEN));
 
         carry = Math.floor(sum / 10);
+        var doCarry = Math.min(carry, 1);
+
+        if (decimalPlaces > doCarry) {
+            resultStr += "0.";
+            resultStr += (new Array(decimalPlaces - doCarry).join("0"));
+        }
+
         if (carry !== 0) {
             highlights.push(graph.label([x - 1, pos.carry], "\\orange{" + carry + "}", "below"));
-            carryStr = "\\orange{" + carry + "}";
+            resultStr += "\\orange{" + carry + "}";
+            if (decimalPlaces === 1) {
+                resultStr += ".";
+            }
+        }
+
+        resultStr += "\\green{" + (sum % 10) + "}";
+        if (index + 1 > decimalPos) {
+            resultStr += (new Array(index - decimalPos + 1).join("0"));
         }
 
         this.showSideLabel("\\Large{" +
             prevCarryStr +
-            "\\blue{" + (digitsA[index] * power) + "}" +
+            "\\blue{" + KhanUtil.localeToFixed(digitsA[index] * power, decimalPlaces) + "}" +
             addendStr +
             " = " +
-            carryStr +
-            "\\green{" + sum % 10 + "}" +
-            zeros +
+            resultStr +
             "}");
 
         index++;
@@ -92,12 +157,12 @@ function Adder(a, b, digitsA, digitsB) {
             "\\blue{" + carry + "}", "below"));
         graph.label([pos.max - index, pos.sum], "\\LARGE{" + carry + "}");
         highlights.push(graph.label([pos.max - index, pos.sum],
-            "\\LARGE{\\color{#28AE7B}{" + carry + "}}"));
+            "\\LARGE{\\green{" + carry + "}}"));
 
         this.showSideLabel("\\Large{" +
             "\\blue{" + carry + "}" +
             " = " +
-            "\\color{#28AE7B}{" + carry + "}" +
+            "\\green{" + carry + "}" +
             "}");
     };
 
@@ -111,20 +176,15 @@ function Adder(a, b, digitsA, digitsB) {
         }
     };
 
-    this.showSideLabel = function(str) {
-        highlights.push(graph.label([pos.sideX, pos.sideY], str, "right"));
-    };
-
-    this.showDecimals = function(deciA, deciB) {
-        for (var i = 0; i < 3; i++) {
-            graph.style({ fill: "#000" }, function() {
-                graph.label([pos.max - Math.max(deciA, deciB) + 0.5, i - 0.1],
-                    "\\LARGE{" + decimalPointSymbol + "}", "center", true);
-            });
-        }
-        this.showSideLabel("\\text{Make sure the decimals are lined up.}");
+    this.showSideLabel = function(str, dy) {
+        var y = pos.sideY + (dy || 0);
+        highlights.push(graph.label([pos.sideX, y], str, "right"));
     };
 }
+
+Adder.processDigit = function() {
+
+};
 
 Adder.numHintsFor = function(a, b) {
     return KhanUtil.digits(a + b).length + 1;
@@ -405,7 +465,7 @@ function drawRow(num, y, color, startCount) {
     var set = graph.raphael.set();
     for (var x = 0; x < num; x++) {
         set.push(graph.label([x, y], "\\small{\\color{" + color + "}{" + (startCount + x) + "}}"));
-        set.push(graph.circle([x, y], 0.25));
+        set.push(graph.circle([x, y], 0.35));
     }
 
     return set;
@@ -417,6 +477,7 @@ function Multiplier(a, b, digitsA, digitsB, deciA, deciB) {
     deciB = deciB || 0;
     digitsA = digitsA || KhanUtil.digits(a);
     digitsB = digitsB || KhanUtil.digits(b);
+
     var digitsProduct = KhanUtil.integerToDigits(a * b);
     var highlights = [];
     var carry = 0;
@@ -425,7 +486,7 @@ function Multiplier(a, b, digitsA, digitsB, deciA, deciB) {
     var maxNumDigits = Math.max(deciA + deciB, digitsProduct.length);
 
     var leadingZero = 0;
-    for (var i=digitsB.length-1; i>0; i--) {
+    for (var i = digitsB.length - 1; i > 0; i--) {
         if (digitsB[i] === 0) {
             leadingZero++;
         } else {
@@ -436,8 +497,13 @@ function Multiplier(a, b, digitsA, digitsB, deciA, deciB) {
     var numHints = digitsA.length * (digitsB.length - leadingZero) + 1;
 
     this.show = function() {
+        var height = Math.max(numHints - 4, 3);
+        if (deciA || deciB) {
+            height += 3;
+        }
+
         graph.init({
-            range: [[-2 - maxNumDigits, 12], [-Math.max(numHints, 6), 3]],
+            range: [[-2 - maxNumDigits, 18], [-height, 3]],
             scale: [20, 40]
         });
 
@@ -451,6 +517,15 @@ function Multiplier(a, b, digitsA, digitsB, deciA, deciB) {
     this.removeHighlights = function() {
         while (highlights.length) {
             highlights.pop().remove();
+        }
+    };
+
+    this.getTrueValue = function(n, power) {
+        n *= Math.pow(10, power);
+        if (n !== 0) {
+            return KhanUtil.localeToFixed(n, Math.max(0, -power));
+        } else {
+            return n;
         }
     };
 
@@ -469,24 +544,32 @@ function Multiplier(a, b, digitsA, digitsB, deciA, deciB) {
         var ones = product % 10;
         var currCarry = Math.floor(product / 10);
 
+        // Highlight the digits we're using
         highlights = highlights.concat(drawDigits([bigDigit], -indexA, 2, KhanUtil.BLUE));
         highlights = highlights.concat(drawDigits([smallDigit], -indexB, 1, KhanUtil.PINK));
         if (carry) {
-            highlights = highlights.concat(graph.label([-indexA, 3], "\\orange{" + carry + "}", "below"));
+            highlights = highlights.concat(graph.label([-indexA, 3], "\\purple{" + carry + "}", "below"));
         }
-        graph.label([2, -indexB * digitsA.length - indexA + 2],
-            "\\blue{" + bigDigit + "}" +
-            "\\times" +
-            "\\color{#FF00AF}{" + smallDigit + "}" +
-            (carry ? "+\\orange{" + carry + "}" : "") +
-            "=" +
-            "\\color{#28AE7B}{" + product + "}", "right");
 
-        drawDigits([ones], -indexB - indexA, -indexB);
+        var hint = "\\blue{" + this.getTrueValue(bigDigit, indexA - deciA) + "}";
+        hint += "\\times \\pink{" + this.getTrueValue(smallDigit, indexB - deciB) + "}";
+        hint += (carry ? "+\\purple{" + this.getTrueValue(carry, indexA + indexB - deciA - deciB) + "}" : "");
+        hint += "= \\green{" + this.getTrueValue(product, indexA + indexB - deciA - deciB) + "}";
+
+        graph.label([2, 2 - indexB * digitsA.length - indexA], hint, "right");
+
+        var result = [ones];
+        if (indexA === 0) {
+            for (var i = 0; i < indexB; i++) {
+                result.push(0);
+            }
+        }
+
+        drawDigits(result, -indexB - indexA, -indexB);
         highlights = highlights.concat(drawDigits([ones], -indexB - indexA, -indexB, KhanUtil.GREEN));
 
         if (currCarry) {
-            highlights = highlights.concat(graph.label([-1 - indexA, 3], "\\color{#28AE7B}{" + currCarry + "}", "below"));
+            highlights = highlights.concat(graph.label([-1 - indexA, 3], "\\green{" + currCarry + "}", "below"));
             if (indexA === digitsA.length - 1) {
                 drawDigits([currCarry], -indexB - indexA - 1, -indexB);
                 highlights = highlights.concat(drawDigits([currCarry], -indexB - indexA - 1, -indexB, KhanUtil.GREEN));
@@ -676,7 +759,6 @@ function Divider(divisor, dividend, deciDivisor, deciDividend, decimalRemainder)
 
         // Draw extra zeros in the dividend
         if (deciDiff > 0) {
-            var orig = digitsDividend;
             digitsDividend = KhanUtil.padDigitsToNum(digitsDividend, digitsDividend.length + deciDiff);
             var x = digitsDividend.length - deciDiff;
             var zeros = digitsDividend.slice(x);
@@ -787,7 +869,7 @@ function Divider(divisor, dividend, deciDivisor, deciDividend, decimalRemainder)
     this.showRemainder = function(remainder) {
         var txt;
         if (remainder === 0) {
-            txt = "\\text{" + $._("The remainder is 0 so we have our answer.") + "}";
+            txt = "\\text{" + $._("The remainder is 0, so we have our answer.") + "}";
         } else {
             txt = $._("\\text{Since } %(remainder)s \\text{ is less than } %(divisor)s \\text{, it is left as our remainder.}",
                     { remainder: remainder, divisor: divisor });
@@ -852,8 +934,8 @@ Divider.getHints = function(divisor, digitsDividend, deciDivisor, deciDividend, 
         hints.push(['bring-up-decimal']);
     }
 
-    // If we want a decimal remainder, add up to 4 extra places
-    var numPlaces = digitsDividend.length + (decimalRemainder ? 4 : 0);
+    // If we want a decimal remainder, add up to 5 extra places
+    var numPlaces = digitsDividend.length + (decimalRemainder ? 5 : 0);
     var digits = KhanUtil.padDigitsToNum(digitsDividend, numPlaces);
     var decimalsAdded = 0;
     var decimalsRemainder = ['decimal-remainder', 0];
@@ -885,7 +967,7 @@ Divider.getHints = function(divisor, digitsDividend, deciDivisor, deciDividend, 
         hints.push(['result', quotient, dividend]);
     }
 
-    if (dividend === 0 || decimalsAdded !== 4) {
+    if (dividend === 0 || decimalsAdded !== 5) {
         hints.push(['remainder', dividend]);
     }
 

@@ -1,0 +1,34 @@
+.node text {
+    font: 10px sans-serif;
+    pointer-events: none;
+    text-anchor: middle;
+}
+
+.desc-tip{
+    font-size: 18px;
+    margin-top: -34px;
+}
+
+.desc-tip .tipsy-inner{
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    max-width: 400px;
+    box-shadow: 0px 0px 17px #28333D;
+    -webkit-box-shadow: 0px 0px 17px #28333D;
+    -moz-box-shadow: 0px 0px 17px #28333D; 
+    border: solid 1px rgba(255, 255, 255, 0.25);
+}
+
+div span {
+    height: 100%; 
+    vertical-align: middle; 
+    display: inline-block;
+}
+
+div h {
+    margin: 0; 
+    vertical-align: 
+    middle; display: 
+    inline-block;
+}

@@ -10,6 +10,7 @@ from django.http import HttpResponseServerError
 import kalite.django_cherrypy_wsgiserver.api_urls
 import kalite.i18n.api_urls
 import kalite.coachreports.api_urls
+import kalite.knowledgemap.api_urls
 import kalite.control_panel.api_urls
 import kalite.playlist.api_urls
 import kalite.contentload.api_urls
@@ -59,6 +60,10 @@ urlpatterns += patterns('kalite.control_panel.api_views',
 # Coach report endpoints for lazily getting data for reporting 
 urlpatterns += patterns('kalite.coachreports.api_views',
     url(r'^coachreports/', include(kalite.coachreports.api_urls)),
+)
+
+urlpatterns += patterns('kalite.knowledgemap.api_views',
+    url(r'^knowledgemap/', include(kalite.knowledgemap.api_urls)),
 )
 
 # i18n allows changing default languages for users

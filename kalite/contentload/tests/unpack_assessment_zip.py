@@ -34,7 +34,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
             get_method.assert_called_once_with(url)
 
             # verify that the assessment json just extracted is written to the khan data dir
-            self.assertEqual(zf.open("assessment_items.json").read(),
+            self.assertEqual(zf.open("assessmentitems.json").read(),
                              open(mod.ASSESSMENT_ITEMS_PATH).read())
 
             # TODO(aron): write test for verifying that assessment items are combined
@@ -43,7 +43,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
             # verify that the other items are written to the content directory
             for filename in zf.namelist():
                 # already verified above; no need to double-dip
-                if "assessment_items.json" in filename:
+                if "assessmentitems.json" in filename:
                     continue
                 else:
                     filename_path = os.path.join(mod.KHAN_CONTENT_PATH, filename)

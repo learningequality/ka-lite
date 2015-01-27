@@ -1,6 +1,7 @@
 import json
 import os
 from django.db import models
+from django.conf import settings
 
 from fle_utils.django_utils import ExtendedModel
 
@@ -102,6 +103,9 @@ class VanillaPlaylist:
 
     @classmethod
     def all(cls, limit_to_shown=True):
+        if "Nalanda" not in settings.CONFIG_PACKAGE:
+            return []
+
         with open(cls.playlistjson) as f:
             raw_playlists = json.load(f)
 

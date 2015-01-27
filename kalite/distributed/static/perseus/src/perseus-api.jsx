@@ -8,9 +8,6 @@
  *  * nothing if it is purely a bug fix.
  *
  * Callbacks passed to Renderer/ItemRenderer:
- *  * interceptInputFocus:
- *    When non-null, inputs will not receive focus events,
- *    but instead this function will be called
  *  * onInputError:
  *    Called when there is an error grading a widget
  *  * onFocusChange: (newFocus, oldFocus)
@@ -26,32 +23,55 @@
  * These are css class names that will continue to preserve their
  * semantic meaning across the same perseus api major version.
  */
+
+var StubTagEditor = require("./components/stub-tag-editor.jsx");
+
 module.exports = {
     Options: {
         propTypes: React.PropTypes.shape({
             fancyDropdowns: React.PropTypes.bool.isRequired,
-            interceptInputFocus: React.PropTypes.func,
             onInputError: React.PropTypes.func.isRequired,
             onFocusChange: React.PropTypes.func.isRequired,
-            staticRender: React.PropTypes.bool.isRequired
+            staticRender: React.PropTypes.bool.isRequired,
+            GroupMetadataEditor: React.PropTypes.func.isRequired,
+            // Enable old answer types in test.html
+            // TODO(aria) Remove when Alex kills the answer area
+            enableOldAnswerTypes: React.PropTypes.bool.isRequired,
+            readOnly: React.PropTypes.bool.isRequired,
+
+            // A function that takes in the relative problem number (starts at
+            // 0 and is incremented for each group widget), and the ID of the
+            // group widget, then returns a react component that will be added
+            // immediately above the renderer in the group widget. If the
+            // function returns null, no annotation will be added.
+            groupAnnotator: React.PropTypes.func.isRequired,
         }).isRequired,
 
         defaults: {
             fancyDropdowns: false,
-            interceptInputFocus: null,
             onInputError: function() { },
             onFocusChange: function() { },
-            staticRender: false
+            staticRender: false,
+            GroupMetadataEditor: StubTagEditor,
+            enableOldAnswerTypes: false,
+            readOnly: false,
+            groupAnnotator: function() { return null; },
         }
     },
     ClassNames: {
+        RENDERER: "perseus-renderer",
+        TWO_COLUMN_RENDERER: "perseus-renderer-two-columns",
         INPUT: "perseus-input",
         FOCUSED: "perseus-focused",
         RADIO: {
             OPTION: "perseus-radio-option",
             SELECTED: "perseus-radio-selected",
             OPTION_CONTENT: "perseus-radio-option-content"
-        }
+        },
+        INTERACTIVE: "perseus-interactive",
+        CORRECT: "perseus-correct",
+        INCORRECT: "perseus-incorrect",
+        UNANSWERED: "perseus-unanswered",
     }
 };
 

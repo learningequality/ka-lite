@@ -25,7 +25,8 @@
         </form>
         <div id="info_block">
             {% if not restricted %}
-                {% blocktrans %}If you don't have a login, please <a href="{{ sign_up_url }}">sign up</a>.{% endblocktrans %}
+                {% url 'facility_user_signup' as signup_url %}
+                {% blocktrans %}If you don't have a login, please <a href="{{ signup_url }}">sign up</a>.{% endblocktrans %}
             {% else %}
                 {% blocktrans %}If you don't have a login, please contact your administrator.{% endblocktrans %}
             {% endif %}
