@@ -45,6 +45,7 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language="en"):
+    translation.activate(language)
     global TOPICS, TOPICS_FILEPATHS
     if not TOPICS:
         TOPICS = {}
@@ -96,7 +97,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
                     json.dump(TOPICS[channel][language], f)
             except IOError as e:
                 logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
-
+    translation.deactivate()
     return TOPICS[channel][language]
 
 
@@ -453,10 +454,12 @@ def get_exercise_data(request, exercise_id=None):
     else:
         exercise_template = os.path.join(exercise_lang, exercise_file)
 
+    translation.activate(exercise_lang)
     exercise["lang"] = exercise_lang
     exercise["template"] = exercise_template
     exercise["title"] = _(exercise.get("title", ""))
     exercise["description"] = _(exercise.get("description", ""))
+    translation.deactivate()
 
     return exercise
 
@@ -491,11 +494,13 @@ def get_content_data(request, content_id=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This content was not found! You must login as an admin/teacher to download the content."))
 
+    translation.activate(content_lang)
     content = content.copy()
     content["content_urls"] = urls
     content["selected_language"] = content_lang
     content["title"] = _(content["title"])
     content["description"] = _(content.get("description", ""))
+    translation.deactivate()
 
     return content
 
