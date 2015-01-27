@@ -33,7 +33,6 @@ TOPICS_FILEPATHS = {
 }
 EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
 ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
-KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "map_topics.json")
 CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
