@@ -6,13 +6,14 @@ import requests
 import threading
 import time
 
+from collections_local_copy import OrderedDict
+from fle_utils.general import ensure_dir
+from functools import partial
+from khan_api_python.api_models import Khan, APIError
 from multiprocessing.dummy import Pool as ThreadPool
 
 from django.conf import settings
 
-from fle_utils.general import ensure_dir
-from functools import partial
-from khan_api_python.api_models import Khan, APIError
 from kalite.updates.videos import REMOTE_VIDEO_SIZE_FILEPATH
 
 logging = settings.LOG
@@ -159,8 +160,9 @@ def retrieve_API_data(channel=None):
     sizes_by_id, sizes = query_remote_content_file_sizes(content, blacklist=blacklist)
     ensure_dir(os.path.dirname(REMOTE_VIDEO_SIZE_FILEPATH))
     old_sizes.update(sizes_by_id)
+    sizes = OrderedDict(sorted(old_sizes.items()))
     with open(REMOTE_VIDEO_SIZE_FILEPATH, "w") as fp:
-        json.dump(old_sizes, fp, indent=2)
+        json.dump(sizes, fp, indent=2)
     logging.info("Finished checking remote content file sizes...")
 
     assessment_items = []
