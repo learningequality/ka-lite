@@ -56,3 +56,4 @@ writeup/
 ghostdriver.log
 /kalite/_built.touch
 /kalite/contentload/tests/fixtures/
+*.swp

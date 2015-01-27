@@ -279,7 +279,7 @@ def login(request, facility):
 
             # Send them back from whence they came (unless it's the sign up page)
             landing_page = form.cleaned_data["callback_url"] if form.cleaned_data["callback_url"] != reverse("facility_user_signup") else None
-            if not landing_page:
+            if not landing_page or landing_page == reverse("login"):
                 # Just going back to the homepage?  We can do better than that.
                 if form.get_user().is_teacher:
                     landing_page = reverse("tabular_view")

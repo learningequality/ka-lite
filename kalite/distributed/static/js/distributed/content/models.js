@@ -132,13 +132,13 @@ window.ContentLogCollection = Backbone.Collection.extend({
         if (this.length > 0) {
             return this.at(0);
         } else {
-            var id_key = this.model_id_key;
-            return new this.model({
-                id_key: this.content_model.get("id"),
+            var data = {
                 "content_source": this.content_model.get("source") || "",
                 "content_kind": this.content_model.get("kind"),
                 "user": window.statusModel.get("user_uri")
-            });
+            };
+            data[this.model_id_key] = this.content_model.get("id");
+            return new this.model(data);
         }
     }
 

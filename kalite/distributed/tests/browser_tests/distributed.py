@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -15,10 +16,10 @@ from django.test.utils import override_settings
 from django.utils.translation import ugettext as _
 
 from fle_utils.general import isnumeric
-from kalite.facility.models import FacilityUser
+from kalite.facility.models import FacilityUser, Facility
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins, CreateFacilityMixin
 from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
@@ -77,9 +78,14 @@ class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase):
 
 
 @unittest.skipIf(settings.DISABLE_SELF_ADMIN, "Registration not allowed when DISABLE_SELF_ADMIN set.")
-class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase):
+class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin, CreateFacilityMixin):
     username = "user1"
     password = "password"
+
+    def setUp(self):
+        super(UserRegistrationCaseTest, self).setUp();
+        self.create_admin()
+        self.create_facility()
 
     def test_register_login_exact(self):
         """Tests that a user can login with the exact same email address as registered"""
@@ -360,3 +366,90 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         time.sleep(3)
         self.browse_to(self.reverse("homepage"))
         self.assertTrue(self.browser_is_logged_in(), "Timeout should not logout teacher")
+
+class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase, CreateFacilityMixin):
+    """
+    Addresses issue 2864. Ensure that watching a video accumulates points for a student.
+    """
+
+    def setUp(self):
+        super(WatchingVideoAccumulatesPointsTest, self).setUp()
+        self.browser.set_page_load_timeout(30)
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+        self.browser_login_student(username="johnduck", password="superpassword")
+
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
+    def test_watching_video_increases_points(self):
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        self._play_video()
+        updated_points = self.browser_get_points()
+        self.assertNotEqual(updated_points, points, "Points were not increased after video seek position was changed")
+
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
+    def test_points_update(self):
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
+        self.browser_wait_for_js_object_exists(video_js_object)
+        self.browser.execute_script(video_js_object + ".set_progress(1);")
+        updated_points = self.browser_get_points()
+        self.assertNotEqual(updated_points, points, "Points were not increased after video progress was updated")
+
+    def _play_video(self):
+        """Video might not be downloaded, so simulate "playing" it by firing off appropriate js events."""
+        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
+        self.browser_wait_for_js_object_exists(video_js_object)
+        self.browser.execute_script(video_js_object + ".activate()")
+        self.browser.execute_script(video_js_object + ".set_progress(0.5)")
+        self.browser.execute_script(video_js_object + ".update_progress()")
+
+class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin):
+    """
+    A regression test for issue 2858. When a user with X points gets Y more points and 
+    navigates to a new item, the points display reamins X. Only after a third navigation 
+    event are the points updated correctly to X + Y + any other points accumulated in the meantime.
+    We need to test two different backbone router events here (under distributed/topics/router.js)
+    """
+
+    def setUp(self):
+        super(PointsDisplayUpdatesCorrectlyTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+        self.browser_login_student(username="johnduck", password="superpassword")
+
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "This is a Schroedinger's Cat test - a superposition of fail/ok whose outcome depends on the observer.")
+    def test_points_update_after_backbone_navigation(self):
+        """
+        Tests a navigation event caught by loading another backbone view.
+        """
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        self._play_video()
+        self.browse_to_random_video()
+        updated_points = self.browser_get_points()
+        self.assertNotEqual(updated_points, points, "Points were not updated after a backbone navigation event.")
+    
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
+    def test_points_update_after_non_backbone_navigation(self):
+        """
+        Tests navigation event not triggered by loading another backbone view, e.g.
+        refreshing the page.
+        """
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        self._play_video()
+        self.browse_to(self.reverse("homepage"))
+        updated_points = self.browser_get_points()
+        self.assertNotEqual(updated_points, points, "Points were not updated after a non-backbone navigation event.")
+
+    def _play_video(self):
+        """The video might not be downloaded, so instead we simulate playing it by changing the points on the log_model."""
+        log_model_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view.log_model"
+        self.browser_wait_for_js_object_exists(log_model_object)
+        self.browser.execute_script(log_model_object + ".set(\"points\", 9000);" )
+        self.browser.execute_script(log_model_object + ".saveNow();" )
+
