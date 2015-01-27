@@ -104,4 +104,4 @@ def initialize_content_caches(force=False):
     logging.info("Preloading content data.")
     topic_tools.get_content_cache(force=force, annotate=True)
     logging.info("Preloading topic tree data.")
-    topic_tools.get_topic_tree(force=force, annotate=True)
+    topic_tools.get_topic_tree(force=force, annotate=True, language=settings.LANGUAGE_CODE)
