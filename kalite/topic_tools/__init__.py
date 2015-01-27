@@ -434,6 +434,8 @@ def get_topic_videos(*args, **kwargs):
 def get_exercise_data(request, exercise_id=None):
     exercise = get_exercise_cache().get(exercise_id, None)
 
+    exercise = copy.copy(exercise)
+
     if not exercise:
         return None
 
@@ -453,6 +455,8 @@ def get_exercise_data(request, exercise_id=None):
 
     exercise["lang"] = exercise_lang
     exercise["template"] = exercise_template
+    exercise["title"] = _(exercise.get("title", ""))
+    exercise["description"] = _(exercise.get("description", ""))
 
     return exercise
 
