@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
-
 var React = require('react');
+var _ = require("underscore");
+
 var Renderer = require("./renderer.jsx");
 var QuestionParagraph = require("./question-paragraph.jsx");
 var WidgetContainer = require("./widget-container.jsx");
@@ -25,6 +25,16 @@ var AnswerAreaRenderer = React.createClass({
         apiOptions: ApiOptions.propTypes
     },
 
+    getDefaultProps: function() {
+        return {
+            problemNum: 0,
+            onInteractWithWidget: function() {},
+            enabledFeatures: EnabledFeatures.defaults,
+            highlightedWidgets: [],
+            apiOptions: ApiOptions.defaults
+        };
+    },
+
     getInitialState: function() {
         // TODO(alpert): Move up to parent props?
         return {
@@ -35,6 +45,16 @@ var AnswerAreaRenderer = React.createClass({
 
     componentWillReceiveProps: function(nextProps) {
         this.setState({cls: this.getClass(nextProps.type)});
+    },
+
+    getWidgetInstance: function() {
+        // Half the time this is a Renderer; the other half of the time it's a
+        // real widget.
+        if (this.props.type === "multiple") {
+            return this.refs.widget;
+        } else {
+            return this.refs.container.getWidget();
+        }
     },
 
     getClass: function(type) {
@@ -55,51 +75,35 @@ var AnswerAreaRenderer = React.createClass({
 
     emptyWidgets: function() {
         if (this.props.type === "multiple") {
-            return this.refs.widget.emptyWidgets();
+            return this.getWidgetInstance().emptyWidgets();
         } else {
             return Util.scoreIsEmpty(
-                this.refs.widget.simpleValidate(this.props.options)) ?
+                this.getWidgetInstance().simpleValidate(this.props.options)) ?
                 [SINGLE_ITEM_WIDGET_ID] : [];
         }
     },
 
     // Gets a focus object fixed up with an "answer-" prefix for
     // onFocusChange when type === "multiple"
-    _getAnswerAreaFocusObj: function(rendererFocusObj) {
-        if (rendererFocusObj.path == null) {
-            return rendererFocusObj;
+    _getAnswerAreaFocusObj: function(rendererFocusPath) {
+        if (rendererFocusPath == null) {
+            return rendererFocusPath;
         }
         // TODO(jack): make "answer" the first element of the prefix
         // array, rather than modifying the widgetId, once we have
         // expunged widgetIds from the rest of the api calls in
         // favor of focus paths
-        var answerPath = ["answer-" + rendererFocusObj.path[0]];
-        answerPath = answerPath.concat(_.rest(rendererFocusObj.path));
-        return {
-            path: answerPath,
-            element: rendererFocusObj.element
-        };
+        var answerPath = ["answer-" + _.first(rendererFocusPath)].concat(
+            _.rest(rendererFocusPath));
+        return answerPath;
     },
 
     renderMultiple: function() {
-        var parentInterceptInputFocus =
-                this.props.apiOptions.interceptInputFocus;
         var parentOnFocusChange = this.props.apiOptions.onFocusChange;
-
         var apiOptions = _.extend(
             {},
             ApiOptions.defaults,
             this.props.apiOptions,
-            parentInterceptInputFocus && {
-                // Rewrite widgetIds sent to interceptInputFocus on the way
-                // up to include an "answer-" prefix
-                interceptInputFocus: (widgetId) => {
-                    var args = _.toArray(arguments);
-                    var fullWidgetId = "answer-" + widgetId;
-                    args[0] = fullWidgetId;
-                    return parentInterceptInputFocus.apply(null, args);
-                }
-            },
             parentOnFocusChange && {
                 onFocusChange: (newFocus, oldFocus) => {
                     // If we have an apiOptions.onFocusChange, call
@@ -112,27 +116,38 @@ var AnswerAreaRenderer = React.createClass({
             }
         );
 
-        return this.state.cls(_.extend({
-            ref: "widget",
-            problemNum: this.props.problemNum,
-            onChange: this.handleChangeRenderer,
-            onInteractWithWidget: this.props.onInteractWithWidget,
-            highlightedWidgets: this.props.highlightedWidgets,
-            enabledFeatures: _.extend({}, this.props.enabledFeatures, {
+        return <this.state.cls
+            ref="widget"
+            problemNum={this.props.problemNum}
+            onChange={this.handleChangeRenderer}
+            onInteractWithWidget={this.props.onInteractWithWidget}
+            highlightedWidgets={this.props.highlightedWidgets}
+            enabledFeatures={_.extend({}, this.props.enabledFeatures, {
                 // Hide answer area tooltip formats,
                 // the "Acceptable formats" box already works
                 toolTipFormats: false
-            }),
-            apiOptions: apiOptions
-        }, this.props.options, this.state.widget));
+            })}
+            apiOptions={apiOptions}
+            {...this.props.options}
+            {...this.state.widget}
+        />;
     },
 
     renderSingle: function() {
         var shouldHighlight = _.contains(this.props.highlightedWidgets,
                                     SINGLE_ITEM_WIDGET_ID);
 
-        var editorProps = this.props.options;
-        var transform = Widgets.getTransform(this.props.type);
+        return <QuestionParagraph>
+            <WidgetContainer
+                ref="container"
+                key={this.props.type}
+                type={this.state.cls}
+                initialProps={this.getSingleWidgetProps()}
+                shouldHighlight={shouldHighlight} />
+        </QuestionParagraph>;
+    },
+
+    getSingleWidgetProps: function() {
         var apiOptions = _.extend(
             {},
             ApiOptions.defaults,
@@ -150,46 +165,36 @@ var AnswerAreaRenderer = React.createClass({
         // onChangeFocus at the ItemRenderer level.
         var onFocus = (path, elem) => {
             this._isFocused = true;
-            apiOptions.onFocusChange({
-                path: [SINGLE_ITEM_WIDGET_ID].concat(path),
-                element: elem || this.refs.widget.getDOMNode()
-            }, {
+            apiOptions.onFocusChange(
+                [SINGLE_ITEM_WIDGET_ID].concat(path),
                 // we're pretending we're a renderer, so if we got
                 // focus, we must not have had it before
-                path: null,
-                element: null
-            });
+                null);
         };
         var onBlur = (path, elem) => {
             this._isFocused = false;
-            apiOptions.onFocusChange({
-                path: null,
-                element: null
-            }, {
-                path: [SINGLE_ITEM_WIDGET_ID].concat(path),
-                element: elem || this.refs.widget.getDOMNode()
-            });
+            apiOptions.onFocusChange(null,
+                [SINGLE_ITEM_WIDGET_ID].concat(path));
         };
 
-        return <QuestionParagraph>
-            <WidgetContainer
-                shouldHighlight={shouldHighlight} >
-                {this.state.cls(_.extend({
-                    ref: "widget",
-                    widgetId: SINGLE_ITEM_WIDGET_ID,
-                    problemNum: this.props.problemNum,
-                    onChange: this.handleChangeRenderer,
-                    enabledFeatures: _.extend({}, this.props.enabledFeatures, {
-                        // Hide answer area tooltip formats,
-                        // the "Acceptable formats" box already works
-                        toolTipFormats: false
-                    }),
-                    apiOptions: apiOptions,
-                    onFocus: onFocus,
-                    onBlur: onBlur
-                }, transform(editorProps), this.state.widget))}
-            </WidgetContainer>
-        </QuestionParagraph>;
+        var initialWidgetProps = Widgets.getRendererPropsForWidgetInfo(
+            this.props,
+            this.props.problemNum
+        );
+
+        return _.extend({
+            widgetId: SINGLE_ITEM_WIDGET_ID,
+            problemNum: this.props.problemNum,
+            onChange: this.handleChangeRenderer,
+            enabledFeatures: _.extend({}, this.props.enabledFeatures, {
+                // Hide answer area tooltip formats,
+                // the "Acceptable formats" box already works
+                toolTipFormats: false
+            }),
+            apiOptions: apiOptions,
+            onFocus: onFocus,
+            onBlur: onBlur
+        }, initialWidgetProps, this.state.widget);
     },
 
     _setWidgetProps: function(widgetId, newProps, cb) {
@@ -199,7 +204,7 @@ var AnswerAreaRenderer = React.createClass({
             this.handleChangeRenderer(newProps, cb);
         } else if (this.props.type === "multiple") {
             // We have a `Renderer`
-            this.refs.widget._setWidgetProps(widgetId, newProps, cb);
+            this.getWidgetInstance()._setWidgetProps(widgetId, newProps, cb);
         } else if ((typeof console) !== "undefined" && console.error) {
             // We have a widget id other than area in a non-renderer area
             console.error(
@@ -224,17 +229,11 @@ var AnswerAreaRenderer = React.createClass({
                         this.props.apiOptions.onFocusChange &&
                         !this._isFocused) {
                     this._isFocused = true;
-                    this.props.apiOptions.onFocusChange({
-                        path: [SINGLE_ITEM_WIDGET_ID],
-                        // TODO(jack): Make this less hacky (call some magic
-                        // getElement function or something):
-                        element: this.refs.widget.getDOMNode()
-                    }, {
+                    this.props.apiOptions.onFocusChange(
+                        [SINGLE_ITEM_WIDGET_ID],
                         // we're pretending we're a renderer, so if we got
                         // focus, we must not have had it before
-                        path: null,
-                        element: null
-                    });
+                        null);
                 }
             }
         });
@@ -242,105 +241,183 @@ var AnswerAreaRenderer = React.createClass({
 
     componentDidMount: function() {
         // Storing things directly on components should be avoided!
-        this.examples = [];
-        this.$examples = $("<div id='examples'></div>");
         this._isFocused = false;
-
         this.update();
     },
 
-    componentDidUpdate: function() {
+    componentDidUpdate: function(prevProps) {
         this.update();
+
+        if (this.props.type !== "multiple" &&
+                prevProps.type === this.props.type) {
+            this.refs.container.replaceWidgetProps(
+                this.getSingleWidgetProps());
+        }
     },
 
     update: function() {
         $("#calculator").toggle(this.props.calculator);
-
-        var widget = this.refs.widget;
-        var examples = widget.examples ? widget.examples() : null;
-
-        if (_.isEqual(examples, this.examples)) {
-            // Only destroy (and maybe recreate) qtip if examples have changed
-            return;
-        }
-
-        this.examples = examples;
-
-        $("#examples-show").hide();
-        if ($("#examples-show").data("qtip")) {
-            // This will warn about Jquery removing a node owned by React, 
-            // however React no longer owns that node. We created that node 
-            // using React, copied its html, passed it to qtip, and then 
-            // unmounted it from React. So it React thinks it is it's code 
-            // because it has a data-reactid, but qtip created it.      
-            $("#examples-show").qtip("destroy", /* immediate */ true);
-        }
-
-        if (examples && $("#examples-show").length) {
-            $("#examples-show").append(this.$examples);
-
-            var content = _.map(examples, function(example) {
-                return "- " + example;
-            }).join("\n");
-
-            React.renderComponent(
-                Renderer({content: content}),
-                this.$examples[0]);
-
-            $("#examples-show").qtip({
-                content: {
-                    text: this.$examples.html()
-                },
-                style: {classes: "qtip-light leaf-tooltip"},
-                position: {
-                    my: "center right",
-                    at: "center left"
-                },
-                show: {
-                    delay: 200,
-                    effect: {
-                        length: 0
-                    }
-                },
-                hide: {delay: 0}
-            });
-
-            // Now that qtip has been created with a copy of the react 
-            // component's html, we no longer need to keep the react component.
-            React.unmountComponentAtNode(this.$examples[0]);
-            this.$examples.remove();
-
-            $("#examples-show").show();
-        }
     },
 
     componentWillUnmount: function() {
         if (this.props.calculator) {
             $("#calculator").hide();
         }
-        if (this.state.cls.examples && $("#examples-show").length) {
-            $("#examples-show").hide();
-            React.unmountComponentAtNode(
-                    document.getElementById("examples"));
+    },
+
+    getDOMNodeForPath: function(path) {
+        var prefixedWidgetId = _.first(path);
+        var interWidgetPath = _.rest(path);
+
+        if (this.props.type === "multiple") {
+            var widgetId = prefixedWidgetId.replace('answer-', '');
+            var relativePath = [widgetId].concat(interWidgetPath);
+
+            // Answer-area is a renderer, so we can pass down the path
+            return this.getWidgetInstance().getDOMNodeForPath(relativePath);
+        } else {
+            // Answer-area is a widget, so we treat it like a widget, returning
+            // the outer node in the special-case that there is no remaining
+            // path.
+            var widget = this.getWidgetInstance();
+            var getNode = widget.getDOMNodeForPath;
+            if (getNode) {
+                return getNode(interWidgetPath);
+            } else if (interWidgetPath.length === 0) {
+                return widget.getDOMNode();
+            }
+        }
+    },
+
+    getGrammarTypeForPath: function(path) {
+        // TODO(emily): refactor this kind of logic out, or wait until alex
+        // kills the answer-area-renderer and solves it for me.
+        var prefixedWidgetId = _.first(path);
+        var interWidgetPath = _.rest(path);
+
+        if (this.props.type === "multiple") {
+            var widgetId = prefixedWidgetId.replace('answer-', '');
+            var relativePath = [widgetId].concat(interWidgetPath);
+
+            // Answer-area is a renderer, so we can pass down the path
+            return this.getWidgetInstance().getGrammarTypeForPath(
+                relativePath);
+        } else {
+            // Answer-area is a widget, so we treat it like a widget.
+            var widget = this.getWidgetInstance();
+            return widget.getGrammarTypeForPath(interWidgetPath);
+        }
+    },
+
+    getInputPaths: function() {
+        if (this.props.type === "multiple") {
+            var inputPaths = this.getWidgetInstance().getInputPaths();
+            // We need to prefix our widgetIds with 'answer-' to preserve
+            // uniqueness when we return these to the item-renderer.
+            return _.map(inputPaths, (path) => {
+                var prefixedWidget = 'answer-' + _.first(path);
+                return [prefixedWidget].concat(_.rest(path));
+            });
+        } else {
+            var widgetId = "answer-area";
+            var inputPaths = [];
+            var widget = this.getWidgetInstance();
+            if (widget.getInputPaths) {
+                // Grab all input paths and add widgetID to the front
+                var widgetInputPaths = widget.getInputPaths();
+
+                if (widgetInputPaths === widget) {
+                    // Special case: we allow you to just return the widget
+                    inputPaths.push([
+                        widgetId
+                    ]);
+                } else {
+                    // Add to collective list of inputs
+                    _.each(widgetInputPaths, (inputPath) => {
+                        var relativeInputPath = [widgetId].concat(inputPath);
+                        inputPaths.push(relativeInputPath);
+                    });
+                }
+            }
+            return inputPaths;
+        }
+    },
+
+    focusPath: function(path) {
+        var prefixedWidgetId = _.first(path);
+        var interWidgetPath = _.rest(path);
+
+        if (this.props.type === "multiple") {
+            var widgetId = prefixedWidgetId.replace('answer-', '');
+            var relativePath = [widgetId].concat(interWidgetPath);
+
+            // Answer-area is a renderer, so we can pass down the path
+            this.getWidgetInstance().focusPath(relativePath);
+        } else {
+            // Answer-area is a widget
+            var focusWidget = this.getWidgetInstance().focusInputPath;
+            focusWidget && focusWidget(interWidgetPath);
+        }
+    },
+
+    blurPath: function(path) {
+        var prefixedWidgetId = _.first(path);
+        var interWidgetPath = _.rest(path);
+
+        if (this.props.type === "multiple") {
+            var widgetId = prefixedWidgetId.replace('answer-', '');
+            var relativePath = [widgetId].concat(interWidgetPath);
+
+            // Answer-area is a renderer, so we can pass down the path
+            this.getWidgetInstance().blurPath(relativePath);
+        } else {
+            // Answer-area is a widget
+            var blurWidget = this.getWidgetInstance().blurInputPath;
+            blurWidget && blurWidget(interWidgetPath);
         }
     },
 
     focus: function() {
-        this.refs.widget.focus();
+        var focusContents = this.getWidgetInstance().focus;
+        focusContents && focusContents();
+    },
+
+    blur: function() {
+        var blurContents = this.getWidgetInstance().blur;
+        blurContents && blurContents();
+    },
+
+    setInputValue: function(path, newValue, focus) {
+        var prefixedWidgetId = _.first(path);
+        var interWidgetPath = _.rest(path);
+
+        var newPath;
+        if (this.props.type === "multiple") {
+            var widgetId = prefixedWidgetId.replace('answer-', '');
+            var relativePath = [widgetId].concat(interWidgetPath);
+            newPath = relativePath;
+        } else {
+            newPath = interWidgetPath;
+        }
+
+        // Thankfully, the API is agnostic! So it doesn't matter if this is a
+        // renderer or a widget.
+        this.getWidgetInstance().setInputValue(newPath, newValue, focus);
     },
 
     guessAndScore: function() {
         // TODO(alpert): These should probably have the same signature...
         if (this.props.type === "multiple") {
-            return this.refs.widget.guessAndScore();
+            return this.getWidgetInstance().guessAndScore();
         } else {
-            var guess = this.refs.widget.toJSON();
+            var guess = this.getWidgetInstance().getUserInput();
 
             var score;
             if (this.props.graded == null || this.props.graded) {
                 // props.graded is unset or true
                 // TODO(alpert): Separate out the rubric
-                score = this.refs.widget.simpleValidate(this.props.options);
+                score = this.getWidgetInstance().simpleValidate(
+                    this.props.options);
             } else {
                 score = Util.noScore;
             }

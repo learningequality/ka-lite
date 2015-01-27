@@ -27,6 +27,7 @@ question editor.
 
 Here are some technologies that will be important to be familiar with to work with
 the Perseus source code:
+
  * We create all Perseus components, including widgets, with
    [React.js](http://facebook.github.io/react/).
  * We use [underscore](http://underscorejs.org/) for various collection utility
@@ -37,22 +38,44 @@ the Perseus source code:
  * We compile our CSS with [Less](http://lesscss.org/).
  * Some parts of question rendering, answer checking, and hint display are handled
    by [khan-excercises](https://github.com/Khan/khan-exercises), our legacy
-   exercise framework. We also make heavy use of
-   [Graphie](https://github.com/Khan/khan-exercises/blob/master/utils/graphie.js),
-   which exists within khan-exercises.
+   exercise framework.
+ * For graph or visual widgets, we often make use of:
+    * [graphie](https://github.com/Khan/khan-exercises/blob/master/utils/graphie.js),
+       which exists within khan-exercises, and
+    * The [React <Graphie> component](https://github.com/Khan/perseus/blob/master/src/components/graphie.jsx),
+      a react layer on top of graphie and Interactive2.
 
 And here are some other technologies we use, which are only used by specific
 parts of the code (and aren't necessary to understand to work with Perseus code):
+
  * We render math text with [KaTeX](https://github.com/Khan/KaTeX) and
    [MathJax](http://www.mathjax.org/).
- * We render Markdown with [marked-react](https://github.com/spicyj/marked-react),
-   a port of the [marked](https://github.com/chjj/marked) Markdown renderer to
-   React.js
  * We use [jQuery](http://jquery.com/) for low-level dom manipulation for things
    that are not possible with React.js
- * We use [Browserify](http://browserify.org/) to provide Node.js style `require`
+ * We use [webpack](http://webpack.github.io/) to provide Node.js style `require`
    dependencies.
+ * Some internal library-ish things:
+    * [Interactive2](https://github.com/Khan/perseus/tree/master/src/interactive2),
+      a higher level API on top of several interactive graphie things, and
+    * We render Markdown with
+      [simple-markdown](https://github.com/Khan/perseus/blob/master/src/simple-markdown.jsx),
+      a custom extensible markdown parser based on [marked.js](https://github.com/chjj/marked)
 
+
+## Overall architecture
+
+The root React components of perseus are:
+
+ * EditorPage (src/editor-page.jsx): This renders the entire editor,
+   and is what you see on test.html.
+ * Editor (src/editor.jsx): This renders the left text editor for the
+   question area, custom-format answer area, or a hint. It manages
+   much of question and widget serialization.
+ * ItemRenderer (src/item-renderer.jsx): This is the component that
+   renders the entire item on the site.
+ * Renderer: This renders a question area, a custom-format answer
+   area, or a hint. It manages markdown parsing and passing props
+   through to widgets.
 
 ## Adding widgets
 
@@ -63,16 +86,19 @@ you probably want to create a new widget or modify an existing widget.
 Widgets are all defined in the `src/widgets/` directory, and loaded in src/all-widgets.js.
 
 Each widget consists of the following parts:
+
  * A `name` which is a unique id slug, such as `number-input` or `example-widget`
     * *Note: This id should only contain lowercase alphabetic characters and dashes.*
  * A `displayName` which is shown to the user in the "Add widget" menu
  * A `widget` or "widget renderer", such as NumberInput or ExampleWidget
  * An `editor` or "widget editor", such as NumberInputEditor or ExampleWidgetEditor
  * An options `transform` transformation function, which converts the result of
-   `widgetEditor.toJSON()` (generally the editor's props) to the widget renderer's
-   props
+   `widgetEditor.serialize()` (generally the editor's props) to the widget
+   renderer's props
  * An options `hidden` flag, which, if `true`, will prevent the widget from being
    available in the widget menu
+ * An options `shorcut`, which is a unique string that can be used to quickly add the widget in the editor
+   * *Note: If not provided the widget will get automatically assigned a shortcut, extracted from `name`*
 
 These are exported in an object at the bottom of every widget file:
 
@@ -170,11 +196,11 @@ different props. This pattern is so common that it has been made into a
 mixin, `Changeable`, which provides `this.change`:
 
     var Changeable = require("../mixins/changeable");
-    
+
     var ExampleWidgetEditor = React.createClass({
         // ...
         mixins: [Changeable]
-        
+
         // ...
         handleAnswerChange(event) {
             this.change({
@@ -183,7 +209,7 @@ mixin, `Changeable`, which provides `this.change`:
         }
         // ...
     });
-    
+
 After this change, the following props will be sent down to the
 `ExampleWidgetEditor` by the `Editor`:
 
@@ -195,48 +221,48 @@ After this change, the following props will be sent down to the
         "maxError": 0.1,
         "answerType": "number"
     }
-    
-At this point, the question writer probably would like to save the item.
-When they save the item, the widget editor's `toJSON()` function is called,
-and the result is set as the `options` field for that widget and stored in
-the datastore. **The result of `toJSON()` is stored in the datastore.**
-It is important to note that when the question is loaded again, that
-result of `toJSON()` that has been stored in the datastore will be sent
-as the props of the widget editor. For that reason,
-**it is important for toJSON to return an object compatible with the editor's props**.
+
+At this point, the question writer probably would like to save the item.  When
+they save the item, the widget editor's `serialize()` function is called, and
+the result is set as the `options` field for that widget and stored in the
+datastore. **The result of `serialize()` is stored in the datastore.** It is
+important to note that when the question is loaded again, that result of
+`serialize()` that has been stored in the datastore will be sent as the props
+of the widget editor. For that reason, **it is important for serialize to
+return an object compatible with the editor's props**.
 
 While it is possible to return things other than the editor's props from
-`toJSON()`, this is not recommended, and all future widgets should return a
-strict subset of their editor's props in `toJSON()`. Since this pattern is
-quite common, we have a mixin to create a correct `toJSON()` function:
-`JsonifyProps`. Adding `JsonifyProps` to the mixins of the widget editor
-gives the widget editor a `toJSON()` function that returns the widget
+`serialize()`, this is not recommended, and all future widgets should return a
+strict subset of their editor's props in `serialize()`. Since this pattern is
+quite common, we have a mixin to create a correct `serialize()` function:
+`EditorJsonify`. Adding `EditorJsonify` to the mixins of the widget editor
+gives the widget editor a `serialize()` function that returns the widget
 editor's props minus special props used by React or Perseus.
 
-From here, it is important to understand how these editor props relate to
-the widget renderer's props. The widget renderer's props are created by
-calling the `transform` function exported by the widget on the result
-of the widget editor's `toJSON()` function (or equivalently on the props
-from the datastore). If no `transform` function is registered, the
-identity function is used in its place. For this reason, many legacy
-widgets have the same format for their editor props and renderer props,
-however, this conflation is no longer necessary, and in most cases
-an explicit `transform` function can make prop logic clearer.
+From here, it is important to understand how these editor props relate to the
+widget renderer's props. The widget renderer's props are created by calling the
+`transform` function exported by the widget on the result of the widget
+editor's `serialize()` function (or equivalently on the props from the
+datastore). If no `transform` function is registered, the identity function is
+used in its place. For this reason, many legacy widgets have the same format
+for their editor props and renderer props, however, this conflation is no
+longer necessary, and in most cases an explicit `transform` function can make
+prop logic clearer.
 
 
 ### Between the widgets
 
-In order to get the information from the editor to the renderer, there is big chain of calls of `toJSON` calls with the following hierarchy: 
+In order to get the information from the editor to the renderer, there is big chain of calls of `serialize` calls with the following hierarchy:
 
     TOP: StatefulEditorPage -> EditorPage -> ItemEditor -> Editor -> WidgetEditor -> (widget’s editor) : BOTTOM
 
-It’s at the `EditorPage` level that `updateRenderer` takes `EditorPage.toJSON` and passes it to `ItemRenderer`, which (on mounting) passes that information to three additional components: `Renderer`, `AnswerAreaRenderer`, and `HintsRenderer`. Each of those in turn identifies the widget type and inserts the information. (In the future, we may streamline this process, delete the toJSON function at the widget’s editor level, and simply extract the props of the widget directly.)
+It’s at the `EditorPage` level that `updateRenderer` takes `EditorPage.serialize` and passes it to `ItemRenderer`, which (on mounting) passes that information to three additional components: `Renderer`, `AnswerAreaRenderer`, and `HintsRenderer`. Each of those in turn identifies the widget type and inserts the information. (In the future, we may streamline this process, delete the `serializeQuestion` function at the widget’s editor level, and simply extract the props of the widget directly.)
 
-But you might be wondering, "how does it know to update?" That's why we use a heirarchical paradigm of calling 
+But you might be wondering, "how does it know to update?" That's why we use a heirarchical paradigm of calling
 
     this.props.onChange({updatedParam: newValue}, callbackFunction)
 
-for every update-worthy instance. Similar to toJSON, it goes all the way up the hierarchy above and then comes all the way back down, rerendering everything. The results of these renders are then diffed by React, preventing them from causing unnecessary DOM manipulation (and keeping this whole process fast).
+for every update-worthy instance. Similar to `serialize`, it goes all the way up the hierarchy above and then comes all the way back down, rerendering everything. The results of these renders are then diffed by React, preventing them from causing unnecessary DOM manipulation (and keeping this whole process fast).
 
 Note that there is nothing special about the function `onChange`--that name
 is just a convention, and not related to the DOM's `onChange` event, except
@@ -249,7 +275,7 @@ ours because of the DOM event.
 Want to help out? Here are some well-scoped improvements we could use:
 - **Show messages on user input in test.html**: In production, there is a message box
   that shows various clues to the user ("You didn't simplify" or "You used x instead of \*").
-  But those clues don't show up in Perseus for whatever reason. Essentially onClick of 
+  But those clues don't show up in Perseus for whatever reason. Essentially onClick of
   the score button or (if the above mini-project is done) the green button, there should be
   a message that appears. This is becoming more important as these little clues are now going
   mainstream, with content creators able to add their own custom-tailored hints.
@@ -264,10 +290,6 @@ Want to help out? Here are some well-scoped improvements we could use:
   angle. Specifically, we would probably want to add a new dropdown for snap mode, set
   to maybe "grid" or "angle", and when set to angle, there would be additional
   snapDegrees and snapOffset props (the same ones used by the angle shape).
-- **Add a coefficient type:** Add a type to input-number for use as a coeffient in
-  polynomials. It would accept "" to mean 1 (an empty box in front of `x` means `1x`),
-  and "-" as "-1", in addition to decimals and fractions.
-
 
 ## Styles
 

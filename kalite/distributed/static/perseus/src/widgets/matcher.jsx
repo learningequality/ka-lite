@@ -1,7 +1,7 @@
-/** @jsx React.DOM */
-
 var React = require('react');
-var InfoTip        = require("react-components/info-tip");
+var _ = require("underscore");
+
+var InfoTip        = require("react-components/info-tip.jsx");
 var PropCheckBox   = require("../components/prop-check-box.jsx");
 var Renderer       = require("../renderer.jsx");
 var Sortable       = require("../components/sortable.jsx");
@@ -26,7 +26,7 @@ var Matcher = React.createClass({
             left: [],
             right: [],
             labels: ["", ""],
-            orderMatters: true,
+            orderMatters: false,
             padding: true,
             problemNum: 0,
             onChange: function() {}
@@ -99,7 +99,7 @@ var Matcher = React.createClass({
         this.setState({rightHeight: height});
     },
 
-    toJSON: function(skipValidation) {
+    getUserInput: function() {
         return {
             left: this.refs.left.getOptions(),
             right: this.refs.right.getOptions()
@@ -107,7 +107,7 @@ var Matcher = React.createClass({
     },
 
     simpleValidate: function(rubric) {
-        return Matcher.validate(this.toJSON(), rubric);
+        return Matcher.validate(this.getUserInput(), rubric);
     },
 
     statics: {
@@ -145,7 +145,7 @@ var MatcherEditor = React.createClass({
             left: ["$x$", "$y$", "$z$"],
             right: ["$1$", "$2$", "$3$"],
             labels: ["test", "label"],
-            orderMatters: true,
+            orderMatters: false,
             padding: true
         };
     },
@@ -221,14 +221,16 @@ var MatcherEditor = React.createClass({
         this.props.onChange({labels: labels});
     },
 
-    toJSON: function(skipValidation) {
-        if (!skipValidation) {
-            if (this.props.left.length !== this.props.right.length) {
-                alert("Warning: The two halves of the matcher have different" +
-                    " numbers of cards.");
-            }
+    getSaveWarnings: function() {
+        if (this.props.left.length !== this.props.right.length) {
+            return [
+                "Warning: The two halves of the matcher have different" +
+                " numbers of cards."
+            ];
         }
+    },
 
+    serialize: function() {
         return _.pick(this.props,
             "left", "right", "labels", "orderMatters", "padding"
         );

@@ -129,7 +129,7 @@ $.extend(KhanUtil, {
 
             var t = construction.tool;
 
-            $(t.center.mouseTarget[0]).bind(
+            $(t.center.mouseTarget.getMouseTarget()).bind(
                 "vmouseover vmouseout", function(event) {
                     if (t.center.highlight) {
                         t.circ.animate({
@@ -149,8 +149,6 @@ $.extend(KhanUtil, {
 
             // add new points that all other points should snap to
             construction.snapPoints.push(t.center);
-
-
 
             t.center.onMove = function(x, y) {
                 t.circ.toFront();
@@ -216,9 +214,10 @@ $.extend(KhanUtil, {
                 }
             };
 
-            t.center.mouseTarget.dblclick(function() {
-                construction.removeTool(t, true);
-            });
+            // XXX(joel/emily)
+            // t.center.mouseTarget.dblclick(function() {
+            //     construction.removeTool(t, true);
+            // });
 
             $(t.perim[0]).css("cursor", "move");
             $(t.perim[0]).bind(
@@ -343,7 +342,7 @@ $.extend(KhanUtil, {
                     movePointsWithLine: true
                 });
 
-            $(construction.tool.center.mouseTarget[0]).bind(
+            $(construction.tool.center.mouseTarget.getMouseTarget()).bind(
                 "vmouseover vmouseout", construction.tool, function(event) {
                     if (event.data.center.highlight) {
                         event.data.line1.visibleLine.animate({
@@ -380,8 +379,8 @@ $.extend(KhanUtil, {
                 //t.first.onMoveEnd(t.first.coord[0], t.first.coord[1]);
                 //t.second.onMoveEnd(t.second.coord[0], t.second.coord[1]);
             };
-            
-            $(t.center.mouseTarget[0]).bind("dblclick", function() {
+
+            $(t.center.mouseTarget.getMouseTarget()).bind("dblclick", function() {
                 construction.removeTool(t, true);
             });
 
@@ -392,8 +391,13 @@ $.extend(KhanUtil, {
         // the straightedge object has the following fields
         // first, second: movable endpoints
         // edge: movable line segment
-        construction.addStraightedge = function(extend) {
+        // extend determines whether the line extends off
+        // screen (default) or is a line segment
+        // if fixed is true then the line cannot be dragged
+        // by selecting the line (as opposed to the end points)
+        construction.addStraightedge = function(extend, fixed) {
             extend = extend == null ? true : extend;
+            fixed = fixed == null ? false : fixed;
 
             construction.tool = {
                 interType: "line",
@@ -432,10 +436,13 @@ $.extend(KhanUtil, {
                         "stroke-width": 3
                     },
                     extendLine: extend,
+                    constraints: {
+                        fixed: fixed
+                    },
                     movePointsWithLine: true
                 });
 
-            $(construction.tool.first.mouseTarget[0]).bind(
+            $(construction.tool.first.mouseTarget.getMouseTarget()).bind(
                 "vmouseover vmouseout", construction.tool, function(event) {
                     if (event.data.first.highlight) {
                         event.data.edge.visibleLine.animate({
@@ -455,7 +462,7 @@ $.extend(KhanUtil, {
                         }, 50);
                     }
                 });
-            $(construction.tool.second.mouseTarget[0]).bind(
+            $(construction.tool.second.mouseTarget.getMouseTarget()).bind(
                 "vmouseover vmouseout", construction.tool, function(event) {
                     if (event.data.second.highlight) {
                         event.data.edge.visibleLine.animate({
@@ -475,7 +482,7 @@ $.extend(KhanUtil, {
                         }, 50);
                     }
                 });
-            $(construction.tool.edge.mouseTarget[0]).bind(
+            $(construction.tool.edge.mouseTarget.getMouseTarget()).bind(
                 "vmouseover vmouseout", construction.tool, function(event) {
                     if (event.data.edge.highlight) {
                         event.data.first.visibleShape.animate({
@@ -583,15 +590,15 @@ $.extend(KhanUtil, {
                 endpointMoveEnd(x, y, t.second);
             };
 
-            $(t.first.mouseTarget[0]).bind("dblclick", function() {
+            $(t.first.mouseTarget.getMouseTarget()).bind("dblclick", function() {
                 construction.removeTool(t, true);
             });
 
-            $(t.second.mouseTarget[0]).bind("dblclick", function() {
+            $(t.second.mouseTarget.getMouseTarget()).bind("dblclick", function() {
                 construction.removeTool(t, true);
             });
 
-            $(t.edge.mouseTarget[0]).bind("dblclick", function() {
+            $(t.edge.mouseTarget.getMouseTarget()).bind("dblclick", function() {
                 construction.removeTool(t, true);
             });
             construction.updateIntersections();
@@ -604,7 +611,7 @@ $.extend(KhanUtil, {
                         key === "first" || key === "second") {
                     tool[key].visibleShape.remove();
                     tool[key].visible = false;
-                    $(tool[key].mouseTarget[0]).remove();
+                    $(tool[key].mouseTarget.getMouseTarget()).remove();
                 } else if (key === "circ") {
                     tool[key].remove();
                 } else if (key === "edge") {
@@ -1024,8 +1031,8 @@ $.extend(KhanUtil, {
         // Find angles to line points
         var angles = [];
         _.map(lines, function(tool) {
-            var angle1 = Math.atan2(tool.first.coord[1], tool.first.coord[0]) * 180 / Math.PI; 
-            var angle2 = Math.atan2(tool.second.coord[1], tool.second.coord[0]) * 180 / Math.PI; 
+            var angle1 = Math.atan2(tool.first.coord[1], tool.first.coord[0]) * 180 / Math.PI;
+            var angle2 = Math.atan2(tool.second.coord[1], tool.second.coord[0]) * 180 / Math.PI;
             angles.push((angle1 - offsetAngle + 540 + 180 / n) % 360);
             angles.push((angle2 - offsetAngle + 540 + 180 / n) % 360);
         });

@@ -166,16 +166,17 @@ class APIModel(AttrDict):
     def toJSON(self):
         output = copy.copy(self)
         for key in output._related_field_types.keys() + output._lazy_related_field_types.keys():
-            if isinstance(output[key], APIModel):
-                output[key] = output[key].toJSON()
-            elif isinstance(output[key], dict):
-                output[key] = json.dumps(output[key])
-            elif isinstance(output[key], list):
-                for i, item in enumerate(output[key]):
-                    if isinstance(output[key][i], APIModel):
-                        output[key][i] = output[key][i].toJSON()
-                    elif isinstance(output[key][i], dict):
-                        output[key][i] = json.dumps(output[key][i])
+            if output.get(key, None):
+                if isinstance(output[key], APIModel):
+                    output[key] = output[key].toJSON()
+                elif isinstance(output[key], dict):
+                    output[key] = json.dumps(output[key])
+                elif isinstance(output[key], list):
+                    for i, item in enumerate(output[key]):
+                        if isinstance(output[key][i], APIModel):
+                            output[key][i] = output[key][i].toJSON()
+                        elif isinstance(output[key][i], dict):
+                            output[key][i] = json.dumps(output[key][i])
         deletekeys = []
         for key in output:
             if key.startswith("_"):
@@ -296,7 +297,13 @@ class Khan():
         """
         Function to turn a dictionary into a Python object of the kind given by name.
         """
-        return kind_to_class_map[name](node, session=self, loaded=loaded)
+        if isinstance(node, str) or isinstance(node, unicode):
+            # Assume just an id has been supplied - otherwise there's not much we can do.
+            node = {"id": node}
+        if isinstance(node, dict):
+            return kind_to_class_map[name](node, session=self, loaded=loaded)
+        else:
+            return node
 
     def convert_items(self, name, obj, loaded=True):
         """
@@ -437,7 +444,7 @@ class Khan():
         """
         Return list of all assessment item tags in the Khan API
         """
-        return self.convert_list_to_classes(api_call("v1", Tag.base_url + self.params(), self))
+        return self.convert_list_to_classes(api_call("v1", Tag.base_url + self.params(), self), class_converter=Tag)
 
 class Exercise(APIModel):
 
@@ -482,7 +489,7 @@ class AssessmentItem(APIModel):
 
         super(AssessmentItem, self).__init__(*args, **kwargs)
         self._lazy_related_field_types = {
-            "tags": partial(self._session.class_by_name, name="Tag"),
+            "tags": partial(self._session.class_by_name, name="AssessmentItemTag"),
         }
 
 class Tag(APIModel):

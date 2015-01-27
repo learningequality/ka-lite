@@ -5,10 +5,12 @@
 
 @import "variables.less";
 
+// Article Renderer
+@import "articles.less";
+
 #perseus {
     position: relative;
 }
-
 
 // .no-select is used to prevent selection of certain widgets.
 // often, allowing selection makes for an awkward mobile experience
@@ -52,8 +54,8 @@
     .no-select;
 }
 
-.interactive-component,
-.interactive-component.above-scratchpad {
+.perseus-interactive,
+.perseus-interactive.above-scratchpad {
     position: relative;
     z-index: @zIndexInteractiveComponent;
 }
@@ -73,15 +75,10 @@
     }
 }
 
-#examples > div > ul {
-    // React and Perseus.Renderer add an extra layer each to what qtip expects
-    list-style-type: disc;
-}
-
 .framework-perseus {
     #problemarea {
         input, button {
-            .interactive-component
+            .perseus-interactive;
         }
     }
 
@@ -104,6 +101,15 @@
 
     .paragraph > ul:not(.perseus-widget-radio) > li {
         list-style-type: disc;
+    }
+
+    .paragraph > ol {
+        list-style: decimal;
+        padding-left: 2em;
+    }
+
+    blockquote {
+        padding: 0 2.5em;
     }
 
     table {
@@ -136,6 +142,37 @@
         }
     }
 
+    .perseus-titled-table {
+        display: inline-block;
+
+        // Center the table in a titled table
+        table {
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    // Center the title in a titled table
+    .perseus-table-title {
+        text-align: center;
+        font-size: larger;
+    }
+
+    sup {
+        font-size: smaller;
+        vertical-align: super;
+
+        // by default, vertical-align: super changes the line height of
+        // the line this text is in, which repositions surrounding text
+        // and is sad. This is especially important for the passage
+        // widget, as changes to line-height there make the line numbers
+        // incorrect. This hack fixes that, and seems to not cause problems
+        // even if there is no other text on the line (it still gets the
+        // standard line-height of what non `vertical-align: super` text
+        // would be.
+        line-height: 0;
+    }
+
     // place on a div above the inputs
     .range-input {
         border: 1px solid #ccc;
@@ -165,7 +202,7 @@
         width: 40px;
 
         &.invalid-input {
-            background-color: #ffbaba;
+            background-color: @red;
             outline-color: red;
         }
 
@@ -189,9 +226,11 @@
         min-width: 80px;
         min-height: 36px;
         border-radius: 5px;
-        padding: 3px 5px;
+        padding: 0;
+        margin-top: 4px;
+        margin-bottom: 4px;
         background: white;
-        border: 1px solid #a4a4a4
+        border: 1px solid #a4a4a4;
     }
 
     .graph-settings {
@@ -209,6 +248,14 @@
         }
     }
 
+    .graphie-container {
+        position: relative;
+
+        img {
+            position: absolute;
+        }
+    }
+
     .graph-settings, .image-settings, .misc-settings {
         padding-bottom: 5px;
     }
@@ -216,6 +263,15 @@
     .image-settings, .misc-settings, .type-settings {
         border-top: 1px solid black;
         padding-top: 5px;
+    }
+
+    .svg-image {
+        display: inline-block;
+        position: relative;
+
+        > .graphie-container {
+            position: absolute;
+        }
     }
 }
 
@@ -234,6 +290,12 @@
 
 /* Widget CSS */
 
+.perseus-graph-padding {
+    padding: 25px 25px 0 0;
+}
+
+// TODO(aria): Ugh, sort these and remove
+// the extra categorization file
 @import "widgets/expression.less";
 @import "widgets/radio.less";
 @import "widgets/interactive-graph.less";
@@ -248,6 +310,12 @@
 @import "widgets/matcher.less";
 @import "widgets/sortable.less";
 @import "widgets/image.less";
+@import "widgets/passage.less";
+@import "widgets/matrix.less";
+@import "widgets/group.less";
+@import "widgets/sequence.less";
+@import "widgets/grapher.less";
+@import "widgets/unit.less";
 
 .perseus-diff {
     @borderColor: #E4E4E4;
@@ -434,6 +502,11 @@
     }
 }
 
+// override normal 5px border radius for the editor only
+.perseus-widget-editor .perseus-math-input.mq-editable-field.mq-math-mode > .mq-root-block {
+    border-radius: 0;
+}
+
 // This style looks a little off in the expression editor. Luckily users don't
 // use the expression editor.
 .math-input-buttons {
@@ -488,4 +561,168 @@
     &:last-child {
         margin-bottom: 0;
     }
+}
+
+.renderer-widget-error {
+    background-color: #fcc;
+}
+
+body.sat-section {
+    @satTopSpacing: 35px;
+    @satSectionHeight: 550px;
+    .content-area > div {
+        margin-left: auto;
+        margin-right: auto;
+        width: 592px;
+        .perseus-input-with-answer-blurb {
+            > span {
+                display: inline-block;
+            }
+
+            .perseus-possible-answers, .perseus-possible-answers:before {
+                font-family: "Proxima Nova Semibold"
+            }
+
+            .perseus-possible-answers {
+                color: rgb(0, 153, 0);
+                padding-right: 4px;
+            }
+
+            .perseus-possible-answers:before {
+                content: "CORRECT ANSWER:";
+                padding: 0 5px 0 13px;
+                color: rgb(18, 18, 18);
+            }
+
+            .perseus-possible-answer:not(:first-child):before {
+                // TODO(johnsullivan): Figure out a better way to do this list
+                // joining.
+                content: "or";
+                padding: 0 5px;
+                color: rgb(18, 18, 18);
+            }
+        }
+
+        input.perseus-incorrect {
+            color: @satIncorrectColor;
+            background-color: @satIncorrectBackgroundColor;
+            border: solid 1px @satIncorrectBorderColor;
+        }
+
+        input.perseus-correct {
+            color: @satCorrectColor;
+            background-color: @satCorrectBackgroundColor;
+            border: solid 1px @satCorrectBorderColor;
+        }
+
+        input.perseus-unanswered {
+            background-color: #eee;
+            border: solid 1px #999;
+        }
+
+        &.perseus-renderer-two-columns {
+            // This prevents a strange blank space from appearing above
+            // passages.
+            // TODO(johnsullivan): Try and get rid of the wrapping div that's
+            // causing this instead of modifying its margin like this.
+            & > .paragraph {
+                margin: 0;
+            }
+
+            width: 1024px;
+            & > .paragraph {
+                margin: 0;
+            }
+            .perseus-column {
+                & > .paragraph {
+                    margin: 0;
+                }
+                overflow-y: auto;
+                &:nth-child(1) {
+                    background: #eee;
+                    border-right: 1px solid #ddd;
+                    height: @satSectionHeight - @satTopSpacing;
+                    max-height: @satSectionHeight - @satTopSpacing;
+                    float: left;
+                    padding-left: 46px;
+                    padding-top: @satTopSpacing;
+                    padding-bottom: 22px;
+                    width: 512px;
+                    box-sizing: border-box;
+
+                    .perseus-widget-passage {
+                        // We've replaced the margin here with padding in the
+                        // parent element to stay consistent with non-passage
+                        // two-column mode.
+                        margin: 0;
+                    }
+
+                    & > .paragraph {
+                        margin-right: 40px;
+                    }
+
+                    blockquote {
+                        padding: 0;
+                        margin-right: 22px;
+
+                        & > .paragraph:nth-child(1) {
+                            margin-top: 0;
+                        }
+                    }
+                }
+                &:nth-child(2) {
+                    float: right;
+                    height: @satSectionHeight;
+                    max-height: @satSectionHeight;
+                    padding-right: 20px;
+                    width: 475px;
+                    .perseus-group {
+                        margin-bottom: 20px;
+                    }
+                }
+            }
+        }
+    }
+    .question-annotation {
+        // TODO(kitt): generalize for passages
+        color: #999;
+        margin-top: @satTopSpacing;
+        margin-bottom: 24px;
+        text-transform: uppercase;
+    }
+
+    .paragraph:not(:first-child) .question-annotation {
+        margin-top: 48px;
+    }
+
+    input[type=text],
+    input[type=number] {
+        border: 1px solid #aaa;
+        font-family: @boldFontFamily;
+        font-size: 14px;
+        margin: 10px 0;
+        padding: 5px;
+    }
+
+    .valid-answer {
+        input[type=text]:valid, input[type=number]:valid {
+            border: 1px solid @satBlue;
+            background: @satSelectedBackgroundColor;
+        }
+    }
+    .invalid-answer {
+        input[type=text]:valid, input[type=number]:valid {
+            color: @satIncorrectColor;
+            background-color: @satIncorrectBackgroundColor;
+            border: solid 1px @satIncorrectBorderColor;
+        }
+    }
+}
+
+.perseus-error {
+    background: @red;
+    border: 2px solid red;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 15px 0 10px;
 }

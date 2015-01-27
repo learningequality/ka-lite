@@ -23,30 +23,15 @@
                     <var id="SOLUTION">plus("x", F)</var>
                 </div>
 
-                <p class="problem">Simplify the following expression:</p>
-                <p class="question"><code>y = \dfrac{<var>A</var>x^2+<var>B</var>x+<var>C</var>}{<var>DENOMINATOR</var>}</code></p>
+                <p class="problem">Simplify the right-hand side of the equation below and state the condition under which the simplification is valid.</p>
+                <p class="question"><code>y = \dfrac{<var>A</var>x^2+<var>coefficient(B)</var>x+<var>C</var>}{<var>DENOMINATOR</var>}</code></p>
 
-                <div class="solution" data-type="set">
-                    <div class="set-sol" data-type="multiple">
-                        <div class="sol" data-type="regex">
-                            ^\s*x\s*<var>F &gt; 0 ? "\\+" : "[-\u2212]"</var>\s*<var>abs(F)</var>\s*$
-                        </div>
-                        <span class="sol"><var>-E/A</var></span>
+                <div class="solution" data-type="multiple">
+                    <span><code>y = </code></span>
+                    <div class="sol" data-type="expression" data-same-form="">
+                        <var>SOLUTION.toString()</var>
                     </div>
-                    <div class="set-sol" data-type="multiple">
-                        <div class="sol" data-type="regex">
-                            ^\s*<var>F &gt; 0 ? "" : "[-\u2212]"</var>\s*<var>abs(F)</var>\s*\+\s*x\s*$
-                        </div>
-                        <span class="sol"><var>-E/A</var></span>
-                    </div>
-
-                    <div class="input-format">
-                        <div class="entry" data-type="multiple">
-                            <code>y = \space </code><span class="sol short50">a</span>
-                            <code>\space x \neq \space </code><span class="sol short32">a</span>
-                        </div>
-                    </div>
-                    <div class="example">a simplifed expression, like <code>x + 2</code></div>
+                    <code>x \neq \space </code><span class="sol"><var>-E/A</var></span>
                 </div>
             </div>
 
@@ -57,30 +42,15 @@
                     <var id="SOLUTION">plus(A+"x", E)</var>
                 </div>
 
-                <p class="problem">Simplify the following expression:</p>
-                <p class="question"><code>y = \dfrac{<var>A</var>x^2+<var>B</var>x+<var>C</var>}{<var>DENOMINATOR</var>}</code></p>
+                <p class="problem">Simplify the right-hand side of the equation below and state the condition under which the simplification is valid.</p>
+                <p class="question"><code>y = \dfrac{<var>A</var>x^2+<var>coefficient(B)</var>x+<var>C</var>}{<var>DENOMINATOR</var>}</code></p>
 
-                <div class="solution" data-type="set">
-                    <div class="set-sol" data-type="multiple">
-                        <div class="sol" data-type="regex">
-                            ^\s*<var>A &gt; 0 ? "" : "[-\u2212]"</var>\s*<var>abs(A)</var>\s*x\s*<var>E &gt; 0 ? "\\+" : "[-\u2212]"</var>\s*<var>abs(E)</var>\s*$
-                        </div>
-                        <span class="sol" data-type="number"><var>-F</var></span>
+                <div class="solution" data-type="multiple">
+                    <span><code>y = </code></span>
+                    <div class="sol" data-type="expression" data-same-form="">
+                        <var>SOLUTION.toString()</var>
                     </div>
-                    <div class="set-sol" data-type="multiple">
-                        <div class="sol" data-type="regex">
-                            ^\s*<var>E &gt; 0 ? "" : "[-\u2212]"</var>\s*<var>abs(E)</var>\s*<var>A &gt; 0 ? "\\+" : "[-\u2212]"</var>\s*<var>abs(A)</var>\s*x\s*$
-                        </div>
-                        <span class="sol" data-type="number"><var>-F</var></span>
-                    </div>
-
-                    <div class="input-format">
-                        <div class="entry" data-type="multiple">
-                            <code>y = \space </code><span class="sol short50">a</span>
-                            <code>\space x \neq \space </code><span class="sol short32">a</span>
-                        </div>
-                    </div>
-                    <div class="example">a simplifed expression, like <code>x + 2</code></div>
+                    <code>x \neq \space </code><span class="sol"><var>-F</var></span>
                 </div>
             </div>
         </div>
@@ -111,7 +81,7 @@
                 <code>
                     \qquad \begin{eqnarray}
                         \purple{ab} &amp;=&amp;
-                            \blue{(<var>A</var>)}\pink{(<var>C</var>)} &amp;=&amp; <var>A * C</var> \\
+                            \blue{(<var>A</var>)}\pink{(<var>C</var>)} &amp;=&amp; \red{<var>A * C</var>} \\
                         \purple{a} + \purple{b} &amp;=&amp; &amp;=&amp;
                             \green{<var>B</var>}
                     \end{eqnarray}
@@ -119,9 +89,9 @@
             </div>
             <p>
                 In order to find <code>\purple{a}</code> and <code>\purple{b}</code>, list out the factors of
-                <code><var>A * C</var></code> and add them together.
+                <code>\red{<var>A * C</var>}</code> and add them together.
                 <span data-if="A * C < 0">
-                    Remember, since <code><var>A * C</var></code> is negative, one of the factors must be
+                    Remember, since <code>\red{<var>A * C</var>}</code> is negative, one of the factors must be
                     negative.
                 </span>
                 The factors that add up to <code>\green{<var>B</var>}</code> will be your
@@ -135,9 +105,9 @@
                 <code>
                     \qquad \begin{eqnarray}
                         \purple{ab} &amp;=&amp; (\purple{<var>E</var>})(\purple{<var>A * F</var>})
-                            &amp;=&amp; <var>E * A * F</var> \\
+                            &amp;=&amp; \red{<var>A * C</var>} \\
                         \purple{a} + \purple{b} &amp;=&amp; \purple{<var>E</var>} + \purple{<var>A * F</var>}
-                            &amp;=&amp; <var>E + A * F</var>
+                            &amp;=&amp; \green{<var>B</var>}
                     \end{eqnarray}
                 </code>
             </div>
@@ -150,12 +120,12 @@
                     + (\purple{<var>A * F</var>}x <span data-if="C > 0">+</span>\pink{<var>C</var>})
                 </code>
             </div>
-            
+
             <div>
                 <p>Factor out the common factors:</p>
                 <code>\qquad x(<var>A</var>x + <var>E</var>) + <var>F</var>(<var>A</var>x + <var>E</var>)</code>
             </div>
-            
+
             <div>
                 <p>Now factor out <code>(<var>A</var>x + <var>E</var>)</code>:</p>
                 <p><code>\qquad (<var>A</var>x + <var>E</var>)(x + <var>F</var>)</code></p>
@@ -163,15 +133,33 @@
 
             <div>
                 <p>The original expression can therefore be written:</p>
-                <p><code>\qquad \dfrac{(<var>A</var>x + <var>E</var>)(x + <var>F</var>)}{<var>DENOMINATOR</var>}</code></p>
+                <p><code>\qquad y = \dfrac{(<var>A</var>x + <var>E</var>)(x + <var>F</var>)}{<var>DENOMINATOR</var>}</code></p>
             </div>
 
             <div>
-                <p>We are dividing by <code><var>DENOMINATOR</var></code>, so <code><var>DENOMINATOR</var> \neq 0</code></p>
-                <p>Therefore, <code>x \neq <var>CONDITION</var></code>.</p>
+                <p>We can divide the numerator and denominator by <code><var>DENOMINATOR</var></code>:</p>
+                <p><code>\qquad y =
+                    \dfrac{\cancel{(<var>DENOMINATOR</var>)}(<var>SOLUTION</var>)}{\cancel{<var>DENOMINATOR</var>}}
+                    = <var>SOLUTION</var>
+                </code></p>
             </div>
 
-            <p>This leaves us with <code><var>SOLUTION</var>; x \neq <var>CONDITION</var></code>.</p>
+            <div>
+                <p>Because we divided by <code><var>DENOMINATOR</var></code>,</p>
+                <p><code>\begin{align}
+                    <var>DENOMINATOR</var> &amp;\neq 0 \\
+                    x &amp;\neq <var>CONDITION</var>
+                    \end{align}
+                </code></p>
+            </div>
+
+            <div>
+                    <p>Therefore,</p>
+                    <p>
+                        <code>\qquad y = <var>SOLUTION</var></code><br>
+                        <code>\qquad x \neq <var>CONDITION</var></code>
+                    </p>
+                </div>
         </div>
     </div>
 </body>

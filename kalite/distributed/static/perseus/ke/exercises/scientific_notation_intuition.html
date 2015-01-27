@@ -87,6 +87,10 @@
 
                         graph.decimal.visibleShape.remove();
                         graph.decimal.visibleShape = label([graph.decimalPlace, -0.3], "\\Huge{" + decimal + "}");
+                        graph.decimal.visibleShape.moveTo = function(point) {
+                            this.attr("cx", point[0]);
+                            this.attr("cy", point[1]);
+                        };
                         graph.decimal.visibleShape.css("color",
                             KhanUtil.BLUE);
 
@@ -178,9 +182,7 @@
                 </div>
 
                 <div class="solution" data-type="custom">
-                    <div class="instruction">
-                        Move the decimal in the bottom number by dragging it left or right.
-                    </div>
+                    <div class="instruction"></div>
                     <div class="guess">E - graph.decimal.coord[0]</div>
                     <div class="validator-function">
                         if ( guess === 0 ) {

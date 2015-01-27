@@ -34,8 +34,8 @@
     padding: 15px;
     margin: 15px;
     color: white;
-    background-color: #5C8547;
-    border: 2px solid #5C8547;
+    background-color: #5AA685;
+    border: 2px solid #5AA685;
 }
 .btn.btn-primary.download-link.pull-right:hover {
     background-color: white;
@@ -69,8 +69,8 @@
     border-color: #8dc63f;
 }
 .btn-related-content:hover {
-    background-color: #5C8547;
-    border-color: #5C8547;
+    background-color: #5AA685;
+    border-color: #5AA685;
 }
 .related-content-header {
     font-size: 14px;
@@ -99,7 +99,7 @@
     color: white;
 }
 .btn-tag:hover {
-    background-color: #5C8547;
-    border-color: #5C8547;
+    background-color: #5AA685;
+    border-color: #5AA685;
     color: white;
 }

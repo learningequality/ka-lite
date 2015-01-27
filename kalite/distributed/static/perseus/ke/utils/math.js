@@ -111,6 +111,17 @@ $.extend(KhanUtil, {
         return Math.floor(x + 0.001);
     },
 
+    // Bound a number by 1e-6 and 1e20 to avoid exponents after toString
+    bound: function(num) {
+        if (num === 0) {
+            return num;
+        } else if (num < 0) {
+            return -KhanUtil.bound(-num);
+        } else {
+            return Math.max(1e-6, Math.min(num, 1e20));
+        }
+    },
+
     factorial: function(x) {
         if (x <= 1) {
             return x;
@@ -662,6 +673,15 @@ $.extend(KhanUtil, {
     LIGHT_RED: "#ED9AAC",
     LIGHT_GRAY: "#ED9B9B",
     LIGHT_BLACK: "#ED9B9B",
+    GRAY10: "#D6D6D6",
+    GRAY20: "#CDCDCD",
+    GRAY30: "#B3B3B3",
+    GRAY40: "#9A9A9A",
+    GRAY50: "#808080",
+    GRAY60: "#666666",
+    GRAY70: "#4D4D4D",
+    GRAY80: "#333333",
+    GRAY90: "#1A1A1A",
     // Don't actually use _BACKGROUND! Make things transparent instead. The
     // background color used in exercises is subject to change at the whim
     // of fickle designers.
@@ -670,7 +690,7 @@ $.extend(KhanUtil, {
 
 // For consistent coloring throughout Perseus
 $.extend(KhanUtil, {
-    INTERACTING: KhanUtil.PINK,
+    INTERACTING: KhanUtil.ORANGE,
     INTERACTIVE: KhanUtil.ORANGE,
     DYNAMIC: KhanUtil.BLUE
 });

@@ -63,7 +63,9 @@ def download_url_to_zip(zipfile, url):
     r = requests.get(url)
     try:
         r.raise_for_status()
-    except Exception as e:
+    # we don't want a failed image request to download, but we
+    # want to inform the user of the error
+    except requests.exceptions.RequestException as e:
         logging.error(str(r))
         return None
     zipfile.writestr(filename, r.content)
