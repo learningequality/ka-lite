@@ -9,7 +9,7 @@ from django.core.management import call_command
 from kalite.testing import KALiteTestCase
 from kalite.contentload.management.commands import generate_assessment_zips as mod
 
-HTTREPLAY_RECORDINGS_DIR = os.path.join(os.path.dirname(__file__),
+TEST_FIXTURES_DIR = os.path.join(os.path.dirname(__file__),
                                         "fixtures")
 
 
@@ -17,14 +17,14 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
     @patch.object(requests, 'get')
     def test_command(self, get_method):
-        with open(os.path.join(HTTREPLAY_RECORDINGS_DIR, "assessment_items_cache.json")) as f:
+        with open(os.path.join(TEST_FIXTURES_DIR, "assessment_items_sample.json")) as f:
             assessment_items_content = f.read()
 
         get_method.return_value = MagicMock(content=assessment_items_content)
 
         call_command("generate_assessment_zips")
 
-        self.assertEqual(get_method.call_count, 2, "requests.get not called at all!")
+        self.assertEqual(get_method.call_count, 2, "requests.get not called the correct # of times!")
 
         with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
             self.assertIn("assessment_items.json", zf.namelist())  # make sure assessment items is written
