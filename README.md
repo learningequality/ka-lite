@@ -27,3 +27,7 @@ Official website: http://kalite.learningequality.org/
 #### License information:
 
 The KA Lite sourcecode itself is open-source [MIT licensed](http://opensource.org/licenses/MIT), and the other included software and content is licensed as described in the [LICENSE](https://raw.github.com/learningequality/ka-lite/master/LICENSE) file. Please note that KA Lite is not officially affiliated with, nor maintained by, Khan Academy, but rather makes use of Khan Academy's open API and Creative Commons content, which may only be used for non-commercial purposes.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/learningequality/ka-lite/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
