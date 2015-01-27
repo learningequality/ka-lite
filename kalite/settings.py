@@ -169,6 +169,8 @@ SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
+KHAN_EXERCISES_DIRPATH = getattr(local_settings, "KHAN_EXERCISES_DIRPATH", os.path.join(os.path.dirname(__file__), "static", "perseus", "ke"))
+
 # Override
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 TEST_RUNNER = KALITE_TEST_RUNNER
