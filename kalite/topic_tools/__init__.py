@@ -102,10 +102,10 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
 
 NODE_CACHE = None
 CACHE_VARS.append("NODE_CACHE")
-def get_node_cache(node_type=None, force=False):
+def get_node_cache(node_type=None, force=False, language="en"):
     global NODE_CACHE
     if NODE_CACHE is None or force:
-        NODE_CACHE = generate_node_cache(get_topic_tree(force))
+        NODE_CACHE = generate_node_cache(get_topic_tree(force, language=language))
     if node_type is None:
         return NODE_CACHE
     else:
