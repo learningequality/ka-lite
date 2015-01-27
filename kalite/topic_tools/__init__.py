@@ -44,12 +44,14 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
-def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
+def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language="en"):
     global TOPICS, TOPICS_FILEPATHS
     if not TOPICS:
         TOPICS = {}
     if TOPICS.get(channel) is None:
-        TOPICS[channel] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+        TOPICS[channel] = {}
+    if TOPICS.get(channel, {}).get(language) is None:
+        TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
         validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
 
         # Just loaded from disk, so have to restamp.
@@ -57,10 +59,10 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
 
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            topics = softload_json(TOPICS_FILEPATHS.get(channel) + ".cache", logger=logging.debug, raises=False)
+            topics = softload_json(TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", logger=logging.debug, raises=False)
             if topics:
-                TOPICS[channel] = topics
-                return TOPICS[channel]
+                TOPICS[channel][language] = topics
+                return TOPICS[channel][language]
 
         # Loop through all the nodes in the topic tree
         # and cross reference with the content_cache to check availability.
@@ -83,15 +85,19 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
                 if content_cache.get(node.get("id"), {}).get("languages", True):
                     node["available"] = True
 
-        recurse_nodes(TOPICS[channel])
+            # Translate everything for good measure
+            node["title"] = _(node.get("title", ""))
+            node["description"] = _(node.get("description", ""))
+
+        recurse_nodes(TOPICS[channel][language])
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(TOPICS_FILEPATHS.get(channel) + ".cache", "w") as f:
-                    json.dump(TOPICS[channel], f)
+                with open(TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", "w") as f:
+                    json.dump(TOPICS[channel][language], f)
             except IOError as e:
                 logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
 
-    return TOPICS[channel]
+    return TOPICS[channel][language]
 
 
 NODE_CACHE = None
