@@ -15,6 +15,12 @@ A: Because Bash isn't cross-platform
 
 NB! This is run using the host system's python!
 
+Environment variables used:
+
+- KALITE_DIR: The root directory of the installation
+- KALITE_PYTHON: If you want kalite run with a diffent python than the one
+  in your path
+
 """
 import os
 import sys
