@@ -382,17 +382,8 @@ class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, 
 
     def test_watching_video_increases_points(self):
         self.browse_to_random_video()
-        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
-        self.browser_wait_for_js_object_exists(video_js_object)
         points = self.browser_get_points()
-        self.browser.execute_script(video_js_object + ".play()")
-        # Don't want to overshoot the video length and get an error
-        #seek_time_expr = video_js_object + ".get_duration() * 0.95"
-        #seek_method = ".seek(%s);" % seek_time_expr
-        #self.browser.execute_script(video_js_object + seek_method)
-        # this hurts but it's necessary... the seek method is somehow unwieldy
-        time.sleep(1)
-        self.browser.execute_script(video_js_object + ".pause()")
+        self._play_video()
         updated_points = self.browser_get_points()
         self.assertNotEqual(updated_points, points, "Points were not increased after video seek position was changed")
 
@@ -404,6 +395,14 @@ class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, 
         self.browser.execute_script(video_js_object + ".set_progress(1);")
         updated_points = self.browser_get_points()
         self.assertNotEqual(updated_points, points, "Points were not increased after video progress was updated")
+
+    def _play_video(self):
+        """Video might not be downloaded, so simulate "playing" it by firing off appropriate js events."""
+        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
+        self.browser_wait_for_js_object_exists(video_js_object)
+        self.browser.execute_script(video_js_object + ".activate()")
+        self.browser.execute_script(video_js_object + ".set_progress(0.5)")
+        self.browser.execute_script(video_js_object + ".update_progress()")
 
 class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin):
     """
@@ -443,13 +442,10 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         updated_points = self.browser_get_points()
         self.assertNotEqual(updated_points, points, "Points were not updated after a non-backbone navigation event.")
 
-    def _play_video(self, seconds=1):
-        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
-        self.browser_wait_for_js_object_exists(video_js_object)
-        self.browser.execute_script(video_js_object + ".play()")
-        time.sleep(seconds)
-        self.browser.execute_script(video_js_object + ".pause()")
-        # Points are persisted to the server only in long intervals (30+ seconds?)
-        # So we'll circumvent that here to make tests run quickly
-        self.assertTrue(False, "Implement this after determining which js object persists points to the server...")
+    def _play_video(self):
+        """The video might not be downloaded, so instead we simulate playing it by changing the points on the log_model."""
+        log_model_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view.log_model"
+        self.browser_wait_for_js_object_exists(log_model_object)
+        self.browser.execute_script(log_model_object + ".set(\"points\", 9000);" )
+        self.browser.execute_script(log_model_object + ".saveNow();" )
 
