@@ -1,5 +1,7 @@
 import time
-from selenium.common.exceptions import NoSuchElementException
+import re
+
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -9,6 +11,12 @@ from django.utils.translation import ugettext as _
 
 from ..browser import browse_to, setup_browser, wait_for_page_change
 
+from kalite.facility.models import Facility
+from kalite.topic_tools import get_content_cache
+
+from django.contrib.auth.models import User
+
+from random import choice
 
 class BrowserActionMixins(object):
 
@@ -174,6 +182,31 @@ class BrowserActionMixins(object):
                 pass
             except:
                 break
+    
+    def browser_wait_for_js_condition(self, condition, max_wait_time=4, step_time=0.25):
+        """
+        Waits for the script in condition to return True.
+        Warning: don't preface condition with "return"
+        """
+        total_wait_time = 0
+        script = "return " + condition
+        while total_wait_time < max_wait_time:
+
+            time.sleep(step_time)
+            total_wait_time += step_time
+            try:
+                if self.browser.execute_script(script):
+                    break
+                else:
+                    pass
+            except WebDriverException:
+                # possible if the object you want to exist is an attribute of an object
+                # that doesn't yet exist, e.g. does_not_exist_yet.i_want_to_test_this_one
+                pass
+    
+    def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=4, step_time=0.25):
+        exists_condition = "typeof(%s) != 'undefined'" % obj_name
+        self.browser_wait_for_js_condition(exists_condition, max_wait_time, step_time)
 
     # Actual testing methods
     def empty_form_test(self, url, submission_element_id):
@@ -246,7 +279,14 @@ class BrowserActionMixins(object):
     def browser_register_user(self, username, password, first_name="firstname",
                               last_name="lastname", facility_name=None,
                               stay_logged_in=False):
-        """Tests that a user can register"""
+        """
+        Tests that a user can register.
+        This method will fail if you haven't created an admin and a facility.
+        (See CreateAdminMixin and CreateFacilityMixin.)
+        """
+
+        self.assertTrue(self._admin_exists(), "No admin user exists")
+        self.assertTrue(self._facility_exists(), "No facility exists")
 
         # Expected results vary based on whether a user is logged in or not.
         if not stay_logged_in:
@@ -370,3 +410,32 @@ class BrowserActionMixins(object):
             inputElement.clear()
             inputElement.send_keys(input_id_dict[key])
             time.sleep(0.5)
+
+    @classmethod
+    def _admin_exists(cls):
+        return User.objects.filter(is_superuser=True).exists()
+    
+    @classmethod
+    def _facility_exists(cls):
+        return Facility.objects.all().exists()
+
+    def browse_to_random_video(self):
+        available = False
+        while not available:
+            video = get_content_cache()[choice(get_content_cache().keys())]
+            # The inclusion of this line can potentially lead to the test hanging indefinitely
+            # So we can't assume that a video has been downloaded for testing purposes :(
+            # available = (len(video['languages']) > 0)
+            available = True
+        video_url = video['path']
+        self.browse_to(self.reverse("learn") + video_url) 
+
+    def browser_get_points(self):
+        # The following commented line of code returns an element with blank text,
+        # possibly due to a race condition, hence querying the element with js which "just works"
+        #points_elem = self.browser.find_element_by_id("points")    
+        # Ensure the element has been populated by triggering an event
+        self.browser_wait_for_js_object_exists("window.statusModel");
+        self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
+        points_text = self.browser.execute_script("return $('#points').text();")
+        return int(re.search(r"(\d+)", points_text).group(1))
