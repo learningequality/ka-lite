@@ -305,18 +305,22 @@ def stop(args=[]):
         os.unlink(PID_FILE)
     except NotRunning as e:
         sys.stderr.write("Already stopped. Status was: {:s}\n".format(status.codes[e.status_code]))
+        return
 
-    # Kill a possibly running job scheduler
+    # If there's no PID for the job scheduler, just quit
     if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
-        return 1
-    try:
-        pid = int(open(PID_FILE_JOB_SCHEDULER, 'r').read())
-        if pid_exists(pid):
-            kill_pid(pid)
-        os.unlink(PID_FILE_JOB_SCHEDULER)
-    except (ValueError, OSError):
         pass
+    else:
+        try:
+            pid = int(open(PID_FILE_JOB_SCHEDULER, 'r').read())
+            if pid_exists(pid):
+                kill_pid(pid)
+            os.unlink(PID_FILE_JOB_SCHEDULER)
+        except (ValueError, OSError):
+            sys.stderr.write("Invalid job scheduler PID file: {:s}".format(PID_FILE_JOB_SCHEDULER))
     
+    print("kalite stopped")
+
 
 def status():
     """
