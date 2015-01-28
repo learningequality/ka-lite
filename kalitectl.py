@@ -44,7 +44,7 @@ else:
     sys.path = ['python-packages', 'kalite'] + sys.path
 
 
-from django.core.management import execute_from_command_line, ManagementUtility
+from django.core.management import ManagementUtility
 from threading import Thread
 from docopt import docopt
 import httplib
@@ -231,6 +231,8 @@ class ManageThread(Thread):
 
     def run(self):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
+        # This ensures that 'kalite' is printed in help menus instead of
+        # 'kalitectl.py' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite'
         utility.execute()
 
@@ -246,6 +248,8 @@ def manage(command, args=[], in_background=False):
     # Import here so other commands can run faster
     if not in_background:
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
+        # This ensures that 'kalite' is printed in help menus instead of
+        # 'kalitectl.py' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite'
         utility.execute()
     else:
