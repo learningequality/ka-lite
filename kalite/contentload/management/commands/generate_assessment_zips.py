@@ -46,7 +46,7 @@ class Command(NoArgsCommand):
 
 def write_assessment_to_zip(zf, assessment_items):
     assessment_json_string = json.dumps(assessment_items)
-    zf.writestr("assessment_items.json", assessment_json_string)
+    zf.writestr("assessmentitems.json", assessment_json_string)
 
 
 def download_urls(zf, urls):
