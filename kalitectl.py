@@ -256,7 +256,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
             pid = int(open(STARTUP_LOCK).read())
             # Does the PID in there still exist?
             if pid_exists(pid):
-                sys.stderr.write("Refusing to start: Start up lock exists: {:s}\n".format(STARTUP_LOCK))
+                sys.stderr.write("Refusing to start: Start up lock exists: {0:s}\n".format(STARTUP_LOCK))
                 sys.exit(1)
         # Couldn't parse to int
         except TypeError:
@@ -280,7 +280,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=['--daemon', '--pid-file={:s}'.format(PID_FILE_JOB_SCHEDULER)]
+            args=['--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)]
         )
     args = "--host={host:s} --daemonize{production:s} --pidfile={pid:s} --startup-lock-file={startup:s}".format(
         host=LISTEN_ADDRESS,
@@ -304,8 +304,8 @@ def stop(args=[]):
         kill_pid(get_pid())
         os.unlink(PID_FILE)
     except NotRunning as e:
-        sys.stderr.write("Already stopped. Status was: {:s}\n".format(status.codes[e.status_code]))
-        return
+        sys.stderr.write("Already stopped. Status was: {000:s}\n".format(status.codes[e.status_code]))
+        sys.exit(-1)
 
     # If there's no PID for the job scheduler, just quit
     if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
@@ -317,7 +317,7 @@ def stop(args=[]):
                 kill_pid(pid)
             os.unlink(PID_FILE_JOB_SCHEDULER)
         except (ValueError, OSError):
-            sys.stderr.write("Invalid job scheduler PID file: {:s}".format(PID_FILE_JOB_SCHEDULER))
+            sys.stderr.write("Invalid job scheduler PID file: {00:s}".format(PID_FILE_JOB_SCHEDULER))
     
     print("kalite stopped")
 
@@ -335,7 +335,7 @@ def status():
     except NotRunning as e:
         return e.status_code
 status.codes = {
-    0: 'Running',
+    0: 'OK, running',
     1: 'Stopped',
     4: 'Starting up',
     5: 'Not responding',
@@ -361,7 +361,7 @@ def status_job_scheduler():
     except OSError:
         return 99
 status_job_scheduler.codes = {
-    0: 'Running',
+    0: 'OK, running',
     1: 'Stopped',
     99: 'Could not read PID file',
     100: 'Invalid PID file',
@@ -384,7 +384,7 @@ if __name__ == "__main__":
         else:
             status_code = status()
             verbose_status = status.codes[status_code]
-        sys.stderr.write("{:d} {}\n".format(status_code, verbose_status))
+        sys.stderr.write("{0:s} ({1:d})\n".format(status_code, verbose_status))
         sys.exit(status_code)
     
     elif arguments['shell']:
