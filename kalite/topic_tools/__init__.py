@@ -369,13 +369,13 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
     return result
 
 
-def generate_node_cache(topictree=None):
+def generate_node_cache(topictree=None, language="en"):
     """
     Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Content nodes.
     """
 
     if not topictree:
-        topictree = get_topic_tree()
+        topictree = get_topic_tree(language=language)
     node_cache = {}
     node_cache["Topic"] = {}
 
@@ -392,8 +392,8 @@ def generate_node_cache(topictree=None):
                 recurse_nodes(child)
     recurse_nodes(topictree)
 
-    node_cache["Exercise"] = get_exercise_cache()
-    node_cache["Content"] = get_content_cache()
+    node_cache["Exercise"] = get_exercise_cache(language=language)
+    node_cache["Content"] = get_content_cache(language=language)
 
     return node_cache
 
