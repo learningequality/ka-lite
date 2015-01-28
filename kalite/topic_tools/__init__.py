@@ -173,39 +173,43 @@ def create_thumbnail_url(thumbnail):
 
 CONTENT          = None
 CACHE_VARS.append("CONTENT")
-def get_content_cache(force=False, annotate=False):
+def get_content_cache(force=False, annotate=False, language="en"):
     global CONTENT, CONTENT_FILEPATH
 
     if CONTENT is None:
-        CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
+        CONTENT = {}
+    if CONTENT.get(language) is None:
+        CONTENT[language] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
         annotate = True
     
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(CONTENT_FILEPATH + ".cache", logger=logging.debug, raises=False)
+            content = softload_json(CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
             if content:
-                CONTENT = content
-                return CONTENT
+                CONTENT[language] = content
+                return CONTENT[language]
 
         # Loop through all content items and put thumbnail urls, content urls,
         # and subtitle urls on the content dictionary, and list all languages
         # that the content is available in.
-        for content in CONTENT.values():
-            languages = []
+        for content in CONTENT[language].values():
             default_thumbnail = create_thumbnail_url(content.get("id"))
             dubmap = i18n.get_id2oklang_map(content.get("id"))
-            for lang, dubbed_id in dubmap.items():
+            content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
+            if content_lang:
+                dubbed_id = dubmap.get(content_lang)
                 # TODO (rtibbles): Explicitly stamp "mp4" on KA videos in contentload
                 format = content.get("format", "mp4")
                 if is_content_on_disk(dubbed_id, format):
-                    languages.append(lang)
+                    content["available"] = True
                     thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
-                    content["lang_data_" + lang] = {
-                        "stream": settings.CONTENT_URL + dubmap.get(lang) + "." + format,
+                    content["content_urls"] = {
+                        "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
                         "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
                         "thumbnail": thumbnail,
                     }
-            content["languages"] = languages
+                else:
+                    content["available"] = False
 
             # Get list of subtitle language codes currently available
             subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
@@ -220,14 +224,20 @@ def get_content_cache(force=False, annotate=False):
             # Sort all subtitle URLs by language code
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
+            translation.activate(i18n.lcode_to_django_lang(content_lang))
+            content["selected_language"] = content_lang
+            content["title"] = _(content["title"])
+            content["description"] = _(content.get("description", ""))
+            translation.deactivate()
+
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(CONTENT_FILEPATH + ".cache", "w") as f:
-                    json.dump(CONTENT, f)
+                with open(CONTENT_FILEPATH + "_" + language + ".cache", "w") as f:
+                    json.dump(CONTENT[language], f)
             except IOError as e:
                 logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
 
-    return CONTENT
+    return CONTENT[language]
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
@@ -476,16 +486,13 @@ def get_assessment_item_data(request, assessment_item_id=None):
 
 def get_content_data(request, content_id=None):
 
-    content_cache = get_content_cache()
+    content_cache = get_content_cache(language=request.language)
     content = content_cache.get(content_id, None)
 
     if not content:
         return None
 
-    content_lang = i18n.select_best_available_language(request.language, available_codes=content.get("languages", [])) or ""
-    urls = content.get("lang_data_" + content_lang, None)
-
-    if not urls:
+    if not content.get("content_urls", None):
         if request.is_admin:
             # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
             messages.warning(request, _("This content was not found! You can download it by going to the Update page."))
@@ -493,14 +500,6 @@ def get_content_data(request, content_id=None):
             messages.warning(request, _("This content was not found! Please contact your teacher or an admin to have it downloaded."))
         elif not request.is_logged_in:
             messages.warning(request, _("This content was not found! You must login as an admin/teacher to download the content."))
-
-    translation.activate(content_lang)
-    content = content.copy()
-    content["content_urls"] = urls
-    content["selected_language"] = content_lang
-    content["title"] = _(content["title"])
-    content["description"] = _(content.get("description", ""))
-    translation.deactivate()
 
     return content
 
