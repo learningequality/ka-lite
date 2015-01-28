@@ -168,7 +168,7 @@ def query_logs(users, items, logtype, logdict):
     return logdict
 
 
-def compute_data(data_types, who, where):
+def compute_data(data_types, who, where, language="en"):
     """
     Compute the data in "data_types" for each user in "who", for the topics selected by "where"
 
