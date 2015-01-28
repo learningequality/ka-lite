@@ -136,7 +136,7 @@ class VanillaPlaylist:
 
         return playlists
 
-    def get_playlist_entries(playlist, entry_type):
+    def get_playlist_entries(playlist, entry_type, language="en"):
         """
         Given a VanillaPlaylist, inspect its 'entries' attribute and return a list
         containing corresponding nodes for each item from the topic tree.
@@ -145,7 +145,7 @@ class VanillaPlaylist:
         unprepared = filter(lambda e: e["entity_kind"]==entry_type, playlist.entries)
         prepared = []
         for entry in unprepared:
-            new_item = get_node_cache()[entry_type].get(entry['entity_id'], None)
+            new_item = get_node_cache(language=language)[entry_type].get(entry['entity_id'], None)
             if new_item:
                 prepared.append(new_item)
         return prepared
