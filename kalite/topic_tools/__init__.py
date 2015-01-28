@@ -121,13 +121,17 @@ def get_exercise_cache(force=False, language="en"):
         EXERCISES = {}
     if EXERCISES.get(language) is None or force:
         EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
+        exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+        if os.path.exists(exercise_root):
+            exercise_templates = os.listdir(exercise_root)
+        else:
+            exercise_templates = []
         for exercise in EXERCISES[language].values():
-            exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
             exercise_file = exercise["name"] + ".html"
             exercise_template = exercise_file
 
             # Get the language codes for exercise templates that exist
-            available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
+            available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
 
             # Return the best available exercise template
             exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
