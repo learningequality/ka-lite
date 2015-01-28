@@ -26,6 +26,7 @@ import os
 import sys
 import subprocess
 from distutils import spawn
+import warnings
 
 kalite_path = None
 
@@ -38,10 +39,14 @@ if 'KALITE_DIR' in os.environ:
 # Path not set, try to guess it
 else:
     where_am_i = os.path.split(__file__)
+    where_am_i_prev = '.'
     if len(where_am_i) > 2:
-        where_am_i_prev = os.path.join(*where_am_i[:-2])
-    else:
-        where_am_i_prev = '.'
+        if where_am_i[-1] == 'kalite':
+            where_am_i_prev = os.path.join(*where_am_i[:-2])
+    # On Windows, because it's run from bin/windows/kalite.bat
+    # where_am_i = ('..', 'kalite')
+    elif where_am_i == ('..', 'kalite'):
+        where_am_i_prev = os.path.join('..', '..')
     if os.path.exists(os.path.join(where_am_i_prev, 'kalite', '__init__.py')):
         kalite_path = where_am_i_prev
 
@@ -73,7 +78,8 @@ python_executable = spawn.find_executable(python_executable)
 
 # Check that the executable exists
 if not python_executable:
-    raise RuntimeError("Cannot find python executable to run or its not executable")
+    python_executable = sys.executable
+    warnings.warn("Could not find Python in your path, defaulting to {0:s}".format(python_executable), RuntimeWarning)
 
 # Path for manage.py
 manage_py = os.path.join(kalite_path, 'kalitectl.py')
