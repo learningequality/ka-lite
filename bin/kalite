@@ -57,15 +57,14 @@ if not kalite_path:
 # Make sure it's set as an absolute path
 kalite_path = os.path.abspath(kalite_path)
 
-sys.path.append(os.path.join(kalite_path, 'python-packages'))
-sys.path.append(os.path.join(kalite_path))
-
 env = {}
 env.update(os.environ.copy())
 env['KALITE_DIR'] = kalite_path
 
 if 'KALITE_PYTHON' in os.environ:
     python_executable = os.environ['KALITE_PYTHON']
+    if not spawn.find_executable(python_executable):
+        raise RuntimeError("KALITE_PYTHON set to invalid python path")
 else:
     # Not sure if this is a nice behavior.. but we check if there is an explicit
     # python2 executable because some systems may have 'python' set for py3.
@@ -73,13 +72,13 @@ else:
     if not spawn.find_executable(python_executable):
         python_executable = 'python'
 
-# Finally get the full path for the executable from distutils
-python_executable = spawn.find_executable(python_executable)
-
-# Check that the executable exists
-if not python_executable:
-    python_executable = sys.executable
-    warnings.warn("Could not find Python in your path, defaulting to {0:s}".format(python_executable), RuntimeWarning)
+    # Set full path of executable - returns None if it's not found
+    python_executable = spawn.find_executable(python_executable)
+    
+    # Check that the executable exists
+    if not python_executable:
+        python_executable = sys.executable
+        warnings.warn("Could not determine Python in your path, defaulting to {0:s}".format(python_executable), RuntimeWarning)
 
 # Path for manage.py
 manage_py = os.path.join(kalite_path, 'kalitectl.py')
