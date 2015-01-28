@@ -1,1 +1,1 @@
-python.exe ..\kalite %*
+start /b python.exe ..\kalite %*
