@@ -44,7 +44,7 @@ else:
     sys.path = ['python-packages', 'kalite'] + sys.path
 
 
-from django.core.management import execute_from_command_line
+from django.core.management import execute_from_command_line, ManagementUtility
 from threading import Thread
 from docopt import docopt
 import httplib
@@ -230,9 +230,9 @@ class ManageThread(Thread):
         return super(ManageThread, self).__init__(*args, **kwargs)
 
     def run(self):
-        execute_from_command_line(
-            [os.path.basename(sys.argv[0]), self.command] + self.args
-        )
+        utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
+        utility.prog_name = 'kalite'
+        utility.execute()
 
 
 def manage(command, args=[], in_background=False):
@@ -245,9 +245,9 @@ def manage(command, args=[], in_background=False):
     """
     # Import here so other commands can run faster
     if not in_background:
-        execute_from_command_line(
-            [os.path.basename(sys.argv[0]), command] + args
-        )
+        utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
+        utility.prog_name = 'kalite'
+        utility.execute()
     else:
         thread = ManageThread(command, args=args)
         thread.start()
