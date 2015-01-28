@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+import tempfile
 import zipfile
 from mock import patch, MagicMock
 
@@ -57,6 +58,27 @@ class UtilityFunctionTests(KALiteTestCase):
 
             self.assertEqual(zf.writestr.call_args[0][0]  # call_args[0] are the positional arguments
                              , "assessment_items.json")
+
+    @patch.object(requests, "get")
+    def test_fetch_file_from_url_or_cache(self, get_method):
+        expected_content = get_method.return_value.content = "testtest"
+
+        # test that a nonexistent cache file is downloaded
+        filename = os.path.basename(self.imgurl)
+        cached_file_path = os.path.join(tempfile.tempdir, filename)
+        if os.path.exists(cached_file_path):
+            os.remove(cached_file_path)  # make sure it doesn't exist
+
+        mod.fetch_file_from_url_or_cache(self.imgurl)
+        get_method.assert_called_once_with(self.imgurl)
+        self.assertTrue(os.path.exists(cached_file_path), "File wasn't cached!")
+
+        get_method.call_count = 0
+        # now test that we don't download that file again
+        mod.fetch_file_from_url_or_cache(self.imgurl)
+        self.assertEqual(get_method.call_count, 0, "requests.get called! File wasn't cached!")
+
+
 
     def test_gets_images_urls_inside_item_data(self):
 
