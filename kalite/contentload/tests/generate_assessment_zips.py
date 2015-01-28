@@ -21,11 +21,13 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
         with open(os.path.join(TEST_FIXTURES_DIR, "assessment_items_sample.json")) as f:
             assessment_items_content = f.read()
 
+        image_requests = len(list(mod.all_image_urls(json.loads(assessment_items_content))))
+
         get_method.return_value = MagicMock(content=assessment_items_content)
 
         call_command("generate_assessment_zips")
 
-        self.assertEqual(get_method.call_count, 2, "requests.get not called the correct # of times!")
+        self.assertEqual(get_method.call_count, 1 + image_requests, "requests.get not called the correct # of times!")
 
         with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
             self.assertIn("assessment_items.json", zf.namelist())  # make sure assessment items is written
@@ -57,7 +59,7 @@ class UtilityFunctionTests(KALiteTestCase):
             mod.write_assessment_to_zip(zf, self.assessment_sample)
 
             self.assertEqual(zf.writestr.call_args[0][0]  # call_args[0] are the positional arguments
-                             , "assessment_items.json")
+                             , "assessmentitems.json")
 
     @patch.object(requests, "get")
     def test_fetch_file_from_url_or_cache(self, get_method):
