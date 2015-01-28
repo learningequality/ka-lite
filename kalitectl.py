@@ -31,7 +31,18 @@ from __future__ import print_function
 # Add distributed python-packages subfolder to current path
 # DO NOT IMPORT BEFORE THIS LIKE
 import sys
-sys.path = ['python-packages', 'kalite'] + sys.path
+import os
+
+# KALITE_DIR set, so probably called from bin/kalite
+if 'KALITE_DIR' in os.environ:
+    sys.path = [
+        os.path.join(os.environ['KALITE_DIR'], 'python-packages'),
+        os.path.join(os.environ['KALITE_DIR'], 'kalite')
+    ] + sys.path
+# KALITE_DIR not set, so called from some other source
+else:
+    sys.path = ['python-packages', 'kalite'] + sys.path
+    
 
 from django.core.management import execute_from_command_line
 from threading import Thread
@@ -40,7 +51,6 @@ import httplib
 from urllib2 import URLError
 from socket import timeout
 from kalite.version import VERSION
-import os
 
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
