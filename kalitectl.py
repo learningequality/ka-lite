@@ -233,7 +233,7 @@ class ManageThread(Thread):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
         # This ensures that 'kalite' is printed in help menus instead of
         # 'kalitectl.py' (a part from the top most text in `kalite manage help`
-        utility.prog_name = 'kalite'
+        utility.prog_name = 'kalite manage'
         utility.execute()
 
 
@@ -250,7 +250,7 @@ def manage(command, args=[], in_background=False):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
         # 'kalitectl.py' (a part from the top most text in `kalite manage help`
-        utility.prog_name = 'kalite'
+        utility.prog_name = 'kalite manage'
         utility.execute()
     else:
         thread = ManageThread(command, args=args)
