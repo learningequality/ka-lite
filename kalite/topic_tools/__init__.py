@@ -45,7 +45,6 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language="en"):
-    translation.activate(language)
     global TOPICS, TOPICS_FILEPATHS
     if not TOPICS:
         TOPICS = {}
@@ -67,7 +66,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
 
         # Loop through all the nodes in the topic tree
         # and cross reference with the content_cache to check availability.
-        content_cache = get_content_cache()
+        content_cache = get_content_cache(language=language)
         def recurse_nodes(node):
 
             child_availability = []
@@ -83,12 +82,14 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
             else:
                 # By default this is very charitable, assuming if something has not been annotated
                 # it is available - needs to be updated for exercises.
-                if content_cache.get(node.get("id"), {}).get("languages", True):
+                if content_cache.get(node.get("id"), {}).get("available", True):
                     node["available"] = True
 
             # Translate everything for good measure
+            translation.activate(i18n.lcode_to_django_lang(language))
             node["title"] = _(node.get("title", ""))
             node["description"] = _(node.get("description", ""))
+            translation.deactivate()
 
         recurse_nodes(TOPICS[channel][language])
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
@@ -97,7 +98,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
                     json.dump(TOPICS[channel][language], f)
             except IOError as e:
                 logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
-    translation.deactivate()
+
     return TOPICS[channel][language]
 
 
