@@ -114,12 +114,35 @@ def get_node_cache(node_type=None, force=False, language="en"):
 
 EXERCISES          = None
 CACHE_VARS.append("EXERCISES")
-def get_exercise_cache(force=False):
+def get_exercise_cache(force=False, language="en"):
     global EXERCISES, EXERCISES_FILEPATH
-    if EXERCISES is None or force:
-        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
+    if EXERCISES is None:
+        EXERCISES = {}
+    if EXERCISES.get(language) is None or force:
+        EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
+        for exercise in EXERCISES[language].values():
+            exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+            exercise_file = exercise["name"] + ".html"
+            exercise_template = exercise_file
 
-    return EXERCISES
+            # Get the language codes for exercise templates that exist
+            available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
+
+            # Return the best available exercise template
+            exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
+            if exercise_lang == "en":
+                exercise_template = exercise_file
+            else:
+                exercise_template = os.path.join(exercise_lang, exercise_file)
+
+            translation.activate(i18n.lcode_to_django_lang(exercise_lang))
+            exercise["lang"] = exercise_lang
+            exercise["template"] = exercise_template
+            exercise["title"] = _(exercise.get("title", ""))
+            exercise["description"] = _(exercise.get("description", ""))
+            translation.deactivate()
+
+    return EXERCISES[language]
 
 ASSESSMENT_ITEMS          = None
 CACHE_VARS.append("ASSESSMENT_ITEMS")
@@ -443,33 +466,11 @@ def get_topic_videos(*args, **kwargs):
 
 
 def get_exercise_data(request, exercise_id=None):
-    exercise = get_exercise_cache().get(exercise_id, None)
-
-    exercise = copy.copy(exercise)
+    exercise = get_exercise_cache(language=request.language).get(exercise_id, None)
 
     if not exercise:
         return None
 
-    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
-    exercise_file = exercise["name"] + ".html"
-    exercise_template = exercise_file
-
-    # Get the language codes for exercise templates that exist
-    available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
-
-    # Return the best available exercise template
-    exercise_lang = i18n.select_best_available_language(request.language, available_codes=available_langs)
-    if exercise_lang == "en":
-        exercise_template = exercise_file
-    else:
-        exercise_template = os.path.join(exercise_lang, exercise_file)
-
-    translation.activate(exercise_lang)
-    exercise["lang"] = exercise_lang
-    exercise["template"] = exercise_template
-    exercise["title"] = _(exercise.get("title", ""))
-    exercise["description"] = _(exercise.get("description", ""))
-    translation.deactivate()
 
     return exercise
 
