@@ -76,21 +76,13 @@ def register_device(request):
             if not registration.is_used():
                 registration.use()
 
-            elif get_object_or_None(Device, public_key=client_device.public_key):
-                return JsonResponseMessageError("This device has already been registered", code="device_already_registered")
-            else:
-                # If not... we're in a very weird state--we have a record of their
-                #   registration, but no device record.
-                # Let's just let the registration happens, so we can refresh things here.
-                #   No harm, and some failsafe benefit.
-                # So, pass through... no code :)
-                pass
-
             # Use the RegisteredDevicePublicKey, now that we've initialized the device and put it in its zone
             zone = registration.zone
 
         except RegisteredDevicePublicKey.DoesNotExist:
             try:
+                # A redirect loop here is also possible, if a Device exists in the central server database 
+                # corresponding to the client_device, but no corresponding RegisteredDevicePublicKey exists
                 device = Device.objects.get(public_key=client_device.public_key)
                 return JsonResponseMessageError("This device has already been registered", code="device_already_registered")
             except Device.DoesNotExist:
