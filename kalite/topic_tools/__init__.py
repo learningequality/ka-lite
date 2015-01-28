@@ -107,7 +107,7 @@ CACHE_VARS.append("NODE_CACHE")
 def get_node_cache(node_type=None, force=False, language="en"):
     global NODE_CACHE
     if NODE_CACHE is None or force:
-        NODE_CACHE = generate_node_cache(get_topic_tree(force, language=language))
+        NODE_CACHE = generate_node_cache()
     if node_type is None:
         return NODE_CACHE
     else:
@@ -182,10 +182,10 @@ def get_knowledgemap_topics(force=False, language="en"):
 
 LEAFED_TOPICS = None
 CACHE_VARS.append("LEAFED_TOPICS")
-def get_leafed_topics(force=False):
+def get_leafed_topics(force=False, language="en"):
     global LEAFED_TOPICS
     if LEAFED_TOPICS is None or force:
-        LEAFED_TOPICS = [topic for topic in get_node_cache()["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
+        LEAFED_TOPICS = [topic for topic in get_node_cache(language=language)["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
     return LEAFED_TOPICS
 
 def create_thumbnail_url(thumbnail):
@@ -296,7 +296,7 @@ def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE, alldata=F
             False: {}
         }
     if not FLAT_TOPIC_TREE[alldata] or lang_code not in FLAT_TOPIC_TREE[alldata] or force:
-        FLAT_TOPIC_TREE[alldata][lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code, alldata=alldata)
+        FLAT_TOPIC_TREE[alldata][lang_code] = generate_flat_topic_tree(get_node_cache(force=force, language=lang_code), lang_code=lang_code, alldata=alldata)
     return FLAT_TOPIC_TREE[alldata][lang_code]
 
 
@@ -471,7 +471,6 @@ def get_exercise_data(request, exercise_id=None):
 
     if not exercise:
         return None
-
 
     return exercise
 
