@@ -343,9 +343,9 @@ def generate_slug_to_video_id_map(node_cache=None):
 
 
 def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, alldata=False):
-    translation.activate(lang_code)
+    translation.activate(i18n.lcode_to_django_lang(lang_code))
 
-    categories = node_cache or get_node_cache()
+    categories = node_cache or get_node_cache(language=i18n.lcode_to_django_lang(lang_code))
     result = dict()
     # make sure that we only get the slug of child of a topic
     # to avoid redundancy
