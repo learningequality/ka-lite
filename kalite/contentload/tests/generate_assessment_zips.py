@@ -30,7 +30,7 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
         self.assertEqual(get_method.call_count, 1 + image_requests, "requests.get not called the correct # of times!")
 
         with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
-            self.assertIn("assessment_items.json", zf.namelist())  # make sure assessment items is written
+            self.assertIn("assessmentitems.json", zf.namelist())  # make sure assessment items is written
 
             for filename in zf.namelist():
                 if ".gif" in filename:
