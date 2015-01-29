@@ -138,6 +138,14 @@ window.ExerciseView = Backbone.View.extend({
 
         // Catch the "next question" button click event -- needs to be explicit (not in "events")
         this.$("#next-question-button").click(this.next_question_clicked);
+        
+        // Workaround so that pressing enter on perseus exercises submits the answer 
+        var selector = $(".perseus-input");
+        $(document.body).on("keydown", selector, function(e) {
+            if( e.keyCode == $.ui.keyCode.ENTER ) {
+                $("#check-answer-button").trigger("click");
+            }
+        });
 
         this.listenTo(this.data_model, "change:title", this.update_title);
 
