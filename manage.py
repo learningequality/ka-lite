@@ -52,7 +52,7 @@ if __name__ == "__main__":
     # the root cause and implement a better way?
     # http://blog.daniel-watkins.co.uk/2013/02/removing-pyc-files-coda.html
     # Manually clean all pyc files before entering any real codepath
-    if not BUILT:
+    if not BUILT and "kaserve" in sys.argv:
         clean_pyc(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'kalite'))
 
     ########################
