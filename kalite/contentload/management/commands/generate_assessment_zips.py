@@ -19,24 +19,17 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         logging.info("fetching assessment items")
-        assessment_items_url = "https://s3.amazonaws.com/uploads.hipchat.com/86198%2F624195%2FtYo7Ez0tt3e1qQW%2Fassessmentitems.json"
 
-        # cache the assessmentitems
-        assessment_items_cache_path = os.path.join(settings.PROJECT_PATH, "assessmentitems.cache.json")
-        if os.path.isfile(assessment_items_cache_path):
-            assessment_items = json.load(open(assessment_items_cache_path))
-        else:
-            assessment_items = json.loads(requests.get(assessment_items_url).content)
-            json.dump(assessment_items, open(assessment_items_cache_path, "w"))
+        # load the assessmentitems
+        assessment_items = json.load(open(os.path.join(settings.PROJECT_PATH, "..", "data", "khan", "assessmentitems.json")))
 
         image_urls = all_image_urls(assessment_items)
 
         logging.info("rewriting image urls")
         new_assessment_items = localhosted_image_urls(assessment_items)
 
-        with open(os.path.join(settings.PROJECT_PATH, "..", "data", "khan", "assessmentitems.json"), "w") as f:
-            json.dump(new_assessment_items, f, indent=4)
-
+        # TODO(jamalex): We should migrate this away from direct-to-zip so that we can re-run it
+        # without redownloading all files. Not possible currently because ZipFile has no `delete`.
         logging.info("downloading images")
         with zipfile.ZipFile(ZIP_FILE_PATH, "w") as zf:
             write_assessment_to_zip(zf, new_assessment_items)
@@ -51,28 +44,33 @@ def write_assessment_to_zip(zf, assessment_items):
 
 
 def download_urls(zf, urls):
+
+    urls = set(urls)
+
     pool = ThreadPool(5)
     download_to_zip_func = lambda url: download_url_to_zip(zf, url)
-    pool.map(download_to_zip_func, urls)
+    map(download_to_zip_func, urls)
 
     return ZIP_FILE_PATH
 
 
 def download_url_to_zip(zipfile, url):
+    url = url.replace("https://ka-", "http://ka-")
     filename = os.path.basename(url)
     try:
         filecontent = fetch_file_from_url_or_cache(url)
-    # we don't want a failed image request to download, but we
-    # want to inform the user of the error
-    except requests.exceptions.RequestException as e:
-        logging.error(str(r))
-        return None
+    except Exception as e:
+        # we don't want a failed image request to download, but we
+        # want to inform the user of the error
+        logging.error("Error when downloading from URL: %s (%s)" % (url, e))
+        return
+
     zipfile.writestr(filename, filecontent)
 
 
 def fetch_file_from_url_or_cache(url):
     filename = os.path.basename(url)
-    cached_file_path = os.path.join(tempfile.tempdir, filename)
+    cached_file_path = os.path.join(tempfile.gettempdir(), filename)
 
     if os.path.exists(cached_file_path):  # just read from the cache file
         logging.info("reading cached file %s" % cached_file_path)

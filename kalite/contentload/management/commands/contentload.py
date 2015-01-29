@@ -70,7 +70,6 @@ def scrub_topic_tree(node_cache, channel_data):
                     del node[att]
 
 
-
 class Command(NoArgsCommand):
     help = """
     **WARNING** not intended for use outside of the FLE; use at your own risk!
@@ -144,10 +143,16 @@ class Command(NoArgsCommand):
 
         validate_data(topic_tree, node_cache, slug2id_map)
 
-        save_cache_file("Topic", cache_object=topic_tree, data_path=channel_path)
-        save_cache_file("Exercise", cache_object=exercise_cache, data_path=channel_path)
-        save_cache_file("AssessmentItem", cache_object=assessment_item_cache, data_path=channel_path)
-        save_cache_file("Content", cache_object=content_cache, data_path=channel_path)
+        try:
+
+            save_cache_file("Topic", cache_object=topic_tree, data_path=channel_path)
+            save_cache_file("Exercise", cache_object=exercise_cache, data_path=channel_path)
+            save_cache_file("AssessmentItem", cache_object=assessment_item_cache, data_path=channel_path)
+            save_cache_file("Content", cache_object=content_cache, data_path=channel_path)
+
+        except:
+
+            import IPython; IPython.embed()
 
         if hasattr(channel_tools, "channel_data_files"):
             channel_tools.channel_data_files(dest=channel_path)
