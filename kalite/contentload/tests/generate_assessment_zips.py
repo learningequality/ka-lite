@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+import tempfile
 import zipfile
 from mock import patch, MagicMock
 
@@ -9,7 +10,7 @@ from django.core.management import call_command
 from kalite.testing import KALiteTestCase
 from kalite.contentload.management.commands import generate_assessment_zips as mod
 
-HTTREPLAY_RECORDINGS_DIR = os.path.join(os.path.dirname(__file__),
+TEST_FIXTURES_DIR = os.path.join(os.path.dirname(__file__),
                                         "fixtures")
 
 
@@ -17,14 +18,16 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
     @patch.object(requests, 'get')
     def test_command(self, get_method):
-        with open(os.path.join(HTTREPLAY_RECORDINGS_DIR, "assessment_items_cache.json")) as f:
+        with open(os.path.join(TEST_FIXTURES_DIR, "assessment_items_sample.json")) as f:
             assessment_items_content = f.read()
+
+        image_requests = len(list(mod.all_image_urls(json.loads(assessment_items_content))))
 
         get_method.return_value = MagicMock(content=assessment_items_content)
 
         call_command("generate_assessment_zips")
 
-        self.assertEqual(get_method.call_count, 2, "requests.get not called at all!")
+        self.assertEqual(get_method.call_count, 1 + image_requests, "requests.get not called the correct # of times!")
 
         with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
             self.assertIn("assessment_items.json", zf.namelist())  # make sure assessment items is written
@@ -46,7 +49,7 @@ class UtilityFunctionTests(KALiteTestCase):
 
     def setUp(self):
 
-        with open(os.path.join(HTTREPLAY_RECORDINGS_DIR, "assessment_items_sample.json")) as f:
+        with open(os.path.join(TEST_FIXTURES_DIR, "assessment_items_sample.json")) as f:
             self.assessment_sample = json.load(f)
         self.imgurl = "https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"
 
@@ -56,7 +59,28 @@ class UtilityFunctionTests(KALiteTestCase):
             mod.write_assessment_to_zip(zf, self.assessment_sample)
 
             self.assertEqual(zf.writestr.call_args[0][0]  # call_args[0] are the positional arguments
-                             , "assessment_items.json")
+                             , "assessmentitems.json")
+
+    @patch.object(requests, "get")
+    def test_fetch_file_from_url_or_cache(self, get_method):
+        expected_content = get_method.return_value.content = "testtest"
+
+        # test that a nonexistent cache file is downloaded
+        filename = os.path.basename(self.imgurl)
+        cached_file_path = os.path.join(tempfile.tempdir, filename)
+        if os.path.exists(cached_file_path):
+            os.remove(cached_file_path)  # make sure it doesn't exist
+
+        mod.fetch_file_from_url_or_cache(self.imgurl)
+        get_method.assert_called_once_with(self.imgurl)
+        self.assertTrue(os.path.exists(cached_file_path), "File wasn't cached!")
+
+        get_method.call_count = 0
+        # now test that we don't download that file again
+        mod.fetch_file_from_url_or_cache(self.imgurl)
+        self.assertEqual(get_method.call_count, 0, "requests.get called! File wasn't cached!")
+
+
 
     def test_gets_images_urls_inside_item_data(self):
 

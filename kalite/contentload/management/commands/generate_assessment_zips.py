@@ -1,8 +1,9 @@
 import copy
 import json
+import os
 import re
 import requests
-import os
+import tempfile
 import zipfile
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -43,26 +44,47 @@ def write_assessment_to_zip(zf, assessment_items):
 
 
 def download_urls(zf, urls):
+
+    urls = set(urls)
+
     pool = ThreadPool(5)
     download_to_zip_func = lambda url: download_url_to_zip(zf, url)
-    pool.map(download_to_zip_func, urls)
+    map(download_to_zip_func, urls)
 
     return ZIP_FILE_PATH
 
 
 def download_url_to_zip(zipfile, url):
-    filename = os.path.basename(url)
     url = url.replace("https://ka-", "http://ka-")
-    logging.info("downloading %s" % url)
+    filename = os.path.basename(url)
     try:
+        filecontent = fetch_file_from_url_or_cache(url)
+    except Exception as e:
+        # we don't want a failed image request to download, but we
+        # want to inform the user of the error
+        logging.error("Error when downloading from URL: %s (%s)" % (url, e))
+        return
+
+    zipfile.writestr(filename, filecontent)
+
+
+def fetch_file_from_url_or_cache(url):
+    filename = os.path.basename(url)
+    cached_file_path = os.path.join(tempfile.gettempdir(), filename)
+
+    if os.path.exists(cached_file_path):  # just read from the cache file
+        logging.info("reading cached file %s" % cached_file_path)
+        with open(cached_file_path) as f:
+            out = f.read()
+    else:                       # fetch, then write to the cache file
+        logging.info("downloading file %s" % url)
         r = requests.get(url)
         r.raise_for_status()
-    # we don't want a failed image request to download, but we
-    # want to inform the user of the error
-    except:
-        logging.error("Error when downloading from URL: %s" % url)
-        return
-    zipfile.writestr(filename, r.content)
+        with open(cached_file_path, "w") as f:
+            f.write(r.content)
+        out = r.content
+
+    return out
 
 
 def all_image_urls(items):

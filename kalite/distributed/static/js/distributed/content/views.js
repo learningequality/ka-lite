@@ -114,6 +114,7 @@ window.ContentBaseView = BaseView.extend({
 
         this.data_model = options.data_model;
         this.log_model = options.log_model;
+        this.listenTo(window.channel_router, "navigation", this.close);
     },
 
     activate: function () {
@@ -199,5 +200,6 @@ window.ContentPointsView = BaseView.extend({
     render: function() {
         this.$el.html(this.template(this.model.attributes));
         statusModel.set("newpoints", this.model.get("points") - this.starting_points);
+        this.starting_points = this.model.get("points");
     }
 });

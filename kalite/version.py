@@ -22,6 +22,48 @@ VERSION_INFO = {
             "coaches": [],
             "admins": [],
         },
+        "bugs_fixed": {
+            "all": ["Mark registration process result immediately", ],
+            "students": [],
+            "coaches": [],
+            "admins": ["Fix Export CSV", "Validate username during installation for Windows"],
+        },
+
+    },
+
+    "0.12.10": {
+        "release_date": "2014/12/20",
+        "git_commit": "b880fe4",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["Make get_uuid more robust from race conditions"],
+            "students": [],
+            "coaches": [],
+            "admins": ["Removed partially watched videos from CSV export"],
+        },
+
+    },
+
+    "0.12.9": {
+        "release_date": "2014/12/05",
+        "git_commit": "a0333d4",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["Fixed the issue with runserver failing when it tries to create a database", "Fix CSV export's logged_in and total_videos column"],
+        },
 
     },
 

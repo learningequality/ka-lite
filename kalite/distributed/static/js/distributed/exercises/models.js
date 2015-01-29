@@ -218,17 +218,14 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     model: AttemptLogModel,
 
     initialize: function(models, options) {
-        this.exercise_id = options.exercise_id;
-        this.context_type = options.context_type;
+        this.filters = $.extend({
+            "user": window.statusModel.get("user_id"),
+            "limit": ExerciseParams.STREAK_WINDOW
+        }, options);
     },
 
     url: function() {
-        return "/api/attemptlog/?" + $.param({
-            "exercise_id": this.exercise_id,
-            "user": window.statusModel.get("user_id"),
-            "limit": ExerciseParams.STREAK_WINDOW,
-            "context_type": this.context_type
-        });
+        return "/api/attemptlog/?" + $.param(this.filters, true);
     },
 
     add_new: function(attemptlog) {
