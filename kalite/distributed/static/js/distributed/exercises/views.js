@@ -116,9 +116,17 @@ window.ExerciseView = Backbone.View.extend({
     },
 
     events: {
-        "submit .answer-form": "answer_form_submitted"
+        "submit .answer-form": "answer_form_submitted",
+        "keyup .perseus-input": "click_check_answer_button",
+        "keyup #solutionarea>input": "click_check_answer_button"
     },
 
+    click_check_answer_button: function(e) {
+        if(e.keyCode == $.ui.keyCode.ENTER) {
+            $("#check-answer-button").trigger("click");
+        }
+    },
+    
     render: function() {
 
         var data = $.extend(this.data_model.attributes, {test_id: this.options.test_id});
