@@ -76,11 +76,13 @@ class UtilityFunctionTests(KALiteTestCase):
 
     @patch.object(zipfile, "ZipFile", autospec=True)
     def test_write_assessment_json_to_zip(self, zipfile_class):
-        with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
+        with open(mod.ZIP_FILE_PATH) as f:
+            zf = zipfile.ZipFile(mod.ZIP_FILE_PATH)
             mod.write_assessment_to_zip(zf, self.assessment_sample)
 
             self.assertEqual(zf.writestr.call_args[0][0]  # call_args[0] are the positional arguments
                              , "assessmentitems.json")
+            zf.close()
 
     @patch.object(requests, "get")
     def test_fetch_file_from_url_or_cache(self, get_method):
@@ -136,7 +138,9 @@ class UtilityFunctionTests(KALiteTestCase):
         download_method.return_value = 1
 
         urls = ["http://test1.com", "http://test2.com"]
-        with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
+        with open(mod.ZIP_FILE_PATH) as f:
+            zf = zipfile.ZipFile(mod.ZIP_FILE_PATH)
             mod.download_urls(zf, urls)
+            zf.close()
 
         self.assertEqual(download_method.call_count, len(urls))

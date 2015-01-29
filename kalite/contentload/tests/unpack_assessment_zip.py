@@ -77,8 +77,10 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         with open(mod.ASSESSMENT_ITEMS_PATH) as f:
             old_assessment_items = json.load(f)
 
-        with zipfile.ZipFile(ASSESSMENT_ZIP_SAMPLE_PATH) as zf:
+        with open(ASSESSMENT_ZIP_SAMPLE_PATH) as f:
+            zf = zipfile.ZipFile(f)
             mod.extract_assessment_items_to_data_dir(zf)
+            zf.close()
 
 
         # test that it combines the new assessment items with the previous one
