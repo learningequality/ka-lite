@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from kalite.distributed.api_views import compute_total_points
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.i18n import lc_to_django_lang
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
@@ -192,7 +193,7 @@ def tabular_view(request, report_type="exercise"):
     """Tabular view also gets data server-side."""
     # important for setting the defaults for the coach nav bar
 
-    language = request.language
+    language = lc_to_django_lang(request.language)
 
     facility, group_id, context = coach_nav_context(request, "tabular")
 
@@ -200,7 +201,7 @@ def tabular_view(request, report_type="exercise"):
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = [get_node_cache("Topic", language=language).get(tid["id"]) for tid in get_knowledgemap_topics(language=request.language) if report_type.title() in tid["contains"]]
+    topics = [get_node_cache("Topic", language=language).get(tid["id"]) for tid in get_knowledgemap_topics(language=language) if report_type.title() in tid["contains"]]
     playlists = Playlist.all()
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)

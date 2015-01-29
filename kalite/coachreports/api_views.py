@@ -26,6 +26,7 @@ from fle_utils.testing.decorators import allow_api_profiling
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from kalite.topic_tools import get_topic_by_path, get_node_cache, get_exercise_cache
+from kalite.i18n import lc_to_django_lang
 
 
 # Global variable of all the known stats, their internal and external names,
@@ -350,7 +351,7 @@ def api_data(request, xaxis="", yaxis=""):
     * the rest of the data is metadata, useful for displaying detailed info about data.
     """
 
-    language = request.language
+    language = lc_to_django_lang(request.language)
     # Get the request form
     try:
         form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
