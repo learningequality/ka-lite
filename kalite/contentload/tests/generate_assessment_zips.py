@@ -22,6 +22,7 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
     def setUp(self):
         self.tempdir_patch = patch.object(tempfile, "gettempdir")
+        self.addCleanup(self.tempdir_patch.stop)
         self.gettempdir_method = self.tempdir_patch.start()
 
         # make sure we control the temp dir where temporary images are written
