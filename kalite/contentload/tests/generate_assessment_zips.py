@@ -12,6 +12,8 @@ from kalite.contentload.management.commands import generate_assessment_zips as m
 
 TEST_FIXTURES_DIR = os.path.join(os.path.dirname(__file__),
                                         "fixtures")
+ASSESSMENT_ITEMS_SAMPLE_PATH = os.path.join(TEST_FIXTURES_DIR,
+                                            "assessment_items_sample.json")
 
 
 class GenerateAssessmentItemsCommandTests(KALiteTestCase):

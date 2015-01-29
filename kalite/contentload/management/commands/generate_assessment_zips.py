@@ -13,6 +13,7 @@ from django.core.management.base import NoArgsCommand
 logging = settings.LOG
 
 ZIP_FILE_PATH = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
+ASSESSMENT_ITEMS_PATH = os.path.join(settings.PROJECT_PATH, "..", "data", "khan", "assessmentitems.json")
 
 
 class Command(NoArgsCommand):
@@ -21,7 +22,7 @@ class Command(NoArgsCommand):
         logging.info("fetching assessment items")
 
         # load the assessmentitems
-        assessment_items = json.load(open(os.path.join(settings.PROJECT_PATH, "..", "data", "khan", "assessmentitems.json")))
+        assessment_items = json.load(open(ASSESSMENT_ITEMS_PATH))
 
         image_urls = all_image_urls(assessment_items)
 
