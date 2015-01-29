@@ -88,7 +88,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
             # Translate everything for good measure
             with i18n.translate_block(language):
                 node["title"] = _(node.get("title", ""))
-                node["description"] = _(node.get("description", ""))
+                node["description"] = _(node.get("description", "")) if node.get("description") else ""
 
         recurse_nodes(TOPICS[channel][language])
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
@@ -143,7 +143,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 exercise["lang"] = exercise_lang
                 exercise["template"] = exercise_template
                 exercise["title"] = _(exercise.get("title", ""))
-                exercise["description"] = _(exercise.get("description", ""))
+                exercise["description"] = _(exercise.get("description", "")) if exercise.get("description") else ""
 
     return EXERCISES[language]
 
@@ -253,7 +253,7 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
             with i18n.translate_block(content_lang):
                 content["selected_language"] = content_lang
                 content["title"] = _(content["title"])
-                content["description"] = _(content.get("description", ""))
+                content["description"] = _(content.get("description", "")) if content.get("description") else ""
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
