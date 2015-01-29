@@ -1,8 +1,10 @@
 import json
 import os
 import requests
+import shutil
 import tempfile
 import zipfile
+from fle_utils.general import ensure_dir
 from mock import patch, MagicMock
 
 from django.core.management import call_command
@@ -18,9 +20,22 @@ ASSESSMENT_ITEMS_SAMPLE_PATH = os.path.join(TEST_FIXTURES_DIR,
 
 class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
+    def setUp(self):
+        self.tempdir_patch = patch.object(tempfile, "gettempdir")
+        self.gettempdir_method = self.tempdir_patch.start()
+
+        # make sure we control the temp dir where temporary images are written
+        self.fake_temp_dir = self.gettempdir_method.return_value = os.path.abspath("tmp/")
+        ensure_dir(self.fake_temp_dir)
+
+    def tearDown(self):
+        shutil.rmtree(self.fake_temp_dir)
+
+    @patch.object(mod, "ASSESSMENT_ITEMS_PATH", ASSESSMENT_ITEMS_SAMPLE_PATH)
     @patch.object(requests, 'get')
     def test_command(self, get_method):
-        with open(os.path.join(TEST_FIXTURES_DIR, "assessment_items_sample.json")) as f:
+
+        with open(ASSESSMENT_ITEMS_SAMPLE_PATH) as f:
             assessment_items_content = f.read()
 
         image_requests = len(set(mod.all_image_urls(json.loads(assessment_items_content))))
@@ -31,7 +46,9 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
         self.assertEqual(get_method.call_count, image_requests, "requests.get not called the correct # of times!")
 
-        with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
+
+        with open(mod.ZIP_FILE_PATH) as f:
+            zf = zipfile.ZipFile(mod.ZIP_FILE_PATH)
             self.assertIn("assessmentitems.json", zf.namelist())  # make sure assessment items is written
 
             for filename in zf.namelist():
@@ -41,28 +58,26 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
                     continue
                 elif ".png" in filename:
                     continue
-                elif "assessment_items.json" in filename:
+                elif "assessmentitems.json" in filename:
                     continue
                 else:
                     self.assertTrue(False, "Invalid file %s got in the assessment zip!" % filename)
+            zf.close()
 
 
 class UtilityFunctionTests(KALiteTestCase):
 
     def setUp(self):
-
         with open(os.path.join(TEST_FIXTURES_DIR, "assessment_items_sample.json")) as f:
             self.assessment_sample = json.load(f)
+
         self.imgurl = "https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"
 
     @patch.object(zipfile, "ZipFile", autospec=True)
     def test_write_assessment_json_to_zip(self, zipfile_class):
-
-        with open(mod.ZIP_FILE_PATH) as f:
-            zf = zipfile.ZipFile(mod.ZIP_FILE_PATH)
+        with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
             mod.write_assessment_to_zip(zf, self.assessment_sample)
 
-            zf.close()
             self.assertEqual(zf.writestr.call_args[0][0]  # call_args[0] are the positional arguments
                              , "assessmentitems.json")
 
