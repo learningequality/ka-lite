@@ -185,7 +185,6 @@ class AssessmentItem():
         self.id = kwargs.get('id')
         self.kind = kwargs.get('kind')
         self.item_data = kwargs.get('item_data')
-        self.tags = kwargs.get('tags')
         self.author_names = kwargs.get('author_names')
         self.sha = kwargs.get('sha')
 
@@ -194,7 +193,6 @@ class AssessmentItemResource(Resource):
 
     kind = fields.CharField(attribute='kind')
     item_data = fields.CharField(attribute='item_data')
-    tags = fields.CharField(attribute='tags')
     author_names = fields.CharField(attribute='author_names')
     sha = fields.CharField(attribute='sha')
     id = fields.CharField(attribute='id')
