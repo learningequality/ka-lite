@@ -1,6 +1,7 @@
 import errno
 import json
 import os
+import glob
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -17,6 +18,8 @@ from fle_utils.general import ensure_dir
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
 
+from optparse import make_option
+
 try:
     from local_settings import *
     import local_settings
@@ -30,7 +33,6 @@ USER_TYPE_STUDENT = "student"
 
 log = settings.LOG
 
-
 class Command(BaseCommand):
     """
     This will generate screenshots based on the selenium firefox webdriver to be used for the user guide document.
@@ -43,17 +45,30 @@ class Command(BaseCommand):
     """
     help = "Generate screenshots to be used on the User manual."
 
+    option_list = BaseCommand.option_list + (
+        make_option('--from-str',
+            action='store',
+            dest='cl_str',
+            default=None,
+            help='Takes a JSON string instead of reading from the default file location.'),
+        make_option('--output-dir',
+            action='store',
+            dest='output_dir',
+            default=None,
+            help='Specify the output directory relative to the project base directory.'),
+        )
+
     def handle(self, *args, **options):
-        sc = Screenshot()
-        sc.snap_all()
+        sc = Screenshot(**options)
+        sc.snap_all(**options)
         # since we used a new sqlite database for this command we must delete it after
         database_name = getattr(settings, 'SCREENSHOTS_DATABASE_NAME', None)
         if database_name:
-            delete_sqlite_database(sc.database)
+            delete_sqlite_database(sc.database, verbosity=options['verbosity'])
 
 
 # Possibly re-usable codes.
-def reset_sqlite_database(username=None, email=None, password=None, router=None):
+def reset_sqlite_database(username=None, email=None, password=None, router=None, verbosity="1"):
     """
     Resets the currently used sqlite database.  Creates the user if admin_username is passed.
     :param username: If present, creates a superuser with this username.
@@ -71,13 +86,13 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None)
         ensure_dir(settings.SCREENSHOTS_OUTPUT_PATH)
 
         new_io = StringIO()
-        call_command("reset_db", interactive=False, stdout=new_io, router=router)
-        call_command("syncdb", interactive=False, stdout=new_io, router=router)
-        call_command("migrate", interactive=False, stdout=new_io, router=router)
+        call_command("reset_db", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
+        call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
+        call_command("migrate", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
         if username and email and password:
             log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,))
             call_command("createsuperuser", username=username, email=email,
-                         interactive=False, stdout=new_io, router=router)
+                         interactive=False, stdout=new_io, router=router, verbosity=verbosity)
             admin_user = User.objects.get(username=username)
             admin_user.set_password(password)
             admin_user.save()
@@ -85,7 +100,7 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None)
     return None
 
 
-def delete_sqlite_database(database=None):
+def delete_sqlite_database(database=None, verbosity="1"):
     """
     Delete the specified sqlite database or if None, the one on `settings.py` of the app or project.
     :param database: The database filename with full path.
@@ -97,9 +112,9 @@ def delete_sqlite_database(database=None):
             if not database:
                 database = settings.DATABASES[router]['NAME']
             if os.path.exists(database):
-                log.info('==> Removing database %s ...' % database)
+                log.info('==> Removing database %s ...' % database) if int(verbosity) > 0 else None
                 os.remove(database)
-                log.info('====> Successfully removed database.')
+                log.info('====> Successfully removed database.') if int(verbosity) > 0 else None
     except Exception as exc:
         log.error('====> EXCEPTION: %s' % exc)
 
@@ -130,10 +145,21 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
 
     database = getattr(settings, 'SCREENSHOTS_DATABASE_PATH', None)
 
+    verbosity = 1
+    output_path = None
+
     def _fake_test():
         # Fools django.utils.unittest.case.TestCase.__init__
         # See the small novel comment under __init__ below
         pass
+
+    def logwarn(self, *args, **kwargs):
+        if int(self.verbosity) > 0:
+            log.warn(*args, **kwargs)
+    
+    def loginfo(self, *args, **kwargs):
+        if int(self.verbosity) > 0:
+            log.info(*args, **kwargs)
     
     def __init__(self, *args, **kwargs):
         # It's not good to override __init__ for classes that inherit from TestCase
@@ -144,22 +170,27 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
         # -- M.C. Gallaspy, 1/21/2015
         KALiteBrowserTestCase.__init__(self, "_fake_test")
 
+        self.verbosity = kwargs['verbosity']
+
         # make sure output path exists and is empty
-        output_path = settings.SCREENSHOTS_OUTPUT_PATH
-        ensure_dir(output_path)
+        if kwargs['output_dir']:
+            self.output_path = os.path.join( os.path.realpath(os.path.join(settings.PROJECT_PATH, '..')), 
+                                        kwargs['output_dir'])
+        else:
+            self.output_path = settings.SCREENSHOTS_OUTPUT_PATH
+        ensure_dir(self.output_path)
 
         # make sure directory is empty from screenshot files
-        import glob
-        png_path = os.path.join(output_path, "*%s" % settings.SCREENSHOTS_EXTENSION)
+        png_path = os.path.join(self.output_path, "*%s" % settings.SCREENSHOTS_EXTENSION)
         pngs = glob.glob(png_path)
         if pngs:
-            log.warn("==> Deleting existing screenshots: %s ..." % png_path)
+            self.logwarn("==> Deleting existing screenshots: %s ..." % png_path)
             for filename in pngs:
                 os.remove(filename)
 
         # setup database to use and auto-create admin user
-        log.info("==> Setting-up database ...")
-        self.admin_user = reset_sqlite_database(self.admin_username, self.admin_email, self.default_password)
+        self.loginfo("==> Setting-up database ...")
+        self.admin_user = reset_sqlite_database(self.admin_username, self.admin_email, self.default_password, verbosity=self.verbosity)
         self.admin_pass = self.default_password
         if not self.admin_user:
             raise Exception("==> Did not successfully setup database!")
@@ -173,14 +204,12 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
 
         self.setUpClass()
 
-        log.info("==> Setting-up browser ...")
-        #self.browser = webdriver.Firefox()
-        #self.browser.set_window_size(1024, 768)
+        self.loginfo("==> Setting-up browser ...")
         super(Screenshot, self).setUp()
 
-        log.info("==> Browser %s successfully setup with live_server_url %s." %
+        self.loginfo("==> Browser %s successfully setup with live_server_url %s." %
                  (self.browser.name, self.live_server_url,))
-        log.info("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
+        self.loginfo("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
 
     def validate_json_keys(self, shot):
         """
@@ -189,13 +218,12 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
         values = [shot[key] for key in self.JSON_KEYS]
 
     def make_filename(self, slug):
-        ensure_dir(settings.SCREENSHOTS_OUTPUT_PATH)
-        filename = "%s/%s%s" % (settings.SCREENSHOTS_OUTPUT_PATH, slug, settings.SCREENSHOTS_EXTENSION)
+        filename = "%s/%s%s" % (self.output_path, slug, settings.SCREENSHOTS_EXTENSION)
         return filename
 
     def snap(self, slug):
         filename = self.make_filename(slug=slug)
-        log.info('====> Snapping %s --titled-- "%s" --> %s%s ...' %
+        self.loginfo('====> Snapping %s --titled-- "%s" --> %s%s ...' %
                  (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
         self.browser.save_screenshot(filename)
 
@@ -249,14 +277,17 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
             log.error("'shot' object: %s" % repr(shot))
             raise
 
-    def snap_all(self, browser=None):
+    def snap_all(self, browser=None, **options):
         """
         Take screenshots for each item from json grouped by user.
         """
         shots = []
         try:
-            log.info('==> Fetching screenshots.json from %s ...' % (settings.SCREENSHOTS_JSON_FILE,))
-            shots = json.load(open(settings.SCREENSHOTS_JSON_FILE))
+            if options['cl_str']:
+                shots = json.loads(options['cl_str'])
+            else:
+                self.loginfo('==> Fetching screenshots.json from %s ...' % (settings.SCREENSHOTS_JSON_FILE,))
+                shots = json.load(open(settings.SCREENSHOTS_JSON_FILE))
             for shot in shots:
                 self.process_snap(shot, browser=browser)
             self.browser.quit()
