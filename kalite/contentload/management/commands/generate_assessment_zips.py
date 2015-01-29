@@ -52,7 +52,7 @@ def download_urls(zf, urls):
 
     pool = ThreadPool(5)
     download_to_zip_func = lambda url: download_url_to_zip(zf, url)
-    map(download_to_zip_func, urls)
+    pool.map(download_to_zip_func, urls)
 
     return ZIP_FILE_PATH
 
