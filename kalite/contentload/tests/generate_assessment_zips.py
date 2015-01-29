@@ -57,9 +57,12 @@ class UtilityFunctionTests(KALiteTestCase):
 
     @patch.object(zipfile, "ZipFile", autospec=True)
     def test_write_assessment_json_to_zip(self, zipfile_class):
-        with zipfile.ZipFile(mod.ZIP_FILE_PATH) as zf:
+
+        with open(mod.ZIP_FILE_PATH) as f:
+            zf = zipfile.ZipFile(mod.ZIP_FILE_PATH)
             mod.write_assessment_to_zip(zf, self.assessment_sample)
 
+            zf.close()
             self.assertEqual(zf.writestr.call_args[0][0]  # call_args[0] are the positional arguments
                              , "assessmentitems.json")
 

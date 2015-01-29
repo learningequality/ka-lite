@@ -32,9 +32,11 @@ class Command(NoArgsCommand):
         # TODO(jamalex): We should migrate this away from direct-to-zip so that we can re-run it
         # without redownloading all files. Not possible currently because ZipFile has no `delete`.
         logging.info("downloading images")
-        with zipfile.ZipFile(ZIP_FILE_PATH, "w") as zf:
+        with open(ZIP_FILE_PATH, "w") as f:
+            zf = zipfile.ZipFile(ZIP_FILE_PATH, "w")  # zipfile.ZipFile isn't a context manager yet for python 2.6
             write_assessment_to_zip(zf, new_assessment_items)
             zip_file_path = download_urls(zf, image_urls)
+            zf.close()
 
         logging.info("Zip File with images placed in %s" % zip_file_path)
 
