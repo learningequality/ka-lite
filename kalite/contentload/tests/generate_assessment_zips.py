@@ -23,7 +23,7 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
         with open(os.path.join(TEST_FIXTURES_DIR, "assessment_items_sample.json")) as f:
             assessment_items_content = f.read()
 
-        image_requests = len(list(mod.all_image_urls(json.loads(assessment_items_content))))
+        image_requests = len(set(mod.all_image_urls(json.loads(assessment_items_content))))
 
         get_method.return_value = MagicMock(content=assessment_items_content)
 
