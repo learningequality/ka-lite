@@ -16,6 +16,8 @@ from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
 
+from contextlib import contextmanager
+
 ################################################
 ###                                          ###
 ###   NOTE TO US:                            ###
@@ -442,3 +444,10 @@ def set_request_language(request, lang_code):
 
     request.language = lcode_to_ietf(lang_code)
     translation.activate(request.language)
+
+@contextmanager
+def translate_block(language):
+    language = lcode_to_django_lang(language)
+    translation.activate(language)
+    yield
+    translation.deactivate()

@@ -86,10 +86,9 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
                     node["available"] = True
 
             # Translate everything for good measure
-            translation.activate(i18n.lcode_to_django_lang(language))
-            node["title"] = _(node.get("title", ""))
-            node["description"] = _(node.get("description", ""))
-            translation.deactivate()
+            with i18n.translate_block(language):
+                node["title"] = _(node.get("title", ""))
+                node["description"] = _(node.get("description", ""))
 
         recurse_nodes(TOPICS[channel][language])
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
@@ -140,12 +139,11 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
             else:
                 exercise_template = os.path.join(exercise_lang, exercise_file)
 
-            translation.activate(i18n.lcode_to_django_lang(exercise_lang))
-            exercise["lang"] = exercise_lang
-            exercise["template"] = exercise_template
-            exercise["title"] = _(exercise.get("title", ""))
-            exercise["description"] = _(exercise.get("description", ""))
-            translation.deactivate()
+            with i18n.translate_block(exercise_lang):
+                exercise["lang"] = exercise_lang
+                exercise["template"] = exercise_template
+                exercise["title"] = _(exercise.get("title", ""))
+                exercise["description"] = _(exercise.get("description", ""))
 
     return EXERCISES[language]
 
@@ -252,11 +250,10 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
             # Sort all subtitle URLs by language code
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
-            translation.activate(i18n.lcode_to_django_lang(content_lang))
-            content["selected_language"] = content_lang
-            content["title"] = _(content["title"])
-            content["description"] = _(content.get("description", ""))
-            translation.deactivate()
+            with i18n.translate_block(content_lang):
+                content["selected_language"] = content_lang
+                content["title"] = _(content["title"])
+                content["description"] = _(content.get("description", ""))
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
@@ -348,28 +345,26 @@ def generate_slug_to_video_id_map(node_cache=None):
 
 
 def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, alldata=False):
-    translation.activate(i18n.lcode_to_django_lang(lang_code))
+    with i18n.translate_block(lang_code):
 
-    categories = node_cache or get_node_cache(language=i18n.lcode_to_django_lang(lang_code))
-    result = dict()
-    # make sure that we only get the slug of child of a topic
-    # to avoid redundancy
-    for category_name, category in categories.iteritems():
-        result[category_name] = {}
-        for node_name, node in category.iteritems():
-            if alldata:
-                relevant_data = node
-            else:
-                relevant_data = {
-                    'title': _(node['title']),
-                    'path': node['path'],
-                    'kind': node['kind'],
-                    'available': node.get('available', True),
-                    'keywords': node.get('keywords', []),
-                }
-            result[category_name][node_name] = relevant_data
-
-    translation.deactivate()
+        categories = node_cache or get_node_cache(language=i18n.lcode_to_django_lang(lang_code))
+        result = dict()
+        # make sure that we only get the slug of child of a topic
+        # to avoid redundancy
+        for category_name, category in categories.iteritems():
+            result[category_name] = {}
+            for node_name, node in category.iteritems():
+                if alldata:
+                    relevant_data = node
+                else:
+                    relevant_data = {
+                        'title': _(node['title']),
+                        'path': node['path'],
+                        'kind': node['kind'],
+                        'available': node.get('available', True),
+                        'keywords': node.get('keywords', []),
+                    }
+                result[category_name][node_name] = relevant_data
 
     return result
 
