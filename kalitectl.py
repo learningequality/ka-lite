@@ -127,11 +127,11 @@ else:
 
     def kill_pid(pid):
         """Kill the proces using pywin32 and pid"""
-        import win32api  # @UnresolvedImport
+        import ctypes
         PROCESS_TERMINATE = 1
-        handle = win32api.OpenProcess(PROCESS_TERMINATE, False, pid)
-        win32api.TerminateProcess(handle, -1)
-        win32api.CloseHandle(handle)
+        handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, pid)  # @UndefinedVariable
+        ctypes.windll.kernel32.TerminateProcess(handle, -1)  # @UndefinedVariable
+        ctypes.windll.kernel32.CloseHandle(handle)  # @UndefinedVariable
 
 
 def get_pid():
