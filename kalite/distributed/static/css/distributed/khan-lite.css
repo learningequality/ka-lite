@@ -850,10 +850,6 @@ a.disabled {
     font-size: 26px;
 }
 
-#software-keyboard div .key-bs {
-    font-size: 16px;
-}
-
 /* TODO-BLOCKER (rtibbles): 0.13 - Remove extraneous css added here to make styling work without Bootstrap */
 
 #software-keyboard-container {

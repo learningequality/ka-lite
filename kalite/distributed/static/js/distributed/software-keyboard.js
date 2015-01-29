@@ -96,8 +96,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
                 .appendTo(self.software_keyboard);
 
             jQuery.each(row, function(j, key) {
-                var keySpan = $("<div class='.col-xs-4'><button class='key simple-button " + (key === "bs" ? "key-bs" : "") + "' value='" + key + "'>" + (key === "bs" ? "Del" : key) + "</button></div>").appendTo(rowDiv);
-
+                var keySpan = $("<div class='.col-xs-4'><button class='key simple-button' value='" + key + "'>" + (key === "bs" ? "Del" : key) + "</button></div>").appendTo(rowDiv);
             });
         });
 
