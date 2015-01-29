@@ -22,6 +22,7 @@ from .. import engine
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
 
+from securesync import ERROR_CODES as EC
 
 @csrf_exempt
 #@api_handle_error_with_json
@@ -47,13 +48,13 @@ def register_device(request):
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
     except Exception as e:
-        return JsonResponseMessageError("Could not decode the client device model: %s" % e, code="client_device_corrupted")
+        return JsonResponseMessageError("Could not decode the client device model: %s" % e, code=EC.CLIENT_DEVICE_CORRUPTED)
 
     # Validate the loaded data
     if not isinstance(client_device, Device):
-        return JsonResponseMessageError("Client device must be an instance of the 'Device' model.", code="client_device_not_device")
+        return JsonResponseMessageError("Client device must be an instance of the 'Device' model.", code=EC.CLIENT_DEVICE_NOT_DEVICE)
     if not client_device.verify():
-        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key.", code="client_device_invalid_signature")
+        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key.", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
 
     try:
         zone = register_self_registered_device(client_device, models, data)
@@ -68,7 +69,7 @@ def register_device(request):
             # But still, good to keep track of!
             UnregisteredDevicePing.record_ping(id=client_device.id, ip=get_request_ip(request))
 
-            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code="chain_of_trust_invalid")
+            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code=EC.CHAIN_OF_TRUST_INVALID)
 
     if not zone: # old code-path
         try:
@@ -77,7 +78,7 @@ def register_device(request):
                 registration.use()
 
             elif get_object_or_None(Device, public_key=client_device.public_key):
-                return JsonResponseMessageError("This device has already been registered", code="device_already_registered")
+                return JsonResponseMessageError("This device has already been registered", code=EC.DEVICE_ALREADY_REGISTERED)
             else:
                 # If not... we're in a very weird state--we have a record of their
                 #   registration, but no device record.
@@ -92,9 +93,9 @@ def register_device(request):
         except RegisteredDevicePublicKey.DoesNotExist:
             try:
                 device = Device.objects.get(public_key=client_device.public_key)
-                return JsonResponseMessageError("This device has already been registered", code="device_already_registered")
+                return JsonResponseMessageError("This device has already been registered", code=EC.DEVICE_ALREADY_REGISTERED)
             except Device.DoesNotExist:
-                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code="public_key_unregistered")
+                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code=EC.PUBLIC_KEY_UNREGISTERED)
 
     client_device.save(imported=True)
 
