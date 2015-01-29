@@ -21,7 +21,7 @@ from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
-from kalite.i18n import get_default_language, lc_to_django_lang
+from kalite.i18n import get_default_language, lcode_to_django_lang
 from kalite.main.models import UserLog
 from kalite.shared.decorators import require_authorized_admin
 from kalite.student_testing.utils import set_exam_mode_off
@@ -269,7 +269,7 @@ def login(request, facility):
             user = form.get_user()
 
             try:
-                UserLog.begin_user_activity(user, activity_type="login", language=lc_to_django_lang(request.language))  # Success! Log the event (ignoring validation failures)
+                UserLog.begin_user_activity(user, activity_type="login", language=lcode_to_django_lang(request.language))  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
                 logging.error("Failed to begin_user_activity upon login: %s" % e)
 
