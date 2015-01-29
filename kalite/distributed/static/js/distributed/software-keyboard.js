@@ -74,7 +74,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
 
         // TODO-BLOCKER (rtibbles): 0.13 - Turn this into a handlebars template, conditionally render templates based on exercise types.
 
-        this.$el.append("<button id='show-keyboard'>" + gettext("Hide Keypad") + "</button>");
+        this.$el.append("<button class='simple-button orange' id='show-keyboard'>" + gettext("Hide Keypad") + "</button>");
 
         this.$el.append("<div class='container-fluid' id='software-keyboard'></div>");
 
@@ -96,8 +96,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
                 .appendTo(self.software_keyboard);
 
             jQuery.each(row, function(j, key) {
-                var keySpan = $("<div class='.col-xs-4'><button class='key green_button " + (key === "bs" ? "key-bs" : "") + "' value='" + key + "'>" + (key === "bs" ? "Del" : key) + "</button></div>").appendTo(rowDiv);
-
+                var keySpan = $("<div class='.col-xs-4'><button class='key simple-button' value='" + key + "'>" + (key === "bs" ? "Del" : key) + "</button></div>").appendTo(rowDiv);
             });
         });
 
