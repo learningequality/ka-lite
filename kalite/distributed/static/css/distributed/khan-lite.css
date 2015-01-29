@@ -867,13 +867,14 @@ a.disabled {
     border:0px;
 }
 
-div .row {
+/*Why mess with Bootstrap sizing?*/
+/*div .row {
     width: 100%;
 }
 div .col-xs-4 {
     width: 100%;
     height: 60px;
-}
+}*/
 
 /* END styles for software-keyboard */
 
