@@ -38,17 +38,21 @@ if 'KALITE_DIR' in os.environ:
 
 # Path not set, try to guess it
 else:
-    where_am_i = os.path.split(__file__)
-    where_am_i_prev = '.'
-    if len(where_am_i) > 2:
-        if where_am_i[-1] == 'kalite':
-            where_am_i_prev = os.path.join(*where_am_i[:-2])
-    # On Windows, because it's run from bin/windows/kalite.bat
-    # where_am_i = ('..', 'kalite')
-    elif where_am_i == ('..', 'kalite'):
-        where_am_i_prev = os.path.join('..', '..')
-    if os.path.exists(os.path.join(where_am_i_prev, 'kalite', '__init__.py')):
-        kalite_path = where_am_i_prev
+    # Fetch full path of script's base dirname
+    where_am_i = os.path.split(os.path.realpath(__file__))
+    script_dir_path = os.path.split(where_am_i[0])[0]
+    script_dir_name = os.path.split(where_am_i[0])[1]
+    if script_dir_name == 'ka-lite':
+        kalite_path = where_am_i[0]
+    elif script_dir_name == 'kalite':
+        kalite_path = script_dir_path
+    elif script_dir_name == 'bin':
+        kalite_path = script_dir_path
+    elif script_dir_name == 'windows':
+        kalite_path = os.path.realpath(os.path.join(script_dir_path, '..'))
+    # Check that it works
+    if kalite_path and not os.path.exists(os.path.join(kalite_path, 'kalite', '__init__.py')):
+        kalite_path = None
 
 if not kalite_path:
     raise RuntimeError("Could not determine where KA Lite is installed. Please set the KALITE_DIR environment variable.")
