@@ -44,7 +44,7 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
-def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language="en"):
+def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language=settings.LANGUAGE_CODE):
     global TOPICS, TOPICS_FILEPATHS
     if not TOPICS:
         TOPICS = {}
@@ -104,7 +104,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
 
 NODE_CACHE = None
 CACHE_VARS.append("NODE_CACHE")
-def get_node_cache(node_type=None, force=False, language="en"):
+def get_node_cache(node_type=None, force=False, language=settings.LANGUAGE_CODE):
     global NODE_CACHE
     if NODE_CACHE is None or force:
         NODE_CACHE = generate_node_cache()
@@ -115,7 +115,7 @@ def get_node_cache(node_type=None, force=False, language="en"):
 
 EXERCISES          = None
 CACHE_VARS.append("EXERCISES")
-def get_exercise_cache(force=False, language="en"):
+def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
     global EXERCISES, EXERCISES_FILEPATH
     if EXERCISES is None:
         EXERCISES = {}
@@ -175,7 +175,7 @@ def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):
 
 KNOWLEDGEMAP_TOPICS = None
 CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
-def get_knowledgemap_topics(force=False, language="en"):
+def get_knowledgemap_topics(force=False, language=settings.LANGUAGE_CODE):
     global KNOWLEDGEMAP_TOPICS
     if KNOWLEDGEMAP_TOPICS is None:
         KNOWLEDGEMAP_TOPICS = {}
@@ -186,7 +186,7 @@ def get_knowledgemap_topics(force=False, language="en"):
 
 LEAFED_TOPICS = None
 CACHE_VARS.append("LEAFED_TOPICS")
-def get_leafed_topics(force=False, language="en"):
+def get_leafed_topics(force=False, language=settings.LANGUAGE_CODE):
     global LEAFED_TOPICS
     if LEAFED_TOPICS is None or force:
         LEAFED_TOPICS = [topic for topic in get_node_cache(language=language)["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
@@ -201,7 +201,7 @@ def create_thumbnail_url(thumbnail):
 
 CONTENT          = None
 CACHE_VARS.append("CONTENT")
-def get_content_cache(force=False, annotate=False, language="en"):
+def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CODE):
     global CONTENT, CONTENT_FILEPATH
 
     if CONTENT is None:
@@ -374,7 +374,7 @@ def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, 
     return result
 
 
-def generate_node_cache(topictree=None, language="en"):
+def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
     """
     Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Content nodes.
     """

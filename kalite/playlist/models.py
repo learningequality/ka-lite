@@ -136,7 +136,7 @@ class VanillaPlaylist:
 
         return playlists
 
-    def get_playlist_entries(playlist, entry_type, language="en"):
+    def get_playlist_entries(playlist, entry_type, language=settings.LANGUAGE_CODE):
         """
         Given a VanillaPlaylist, inspect its 'entries' attribute and return a list
         containing corresponding nodes for each item from the topic tree.
