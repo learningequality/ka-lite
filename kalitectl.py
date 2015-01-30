@@ -8,7 +8,8 @@ www.learningequality.org
 Usage:
   kalite start [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
-  kalite status [job-scheduler] [options]
+  kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
+  kalite status [--job-scheduler] [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
   kalite manage COMMAND [options] [DJANGO_OPTIONS ...]
@@ -313,7 +314,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     manage('kaserve', args=args.split(" "))
 
 
-def stop(args=[]):
+def stop(args=[], sys_exit=True):
     """
     Stops the kalite server, either from PID or through a management command
 
@@ -328,7 +329,9 @@ def stop(args=[]):
     except NotRunning as e:
         sys.stderr.write(
             "Already stopped. Status was: {000:s}\n".format(status.codes[e.status_code]))
-        sys.exit(-1)
+        if sys_exit:
+            sys.exit(-1)
+        return
 
     # If there's no PID for the job scheduler, just quit
     if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
@@ -343,7 +346,9 @@ def stop(args=[]):
             sys.stderr.write(
                 "Invalid job scheduler PID file: {00:s}".format(PID_FILE_JOB_SCHEDULER))
 
-    print("kalite stopped")
+    sys.stderr.write("kalite stopped\n")
+    if sys_exit:
+        sys.exit(0)
 
 
 def status():
@@ -396,10 +401,22 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version=str(VERSION), options_first=True)
 
     if arguments['start']:
-        start(debug=arguments['--debug'], args=arguments['DJANGO_OPTIONS'])
+        start(
+            debug=arguments['--debug'],
+            skip_job_scheduler=arguments['--skip-job-scheduler'],
+            args=arguments['DJANGO_OPTIONS']
+        )
 
     elif arguments['stop']:
         stop(args=arguments['DJANGO_OPTIONS'])
+
+    elif arguments['restart']:
+        stop(args=arguments['DJANGO_OPTIONS'], sys_exit=False)
+        start(
+            debug=arguments['--debug'],
+            skip_job_scheduler=arguments['--skip-job-scheduler'],
+            args=arguments['DJANGO_OPTIONS']
+        )
 
     elif arguments['status']:
         if arguments['job-scheduler']:
