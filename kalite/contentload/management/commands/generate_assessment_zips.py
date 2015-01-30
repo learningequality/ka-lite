@@ -101,6 +101,7 @@ def all_image_urls(items):
 
 
 def localhosted_image_urls(items):
+    # we copy so we make sure we don't modify the items passed in to this function
     newitems = copy.deepcopy(items)
 
     url_to_replace = r'https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg))'
