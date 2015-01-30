@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block help_active %}active{% endblock help_active %}
+{% block help_active %}{% trans "active" %}{% endblock help_active %}
 {% block title %}{% trans "Administration Panel" %}{{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
