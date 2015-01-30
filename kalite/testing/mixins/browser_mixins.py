@@ -1,6 +1,7 @@
 import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -84,9 +85,9 @@ class BrowserActionMixins(object):
         This code will verify that a message with the given type contains the specified text."""
 
         self.browser_wait_for_ajax_calls_to_finish()
-        time.sleep(1)  # wait for the message to get created
 
         # Get messages (and limit by type)
+        WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
         messages = self.browser.find_elements_by_class_name("alert")
         if message_type:
             messages = [m for m in messages if message_type in m.get_attribute("class")]
