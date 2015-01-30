@@ -51,7 +51,6 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
         TOPICS = {}
     if TOPICS.get(channel) is None:
         TOPICS[channel] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
-        validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
 
         # Just loaded from disk, so have to restamp.
         annotate = True
@@ -255,29 +254,6 @@ def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE, alldata=F
     if not FLAT_TOPIC_TREE[alldata] or lang_code not in FLAT_TOPIC_TREE[alldata] or force:
         FLAT_TOPIC_TREE[alldata][lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code, alldata=alldata)
     return FLAT_TOPIC_TREE[alldata][lang_code]
-
-
-def validate_ancestor_ids(topictree=None):
-    """
-    Given the KA Lite topic tree, make sure all parent_id and ancestor_ids are stamped
-    """
-
-    if not topictree:
-        topictree = get_topic_tree()
-
-    def recurse_nodes(node, ancestor_ids=[]):
-        # Add ancestor properties
-        if not "parent_id" in node:
-            node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
-        if not "ancestor_ids" in node:
-            node["ancestor_ids"] = ancestor_ids
-
-        # Do the recursion
-        for child in node.get("children", []):
-            recurse_nodes(child, ancestor_ids=ancestor_ids + [node["id"]])
-    recurse_nodes(topictree)
-
-    return topictree
 
 
 def generate_slug_to_video_id_map(node_cache=None):
