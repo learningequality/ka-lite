@@ -394,7 +394,7 @@ def select_best_available_language(target_code, available_codes=None):
     target_code = lcode_to_django_lang(target_code)
     if available_codes is None:
         available_codes = get_installed_language_packs().keys()
-    available_codes = [lcode_to_django_lang(lc) for lc in available_codes]
+    available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
     if target_code in available_codes:

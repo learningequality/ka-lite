@@ -221,20 +221,23 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
         for content in CONTENT[language].values():
             default_thumbnail = create_thumbnail_url(content.get("id"))
             dubmap = i18n.get_id2oklang_map(content.get("id"))
-            content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
-            if content_lang:
-                dubbed_id = dubmap.get(content_lang)
-                format = content.get("format", "")
-                if is_content_on_disk(dubbed_id, format):
-                    content["available"] = True
-                    thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
-                    content["content_urls"] = {
-                        "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
-                        "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
-                        "thumbnail": thumbnail,
-                    }
+            if dubmap:
+                content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
+                if content_lang:
+                    dubbed_id = dubmap.get(content_lang)
+                    format = content.get("format", "")
+                    if is_content_on_disk(dubbed_id, format):
+                        content["available"] = True
+                        thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
+                        content["content_urls"] = {
+                            "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
+                            "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                            "thumbnail": thumbnail,
+                        }
                 else:
                     content["available"] = False
+            else:
+                content["available"] = False
 
             # Get list of subtitle language codes currently available
             subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
