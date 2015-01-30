@@ -17,6 +17,8 @@ SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
 SCREENSHOT_COMMAND_OPTS = " --no-del -v 0 --from-str '%s' --output-dir %s"
 OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
 
+from django.core.management import call_command
+
 def setup(app):
     app.add_directive('screenshot', Screenshot)
     app.connect('env-purge-doc', purge_screenshots)
@@ -137,6 +139,12 @@ def _parse_user_role(arg_str):
     else:
         raise NotImplementedError("Unrecognized user-role: %s" % arg_str)
 
+def _parse_user_role(arg_str):
+    if arg_str in ["guest", "coach", "admin", "learner"]:
+        return arg_str
+    else
+        raise NotImplementedError()
+
 class Screenshot(Image):
     """ Provides directive to include screenshot based on given options.
 
@@ -145,6 +153,8 @@ class Screenshot(Image):
     required_arguments = 0
     optional_arguments = 0
     has_content = False
+    
+    user_role = None
 
     #########################################################
     # Handlers will be invoked in the run method should     #
