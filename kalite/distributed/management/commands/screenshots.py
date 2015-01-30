@@ -29,7 +29,7 @@ except ImportError:
 USER_TYPE_ADMIN = "admin"
 USER_TYPE_COACH = "coach"
 USER_TYPE_GUEST = "guest"
-USER_TYPE_STUDENT = "student"
+USER_TYPE_STUDENT = "learner"
 
 log = settings.LOG
 
