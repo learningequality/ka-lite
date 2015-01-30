@@ -60,3 +60,4 @@ ghostdriver.log
 /kalite/_built.touch
 /kalite/contentload/tests/fixtures/
 *.swp
+sphinx-docs/_build
