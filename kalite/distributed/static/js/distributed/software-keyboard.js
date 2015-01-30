@@ -9,22 +9,28 @@ window.SoftwareKeyboardView = Backbone.View.extend({
 
         _.bindAll(this);
 
-       this.inputs = this.$(":input")
-           .prop("readonly", true)
-           .css("-webkit-tap-highlight-color", "rgba(0, 0, 0, 0)");
-       this.field = this.inputs.first();
-       this.touch = Modernizr.touch;
-       this.enabled = true;
-       this.render();
+        this.touch = Modernizr.touch;
+        this.enabled = true;
+        this.render();
 
     },
 
+    set_input: function(el) {
+        this.inputs = $(el).find(":input")
+            .prop("readonly", true)
+            .css("-webkit-tap-highlight-color", "rgba(0, 0, 0, 0)");
+        this.field = this.inputs.first();
+    },
+
     toggle_keypad: function() {
+        var self = this;
         this.enabled = !this.enabled;
         this.software_keyboard.toggle();
-        this.inputs.prop("readonly", function(index, value){
-            return !value;
-        });
+        if (typeof this.inputs !== "undefined") {
+            this.inputs.prop("readonly", function(index, value){
+                return self.enabled;
+            });
+        }
         this.$("#show-keyboard").text(function(i, text){
             return text === gettext("Show Keypad") ? gettext("Hide Keypad") : gettext("Show Keypad");
         });

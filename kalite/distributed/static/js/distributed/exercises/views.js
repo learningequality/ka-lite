@@ -176,7 +176,7 @@ window.ExerciseView = Backbone.View.extend({
                         el: self.$("#software-keyboard-container")
                     });
                 }
-
+                self.software_keyboard_view.set_input("#solutionarea");
                 self.software_keyboard_view.show();
             } else if (typeof self.software_keyboard_view !== "undefined") {
                 self.software_keyboard_view.hide();
