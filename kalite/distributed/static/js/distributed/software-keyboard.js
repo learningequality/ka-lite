@@ -16,8 +16,8 @@ window.SoftwareKeyboardView = Backbone.View.extend({
     },
 
     set_input: function(el) {
-        this.inputs = $(el).find(":input")
-            .prop("readonly", true)
+        this.inputs = $(el)
+            .prop("readonly", this.enabled)
             .css("-webkit-tap-highlight-color", "rgba(0, 0, 0, 0)");
         this.field = this.inputs.first();
     },
@@ -71,6 +71,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         }
 
         this.field.trigger("keypress");
+        this.field.trigger("change");
 
         return false;
     },
