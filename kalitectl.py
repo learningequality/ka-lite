@@ -9,7 +9,7 @@ Usage:
   kalite start [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
-  kalite status [--job-scheduler] [options]
+  kalite status [job-scheduler] [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
   kalite manage COMMAND [options] [DJANGO_OPTIONS ...]
