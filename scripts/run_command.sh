@@ -9,4 +9,4 @@ else
 fi
 
 pyexec=`"$SCRIPT_DIR/python.sh"`
-"$pyexec" "$KALITE_DIR/manage.py" run_sandboxed_command $~
+"$pyexec" "manage.py" run_sandboxed_command $~

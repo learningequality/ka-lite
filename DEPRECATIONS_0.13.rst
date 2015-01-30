@@ -6,6 +6,30 @@ Why in RST, reStructuredText? Because our future sphinx will run on RST.
 This is a working copy for making notes on deprecations until the documentation
 structure is here.
 
+Purging *pyc files
+------------------
+
+Previously, kalite would look for ``*pyc`` files every time it was launched,
+and that was quite a waste since its only useful when upgrading. In dev
+environments, we recommend that the developer keeps track of these issues
+on his/her own as with any other project.
+
+Tips:
+http://blog.daniel-watkins.co.uk/2013/02/removing-pyc-files-coda.html
+
+> Luckily, it's pretty easy to fix this in git, using hooks, specifically the
+> post-checkout hook. To do that, add the following to .git/hooks/post-checkout, and make the file executable:
+
+::
+
+    #!/bin/bash
+    find $(git rev-parse --show-cdup) -name "*.pyc" -delete
+
+For the normal user, reset assured that the upgrade notes contain more
+info.
+
+TODO: Check that a git pull from an older release does not leave behind any
+problematic *pyc files and possibly dump this whole thing.
 
 Which version can I upgrade from?
 ---------------------------------

@@ -224,8 +224,7 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
             content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
             if content_lang:
                 dubbed_id = dubmap.get(content_lang)
-                # TODO (rtibbles): Explicitly stamp "mp4" on KA videos in contentload
-                format = content.get("format", "mp4")
+                format = content.get("format", "")
                 if is_content_on_disk(dubbed_id, format):
                     content["available"] = True
                     thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail

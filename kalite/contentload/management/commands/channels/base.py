@@ -32,9 +32,6 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     if not kind:
         return node
 
-    node["x_pos"] = node.get("x_pos", 0) or node.get("h_position", 0)
-    node["y_pos"] = node.get("y_pos", 0) or node.get("v_position", 0)
-
     # Only keep key data we can use
     if kind in channel_data["attribute_whitelists"]:
         for key in node.keys():
@@ -53,11 +50,12 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     node["path"] = node.get("path", "") or path + node["slug"] + "/"
     if "title" not in node:
         node["title"] = (node.get(channel_data["title_key"][kind], ""))
-    node["title"] = node["title"].strip()
+    node["title"] = (node["title"] or "").strip()
 
-    # Add some attribute that should have been on there to start with.
-    node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
-    node["ancestor_ids"] = ancestor_ids
+    if ancestor_ids:
+        # Add some attribute that should have been on there to start with.
+        node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
+        node["ancestor_ids"] = ancestor_ids
 
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
@@ -166,11 +164,12 @@ def rebuild_topictree(
                 children_to_delete.append(i)
                 logging.debug("Removing hidden child: %s" % child[channel_data["slug_key"][child_kind]])
                 continue
-            elif channel_data.get("require_download_link", False) and child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
+            elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
                 #   we won't remove these nodes
                 logging.warn("No download link for video: %s\n" % child.get("youtube_id", child.get("id", "")))
-                children_to_delete.append(i)
+                if channel_data.get("require_download_link", False):
+                    children_to_delete.append(i)
                 continue
 
             child_kinds = child_kinds.union(set([child_kind]))
