@@ -77,63 +77,68 @@
 
 {% block report_content %}
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="selection pull-left">
-        {# Select the coach report type #}
-        {% if report_types %}
-            <div class="subtitle">{% trans "Select Report" %}</div>
-            <select id="report_type">
-                <option {% if not request_report_type %}selected{% endif %}>----</option>
-                {% for report_type in report_types %}
-                    <option value="{% trans report_type %}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
-                {% endfor %}
-            </select>
-        {% else %}
-            <div class="subtitle">{% trans "No report types available." %}</div>
-        {% endif %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="selection pull-left">
+            {# Select the coach report type #}
+            {% if report_types %}
+                <div class="subtitle coach-heading">{% trans "Select Report" %}</div>
+                <select class="form-control" id="report_type">
+                    <option {% if not request_report_type %}selected{% endif %}>----</option>
+                    {% for report_type in report_types %}
+                        <option value="{% trans report_type %}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
+                    {% endfor %}
+                </select>
+            {% else %}
+                <div class="subtitle coach-heading">{% trans "No report types available." %}</div>
+            {% endif %}
+            </div>
+            <div class="selection pull-left">
+            {% if users and request_report_type == "student" %}
+                <div class="subtitle coach-heading">{% trans "Select Student" %}</div>
+                <select class="form-control" id="student">
+                    <option {% if not request.GET.user %}selected{% endif %}>----</option>
+                    {% for user in users %}
+                        <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+            {% elif groups %}
+                {% if playlists %}
+                    <div class="selection">
+                        <div class="subtitle coach-heading">{% trans "Select Playlist" %}</div>
+                        <select class="form-control" id="playlist">
+                            <option {% if not request.GET.playlist %}selected{% endif %}>----</option>
+                            {% for playlist in playlists %}
+                                <option value="{{ playlist.id }}"{% if request.GET.playlist == playlist.id %}selected{% endif %}>{{ playlist.tag }}: {% trans playlist.title %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% elif topics %}
+                    <div class="selection">
+                        <div class="subtitle coach-heading">{% trans "Select Topic" %}</div>
+                        <select class="form-control" id="topic">
+                            <option {% if not request.GET.topic %}selected{% endif %}>----</option>
+                            {% for topic in topics %}
+                                <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{% trans topic.title %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            {% endif %}
         </div>
-        <div class="selection pull-left">
-        {% if users and request_report_type == "student" %}
-            <div class="subtitle">{% trans "Select Student" %}</div>
-            <select id="student">
-                <option {% if not request.GET.user %}selected{% endif %}>----</option>
-                {% for user in users %}
-                    <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.name }}</option>
-                {% endfor %}
-            </select>
-        {% elif groups %}
-            {% if playlists %}
-                <div class="selection">
-                    <div class="subtitle">{% trans "Select Playlist" %}</div>
-                    <select id="playlist">
-                        <option {% if not request.GET.playlist %}selected{% endif %}>----</option>
-                        {% for playlist in playlists %}
-                            <option value="{{ playlist.id }}"{% if request.GET.playlist == playlist.id %}selected{% endif %}>{{ playlist.tag }}: {% trans playlist.title %}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            {% elif topics %}
-                <div class="selection">
-                    <div class="subtitle">{% trans "Select Topic" %}</div>
-                    <select id="topic">
-                        <option {% if not request.GET.topic %}selected{% endif %}>----</option>
-                        {% for topic in topics %}
-                            <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{% trans topic.title %}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            {% endif %}
-        {% endif %}
     </div>
-    <div class="col-md-12">
-        <ul class="pull-right" id="legend">
-            <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
-            <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>
-            {% if request_report_type != "video" %}
-            <li class="legend"><div class="struggle"></div>{% trans "Struggling" %}</li>
-            {% endif %}
-        </ul>
+
+    <div class="row">
+        <div class="col-md-6 col-md-push-1 col-xs-4 col-xs-push-1">
+            <ul id="legend">
+                <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
+                <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>
+                {% if request_report_type != "video" %}
+                <li class="legend"><div class="struggle"></div>{% trans "Struggling" %}</li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
 </div>
 

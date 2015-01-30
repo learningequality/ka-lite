@@ -70,12 +70,12 @@ th.headrowuser {
     font-weight: bold;
 }
 
-.complete {
-    background-color: #2F942F;
+.partial {
+    background-color: #ACD289;
 }
 
-.partial {
-    background-color: #94BE48;
+.complete {
+    background-color: #5AA685;
 }
 
 .struggle {
@@ -113,26 +113,31 @@ th.headrowuser {
     display:block;
     text-overflow: ellipsis;
 }
+
 #legend {
     padding-left: 0;
-    padding-top: 0 !important;
+    padding-top: 20px;
 }
+
 .legend {
-    border: 1px solid #333;
     display: inline-block;
     height: 20px;
     overflow: hidden;
-    text-align:center;
-    width:120px;
+    text-align: center;
+    width: 120px;
+    padding-right: 10px;
 }
+
 .legend div {
-    float:left;
-    width:35px;
-    height:21px;
+    float: left;
+    width: 35px;
+    height: 21px;
 }
+
 .selection {
     margin-right: 10px;
 }
+
 @media only screen and (max-width: 1199px) {
     #legend { float: left !important; margin-top: 15px; }
 }
