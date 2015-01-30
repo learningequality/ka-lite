@@ -41,10 +41,10 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         if(!this.enabled) {
             return false;
         }
+        var field = this.field[0];
         var key = $(ev.target).val();
         // backspace key
         if (key == "bs") {
-            var field = this.field[0];
             if (_.isFunction(field.setRangeText)) {
                 // delete the currently selected text or the last character
                 if (field.selectionStart === field.selectionEnd) {
@@ -60,7 +60,6 @@ window.SoftwareKeyboardView = Backbone.View.extend({
             this.field.val('');
         } else {
             //normal key
-            var field = this.field[0];
             if (_.isFunction(field.setRangeText)) {
                 // overwrite the current selection with the new key (which will just insert if nothing is selected)
                 field.setRangeText(key);
@@ -71,7 +70,14 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         }
 
         this.field.trigger("keypress");
-        this.field.trigger("change");
+
+        // The only way it seems we can set the value for a Perseus exercise is by using the
+        // setInputValue method of the itemRenderer. Directly interacting with the DOM element
+        // doesn't seem to trigger the right events for the React Element to notice.
+        var inputPaths = Exercises.PerseusBridge.itemRenderer.getInputPaths() || [];
+        if (inputPaths.length > 0) {
+            Exercises.PerseusBridge.itemRenderer.setInputValue(inputPaths[0], this.field.val());
+        }
 
         return false;
     },
