@@ -133,6 +133,9 @@ window.SoftwareKeyboardView = Backbone.View.extend({
 
     catch_keypress: function(event) {
         event.preventDefault();
+        if (event.which == 13 || event.keyCode == 13) {
+            this.trigger("enter_pressed");
+        }
         return false;
     }
 

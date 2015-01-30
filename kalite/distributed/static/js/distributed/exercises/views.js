@@ -189,8 +189,10 @@ window.ExerciseView = Backbone.View.extend({
                     self.software_keyboard_view.set_input(".perseus-input:input");
                 }
                 self.software_keyboard_view.show();
+                self.listenTo(self.software_keyboard_view, "enter_pressed", function(){$("#check-answer-button").trigger("click");});
             } else if (typeof self.software_keyboard_view !== "undefined") {
                 self.software_keyboard_view.hide();
+                self.stopListening(self.software_keyboard_view);
             }
         });
 
