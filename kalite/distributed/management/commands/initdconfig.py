@@ -4,7 +4,7 @@ import os
 import sys
 
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 script_template = """
 #! /bin/sh
@@ -26,12 +26,12 @@ case "$1" in
     start)
         echo "Starting ka-lite!"
         #run ka-lite as the owner of the project folder, and not as root
-        su `stat --format="%%U" "%(repo_path)s"` -c "%(script_path)s/start.sh"
+        su `stat --format="%%U" "%(repo_path)s"` -c "%(script_path)s/bin/kalite start"
         ;;
     stop)
         echo "Shutting down ka-lite!"
         echo
-        "%(script_path)s/stop.sh"
+        "%(script_path)s/bin/kalite stop"
         ;;
 esac
 
@@ -40,7 +40,7 @@ esac
 if sys.platform == 'darwin':
     # TODO(cpauya): Set the StandardOutPath key so that /dev/stdout or /dev/tty can be used.  Reason is if user runs:
     # `launchctl load -w $HOME/Library/LaunchAgents/org.learningequality.kalite.plist`
-    # then the output of the `start.sh` script are not shown on the terminal but instead on
+    # then the output of `kalite start` are not shown on the terminal but instead on
     # `/tmp/kalite.out`.  There must be a way to set it to display on the user's terminal.
     script_template = """
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -50,7 +50,7 @@ if sys.platform == 'darwin':
         <key>Label</key>
         <string>org.learningequality.kalite</string>
         <key>Program</key>
-        <string>%(script_path)s/start.sh</string>
+        <string>%(script_path)s/bin/kalite start</string>
         <key>RunAtLoad</key>
         <true/>
         <key>StandardOutPath</key>

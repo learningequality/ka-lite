@@ -15,6 +15,7 @@ from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 
 from ... import cherrypyserver
+import warnings
 
 
 CPWSGI_HELP = r"""
@@ -73,6 +74,9 @@ class Command(BaseCommand):
         runcherrypyserver(args)
 
 
+# TODO
+# benjaoming: This doesn't work on Windows, but is replaced by functionality
+# inside kalitectl so can be removed
 def change_uid_gid(uid, gid=None):
     """Try to change UID and GID to the provided values.
     UID and GID are given as names like 'nobody' not integer.
@@ -86,6 +90,10 @@ def change_uid_gid(uid, gid=None):
     os.setgid(gid)
     os.setuid(uid)
 
+
+# TODO
+# benjaoming: This doesn't work on Windows, but is replaced by functionality
+# inside kalitectl so can be removed
 def get_uid_gid(uid, gid=None):
     """Try to change UID and GID to the provided values.
     UID and GID are given as names like 'nobody' not integer.
@@ -104,6 +112,9 @@ def get_uid_gid(uid, gid=None):
     return (uid, gid)
 
 
+# TODO
+# benjaoming: This doesn't work on Windows, but is replaced by functionality
+# inside kalitectl so can be removed
 def poll_process(pid):
     """
     Poll for process with given pid up to 10 times waiting .25 seconds in between each poll.
@@ -206,6 +217,8 @@ def runcherrypyserver(argset=[], **kwargs):
     # Get the options
     options = CPWSGI_OPTIONS.copy()
     options.update(kwargs)
+    
+    # TODO: What's going on here!? Care to comment, anonymous author? :)
     for x in argset:
         if "=" in x:
             k, v = x.split('=', 1)
@@ -218,40 +231,43 @@ def runcherrypyserver(argset=[], **kwargs):
     if "help" in options:
         print CPWSGI_HELP
         return
-
+    
+    # TODO: This is not in us anymore in `kalite stop` so can be deprecated
     if "stop" in options:
+        warnings.warn("Using runcherrypyserver stop is deprecated, use `kalite stop`", DeprecationWarning)
         if options['pidfile']:
             stop_server(options['pidfile'])
             return True
         if options['host'] and options['port']:
-            #fall through into the following host/port shutdown sequence
-            pass
+            pid = ka_lite_is_using_port(options['host'], options['port'])
+            stop_server_using_pid(pid)
+            return True
         else:
             raise Exception("must have pidfile or host+port")
 
     if port_is_available(options['host'], options['port']):
         pass
     else:
-        # is kalite running on that port?
-        existing_server_pid = ka_lite_is_using_port(options['host'], options['port'])
-        if existing_server_pid:
-            stop_server_using_pid(existing_server_pid)
-            # try again, is kalite still running on that port?
-            time.sleep(5.0)
-            existing_server_pid = ka_lite_is_using_port(options['host'], options['port'])
-            if existing_server_pid:
-                raise Exception("Existing kalite process cannot be stopped")
-        else:
-            raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
+        # TODO: Remove this
+        # benjaoming: this is replaced by the stop command in kalitectl
+        # existing_server_pid = ka_lite_is_using_port(options['host'], options['port'])
+        # if existing_server_pid:
+        #     stop_server_using_pid(existing_server_pid)
+        #     # try again, is kalite still running on that port?
+        #     time.sleep(5.0)
+        #     existing_server_pid = ka_lite_is_using_port(options['host'], options['port'])
+        #     if existing_server_pid:
+        #         raise Exception("Existing kalite process cannot be stopped")
+        raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
 
-        if port_is_available(options['host'], options['port']):
-            # Make a final check that the port is free.  This is needed in case someone downloaded
-            #  and started another copy of KA Lite, and ran it with the default settings
-            #  (port 8008, taken by Nginx), then it would kill the other server without
-            # freeing up the port, so we need to raise an exception.
-            pass
-        else:
-            raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
+        # if port_is_available(options['host'], options['port']):
+        #    # Make a final check that the port is free.  This is needed in case someone downloaded
+        #    #  and started another copy of KA Lite, and ran it with the default settings
+        #    #  (port 8008, taken by Nginx), then it would kill the other server without
+        #    # freeing up the port, so we need to raise an exception.
+        #     pass
+        # else:
+        #     raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
 
     if "stop" in options:
         #we are done, get out
