@@ -2,7 +2,8 @@ window.SoftwareKeyboardView = Backbone.View.extend({
 
     events: {
        "click button.key" : "key_pressed",
-       "click button#show-keyboard": "toggle_keypad"
+       "click button#show-keyboard": "toggle_keypad",
+       "keypress button": "catch_keypress"
      },
 
     initialize: function () {
@@ -74,9 +75,12 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         // The only way it seems we can set the value for a Perseus exercise is by using the
         // setInputValue method of the itemRenderer. Directly interacting with the DOM element
         // doesn't seem to trigger the right events for the React Element to notice.
-        var inputPaths = Exercises.PerseusBridge.itemRenderer.getInputPaths() || [];
-        if (inputPaths.length > 0) {
-            Exercises.PerseusBridge.itemRenderer.setInputValue(inputPaths[0], this.field.val());
+
+        if (typeof Exercises.PerseusBridge.itemRenderer !== "undefined") {
+            var inputPaths = Exercises.PerseusBridge.itemRenderer.getInputPaths() || [];
+            if (inputPaths.length > 0) {
+                Exercises.PerseusBridge.itemRenderer.setInputValue(inputPaths[0], this.field.val());
+            }
         }
 
         return false;
@@ -125,6 +129,11 @@ window.SoftwareKeyboardView = Backbone.View.extend({
 
     show: function() {
         this.$el.show();
+    },
+
+    catch_keypress: function(event) {
+        event.preventDefault();
+        return false;
     }
 
 });
