@@ -101,7 +101,8 @@ def initialize_content_caches(force=False):
     Catch all function to regenerate any content caches in memory that need annotation
     with file availability
     """
-    logging.info("Preloading content data.")
-    topic_tools.get_content_cache(force=force, annotate=True, language=settings.LANGUAGE_CODE)
-    logging.info("Preloading topic tree data.")
-    topic_tools.get_topic_tree(force=force, annotate=True, language=settings.LANGUAGE_CODE)
+    for lang in i18n.get_installed_language_packs(force=True).keys():
+        logging.info("Preloading content data for language {lang}.".format(lang=lang))
+        topic_tools.get_content_cache(force=force, annotate=True, language=lang)
+        logging.info("Preloading topic tree data for language {lang}.".format(lang=lang))
+        topic_tools.get_topic_tree(force=force, annotate=True, language=lang)
