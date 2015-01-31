@@ -7,6 +7,9 @@ from exceptions import NotImplementedError
 
 from django.core.management import call_command
 
+import json
+import os
+
 def setup(app):
     app.add_directive('screenshot', Screenshot)
 
@@ -112,7 +115,7 @@ def _parse_nav_steps(arg_str):
 def _parse_user_role(arg_str):
     if arg_str in ["guest", "coach", "admin", "learner"]:
         return arg_str
-    else
+    else:
         raise NotImplementedError()
 
 class Screenshot(Image):
@@ -136,8 +139,27 @@ class Screenshot(Image):
     #########################################################
     def _login_handler(self, username, password, submit):
         # This part depends on the details of the management command
-        call_command(
-        raise NotImplementedError()
+        from_str_arg = { "users": ["guest"],
+                         "slug": "",
+                         "start_url": "/securesync/login",
+                         "inputs": [{"#id_username":username},
+                                    {"#id_password":password},
+                                   ],
+                         "pages": [],
+                         "notes": [],
+                       }
+        if submit:
+            from_str_arg["inputs"].append({"<submit>":""})
+        from_str_arg["inputs"].append({"<slug>":"testshot"})
+        from_str_arg = [from_str_arg]
+        #call_command("screenshots", 
+        #             from_str=json.dumps(from_str_arg),
+        #            output_dir=os.path.dirname(os.path.realpath(__file__)))
+        cmd_str = "python /home/gallaspy/Desktop/ka-lite/kalite/manage.py screenshots -v 0 --from-str '%s' --output-dir %s" % (json.dumps(from_str_arg), os.path.abspath(os.path.dirname(os.path.realpath(__file__))))
+        returncode = os.system(cmd_str)
+        self.arguments.append("testshot.png")
+        (image_node,) = Image.run(self)
+        return image_node
 
     def _command_handler(self, action, *options):
         raise NotImplementedError()
