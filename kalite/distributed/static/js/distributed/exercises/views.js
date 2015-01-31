@@ -170,16 +170,29 @@ window.ExerciseView = Backbone.View.extend({
 
         // TODO (rtibbles): Make this nice, not horrible.
         this.listenTo(Exercises, "newProblem", function (ev, data) {
-            if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
+            var answerType = data.answerType;
+            if (typeof answerType === "undefined") {
+                answerType = ((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])[0] || [""])[0];
+            }
+
+            var checkVal = /number|decimal|rational|improper|mixed/gi;
+
+            if (checkVal.test(answerType)){
                 if (typeof self.software_keyboard_view === "undefined") {
                     self.software_keyboard_view = new SoftwareKeyboardView({
                         el: self.$("#software-keyboard-container")
                     });
                 }
-
+                if (Exercises.getCurrentFramework()==="khan-exercises"){
+                    self.software_keyboard_view.set_input("#solutionarea :input");
+                } else {
+                    self.software_keyboard_view.set_input(".perseus-input:input");
+                }
                 self.software_keyboard_view.show();
+                self.listenTo(self.software_keyboard_view, "enter_pressed", function(){$("#check-answer-button").trigger("click");});
             } else if (typeof self.software_keyboard_view !== "undefined") {
                 self.software_keyboard_view.hide();
+                self.stopListening(self.software_keyboard_view);
             }
         });
 
