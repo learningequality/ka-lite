@@ -322,7 +322,7 @@ def get_annotated_topic_tree(request, lang_code=None):
     lang_code = lang_code or request.language      # Get annotations for the current language.
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
 
-    return JsonResponse(annotate_topic_tree(get_topic_tree(), statusdict=statusdict, lang_code=lang_code))
+    return JsonResponse(annotate_topic_tree(get_topic_tree(language=lang_code), statusdict=statusdict, lang_code=lang_code))
 
 
 """

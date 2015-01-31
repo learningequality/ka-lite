@@ -16,6 +16,8 @@ from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
 
+from contextlib import contextmanager
+
 ################################################
 ###                                          ###
 ###   NOTE TO US:                            ###
@@ -38,7 +40,7 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", ka_lang_code)
+    return os.path.join(os.path.dirname(__file__), settings.KHAN_EXERCISES_RELPATH, "exercises", ka_lang_code)
 
 
 def get_locale_path(lang_code=None):
@@ -392,7 +394,7 @@ def select_best_available_language(target_code, available_codes=None):
     target_code = lcode_to_django_lang(target_code)
     if available_codes is None:
         available_codes = get_installed_language_packs().keys()
-    available_codes = [lcode_to_django_lang(lc) for lc in available_codes]
+    available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
     if target_code in available_codes:
@@ -442,3 +444,10 @@ def set_request_language(request, lang_code):
 
     request.language = lcode_to_ietf(lang_code)
     translation.activate(request.language)
+
+@contextmanager
+def translate_block(language):
+    language = lcode_to_django_lang(language)
+    translation.activate(language)
+    yield
+    translation.deactivate()

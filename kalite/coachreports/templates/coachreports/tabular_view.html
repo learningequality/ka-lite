@@ -86,7 +86,7 @@
             <select id="report_type">
                 <option {% if not request_report_type %}selected{% endif %}>----</option>
                 {% for report_type in report_types %}
-                    <option value="{% trans report_type %}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
+                    <option value="{{ report_type.value }}" {% if report_type.value == request_report_type %}selected{% endif %}>{{ report_type.name }}</option>
                 {% endfor %}
             </select>
         {% else %}

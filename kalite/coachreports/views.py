@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from kalite.distributed.api_views import compute_total_points
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.i18n import lcode_to_django_lang
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
@@ -192,13 +193,15 @@ def tabular_view(request, report_type="exercise"):
     """Tabular view also gets data server-side."""
     # important for setting the defaults for the coach nav bar
 
+    language = lcode_to_django_lang(request.language)
+
     facility, group_id, context = coach_nav_context(request, "tabular")
 
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics() if report_type.title() in tid["contains"]]
+    topics = [get_node_cache("Topic", language=language).get(tid["id"]) for tid in get_knowledgemap_topics(language=language) if report_type.title() in tid["contains"]]
     playlists = Playlist.all()
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
@@ -207,7 +210,7 @@ def tabular_view(request, report_type="exercise"):
 
     context.update({
         # For translators: the following two translations are nouns
-        "report_types": (_("exercise"), _("video")),
+        "report_types": ({"value": "exercise", "name":_("exercise")}, {"value": "video", "name": _("video")}),
         "request_report_type": report_type,
         "topics": [{"id": t["id"], "title": t["title"]} for t in topics if t],
         "playlists": [{"id": p.id, "title": p.title, "tag": p.tag} for p in playlists if p],
@@ -265,7 +268,7 @@ def tabular_view(request, report_type="exercise"):
         if topic_id:
             exercises = get_topic_exercises(topic_id=topic_id)
         elif playlist:
-            exercises = playlist.get_playlist_entries("Exercise")
+            exercises = playlist.get_playlist_entries("Exercise", language=language)
 
         context["exercises"] = exercises
 
@@ -300,7 +303,7 @@ def tabular_view(request, report_type="exercise"):
         if topic_id:
             context["videos"] = get_topic_videos(topic_id=topic_id)
         elif playlist:
-            context["videos"] = playlist.get_playlist_entries("Video")
+            context["videos"] = playlist.get_playlist_entries("Video", language=language)
 
         # More code, but much faster
         video_ids = [vid["id"] for vid in context["videos"]]
