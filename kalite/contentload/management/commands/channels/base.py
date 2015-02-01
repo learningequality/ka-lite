@@ -20,7 +20,7 @@ def retrieve_API_data(channel=None):
     return topic_tree, exercises, assessment_items, content
 
 
-def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
+def whitewash_node_data(node, path="", channel_data={}):
     """
     Utility function to convert nodes into the format used by KA Lite.
     Extracted from other functions so as to be reused by both the denormed
@@ -51,11 +51,6 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     if "title" not in node:
         node["title"] = (node.get(channel_data["title_key"][kind], ""))
     node["title"] = (node["title"] or "").strip()
-
-    if ancestor_ids:
-        # Add some attribute that should have been on there to start with.
-        node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
-        node["ancestor_ids"] = ancestor_ids
 
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
@@ -96,7 +91,7 @@ def rebuild_topictree(
 
     content_lookup = dict((content["id"], content) for content in contents)
 
-    def recurse_nodes(node, path="", ancestor_ids=[]):
+    def recurse_nodes(node, path=""):
         """
         Internal function for recursing over the topic tree, marking relevant metadata,
         and removing undesired attributes and children.
@@ -104,7 +99,7 @@ def rebuild_topictree(
 
         kind = node["kind"]
 
-        node = whitewash_node_data(node, path, ancestor_ids)
+        node = whitewash_node_data(node, path)
 
         if kind != "Topic":
             if kind in channel_data["denormed_attribute_list"]:
@@ -173,7 +168,7 @@ def rebuild_topictree(
                 continue
 
             child_kinds = child_kinds.union(set([child_kind]))
-            child_kinds = child_kinds.union(recurse_nodes(child, path=node["path"], ancestor_ids=ancestor_ids + [node["id"]]))
+            child_kinds = child_kinds.union(recurse_nodes(child, path=node["path"]))
 
         # Delete those marked for completion
         for i in reversed(children_to_delete):

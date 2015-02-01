@@ -39,7 +39,6 @@ def validate_data(topic_tree, node_cache, slug2id_map):
             if vid_slug not in slug2id_map or slug2id_map[vid_slug] not in node_cache["Content"]:
                 logging.warning("Could not find related video %s in node_cache (from exercise %s)\n" % (vid_slug, exercise["slug"]))
 
-
     # Validate all topics have leaves
     for topic in node_cache["Topic"].values():
         if not topic.get("children"):

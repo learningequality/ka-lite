@@ -139,8 +139,6 @@ def construct_node(location, parent_path, node_cache, channel):
         logging.warning("No metadata for file {base_name}".format(base_name=base_name))
     node = {
         "path": current_path,
-        "parent_id": os.path.basename(parent_path),
-        "ancestor_ids": filter(None, parent_path.split("/")),
         "slug": slug,
     }
     if os.path.isdir(location):
