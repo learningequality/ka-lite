@@ -164,25 +164,24 @@ class APIModel(AttrDict):
         self._loaded = True
 
     def toJSON(self):
-        output = copy.copy(self)
-        for key in output._related_field_types.keys() + output._lazy_related_field_types.keys():
-            if output.get(key, None):
-                if isinstance(output[key], APIModel):
-                    output[key] = output[key].toJSON()
-                elif isinstance(output[key], dict):
-                    output[key] = json.dumps(output[key])
-                elif isinstance(output[key], list):
-                    for i, item in enumerate(output[key]):
-                        if isinstance(output[key][i], APIModel):
-                            output[key][i] = output[key][i].toJSON()
-                        elif isinstance(output[key][i], dict):
-                            output[key][i] = json.dumps(output[key][i])
-        deletekeys = []
-        for key in output:
-            if key.startswith("_"):
-                deletekeys.append(key)
-        for key in deletekeys:
-            del output[key]
+        output = {}
+        for key in self._related_field_types.keys() + self._lazy_related_field_types.keys():
+            if self.get(key, None):
+                if isinstance(self[key], APIModel):
+                    output[key] = self[key].toJSON()
+                elif isinstance(self[key], dict):
+                    output[key] = json.dumps(self[key])
+                elif isinstance(self[key], list):
+                    output[key] = []
+                    for i, item in enumerate(self[key]):
+                        if isinstance(self[key][i], APIModel):
+                            output[key].append(self[key][i].toJSON())
+                        elif isinstance(self[key][i], dict):
+                            output[key].append(json.dumps(self[key][i]))
+        for key in self:
+            if key not in self._related_field_types.keys() + self._lazy_related_field_types.keys():
+                if not (key.startswith("_") or hasattr(self[key], '__call__')):
+                    output[key] = self[key]
         return json.dumps(output)
 
 def api_call(target_version, target_api_url, session, debug=False, authenticate=True):
