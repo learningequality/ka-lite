@@ -298,6 +298,9 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         f.write(str(os.getpid()))
 
     # Start the job scheduler (not Celery yet...)
+    # This command is run before starting the server, in case the server
+    # should be configured to not run in daemon mode or in case the
+    # server fails to go to daemon mode.
     if not skip_job_scheduler:
         manage(
             'cronserver',
