@@ -8,7 +8,7 @@ from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
-from kalite.topic_tools import get_exercise_data, get_assessment_item_cache, get_content_data
+from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -224,7 +224,8 @@ class AssessmentItemResource(Resource):
 
     def obj_get(self, bundle, **kwargs):
         id = kwargs.get("id", None)
-        assessment_item = get_assessment_item_cache().get(id, None)
+        # assessment_item = get_assessment_item_cache().get(id, None)
+        assessment_item = get_assessment_item_data(bundle.request, id)
         if assessment_item:
             return AssessmentItem(**assessment_item)
         else:
