@@ -185,7 +185,6 @@ class APIModel(AttrDict):
             del output[key]
         return json.dumps(output)
 
-
 def api_call(target_version, target_api_url, session, debug=False, authenticate=True):
     """
     Generic API call function, that will try to use an authenticated request if available,
@@ -488,9 +487,6 @@ class AssessmentItem(APIModel):
     def __init__(self, *args, **kwargs):
 
         super(AssessmentItem, self).__init__(*args, **kwargs)
-        self._lazy_related_field_types = {
-            "tags": partial(self._session.class_by_name, name="AssessmentItemTag"),
-        }
 
 class Tag(APIModel):
     """
