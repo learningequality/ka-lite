@@ -21,7 +21,7 @@ from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
-from kalite.i18n import get_default_language
+from kalite.i18n import get_default_language, lcode_to_django_lang
 from kalite.main.models import UserLog
 from kalite.shared.decorators import require_authorized_admin
 from kalite.student_testing.utils import set_exam_mode_off
@@ -231,7 +231,7 @@ def login(request, facility):
 
     #Fix for #2047: prompt user to create an admin account if none exists
     if not User.objects.exists():
-        messages.warning(request, _("No administrator account detected. Please run 'python manage.py createsuperuser' from the terminal to create one."))
+        messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
 
     # Fix for #1211: refresh cached facility info when it's free and relevant
     refresh_session_facility_info(request, facility_count=len(facilities))
@@ -269,7 +269,7 @@ def login(request, facility):
             user = form.get_user()
 
             try:
-                UserLog.begin_user_activity(user, activity_type="login", language=request.language)  # Success! Log the event (ignoring validation failures)
+                UserLog.begin_user_activity(user, activity_type="login", language=lcode_to_django_lang(request.language))  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
                 logging.error("Failed to begin_user_activity upon login: %s" % e)
 
@@ -279,7 +279,7 @@ def login(request, facility):
 
             # Send them back from whence they came (unless it's the sign up page)
             landing_page = form.cleaned_data["callback_url"] if form.cleaned_data["callback_url"] != reverse("facility_user_signup") else None
-            if not landing_page:
+            if not landing_page or landing_page == reverse("login"):
                 # Just going back to the homepage?  We can do better than that.
                 if form.get_user().is_teacher:
                     landing_page = reverse("tabular_view")

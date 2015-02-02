@@ -1,0 +1,100 @@
+#!/usr/bin/env python
+"""
+Role of this executable:
+Determine where kalite is installed and which python to use. This can be
+set in the system's env (useful for distribution).
+
+All arguments are proxied for kalite, and all stderr and stdout is returned.
+
+Notes...
+THIS MAY BE RUN BY PYTHON 2 AND 3 !!!
+
+Q&A
+Q: Why is this not written in Bash?
+A: Because Bash isn't cross-platform
+
+NB! This is run using the host system's python!
+
+Environment variables used:
+
+- KALITE_DIR: The root directory of the installation
+- KALITE_PYTHON: If you want kalite run with a diffent python than the one
+  in your path
+
+"""
+import os
+import sys
+import subprocess
+from distutils import spawn
+import warnings
+
+kalite_path = None
+
+# Yay! The path is set!
+if 'KALITE_DIR' in os.environ:
+    kalite_path = os.environ['KALITE_DIR']
+    if not os.path.exists(kalite_path):
+        raise RuntimeError("KALITE_DIR environment var is invalid: {:s}".format(kalite_path))
+
+# Path not set, try to guess it
+else:
+    # Fetch full path of script's base dirname
+    where_am_i = os.path.split(os.path.realpath(__file__))
+    script_dir_path = os.path.split(where_am_i[0])[0]
+    script_dir_name = os.path.split(where_am_i[0])[1]
+    if script_dir_name == 'ka-lite':
+        kalite_path = where_am_i[0]
+    elif script_dir_name == 'kalite':
+        kalite_path = script_dir_path
+    elif script_dir_name == 'bin':
+        kalite_path = script_dir_path
+    elif script_dir_name == 'windows':
+        kalite_path = os.path.realpath(os.path.join(script_dir_path, '..'))
+    # Check that it works
+    if kalite_path and not os.path.exists(os.path.join(kalite_path, 'kalite', '__init__.py')):
+        kalite_path = None
+
+if not kalite_path:
+    raise RuntimeError("Could not determine where KA Lite is installed. Please set the KALITE_DIR environment variable.")
+
+
+# Make sure it's set as an absolute path
+kalite_path = os.path.abspath(kalite_path)
+
+env = {}
+env.update(os.environ.copy())
+env['KALITE_DIR'] = kalite_path
+
+if 'KALITE_PYTHON' in os.environ:
+    python_executable = os.environ['KALITE_PYTHON']
+    if not spawn.find_executable(python_executable):
+        raise RuntimeError("KALITE_PYTHON set to invalid python path")
+else:
+    # Not sure if this is a nice behavior.. but we check if there is an explicit
+    # python2 executable because some systems may have 'python' set for py3.
+    python_executable = 'python2'
+    if not spawn.find_executable(python_executable):
+        python_executable = 'python'
+
+    # Set full path of executable - returns None if it's not found
+    python_executable = spawn.find_executable(python_executable)
+    
+    # Check that the executable exists
+    if not python_executable:
+        python_executable = sys.executable
+        warnings.warn("Could not determine Python in your path, defaulting to {0:s}".format(python_executable), RuntimeWarning)
+
+# Path for manage.py
+manage_py = os.path.join(kalite_path, 'kalitectl.py')
+
+# Arguments to proxy
+args = sys.argv[1:]
+
+# Open up a process and proxy both the process' stdout and stderr
+p = subprocess.Popen(
+    [python_executable, manage_py] + args,
+    env=env,
+)
+
+p.communicate()
+sys.exit(p.returncode)

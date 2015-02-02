@@ -4,6 +4,7 @@ from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
 from django.utils.translation import ugettext as _
 from django.conf.urls import url
+from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
@@ -44,7 +45,7 @@ class AttemptLogResource(ModelResource):
         filtering = {
             "exercise_id": ('exact', ),
             "user": ('exact', ),
-            "context_type": ('exact', ),
+            "context_type": ('exact', 'in', ),
         }
         authorization = UserObjectsOnlyAuthorization()
 
@@ -86,7 +87,6 @@ class VideoLogResource(ModelResource):
 class Exercise():
 
     def __init__(self, **kwargs):
-        self.ancestor_ids = kwargs.get('ancestor_ids')
         self.lang = kwargs.get('lang')
         self.kind = kwargs.get('kind')
         self.all_assessment_items = kwargs.get('all_assessment_items')
@@ -98,7 +98,6 @@ class Exercise():
         self.name = kwargs.get('name')
         self.id = kwargs.get('id')
         self.seconds_per_fast_problem = kwargs.get('seconds_per_fast_problem')
-        self.parent_id = kwargs.get('parent_id')
         self.template = kwargs.get('template')
         self.path = kwargs.get('path')
         self.x_pos = kwargs.get('x_pos')
@@ -108,8 +107,6 @@ class Exercise():
 
 
 class ExerciseResource(Resource):
-
-    ancestor_ids = fields.CharField(attribute='ancestor_ids')
     lang = fields.CharField(attribute='lang', default='en')
     kind = fields.CharField(attribute='kind')
     all_assessment_items = fields.ListField(attribute='all_assessment_items')
@@ -121,7 +118,6 @@ class ExerciseResource(Resource):
     name = fields.CharField(attribute='name')
     id = fields.CharField(attribute='id')
     seconds_per_fast_problem = fields.CharField(attribute='seconds_per_fast_problem')
-    parent_id = fields.CharField(attribute='parent_id', null=True)
     template = fields.CharField(attribute='template')
     path = fields.CharField(attribute='path')
     x_pos = fields.IntegerField(attribute='x_pos', default=0)
@@ -184,7 +180,6 @@ class AssessmentItem():
         self.id = kwargs.get('id')
         self.kind = kwargs.get('kind')
         self.item_data = kwargs.get('item_data')
-        self.tags = kwargs.get('tags')
         self.author_names = kwargs.get('author_names')
         self.sha = kwargs.get('sha')
 
@@ -193,7 +188,6 @@ class AssessmentItemResource(Resource):
 
     kind = fields.CharField(attribute='kind')
     item_data = fields.CharField(attribute='item_data')
-    tags = fields.CharField(attribute='tags')
     author_names = fields.CharField(attribute='author_names')
     sha = fields.CharField(attribute='sha')
     id = fields.CharField(attribute='id')
@@ -269,6 +263,8 @@ class Content:
         self.selected_language = lang_code
         if self.description == "None":
             self.description = ""
+        # TODO-BLOCKER (MCGallaspy) this is inappropriate if multiple channels are active at once
+        self.source = settings.CHANNEL
 
 
 class ContentResource(Resource):
@@ -280,6 +276,7 @@ class ContentResource(Resource):
     selected_language = fields.CharField(attribute='selected_language')
     title = fields.CharField(attribute='title')
     extra_fields = fields.CharField(attribute='extra_fields')
+    source = fields.CharField(attribute='source')
 
     class Meta:
         resource_name = 'content'

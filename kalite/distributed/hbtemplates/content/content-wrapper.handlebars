@@ -25,7 +25,7 @@
                     </h3>
 
                     <span class="title">{{ title }}</span>
-                    <span class="organization">by: {{ organization }}</span>
+                    <span class="organization">{{_ "by:" }} {{ organization }}</span>
                     {{#if description }}
                     <div class="content-description">{{ description }}</div>
                     {{/if}}
@@ -40,7 +40,7 @@
                 {{#if related_content}}
                 <div class="panel-footer">
                     <h3>
-                        Related content:
+                        {{_ "Related content:" }}
                     </h3>
                     <div class="row">
                         {{#each related_content }}
@@ -64,7 +64,7 @@
                 {{#if tags}}
                 <div class="panel-footer">
                     <h3>
-                        Tags:
+                        {{_ "Tags:" }}
                     </h3>
                     {{#each tags }}
                         <a href="/search/?query={{ this }}">

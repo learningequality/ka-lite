@@ -22,7 +22,7 @@ from fle_utils.general import ensure_dir
 EXERCISE_FILEPATH_TEMPLATE = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s.html")
 
 def save_cache_file(cache_type, cache_object=None, node_cache=None, data_path=None):
-    
+
     if cache_object is not None:
         dest_filepath = os.path.join(data_path, cache_type.lower() + "s.json")
         logging.debug("Saving %(cache_type)s to %(dest_filepath)s" % {"cache_type": cache_type, "dest_filepath": dest_filepath})
@@ -38,7 +38,6 @@ def validate_data(topic_tree, node_cache, slug2id_map):
         for vid_slug in exercise.get("related_video_slugs", []):
             if vid_slug not in slug2id_map or slug2id_map[vid_slug] not in node_cache["Content"]:
                 logging.warning("Could not find related video %s in node_cache (from exercise %s)\n" % (vid_slug, exercise["slug"]))
-        
 
     # Validate all topics have leaves
     for topic in node_cache["Topic"].values():
@@ -68,7 +67,6 @@ def scrub_topic_tree(node_cache, channel_data):
                     if att == "live":
                         assert node[att] == True, "All non-live nodes (%s) better be deleted by this point!" % node["id"]
                     del node[att]
-
 
 
 class Command(NoArgsCommand):
@@ -131,23 +129,32 @@ class Command(NoArgsCommand):
         exercise_cache = channel_tools.build_full_cache(exercises, id_key=channel_tools.id_key["Exercise"])
         assessment_item_cache = channel_tools.build_full_cache(assessment_items)
         content_cache = channel_tools.build_full_cache(content)
-        
+
         node_cache = topic_tools.generate_node_cache(topic_tree)
-        
+
         node_cache["Exercise"] = exercise_cache
         node_cache["Content"] = content_cache
         node_cache["AssessmentItem"] = assessment_item_cache
         slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
-        
+
         if channel_tools.channel_data["temp_ok_atts"]:
             scrub_topic_tree(node_cache=node_cache, channel_data=channel_tools.channel_data)
 
         validate_data(topic_tree, node_cache, slug2id_map)
 
-        save_cache_file("Topic", cache_object=topic_tree, data_path=channel_path)
-        save_cache_file("Exercise", cache_object=exercise_cache, data_path=channel_path)
-        save_cache_file("AssessmentItem", cache_object=assessment_item_cache, data_path=channel_path)
-        save_cache_file("Content", cache_object=content_cache, data_path=channel_path)
+        # The reason why we catch all errors was that this thing takes
+        # around 6 hours to run, and having them error out in the end
+        # is kind of a bummer. Since this is meant to just run
+        # occasionally on our side (as a hidden feature of KA Lite),
+        # it's safe to have this code smell for now.
+        try:
+            save_cache_file("Topic", cache_object=topic_tree, data_path=channel_path)
+            save_cache_file("Exercise", cache_object=exercise_cache, data_path=channel_path)
+            save_cache_file("AssessmentItem", cache_object=assessment_item_cache, data_path=channel_path)
+            save_cache_file("Content", cache_object=content_cache, data_path=channel_path)
+
+        except:
+            import IPython; IPython.embed()
 
         if hasattr(channel_tools, "channel_data_files"):
             channel_tools.channel_data_files(dest=channel_path)

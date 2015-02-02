@@ -2,9 +2,9 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block languages_active %}languages-active active-tab active-nav{% endblock languages_active %}
-{% block users_active %}active{% endblock users_active %}
-{% block manage_active %}active{% endblock manage_active %}
+{% block languages_active %}{% trans "languages-active active-tab active-nav" %}{% endblock languages_active %}
+{% block users_active %}{% trans "active" %}{% endblock users_active %}
+{% block manage_active %}{% trans "active" %}{% endblock manage_active %}
 
 {% block title %}{% trans "Update Languages" %}{{ block.super }}{% endblock %}
 
@@ -48,7 +48,7 @@
                     <span class= "button_style">
                         <div class="dropdown" id="language-packs">
                             <button class="btn btn-default dropdown-toggle" type="button" id="language-packs-selection" data-toggle="dropdown" aria-expanded="true">
-                                select language pack
+                                {% trans "select language pack" %}
                                 <span class="caret"></span>
                             </button>
                           <ul class="dropdown-menu" role="menu" id="language-packs-ul"></ul>

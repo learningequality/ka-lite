@@ -2,7 +2,10 @@
 Migrate management command.
 """
 
+from __future__ import print_function
+
 import os.path, re, sys
+from functools import reduce
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
@@ -41,12 +44,6 @@ class Command(BaseCommand):
         make_option('--database', action='store', dest='database',
             default=DEFAULT_DB_ALIAS, help='Nominates a database to synchronize. '
                 'Defaults to the "default" database.'),
-        make_option('--hack',  # KA-LITE-MOD: needed for relaunch_external hack
-            action="store_true",
-            dest="hack",
-            default=False,
-            help="Flag that we're getting an external callback ",
-        ),
     )
     if '--verbosity' not in [opt.get_opt_string() for opt in BaseCommand.option_list]:
         option_list += (
@@ -57,43 +54,8 @@ class Command(BaseCommand):
     help = "Runs migrations for all apps."
     args = "[appname] [migrationname|zero] [--all] [--list] [--skip] [--merge] [--no-initial-data] [--fake] [--db-dry-run] [--database=dbalias]"
 
-    def relaunch_external(self):
-        """
-        This is a KA Lite hack. #KA-LITE-MOD
-
-        In our git-based update command (until version 0.10.3), we update the code, then run
-        run the 'migrate' command under the old code (since it's loaded into memory).
-        This can cause conflicting / now-outdated imports.
-
-        The right thing to do is to run migrate via subprocess, so that it runs all fresh, new code.
-        Alas, we've shipped versions that don't do this already, so we can't go back and fix.
-
-        The hack here is: detect when this is happening, then force migrate to re-launch itself via subprocess.
-
-        Note that this only works if this file (migrate.py) hasn't already been loaded into the process.  It
-        shouldn't be... but it's worth keeping in mind!
-        """
-        import sys
-        import settings
-        import utils.django_utils.command
-        reload(utils.django_utils.command)  # this is necessary because the 0.10.2 version of this code has a bug!
-
-        # Launch through subprocess, then print output.
-        sys.stdout.write("[NOTE version upgrade hack: running 'migrate' through subprocess.]\n\n")
-        sys.stdout.write("Please wait. DO NOT CANCEL WHILE MIGRATE RUNS, EVEN THOUGH YOU'RE RECEIVING NO OUTPUT!!  JUST WAIT!!\n")
-        sys.stdout.write("Output will print below when migrate is complete.\n\n")
-
-        (out, err, rc) = utils.django_utils.command.call_outside_command_with_output("migrate", merge=True, hack=True, manage_py_dir=settings.PROJECT_PATH)
-        sys.stdout.write(out)
-        if rc:
-            sys.stderr.write(err)
-        sys.exit(0)  # abort the rest of the migrate / update command
-
     def handle(self, app=None, target=None, skip=False, merge=False, backwards=False, fake=False, db_dry_run=False, show_list=False, show_changes=False, database=DEFAULT_DB_ALIAS, delete_ghosts=False, ignore_ghosts=False, **options):
-
-        if "update" in sys.argv and "--hack" not in sys.argv:
-            self.relaunch_external()
-
+        
         # NOTE: THIS IS DUPLICATED FROM django.core.management.commands.syncdb
         # This code imports any module named 'management' in INSTALLED_APPS.
         # The 'management' module is the preferred way of listening to post_syncdb
@@ -102,12 +64,12 @@ class Command(BaseCommand):
         for app_name in settings.INSTALLED_APPS:
             try:
                 import_module('.management', app_name)
-            except ImportError, exc:
+            except ImportError as exc:
                 msg = exc.args[0]
                 if not msg.startswith('No module named') or 'management' not in msg:
                     raise
         # END DJANGO DUPE CODE
-
+        
         # if all_apps flag is set, shift app over to target
         if options.get('all_apps', False):
             target = app
@@ -118,21 +80,21 @@ class Command(BaseCommand):
             try:
                 apps = [Migrations(app)]
             except NoMigrations:
-                print "The app '%s' does not appear to use migrations." % app
-                print "./manage.py migrate " + self.args
+                print("The app '%s' does not appear to use migrations." % app)
+                print("./manage.py migrate " + self.args)
                 return
         else:
             apps = list(migration.all_migrations())
-
+        
         # Do we need to show the list of migrations?
         if show_list and apps:
             list_migrations(apps, database, **options)
-
+            
         if show_changes and apps:
             show_migration_changes(apps)
-
+        
         if not (show_list or show_changes):
-
+            
             for app in apps:
                 result = migration.migrate_app(
                     app,
@@ -161,30 +123,31 @@ def list_migrations(apps, database = DEFAULT_DB_ALIAS, **options):
     applied_migrations = MigrationHistory.objects.filter(app_name__in=[app.app_label() for app in apps])
     if database != DEFAULT_DB_ALIAS:
         applied_migrations = applied_migrations.using(database)
-    applied_migration_names = ['%s.%s' % (mi.app_name,mi.migration) for mi in applied_migrations]
+    applied_migrations_lookup = dict(('%s.%s' % (mi.app_name, mi.migration), mi) for mi in applied_migrations)
 
-    print
+    print()
     for app in apps:
-        print " " + app.app_label()
+        print(" " + app.app_label())
         # Get the migrations object
         for migration in app:
-            if migration.app_label() + "." + migration.name() in applied_migration_names:
-                applied_migration = applied_migrations.get(app_name=migration.app_label(), migration=migration.name())
-                print format_migration_list_item(migration.name(), applied=applied_migration.applied, **options)
+            full_name = migration.app_label() + "." + migration.name()
+            if full_name in applied_migrations_lookup:
+                applied_migration = applied_migrations_lookup[full_name]
+                print(format_migration_list_item(migration.name(), applied=applied_migration.applied, **options))
             else:
-                print format_migration_list_item(migration.name(), applied=False, **options)
-        print
+                print(format_migration_list_item(migration.name(), applied=False, **options))
+        print()
 
 def show_migration_changes(apps):
     """
     Prints a list of all available migrations, and which ones are currently applied.
     Accepts a list of Migrations instances.
-
+    
     Much simpler, less clear, and much less robust version:
         grep "ing " migrations/*.py
     """
     for app in apps:
-        print app.app_label()
+        print(app.app_label())
         # Get the migrations objects
         migrations = [migration for migration in app]
         # we use reduce to compare models in pairs, not to generate a value
@@ -198,104 +161,104 @@ def format_migration_list_item(name, applied=True, **options):
             return '  (*) %s' % name
     else:
         return '  ( ) %s' % name
-
+                            
 def diff_migrations(migration1, migration2):
-
+    
     def model_name(models, model):
         return models[model].get('Meta', {}).get('object_name', model)
-
+        
     def field_name(models, model, field):
         return '%s.%s' % (model_name(models, model), field)
-
-    print "  " + migration2.name()
-
+        
+    print("  " + migration2.name())
+    
     models1 = migration1.migration_class().models
     models2 = migration2.migration_class().models
 
     # find new models
     for model in models2.keys():
         if not model in models1.keys():
-            print '    added model %s' % model_name(models2, model)
-
+            print('    added model %s' % model_name(models2, model))
+ 
     # find removed models
     for model in models1.keys():
         if not model in models2.keys():
-            print '    removed model %s' % model_name(models1, model)
-
+            print('    removed model %s' % model_name(models1, model))
+            
     # compare models
     for model in models1:
         if model in models2:
-
+        
             # find added fields
             for field in models2[model]:
                 if not field in models1[model]:
-                    print '    added field %s' % field_name(models2, model, field)
+                    print('    added field %s' % field_name(models2, model, field))
 
             # find removed fields
             for field in models1[model]:
                 if not field in models2[model]:
-                    print '    removed field %s' % field_name(models1, model, field)
-
+                    print('    removed field %s' % field_name(models1, model, field))
+                
             # compare fields
             for field in models1[model]:
                 if field in models2[model]:
-
+                
                     name = field_name(models1, model, field)
-
+                
                     # compare field attributes
                     field_value1 = models1[model][field]
                     field_value2 = models2[model][field]
-
+                    
                     # if a field has become a class, or vice versa
                     if type(field_value1) != type(field_value2):
-                        print '    type of %s changed from %s to %s' % (
-                            name, field_value1, field_value2)
-
+                        print('    type of %s changed from %s to %s' % (
+                            name, field_value1, field_value2))
+                    
                     # if class
                     elif isinstance(field_value1, dict):
                         # print '    %s is a class' % name
                         pass
-
+                    
                     # else regular field
                     else:
-
+                    
                         type1, attr_list1, field_attrs1 = models1[model][field]
                         type2, attr_list2, field_attrs2 = models2[model][field]
-
+                        
                         if type1 != type2:
-                            print '    %s type changed from %s to %s' % (
-                                name, type1, type2)
-
+                            print('    %s type changed from %s to %s' % (
+                                name, type1, type2))
+    
                         if attr_list1 != []:
-                            print '    %s list %s is not []' % (
-                                name, attr_list1)
+                            print('    %s list %s is not []' % (
+                                name, attr_list1))
                         if attr_list2 != []:
-                            print '    %s list %s is not []' % (
-                                name, attr_list2)
+                            print('    %s list %s is not []' % (
+                                name, attr_list2))    
                         if attr_list1 != attr_list2:
-                            print '    %s list changed from %s to %s' % (
-                                name, attr_list1, attr_list2)
-
+                            print('    %s list changed from %s to %s' % (
+                                name, attr_list1, attr_list2))                
+                                        
                         # find added field attributes
                         for attr in field_attrs2:
                             if not attr in field_attrs1:
-                                print '    added %s attribute %s=%s' % (
-                                    name, attr, field_attrs2[attr])
-
+                                print('    added %s attribute %s=%s' % (
+                                    name, attr, field_attrs2[attr]))
+                                
                         # find removed field attributes
                         for attr in field_attrs1:
                             if not attr in field_attrs2:
-                                print '    removed attribute %s(%s=%s)' % (
-                                    name, attr, field_attrs1[attr])
-
+                                print('    removed attribute %s(%s=%s)' % (
+                                    name, attr, field_attrs1[attr]))
+                            
                         # compare field attributes
                         for attr in field_attrs1:
                             if attr in field_attrs2:
-
+                            
                                 value1 = field_attrs1[attr]
                                 value2 = field_attrs2[attr]
                                 if value1 != value2:
-                                    print '    %s attribute %s changed from %s to %s' % (
-                                        name, attr, value1, value2)
-
+                                    print('    %s attribute %s changed from %s to %s' % (
+                                        name, attr, value1, value2))
+    
     return migration2
