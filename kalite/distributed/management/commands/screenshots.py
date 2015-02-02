@@ -56,6 +56,11 @@ class Command(BaseCommand):
             dest='output_dir',
             default=None,
             help='Specify the output directory relative to the project base directory.'),
+        make_option('--no-del',
+            action='store_true',
+            dest='no_del',
+            default=None,
+            help='Don\'t delete existing screenshots.'),
         )
 
     def handle(self, *args, **options):
@@ -183,7 +188,7 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
         # make sure directory is empty from screenshot files
         png_path = os.path.join(self.output_path, "*%s" % settings.SCREENSHOTS_EXTENSION)
         pngs = glob.glob(png_path)
-        if pngs:
+        if pngs and not kwargs['no_del']:
             self.logwarn("==> Deleting existing screenshots: %s ..." % png_path)
             for filename in pngs:
                 os.remove(filename)
