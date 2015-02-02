@@ -153,7 +153,7 @@ class Screenshot(Image):
     required_arguments = 0
     optional_arguments = 0
     has_content = False
-    
+
     user_role = None
 
     #########################################################
