@@ -3,12 +3,15 @@ from docutils.parsers.rst.directives.images import Image
 from docutils.parsers.rst import Directive
 import docutils.parsers.rst.directives as directives
 
-from exceptions import NotImplementedError
-
-from django.core.management import call_command
-
-import json
 import os
+import uuid
+import json
+
+from exceptions import NotImplementedError
+from errors import ActionError
+from errors import OptionError
+
+SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
 
 def setup(app):
     app.add_directive('screenshot', Screenshot)
@@ -29,36 +32,40 @@ def _parse_command(command):
     """" Parses a command into action and options.
 
     Returns a dictionary with following keys:
+       selector (string): the selector to identify the element
        action (string): the action type (if it's recognized)
        options (list): a list of options
 
-       Both keys have empty values if action type is not recognized.
+    Raises an error if action type is not recognized or if options are invalid.
     """
-    # Initalize action and opttions with empty values.
-    action = ''
-    options = []
+    command_args = command.split()
+    selector = command_args[0]
+    action = command_args[1]
+    options = command_args[2:]
 
-    command_args = command.split(' ')
-    if command_args[0] in ('click', 'send_keys', 'submit'):
-        action = command_args[0]
-        options = command_args[-1]
+    if action not in ('click', 'send_keys', 'submit'):
+        raise ActionError(action)
 
-    return {'action': action, 'options': options}
+    # Validate input options for the specified action.
+    if action == 'click' or action == 'submit':
+        if options:
+            raise OptionError("The action '%s' must not contain any arguments whereas supplied arguments: '%s'." % (action, repr(options)))
+
+    return {'selector': selector, 'action': action, 'options': options}
 
 def _parse_login(username, password, submit=""):
     """" Parses a command into action and options.
 
     Returns a dictionary with following keys:
-       username (string):  the username.
-       password (string): password.
-       submit (bool): True if login form is to be submitted, false otherwise.
-
-    runhandler should be "_login_handler"
+       runhandler (string):  "_login_handler".
+       args (dict) : A dictionary of arguments with following keys:
+         username (string):  the username.
+         password (string): password.
+         submit (bool): True if login form is to be submitted, false otherwise.
     """
     submit_bool = True if submit == "submit" else False
-    return { 'runhandler': '_login_handler',
-             'args': {'username': username, 'password': password, 'submit': submit_bool},
-           }
+    args = {'username': username, 'password': password, 'submit': submit_bool}
+    return {'runhandler': '_login_handler', 'args': args}
 
 def _parse_nav_steps(arg_str):
     """ Here's how to specify the navigation steps:
@@ -111,12 +118,11 @@ def _parse_nav_steps(arg_str):
     return { "runhandler":  runhandler,
              "args":        args}
 
-
 def _parse_user_role(arg_str):
     if arg_str in ["guest", "coach", "admin", "learner"]:
         return arg_str
     else:
-        raise NotImplementedError()
+        raise NotImplementedError("Unrecognized user-role: %s" % arg_str)
 
 class Screenshot(Image):
     """ Provides directive to include screenshot based on given options.
@@ -129,7 +135,7 @@ class Screenshot(Image):
     required_arguments = 0
     optional_arguments = 1
     has_content = False
-    
+
     user_role = None
 
     #########################################################
@@ -138,7 +144,6 @@ class Screenshot(Image):
     # to generate the screenshot (once the script is ready).#
     #########################################################
     def _login_handler(self, username, password, submit):
-        # This part depends on the details of the management command
         from_str_arg = { "users": ["guest"],
                          "slug": "",
                          "start_url": "/securesync/login",
@@ -150,14 +155,16 @@ class Screenshot(Image):
                        }
         if submit:
             from_str_arg["inputs"].append({"<submit>":""})
-        from_str_arg["inputs"].append({"<slug>":"testshot"})
+        filename = uuid.uuid4().__str__()
+        from_str_arg["inputs"].append({"<slug>":filename})
+        # This assignment is necessary because of the format the screenshots management command expects
         from_str_arg = [from_str_arg]
-        #call_command("screenshots", 
-        #             from_str=json.dumps(from_str_arg),
-        #            output_dir=os.path.dirname(os.path.realpath(__file__)))
-        cmd_str = "python /home/gallaspy/Desktop/ka-lite/kalite/manage.py screenshots -v 0 --from-str '%s' --output-dir %s" % (json.dumps(from_str_arg), os.path.abspath(os.path.dirname(os.path.realpath(__file__))))
-        returncode = os.system(cmd_str)
-        self.arguments.append("testshot.png")
+        output_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
+        # Trying to import django.core.management.call_command gets you into some sort of import hell
+        # Apparently due to a circular import, according to Ben Bach.
+        cmd_str = SCREENSHOT_COMMAND + " --no-del -v 0 --from-str '%s' --output-dir %s" % (json.dumps(from_str_arg), output_path)
+        os.system(cmd_str)
+        self.arguments.append(os.path.join("_images", filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
 
