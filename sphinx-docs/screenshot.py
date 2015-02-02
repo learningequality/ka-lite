@@ -128,12 +128,9 @@ class Screenshot(Image):
     """ Provides directive to include screenshot based on given options.
 
     Since it inherits from the Image directive, it can take Image options.
-    Right now just stupidly spits out the additional options that I've included.
-    If an image is given as an argument, it'll act just like a regular image
-    directive.
     """
     required_arguments = 0
-    optional_arguments = 1
+    optional_arguments = 0
     has_content = False
 
     user_role = None
@@ -144,7 +141,7 @@ class Screenshot(Image):
     # to generate the screenshot (once the script is ready).#
     #########################################################
     def _login_handler(self, username, password, submit):
-        from_str_arg = { "users": ["guest"],
+        from_str_arg = { "users": ["guest"], # This will fail if not guest, because of a redirect
                          "slug": "",
                          "start_url": "/securesync/login",
                          "inputs": [{"#id_username":username},
@@ -197,10 +194,9 @@ class Screenshot(Image):
             (image_node,) = Image.run(self)
             return_nodes.append(image_node)
 
-        return_nodes.append(nodes.Text("Language code is '%s'.  " % language))
-
         if 'focus' in self.options:
-            return_nodes.append(nodes.Text("DOM id is '%s' and annotation is '%s'.  " % (self.options['focus']['id'], self.options['focus']['annotation'])))
+            # Again, this has to be handled by the runhandler... so assign it to an instance variable
+            pass
 
         if 'user-role' in self.options:
             self.user_role = self.options['user-role']
@@ -211,7 +207,7 @@ class Screenshot(Image):
             # Assign something to an instance variable so it can be used in other methods
             pass
 
-        if 'url' in self.options and 'navigation-steps' in self.options:
+        if 'navigation-steps' in self.options:
             runhandler = self.options['navigation-steps']['runhandler']
             args = self.options['navigation-steps']['args']
             return_nodes.append(getattr(self, runhandler)(**args))
