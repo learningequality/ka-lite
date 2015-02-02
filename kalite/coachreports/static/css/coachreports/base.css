@@ -1,9 +1,17 @@
 #coachreport-navigation-container {
     padding-bottom: 30px;
     margin-bottom: 15px;
-    border-bottom: 3px solid #5AA685;
 }
 
 .container-margin-bottom {
     margin-bottom: 50px;
+}
+
+.coach-reports-row {
+    border-bottom: 3px solid #5AA685;
+    margin-bottom: 20px;
+}
+
+select.reports-select {
+    width: 300px !important;
 }
