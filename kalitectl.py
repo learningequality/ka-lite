@@ -45,7 +45,7 @@ else:
     sys.path = ['python-packages', 'kalite'] + sys.path
 
 
-from django.core.management import ManagementUtility
+from django.core.management import ManagementUtility, get_commands
 from threading import Thread
 from docopt import docopt
 import httplib
@@ -246,6 +246,9 @@ def manage(command, args=[], in_background=False):
     :param args: List of options to parse to the django management command
     :param in_background: Creates a sub-process for the command
     """
+    # Ensure that django.core.management's global _command variable is set
+    # before call commands, especially the once that run in the background
+    get_commands()
     # Import here so other commands can run faster
     if not in_background:
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
