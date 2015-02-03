@@ -23,7 +23,7 @@ from securesync.engine.models import DeferredCountSyncedModel
 
 
 class Facility(DeferredCountSyncedModel):
-    name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
+    name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that learners/coaches will see when choosing their facility; it can be in the local language.)"), max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))
     address = models.CharField(verbose_name=_("Address"), help_text=_("(Please provide as detailed an address as possible.)"), max_length=400, blank=True)
     address_normalized = models.CharField(max_length=400, blank=True)
@@ -146,7 +146,7 @@ class FacilityUser(DeferredCountSyncedModel):
     # Translators: This is a label in a form.
     last_name = models.CharField(max_length=60, verbose_name=_("Last Name"), blank=True)
     # Translators: This is a label in a form.
-    is_teacher = models.BooleanField(default=False, help_text=_("(whether this user should have teacher permissions)"))
+    is_teacher = models.BooleanField(default=False, help_text=_("(whether this user should have coach permissions)"))
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128)
     default_language = models.CharField(max_length=8, blank=True, null=True); default_language.minversion="0.11.1"

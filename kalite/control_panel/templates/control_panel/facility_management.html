@@ -77,14 +77,14 @@
 
 {% block buttons %}{{ block.super }}
     <li>
-        <button class="btn btn-success" data-toggle="modal" data-target="export_csv_div_id" id="top_export_button_id" value="{% trans 'Export student stats' %}">{% trans 'Export student stats' %}</button>
+        <button class="btn btn-success" data-toggle="modal" data-target="export_csv_div_id" id="top_export_button_id" value="{% trans 'Export learner stats' %}">{% trans 'Export learner stats' %}</button>
     </li>
     <div id="export_csv_div_id" class="modal fade">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title">{% trans "Export student stats" %}</h4>
+                    <h4 class="modal-title">{% trans "Export learner stats" %}</h4>
                 </div>
                 <div class="modal-body">
                     <form class="form" method="post" action="?format=csv" id="date_picker_form">

@@ -42,7 +42,7 @@ class TestUserManagement(BrowserActionMixins, CreateAdminMixin, FacilityMixins, 
         self.browse_to(self.reverse("facility_management", kwargs=params))
         self.assertEqual(self.browser.find_element_by_css_selector('div#coaches p.no-data').text, "You currently have no coaches for this facility.", "Does not report no coaches with no coaches.")
         self.assertEqual(self.browser.find_element_by_css_selector('div#groups p.no-data').text, "You currently have no group data available.", "Does not report no groups with no groups.")
-        self.assertEqual(self.browser.find_element_by_css_selector('div#students p.no-data').text, "You currently have no student data available.", "Does not report no users with no users.")
+        self.assertEqual(self.browser.find_element_by_css_selector('div#students p.no-data').text, "You currently have no learner data available.", "Does not report no users with no users.")
 
     def test_groups_one_group_no_user_in_group_no_ungrouped_no_group_selected(self):
         facility = self.facility
