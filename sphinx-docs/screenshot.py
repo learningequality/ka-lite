@@ -11,6 +11,8 @@ from exceptions import NotImplementedError
 from errors import ActionError
 from errors import OptionError
 
+from selenium.webdriver.common.keys import Keys
+
 SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
 
 def setup(app):
@@ -39,11 +41,14 @@ def _parse_command(command):
     Raises an error if action type is not recognized or if options are invalid.
     """
     command_args = command.split()
-    selector = command_args[0]
-    action = command_args[1]
-    options = command_args[2:]
+    if not command_args:
+        return None
+    else:
+        selector = command_args[0]
+        action = command_args[1]
+        options = command_args[2:]
 
-    if action not in ('click', 'send_keys', 'submit'):
+    if action not in ('click', 'send_keys', 'submit', ''):
         raise ActionError(action)
 
     # Validate input options for the specified action.
@@ -95,7 +100,7 @@ def _parse_nav_steps(arg_str):
 
         Returns a dictionary with:
             runhandler: reference to function invoked in the run method
-            args:       a list of positional arguments passed to the runhandler function
+            args:       a dictionary of arguments passed to the runhandler function
     """
     # The alias with its parse function
     ALIASES = [("LOGIN", _parse_login)]
@@ -107,16 +112,10 @@ def _parse_nav_steps(arg_str):
             return e[1](*words[1:])
 
     commands = arg_str.split('|')
-    parsed_commands = map(_parse_command, commands)
-    many_commands = (len(commands) > 1)
-    if many_commands:
-        runhandler = "_commands_handler"
-        args = parsed_commands
-    else:
-        runhandler = "_command_handler"
-        args = parsed_commands[0]
+    parsed_commands = reduce(lambda x,y: x+[y] if y else x, map(_parse_command, commands), [])
+    runhandler = "_command_handler"
     return { "runhandler":  runhandler,
-             "args":        args}
+             "args":        {'commands': parsed_commands}}
 
 def _parse_user_role(arg_str):
     if arg_str in ["guest", "coach", "admin", "learner"]:
@@ -134,6 +133,7 @@ class Screenshot(Image):
     has_content = False
 
     user_role = None
+    url = None
 
     #########################################################
     # Handlers will be invoked in the run method should     #
@@ -152,24 +152,31 @@ class Screenshot(Image):
                        }
         if submit:
             from_str_arg["inputs"].append({"<submit>":""})
-        filename = uuid.uuid4().__str__()
-        from_str_arg["inputs"].append({"<slug>":filename})
-        # This assignment is necessary because of the format the screenshots management command expects
+        from_str_arg["inputs"].append({"<slug>":self.filename})
         from_str_arg = [from_str_arg]
-        output_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
         # Trying to import django.core.management.call_command gets you into some sort of import hell
         # Apparently due to a circular import, according to Ben Bach.
-        cmd_str = SCREENSHOT_COMMAND + " --no-del -v 0 --from-str '%s' --output-dir %s" % (json.dumps(from_str_arg), output_path)
-        os.system(cmd_str)
-        self.arguments.append(os.path.join("_images", filename+".png"))
+        os.system(SCREENSHOT_COMMAND + " --no-del -v 0 --from-str '%s' --output-dir %s" % (json.dumps(from_str_arg), self.output_path))
+        self.arguments.append(os.path.join("_images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
 
-    def _command_handler(self, action, *options):
-        raise NotImplementedError()
-
-    def _commands_handler(self, *commands):
-        return map(_command_handler, commands)
+    def _command_handler(self, commands):
+        if not self.url:
+            raise NotImplementedError("Please supply a url using the :url: option")
+        from_str_arg = { "users": [self.user_role],
+                         "slug": "",
+                         "start_url": self.url,
+                         "pages": [],
+                         "notes": [],
+                       }        
+        from_str_arg['inputs'] = reduce(lambda x,y: x+y, map(_cmd_to_inputs, commands), [])
+        from_str_arg["inputs"].append({"<slug>":self.filename})
+        from_str_arg = [from_str_arg]
+        os.system(SCREENSHOT_COMMAND + " --no-del -v 0 --from-str '%s' --output-dir %s" % (json.dumps(from_str_arg), self.output_path))
+        self.arguments.append(os.path.join("_images", self.filename+".png"))
+        (image_node,) = Image.run(self)
+        return image_node
 
     # Add options to the image directive.
     option_spec = Image.option_spec.copy()
@@ -204,12 +211,43 @@ class Screenshot(Image):
             self.user_role = "guest"
 
         if 'url' in self.options:
-            # Assign something to an instance variable so it can be used in other methods
-            pass
+            self.url = self.options['url']
 
         if 'navigation-steps' in self.options:
+            self.filename = uuid.uuid4().__str__()
+            self.output_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
             runhandler = self.options['navigation-steps']['runhandler']
             args = self.options['navigation-steps']['args']
             return_nodes.append(getattr(self, runhandler)(**args))
 
         return return_nodes
+
+
+# Implementation-specific functions for the screenshots management command
+def _specialkeys(k):
+    if k=="TAB":
+        return Keys.TAB
+    elif k=="ENTER":
+        return Keys.ENTER
+    elif k=="BACKSPACE":
+        return Keys.BACKSPACE
+    else:
+        return k
+
+def _cmd_to_inputs(cmd):
+    inputs = []
+    if cmd['selector'] == 'NEXT':
+        sel = ""
+        inputs.append({"": Keys.TAB})
+    elif cmd['selector'] == 'SAME':
+        sel = ""
+    else:
+        sel = cmd['selector']
+    if cmd['action']=='click':
+        inputs.append({sel: ""})
+    elif cmd['action']=='submit':
+        inputs.append({"<submit>": ""})
+    elif cmd['action']=='send_keys':
+        inputs.append({sel: ' '.join(map(_specialkeys,cmd['options']))})
+    return inputs
+
