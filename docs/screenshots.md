@@ -62,11 +62,11 @@ Here are sample entries for the `/kalite/distributed/data/screenshots.json` file
     users == ["guest", "admin", "student", "coach", "hub-guest", "hub-user"]
     slug ==  if has value, must be unique and will be appended `.png` to become the filename of the screenshot
     start_url == where the browser will start to do the inputs 
-    inputs == array of key-value objects as inputs (selector, text, special codes, etc), to do to show the page as per url.  Possible values for object keys are:
-        "#id_form_field" = If has "#", use the `id` argument, else, treat the key as the `name` for the `browser_activate_element()` method call.  This automatically moves to the next form element.
+    inputs == array of key-value objects as inputs (selector, text, special codes, etc), to do to show the page as per url.  Possible values for object keys in order of precedence are:
         "<slug>" == take a screenshot here and the value, which must be a unique slug, is used as filename
         "<submit>" == submit the page by sending the Enter key to the browser
-        "" / empty string as key == Fill-in the value on the current form element, which is automatically selected by above selector key.
+        "selector": "value" == If the first character is "#" or "." tries to find an element by id or class, respectively. Otherwise tries to find the element by name. Then it activates the element by clicking it. If the value is nonempty, then it will send the value with `send_keys`.
+        "": "value" == Finally if the key is empty but there is a value, then value will be sent to the active browser's active element (as from `browser.switch_to_active_element()`) with `send_keys`. This is meant to be used as part of a sequence of actions, where an element has been previously selected.
     pages == page numbers from user guide where the screenshot can be used (for reference)
     notes == notes for the screenshot
 
