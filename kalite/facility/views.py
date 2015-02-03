@@ -69,7 +69,7 @@ def add_facility_teacher(request):
     If central, must be an org admin
     If distributed, must be superuser or a coach
     """
-    title = _("Add a new teacher")
+    title = _("Add a new coach")
     return _facility_user(request, new_user=True, is_teacher=True, title=title)
 
 
@@ -84,7 +84,7 @@ def add_facility_student(request, ds):
     if request.is_teacher and not ds["facility"].teacher_can_create_students:
         return HttpResponseForbidden()
 
-    title = _("Add a new student")
+    title = _("Add a new learner")
     return _facility_user(request, new_user=True, title=title)
 
 
@@ -97,7 +97,7 @@ def facility_user_signup(request):
 
     if settings.DISABLE_SELF_ADMIN:
         # Users cannot create/edit their own data when UserRestricted
-        raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
+        raise PermissionDenied(_("Please contact a coach or administrator to receive login information to this installation."))
     if settings.CENTRAL_SERVER:
         raise Http404(_("You may not sign up as a facility user on the central server."))
 
