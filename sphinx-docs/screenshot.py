@@ -54,7 +54,7 @@ def _parse_command(command):
     return {'selector': selector, 'action': action, 'options': options}
 
 def _parse_login(username, password, submit=""):
-    """" Parses a command into action and options.
+    """" Parses a LOGIN command.
 
     Returns a dictionary with following keys:
        runhandler (string):  "_login_handler".
