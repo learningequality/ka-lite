@@ -22,7 +22,7 @@ KA Lite is a lightweight web application software that allows users without Inte
 
 What are the goals of KA Lite?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Learning is fundamental to human flourishing, and strive to support learning opportunities on every front. KA Lite’s goal is to make the high-quality educational resources and tools provided by Khan Academy accessible to the estimated 65% of the world that don’t have access to Internet. 
+Learning is fundamental to human flourishing, and at Foundation for Learning Equality, we strive to support learning opportunities on every front. That's why we created KA Lite, with the goal of making high-quality educational resources and tools provided by Khan Academy accessible to the estimated 65% of the world that don’t have access to Internet. 
 
 
 How KA Lite works
