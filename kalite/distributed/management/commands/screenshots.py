@@ -257,23 +257,26 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
             if self.browser.current_url != start_url:
                 self.browse_to(start_url)
 
-            # Make browser inputs and take screenshots as specified.
             inputs = shot[self.KEY_INPUTS]
             for item in inputs:
                 for key, value in item.iteritems():
                     if key:
                         if key.lower() == self.KEY_CMD_SLUG:
                             self.snap(slug=value)
-                            continue
                         elif key.lower() == self.KEY_CMD_SUBMIT:
                             self.browser_send_keys(Keys.RETURN)
-                            continue
                         else:
-                            kwargs = {'name': key}
                             if key[0] == "#":
-                                kwargs = {'id': key.replace("#", "")}
+                                kwargs = {'id': key[1:]}
+                            elif key[0] == ".":
+                                kwargs = {'css_class': key[1:]}
+                            else:
+                                kwargs = {'name': key}
                             self.browser_activate_element(**kwargs)
-                    self.browser_form_fill(value)
+                            if value:
+                                self.browser_send_keys(value)
+                    elif not key and value:
+                        self.browser_send_keys(value)
 
             if shot[self.KEY_SLUG]:
                 self.snap(slug=shot[self.KEY_SLUG])
