@@ -475,9 +475,9 @@ def get_content_data(request, content_id=None):
             # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
             messages.warning(request, _("This content was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
-            messages.warning(request, _("This content was not found! Please contact your teacher or an admin to have it downloaded."))
+            messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
         elif not request.is_logged_in:
-            messages.warning(request, _("This content was not found! You must login as an admin/teacher to download the content."))
+            messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
 
     return content
 
