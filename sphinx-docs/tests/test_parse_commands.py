@@ -6,13 +6,15 @@
     Either of the two commands must be run from the 'sphinx-docs' directory.
 """
 
+
+from errors import ActionError, OptionError
+
+from nose.tools import assert_equal, raises, with_setup
+
+import sys, os
+
+sys.path.insert(0, os.path.abspath(os.path.join('..','python-packages')))
 import screenshot
-
-from errors import ActionError
-from errors import OptionError
-
-from nose.tools import assert_equal
-from nose.tools import raises
 
 def test_parse_focus():
     """ Test screenshot._parse_focus() function.
@@ -97,14 +99,21 @@ def test_parse_login():
 def test_parse_nav_steps():
     """ Test screenshot._parse_nav_steps() function.
     """
+    print sys.path
     # Test with just one command.
     arg_str = 'selector click'
-    expected_output = {'runhandler': '_command_handler', 'args': {'action': 'click', 'options': [], 'selector': 'selector'}}
+    expected_output = {'runhandler': '_command_handler', 'args': {'commands': [{'action': 'click', 'options': [], 'selector': 'selector'}]}}
     actual_output = screenshot._parse_nav_steps(arg_str)
     assert_equal(expected_output, actual_output)
 
     # Test with just two commands separated by '|'.
     arg_str = 'selector click | selector2 click'
-    expected_output = {'runhandler': '_commands_handler', 'args': [{'action': 'click', 'options': [], 'selector': 'selector'},{'action': 'click', 'options': [], 'selector': 'selector2'} ]}
+    expected_output = {'runhandler': '_command_handler', 'args': {'commands': [{'action': 'click', 'options': [], 'selector': 'selector'},{'action': 'click', 'options': [], 'selector': 'selector2'}]}}
+    actual_output = screenshot._parse_nav_steps(arg_str)
+    assert_equal(expected_output, actual_output)
+
+    # Test with no commands
+    arg_str = ''
+    expected_output = {'runhandler': '_command_handler', 'args': {'commands': []}}
     actual_output = screenshot._parse_nav_steps(arg_str)
     assert_equal(expected_output, actual_output)
