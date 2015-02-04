@@ -41,7 +41,7 @@ Setting up KA Lite
 -------------------
 Once you have successfully installed KA Lite, the installation script should give you a URL (http://127.0.0.1:8008/) to visit so that you can open KA Lite and login for the first time. 
 
-Copy and paste the URL into a web browser. The KA Lite application should show up.  and login to KA Lite using the username and password you created during the installation process. 
+Copy and paste the URL into a web browser. The KA Lite application should show up. Then, login to KA Lite using the username and password you created during the installation process. 
 
 * If you have forgotten the username/password combination, simply delete this version of KA Lite (delete the “ka-lite” folder that you downloaded during the installation guide steps for your system and then redo the installation steps in the Install Guide). If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
 
@@ -75,7 +75,6 @@ How to register your device with online access to data
 Post Registration Setup
 -------------------------------------------
 Now that you have registered successfully, it's time to configure your local KA Lite installation to suit your needs. If any terms like 'facility' or 'device' become confusing, feel free to reference the `Administrator Glossary`_ for a quick reminder.
-
 
 Create a Facility
 -------------------------
@@ -201,6 +200,11 @@ Edit User Information
 #. You will be redirected to the previous page, with a message at the top indicating that your changes have been saved.
 
 .. |bluepencil| image:: bluepencil.png
+
+Allowing Other Users to Connect
+--------------------------------
+In order for other users to be able to connect to the KA Lite server with a different machine, you will need to give them an IP address with which to access the software. This should be different from the IP address given to you during setup (127.0.0.1:8008). 
+
 
 Downloading Videos
 ---------------------
