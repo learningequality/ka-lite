@@ -132,9 +132,6 @@ class Screenshot(Image):
     optional_arguments = 0
     has_content = False
 
-    user_role = None
-    url = None
-
     #########################################################
     # Handlers will be invoked in the run method should     #
     # both return appropriate nodes and spawn a process     #
