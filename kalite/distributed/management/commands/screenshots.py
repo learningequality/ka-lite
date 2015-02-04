@@ -283,6 +283,7 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
         except Exception as exc:
             log.error("====> EXCEPTION snapping url %s: %s" % (start_url, exc,))
             log.error("'shot' object: %s" % repr(shot))
+            self.browser.close()
             raise
 
     def snap_all(self, browser=None, **options):
