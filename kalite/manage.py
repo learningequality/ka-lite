@@ -9,8 +9,8 @@ import warnings
 #    mangling of the project path (see below)
 
 warning_txt = (
-    "You should not run kalite/manage.py, it's gone in kalite 0.14. Instead, "
-    "use the 'kalite' command."
+    "You should not run kalite/manage.py, as it is deprecated and will be gone in KA Lite 0.14. "
+    "Instead, use the 'kalite' command."
 )
 
 # Explicitly print it because warnings are suppressed
