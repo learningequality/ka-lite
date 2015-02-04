@@ -14,9 +14,23 @@ from errors import OptionError
 from selenium.webdriver.common.keys import Keys
 
 SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
+SCREENSHOT_COMMAND_OPTS = " --no-del -v 0 --from-str '%s' --output-dir %s"
+OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
 
 def setup(app):
     app.add_directive('screenshot', Screenshot)
+    app.connect('env-purge-doc', purge_screenshots)
+    app.connect('env-updated', process_screenshots)
+
+def purge_screenshots(app, env, docname):
+    if not hasattr(env, 'screenshot_all_screenshots'):
+        return
+    env.screenshot_all_screenshots = [s for s in env.screenshot_all_screenshots
+                          if s['docname'] != docname]
+
+def process_screenshots(app, env):
+    all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
+    os.system(SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS % (json.dumps(all_args), OUTPUT_PATH))
 
 def _parse_focus(arg_str):
     """ Returns id and annotation after splitting input string.
@@ -150,10 +164,12 @@ class Screenshot(Image):
         if submit:
             from_str_arg["inputs"].append({"<submit>":""})
         from_str_arg["inputs"].append({"<slug>":self.filename})
-        from_str_arg = [from_str_arg]
         # Trying to import django.core.management.call_command gets you into some sort of import hell
         # Apparently due to a circular import, according to Ben Bach.
-        os.system(SCREENSHOT_COMMAND + " --no-del -v 0 --from-str '%s' --output-dir %s" % (json.dumps(from_str_arg), self.output_path))
+        self.env.screenshot_all_screenshots.append({
+            'docname':  self.env.docname,
+            'from_str_arg': from_str_arg,
+        })
         self.arguments.append(os.path.join("_images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
@@ -169,8 +185,10 @@ class Screenshot(Image):
                        }        
         from_str_arg['inputs'] = reduce(lambda x,y: x+y, map(_cmd_to_inputs, commands), [])
         from_str_arg["inputs"].append({"<slug>":self.filename})
-        from_str_arg = [from_str_arg]
-        os.system(SCREENSHOT_COMMAND + " --no-del -v 0 --from-str '%s' --output-dir %s" % (json.dumps(from_str_arg), self.output_path))
+        self.env.screenshot_all_screenshots.append({
+            'docname':  self.env.docname,
+            'from_str_arg': from_str_arg,
+        })
         self.arguments.append(os.path.join("_images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
@@ -190,9 +208,11 @@ class Screenshot(Image):
         Build language can be accessed from the BuildEnvironment.
         """
         # sphinx.environment.BuildEnvironment
-        env = self.state.document.settings.env
-        language = env.config.language
+        self.env = self.state.document.settings.env
+        language = self.env.config.language
         return_nodes = []
+        if not hasattr(self.env, 'screenshot_all_screenshots'):
+            self.env.screenshot_all_screenshots = []
 
         if len(self.arguments) == 1:
             (image_node,) = Image.run(self)
@@ -212,7 +232,6 @@ class Screenshot(Image):
 
         if 'navigation-steps' in self.options:
             self.filename = uuid.uuid4().__str__()
-            self.output_path = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
             runhandler = self.options['navigation-steps']['runhandler']
             args = self.options['navigation-steps']['args']
             return_nodes.append(getattr(self, runhandler)(**args))
