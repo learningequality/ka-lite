@@ -82,8 +82,14 @@ window.PlaylistContentAreaView = Backbone.View.extend({
     },
 
     render: function() {
-        this.$el.html(this.template(this.model.attributes));
-        return this;
+        if (window.statusModel.get("is_logged_in")) {
+            this.$el.html(this.template(this.model.attributes));
+            return this;
+        }
+        else
+        {
+            window.location = "/securesync/login";
+        }
     },
 
     show_view: function(view) {
