@@ -1,0 +1,22 @@
+What I Changed:
+
+There was a lot of stuff that was missing from the user manual, a lot of it assumes that the user has a lot of basic knowledge about networking (which, a lot of people don't. It's not in their field.) I tried to rewrite the instructions to reflect a different perspective, one that doesn't assume so much knowledge on the users' behalf....
+
+Therefore, there were/still are a few sections that need to be added.
+
+1. How to restart the server (there is no way to do this through the user interface? ) --there are parts in the manual where they reference restarting the server with no explanation on how to.
+
+2. How to get your IP address (ADMIN) -- this needs to be fixed? Or still working on this, actually. Not sure on how to do this actually.... lol
+just look for ipv4 on windows,
+ifconfig on mac,
+dunno about linux? prob the same ^
+
+
+
+
+What I'm waiting on:
+1. removing users from group... being able to ungroup users... this is a feature that was available in 0.12 but seems to have abug in 0.13 . section is left blank.
+
+2. ACCESSING ka lite for admins... will there be a clickable icon? a runnable command? what exactly is it? seems like is still in its dev stages so i am also leaving that alone for now
+
+3. screenshawts
