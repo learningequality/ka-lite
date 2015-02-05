@@ -459,9 +459,8 @@ def get_assessment_item_data(request, assessment_item_id=None):
         return None
 
     # TODO (rtibbles): Enable internationalization for the assessment_items.
+    logging.info("Assessment items =%s" % assessment_item['item_data'])
     logging.info('Wrapping the Assessment Item with _()')
-    lang_code = i18n.get_default_language()
-    activate(lang_code)
     item_data = json.loads(assessment_item['item_data'])
     question_content = _(item_data['question']['content'])
     answerarea_content = _(item_data['answerArea']['options']['content'])
