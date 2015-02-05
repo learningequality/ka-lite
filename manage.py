@@ -5,14 +5,6 @@ import os
 import sys
 
 
-def clean_pyc(path):
-    for root, __, __ in os.walk(os.path.join(path, "..")):
-        for pyc_file in glob.glob(os.path.join(root, "*.py[oc]")):
-            try:
-                os.remove(pyc_file)
-            except:
-                pass
-
 try:
     import fle_utils  # @UnusedImport
 except ImportError:
@@ -43,17 +35,6 @@ if __name__ == "__main__":
     elif "runcherrypyserver" in sys.argv and "stop" not in sys.argv:
         logging.info("You requested to run runcherrypyserver; instead, we're funneling you through our 'kaserve' command.")
         sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
-
-    ########################
-    # manual clean_pyc
-    ########################
-    # benjaoming: why are we always doing this, this is horrible for performance
-    # ...and before it didn't include python-packages anyways. Can we get to
-    # the root cause and implement a better way?
-    # http://blog.daniel-watkins.co.uk/2013/02/removing-pyc-files-coda.html
-    # Manually clean all pyc files before entering any real codepath
-    if not BUILT and "kaserve" in sys.argv:
-        clean_pyc(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'kalite'))
 
     ########################
     # Run it.
