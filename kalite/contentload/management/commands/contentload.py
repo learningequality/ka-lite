@@ -153,7 +153,8 @@ class Command(NoArgsCommand):
             save_cache_file("AssessmentItem", cache_object=assessment_item_cache, data_path=channel_path)
             save_cache_file("Content", cache_object=content_cache, data_path=channel_path)
 
-        except:
+        except Exception as e:
+
             import IPython; IPython.embed()
 
         if hasattr(channel_tools, "channel_data_files"):

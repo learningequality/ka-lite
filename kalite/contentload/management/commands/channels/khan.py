@@ -93,6 +93,9 @@ def build_full_cache(items, id_key="id"):
     Uses list of items retrieved from Khan Academy API to
     create an item cache with fleshed out meta-data.
     """
+
+    output = {}
+
     for item in items:
         for attribute in item._API_attributes:
             logging.info("Fetching item information for {id}, attribute: {attribute}".format(id=item.get(id_key, "Unknown"), attribute=attribute))
@@ -104,7 +107,7 @@ def build_full_cache(items, id_key="id"):
                             try:
                                 subitem = json.loads(subitem.toJSON())
                             except AttributeError:
-                                True
+                                pass
                             if subitem.has_key("kind"):
                                 subitem = whitewash_node_data(
                                     {key: value for key, value in subitem.items()})
@@ -113,7 +116,7 @@ def build_full_cache(items, id_key="id"):
                     try:
                         item[attribute] = json.loads(item[attribute].toJSON())
                     except AttributeError:
-                        True
+                        pass
                     if item[attribute].has_key("kind"):
                         item[attribute] = whitewash_node_data(
                             {key: value for key, value in item.attribute.items()})
@@ -123,12 +126,11 @@ def build_full_cache(items, id_key="id"):
         try:
             item = json.loads(item.toJSON())
         except AttributeError:
-            True
-        for key in item.keys():
-            if hasattr(item[key], '__call__'):
-                logging.warn('{kind}: {item} had a function on key {key}'.format(kind=item.get('kind', ''), item=item.get('id', ''), key=key))
-                del item[key]
-    return {item["id"]: whitewash_node_data(item) for item in items}
+            logging.error("Unable to serialize %r" % item)
+
+        output[item["id"]] = whitewash_node_data(item)
+
+    return output
 
 def retrieve_API_data(channel=None):
     khan = Khan()
