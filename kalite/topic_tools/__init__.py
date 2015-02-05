@@ -460,9 +460,6 @@ def get_assessment_item_data(request, assessment_item_id=None):
         return None
 
     # TODO (rtibbles): Enable internationalization for the assessment_items.
-    # logging.info('Assessment Item =>%s' % assessment_item)
-    # logging.info('Assessment Item type%s' % type(assessment_item["item_data"]))
-
     item_data = json.loads(assessment_item['item_data'])
     # logging.info("Json Loads Item Data =>%s" % item_data)
     question_content = _(item_data['question']['content'])
