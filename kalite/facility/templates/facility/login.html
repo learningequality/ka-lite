@@ -1,7 +1,7 @@
 {% extends base_template %}
 {% load i18n %}
 
-{% block login_active %}active{% endblock login_active %}
+{% block login_active %}{% trans "active" %}{% endblock login_active %}
 
 {% block title %}{% trans "Log in" %}{{ block.super }}{% endblock title %}
 

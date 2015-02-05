@@ -57,7 +57,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
                 "secondsPerFastProblem": this.get("seconds_per_fast_problem"),
                 "authorName": this.get("author_name"),
                 "relatedVideos": this.get("related_videos"),
-                "fileName": this.get("name") + ".html" // this.get("file_name")
+                "fileName": this.get("template")
             },
             "exerciseProgress": {
                 "level": "" // needed to keep khan-exercises from blowing up

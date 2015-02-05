@@ -20,4 +20,4 @@ def flat_topic_tree(request, lang_code):
 @api_handle_error_with_json
 @backend_cache_page
 def topic_tree(request, channel):
-    return JsonResponse(get_topic_tree(channel=channel))
+    return JsonResponse(get_topic_tree(channel=channel, language=request.language))

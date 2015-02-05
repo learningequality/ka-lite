@@ -87,7 +87,6 @@ class VideoLogResource(ModelResource):
 class Exercise():
 
     def __init__(self, **kwargs):
-        self.ancestor_ids = kwargs.get('ancestor_ids')
         self.lang = kwargs.get('lang')
         self.kind = kwargs.get('kind')
         self.all_assessment_items = kwargs.get('all_assessment_items')
@@ -99,7 +98,6 @@ class Exercise():
         self.name = kwargs.get('name')
         self.id = kwargs.get('id')
         self.seconds_per_fast_problem = kwargs.get('seconds_per_fast_problem')
-        self.parent_id = kwargs.get('parent_id')
         self.template = kwargs.get('template')
         self.path = kwargs.get('path')
         self.x_pos = kwargs.get('x_pos')
@@ -109,8 +107,6 @@ class Exercise():
 
 
 class ExerciseResource(Resource):
-
-    ancestor_ids = fields.CharField(attribute='ancestor_ids')
     lang = fields.CharField(attribute='lang', default='en')
     kind = fields.CharField(attribute='kind')
     all_assessment_items = fields.ListField(attribute='all_assessment_items')
@@ -122,7 +118,6 @@ class ExerciseResource(Resource):
     name = fields.CharField(attribute='name')
     id = fields.CharField(attribute='id')
     seconds_per_fast_problem = fields.CharField(attribute='seconds_per_fast_problem')
-    parent_id = fields.CharField(attribute='parent_id', null=True)
     template = fields.CharField(attribute='template')
     path = fields.CharField(attribute='path')
     x_pos = fields.IntegerField(attribute='x_pos', default=0)

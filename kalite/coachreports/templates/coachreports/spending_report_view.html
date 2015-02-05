@@ -5,7 +5,7 @@
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
-{% block title %}{% trans "Student spending report" %} {{ block.super }}{% endblock title %}
+{% block title %}{% trans "Learner spending report" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
@@ -44,14 +44,14 @@
         </div>
         {% if not user_points %}
             <p>
-                {% trans "There are no students at this facility." %}
+                {% trans "There are no learners at this facility." %}
             </p>
         {% else %}
             <table>
                 <thead>
                     <tr>
                         <th>
-                            {% trans "Student" %}
+                            {% trans "Learner" %}
                         </th>
                         <th>
                             {% trans "Points Remaining" %}

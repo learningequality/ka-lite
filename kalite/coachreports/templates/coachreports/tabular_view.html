@@ -86,7 +86,7 @@
             <select id="report_type">
                 <option {% if not request_report_type %}selected{% endif %}>----</option>
                 {% for report_type in report_types %}
-                    <option value="{% trans report_type %}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
+                    <option value="{{ report_type.value }}" {% if report_type.value == request_report_type %}selected{% endif %}>{{ report_type.name }}</option>
                 {% endfor %}
             </select>
         {% else %}
@@ -95,7 +95,7 @@
         </div>
         <div class="selection pull-left">
         {% if users and request_report_type == "student" %}
-            <div class="subtitle">{% trans "Select Student" %}</div>
+            <div class="subtitle">{% trans "Select Learner" %}</div>
             <select id="student">
                 <option {% if not request.GET.user %}selected{% endif %}>----</option>
                 {% for user in users %}
@@ -145,7 +145,7 @@
                 <div class="subtitle error" id="error_message">
                     {% if not groups.0.groups and not groups.1 and request.GET.topic %}
                         {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
-                        {% trans "No student accounts have been created." %}
+                        {% trans "No learner accounts have been created." %}
                     {% elif request.GET.topic and request.GET.playlist %}
                         {% trans "Please select either a topic or a playlist above, but not both." %}
                     {% elif not request.GET.topic and not request.GET.playlist %}
@@ -159,7 +159,7 @@
                         {% endif %}
                     {% else %}
                         {% comment %}Everything specified, but no users fit the query.{% endcomment %}
-                        {% trans "No student accounts in this group have been created." %}
+                        {% trans "No learner accounts in this group have been created." %}
                     {% endif %}
                 </div>
             </p>
@@ -171,7 +171,7 @@
                         <tbody>
                             <tr>
                                 <th class="headrowuser">
-                                    {% trans "Student" %}
+                                    {% trans "Learner" %}
                                 </th>
                             </tr>
                             {% for student in students %}

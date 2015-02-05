@@ -5,35 +5,23 @@ Views for the KA Lite app are wide-ranging, and include:
 * Administrative pages
 and more!
 """
-import copy
-import json
-import os
-import re
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from functools import partial
 
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
-from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound, HttpResponseRedirect, Http404, HttpResponseServerError
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
-from django.views.i18n import javascript_catalog
 
-from fle_utils.django_utils import is_loopback_connection
-from fle_utils.internet import JsonResponse, JsonResponseMessageError, get_ip_addresses, set_query_params, backend_cache_page
+from fle_utils.internet import JsonResponseMessageError, get_ip_addresses, set_query_params, backend_cache_page
 from kalite import topic_tools
-from kalite.facility.models import Facility, FacilityUser,FacilityGroup
-from kalite.i18n import select_best_available_language
-from kalite.main.models import VideoLog, ExerciseLog
-from kalite.playlist.views import view_playlist
 from kalite.shared.decorators import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
@@ -94,13 +82,7 @@ def learn(request):
 @backend_cache_page
 @render_to("knowledgemap/knowledgemap.html")
 def exercise_dashboard(request):
-    slug = request.GET.get("topic")
-    if not slug:
-        title = _("Your Knowledge Map")
-    elif slug in topic_tools.get_node_cache("Topic"):
-        title = _(topic_tools.get_node_cache("Topic")[slug]["title"])
-    else:
-        raise Http404
+    title = _("Your Knowledge Map")
 
     context = {
         "title": title,

@@ -57,6 +57,13 @@ class Command(BaseCommand):
             help="PID file"
         ),
         make_option(
+            '--startup-lock-file',
+            action='store',
+            dest='startuplock',
+            default=None,
+            help="Remove this file after successful startup"
+        ),
+        make_option(
             '--production',
             action='store_true',
             dest='production',
@@ -132,6 +139,9 @@ class Command(BaseCommand):
         logging.debug("Writing %s as BUILD_HASH" % build_hash)
         Settings.set('BUILD_HASH', build_hash)
 
+        if options['startuplock']:
+            os.unlink(options['startuplock'])
+        
         # Now call the proper command
         if not options["production"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
