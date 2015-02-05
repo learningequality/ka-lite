@@ -47,7 +47,7 @@
             <table class="table selectable-table">
                  <thead>
                     <tr class="success">
-                        <th><input class="select-all" type="checkbox" value="#students"</th>
+                        <th><input class="select-all" type="checkbox" value="#students" autocomplete="off"/></th>
                         <th>{% trans "Learner Name" %}</th>
                         <th>{% trans "Edit" %}</th>
                         <th>{% trans "Coach" %}</th>
@@ -62,7 +62,7 @@
                 <tbody>
                     {% for student in student_pages %}
                         <tr class="selectable" value="{{ student.id }}" type="students">
-                            <td><input type="checkbox" value="#students"></td>
+                            <td><input type="checkbox" value="#students" autocomplete="off"/></td>
                             <td>
                                 {{ student|format_name:"last_first" }}
                             </td>
