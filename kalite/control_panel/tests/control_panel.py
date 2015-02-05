@@ -108,6 +108,24 @@ class GroupControlTests(FacilityMixins,
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
 
+    def test_checkbox_not_autocompleted(self):
+        # This is a regression test for issue #2929
+        # Firefox aggressively autocompletes form elements, meaning if a checkbox is checked
+        # upon page refresh, it will stay checked. This then disrupts our checkbox/highlight
+        # UI and makes them desynchronized.
+        # N.B. This assumes that our browser tests are running on Firefox, otherwise, this test is moot.
+        self.browser_login_admin(**self.admin_data)
+
+        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
+
+        group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
+        group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
+        group_delete_checkbox.click()
+
+        self.browser.refresh()
+
+        self.assertNotEqual(self.browser.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]').get_attribute("checked"), u'true')
+
 
 @override_settings(RESTRICTED_TEACHER_PERMISSIONS=True)
 class RestrictedTeacherTests(FacilityMixins,
