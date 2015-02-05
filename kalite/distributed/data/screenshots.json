@@ -5,7 +5,14 @@
         "start_url": "/",
         "inputs": [],
         "pages": [5],
-        "notes": ""
+        "notes": "",
+        "focus": {
+          "element_id": "suggested-action-image-link-homepage",
+          "styles": {
+            "border": "4px solid",
+            "borderColor": "red"
+          }
+        }
     },
     {
         "users": ["guest"],
