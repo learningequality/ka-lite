@@ -19,7 +19,7 @@ from kalite import topic_tools
 from fle_utils.general import ensure_dir
 
 # get the path to an exercise file, so we can check, below, which ones exist
-EXERCISE_FILEPATH_TEMPLATE = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s.html")
+EXERCISE_FILEPATH_TEMPLATE = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s")
 
 def save_cache_file(cache_type, cache_object=None, node_cache=None, data_path=None):
 
@@ -32,7 +32,7 @@ def save_cache_file(cache_type, cache_object=None, node_cache=None, data_path=No
 def validate_data(topic_tree, node_cache, slug2id_map):
     # Validate related videos
     for exercise in node_cache['Exercise'].values():
-        exercise_path = EXERCISE_FILEPATH_TEMPLATE % exercise["slug"]
+        exercise_path = EXERCISE_FILEPATH_TEMPLATE % exercise.get("file_name", "")
         if not os.path.exists(exercise_path) and not exercise.get("uses_assessment_items", False):
             logging.warning("Could not find exercise HTML file: %s\n" % exercise_path)
         for vid_slug in exercise.get("related_video_slugs", []):
