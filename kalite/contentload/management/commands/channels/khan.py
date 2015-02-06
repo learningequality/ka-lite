@@ -143,6 +143,8 @@ def retrieve_API_data(channel=None):
 
     exercises = khan.get_exercises()
 
+    exercises_dummy = khan.get_exercises()
+
     logging.info("Fetching Khan videos")
 
     content = khan.get_videos()
@@ -200,7 +202,7 @@ def retrieve_API_data(channel=None):
                     logging.info("Fetching assessment item {assessment} failed more than 5 times, aborting".format(assessment=assessment_item["id"]))
                     break
 
-    threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises]
+    threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises_dummy]
 
     for thread in threads:
         thread.start()
