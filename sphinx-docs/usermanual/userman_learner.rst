@@ -24,6 +24,10 @@ Learners may receive their account information from their Coaches or Administrat
 #. Fill out the information. 
 #. Click the "Create user" button when you are finished.
 
+How to Update Account Information
+-----------------------------------
+
+
 Navigating through Content
 -------------------------------------------
 To begin engaging with the Khan Academy videos and exercises, first make sure you are logged into KA Lite. Upon log in, you should see a green menu on the left that lists the content. If you do not see this green menu, please start by clicking on the "Learn" tab on the home page. 
