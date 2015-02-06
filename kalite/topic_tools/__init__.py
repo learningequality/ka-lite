@@ -459,17 +459,26 @@ def get_assessment_item_data(request, assessment_item_id=None):
         return None
 
     # TODO (rtibbles): Enable internationalization for the assessment_items.
-    logging.info("Assessment items =%s" % assessment_item['item_data'])
-    logging.info('Wrapping the Assessment Item with _()')
-    item_data = json.loads(assessment_item['item_data'])
-    question_content = _(item_data['question']['content'])
-    answerarea_content = _(item_data['answerArea']['options']['content'])
-    # TODO (jesumer): Loop over hints.
-    hints_content = _(item_data['hints'][0]['content'])
+    answerarea_content = ""
+    hints_content = ""
+    try:
+        logging.info('Wrapping the Assessment Item with _()')
+        item_data = json.loads(assessment_item['item_data'])
+        question_content = _(item_data['question']['content'])
+        answerarea_content = _(item_data['answerArea']['options']['content'])
+
+        # Loop over hints.
+        hints = item_data['hints'][0]
+        for k, v in hints.iteritems():
+            if k == "content":
+                hints_content = _(v)
+    except KeyError:
+        pass
 
     item = item_data
     item['question']['content'] = question_content
-    item['answerArea']['options']['content'] = answerarea_content
+    if answerarea_content:
+        item['answerArea']['options']['content'] = answerarea_content
     item['hints'][0]['content'] = hints_content
 
     item = json.dumps(item)
