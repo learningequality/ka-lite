@@ -4,7 +4,7 @@ Please follow steps 1-8 for normal Linux Installation Guide.
 
 During installation you will be asked to optimize your installation for performance on the Raspberry Pi
 
-Say **YES!** Make sure you have a stable Internet connection during the process, as you will be downloading a number of 3rd party open source libraries.
+Say **YES!** Make sure you have a stable internet connection during the process, as you will be downloading a number of 3rd party open source libraries.
 
 Raspberry Pi Wi-Fi
 ------------------------------
