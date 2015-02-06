@@ -96,7 +96,7 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None,
         call_command("migrate", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
         if username and email and password:
             log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,)) if int(verbosity) > 0 else None
-            call_command("createsuperuser", username=username, email=email, 
+            call_command("createsuperuser", username=username, email=email,
                          interactive=False, stdout=new_io, router=router, verbosity=verbosity)
             admin_user = User.objects.get(username=username)
             admin_user.set_password(password)
@@ -140,6 +140,7 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
     KEY_START_URL = 'start_url'
     KEY_INPUTS = 'inputs'
     KEY_PAGES = 'pages'
+    KEY_FOCUS = 'focus'
     # Notes aren't used anywhere...
     KEY_NOTES = 'notes'
 
@@ -161,11 +162,11 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
     def logwarn(self, *args, **kwargs):
         if int(self.verbosity) > 0:
             log.warn(*args, **kwargs)
-    
+
     def loginfo(self, *args, **kwargs):
         if int(self.verbosity) > 0:
             log.info(*args, **kwargs)
-    
+
     def __init__(self, *args, **kwargs):
         # It's not good to override __init__ for classes that inherit from TestCase
         # Since we're hackily inheriting here, we have to hackily invoke __init__
@@ -179,7 +180,7 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
 
         # make sure output path exists and is empty
         if kwargs['output_dir']:
-            self.output_path = os.path.join( os.path.realpath(os.path.join(settings.PROJECT_PATH, '..')), 
+            self.output_path = os.path.join( os.path.realpath(os.path.join(settings.PROJECT_PATH, '..')),
                                         kwargs['output_dir'])
         else:
             self.output_path = settings.SCREENSHOTS_OUTPUT_PATH
@@ -226,10 +227,19 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
         filename = "%s/%s%s" % (self.output_path, slug, settings.SCREENSHOTS_EXTENSION)
         return filename
 
-    def snap(self, slug):
+    def snap(self, slug, focus):
         filename = self.make_filename(slug=slug)
         self.loginfo('====> Snapping %s --titled-- "%s" --> %s%s ...' %
                  (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
+
+        if focus:
+            # Apply the specified styles to element. Currently only selection by
+            # id is supported. TODO: Extend it a more generic CSS selector.
+            element_id = focus['element_id']
+            styles = focus['styles']
+            for key, value in styles.iteritems():
+                self.browser.execute_script('document.getElementById("%s").style.%s = "%s"' % (element_id, key, value))
+
         self.browser.save_screenshot(filename)
 
     def process_snap(self, shot, browser=None):
@@ -252,7 +262,7 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                 self.browser_login_user(self.admin_username, self.default_password)
             elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.browser_is_logged_in():
                 self.browser_logout_user()
-            
+
             start_url = "%s%s" % (self.live_server_url, shot["start_url"],)
             if self.browser.current_url != start_url:
                 self.browse_to(start_url)
@@ -262,7 +272,8 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                 for key, value in item.iteritems():
                     if key:
                         if key.lower() == self.KEY_CMD_SLUG:
-                            self.snap(slug=value)
+                            focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
+                            self.snap(slug=value, focus=focus)
                         elif key.lower() == self.KEY_CMD_SUBMIT:
                             self.browser_send_keys(Keys.RETURN)
                         else:
@@ -279,7 +290,8 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                         self.browser_send_keys(value)
 
             if shot[self.KEY_SLUG]:
-                self.snap(slug=shot[self.KEY_SLUG])
+                focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
+                self.snap(slug=shot[self.KEY_SLUG], focus=focus)
         except Exception as exc:
             log.error("====> EXCEPTION snapping url %s: %s" % (start_url, exc,))
             log.error("'shot' object: %s" % repr(shot))
