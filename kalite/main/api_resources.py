@@ -109,7 +109,7 @@ class Exercise():
 class ExerciseResource(Resource):
     lang = fields.CharField(attribute='lang', default='en')
     kind = fields.CharField(attribute='kind')
-    all_assessment_items = fields.ListField(attribute='all_assessment_items')
+    all_assessment_items = fields.ListField(attribute='all_assessment_items', default=[])
     display_name = fields.CharField(attribute='display_name')
     description = fields.CharField(attribute='description')
     y_pos = fields.IntegerField(attribute='y_pos', default=0)
