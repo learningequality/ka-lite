@@ -30,6 +30,10 @@ import warnings
 
 kalite_path = None
 
+# Ensure that PATH is set because distutils.find_executable fails on
+# windows with no path set.
+os.environ['PATH'] = os.environ.get("PATH", "")
+
 # Yay! The path is set!
 if 'KALITE_DIR' in os.environ:
     kalite_path = os.environ['KALITE_DIR']
