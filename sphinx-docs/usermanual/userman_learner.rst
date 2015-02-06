@@ -24,9 +24,6 @@ Learners may receive their account information from their Coaches or Administrat
 #. Fill out the information. 
 #. Click the "Create user" button when you are finished.
 
-How to Update Account Information
------------------------------------
-
 
 Navigating through Content
 -------------------------------------------
@@ -48,7 +45,6 @@ The icons to the left of the menu selections describe whether or not it is a vid
 Once you have found the video or exercise that you'd like to engage with, simply click on that selection.
 
 
-
 How to Practice Exercises
 --------------------------
 First, please log into KA Lite. Then, navigate to the topic that you'd like to practice exercises for. 
@@ -65,4 +61,17 @@ The bar on the top right will display your progress as you go through the exerci
 Saved Progress
 ^^^^^^^^^^^^^^^^^^
 If at any point during an exercise you wish to watch a video to refresh your memory, feel free to navigate to the video by expanding the green tab which will bring up the content menu. Your progress for that exercise will be saved and you will not lose your work.
+
+
+How to View Your Progress
+--------------------------
+At any point in time, you should be able to view your progress on any topic. In order to do this, 
+
+#. Log into KA Lite.
+#. Then, click on your name in the top right of the page. 
+#. It will then show a drop-down menu, from which you can click on "My Progress".
+
+On the progress page, you will be able to view your progress on each topic. There will be two bars for each topic. The top bar represents your progress on the videos for that topic, and the bottom bar will represent your progress on the exercises for that topic. 
+
+
 
