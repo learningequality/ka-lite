@@ -24,6 +24,9 @@ For users that choose to register online, there are some important terms to fami
 **Device**
 	A device should be able to run a KA Lite server (most computers) and other devices to be used as clients. One common configuration is using a Raspberry Pi or other inexpensive computer as a server and relatively cheap tablets as client devices. Tablets can access the servers through an access point, such as a Wi-Fi dongle, or some other networking device such as a router.
 
+**Web Browser**
+    A program that retrieves and presents information resources on the World Wide Web. Popular web browsers include Internet Explorer, Google Chrome, Mozilla Firefox, and Safari.
+
 **Torrent**
     A file or files sent using the BitTorrent protocol. It can be any type of file, such as a movie, song, game, or application. During the transmission, the file is incomplete and therefore referred to as a torrent. Torrent downloads that are incomplete cannot be opened as regular files, because they do not have all the necessary data.
 
@@ -33,9 +36,20 @@ For users that choose to register online, there are some important terms to fami
 **Bandwidth**
     The amount of data that an Internet connection can handle in a given time. An Internet connection with larger bandwidth can move a certain amount of data much faster than an Internet connection with a lower bandwidth.
 
-Accessing KA Lite **THIS NEEDS UPDATING, BUT VERY IMPORTANT**
+Running the KA Lite Server
+---------------------------
+After a successful installation of KA Lite, the terminal should give you a command to copy. It will look something like the following:
+
+    ``/PATH/TO/KALITE/bin/kalite start``
+
+The first string will vary depending on which folder you installed KA Lite in. Simply copy and paste the provided string back into the command prompt, and hit enter. You will be asked whether or not you wish to run the KA Lite server in the background automatically every time you start up the computer. Once you answer yes or no, success! The KA Lite server is now running on your computer. 
+
+Accessing KA Lite
 -------------------
-In order to access KA Lite after it has been successfully installed, please grab the URL given at the end of the installation process (http://127.0.0.1:8008/) **this will probably have to be changed later!!!! tHERE ARE A LOT OF THINGS THAT NEED TO BE CHANGED**
+When the server has been started, you will be given a few IP addresses. You can use these addresses to access KA Lite by copying and pasting them into a web browser of your choice. 
+
+In order to access KA Lite from another machine, please enter the IP address that does *not* start with http://127.0.0.1:8008 into the web browser on that machine.
+
 
 Setting up KA Lite
 -------------------
@@ -227,26 +241,25 @@ If you want to download videos in bulk, your best option is to download the KA L
 We have made the full set of KA videos (in the format needed by KA Lite) available via `BitTorrent Sync`_ (btsync). Note that this is different from BitTorrent; btsync allows us to add new videos or fix problems without issuing a whole new torrent file, and then having seeders split between the old and new torrent files. Here are the steps to set this up:
 
 #. Download and install `BitTorrent Sync`_.
-#. Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to load http://127.0.0.1:8888/ to get the interface
-#. Click the "Enter a key or link" button, and put in **https://link.getsync.com/#f=ka­lite­compressed&sz=25E9&q=­&s=TOQVB3LLGWCKEQ6NOCFBSEVWA74PRA6I&q=­&i=C4M3QMAVXE7RVXR7B3526TBD5V3KYV 5V6&q=­&p=CCGAGLIJGFQFP2X2Z4QWQ3MLPJHTVV3A** 
+#. Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to type http://127.0.0.1:8888/ into the address bar of your browser to get the interface.
+#. Click the "Enter a key or link" button, and put in **https://link.getsync.com/#f=ka­lite­compressed&sz=25E9&q=­&s=TOQVB3LLGWCKEQ6NOCFBSEVWA74PRA6I&q=­&i=C4M3QMAVXE7RVXR7B3526TBD5V3KYV5V6&q=­&p=CCGAGLIJGFQFP2X2Z4QWQ3MLPJHTVV3A** 
 #. Select the "content" folder inside your KA Lite installation as the "location" (unless you want the videos to be located elsewhere).
 #. Allow the videos to sync in there from your peers! It may take a while for now, as we don't yet have many seeders on it. On that note -- please help seed by keeping it running even after you've got all the videos, if you have bandwidth to spare! This will make it easier for others to download the content as well.
 
 These are resized videos. All in all, this will take around 23 GB of space. 
 
-If you chose to download them to somewhere other than the content folder inside the ka-lite folder as recommended above, you need to tell KA Lite where to find them. If this is the case, follow the steps below:
+ 
+.. WARNING:: 
+    If you chose to download them to somewhere other than the content folder inside the ka-lite folder as recommended above, you need to tell KA Lite where to find them. If this is the case, follow the steps below:
+
 
 #. Make sure all video files are located in a single directory, with .mp4 extensions (KA Lite expects this!)
 #. If it doesn't already exist, create a file named local_settings.py in the ka-lite/kalite folder (the one containing settings.py)
-#. Add the line CONTENT_ROOT="[full path to your videos directory]", making SURE to include an OS-specific slash at the end (See examples) and encapsulate it in quotes. 
+#. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes. 
+    **For example, on Windows:** ``CONTENT_ROOT="C:\\torrented_videos_location\\"``
 
-        For example, on Windows:
-        CONTENT_ROOT="C:\\torrented_videos_location\\"
-
-        For example, on Linux:
-        CONTENT_ROOT="/home/me/torrented_videos_location/"
-
-#. Restart your server. If you are unsure on how to do this, please see `Restarting Your Server`_ . 
+    **For example, on Linux:** ``CONTENT_ROOT="/home/me/torrented_videos_location/"``
+#. Restart your server. If you are unsure on how to do this, please see `Restarting Your Server`_ .
 
 .. _BitTorrent Sync: http://www.getsync.com/
 
@@ -300,14 +313,14 @@ Restarting Your Server: Mac
     .. image:: terminal.png 
         :align: center
 
-    Type in "sudo lsof -i :8008" into the prompt, without the quotes. Running this command will prompt you for the machine password. Please enter your machine password, then hit "ENTER" on your keyboard.
+    Type in ``sudo lsof -i :8008`` into the prompt, without the quotes. Running this command will prompt you for the machine password. Please enter your machine password, then hit "ENTER" on your keyboard.
 
 #. After entering your password, some information should appear on your screen. Copy the number that appears under "PID". Please note that the number shown will vary, and may not be exactly the same as the one shown in the picture. Loosely speaking, this is the process ID that is currently running your server. We will need its ID in order to stop the process -- in turn, stopping the KA Lite server. 
 
     .. image:: process.png 
         :align: center
 
-#. Type in "sudo kill -9 <enter PID here>", without quotes into the terminal. Type in the PID that you just copied from the previous step. Be sure to do this without the "< >" symbols. For example, if the PID was the same as the one in the above photo example, you would type in "sudo kill -9 9585". 
+#. Type in ``sudo kill -9 <enter PID here>``. Type in the PID that you just copied from the previous step. Be sure to do this without the "< >" symbols. For example, if the PID was the same as the one in the above photo example, you would type in ``sudo kill -9 9585``. 
 
 #. You may be prompted for your machine password again. If so, please enter in your machine password and hit "Enter" on your keyboard. 
 

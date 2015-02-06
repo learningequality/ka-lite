@@ -24,9 +24,9 @@ Learners may receive their account information from their Coaches or Administrat
 #. Fill out the information. 
 #. Click the "Create user" button when you are finished.
 
-How to Watch Videos
---------------------
-To begin watching the Khan Academy instructional videos, first make sure you are logged into KA Lite. Upon log in, you should see a green menu on the left that lists the video content. If you do not see this green menu, please start by clicking on the "Learn" tab on the home page. 
+Navigating through Content
+-------------------------------------------
+To begin engaging with the Khan Academy videos and exercises, first make sure you are logged into KA Lite. Upon log in, you should see a green menu on the left that lists the content. If you do not see this green menu, please start by clicking on the "Learn" tab on the home page. 
 
 Start by selecting the subject you'd like to explore. This will expand the side menu, displaying subtopics within that subject. 
 
@@ -41,11 +41,24 @@ The icons to the left of the menu selections describe whether or not it is a vid
 .. |exercise| image:: exercise.png
 .. |video| image:: video.png
 
+Once you have found the video or exercise that you'd like to engage with, simply click on that selection.
 
 
 
+How to Practice Exercises
+--------------------------
+First, please log into KA Lite. Then, navigate to the topic that you'd like to practice exercises for. 
 
+To answer a question, enter the answer in the box on the top right of the module, or select the bubble next to the answer choice in the exercise panel. Once you have decided on your answer, click "Check Answer".
 
+After answering a question, the exercise module will not advance to the next question until you click the "Next Question..." button on the right hand side of the module.
 
+The bar on the top right will display your progress as you go through the exercises. After 10 correct answers in a row, your points for the exercise will be added to our total and you will have mastered the exercise. If you get an answer wrong or ask for a hint, all the points you have earned for this exercise will be lost. 
 
+.. HINT:: 
+	If you are stuck on a problem, you can ask for a hint by clickin on the "Show hints" button! Use your hints wisely, for there are a limited number of them for every section. 
+
+Saved Progress
+^^^^^^^^^^^^^^^^^^
+If at any point during an exercise you wish to watch a video to refresh your memory, feel free to navigate to the video by expanding the green tab which will bring up the content menu. Your progress for that exercise will be saved and you will not lose your work.
 
