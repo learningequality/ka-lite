@@ -227,7 +227,7 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
         filename = "%s/%s%s" % (self.output_path, slug, settings.SCREENSHOTS_EXTENSION)
         return filename
 
-    def snap(self, slug, focus):
+    def snap(self, slug, focus, note):
         filename = self.make_filename(slug=slug)
         self.loginfo('====> Snapping %s --titled-- "%s" --> %s%s ...' %
                  (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
@@ -239,6 +239,22 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
             styles = focus['styles']
             for key, value in styles.iteritems():
                 self.browser.execute_script('document.getElementById("%s").style.%s = "%s"' % (element_id, key, value))
+            if note:
+                # Assuming we've loaded jquery
+                # Positioned at the bottom left, so might cause issues with some elements?
+                self.browser.execute_script("$(\"<span id='annotation'></span>\").insertAfter(\'#%s\');" % element_id \
+                                            + "$('#annotation').text(\"%s\")" % note \
+                                            + ".css('position','relative')" \
+                                            + ".css('padding','20px')" \
+                                            + ".css('border','solid 4px black')" \
+                                            + ".css('border-radius','20px 0px 20px 20px')" \
+                                            + ".css('background','white')" \
+                                            + ".css('color','black')" \
+                                            + ".css('z-index','9999');" \
+                                            + "var w=$('#annotation').outerWidth();var h=$('#annotation').height();" \
+                                            + "$('#annotation').css('bottom',-h+'px')" \
+                                            + ".css('left',-w+'px');" \
+                                            )
 
         self.browser.save_screenshot(filename)
 
@@ -268,12 +284,13 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                 self.browse_to(start_url)
 
             inputs = shot[self.KEY_INPUTS]
+            focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
+            note = shot[self.KEY_NOTES] if self.KEY_NOTES in shot else {}
             for item in inputs:
                 for key, value in item.iteritems():
                     if key:
                         if key.lower() == self.KEY_CMD_SLUG:
-                            focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
-                            self.snap(slug=value, focus=focus)
+                            self.snap(slug=value, focus=focus, note=note)
                         elif key.lower() == self.KEY_CMD_SUBMIT:
                             self.browser_send_keys(Keys.RETURN)
                         else:
@@ -290,8 +307,7 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                         self.browser_send_keys(value)
 
             if shot[self.KEY_SLUG]:
-                focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
-                self.snap(slug=shot[self.KEY_SLUG], focus=focus)
+                self.snap(slug=shot[self.KEY_SLUG], focus=focus, note=note)
         except Exception as exc:
             log.error("====> EXCEPTION snapping url %s: %s" % (start_url, exc,))
             log.error("'shot' object: %s" % repr(shot))
