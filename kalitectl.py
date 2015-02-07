@@ -27,6 +27,25 @@ Options:
   DJANGO_OPTIONS        All options are passed on to the django manage command.
                         Notice that all django options must be place *last* and
                         should not be mixed with other options.
+
+Examples:
+  kalite start          Start kalite
+  kalite url            Tell me where kalite is available from
+  kalite status         How is kalite doing?
+  kalite stop           Stop kalite again
+  kalite shell          Display a Django shell
+
+Planned features:
+  kalite start --foreground   Run kalite in the foreground and do not go to
+                              daemon mode.
+  kalite diagnose             Outputs user and copy-paste friendly diagnostics
+  kalite query [COMMAND ...]  A query method for external UIs etc. to send
+                              commands and obtain data from kalite.
+  
+  Universal --verbose option and --debug option. Shows INFO level and DEBUG
+  level from logging.. depends on proper logging being introduced and
+  settings.LOGGERS. Currently, --debug just tells cherrypy to do "debug" mode.
+
 """
 from __future__ import print_function
 # Add distributed python-packages subfolder to current path
@@ -63,13 +82,12 @@ PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
 PID_FILE_JOB_SCHEDULER = os.path.join(KALITE_HOME, 'kalite_cronserver.pid')
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
-# TODO
-# Currently, this address might be hard-coded elsewhere, too
+# TODO: Currently, this address might be hard-coded elsewhere, too
 LISTEN_ADDRESS = "0.0.0.0"
-# Can be configured in django settings which is really odd because that's
+# TODO: Can be configured in django settings which is really odd because that's
 # run INSIDE the http server
 LISTEN_PORT = 8008
-# Hard coded, not good. It's because we currently cannot load up the
+# TODO: Hard coded, not good. It's because we currently cannot load up the
 # django environment, see #2890
 PING_URL = '/api/cherrypy/getpid'
 
@@ -148,7 +166,7 @@ def get_pid():
     The behavior is also quite redundant given that `kalite start` should always
     create a PID file, and if its been started directly with the runserver
     command, then its up to the developer to know what's happening.
-    :returns: PID of running server
+    :returns: (PID of running server, address, port)
     :raises: NotRunning
     """
 
@@ -210,7 +228,7 @@ def get_pid():
         raise NotRunning(8)
 
     if pid == pid:
-        return pid  # Correct PID !
+        return pid, LISTEN_ADDRESS, listen_port  # Correct PID !
     else:
         # Not the correct PID, maybe KA Lite is running from somewhere else!
         raise NotRunning(8)
@@ -330,7 +348,7 @@ def stop(args=[], sys_exit=True):
 
     # Kill the KA lite server
     try:
-        kill_pid(get_pid())
+        kill_pid(get_pid()[0])
         os.unlink(PID_FILE)
     except NotRunning as e:
         sys.stderr.write(
@@ -365,10 +383,19 @@ def status():
     :returns: status_code, key has description in status.codes
     """
     try:
-        get_pid()
+        __, __, port = get_pid()
+        sys.stderr.write("{msg:s} (0)\n".format(msg=status.codes[0]))
+        sys.stderr.write("KA Lite running on:\n\n")
+        from fle_utils.internet.functions import get_ip_addresses
+        for addr in get_ip_addresses():
+            sys.stderr.write("\thttp://%s:%s/\n" % (addr, port))
         return 0
     except NotRunning as e:
-        return e.status_code
+        status_code = e.status_code
+        verbose_status = status.codes[status_code]
+        sys.stderr.write("{msg:s} ({code:d})\n".format(
+            code=status_code, msg=verbose_status))
+        return status_code
 status.codes = {
     0: 'OK, running',
     1: 'Stopped',
@@ -382,6 +409,25 @@ status.codes = {
     100: 'Invalid PID file',
     101: 'Could not determine status',
 }
+
+
+def url():
+    """
+    Check the server's status. For possible statuses, see the status dictionary
+    status.codes
+
+    :returns: status_code, key has description in status.codes
+    """
+    try:
+        get_pid()
+        sys.stderr.write()
+        status_code = 0
+    except NotRunning as e:
+        status_code = e.status_code
+    verbose_status = status.codes[status_code]
+    sys.stderr.write("{msg:s} ({code:d})\n".format(
+        code=status_code, msg=verbose_status))
+    return status_code
 
 
 def status_job_scheduler():
@@ -430,9 +476,6 @@ if __name__ == "__main__":
             verbose_status = status_job_scheduler.codes[status_code]
         else:
             status_code = status()
-            verbose_status = status.codes[status_code]
-        sys.stderr.write("{msg:s} ({code:d})\n".format(
-            code=status_code, msg=verbose_status))
         sys.exit(status_code)
 
     elif arguments['shell']:
