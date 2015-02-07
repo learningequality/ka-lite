@@ -29,6 +29,9 @@ def purge_screenshots(app, env, docname):
                           if s['docname'] != docname]
 
 def process_screenshots(app, env):
+    if not hasattr(env, 'screenshot_all_screenshots'):
+        return
+
     all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
     os.system(SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS % (json.dumps(all_args), OUTPUT_PATH))
 
