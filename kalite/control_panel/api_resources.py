@@ -15,7 +15,7 @@ from securesync.models import Zone, Device, SyncSession
 
 from .api_serializers import CSVSerializer
 from store.models import StoreItem 
-
+from kalite.student_testing.utils import get_current_unit_settings_value
 
 class FacilityResource(ModelResource):
 
@@ -245,6 +245,31 @@ class ExerciseLogResource(ParentFacilityUserResource):
             attempt_logs = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"])
             bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
             bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
+            bundle.data["unit"] = 0
+            current_unit = get_current_unit_settings_value(user.facility.id)
+            if current_unit == 101:
+                bundle.data["unit"] = 101
+            else:
+                x = bundle.data["timestamp_first"]
+                if x:
+                    try:
+                        x = datetime.strptime(str(x), '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        x = datetime.strptime(str(x), '%Y-%m-%d %H:%M:%S.%f')
+
+                    for i in xrange(101,current_unit):
+                        y = StoreTransactionLog.objects.filter(user=user, context_id=i, context_type="unit_points_reset", item="gift_card").exclude(purchased_at__isnull=True)[0].purchased_at
+                        if y:
+                            try:
+                                y = datetime.strptime(str(y), '%Y-%m-%d %H:%M:%S.%f')
+                            except ValueError:
+                                y = datetime.strptime(str(y), '%Y-%m-%d %H:%M:%S')
+                            if x <= y:
+                                bundle.data["unit"] = i
+                                break
+                            else:
+                                bundle.data["unit"] = i+1
+
             bundle.data["part1_answered"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"]).count()
             bundle.data["part1_correct"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], correct=True, context_type__in=["playlist", "exercise"]).count()
             bundle.data["part2_attempted"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["exercise_fixedblock", "playlist_fixedblock"]).count()
