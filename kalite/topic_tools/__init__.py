@@ -459,32 +459,33 @@ def get_assessment_item_data(request, assessment_item_id=None):
         return None
 
     # TODO (rtibbles): Enable internationalization for the assessment_items.
-    answerarea_content = ""
-    hints_content = ""
+
     try:
         logging.info('Wrapping the Assessment Item with _()')
         item_data = json.loads(assessment_item['item_data'])
         question_content = _(item_data['question']['content'])
-        answerarea_content = _(item_data['answerArea']['options']['content'])
+        answerarea_content = item_data['answerArea']['options']['content']
+        if answerarea_content != "":
+             answerarea_content = _(answerarea_content)
 
-        # Loop over hints.
-        hints = item_data['hints'][0]
-        for k, v in hints.iteritems():
-            if k == "content":
-                hints_content = _(v)
+        # Loop over multiple hints contents.
+        # Pickup the wrapped strings and append to hints dict
+        new_hints = []
+        for contents_dict in item_data['hints']:
+            content_value = contents_dict.get('content')
+            converted_content = _(content_value)
+            contents_dict['content'] = converted_content
+            new_hints.append(contents_dict)
+
+        item_data['hints'] = new_hints
+        item_data['question']['content'] = question_content
+        item_data['answerArea']['options']['content'] = answerarea_content
+        # dump data to make it to a proper json format.
+        assessment_item['item_data'] = json.dumps(item_data)
+        logging.info('Successfully wrapped New Assessment Item with _()')
+
     except KeyError:
-        pass
-
-    item = item_data
-    item['question']['content'] = question_content
-    if answerarea_content:
-        item['answerArea']['options']['content'] = answerarea_content
-    item['hints'][0]['content'] = hints_content
-
-    item = json.dumps(item)
-    assessment_item['item_data'] = item
-
-    logging.info('Successfully wrapped New Assessment Item with _()')
+        logging.log("Something wrong with the format on assessment items json.")
 
     return assessment_item
 
