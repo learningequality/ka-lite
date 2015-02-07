@@ -16,6 +16,12 @@ from selenium.webdriver.common.keys import Keys
 SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
 SCREENSHOT_COMMAND_OPTS = " --no-del -v 0 --from-str '%s' --output-dir %s"
 OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
+# These keys are css styles but they need to be camelCased
+FOCUS_CSS_STYLES = { "borderStyle": "solid",
+                     "borderColor": "red",
+                     "borderWidth": "4px",
+                     "borderRadius": "8px",
+                   }
 
 from django.core.management import call_command
 
@@ -172,11 +178,16 @@ class Screenshot(Image):
                                     {"#id_password":password},
                                    ],
                          "pages": [],
-                         "notes": [],
+                         "notes": "",
                        }
         if submit:
             from_str_arg["inputs"].append({"<submit>":""})
         from_str_arg["inputs"].append({"<slug>":self.filename})
+        if hasattr(self, "focus_id"):
+            from_str_arg["focus"] = {}
+            from_str_arg["focus"]["element_id"] = self.focus_id
+            from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
+            from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
         # Trying to import django.core.management.call_command gets you into some sort of import hell
         # Apparently due to a circular import, according to Ben Bach.
         self.env.screenshot_all_screenshots.append({
@@ -194,10 +205,15 @@ class Screenshot(Image):
                          "slug": "",
                          "start_url": self.url,
                          "pages": [],
-                         "notes": [],
+                         "notes": "",
                        }        
         from_str_arg['inputs'] = reduce(lambda x,y: x+y, map(_cmd_to_inputs, commands), [])
         from_str_arg["inputs"].append({"<slug>":self.filename})
+        if hasattr(self, "focus_id"):
+            from_str_arg["focus"] = {}
+            from_str_arg["focus"]["element_id"] = self.focus_id
+            from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
+            from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
         self.env.screenshot_all_screenshots.append({
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
@@ -232,8 +248,8 @@ class Screenshot(Image):
             return_nodes.append(image_node)
 
         if 'focus' in self.options:
-            # Again, this has to be handled by the runhandler... so assign it to an instance variable
-            pass
+            self.focus_id = self.options['focus']['id']
+            self.focus_annotation = self.options['focus']['annotation']
 
         if 'user-role' in self.options:
             self.user_role = self.options['user-role']
@@ -248,6 +264,8 @@ class Screenshot(Image):
             runhandler = self.options['navigation-steps']['runhandler']
             args = self.options['navigation-steps']['args']
             return_nodes.append(getattr(self, runhandler)(**args))
+        else:
+            raise NotImplementedError("navigation-steps is a required option for screenshot directives!")
 
         return return_nodes
 
