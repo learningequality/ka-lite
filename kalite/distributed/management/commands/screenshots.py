@@ -245,16 +245,14 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                 # Positioned at the bottom left, so might cause issues with some elements?
                 self.browser.execute_script("$(\"<span id='annotation'></span>\").insertAfter(\'#%s\');" % element_id \
                                             + "$('#annotation').text(\"%s\")" % note \
-                                            + ".css('position','relative')" \
+                                            + ".css('position','absolute')" \
                                             + ".css('padding','20px')" \
                                             + ".css('border','solid 4px black')" \
                                             + ".css('border-radius','20px 0px 20px 20px')" \
                                             + ".css('background','white')" \
                                             + ".css('color','black')" \
-                                            + ".css('z-index','9999');" \
-                                            + "var w=$('#annotation').outerWidth();var h=$('#annotation').height();" \
-                                            + "$('#annotation').css('bottom',-h+'px')" \
-                                            + ".css('left',-w+'px');" \
+                                            + ".css('z-index','9999')" \
+                                            + ".css('left','0');" \
                                             )
 
         self.browser.save_screenshot(filename)
