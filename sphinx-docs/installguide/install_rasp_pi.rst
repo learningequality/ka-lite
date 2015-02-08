@@ -1,24 +1,25 @@
 Raspberry Pi Installation Guide
 ================================
-Please follow steps 1-8 for normal Linux Installation Guide.
+Please follow *steps 1-8* for normal Linux Installation Guide.
 
-During installation you will be asked to optimize your installation for performance on the Raspberry Pi
+During installation you will be asked to optimize your installation for performance on the Raspberry Pi.
+
+*****INPUT SCREENSHOT OF QUESTION*****
 
 Say **YES!** Make sure you have a stable internet connection during the process, as you will be downloading a number of 3rd party open source libraries.
 
 Raspberry Pi Wi-Fi
 ------------------------------
-To setup a wireless KA Lite server, follow these instructions.
-
-*Note:* Two Wi-Fi USB modules have been tested with KA Lite on the Raspberry Pi
+.. note:: Two Wi-Fi USB modules have been tested with KA Lite on the Raspberry Pi
+	
 	* Raspberry Pi WiPi adaptor
 	* Edimax EW-7811Un
 In our tests, we found that the WiPi adaptor supported a higher number tablet connections.
 	
-Before Installation Begins
+Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**Important:** The Raspberry Pi may crash if the USB adaptor is inserted or removed while the computer is switched on.
+.. note:: The Raspberry Pi may crash if the USB adaptor is inserted or removed while the computer is switched on.
+	
 	* Make sure to shutdown and remove the power from the Raspberry Pi.
 	* Afterwards, insert the wireless USB adaptor.
 	* Lastly, switch the Raspberry Pi on.
@@ -34,7 +35,7 @@ Before Installation Begins
 #. Install and configure the access point.
 	* *cd /opt/ka-lite-pi/scripts*
 	* *sudo ./configure.sh*
-	* *Note:* If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
+	.. note:: If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
 #. Install the USB adaptor software.
 	* If using the WiPi, run this command:
 		* *cd /opt/ka-lite-pi-scripts*
@@ -53,6 +54,8 @@ Before Installation Begins
 	HOTPLUG_INTERFACES="eth0"
 	
 	...
+	
+	*****INPUT SCREENSHOT OF SETTINGS*****
 #. Set wireless to start automatically
 	* *sudo nano /etc/network/interfaces*
 	* Add the "auto wlan0" option and save the file
@@ -63,8 +66,12 @@ Before Installation Begins
 		address 1.1.1.1
 		
 	...
+	
+	*****INPUT SCREENSHOT*****
 #. Finally
 	* *sudo reboot*
 	* A wireless network named "kalite" should be available.
 	* Connect to this network
 	* If the KA Lite server is started, browse to 1.1.1.1
+	
+	*****INPUT SCREENSHOT OF FINAL VERSION*****
