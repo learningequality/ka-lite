@@ -113,17 +113,18 @@ window.SidebarView = BaseView.extend({
         var last_column_width = 400;
         // hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. 
-        this.width = (current_level-1) * column_width + last_column_width + 10;
+        var sidebarPanelPosition = $(".sidebar-panel").position();
+        var sidebarPanelLeft = sidebarPanelPosition.left;
+
+        this.width = (current_level - 1) * column_width + last_column_width + 10;
         this.$(".sidebar-panel").width(this.width);
-        this.$(".sidebar-tab").css({left: this.width});
+        var sidebarPanelNewLeft = -(sidebarPanelLeft + column_width * (current_level - 1));
+        if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
+        console.log(sidebarPanelNewLeft);
+        this.$(".sidebar-panel").css({"left": sidebarPanelNewLeft});
+        this.$(".sidebar-tab").css({"left": this.width});
+
         this.update_sidebar_visibility();
-
-        // TODO(dylanjbarth): Resize sidebar to not cover top nav
-        // var body = document.body, html = document.documentElement;
-        // var height = Math.max(body.scrollHeight, body.offsetHeight, 
-        //                html.clientHeight, html.scrollHeight, html.offsetHeight)
-
-        // this.$(".sidebar-panel").height(height - 55); // minus height of top nav
     }, 100),
 
     check_external_click: function(ev) {
