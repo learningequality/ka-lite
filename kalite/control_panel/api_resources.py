@@ -1,5 +1,5 @@
 from annoying.functions import get_object_or_None
-from datetime import datetime
+from datetime import datetime, date
 from django.db.models import Max, Min
 from django.http import HttpResponse
 from tastypie import fields
@@ -254,6 +254,9 @@ class ExerciseLogResource(ParentFacilityUserResource):
                         break
                     else:
                         bundle.data["unit"] = i + 1
+
+                if bundle.data["unit"] == 0 and bundle.data["timestamp_first"].date() > date(2014, 11, 15):
+                    bundle.data["unit"] = 101
 
             bundle.data["part1_answered"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"]).count()
             bundle.data["part1_correct"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], correct=True, context_type__in=["playlist", "exercise"]).count()
