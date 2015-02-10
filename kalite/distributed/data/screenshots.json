@@ -5,7 +5,7 @@
         "start_url": "/",
         "inputs": [],
         "pages": [5],
-        "notes": "",
+        "notes": "Does this annotation work?",
         "focus": {
           "element_id": "suggested-action-image-link-homepage",
           "styles": {
