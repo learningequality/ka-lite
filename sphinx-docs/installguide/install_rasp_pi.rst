@@ -4,8 +4,6 @@ Please follow *steps 1-8* for normal Linux Installation Guide.
 
 During installation you will be asked to optimize your installation for performance on the Raspberry Pi.
 
-*****INPUT SCREENSHOT OF QUESTION*****
-
 Say **YES!** Make sure you have a stable Internet connection during the process, as you will be downloading a number of 3rd party open source libraries.
 
 Raspberry Pi Wi-Fi
@@ -54,8 +52,6 @@ Installation
 	HOTPLUG_INTERFACES="eth0"
 	
 	...
-	
-	*****INPUT SCREENSHOT OF SETTINGS*****
 #. Set wireless to start automatically
 	* *sudo nano /etc/network/interfaces*
 	* Add the "auto wlan0" option and save the file
@@ -66,12 +62,8 @@ Installation
 		address 1.1.1.1
 		
 	...
-	
-	*****INPUT SCREENSHOT*****
 #. Finally
 	* *sudo reboot*
 	* A wireless network named "kalite" should be available.
 	* Connect to this network
 	* If the KA Lite server is started, browse to 1.1.1.1
-	
-	*****INPUT SCREENSHOT OF FINAL VERSION*****

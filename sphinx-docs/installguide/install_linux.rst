@@ -1,12 +1,9 @@
 Linux Installation Guide
 ===========================
-.. note:: These commands can be used for both Debian and Ubuntu. *For Debian users*, please make sure sudo is installed by doing the following:
+.. note:: You will need to make sure *sudo* is installed for both Debian and Ubuntu. These commands can then be used for both operating systems. 
 
-	* Typing in *dpkg -s sudo* in the command line
-	* It should output whether it is installed or not.
-	* If not, type in *apt-get install sudo* to install.
-	
-#. If not already installed or outdated, install Python v2.6 or v.27 with *sudo apt-get install python*.
+#. Check if Python is already installed with *python -V*.
+#. If not already installed or outdated, install Python v2.6 (*sudo apt-get install python2.6*) or v2.7 (*sudo apt-get install python2.7*).
 	* Or use your Distro's Package Manager by searching for *Python*.
 #. If not already installed or outdated, install Git with *apt-get install git-core*.
 	* Or use your Distro's Package Manager by searching for *Git*.
