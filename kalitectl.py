@@ -34,6 +34,7 @@ Examples:
   kalite status         How is kalite doing?
   kalite stop           Stop kalite again
   kalite shell          Display a Django shell
+  kalite manage help    Show the Django management usage dialogue
 
 Planned features:
   kalite start --foreground   Run kalite in the foreground and do not go to
