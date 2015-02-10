@@ -92,6 +92,20 @@ LISTEN_PORT = 8008
 # django environment, see #2890
 PING_URL = '/api/cherrypy/getpid'
 
+# Status codes for kalite, might be refactored into kalite package itself
+# for easier access to outside processes
+STATUS_RUNNING = 0
+STATUS_STOPPED = 1
+STATUS_STARTING_UP = 4
+STATUS_NOT_RESPONDING = 5
+STATUS_FAILED_TO_START = 6
+STATUS_UNCLEAN_SHUTDOWN = 7
+STATUS_UNKNOWN_INSTANCE = 8
+STATUS_SERVER_CONFIGURATION_ERROR = 9
+STATUS_PID_FILE_READ_ERROR = 99
+STATUS_PID_FILE_INVALID = 100
+STATUS_UNKNOW = 101
+
 
 class NotRunning(Exception):
 
@@ -351,12 +365,29 @@ def stop(args=[], sys_exit=True):
     try:
         kill_pid(get_pid()[0])
         os.unlink(PID_FILE)
+    # Handle exceptions of kalite not already running
     except NotRunning as e:
         sys.stderr.write(
             "Already stopped. Status was: {000:s}\n".format(status.codes[e.status_code]))
-        if sys_exit:
-            sys.exit(-1)
-        return
+        # Indicates if kalite instance was found and then killed with force
+        killed_with_force = False
+        if e.status_code == STATUS_NOT_RESPONDING:
+            sys.stderr.write(
+                "Not responding, killing with force\n"
+            )
+            try:
+                f = open(PID_FILE, "r")
+                pid = int(f.read())
+                kill_pid(pid)
+                killed_with_force = True
+            except ValueError:
+                sys.stderr.write("Could not find PID in .pid file\n")
+            except OSError:  # TODO: More specific exception handling
+                sys.stderr.write("Could not read .pid file\n")
+        if not killed_with_force:
+            if sys_exit:
+                sys.exit(-1)
+            return  # Do not continue because error could not be handled
 
     # If there's no PID for the job scheduler, just quit
     if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
@@ -398,17 +429,17 @@ def status():
             code=status_code, msg=verbose_status))
         return status_code
 status.codes = {
-    0: 'OK, running',
-    1: 'Stopped',
-    4: 'Starting up',
-    5: 'Not responding',
-    6: 'Failed to start (check logs)',
-    7: 'Unclean shutdown',
-    8: 'Unknown KA Lite running on port',
-    9: 'KA Lite server configuration error',
-    99: 'Could not read PID file',
-    100: 'Invalid PID file',
-    101: 'Could not determine status',
+    STATUS_RUNNING: 'OK, running',
+    STATUS_STOPPED: 'Stopped',
+    STATUS_STARTING_UP: 'Starting up',
+    STATUS_NOT_RESPONDING: 'Not responding',
+    STATUS_FAILED_TO_START: 'Failed to start (check logs)',
+    STATUS_UNCLEAN_SHUTDOWN: 'Unclean shutdown',
+    STATUS_UNKNOWN_INSTANCE: 'Unknown KA Lite running on port',
+    STATUS_SERVER_CONFIGURATION_ERROR: 'KA Lite server configuration error',
+    STATUS_PID_FILE_READ_ERROR: 'Could not read PID file',
+    STATUS_PID_FILE_INVALID: 'Invalid PID file',
+    STATUS_UNKNOW: 'Could not determine status',
 }
 
 
