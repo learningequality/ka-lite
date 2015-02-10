@@ -20,7 +20,7 @@ script:
 - bin/kalite manage syncdb --migrate --noinput --traceback
 - bin/kalite test --traceback -v 2
 - grunt jshint
-- coverage run --source=kalite bin/kalite test
+- coverage run --source=kalite manage.py test
 notifications:
   email:
     - aron@learningequality.org
