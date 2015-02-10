@@ -44,14 +44,15 @@ def process_screenshots(app, env):
 def _parse_focus(arg_str):
     """ Returns id and annotation after splitting input string.
 
-    First argument should be the id. An optional annotation can follow.
-    Everything after an initial space will be considered the annotation.
+    First argument should be the jQuery-style selector. An optional 
+    annotation can follow if separated by a separator '|'. Initial
+    whitespace after the '|' will be ignored.
     """
-    split_str = arg_str.split(' ', 1)
+    split_str = arg_str.split('|', 1)
     if len(split_str) == 1:
-        return {'id': split_str[0], 'annotation': ''}
+        return {'id': split_str[0].rstrip(), 'annotation': ''}
     else:
-        return {'id': split_str[0], 'annotation': split_str[1]}
+        return {'id': split_str[0].rstrip(), 'annotation': split_str[1].lstrip()}
 
 def _parse_command(command):
     """" Parses a command into action and options.
@@ -176,9 +177,9 @@ class Screenshot(Image):
         if submit:
             from_str_arg["inputs"].append({"<submit>":""})
         from_str_arg["inputs"].append({"<slug>":self.filename})
-        if hasattr(self, "focus_id"):
+        if hasattr(self, "focus_selector"):
             from_str_arg["focus"] = {}
-            from_str_arg["focus"]["element_id"] = self.focus_id
+            from_str_arg["focus"]["selector"] = self.focus_selector
             from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
             from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
         # Trying to import django.core.management.call_command gets you into some sort of import hell
@@ -202,9 +203,9 @@ class Screenshot(Image):
                        }        
         from_str_arg['inputs'] = reduce(lambda x,y: x+y, map(_cmd_to_inputs, commands), [])
         from_str_arg["inputs"].append({"<slug>":self.filename})
-        if hasattr(self, "focus_id"):
+        if hasattr(self, "focus_selector"):
             from_str_arg["focus"] = {}
-            from_str_arg["focus"]["element_id"] = self.focus_id
+            from_str_arg["focus"]["selector"] = self.focus_selector
             from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
             from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
         self.env.screenshot_all_screenshots.append({
@@ -241,7 +242,7 @@ class Screenshot(Image):
             return_nodes.append(image_node)
 
         if 'focus' in self.options:
-            self.focus_id = self.options['focus']['id']
+            self.focus_selector = self.options['focus']['id']
             self.focus_annotation = self.options['focus']['annotation']
 
         if 'user-role' in self.options:

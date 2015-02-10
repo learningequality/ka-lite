@@ -31,6 +31,6 @@ A screenshot directive has a number of required options
                 is present, otherwise not.
 ```
 If you find yourself writing the same sequence of nav steps over and over again, possibly with minor variations, then we can write an alias for it as for LOGIN.
-* `:focus:` which will highlight an element specified by ID (by giving it a nice red border) and optionally add a floating annotation box. Works like this:
-    :focus: the_id_you_want_to_use A nice little message that follows.
-Don't put a hash in front of the ID. Right now only supports focusing/annotating by ID, but if you find a need for otherwise we can implement that, too.
+* `:focus:` which will highlight an element specified by jQuery-style selector (by giving it a nice red border) and optionally add a floating annotation box. Works like this:
+    :focus: the_selector | A nice little message that follows.
+Just use arbitrary selection a la jQuery (so put a hash in front of IDs, etc). Whitespace can be included, e.g. `li a.classname`. Use the separator for annotations!
