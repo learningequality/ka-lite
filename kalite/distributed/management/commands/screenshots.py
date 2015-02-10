@@ -2,6 +2,7 @@ import errno
 import json
 import os
 import glob
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -236,14 +237,14 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
         if focus:
             # Apply the specified styles to element. Currently only selection by
             # id is supported. TODO: Extend it a more generic CSS selector.
-            element_id = focus['element_id']
+            selector = focus['selector']
             styles = focus['styles']
             for key, value in styles.iteritems():
-                self.browser.execute_script('document.getElementById("%s").style.%s = "%s"' % (element_id, key, value))
+                self.browser.execute_script('$("%s").css("%s", "%s");' % (selector, key, value))
             if note:
                 # Assuming we've loaded jquery
                 # Positioned at the bottom left, so might cause issues with some elements?
-                self.browser.execute_script("$(\"<span id='annotation'></span>\").insertAfter(\'#%s\');" % element_id \
+                self.browser.execute_script("$(\"<span id='annotation'></span>\").insertAfter(\'%s\');" % selector \
                                             + "$('#annotation').text(\"%s\")" % note \
                                             + ".css('position','relative')" \
                                             + ".css('padding','20px')" \

@@ -26,7 +26,7 @@ def test_parse_focus():
     assert_equal(expected_output, actual_output)
 
     # Test with id and a non-empty annotation.
-    arg_str = 'id_with_annotation test annotation'
+    arg_str = 'id_with_annotation | test annotation'
     expected_output = {'id': 'id_with_annotation', 'annotation': 'test annotation'}
     actual_output = screenshot._parse_focus(arg_str)
     assert_equal(expected_output, actual_output)
@@ -63,7 +63,7 @@ def test_parse_command():
 
 @raises(ActionError)
 def test_parse_command_action_error():
-    """ Test ActionError(s) raised by screenshot._parse_focus() function.
+    """ Test ActionError(s) raised by screenshot._parse_command() function.
     """
     # Test with an invalid action, should thrown an exception.
     arg_str = 'selector invalid_action'
@@ -71,7 +71,7 @@ def test_parse_command_action_error():
 
 @raises(OptionError)
 def test_parse_command_option_error():
-    """ Test OptionError(s) raised by screenshot._parse_focus() function.
+    """ Test OptionError(s) raised by screenshot._parse_command() function.
     """
     # Test 'click' action with options, should thrown an exception.
     arg_str = 'selector click options'
