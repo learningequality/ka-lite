@@ -10123,5 +10123,786 @@
     "tag": "Grade 6",
     "title": "Playlist 2: Ratio and Proportions",
     "unit": 104
+  },
+  {
+    "title":
+      "Playlist Exam Prep : Numbers,Place Value and the 4 Operations ( +, -, x, /)",
+    "id": "g5_u500_ep1",
+    "tag": "Grade 5",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/place_value/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/addition_4/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_1/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_2/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/division_4/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/order_of_operations/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/arithmetic_sequences_1/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/rate_problems_0.5/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/prime_numbers/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/divisibility_tests/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/prime_factorization/",
+        "sort_order": 11,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/composite_numbers/",
+        "sort_order": 12,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/least_common_multiple/",
+        "sort_order": 13,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
+  },
+  {
+    "title": "Playlist Exam Prep: Fractions",
+    "id": "g5_u500_ep2",
+    "tag": "Grade 5",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/equivalent_fractions/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/equivalent_fractions_2/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/simplifying_fractions/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/comparing_fractions_2/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/ordering_fractions/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_fractions/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_subtracting_mixed_numbers_0.5/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_subtracting_mixed_numbers_1/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_and_subtracting_fractions/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/fraction_word_problems_1/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/multiplying_fractions_by_integers/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/multiplying_fractions_0.5/",
+        "sort_order": 11,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/dividing_fractions_0.5/",
+        "sort_order": 12,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/dividing_fractions/",
+        "sort_order": 13,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
+  },
+  {
+    "title": "Playlist Exam Prep: Decimals",
+    "id": "g5_u500_ep3",
+    "tag": "Grade 5",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/subtracting_decimals_0.5/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/subtracting_decimals/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/multiplying_decimals/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/converting_fractions_to_decimals_0.5/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/understanding_decimals_place_value/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/comparing_decimals_1/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/comparing_decimals_2/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/understanding_moving_the_decimal/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_decimals/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_decimals_2/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_decimals_0.5/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
+  },
+  {
+    "title":
+      "Playlist Exam Prep : Numbers,Place Value and the 4 Operations ( +, -, x, /)",
+    "id": "g5_u500_ep1",
+    "tag": "Grade 5",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/place_value/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/addition_4/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_1/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_2/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/division_4/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/order_of_operations/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/arithmetic_sequences_1/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/rate_problems_0.5/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/prime_numbers/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/divisibility_tests/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/prime_factorization/",
+        "sort_order": 11,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/composite_numbers/",
+        "sort_order": 12,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/least_common_multiple/",
+        "sort_order": 13,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
+  },
+  {
+    "title": "Playlist Exam Prep: Fractions",
+    "id": "g5_u500_ep2",
+    "tag": "Grade 5",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/equivalent_fractions/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/equivalent_fractions_2/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/simplifying_fractions/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/comparing_fractions_2/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/ordering_fractions/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_fractions/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_subtracting_mixed_numbers_0.5/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_subtracting_mixed_numbers_1/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_and_subtracting_fractions/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/fraction_word_problems_1/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/multiplying_fractions_by_integers/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/multiplying_fractions_0.5/",
+        "sort_order": 11,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/dividing_fractions_0.5/",
+        "sort_order": 12,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/dividing_fractions/",
+        "sort_order": 13,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
+  },
+  {
+    "title": "Playlist Exam Prep: Decimals",
+    "id": "g5_u500_ep3",
+    "tag": "Grade 5",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/subtracting_decimals_0.5/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/subtracting_decimals/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/multiplying_decimals/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/converting_fractions_to_decimals_0.5/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/understanding_decimals_place_value/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/comparing_decimals_1/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/comparing_decimals_2/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/understanding_moving_the_decimal/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_decimals/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_decimals_2/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_decimals_0.5/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
+  },
+  {
+    "title": "Playlist Exam Prep: Geometry, Exponents and Square roots",
+    "id": "g6_u600_ep1",
+    "tag": "Grade 6",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/solid_geometry/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/volume_2/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/volume_1/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/volume_with_unit_cubes/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/exponents_1/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/square_roots/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/square_roots_2/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/ratio_word_problems/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/rate_problems_0.5/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/finding_percents/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/divisibility_tests/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/order_of_operations/",
+        "sort_order": 11,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/prime_factorization/",
+        "sort_order": 12,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id":
+          "/e/least_common_multiple_and_greatest_common_divisor_word_problems/",
+        "sort_order": 13,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
+  },
+  {
+    "title":
+      "Playlist Exam Prep: Integers, Algebraic Expressions and Equations",
+    "id": "g6_u600_ep2",
+    "tag": "Grade 6",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/adding_negative_numbers/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/adding_and_subtracting_negative_numbers/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/number_line_3/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/writing_expressions_1/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/writing_expressions_2/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/evaluating_expressions_1/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/evaluating_expressions_2/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/combining_like_terms_1/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/combining_like_terms_2/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/linear_equations_1/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/one_step_equations/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/linear_equations_2/",
+        "sort_order": 11,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
+  },
+  {
+    "title": "Playlist Exam Prep: Geometry, Decimals, Symmetry",
+    "id": "g6_u600_ep3",
+    "tag": "Grade 6",
+    "show": true,
+    "unit": 100,
+    "entries": [
+      {
+        "entity_id": "/e/complementary_and_supplementary_angles/",
+        "sort_order": 0,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/angle_addition_postulate/",
+        "sort_order": 1,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/vertical_angles/",
+        "sort_order": 2,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/parallel_lines_1/",
+        "sort_order": 3,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/triangle_types/",
+        "sort_order": 4,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/comparing_decimals_2/",
+        "sort_order": 5,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/decimals_on_the_number_line_3/",
+        "sort_order": 6,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/understanding_decimals_place_value/",
+        "sort_order": 7,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/dividing_decimals_0.5/",
+        "sort_order": 8,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/dividing_decimals_1/",
+        "sort_order": 9,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/dividing_decimals_2/",
+        "sort_order": 10,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      },
+      {
+        "entity_id": "/e/axis_of_symmetry/",
+        "sort_order": 11,
+        "entity_kind": "Exercise",
+        "is_essential": false
+      }
+    ]
   }
 ]

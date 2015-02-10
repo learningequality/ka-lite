@@ -158,6 +158,8 @@ var AppView = Backbone.View.extend({
             $("#pre-playlists").append(view.render().el);
         } else if (title.indexOf("Advanced") > -1){
             $("#advanced-playlists").append(view.render().el);
+        } else if (title.indexOf("Exam Prep") > -1){
+            $("#exam-prep-playlists").append(view.render().el);
         }
     },
 
