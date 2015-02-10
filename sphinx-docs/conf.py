@@ -117,7 +117,7 @@ html_theme_options = {
 
   #Make the sidebar "fixed" so that it doesn't scroll out of view
   'stickysidebar': True,
-  'nosidebar': False
+  'nosidebar': False,
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
