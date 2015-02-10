@@ -14,8 +14,8 @@ from errors import OptionError
 from selenium.webdriver.common.keys import Keys
 
 SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
-SCREENSHOT_COMMAND_OPTS = " --no-del -v 0 --from-str '%s' --output-dir %s"
-OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
+SCREENSHOT_COMMAND_OPTS = " -v 0 --from-str '%s' --output-dir %s"
+OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "images"))
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",
                      "borderColor": "red",
@@ -188,7 +188,8 @@ class Screenshot(Image):
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
         })
-        self.arguments.append(os.path.join("_images", self.filename+".png"))
+        self.arguments.append(os.path.join("/", "images", self.filename+".png"))
+        os.system("touch %s" % os.path.join("images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
 
@@ -212,7 +213,8 @@ class Screenshot(Image):
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
         })
-        self.arguments.append(os.path.join("_images", self.filename+".png"))
+        self.arguments.append(os.path.join("/", "images", self.filename+".png"))
+        os.system("touch %s" % os.path.join("images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
 
