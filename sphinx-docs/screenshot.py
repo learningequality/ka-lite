@@ -128,6 +128,9 @@ def _parse_nav_steps(arg_str):
     # The alias with its parse function
     ALIASES = [("LOGIN", _parse_login)]
 
+    if not arg_str:
+        arg_str = ""
+
     # First check if we've been passed an aliased_action_sequence
     words = arg_str.split(' ')
     for e in ALIASES:
