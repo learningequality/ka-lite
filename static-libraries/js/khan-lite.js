@@ -251,11 +251,6 @@ function clear_messages(msg_type) {
     return $("#message_container");
 }
 
-// To clear all messages including django and ajax.
-function clearAllMessages(msg_type) {
-    $(".alert").remove();
-}
-
 function get_message(msg_id) {
     return $("#" + msg_id).text();
 }
