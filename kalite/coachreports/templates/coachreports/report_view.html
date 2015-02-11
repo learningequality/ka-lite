@@ -1,0 +1,264 @@
+{% extends "coachreports/base.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+{% load my_filters %}
+
+{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block title %}{% trans "Progress by topic" %} {{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/report_view.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.defaultoff.css' %}">
+
+{% endblock headcss %}
+
+
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/coachreports/jquery.cookie.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
+
+    <script>
+        $(function() {
+
+            // Note: Unlike other coach reports, the tabular view is generated in server side templates.
+            // As such, changing any of the values of the items requires a change of URL and subsequent
+            // navigation event in order to produce the new report.
+
+            $("#unit_type").change(function(){
+                window.location.href="{% url 'report_view' %}"+$("#unit_type option:selected").val()+ "/" + window.location.search;
+            });
+
+            $("#student").change(function(){
+                window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
+            });
+
+            $("#playlist").change(function(){
+                window.location.href = setGetParam(window.location.href, "playlist", $("#playlist option:selected").val());
+            });
+
+            $("#facility").change(function(){
+                window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
+            });
+
+            $(".group_select").change(function(event){
+                window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
+            });
+
+            // Selector to toggle visible elements is stored in each option value
+            cell_height = 27;
+            $("#disp_options").change(function(){
+                selector = $("#disp_options option:selected").val();
+
+                // adjust the cell height
+                cell_height += 50*Math.pow(-1, 0+$(selector).is(":visible"));
+
+                // adjust view in data cells
+                $(selector).each(function () {
+                    $(this).toggle()
+                });
+                $(selector).each(function () {
+                    $(this).height(20);
+                    $(this).parent().height(cell_height);
+                });
+
+                // Adjust student name cell heights
+                $("th.username").each(function () {
+                    $(this).height(cell_height);
+                });
+            });
+            $(window).resize(function() {
+                $('.headrowuser').height($('.headrow.data').height()+1);
+            }).resize();
+        });
+    </script>
+
+  <script type="text/javascript">
+
+    $(function(){
+      $("#tree").dynatree({
+        persist: true,
+        expand: false,
+        checkbox: true,
+        selectMode: 3,
+        cookieId: "exercises",
+        children: null,
+
+        onPostInit: function(isReloading, isError) {
+            if (window.location.href.indexOf("&playlist=") == -1) {
+                $("#tree").dynatree("getTree").visit(function(node){
+                    node.select(false);
+                    node.expand(false);
+                });
+            }
+        },
+        onSelect: function(select, dtnode) {
+        var selKeys = $.map(dtnode.tree.getSelectedNodes(), function(dtnode){
+          return dtnode.data.key;
+        });
+        window.location.href = setGetParam(window.location.href, "playlist", selKeys);
+        },
+
+      });
+    });
+  </script>
+
+{% endblock headjs %}
+
+{% block content %}
+    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+
+    <div id="selection-bar">
+        <div class="selection">
+        {# Select the unit number #}
+        {% if unit_types %}
+            <div class="subtitle">{% trans "Select Unit" %}</div>
+            <select id="unit_type">
+                {% for unit_type in unit_types %}
+                    <option value="{{ unit_type }}" {% if unit_type == request_unit_type %}selected{% endif %}>{{ unit_type }}</option>
+                {% endfor %}
+            </select>
+        {% else %}
+            <div class="subtitle">{% trans "No units available." %}</div>
+        {% endif %}
+        </div>
+
+
+
+        {% if groups %}
+            {% if playlists %}
+                <div class="selection">
+                    <div class="subtitle">{% trans "Select Playlist" %}</div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+  <div id="tree">
+    <ul>
+     {% for playlist in playlists %}
+          <li id= "{{ playlist.id }}" class="folder" >{% trans playlist.title %}
+            <ul>
+            {% for exercise in playlist.exercises %}
+                <li id="{{ exercise.id }}"> {{ exercise.title }} </li>
+            {% endfor %}
+            </ul>
+      </li>
+    {% endfor %}
+
+    </ul>
+  </div>
+
+
+
+    <div id="content">
+        <div id="legend">
+            <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
+            <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+            {% if request_report_type != "video" %}
+            <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+            {% endif %}
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+
+
+    {% if not students %}
+        <p><div class="subtitle error" id="error_message">
+        {% if not groups.0.groups and not groups.1 %}
+            {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
+            {% trans "No student accounts have been created." %}
+        {% elif request.GET.playlist %}
+            {% trans "Please select a playlist above, but not both." %}
+        {% elif not request.GET.playlist %}
+            {% comment %}Group was selected, but data not queried because a playlist was not selected
+            (NOTE: this required knowledge of how the view queries data){% endcomment %}
+            <div id="no_topic_or_playlist_error">
+            {% if playlists %}
+                {% trans "Please select a playlist above." %}
+            {% endif %}
+            </div>
+        {% else %}
+            {% comment %}Everything specified, but no users fit the query.{% endcomment %}
+            {% trans "No student accounts in this group have been created." %}
+        {% endif %}
+        </div></p>
+
+    {% else %}
+        {% block students_header %}
+        <div id="displaygrid">
+            <div style="clear: both;"></div>
+            <div class="users">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="headrowuser">
+                                {% trans "Student" %}
+                            </th>
+                        </tr>
+                        {% for student in students %}
+                            <tr>
+                                <th class="username">
+                                    <span title="{{ student.name }} ({{ student.username }})">
+                                        <div class="student-name"><a href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a></div>
+                                    </span>
+                                </th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+        {% endblock students_header %}
+
+        {% if request_report_type == "exercise" and exercises %}
+        {% block exercise_data %}
+            <div class="userstatus">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="headrowuser"s>
+                                Student Mastery
+                            </th>
+                            {% for exercise in exercises %}
+                                <th class="headrow data" >
+                                    <div class="exercise-name"><a href="{{ exercise.path }}" title='"{% trans exercise.display_name %}"{% if exercise.description %} ({% trans exercise.description %}){% endif %}'>{% trans exercise.title %}</a></div>
+                                <div>
+                                Mastered: {{ exercise_stats|get_item:exercise.id|get_item:"mastered" }}
+                                Progress: {{ exercise_stats|get_item:exercise.id|get_item:"progress" }}
+                                Struggling: {{ exercise_stats|get_item:exercise.id|get_item:"struggling" }}
+                                Mastery: {{ exercise_stats|get_item:exercise.id|get_item:"mastery" }} %
+                                </div>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <th>
+                                {{ student.mastery }} %
+                                </th>
+                                {% for exercise in exercises %}
+                                    {% if not student.exercise_logs|get_item:exercise.slug %}
+                                        <td class="status data" title="{% trans "Not Attempted" %}">
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"struggling" %}
+                                        <td class="status data struggle" title="{% trans "Struggling" %}"> {{ student.exercise_logs|get_item:exercise.slug|get_item:"streak_progress" }} / {{ student.exercise_logs|get_item:exercise.slug|get_item:"attempts" }} </td>
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"complete" %}
+                                        <td class="status data complete" title="{% trans "Complete" %}"> {{ student.exercise_logs|get_item:exercise.slug|get_item:"streak_progress" }} / {{ student.exercise_logs|get_item:exercise.slug|get_item:"attempts" }} </td>
+                                    {% else %}
+                                        <td class="status data partial" title="{% trans "Attempted" %}"> {{ student.exercise_logs|get_item:exercise.slug|get_item:"streak_progress" }} / {{ student.exercise_logs|get_item:exercise.slug|get_item:"attempts" }} </td>
+                                    {% endif %}
+                                        </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endblock exercise_data %}
+        {% endif %}
+    {% endif %}
+{% endblock content %}
