@@ -244,7 +244,8 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
             if note:
                 # Assuming we've loaded jquery
                 # Positioned at the bottom left, so might cause issues with some elements?
-                self.browser.execute_script("$(\"<span id='annotation'></span>\").insertAfter(\'%s\');" % selector \
+                self.browser.execute_script("$('body').append(\"<span id='annotation'></span>\");" \
+                                            + "var top_position = $('#%s').offset().top + $('#%s').height();" % (element_id, element_id) \
                                             + "$('#annotation').text(\"%s\")" % note \
                                             + ".css('position','absolute')" \
                                             + ".css('padding','20px')" \
@@ -253,7 +254,8 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                                             + ".css('background','white')" \
                                             + ".css('color','black')" \
                                             + ".css('z-index','9999')" \
-                                            + ".css('left','0');" \
+                                            + ".css('left', 0)" \
+                                            + ".css('top',top_position + 'px');" \
                                             )
 
         self.browser.save_screenshot(filename)
