@@ -66,15 +66,17 @@
                                     {% if device.is_own_device %}
                                         <a href="#" id="force-sync" class="registered-only">
                                             {% trans "Sync Now!" %}
-                                        </a></br> 
+                                        </a></br>
                                         {% if is_config_package_nalanda %}
                                             <a href="{% url 'update_software' %}" id="update-link" class=" registered-only">
                                                 {% trans "Update" %}
                                             </a>
                                         {% endif %}
+                                    {% if not device.is_registered %}
                                         <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">
                                             {% trans "Register device" %}
                                         </a>
+                                    {% endif %}
                                         {% if clock_set %}
                                         /
                                             <a onclick="$('#clock_set').show()">
