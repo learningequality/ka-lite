@@ -255,6 +255,7 @@ class ExerciseLogResource(ParentFacilityUserResource):
                     else:
                         bundle.data["unit"] = i + 1
 
+                # Anything done after Nov 15, 2014 is in the RCT which starts from Unit 101
                 if bundle.data["unit"] == 0 and bundle.data["timestamp_first"].date() > date(2014, 11, 15):
                     bundle.data["unit"] = 101
 
