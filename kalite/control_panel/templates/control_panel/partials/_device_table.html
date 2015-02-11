@@ -63,6 +63,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
+                                    <div style="margin-top: -24px;">
                                     {% if device.is_own_device %}
                                         <a href="#" id="force-sync" class="registered-only">
                                             {% trans "Sync Now!" %}
@@ -85,6 +86,7 @@
                                             </div>
                                         {% endif %}
                                     {% endif %}
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
