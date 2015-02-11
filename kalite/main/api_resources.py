@@ -309,8 +309,10 @@ class ContentResource(Resource):
     def obj_get(self, bundle, **kwargs):
         content_id = kwargs.get("id", None)
         content = get_content_data(bundle.request, content_id)
-
+        # MUST: Include messages in the api call.
+        from distributed.api_views import get_messages_for_api_calls
         if content:
+            content['messages'] = get_messages_for_api_calls(bundle.request)
             return Content(**content)
         else:
             raise NotFound('Content with id %s not found' % content_id)
