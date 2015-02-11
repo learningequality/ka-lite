@@ -164,6 +164,8 @@ div.fade {
 }
 .topic-container-inner .sidebar-topic-description {
     display: none;
+    font-size: 0.9em;
+    margin-top: 15px;
 }
 /* applied to all in outermost expanded panel */
 .topic-container-inner:last-child .sidebar-description {
