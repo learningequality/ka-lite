@@ -8,8 +8,8 @@ The user manual is organized by the different "user types" within KA Lite. If yo
 
 
 	Administrator User Manual <userman_admin>
-	Teacher User Manual <userman_coach>
-	Student User Manual <userman_learner>
+	Coach User Manual <userman_coach>
+	Learner User Manual <userman_learner>
 
 This guide assumes that you have already downloaded and installed the KA Lite software on your computer. If you have not yet completed these steps, please see the :doc:`../installguide/install_main`. 
 
@@ -22,7 +22,7 @@ KA Lite is a lightweight web application software that allows users without Inte
 
 What are the goals of KA Lite?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Learning is fundamental to human flourishing, and strive to support learning opportunities on every front. KA Lite’s goal is to make the high-quality educational resources and tools provided by Khan Academy accessible to the estimated 65% of the world that don’t have access to Internet. 
+Learning is fundamental to human flourishing, and at Foundation for Learning Equality, we strive to support learning opportunities on every front. That's why we created KA Lite, with the goal of making high-quality educational resources and tools provided by Khan Academy accessible to the estimated 65% of the world that don’t have access to Internet. 
 
 
 How KA Lite works
@@ -42,11 +42,11 @@ Reaching offline or low-bandwidth communities with KA Lite is a team effort, and
 	Administrators plan out the deployment and logistics, procure the devices and installs KA Lite, and oversee their delivery and integration into the classroom or community. They can also update the software, add content, customize configuration settings, and manage user accounts.
 
 
-#. **Teachers** 
-	Teachers (also referred to as ‘facilitators’ or ‘coaches’) are users who add, manage, and track the progress of groups of students. They have access to student progress data in the form of coach reports, and can step in and provide individualized instruction when the student needs it.
+#. **Coaches** 
+	Coaches (also referred to as ‘facilitators’ or ‘teachers’) are users who add, manage, and track the progress of groups of students. They have access to student progress data in the form of coach reports, and can step in and provide individualized instruction when the student needs it.
 
 
-#. **Students** 
-	Students (also referred to as 'learners') are users who use KA Lite primarily for learning. They earn points for watching videos and answering exercises correctly, and their progress is tracked by the system.
+#. **Learners** 
+	Learners (also referred to as 'students') are users who use KA Lite primarily for learning. They earn points for watching videos and answering exercises correctly, and their progress is tracked by the system.
 
 

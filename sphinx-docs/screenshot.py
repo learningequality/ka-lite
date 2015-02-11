@@ -14,8 +14,8 @@ from errors import OptionError
 from selenium.webdriver.common.keys import Keys
 
 SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
-SCREENSHOT_COMMAND_OPTS = " --no-del -v 0 --from-str '%s' --output-dir %s"
-OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)),"_build","html","_images"))
+SCREENSHOT_COMMAND_OPTS = " -v 0 --from-str '%s' --output-dir %s"
+OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "images"))
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",
                      "borderColor": "red",
@@ -44,14 +44,15 @@ def process_screenshots(app, env):
 def _parse_focus(arg_str):
     """ Returns id and annotation after splitting input string.
 
-    First argument should be the id. An optional annotation can follow.
-    Everything after an initial space will be considered the annotation.
+    First argument should be the jQuery-style selector. An optional 
+    annotation can follow if separated by a separator '|'. Initial
+    whitespace after the '|' will be ignored.
     """
-    split_str = arg_str.split(' ', 1)
+    split_str = arg_str.split('|', 1)
     if len(split_str) == 1:
-        return {'id': split_str[0], 'annotation': ''}
+        return {'id': split_str[0].rstrip(), 'annotation': ''}
     else:
-        return {'id': split_str[0], 'annotation': split_str[1]}
+        return {'id': split_str[0].rstrip(), 'annotation': split_str[1].lstrip()}
 
 def _parse_command(command):
     """" Parses a command into action and options.
@@ -128,6 +129,9 @@ def _parse_nav_steps(arg_str):
     # The alias with its parse function
     ALIASES = [("LOGIN", _parse_login)]
 
+    if not arg_str:
+        arg_str = ""
+
     # First check if we've been passed an aliased_action_sequence
     words = arg_str.split(' ')
     for e in ALIASES:
@@ -173,9 +177,9 @@ class Screenshot(Image):
         if submit:
             from_str_arg["inputs"].append({"<submit>":""})
         from_str_arg["inputs"].append({"<slug>":self.filename})
-        if hasattr(self, "focus_id"):
+        if hasattr(self, "focus_selector"):
             from_str_arg["focus"] = {}
-            from_str_arg["focus"]["element_id"] = self.focus_id
+            from_str_arg["focus"]["selector"] = self.focus_selector
             from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
             from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
         # Trying to import django.core.management.call_command gets you into some sort of import hell
@@ -184,7 +188,8 @@ class Screenshot(Image):
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
         })
-        self.arguments.append(os.path.join("_images", self.filename+".png"))
+        self.arguments.append(os.path.join("/", "images", self.filename+".png"))
+        os.system("touch %s" % os.path.join("images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
 
@@ -199,16 +204,17 @@ class Screenshot(Image):
                        }        
         from_str_arg['inputs'] = reduce(lambda x,y: x+y, map(_cmd_to_inputs, commands), [])
         from_str_arg["inputs"].append({"<slug>":self.filename})
-        if hasattr(self, "focus_id"):
+        if hasattr(self, "focus_selector"):
             from_str_arg["focus"] = {}
-            from_str_arg["focus"]["element_id"] = self.focus_id
+            from_str_arg["focus"]["selector"] = self.focus_selector
             from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
             from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
         self.env.screenshot_all_screenshots.append({
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
         })
-        self.arguments.append(os.path.join("_images", self.filename+".png"))
+        self.arguments.append(os.path.join("/", "images", self.filename+".png"))
+        os.system("touch %s" % os.path.join("images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
 
@@ -238,7 +244,7 @@ class Screenshot(Image):
             return_nodes.append(image_node)
 
         if 'focus' in self.options:
-            self.focus_id = self.options['focus']['id']
+            self.focus_selector = self.options['focus']['id']
             self.focus_annotation = self.options['focus']['annotation']
 
         if 'user-role' in self.options:

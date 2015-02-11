@@ -2,6 +2,7 @@ import errno
 import json
 import os
 import glob
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -236,15 +237,14 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
         if focus:
             # Apply the specified styles to element. Currently only selection by
             # id is supported. TODO: Extend it a more generic CSS selector.
-            element_id = focus['element_id']
+            selector = focus['selector']
             styles = focus['styles']
             for key, value in styles.iteritems():
-                self.browser.execute_script('document.getElementById("%s").style.%s = "%s"' % (element_id, key, value))
+                self.browser.execute_script('$("%s").css("%s", "%s");' % (selector, key, value))
             if note:
                 # Assuming we've loaded jquery
                 # Positioned at the bottom left, so might cause issues with some elements?
                 self.browser.execute_script("$('body').append(\"<span id='annotation'></span>\");" \
-                                            + "var top_position = $('#%s').offset().top + $('#%s').height();" % (element_id, element_id) \
                                             + "$('#annotation').text(\"%s\")" % note \
                                             + ".css('position','absolute')" \
                                             + ".css('padding','20px')" \
@@ -252,8 +252,11 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                                             + ".css('border-radius','20px 0px 20px 20px')" \
                                             + ".css('background','white')" \
                                             + ".css('color','black')" \
-                                            + ".css('z-index','9999')" \
-                                            + ".css('left', 0)" \
+                                            + ".css('z-index','9999');" \
+                                            + "var top_position = $('%s').offset().top + $('%s').outerHeight();" % (selector, selector) \
+                                            + "var left_position = $('%s').offset().left - $('#annotation').outerWidth(); \
+                                               if(left_postion<0){left_position=0;}" % (selector, selector) \
+                                            + "$('#annotation'.css('left', left_position)" \
                                             + ".css('top',top_position + 'px');" \
                                             )
 
