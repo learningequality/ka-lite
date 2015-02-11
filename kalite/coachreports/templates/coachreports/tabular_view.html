@@ -23,7 +23,8 @@
             // navigation event in order to produce the new report.
 
             $("#report_type").change(function(){
-                window.location.href="{% url 'tabular_view' %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
+                var url ="{% url 'tabular_view' %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
+                $("#tabularGo").attr("href", url);
             });
 
             $("#student").change(function(){
@@ -31,7 +32,8 @@
             });
 
             $("#topic").change(function(){
-                window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
+                var url = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
+                $("#tabularGo").attr("href", url);
             });
 
             $("#playlist").change(function(){
@@ -125,6 +127,10 @@
                 </div>
             {% endif %}
         {% endif %}
+        </div>
+        <div class="selection pull-left">
+            <a href="#" class="btn btn-primary" id="tabularGo">Go</a>
+        </div>
     </div>
     <div class="col-md-12">
         <ul class="pull-right" id="legend">
