@@ -254,10 +254,10 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
                                             + ".css('color','black')" \
                                             + ".css('z-index','9999');" \
                                             + "var top_position = $('%s').offset().top + $('%s').outerHeight();" % (selector, selector) \
-                                            + "var left_position = $('%s').offset().left - $('#annotation').outerWidth(); \
-                                               if(left_postion<0){left_position=0;}" % (selector, selector) \
-                                            + "$('#annotation'.css('left', left_position)" \
-                                            + ".css('top',top_position + 'px');" \
+                                            + "var left_position = $('%s').offset().left - $('#annotation').outerWidth();" % selector \
+                                            + "if(left_position<0){left_position=0;};" \
+                                            + "$('#annotation').css('left',left_position+'px')" \
+                                            + ".css('top',top_position+'px');" \
                                             )
 
         self.browser.save_screenshot(filename)
