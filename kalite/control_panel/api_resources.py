@@ -247,17 +247,15 @@ class ExerciseLogResource(ParentFacilityUserResource):
             bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
             bundle.data["unit"] = 0
 
-            if bundle.data["timestamp_first"]:
+            # Anything done after Nov 15, 2014 is in the RCT which starts from Unit 101
+            if StoreTransactionLog.objects.filter(user=user, context_type="unit_points_reset", purchased_at__gte=datetime(2014, 11, 15, 0, 0, 0)).count() == 0:
+                bundle.data["unit"] = 101
+
+            elif bundle.data["timestamp_first"]:
                 for i in xrange(101,104):
                     if StoreTransactionLog.objects.filter(user=user, context_id=i, context_type="unit_points_reset", purchased_at__gte=bundle.data["timestamp_first"]).count() > 0:
                         bundle.data["unit"] = i
                         break
-                    else:
-                        bundle.data["unit"] = i + 1
-
-                # Anything done after Nov 15, 2014 is in the RCT which starts from Unit 101
-                if bundle.data["unit"] == 0 and bundle.data["timestamp_first"].date() > date(2014, 11, 15):
-                    bundle.data["unit"] = 101
 
             bundle.data["part1_answered"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"]).count()
             bundle.data["part1_correct"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], correct=True, context_type__in=["playlist", "exercise"]).count()
