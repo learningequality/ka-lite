@@ -275,22 +275,17 @@ def tabular_view(request, facility, report_type="exercise"):
 @require_authorized_admin
 @facility_required
 @render_to("coachreports/report_view.html")
-def report_view(request, facility, unit_type=100):
+def report_view(request, facility):
     """Tabular view also gets data server-side."""
     student_ordering = ["last_name", "first_name", "username"]
-    unit_list = (unit for unit in UNITS if unit > 100)
-    if unit_type == 100:
-        unit_type = get_current_unit_settings_value(facility.id)
 
     grade = "Grade " + str(get_grade_by_facility(facility))
-    playlists = (filter(lambda p: (p.unit==int(unit_type) or p.unit==100) and p.tag==grade, Playlist.all()) or [None])
+    playlists = (filter(lambda p: p.unit >= 100 and p.unit <= 104 and p.tag==grade, Playlist.all()) or [None])
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         # For translators: the following two translations are nouns
-        "unit_types": unit_list,
-        "request_unit_type": int(unit_type),
         "request_report_type": "exercise",
-        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise") } for p in playlists if p],
+        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise"), "unit": p.unit } for p in playlists if p],
     })
 
     # get querystring info
@@ -392,9 +387,9 @@ def report_view(request, facility, unit_type=100):
             elif student["exercise_logs"][ex]["attempts"] > 0:
                 progress = progress + 1
 
-    context["progress"] = progress
-    context["mastered"] = mastered
-    context["struggling"] = struggling
+    context["progress"] = (100/exercise_count) * progress/user_count
+    context["mastered"] = (100/exercise_count) * mastered/user_count
+    context["struggling"] = (100/exercise_count) * struggling/user_count
 
     log_coach_report_view(request)
 

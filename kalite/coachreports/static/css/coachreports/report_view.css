@@ -113,13 +113,13 @@ th.headrowuser {
     text-overflow: ellipsis;
 }
 #legend {
-    float:right;
+    float:left;
     vertical-align:middle;
     margin:12px 25px 2px 10px;
 }
 .legend {
     float:right;
-    width:120px;
+    width:140px;
     height:20px;
     text-align:center;
     vertical-align:middle;
@@ -128,7 +128,8 @@ th.headrowuser {
     border-style:solid;
     border-width: 1px;
     padding:2px;
-    margin-right: 2px;
+    margin-right: 10px;
+    font-weight: bold;
 /*display:none;*/
 
 }

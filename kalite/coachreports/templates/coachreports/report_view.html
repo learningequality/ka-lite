@@ -28,10 +28,6 @@
             // As such, changing any of the values of the items requires a change of URL and subsequent
             // navigation event in order to produce the new report.
 
-            $("#unit_type").change(function(){
-                window.location.href="{% url 'report_view' %}"+$("#unit_type option:selected").val()+ "/" + window.location.search;
-            });
-
             $("#student").change(function(){
                 window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
             });
@@ -112,21 +108,6 @@
     {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
 
     <div id="selection-bar">
-        <div class="selection">
-        {# Select the unit number #}
-        {% if unit_types %}
-            <div class="subtitle">{% trans "Select Unit" %}</div>
-            <select id="unit_type">
-                {% for unit_type in unit_types %}
-                    <option value="{{ unit_type }}" {% if unit_type == request_unit_type %}selected{% endif %}>{{ unit_type }}</option>
-                {% endfor %}
-            </select>
-        {% else %}
-            <div class="subtitle">{% trans "No units available." %}</div>
-        {% endif %}
-        </div>
-
-
 
         {% if groups %}
             {% if playlists %}
@@ -139,7 +120,7 @@
   <div id="tree">
     <ul>
      {% for playlist in playlists %}
-          <li id= "{{ playlist.id }}" class="folder" >{% trans playlist.title %}
+          <li id= "{{ playlist.id }}" class="folder" > {% trans "Unit" %} {{ playlist.unit }} {% trans playlist.title %}
             <ul>
             {% for exercise in playlist.exercises %}
                 <li id="{{ exercise.id }}"> {{ exercise.title }} </li>
@@ -155,10 +136,10 @@
 
     <div id="content">
         <div id="legend">
-            <div class="legend"><div class="partial"></div>{% trans "In Progress" %}</div>
-            <div class="legend"><div class="complete"></div>{% trans "Completed" %}</div>
+            <div class="legend"><div class="partial"></div>{% trans "In Progress" %} {{ progress }} %</div>
+            <div class="legend"><div class="complete"></div>{% trans "Completed" %} {{ mastered }} %</div>
             {% if request_report_type != "video" %}
-            <div class="legend"><div class="struggle"></div>{% trans "Struggling" %}</div>
+            <div class="legend"><div class="struggle"></div>{% trans "Struggling" %} {{ struggling }} %</div>
             {% endif %}
         </div>
     </div>
