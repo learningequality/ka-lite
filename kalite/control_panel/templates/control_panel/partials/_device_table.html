@@ -66,7 +66,7 @@
                                     {% if device.is_own_device %}
                                         <a href="#" id="force-sync" class="registered-only">
                                             {% trans "Sync Now!" %}
-                                        </a></br> 
+                                        </a>
                                         {% if is_config_package_nalanda %}
                                             <a href="{% url 'update_software' %}" id="update-link" class=" registered-only">
                                                 {% trans "Update" %}
@@ -85,6 +85,7 @@
                                             </div>
                                         {% endif %}
                                     {% endif %}
+
                                 </td>
                             </tr>
                         {% endfor %}
