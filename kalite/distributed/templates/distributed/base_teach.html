@@ -18,7 +18,7 @@
                 <li class="exams {% block exams-active %}{% endblock exams-active %}"><a href="{% url 'test_list' %}" title="{% trans 'See list of available tests.' %}"><div><span class="icon icon-uniE602"></span><br/>{% trans "Tests" %}</div></a></li>
                 <li class="teacher-only units {% block current_unit_active %}{% endblock current_unit_active %}"><a href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div>{% trans "Units" %}</div></a></li>
             {% endif %}
-            <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}"><a href="/" title="{% trans 'KA Lite Home' %}"><div><span class="icon icon-uniE601"></span><br/>{% trans "Learn" %}</div></a></li>
+            <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}"><a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}"><div><span class="icon icon-uniE601"></span><br/>{% trans "Learn" %}</div></a></li>
         </ul>
     </div>
 {% endblock subnavbar %}
