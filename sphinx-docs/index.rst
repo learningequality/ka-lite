@@ -17,4 +17,3 @@ Welcome to the KA Lite Documentation page! Here, you will find all the informati
 
 	Installation Guide <installguide/install_main>
 	User Manual <usermanual/userman_main>
-
