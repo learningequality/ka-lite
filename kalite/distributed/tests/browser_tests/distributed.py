@@ -6,7 +6,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException
 from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
@@ -453,3 +453,43 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         self.browser.execute_script(log_model_object + ".set(\"points\", 9000);" )
         self.browser.execute_script(log_model_object + ".saveNow();" )
 
+class CoachHasLogoutLinkTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, FacilityMixins):
+    """
+    A regression test for issue 3000. Note the judicious use of waits and expected conditions to account for
+    various browser sizes and potential server hiccups. Even though no TimeoutException or NoSuchElementException
+    is expected, I still catch it so I can have my say, dangit, given that the test server likes to throw these
+    for apparently nondeterministic reasons sometimes.
+    """
+
+    def setUp(self):
+        super(CoachHasLogoutLinkTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.create_teacher(username="teacher1", password="password")
+        self.browser_login_user(username="teacher1", password="password")
+
+    def test_logout_link_visible(self):
+        self.browse_to(self.reverse("homepage"))
+        try:
+            nav_logout = WebDriverWait(self.browser, 10).until(
+                expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
+            )
+            dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[10]")
+            try:
+                self.browser_activate_element(elem=dropdown_menu)
+            except ElementNotVisibleException:
+                # Possible if the browser window is too small and the dropdown menu is collapsed.
+                expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
+                self.browser_activate_element(elem=expand_menus_button)
+                # Wait for the animation to finish
+                WebDriverWait(self.browser, 3).until(
+                    expected_conditions.visibility_of(dropdown_menu)
+                )
+                self.browser_activate_element(elem=dropdown_menu)
+            self.assertTrue(nav_logout.is_displayed(), "The dropdown menu logout item is not displayed!")
+        except NoSuchElementException as e:
+            self.assertTrue(False, "Test raised a NoSuchElementException... probably an issue with `setUp` method? Exception: %s" % repr(e))
+            raise
+        except TimeoutException as e:
+            self.assertTrue(False, "Test raised a TimeoutException. Maybe the test server is tired? Exception: %s" % repr(e))
+            raise
