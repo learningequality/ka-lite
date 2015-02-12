@@ -8,7 +8,7 @@ Screenshot directive example
 .. screenshot::
     :user-role: learner
     :url: /learn/khan/
-    :navigation-steps: #search click | #search send_keys A search term 
+    :navigation-steps: #search click | #search send_keys A search term
 
 .. screenshot::
     :user-role: guest

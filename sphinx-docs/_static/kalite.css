@@ -1,0 +1,9 @@
+@import "default.css";
+
+.screenshot {
+    width: 800px;
+    height: auto;
+    border-style: solid;
+    border-width: 4px;
+    border-color: black;
+}
