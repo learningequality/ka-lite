@@ -1,5 +1,5 @@
 from annoying.functions import get_object_or_None
-from datetime import datetime
+from datetime import datetime, date
 from django.db.models import Max, Min
 from django.http import HttpResponse
 from tastypie import fields
@@ -245,6 +245,23 @@ class ExerciseLogResource(ParentFacilityUserResource):
             attempt_logs = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"])
             bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
             bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
+            bundle.data["unit"] = 0
+
+            # Anything done after Nov 15, 2014 is in the RCT which starts from Unit 101
+            if StoreTransactionLog.objects.filter(user=user, context_type="unit_points_reset", purchased_at__gte=datetime(2014, 11, 15, 0, 0, 0)).count() == 0:
+                bundle.data["unit"] = 101
+
+            elif bundle.data["timestamp_first"]:
+                for i in xrange(101,104):
+                    if StoreTransactionLog.objects.filter(user=user, context_id=i, context_type="unit_points_reset", purchased_at__gte=bundle.data["timestamp_first"]).count() > 0:
+                        bundle.data["unit"] = i
+                        break
+
+            # For entries we are not sure about the unit, we keep them as 0, mostly chances are that the unit would be the current_unit.
+            # As we can't predict the current unit on the central server, its better to have the value as 0.
+            # We can't predict the current unit because in some database we have unit_point_reset gift card for unit 101 whereas the current unit is also 101.
+            # So we can't find current_unit by saying that the first unit that doesn't have the unit_point_reset gift card is current_unit.
+
             bundle.data["part1_answered"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"]).count()
             bundle.data["part1_correct"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], correct=True, context_type__in=["playlist", "exercise"]).count()
             bundle.data["part2_attempted"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["exercise_fixedblock", "playlist_fixedblock"]).count()
