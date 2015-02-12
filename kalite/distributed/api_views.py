@@ -91,9 +91,9 @@ def compute_total_points(user):
 
 def get_messages_for_api_calls(request):
     """
-    Re-usable function that returns a dictionary of messages to be used by API calls.
+    Re-usable function that returns a list of messages to be used by API calls.
     """
-    message_dicts = []
+    message_lists = []
     for message in get_messages(request):
         # Make sure to escape strings not marked as safe.
         # Note: this duplicates a bit of Django template logic.
@@ -101,8 +101,8 @@ def get_messages_for_api_calls(request):
         if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
             msg_txt = cgi.escape(unicode(msg_txt))
         msg_type = message.tags
-        message_dicts.append({msg_type: msg_txt})
-    return message_dicts
+        message_lists.append({msg_type: msg_txt})
+    return message_lists
 
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST

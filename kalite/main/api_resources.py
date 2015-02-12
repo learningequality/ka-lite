@@ -8,6 +8,7 @@ from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
+from kalite.distributed.api_views import get_messages_for_api_calls
 from kalite.topic_tools import get_exercise_data, get_assessment_item_cache, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
@@ -310,7 +311,6 @@ class ContentResource(Resource):
         content_id = kwargs.get("id", None)
         content = get_content_data(bundle.request, content_id)
         # MUST: Include messages in the api call.
-        from distributed.api_views import get_messages_for_api_calls
         if content:
             content['messages'] = get_messages_for_api_calls(bundle.request)
             return Content(**content)
