@@ -129,8 +129,16 @@ def rebuild_topictree(
             try:
                 if child_datum["kind"] == "Exercise":
                     child_denormed_data = exercise_lookup[str(child_datum["id"])]
+                    # Add path information here
+                    slug = exercise_lookup[str(child_datum["id"])][channel_data["slug_key"][child_datum["kind"]]] if exercise_lookup[str(child_datum["id"])][channel_data["slug_key"][child_datum["kind"]]] != "root" else "khan"
+                    slug = slugify(unicode(slug))
+                    exercise_lookup[str(child_datum["id"])]["path"] = path + slug + "/"
                 elif child_datum["kind"] == "Video":
                     child_denormed_data = content_lookup[str(child_datum["id"])]
+                    # Add path information here
+                    slug = content_lookup[str(child_datum["id"])][channel_data["slug_key"][child_datum["kind"]]] if content_lookup[str(child_datum["id"])][channel_data["slug_key"][child_datum["kind"]]] != "root" else "khan"
+                    slug = slugify(unicode(slug))
+                    content_lookup[str(child_datum["id"])]["path"] = path + slug + "/"
                 else:
                     child_denormed_data = None
                 if child_denormed_data:
