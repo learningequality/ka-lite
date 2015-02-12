@@ -359,7 +359,7 @@ def tabular_view(request, report_type="exercise"):
                 messages.add_message(request, ERROR, _("Please select a topic."))
         else:
             # 6. Everything specified, but no users fit the query.
-            messages.add_message(request, ERROR, _("No learner accounts have been created."))
+            messages.add_message(request, ERROR, _("No learner accounts in this group have been created."))
     # End: Validate results by showing user messages.
 
     log_coach_report_view(request)
