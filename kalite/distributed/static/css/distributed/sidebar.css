@@ -66,6 +66,7 @@ div.fade {
 
 .missing {
     opacity: 0.4;
+    background: #93BFAC;
 }
 
 .sidebar-panel a:link,
