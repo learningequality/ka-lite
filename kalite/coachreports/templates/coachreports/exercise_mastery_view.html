@@ -8,9 +8,9 @@
 {% block title %}{% trans "Progress by topic" %} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/report_view.css' %}" />
-        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.defaultoff.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/exercise_mastery_view.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.defaultoff.css' %}">
 
 {% endblock headcss %}
 
@@ -20,87 +20,7 @@
     <script type="text/javascript" src="{% static 'js/coachreports/jquery.cookie.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
-
-    <script>
-        $(function() {
-
-            // Note: Unlike other coach reports, the tabular view is generated in server side templates.
-            // As such, changing any of the values of the items requires a change of URL and subsequent
-            // navigation event in order to produce the new report.
-
-            $("#student").change(function(){
-                window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
-            });
-
-            $("#playlist").change(function(){
-                window.location.href = setGetParam(window.location.href, "playlist", $("#playlist option:selected").val());
-            });
-
-            $("#facility").change(function(){
-                window.location.href = setGetParamDict(window.location.href, {"facility": $("#facility option:selected").val(), "group": $("#" + $("#facility option:selected").val() + "_group_select").val()});
-            });
-
-            $(".group_select").change(function(event){
-                window.location.href = setGetParam(window.location.href, "group", $(event.target).val());
-            });
-
-            // Selector to toggle visible elements is stored in each option value
-            cell_height = 27;
-            $("#disp_options").change(function(){
-                selector = $("#disp_options option:selected").val();
-
-                // adjust the cell height
-                cell_height += 50*Math.pow(-1, 0+$(selector).is(":visible"));
-
-                // adjust view in data cells
-                $(selector).each(function () {
-                    $(this).toggle()
-                });
-                $(selector).each(function () {
-                    $(this).height(20);
-                    $(this).parent().height(cell_height);
-                });
-
-                // Adjust student name cell heights
-                $("th.username").each(function () {
-                    $(this).height(cell_height);
-                });
-            });
-            $(window).resize(function() {
-                $('.headrowuser').height($('.headrow.data').height()+1);
-            }).resize();
-        });
-    </script>
-
-  <script type="text/javascript">
-
-    $(function(){
-      $("#tree").dynatree({
-        persist: true,
-        expand: false,
-        checkbox: true,
-        selectMode: 3,
-        cookieId: "exercises",
-        children: null,
-
-        onPostInit: function(isReloading, isError) {
-            if (window.location.href.indexOf("&playlist=") == -1) {
-                $("#tree").dynatree("getTree").visit(function(node){
-                    node.select(false);
-                    node.expand(false);
-                });
-            }
-        },
-        onSelect: function(select, dtnode) {
-        var selKeys = $.map(dtnode.tree.getSelectedNodes(), function(dtnode){
-          return dtnode.data.key;
-        });
-        window.location.href = setGetParam(window.location.href, "playlist", selKeys);
-        },
-
-      });
-    });
-  </script>
+    <script type="text/javascript" src="{% static 'js/coachreports/exercise_mastery_view.js' %}"></script>
 
 {% endblock headjs %}
 
@@ -119,14 +39,15 @@
 
   <div id="tree">
     <ul>
+
      {% for playlist in playlists %}
-          <li id= "{{ playlist.id }}" class="folder" > {% trans "Unit" %} {{ playlist.unit }} {% trans playlist.title %}
+        <li id= "{{ playlist.id }}" class="folder" > {% trans "Unit" %} {{ playlist.unit }} {% trans playlist.title %}
             <ul>
             {% for exercise in playlist.exercises %}
                 <li id="{{ exercise.id }}"> {{ exercise.title }} </li>
             {% endfor %}
             </ul>
-      </li>
+        </li>
     {% endfor %}
 
     </ul>
@@ -137,35 +58,34 @@
     <div id="content">
         <div id="legend">
             <div class="legend"><div class="partial"></div>{% trans "In Progress" %} {{ progress }} %</div>
-            <div class="legend"><div class="complete"></div>{% trans "Completed" %} {{ mastered }} %</div>
-            {% if request_report_type != "video" %}
+            <div class="legend"><div class="complete"></div>{% trans "Mastered" %} {{ mastered }} %</div>
             <div class="legend"><div class="struggle"></div>{% trans "Struggling" %} {{ struggling }} %</div>
-            {% endif %}
         </div>
     </div>
     <div style="clear: both;"></div>
 
 
     {% if not students %}
-        <p><div class="subtitle error" id="error_message">
-        {% if not groups.0.groups and not groups.1 %}
-            {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
-            {% trans "No student accounts have been created." %}
-        {% elif request.GET.playlist %}
-            {% trans "Please select a playlist above, but not both." %}
-        {% elif not request.GET.playlist %}
-            {% comment %}Group was selected, but data not queried because a playlist was not selected
-            (NOTE: this required knowledge of how the view queries data){% endcomment %}
-            <div id="no_topic_or_playlist_error">
-            {% if playlists %}
-                {% trans "Please select a playlist above." %}
-            {% endif %}
+        <p>
+            <div class="subtitle error" id="error_message">
+                {% if not groups.0.groups and not groups.1 %}
+                    {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
+                    {% trans "No student accounts have been created." %}
+                {% endif %}
+                {% if not request.GET.playlist %}
+                    {% comment %}Group was selected, but data not queried because a playlist was not selected
+                    (NOTE: this required knowledge of how the view queries data){% endcomment %}
+                    <div id="no_topic_or_playlist_error">
+                    {% if playlists %}
+                        {% trans "Please select a playlist above." %}
+                    {% endif %}
+                    </div>
+                {% else %}
+                    {% comment %}Everything specified, but no users fit the query.{% endcomment %}
+                    {% trans "No student accounts in this group have been created." %}
+                {% endif %}
             </div>
-        {% else %}
-            {% comment %}Everything specified, but no users fit the query.{% endcomment %}
-            {% trans "No student accounts in this group have been created." %}
-        {% endif %}
-        </div></p>
+        </p>
 
     {% else %}
         {% block students_header %}
@@ -195,13 +115,12 @@
         </div>
         {% endblock students_header %}
 
-        {% if request_report_type == "exercise" and exercises %}
         {% block exercise_data %}
             <div class="userstatus">
                 <table>
                     <thead>
                         <tr>
-                            <th class="headrowuser"s>
+                            <th class="headrowuser">
                                 Student Mastery
                             </th>
                             {% for exercise in exercises %}
@@ -240,6 +159,5 @@
                 </table>
             </div>
         {% endblock exercise_data %}
-        {% endif %}
     {% endif %}
 {% endblock content %}

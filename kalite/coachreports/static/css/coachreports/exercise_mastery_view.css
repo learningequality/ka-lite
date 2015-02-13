@@ -46,13 +46,11 @@ th, td {
 .status {
     height: 27px;
     background-color: #EEE;
-    /*width: 80px;*/
 }
 
 th.username {
     height: 27px;
     border: 1px solid black;
-    /*border-right: none;*/
     padding-left: 5px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -86,7 +84,6 @@ th.headrowuser {
     min-width: 60px;
     max-width: 60px;
     overflow: hidden;
-    /*white-space: nowrap;*/
 }
 
 #legend a {
@@ -106,17 +103,20 @@ th.headrowuser {
     text-align:right;
     vertical-align:middle;
 }
+
 .student-name {
     float:none;
     text-align:left;
     display:block;
     text-overflow: ellipsis;
 }
+
 #legend {
     float:left;
     vertical-align:middle;
     margin:12px 25px 2px 10px;
 }
+
 .legend {
     float:right;
     width:140px;
@@ -130,17 +130,18 @@ th.headrowuser {
     padding:2px;
     margin-right: 10px;
     font-weight: bold;
-/*display:none;*/
-
 }
+
 .legend div {
     float:left;
     width:35px;
     height:21px;
 }
+
 #selection-bar {
     overflow:hide;
 }
+
 #disp_options {
     float:right;
 }

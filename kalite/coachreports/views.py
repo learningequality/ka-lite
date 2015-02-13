@@ -274,24 +274,20 @@ def tabular_view(request, facility, report_type="exercise"):
 
 @require_authorized_admin
 @facility_required
-@render_to("coachreports/report_view.html")
-def report_view(request, facility):
-    """Tabular view also gets data server-side."""
+@render_to("coachreports/exercise_mastery_view.html")
+def exercise_mastery_view(request, facility):
+
     student_ordering = ["last_name", "first_name", "username"]
 
     grade = "Grade " + str(get_grade_by_facility(facility))
     playlists = (filter(lambda p: p.unit >= 100 and p.unit <= 104 and p.tag==grade, Playlist.all()) or [None])
     context = plotting_metadata_context(request, facility=facility)
     context.update({
-        # For translators: the following two translations are nouns
-        "request_report_type": "exercise",
         "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise"), "unit": p.unit } for p in playlists if p],
     })
 
-    # get querystring info
     exercises = str(request.GET.get("playlist", ""))
-    # No valid data; just show generic
-    # Exactly one of topic_id or playlist_id should be present
+
     if not exercises:
          return context
 
@@ -309,15 +305,14 @@ def report_view(request, facility):
     context["exercises"] = exercises
     exercise_count = len(exercises)
 
-    # More code, but much faster
     exercise_names = [ex["name"] for ex in context["exercises"]]
-    # Get students
+
     context["students"] = []
     exlogs = ExerciseLog.objects \
         .filter(user__in=users, exercise_id__in=exercise_names) \
         .order_by(*["user__%s" % field for field in student_ordering]) \
         .values("user__id", "struggling", "complete", "exercise_id", "attempts", "streak_progress")
-    exlogs = list(exlogs)  # force the query to be evaluated
+    exlogs = list(exlogs)
 
     exercise_ids = [ex["id"] for ex in context["exercises"]]
     user_count = len(users)
