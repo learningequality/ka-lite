@@ -129,6 +129,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
         else:
             exercise_templates = []
         assessmentitems = get_assessment_item_cache()
+        TEMPLATE_FILE_PATH = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s")
         for exercise in EXERCISES[language].values():
             exercise_file = exercise["name"] + ".html"
             exercise_template = exercise_file
@@ -153,7 +154,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                         available = True
                 exercise["all_assessment_items"] = items
             else:
-                available = os.path.isfile(exercise_template)
+                available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
 
             with i18n.translate_block(exercise_lang):
                 exercise["available"] = available
