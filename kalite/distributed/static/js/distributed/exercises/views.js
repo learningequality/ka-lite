@@ -126,7 +126,7 @@ window.ExerciseView = Backbone.View.extend({
             $("#check-answer-button").trigger("click");
         }
     },
-    
+
     render: function() {
 
         var data = $.extend(this.data_model.attributes, {test_id: this.options.test_id});
@@ -272,15 +272,21 @@ window.ExerciseView = Backbone.View.extend({
                     item_index = attempts % assessment_items.length;
 
                 } else {
-                    
+
                     item_index = Math.floor(Math.random() * assessment_items.length);
 
                 }
 
-                self.data_model.set("assessment_item_id", assessment_items[item_index].id);
+                // TODO(jamalex): remove this once we figure out why assessment_items[item_index] is an unparsed string
+                var current_item = assessment_items[item_index];
+                if (typeof current_item == "string") {
+                    current_item = JSON.parse(current_item);
+                }
+
+                self.data_model.set("assessment_item_id", current_item.id);
 
                 $(Exercises).trigger("clearExistingProblem");
-                
+
                 var item = new AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
 
                 item.fetch().then(function() {

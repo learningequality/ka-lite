@@ -21,6 +21,7 @@ KHAN_CONTENT_PATH = os.path.join(
 
 ASSESSMENT_ITEMS_PATH = os.path.join(KHAN_DATA_PATH, "assessmentitems.json")
 
+logging = settings.LOG
 
 class Command(BaseCommand):
 
@@ -31,6 +32,7 @@ class Command(BaseCommand):
         ziplocation = args[0]
 
         if is_valid_url(ziplocation):  # url; download the zip
+            logging.warn("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
             r = requests.get(ziplocation)
             r.raise_for_status()
             f = StringIO.StringIO(r.content)

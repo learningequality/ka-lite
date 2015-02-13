@@ -167,6 +167,9 @@ class Command(BaseCommand):
             sys.stdout.write("\n")
 
         # Tried not to be os-specific, but ... hey. :-/
+        # benjaoming: This doesn't work, why is 502 hard coded!? Root is normally
+        # '0' And let's not care about stuff like this, people can be free to
+        # run this as root if they want :)
         if not is_windows() and hasattr(os, "getuid") and os.getuid() == 502:
             sys.stdout.write("-------------------------------------------------------------------\n")
             sys.stdout.write("WARNING: You are installing KA-Lite as root user!\n")
