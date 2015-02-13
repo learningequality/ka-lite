@@ -233,6 +233,8 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
                             "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
                             "thumbnail": thumbnail,
                         }
+                    else:
+                        content["available"] = False
                 else:
                     content["available"] = False
             else:
