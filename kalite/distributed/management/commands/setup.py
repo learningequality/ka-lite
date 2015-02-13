@@ -6,6 +6,7 @@ import re
 import shutil
 import sys
 import tempfile
+from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
 
@@ -166,6 +167,9 @@ class Command(BaseCommand):
             sys.stdout.write("\n")
 
         # Tried not to be os-specific, but ... hey. :-/
+        # benjaoming: This doesn't work, why is 502 hard coded!? Root is normally
+        # '0' And let's not care about stuff like this, people can be free to
+        # run this as root if they want :)
         if not is_windows() and hasattr(os, "getuid") and os.getuid() == 502:
             sys.stdout.write("-------------------------------------------------------------------\n")
             sys.stdout.write("WARNING: You are installing KA-Lite as root user!\n")
@@ -295,10 +299,17 @@ class Command(BaseCommand):
                 shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
                 try:
                     shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                except OSError: # even if we have write permission, we might not have permission to change file mode
+                except OSError:  # even if we have write permission, we might not have permission to change file mode
                     sys.stdout.write("WARNING: Unable to set file permissions on %s! \n" % script_file)
-
-            start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "start%s" % system_script_extension()))
+            
+            kalite_executable = 'kalite'
+            if not spawn.find_executable('kalite'):
+                if os.name == 'posix':
+                    start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "bin", kalite_executable))
+                else:
+                    start_script_path = os.path.realpath(os.path.join(settings.PROJECT_PATH, "..", "bin", "windows", "kalite.bat"))
+            else:
+                start_script_path = kalite_executable
 
             # Run videoscan, on the distributed server.
             sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
@@ -306,14 +317,6 @@ class Command(BaseCommand):
 
             # done; notify the user.
             sys.stdout.write("\n")
-            if install_clean:
-                sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
-                sys.stdout.write("\tPlease run '%s' to start the server,\n" % start_script_path)
-                sys.stdout.write("\tthen load one of the following addresses in your browser to complete the configuration:\n")
-                for ip in get_ip_addresses():
-                    sys.stdout.write("\t\thttp://%s:%d/\n" % (ip, settings.USER_FACING_PORT()))
-
-            else:
-                sys.stdout.write("CONGRATULATIONS! You've finished updating the KA Lite server software.\n")
-                sys.stdout.write("\tPlease run '%s' to start the server.\n" % start_script_path)
+            sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
+            sys.stdout.write("You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
             sys.stdout.write("\n")

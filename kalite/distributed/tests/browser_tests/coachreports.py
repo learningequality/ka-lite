@@ -27,7 +27,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse("tabular_view") + "?topic=addition-subtraction")
         self.browser.find_element_by_css_selector('#error_message')
-        self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("No student accounts have been created."), "Error message with no users available, no topic selected.")
+        self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("No learner accounts have been created."), "Error message with no users available, no topic selected.")
 
     def test_no_groups_with_topic_selected(self):
         self.browser_login_admin(**self.admin_data)
@@ -56,7 +56,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse("tabular_view") + "?topic=addition-subtraction&group=" + group.id)
         self.browser.find_element_by_css_selector('#error_message')
-        self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("No student accounts in this group have been created."), "Error message with no users available.")
+        self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("No learner accounts in this group have been created."), "Error message with no users available.")
 
 
     def test_users_out_of_group(self):
@@ -68,7 +68,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse("tabular_view") + "?topic=addition-subtraction&group_id=" + group.id)
         self.browser.find_element_by_css_selector('#error_message')
-        self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("No student accounts in this group have been created."), "Error message with no users available.")
+        self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("No learner accounts in this group have been created."), "Error message with no users available.")
 
 
     def test_success_with_group(self):

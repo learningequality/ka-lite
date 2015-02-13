@@ -169,7 +169,9 @@ SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
-KHAN_EXERCISES_DIRPATH = getattr(local_settings, "KHAN_EXERCISES_DIRPATH", os.path.join(os.path.dirname(__file__), "static", "perseus", "ke"))
+KHAN_EXERCISES_RELPATH = os.path.join("static", "perseus", "ke")
+
+KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), KHAN_EXERCISES_RELPATH)
 
 # Override
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
@@ -218,6 +220,9 @@ if package_selected("Nalanda"):
     QUIZ_REPEATS = 3
 UNIT_POINTS = 2000
 
+# for extracting assessment item resources
+ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(PROJECT_PATH, "..", "content", "khan")
+
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
@@ -235,3 +240,8 @@ if package_selected("Demo"):
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
     MIDDLEWARE_CLASSES += ('distributed.demo_middleware.StopAdminAccess','distributed.demo_middleware.LinkUserManual','distributed.demo_middleware.ShowAdminLogin',)
+
+if DEBUG:
+    """Show DeprecationWarning messages when in debug"""
+    import warnings
+    warnings.simplefilter('always', DeprecationWarning)

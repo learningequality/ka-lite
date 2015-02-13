@@ -116,7 +116,15 @@ window.ExerciseView = Backbone.View.extend({
     },
 
     events: {
-        "submit .answer-form": "answer_form_submitted"
+        "submit .answer-form": "answer_form_submitted",
+        "keyup .perseus-input": "click_check_answer_button",
+        "keyup #solutionarea>input": "click_check_answer_button"
+    },
+
+    click_check_answer_button: function(e) {
+        if(e.keyCode == $.ui.keyCode.ENTER) {
+            $("#check-answer-button").trigger("click");
+        }
     },
 
     render: function() {
@@ -162,16 +170,29 @@ window.ExerciseView = Backbone.View.extend({
 
         // TODO (rtibbles): Make this nice, not horrible.
         this.listenTo(Exercises, "newProblem", function (ev, data) {
-            if (data.answerType=="number"||data.answerType=="decimal"||data.answerType=="rational"||data.answerType=="improper"||data.answerType=="mixed"){
+            var answerType = data.answerType;
+            if (typeof answerType === "undefined") {
+                answerType = ((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])[0] || [""])[0];
+            }
+
+            var checkVal = /number|decimal|rational|improper|mixed/gi;
+
+            if (checkVal.test(answerType)){
                 if (typeof self.software_keyboard_view === "undefined") {
                     self.software_keyboard_view = new SoftwareKeyboardView({
                         el: self.$("#software-keyboard-container")
                     });
                 }
-
+                if (Exercises.getCurrentFramework()==="khan-exercises"){
+                    self.software_keyboard_view.set_input("#solutionarea :input");
+                } else {
+                    self.software_keyboard_view.set_input(".perseus-input:input");
+                }
                 self.software_keyboard_view.show();
+                self.listenTo(self.software_keyboard_view, "enter_pressed", function(){$("#check-answer-button").trigger("click");});
             } else if (typeof self.software_keyboard_view !== "undefined") {
                 self.software_keyboard_view.hide();
+                self.stopListening(self.software_keyboard_view);
             }
         });
 
@@ -251,15 +272,21 @@ window.ExerciseView = Backbone.View.extend({
                     item_index = attempts % assessment_items.length;
 
                 } else {
-                    
+
                     item_index = Math.floor(Math.random() * assessment_items.length);
 
                 }
 
-                self.data_model.set("assessment_item_id", assessment_items[item_index].id);
+                // TODO(jamalex): remove this once we figure out why assessment_items[item_index] is an unparsed string
+                var current_item = assessment_items[item_index];
+                if (typeof current_item == "string") {
+                    current_item = JSON.parse(current_item);
+                }
+
+                self.data_model.set("assessment_item_id", current_item.id);
 
                 $(Exercises).trigger("clearExistingProblem");
-                
+
                 var item = new AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
 
                 item.fetch().then(function() {

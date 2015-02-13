@@ -3,7 +3,16 @@
 .simple-button.green,
 .simple-button.primary {
     background-color: #5AA685 !important;
-    background-image: none !important;
+    background-image: -moz-linear-gradient(top, #5AA685, #47856A);
+    background-image: -ms-linear-gradient(top, #5AA685, #47856A);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5AA685), to(#47856A));
+    background-image: -webkit-linear-gradient(top, #5AA685, #47856A);
+    background-image: -o-linear-gradient(top, #5AA685, #47856A);
+    background-image: linear-gradient(top, #5AA685, #47856A);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5AA685', endColorstr='#47856A', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    color: #ffffff !important;
     border-color: rgba(0, 0, 0, 0.6) !important;
 }
 
@@ -143,8 +152,7 @@ a:hover {
     position: relative;
     width: 110px;
     height: 88px;
-    line-height: 10;
-    margin: -24px 0px -47px -3px;
+    margin: -18px 0px -47px -3px;
 }
 .teach-nav li div:hover {
     color: #5AA685;
@@ -166,17 +174,12 @@ a:hover {
     text-align: center;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-    height: 87px;
 }
 .teach-nav li a:hover {
     color: #5AA685;
 }
-.teach-nav li img {
-    height: 40px;
-    width: auto;
-    display: block;
-    margin: auto;
-    margin-bottom: 5px;
+.teach-nav span.icon {
+    font-size: 40pt;
 }
 .link-width {
     width: 90px;
@@ -196,33 +199,27 @@ a:hover {
     color: #5AA685 !important;
 }
 .reports {
-    background: url("../../images/distributed/reports-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .reports:hover, .reports-active {
-    background: url("../../images/distributed/reports-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
     color: #5AA685 !important;
 }
 .playlist {
-    background: url("../../images/distributed/playlist-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .playlist:hover, .playlists-active {
-    background: url("../../images/distributed/playlist-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .exams {
-    background: url("../../images/distributed/exam-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .exams:hover, .exams-active {
-    background: url("../../images/distributed/exam-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
@@ -237,12 +234,10 @@ a:hover {
     height: 87px;
 }
 .learn {
-    background: url("../../images/distributed/learn-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .learn:hover, .learn-active {
-    background: url("../../images/distributed/learn-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
@@ -295,9 +290,9 @@ a:hover {
     position: relative;
     width: 110px;
     height: 85px;
-    line-height: 9.5;
+    /*line-height: 9.5;*/
     margin-left: -3px;
-    margin-top: -3px;
+    margin-top: 5px;
 }
 .manage-nav li div:hover {
     color: #5AA685;
@@ -309,12 +304,8 @@ a:hover {
     font-weight: bold;
     text-decoration: none;
 }
-.manage-nav li img {
-    height: 40px;
-    width: auto;
-    display: block;
-    margin: auto;
-    margin-bottom: 5px;
+.manage-nav span.icon {
+    font-size: 40pt;
 }
 .active-nav {
     color: #405D32 !important;
@@ -324,42 +315,34 @@ a:hover {
     font-weight: bold;
 }
 .users {
-    background: url("../../images/distributed/users-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .users:hover, .users-active {
-    background: url("../../images/distributed/users-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .video {
-    background: url("../../images/distributed/videos_icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .video:hover, .video-active {
-    background: url("../../images/distributed/videos_active_icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .languages {
-    background: url("../../images/distributed/language_icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .languages:hover, .languages-active {
-    background: url("../../images/distributed/language_active_icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .facility {
-    background: url("../../images/distributed/facility-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
 .facility:hover, .facility-active {
-    background: url("../../images/distributed/facility-active-icon.png") no-repeat;
     background-position: center 7px;
     height: 87px;
 }
@@ -750,22 +733,22 @@ li .progress-circle {
     white-space: normal;
 }
 
-.video-unavailable,
-.topic-unavailable,
-a:active.video-unavailable,
-a:visited.video-unavailable,
-a:active.topic-unavailable,
-a:link.topic-unavailable,
-a:link.video-unavailable,
-a:visited.topic-unavailable {
+.Video-unavailable,
+.Topic-unavailable,
+a:active.Video-unavailable,
+a:visited.Video-unavailable,
+a:active.Topic-unavailable,
+a:link.Topic-unavailable,
+a:link.Video-unavailable,
+a:visited.Topic-unavailable {
     color: #ACBDD1;
     font-weight: normal;
     text-decoration: none;
 }
-a:hover.video-unavailable {
+a:hover.Video-unavailable {
     color: #ddd;
 }
-a:hover.topic-unavailable {
+a:hover.Topic-unavailable {
     color: #ddd;
 }
 a.disabled {
@@ -816,12 +799,6 @@ a.disabled {
     border-bottom-right-radius: 6px;
 }
 
-#show-keyboard {
-    font-size: 10px;
-    width: 90px;
-    float: right;
-}
-
 #software-keyboard {
     border: 2px solid #cfcfcf;
     background: #c3c3c3;
@@ -847,24 +824,27 @@ a.disabled {
     font-size: 26px;
 }
 
-#software-keyboard div .key-bs {
-    font-size: 16px;
-}
-
 /* TODO-BLOCKER (rtibbles): 0.13 - Remove extraneous css added here to make styling work without Bootstrap */
 
-#show-keyboard {
-    font-size: 10px;
-    width: 90px;
-    float: right;
+#software-keyboard-container {
+    width: 100%;
+    position: relative;
+    display: inline-block;
+}
+
+button#show-keyboard {
+    /*height: 30px;*/
+    width: 100%;
+    font-size: 14px;
+    padding: 0;
+    /*float: right;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
     background-color: #816fba;
     font-family: Arial, Helvetica, sans-serif;
     color: #ffffff;
-    padding: 5px 20px;
-    border:0px;
+    border: 0px;*/
 }
 
 /*Why mess with Bootstrap sizing?*/
@@ -914,22 +894,22 @@ to items you want to have the icon appear with.
 */
 
 .icon-Exercise:before {
-    content: "\e600";
+    content: "\e60f";
 }
 .icon-Video:before {
-    content: "\e601";
+    content: "\e610";
 }
 .icon-Quiz:before {
-    content: "\e602";
+    content: "\e611";
 }
 .icon-Topic:before {
-    content: "\e603";
+    content: "\e612";
 }
 .icon-Audio:before {
-    content: "\e604";
+    content: "\e613";
 }
 .icon-Document:before {
-    content: "\e605";
+    content: "\e614";
 }
 /* BEGIN styles for modal dialog */
 

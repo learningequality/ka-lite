@@ -1,5 +1,8 @@
 @echo off
 
+echo RUNNING THIS SCRIPT IS DEPRECATED
+echo Use bin\windows\kalite.bat
+
 rem determine the script directory (could be in scripts, could be in root folder)
 set "SCRIPT_DIR=%~dp0"
 
@@ -9,9 +12,6 @@ if exist "%SCRIPT_DIR%\python.bat" (
     set "SCRIPT_DIR=%SCRIPT_DIR%\scripts"
     set "KALITE_DIR=%SCRIPT_DIR%\kalite"
 )
-
-REM transfer any previously downloaded content from the old location to the new
-move "%KALITE_DIR%\static\videos\*" "%KALITE_DIR%\..\content" > nul 2> nul
 
 set "file_exist="
 if exist "%KALITE_DIR%\cronserver.pid" set file_exist=0

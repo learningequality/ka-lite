@@ -9,7 +9,7 @@ from django.core.management.commands.makemessages import handle_extensions
 from optparse import make_option
 
 
-def i18nize_parser(parse_dir, extensions, parse_file):
+def i18nize_parser(parse_dir, extensions, parse_file, ignores):
     """
     Call the `i18nize-templates` script which will parse the
     files with the extensions specified.
@@ -18,6 +18,11 @@ def i18nize_parser(parse_dir, extensions, parse_file):
     for dirpath, dirnames, filenames in os.walk(parse_dir):
         logging.info("==> Looking for template file/s at %s" % dirpath)
         for filename in filenames:
+            full_filename = os.path.join(dirpath, filename)
+            # Validate if it's part of our ignores
+            if is_ignored(full_filename, ignores):
+                continue
+
             # Validate file extensions.
             for extension in extensions:
                 if filename.endswith(extension):
@@ -42,6 +47,17 @@ def i18nize_parser(parse_dir, extensions, parse_file):
         logging.info("DONE processing.")
     else:
         logging.info('Did not find any files with extensions [%s] to process!' % (", ".join(extensions),))
+
+
+def is_ignored(filepath, ignores):
+    """
+    Check to see if one of the elements in ignores is part of the filepath.
+    """
+    for ignore in ignores:
+        if ignore in filepath:
+            return True
+    else:
+        return False
 
 
 class Command(AppCommand):
@@ -74,6 +90,10 @@ class Command(AppCommand):
                          'Separate multiple extensions with commas, or use '
                          '-e multiple times.'),
 
+        make_option('--ignore', '-i', dest='ignores',
+                    action='append', default=[],
+                    help="Comma-separated values that if present in a template's full pathname will cause that template to be ignored."),
+
         make_option('--parse-file', action='append', dest="parse_file",
                     help='Select a specific file to be parsed, put only the filename and not the full path.'),
     )
@@ -86,6 +106,7 @@ class Command(AppCommand):
             extensions_option = ['html', 'handlebars']
         extensions = tuple(handle_extensions(extensions_option, ignored=()))
         parse_file = options.get("parse_file")
+        ignores = options.get("ignores")
         if parse_file and isinstance(parse_file, list):
             parse_file = parse_file[0]
 
@@ -98,4 +119,4 @@ class Command(AppCommand):
                         (app.__name__, ', '.join(extensions)))
 
         local_dir = os.path.dirname(app.__file__)
-        i18nize_parser(parse_dir=local_dir, extensions=extensions, parse_file=parse_file)
+        i18nize_parser(parse_dir=local_dir, extensions=extensions, parse_file=parse_file, ignores=ignores)

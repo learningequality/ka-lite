@@ -20,7 +20,7 @@ def retrieve_API_data(channel=None):
     return topic_tree, exercises, assessment_items, content
 
 
-def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
+def whitewash_node_data(node, path="", channel_data={}):
     """
     Utility function to convert nodes into the format used by KA Lite.
     Extracted from other functions so as to be reused by both the denormed
@@ -31,9 +31,6 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
 
     if not kind:
         return node
-
-    node["x_pos"] = node.get("x_pos", 0) or node.get("h_position", 0)
-    node["y_pos"] = node.get("y_pos", 0) or node.get("v_position", 0)
 
     # Only keep key data we can use
     if kind in channel_data["attribute_whitelists"]:
@@ -53,11 +50,7 @@ def whitewash_node_data(node, path="", ancestor_ids=[], channel_data={}):
     node["path"] = node.get("path", "") or path + node["slug"] + "/"
     if "title" not in node:
         node["title"] = (node.get(channel_data["title_key"][kind], ""))
-    node["title"] = node["title"].strip()
-
-    # Add some attribute that should have been on there to start with.
-    node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
-    node["ancestor_ids"] = ancestor_ids
+    node["title"] = (node["title"] or "").strip()
 
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
@@ -98,7 +91,7 @@ def rebuild_topictree(
 
     content_lookup = dict((content["id"], content) for content in contents)
 
-    def recurse_nodes(node, path="", ancestor_ids=[]):
+    def recurse_nodes(node, path=""):
         """
         Internal function for recursing over the topic tree, marking relevant metadata,
         and removing undesired attributes and children.
@@ -106,7 +99,7 @@ def rebuild_topictree(
 
         kind = node["kind"]
 
-        node = whitewash_node_data(node, path, ancestor_ids)
+        node = whitewash_node_data(node, path)
 
         if kind != "Topic":
             if kind in channel_data["denormed_attribute_list"]:
@@ -134,10 +127,21 @@ def rebuild_topictree(
         # Loop through child_data to populate children with denormed data of exercises and videos.
         for child_datum in node.get("child_data", []):
             try:
-                if child_datum["kind"] == "Exercise":
-                    child_denormed_data = exercise_lookup[str(child_datum["id"])]
-                elif child_datum["kind"] == "Video":
-                    child_denormed_data = content_lookup[str(child_datum["id"])]
+                child_id = str(child_datum["id"])
+                child_kind = child_datum["kind"]
+                slug_key = channel_data["slug_key"][child_kind]
+                if child_kind == "Exercise":
+                    child_denormed_data = exercise_lookup[child_id]
+                    # Add path information here
+                    slug = exercise_lookup[child_id][slug_key] if exercise_lookup[child_id][slug_key] != "root" else "khan"
+                    slug = slugify(unicode(slug))
+                    exercise_lookup[child_id]["path"] = node["path"] + slug + "/"
+                elif child_kind == "Video":
+                    child_denormed_data = content_lookup[child_id]
+                    # Add path information here
+                    slug = content_lookup[child_id][slug_key] if content_lookup[child_id][slug_key] != "root" else "khan"
+                    slug = slugify(unicode(slug))
+                    content_lookup[child_id]["path"] = node["path"] + slug + "/"
                 else:
                     child_denormed_data = None
                 if child_denormed_data:
@@ -166,15 +170,16 @@ def rebuild_topictree(
                 children_to_delete.append(i)
                 logging.debug("Removing hidden child: %s" % child[channel_data["slug_key"][child_kind]])
                 continue
-            elif channel_data.get("require_download_link", False) and child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
+            elif child_kind == "Video" and set(["mp4", "png"]) - set(child.get("download_urls", {}).keys()):
                 # for now, since we expect the missing videos to be filled in soon,
                 #   we won't remove these nodes
                 logging.warn("No download link for video: %s\n" % child.get("youtube_id", child.get("id", "")))
-                children_to_delete.append(i)
+                if channel_data.get("require_download_link", False):
+                    children_to_delete.append(i)
                 continue
 
             child_kinds = child_kinds.union(set([child_kind]))
-            child_kinds = child_kinds.union(recurse_nodes(child, path=node["path"], ancestor_ids=ancestor_ids + [node["id"]]))
+            child_kinds = child_kinds.union(recurse_nodes(child, path=node["path"]))
 
         # Delete those marked for completion
         for i in reversed(children_to_delete):

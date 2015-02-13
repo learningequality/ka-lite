@@ -1,5 +1,4 @@
 from kalite.testing import KALiteTestCase
-from kalite.topic_tools import get_topic_tree
 from kalite.caching import initialize_content_caches
 
 
