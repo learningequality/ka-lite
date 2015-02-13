@@ -22,18 +22,21 @@
             // As such, changing any of the values of the items requires a change of URL and subsequent
             // navigation event in order to produce the new report.
 
-            $("#report_type").change(function(){
-                var url ="{% url 'tabular_view' %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
-                $("#tabularGo").attr("href", url);
+            $("#display-topic-report").on("click", function() {
+                var report_type = $("#report_type option:selected").val();
+                // A simple whitelist to exclude invalid urls (i.e. if the '----' option is chosen
+                if (report_type != "exercise" || report_type != "video") {
+                    report_type = "";
+                } else {
+                    report_type += "/";
+                }
+                var base_url = "{% url 'tabular_view' %}" + report_type + window.location.search;
+                var url = setGetParam(base_url, "topic", $("#topic option:selected").val());
+                window.location.href = url;
             });
 
             $("#student").change(function(){
                 window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
-            });
-
-            $("#topic").change(function(){
-                var url = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
-                $("#tabularGo").attr("href", url);
             });
 
             $("#playlist").change(function(){
@@ -129,7 +132,7 @@
         {% endif %}
         </div>
         <div class="selection pull-left">
-            <a href="#" class="btn btn-primary" id="tabularGo">Go</a>
+            <a href="#" class="btn btn-primary" id="display-topic-report">Go</a>
         </div>
     </div>
     <div class="col-md-12">
