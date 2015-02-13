@@ -13,6 +13,12 @@ from errors import OptionError
 
 from selenium.webdriver.common.keys import Keys
 
+from pyvirtualdisplay import Display
+
+# Start a virtual headless display
+display = Display(visible=0, size=(1024, 768))
+display.start()
+
 SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
 SCREENSHOT_COMMAND_OPTS = " -v 0 --from-str '%s' --output-dir %s"
 OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "images"))
