@@ -116,6 +116,9 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
             # test that there are new items in the assessment items too
 
+        # test that it extract the assessment items version file
+        self.assertTrue(os.path.exists(mod.ASSESSMENT_ITEMS_VERSION_PATH), "assessmentitems.json.version wasn't extracted!")
+
     def test_is_valid_url_returns_true_for_valid_urls(self):
         valid_urls = [
             "http://stackoverflow.com/questions/25259134/how-can-i-check-whether-a-url-is-valid-using-urlparse",

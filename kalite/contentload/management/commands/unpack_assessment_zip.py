@@ -20,6 +20,7 @@ KHAN_CONTENT_PATH = os.path.join(
 )
 
 ASSESSMENT_ITEMS_PATH = os.path.join(KHAN_DATA_PATH, "assessmentitems.json")
+ASSESSMENT_ITEMS_VERSION_PATH = os.path.join(KHAN_DATA_PATH, "assessmentitems.json.version")
 
 logging = settings.LOG
 
@@ -47,6 +48,7 @@ class Command(BaseCommand):
 
 def extract_assessment_items_to_data_dir(zf):
     zf.extract("assessmentitems.json", KHAN_DATA_PATH)
+    zf.extract("assessmentitems.json.version", KHAN_DATA_PATH)
 
 
 def unpack_zipfile_to_khan_content(zf):

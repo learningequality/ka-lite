@@ -58,3 +58,4 @@ ghostdriver.log
 /kalite/_built.touch
 /kalite/contentload/tests/fixtures/
 *.swp
+/data/khan/assessmentitems.json.version
