@@ -382,9 +382,15 @@ def exercise_mastery_view(request, facility):
             elif student["exercise_logs"][ex]["attempts"] > 0:
                 progress = progress + 1
 
-    context["progress"] = (100/exercise_count) * progress/user_count
-    context["mastered"] = (100/exercise_count) * mastered/user_count
-    context["struggling"] = (100/exercise_count) * struggling/user_count
+
+    context["progress"] = 0
+    context["mastered"] = 0
+    context["struggling"] = 0
+
+    if user_count > 0 and exercise_count > 0:
+        context["progress"] = (100/exercise_count) * progress/user_count 
+        context["mastered"] = (100/exercise_count) * mastered/user_count
+        context["struggling"] = (100/exercise_count) * struggling/user_count
 
     log_coach_report_view(request)
 

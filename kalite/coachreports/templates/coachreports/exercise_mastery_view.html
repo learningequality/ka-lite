@@ -68,21 +68,14 @@
     {% if not students %}
         <p>
             <div class="subtitle error" id="error_message">
-                {% if not groups.0.groups and not groups.1 %}
-                    {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
-                    {% trans "No student accounts have been created." %}
-                {% endif %}
                 {% if not request.GET.playlist %}
-                    {% comment %}Group was selected, but data not queried because a playlist was not selected
-                    (NOTE: this required knowledge of how the view queries data){% endcomment %}
                     <div id="no_topic_or_playlist_error">
-                    {% if playlists %}
-                        {% trans "Please select a playlist above." %}
-                    {% endif %}
+                        {% if playlists %}
+                            {% trans "Please select a playlist above." %}
+                        {% else %}
+                            {% trans "No student accounts in this group have been created." %}
+                        {% endif %}
                     </div>
-                {% else %}
-                    {% comment %}Everything specified, but no users fit the query.{% endcomment %}
-                    {% trans "No student accounts in this group have been created." %}
                 {% endif %}
             </div>
         </p>
