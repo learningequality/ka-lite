@@ -12,7 +12,6 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-import time
 
 logging = settings.LOG
 
@@ -64,7 +63,6 @@ class DeviceRegistrationTests(FacilityMixins,
              WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
         except TimeoutException:
             pass
-
         self.assertTrue(element.is_displayed())
 
 
