@@ -121,7 +121,12 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
     global EXERCISES, EXERCISES_FILEPATH
     if EXERCISES is None:
         EXERCISES = {}
-    if EXERCISES.get(language) is None or force:
+    if EXERCISES.get(language) is None:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            exercises = softload_json(EXERCISES_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
+            if exercises:
+                EXERCISES[language] = exercises
+                return EXERCISES[language]
         EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
         exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
         if os.path.exists(exercise_root):
@@ -162,6 +167,13 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 exercise["template"] = exercise_template
                 exercise["title"] = _(exercise.get("title", ""))
                 exercise["description"] = _(exercise.get("description", "")) if exercise.get("description") else ""
+
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+            try:
+                with open(EXERCISES_FILEPATH + "_" + language + ".cache", "w") as f:
+                    json.dump(EXERCISES[language], f)
+            except IOError as e:
+                logging.warn("Annotated exercise cache file failed in saving with error {e}".format(e=e))
 
     return EXERCISES[language]
 
