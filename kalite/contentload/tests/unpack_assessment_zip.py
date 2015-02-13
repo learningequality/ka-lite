@@ -2,6 +2,7 @@ import StringIO
 import json
 import os
 import requests
+import tempfile
 import zipfile
 from mock import patch, MagicMock, mock_open
 
@@ -11,20 +12,29 @@ from django.core.management import call_command
 from kalite.testing import KALiteTestCase
 from kalite.contentload.management.commands import unpack_assessment_zip as mod
 
-ASSESSMENT_ZIP_SAMPLE_PATH = os.path.join(
-    os.path.dirname(__file__),
-    "fixtures",
-    "assessment_item_resources.sample.zip"
-)
-
 
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
+
+    def setUp(self):
+        _, self.zipfile_path = tempfile.mkstemp()
+        with open(self.zipfile_path, "w") as f:
+            zf = zipfile.ZipFile(f, "w")
+            for dirpath, _, filenames in os.walk(os.path.join(os.path.dirname(__file__), "fixtures")):
+                # this toplevel for loop should only do one loop, but
+                # it's in a for loop nonetheless since it's more idiomatic
+                for filename in filenames:
+                    full_path = os.path.join(dirpath, filename)
+                    zf.write(full_path, filename)
+            zf.close()
+
+    def tearDown(self):
+        os.unlink(self.zipfile_path)
 
     @patch.object(requests, "get", autospec=True)
     def test_command_with_url(self, get_method):
         url = "http://fakeurl.com/test.zip"
 
-        with open(ASSESSMENT_ZIP_SAMPLE_PATH) as f:
+        with open(self.zipfile_path) as f:
             zip_raw_data = f.read()
             zf = zipfile.ZipFile(StringIO.StringIO(zip_raw_data))
             get_method.return_value = MagicMock(content=zip_raw_data)
@@ -55,6 +65,21 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
 class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
+    def setUp(self):
+        _, self.zipfile_path = tempfile.mkstemp()
+        with open(self.zipfile_path, "w") as f:
+            zf = zipfile.ZipFile(f, "w")
+            for dirpath, _, filenames in os.walk(os.path.join(os.path.dirname(__file__), "fixtures")):
+                # this toplevel for loop should only do one loop, but
+                # it's in a for loop nonetheless since it's more idiomatic
+                for filename in filenames:
+                    full_path = os.path.join(dirpath, filename)
+                    zf.write(full_path, filename)
+            zf.close()
+
+    def tearDown(self):
+        os.unlink(self.zipfile_path)
+
     def test_unpack_zipfile_to_khan_content_extracts_to_content_dir(self):
         zipfile_instance = MagicMock()
 
@@ -77,11 +102,10 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         with open(mod.ASSESSMENT_ITEMS_PATH) as f:
             old_assessment_items = json.load(f)
 
-        with open(ASSESSMENT_ZIP_SAMPLE_PATH) as f:
+        with open(self.zipfile_path) as f:
             zf = zipfile.ZipFile(f)
             mod.extract_assessment_items_to_data_dir(zf)
             zf.close()
-
 
         # test that it combines the new assessment items with the previous one
         with open(mod.ASSESSMENT_ITEMS_PATH) as f:
