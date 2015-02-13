@@ -263,43 +263,7 @@ window.ExerciseView = Backbone.View.extend({
 
             } else if (framework == "perseus") {
 
-                var item_index;
-
-                var assessment_items = self.data_model.get("all_assessment_items") || [{id: ""}];
-
-                if (typeof attempts !== "undefined") {
-
-                    item_index = attempts % assessment_items.length;
-
-                } else {
-
-                    item_index = Math.floor(Math.random() * assessment_items.length);
-
-                }
-
-                // TODO(jamalex): remove this once we figure out why assessment_items[item_index] is an unparsed string
-                var current_item = assessment_items[item_index];
-                if (typeof current_item == "string") {
-                    current_item = JSON.parse(current_item);
-                }
-
-                self.data_model.set("assessment_item_id", current_item.id);
-
-                $(Exercises).trigger("clearExistingProblem");
-
-                var item = new AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
-
-                item.fetch().then(function() {
-                    require([KHAN_EXERCISES_SCRIPT_URL], function() {
-                        Exercises.PerseusBridge.load().then(function() {
-                            Exercises.PerseusBridge.render_item(item.get_item_data());
-                            $(Exercises).trigger("newProblem", {
-                                userExercise: null,
-                                numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
-                            });
-                        });
-                    });
-                });
+                self.get_assessment_item(attempts)
 
             } else {
                 throw "Unknown framework: " + framework;
@@ -307,6 +271,58 @@ window.ExerciseView = Backbone.View.extend({
 
         });
 
+    },
+
+
+    get_assessment_item: function(attempts) {
+        var self = this;
+
+        var item_index;
+
+        var assessment_items = self.data_model.get("all_assessment_items") || [];
+
+
+        if (typeof attempts !== "undefined") {
+
+            item_index = attempts % assessment_items.length;
+
+        } else {
+
+            item_index = Math.floor(Math.random() * assessment_items.length);
+
+        }
+
+        // TODO(jamalex): remove this once we figure out why assessment_items[item_index] is an unparsed string
+        var current_item = assessment_items[item_index];
+        if (typeof current_item == "string") {
+            current_item = JSON.parse(current_item);
+        }
+
+        self.data_model.set("assessment_item_id", current_item.id);
+
+        $(Exercises).trigger("clearExistingProblem");
+
+        var item = new AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
+
+        clear_messages();
+
+        item.fetch({
+            success: self.render_perseus_exercise,
+            error: function() {
+                self.get_assessment_item(attempts+1);
+            }});
+    },
+
+    render_perseus_exercise: function(item) {
+        require([KHAN_EXERCISES_SCRIPT_URL], function() {
+            Exercises.PerseusBridge.load().then(function() {
+                Exercises.PerseusBridge.render_item(item.get_item_data());
+                $(Exercises).trigger("newProblem", {
+                    userExercise: null,
+                    numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
+                });
+            });
+        });
     },
 
     check_answer: function() {
