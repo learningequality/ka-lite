@@ -119,7 +119,7 @@ th.headrowuser {
 
 .legend {
     float:right;
-    width:140px;
+    width:160px;
     height:20px;
     text-align:center;
     vertical-align:middle;
@@ -151,4 +151,8 @@ th.headrowuser {
     text-align: center;
     vertical-align: none;
     padding: 0px;
+}
+
+#exercise-mastery {
+    font-size: 10px
 }

@@ -119,7 +119,7 @@
                             {% for exercise in exercises %}
                                 <th class="headrow data" >
                                     <div class="exercise-name"><a href="{{ exercise.path }}" title='"{% trans exercise.display_name %}"{% if exercise.description %} ({% trans exercise.description %}){% endif %}'>{% trans exercise.title %}</a></div>
-                                <div>
+                                <div id="exercise-mastery">
                                 Mastered: {{ exercise_stats|get_item:exercise.id|get_item:"mastered" }}
                                 Progress: {{ exercise_stats|get_item:exercise.id|get_item:"progress" }}
                                 Struggling: {{ exercise_stats|get_item:exercise.id|get_item:"struggling" }}
