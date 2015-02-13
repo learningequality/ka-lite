@@ -87,23 +87,8 @@ class VideoLogResource(ModelResource):
 class Exercise():
 
     def __init__(self, **kwargs):
-        self.lang = kwargs.get('lang')
-        self.kind = kwargs.get('kind')
-        self.all_assessment_items = kwargs.get('all_assessment_items')
-        self.display_name = kwargs.get('display_name')
-        self.description = kwargs.get('description')
-        self.y_pos = kwargs.get('y_pos')
-        self.title = kwargs.get('title')
-        self.prerequisites = kwargs.get('prerequisites')
-        self.name = kwargs.get('name')
-        self.id = kwargs.get('id')
-        self.seconds_per_fast_problem = kwargs.get('seconds_per_fast_problem')
-        self.template = kwargs.get('template')
-        self.path = kwargs.get('path')
-        self.x_pos = kwargs.get('x_pos')
-        self.slug = kwargs.get('slug')
-        self.exercise_id = kwargs.get('exercise_id')
-        self.uses_assessment_items = kwargs.get('uses_assessment_items')
+        for k, v in kwargs.iteritems():
+            setattr(self, k, v)
 
 
 class ExerciseResource(Resource):
@@ -112,7 +97,6 @@ class ExerciseResource(Resource):
     all_assessment_items = fields.ListField(attribute='all_assessment_items', default=[])
     display_name = fields.CharField(attribute='display_name')
     description = fields.CharField(attribute='description')
-    y_pos = fields.IntegerField(attribute='y_pos', default=0)
     title = fields.CharField(attribute='title')
     prerequisites = fields.ListField(attribute='prerequisites')
     name = fields.CharField(attribute='name')
@@ -120,10 +104,10 @@ class ExerciseResource(Resource):
     seconds_per_fast_problem = fields.CharField(attribute='seconds_per_fast_problem')
     template = fields.CharField(attribute='template')
     path = fields.CharField(attribute='path')
-    x_pos = fields.IntegerField(attribute='x_pos', default=0)
     slug = fields.CharField(attribute='slug')
     exercise_id = fields.CharField(attribute='exercise_id')
     uses_assessment_items = fields.BooleanField(attribute='uses_assessment_items')
+    available = fields.BooleanField(attribute='available', default=True)
 
     class Meta:
         resource_name = 'exercise'
@@ -245,9 +229,17 @@ class Content:
 
     def __init__(self, lang_code="en", **kwargs):
 
-        self.on_disk = False
-
-        standard_fields = ["title", "description", "id", "author_name", "kind"]
+        standard_fields = [
+            "title",
+            "description",
+            "id",
+            "author_name",
+            "kind",
+            "content_urls",
+            "selected_language",
+            "subtitle_urls",
+            "available",
+        ]
 
         for k in standard_fields:
             setattr(self, k, kwargs.pop(k, ""))
@@ -258,21 +250,17 @@ class Content:
             extra_fields[k] = v
 
         # the computed values
-        self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
         self.extra_fields = json.dumps(extra_fields)
-        self.selected_language = lang_code
-        if self.description == "None":
-            self.description = ""
         # TODO-BLOCKER (MCGallaspy) this is inappropriate if multiple channels are active at once
         self.source = settings.CHANNEL
 
 
 class ContentResource(Resource):
     content_urls = fields.DictField(attribute='content_urls')
-    description = fields.CharField(attribute='description')
+    description = fields.CharField(attribute='description', default="")
     id = fields.CharField(attribute='id')
     kind = fields.CharField(attribute='kind')
-    on_disk = fields.BooleanField(attribute='on_disk')
+    available = fields.BooleanField(attribute='available')
     selected_language = fields.CharField(attribute='selected_language')
     title = fields.CharField(attribute='title')
     extra_fields = fields.CharField(attribute='extra_fields')
