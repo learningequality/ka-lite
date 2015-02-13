@@ -124,6 +124,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
             exercise_templates = os.listdir(exercise_root)
         else:
             exercise_templates = []
+        assessmentitems = get_assessment_item_cache()
         for exercise in EXERCISES[language].values():
             exercise_file = exercise["name"] + ".html"
             exercise_template = exercise_file
@@ -138,7 +139,20 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
             else:
                 exercise_template = os.path.join(exercise_lang, exercise_file)
 
+            if exercise.get("uses_assessment_items", False):
+                available = False
+                items = []
+                for item in exercise.get("all_assessment_items","[]"):
+                    item = json.loads(item)
+                    if assessmentitems.get(item.get("id")):
+                        items.append(item)
+                        available = True
+                exercise["all_assessment_items"] = items
+            else:
+                available = os.path.isfile(exercise_template)
+
             with i18n.translate_block(exercise_lang):
+                exercise["available"] = available
                 exercise["lang"] = exercise_lang
                 exercise["template"] = exercise_template
                 exercise["title"] = _(exercise.get("title", ""))
