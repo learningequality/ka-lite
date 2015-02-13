@@ -102,6 +102,7 @@ class ExerciseResource(Resource):
     name = fields.CharField(attribute='name')
     id = fields.CharField(attribute='id')
     seconds_per_fast_problem = fields.CharField(attribute='seconds_per_fast_problem')
+    basepoints = fields.CharField(attribute='basepoints', default='10')
     template = fields.CharField(attribute='template')
     path = fields.CharField(attribute='path')
     slug = fields.CharField(attribute='slug')
