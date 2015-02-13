@@ -138,8 +138,8 @@ class UtilityFunctionTests(KALiteTestCase):
         download_method.return_value = 1
 
         urls = ["http://test1.com", "http://test2.com"]
-        with open(mod.ZIP_FILE_PATH) as f:
-            zf = zipfile.ZipFile(mod.ZIP_FILE_PATH)
+        with open(mod.ZIP_FILE_PATH, "w") as f:
+            zf = zipfile.ZipFile(f, "w")
             mod.download_urls(zf, urls)
             zf.close()
 
