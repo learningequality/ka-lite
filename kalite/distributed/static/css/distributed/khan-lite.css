@@ -993,3 +993,9 @@ div#fade {
 .examples li {
     margin: 5px 0;
 }
+
+#solutionarea input[type=text]:focus, textarea:focus {
+  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+  border-color: rgba(81, 203, 238, 1);
+  border-style: solid;
+}
