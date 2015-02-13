@@ -72,9 +72,11 @@
                                                 {% trans "Update" %}
                                             </a>
                                         {% endif %}
-                                        <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">
+                                    {% if not device.is_registered %}
+                                        <a class="btn btn-success not-registered-only" id="not-registered" href="{% url 'register_public_key' %}">
                                             {% trans "Register device" %}
                                         </a>
+                                    {% endif %}
                                         {% if clock_set %}
                                         /
                                             <a onclick="$('#clock_set').show()">

@@ -8,7 +8,64 @@ from selenium.common.exceptions import NoSuchElementException
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin, StoreMixins
 
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+import time
+
 logging = settings.LOG
+
+
+class DeviceRegistrationTests(FacilityMixins,
+                       StudentProgressMixin,
+                       BrowserActionMixins,
+                       CreateZoneMixin,
+                       CreateAdminMixin,
+                       KALiteBrowserTestCase):
+
+    def setUp(self):
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+
+        super(DeviceRegistrationTests, self).setUp()
+
+
+    def test_device_registration_availability(self):
+        """
+        This test simulate the device registration availability.
+        The Registration button must appear else the test will fail.
+        """
+        facility_name = 'default'
+        self.fac = self.create_facility(name=facility_name)
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+        element = self.browser.find_element_by_id('not-registered')
+        try:
+             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+        except TimeoutException:
+             pass
+        self.assertTrue(element.is_displayed())
+
+
+    def test_device_already_register(self):
+        """
+        This test will simulate the device that has already registered and the only option is available is update
+        the software else the test will fail.
+        """
+        facility_name = 'default'
+        self.zone = self.create_zone()
+        self.device_zone = self.create_device_zone(self.zone)
+        self.fac = self.create_facility(name=facility_name)
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+        element = self.browser.find_element_by_id('force-sync')
+        try:
+             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+        except TimeoutException:
+            pass
+
+        self.assertTrue(element.is_displayed())
 
 
 class FacilityControlTests(FacilityMixins,
