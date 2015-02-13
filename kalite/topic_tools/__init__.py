@@ -66,6 +66,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
         # Loop through all the nodes in the topic tree
         # and cross reference with the content_cache to check availability.
         content_cache = get_content_cache(language=language)
+        exercise_cache = get_exercise_cache(language=language)
         def recurse_nodes(node):
 
             child_availability = []
@@ -80,9 +81,12 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
                 node["available"] = any(child_availability)
             else:
                 # By default this is very charitable, assuming if something has not been annotated
-                # it is available - needs to be updated for exercises.
-                if content_cache.get(node.get("id"), {}).get("available", True):
-                    node["available"] = True
+                # it is available.
+                if node.get("kind") == "Exercise":
+                    cache_node = exercise_cache.get(node.get("id"), {})
+                else:
+                    cache_node = content_cache.get(node.get("id"), {})
+                node["available"] = cache_node.get("available", True)
 
             # Translate everything for good measure
             with i18n.translate_block(language):
