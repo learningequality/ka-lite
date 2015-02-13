@@ -248,6 +248,10 @@ window.ExerciseView = Backbone.View.extend({
 
         this.data_model.update_if_needed_then(function() {
 
+            if (!self.data_model.get("available")) {
+                return this.warn_exercise_not_available()
+            }
+
             var framework = self.data_model.get_framework();
 
             Exercises.setCurrentFramework(framework);
@@ -273,6 +277,11 @@ window.ExerciseView = Backbone.View.extend({
 
     },
 
+    warn_exercise_not_available: function () {
+        show_message("warning", gettext("This content was not found! Please contact your coach or an admin to have it downloaded."));
+        this.$("#workarea").html("");
+        return false;
+    },
 
     get_assessment_item: function(attempts) {
         var self = this;
@@ -281,6 +290,9 @@ window.ExerciseView = Backbone.View.extend({
 
         var assessment_items = self.data_model.get("all_assessment_items") || [];
 
+        if (assessment_items.length === 0) {
+            return this.warn_exercise_not_available()
+        }
 
         if (typeof attempts !== "undefined") {
 
