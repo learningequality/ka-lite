@@ -1,21 +1,27 @@
+import json
+import os
+import uuid
+from subprocess import Popen
+
 from docutils import nodes
 from docutils.parsers.rst.directives.images import Image
 from docutils.parsers.rst import Directive
 import docutils.parsers.rst.directives as directives
-
-import os
-import uuid
-import json
-
 from exceptions import NotImplementedError
+from selenium.webdriver.common.keys import Keys
+
 from errors import ActionError
 from errors import OptionError
 
-from selenium.webdriver.common.keys import Keys
 
-SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
-SCREENSHOT_COMMAND_OPTS = " -v 0 --from-str '%s' --output-dir %s"
+USER_ROLES = ["guest", "coach", "admin", "learner"]
+# The alias with its parse function
+COMMAND_ALIASES = [("LOGIN", _parse_login)]
+# Formatted from subprocess.Popen
 OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "images"))
+MANAGE_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","kalite","manage.py"))
+SCREENSHOT_COMMAND = ["/usr/bin/python", MANAGE_PATH, "screenshots"]
+SCREENSHOT_COMMAND_OPTS = ["-v", "0", "--output-dir", OUTPUT_PATH]
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",
                      "borderColor": "red",
@@ -39,7 +45,8 @@ def process_screenshots(app, env):
         return
 
     all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
-    os.system(SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS % (json.dumps(all_args), OUTPUT_PATH))
+    subprocess = Popen(SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str", json.dumps(all_args)])
+    subprocess.wait()
 
 def _parse_focus(arg_str):
     """ Returns id and annotation after splitting input string.
@@ -47,6 +54,11 @@ def _parse_focus(arg_str):
     First argument should be the jQuery-style selector. An optional 
     annotation can follow if separated by a separator '|'. Initial
     whitespace after the '|' will be ignored.
+
+    Example inputs:
+        #an_id
+        #another_id | With an annotation
+        form.foo input.radio | The quick brown fox 
     """
     split_str = arg_str.split('|', 1)
     if len(split_str) == 1:
@@ -63,6 +75,13 @@ def _parse_command(command):
        options (list): a list of options
 
     Raises an error if action type is not recognized or if options are invalid.
+
+    Example inputs:
+        #sync_button click
+        NEXT send_keys some keys
+        NEXT send_keys special characters like TAB and ENTER can be used like this
+
+    Note that 'TAB', 'ENTER', and 'BACKSPACE' all have special meaning for send_keys
     """
     command_args = command.split()
     if not command_args:
@@ -126,15 +145,12 @@ def _parse_nav_steps(arg_str):
             runhandler: reference to function invoked in the run method
             args:       a dictionary of arguments passed to the runhandler function
     """
-    # The alias with its parse function
-    ALIASES = [("LOGIN", _parse_login)]
-
     if not arg_str:
         arg_str = ""
 
     # First check if we've been passed an aliased_action_sequence
     words = arg_str.split(' ')
-    for e in ALIASES:
+    for e in COMMAND_ALIASES:
         if words[0] == e[0]:
             return e[1](*words[1:])
 
@@ -145,7 +161,7 @@ def _parse_nav_steps(arg_str):
              "args":        {'commands': parsed_commands}}
 
 def _parse_user_role(arg_str):
-    if arg_str in ["guest", "coach", "admin", "learner"]:
+    if arg_str in USER_ROLES:
         return arg_str
     else:
         raise NotImplementedError("Unrecognized user-role: %s" % arg_str)
@@ -154,6 +170,12 @@ class Screenshot(Image):
     """ Provides directive to include screenshot based on given options.
 
     Since it inherits from the Image directive, it can take Image options.
+
+    When parsed, returns an image node pointing to a temporary file (that we `touch`
+    with `os.utime`). The actual image is created later in the build process,
+    when the 'env-updated' event is triggered. If the file doesn't exist when the
+    image node is created, it can cause unexpected behavior, like not copying images
+    properly for html builds.
     """
     required_arguments = 0
     optional_arguments = 0
@@ -189,7 +211,7 @@ class Screenshot(Image):
             'from_str_arg': from_str_arg,
         })
         self.arguments.append(os.path.join("/", "images", self.filename+".png"))
-        os.system("touch %s" % os.path.join("images", self.filename+".png"))
+        os.utime(os.path.join("images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
 
@@ -214,7 +236,7 @@ class Screenshot(Image):
             'from_str_arg': from_str_arg,
         })
         self.arguments.append(os.path.join("/", "images", self.filename+".png"))
-        os.system("touch %s" % os.path.join("images", self.filename+".png"))
+        os.utime(os.path.join("images", self.filename+".png"))
         (image_node,) = Image.run(self)
         return image_node
 
@@ -226,7 +248,13 @@ class Screenshot(Image):
     option_spec['focus'] = _parse_focus
 
     def run(self):
-        """ Returns list of nodes to appended as screenshot.
+        """ During the build process directives are parsed as nodes, and then
+        later the nodes are built into the target format (html, latex, pdf, etc.)
+        
+        run is called automatically during the parsing process and is expected to
+        return a list of nodes. Here we set up our parsing environment, then defer
+        to a runhandler callback for parsing. The callback is determined by the
+        navigation-steps option of the screenshot directive (in _parse_nav_steps).
 
         Language xx can be set in conf.py or by:
         make SPHINXOPTS="-D language=xx" html
