@@ -10,6 +10,8 @@ from multiprocessing.dummy import Pool as ThreadPool
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
 
+import kalite.version as version
+
 logging = settings.LOG
 
 ZIP_FILE_PATH = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
@@ -39,6 +41,10 @@ class Command(NoArgsCommand):
             zf.close()
 
         logging.info("Zip File with images placed in %s" % zip_file_path)
+
+
+def write_assessment_item_version_to_zip(zf, versionnumber=version.SHORTVERSION):
+    zf.writestr("assessmentitems.json.version", versionnumber)
 
 
 def write_assessment_to_zip(zf, assessment_items):
