@@ -69,6 +69,6 @@ $(function(){
               return dtnode.data.key;
             });
             window.location.href = setGetParam(window.location.href, "playlist", selKeys);
-        },
+        }
     });
 });
