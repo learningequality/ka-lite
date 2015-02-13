@@ -73,7 +73,7 @@
                                             </a>
                                         {% endif %}
                                     {% if not device.is_registered %}
-                                        <a class="btn btn-success not-registered-only" href="{% url 'register_public_key' %}">
+                                        <a class="btn btn-success not-registered-only" id="not-registered" href="{% url 'register_public_key' %}">
                                             {% trans "Register device" %}
                                         </a>
                                     {% endif %}

@@ -8,6 +8,12 @@ from selenium.common.exceptions import NoSuchElementException
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin, StoreMixins
 
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+import time
+
 logging = settings.LOG
 
 
@@ -34,10 +40,12 @@ class DeviceRegistrationTests(FacilityMixins,
         self.fac = self.create_facility(name=facility_name)
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
-
-        device_status = self.browser.find_elements_by_class_name("not-registered-only")
-        expected_result = "Register Now!"
-        self.assertEqual(device_status[0].text, expected_result)
+        element = self.browser.find_element_by_id('not-registered')
+        try:
+             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+        except TimeoutException:
+             pass
+        self.assertTrue(element.is_displayed())
 
 
     def test_device_already_register(self):
@@ -51,9 +59,13 @@ class DeviceRegistrationTests(FacilityMixins,
         self.fac = self.create_facility(name=facility_name)
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
-        device_status = self.browser.find_elements_by_class_name("registered-only")
-        expected_result = "Sync Now!"
-        self.assertEqual(device_status[0].text, expected_result)
+        element = self.browser.find_element_by_id('force-sync')
+        try:
+             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+        except TimeoutException:
+            pass
+
+        self.assertTrue(element.is_displayed())
 
 
 class FacilityControlTests(FacilityMixins,
