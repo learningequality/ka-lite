@@ -11,7 +11,8 @@ $(function() {
     $("#facility").change(function() {
         window.location.href = setGetParamDict(window.location.href, {
             "facility": $("#facility option:selected").val(),
-            "group": $("#" + $("#facility option:selected").val() + "_group_select").val()
+            "group": $("#" + $("#facility option:selected").val() + "_group_select").val(),
+            "playlist": ""
         });
     });
 
