@@ -14,7 +14,7 @@ There are two ways KA Lite can be used:
 #. **Installed for single user, on one machine.** If you are not accessing KA Lite through a network or wish to run KA Lite on your own computer, please follow the :doc:`../installguide/install_main` first before proceeding with this user manual. Once you have done so, copy and paste the URL given during the installation process into a web browser to access KA Lite (it should be http://127.0.0.1:8008).
 
 
-How to Log In
+How to Sign Up
 --------------
 Learners may receive their account information from their Coaches or Administrators if their account has been preconfigured. However, it is possible for learners to create their own account. To create an account, please follow the instructions below:
 
@@ -23,6 +23,12 @@ Learners may receive their account information from their Coaches or Administrat
 #. If you are redirected to a page that asks you to select a facility, please select the facility to which you belong. If you are unsure which facility you belong to, please contact your administrator or coach. Skip this step if you do not see this page.
 #. Fill out the information. 
 #. Click the "Create user" button when you are finished.
+
+How to Log In
+-------------
+#. Open KA lite.
+#. Click on the "Log In" tab.
+#. Enter your username and password, and then click the "Log in" button.
 
 
 Navigating through Content

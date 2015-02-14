@@ -23,8 +23,6 @@ Macintosh installation uses the command line, but if you follow the instructions
 #. To begin installation enter *./setup_mac.command*
 #. During installation, you will be prompted to make an Admin account. Go ahead and follow along with the instructions.
 #. To begin running the server.
-	* Enter *./start.command*	
+	* Enter *./bin/kalite start*	
 #. KA lite should be accessible from http://127.0.0.1:8008/
 	* Replace *127.0.0.1* with the computer's external IP address or domain name to access it from another computer.
-
-

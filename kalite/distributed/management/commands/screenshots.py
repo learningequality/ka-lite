@@ -1,8 +1,11 @@
 import errno
+import glob
 import json
 import os
-import glob
 import re
+from optparse import make_option
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -11,21 +14,11 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.urlresolvers import reverse
 from django.utils.six import StringIO
 
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-
 from fle_utils.general import ensure_dir
-
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
 
-from optparse import make_option
-
-try:
-    from local_settings import *
-    import local_settings
-except ImportError:
-    local_settings = object()
+from local_settings import *
 
 USER_TYPE_ADMIN = "admin"
 USER_TYPE_COACH = "coach"
@@ -125,7 +118,7 @@ def delete_sqlite_database(database=None, verbosity="1"):
         log.error('====> EXCEPTION: %s' % exc)
 
 
-class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
+class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
     """
     Override the values from base class for better looking screenshot data.
     """
@@ -244,21 +237,20 @@ class Screenshot(KALiteBrowserTestCase, FacilityMixins, BrowserActionMixins):
             if note:
                 # Assuming we've loaded jquery
                 # Positioned at the bottom left, so might cause issues with some elements?
-                self.browser.execute_script("$('body').append(\"<span id='annotation'></span>\");" \
-                                            + "$('#annotation').text(\"%s\")" % note \
-                                            + ".css('position','absolute')" \
-                                            + ".css('padding','20px')" \
-                                            + ".css('border','solid 4px black')" \
-                                            + ".css('border-radius','20px 0px 20px 20px')" \
-                                            + ".css('background','white')" \
-                                            + ".css('color','black')" \
-                                            + ".css('z-index','9999');" \
-                                            + "var top_position = $('%s').offset().top + $('%s').outerHeight();" % (selector, selector) \
-                                            + "var left_position = $('%s').offset().left - $('#annotation').outerWidth();" % selector \
-                                            + "if(left_position<0){left_position=0;};" \
-                                            + "$('#annotation').css('left',left_position+'px')" \
-                                            + ".css('top',top_position+'px');" \
-                                            )
+                self.browser.execute_script("$('body').append(\"<span id='annotation'></span>\");" 
+                                            + "$('#annotation').text(\"%s\")" % note 
+                                            + ".css('position','absolute')" 
+                                            + ".css('padding','20px')" 
+                                            + ".css('border','solid 4px black')" 
+                                            + ".css('border-radius','20px 0px 20px 20px')" 
+                                            + ".css('background','white')" 
+                                            + ".css('color','black')" 
+                                            + ".css('z-index','9999');" 
+                                            + "var top_position = $('%s').offset().top + $('%s').outerHeight();" % (selector, selector) 
+                                            + "var left_position = $('%s').offset().left - $('#annotation').outerWidth();" % selector 
+                                            + "if(left_position<0){left_position=0;};" 
+                                            + "$('#annotation').css('left',left_position+'px')" 
+                                            + ".css('top',top_position+'px');" )
 
         self.browser.save_screenshot(filename)
 
