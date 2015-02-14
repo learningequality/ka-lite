@@ -15,8 +15,6 @@ from errors import OptionError
 
 
 USER_ROLES = ["guest", "coach", "admin", "learner"]
-# The alias with its parse function
-COMMAND_ALIASES = [("LOGIN", _parse_login)]
 # Formatted from subprocess.Popen
 OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "images"))
 MANAGE_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","kalite","manage.py"))
@@ -145,6 +143,11 @@ def _parse_nav_steps(arg_str):
             runhandler: reference to function invoked in the run method
             args:       a dictionary of arguments passed to the runhandler function
     """
+    # The alias with its parse function
+    # Restored to its original position so that function references are not used
+    # before they are defined
+    COMMAND_ALIASES = [("LOGIN", _parse_login)]
+    
     if not arg_str:
         arg_str = ""
 
@@ -211,7 +214,7 @@ class Screenshot(Image):
             'from_str_arg': from_str_arg,
         })
         self.arguments.append(os.path.join("/", "images", self.filename+".png"))
-        os.utime(os.path.join("images", self.filename+".png"))
+        open(os.path.join(OUTPUT_PATH, self.filename+".png"), 'w').close()
         (image_node,) = Image.run(self)
         return image_node
 
@@ -236,7 +239,7 @@ class Screenshot(Image):
             'from_str_arg': from_str_arg,
         })
         self.arguments.append(os.path.join("/", "images", self.filename+".png"))
-        os.utime(os.path.join("images", self.filename+".png"))
+        open(os.path.join(OUTPUT_PATH, self.filename+".png"), 'w').close()
         (image_node,) = Image.run(self)
         return image_node
 
