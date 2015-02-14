@@ -31,6 +31,22 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
     def tearDown(self):
         os.unlink(self.zipfile_path)
 
+    @patch("%s.open" % mod.__name__, mock_open(), create=True)
+    @patch.object(requests, "get")
+    @patch.object(mod, "should_upgrade_assessment_items")
+    def test_command_should_skip(self, upgrade_method, get_method):
+        upgrade_method.return_value = False
+
+        # test that we don't update when given a url
+        url = "http://fakeurl.com/test.zip"
+        call_command("unpack_assessment_zip", url)
+        self.assertEqual(get_method.call_count, 0, "requests.get was called even if we should've skipped!")
+
+        filename = "/fake/file/somewhere.zip"
+        call_command("unpack_assessment_zip", filename)
+        self.assertEqual(mod.open.call_count, 0,  "open was called even if we should've skipped!")
+
+
     @patch.object(requests, "get", autospec=True)
     def test_command_with_url(self, get_method):
         url = "http://fakeurl.com/test.zip"

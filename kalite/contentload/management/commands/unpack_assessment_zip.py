@@ -4,8 +4,9 @@ import requests
 import os
 import urlparse
 import zipfile
-from fle_utils.general import ensure_dir
 from distutils.version import StrictVersion
+from fle_utils.general import ensure_dir
+from optparse import make_option
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -31,11 +32,23 @@ logging = settings.LOG
 
 class Command(BaseCommand):
 
+    option_list = BaseCommand.option_list + (
+        make_option("-f", "--force",
+                    action="store_true",
+                    dest="force_download",
+                    default=False,
+                    help="If specified, force the download even if our assessment items is up-to-date."),
+    )
+
     def handle(self, *args, **kwargs):
         if len(args) != 1:
             raise CommandError("We expect only one argument; the location of the zip.")
 
         ziplocation = args[0]
+
+        if not should_upgrade_assessment_items() and not kwargs['force_download']:
+            logging.debug("Assessment item resources are in the right version. Skipping download;")
+            return
 
         if is_valid_url(ziplocation):  # url; download the zip
             logging.warn("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
