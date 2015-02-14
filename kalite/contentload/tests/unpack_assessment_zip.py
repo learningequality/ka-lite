@@ -11,6 +11,7 @@ from django.core.management import call_command
 
 from kalite.testing import KALiteTestCase
 from kalite.contentload.management.commands import unpack_assessment_zip as mod
+from kalite import version
 
 
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
@@ -97,6 +98,40 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
         for url in invalid_urls:
             self.assertFalse(mod.is_valid_url(url))
+
+    @patch.object(version, 'SHORTVERSION', '0.13')
+    def test_should_upgrade_assessment_items(self):
+        # if assessmentitems.json.version doesn't exist, then return
+        # true
+        with patch("os.path.exists") as exists_method:
+            exists_method.return_value = False
+            self.assertTrue(
+                mod.should_upgrade_assessment_items(),
+                "We told our user not to download assessment items even if they don't have it! Madness!"
+            )
+
+        # if the version in assessmentitems.json.version is less
+        # than our current version, then we should upgrade (return True)
+        assessment_items_mock_version = "0.9.0"
+        with patch('%s.open' % mod.__name__, mock_open(read_data=assessment_items_mock_version), create=True) as mopen:
+            self.assertTrue(
+                mod.should_upgrade_assessment_items(),
+                "We should've told our users to upgrade assessment items, as they have an old version!"
+            )
+            # we should've also opened the file atleast
+            mopen.assert_called_once_with(mod.ASSESSMENT_ITEMS_VERSION_PATH)
+
+        # if the version in assessment items is equal to our current
+        # version, then don't upgrade
+        assessment_items_mock_version = version.SHORTVERSION
+        with patch('%s.open' % mod.__name__, mock_open(read_data=assessment_items_mock_version), create=True) as mopen:
+            self.assertFalse(
+                mod.should_upgrade_assessment_items(),
+                "We should not tell the user to upgrade when we have the same version as assessment items!"
+            )
+            # we should've also opened the file atleast
+            mopen.assert_called_once_with(mod.ASSESSMENT_ITEMS_VERSION_PATH)
+
 
     def test_extract_assessment_items_to_data_dir(self):
         with open(mod.ASSESSMENT_ITEMS_PATH) as f:

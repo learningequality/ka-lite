@@ -5,9 +5,14 @@ import os
 import urlparse
 import zipfile
 from fle_utils.general import ensure_dir
+from distutils.version import StrictVersion
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
+
+logging = settings.LOG
+
+from kalite import version
 
 KHAN_DATA_PATH = os.path.join(
     settings.CONTENT_DATA_PATH,
@@ -44,6 +49,20 @@ class Command(BaseCommand):
 
         extract_assessment_items_to_data_dir(zf)
         unpack_zipfile_to_khan_content(zf)
+
+
+def should_upgrade_assessment_items():
+    # if assessmentitems.json.version doesn't exist, then we assume
+    # that they haven't got assessment items EVER
+    if not os.path.exists(ASSESSMENT_ITEMS_VERSION_PATH):
+        logging.debug("%s does not exist; downloading assessment items" % ASSESSMENT_ITEMS_VERSION_PATH)
+        return True
+
+    with open(ASSESSMENT_ITEMS_VERSION_PATH) as f:
+        assessment_items_version = StrictVersion(f.read())
+
+    software_version = StrictVersion(version.SHORTVERSION)
+    return software_version > assessment_items_version
 
 
 def extract_assessment_items_to_data_dir(zf):
