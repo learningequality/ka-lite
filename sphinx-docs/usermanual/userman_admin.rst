@@ -42,11 +42,18 @@ After a successful installation of KA Lite, the terminal should give you a comma
 
     ``/PATH/TO/KALITE/bin/kalite start``
 
-The first string will vary depending on which folder you installed KA Lite in. Simply copy and paste the provided string back into the command prompt, and hit enter. You will be asked whether or not you wish to run the KA Lite server in the background automatically every time you start up the computer. Once you answer yes or no, success! The KA Lite server is now running on your computer. 
+The first string will vary depending on which folder you installed KA Lite in. Simply copy and paste the provided string back into the command prompt, and hit enter on your keyboard. You will be asked whether or not you wish to run the KA Lite server in the background automatically every time you start up the computer. Once you answer yes or no, success! The KA Lite server is now running on your computer. 
+
+During the process, your operating system might prompt you to allow "Python.app" to accept incoming connections. The message dialogue may look like the following, depending on your operating system:
+
+    .. image:: acceptconnections.png
+        :align: center
+
+Please allow the app to run. This will make it possible for the KA Lite application to be accessible.
 
 Accessing KA Lite
 -------------------
-When the server has been started, you will be given a few IP addresses. You can use these addresses to access KA Lite by copying and pasting them into a web browser of your choice. 
+Once the server has been started, you will be given a few IP addresses. You can use these addresses to access KA Lite by copying and pasting them into a web browser of your choice. 
 
 In order to access KA Lite from another machine, please enter the IP address that does *not* start with http://127.0.0.1:8008 into the web browser on that machine.
 
@@ -55,7 +62,14 @@ Setting up KA Lite
 -------------------
 Once you have successfully installed KA Lite, the installation script should give you a URL (http://127.0.0.1:8008/) to visit so that you can open KA Lite and login for the first time. 
 
-Copy and paste the URL into a web browser. The KA Lite application should show up. Then, login to KA Lite using the username and password you created during the installation process. 
+Copy and paste the URL into a web browser of your choice. The KA Lite application should show up. Then, log into KA Lite using the username and password you created during the installation process. 
+
+.. screenshot::
+    :user-role: guest
+    :url: /
+    :navigation-steps: 
+    :focus: #nav_login.not-logged-in-only
+
 
 * If you have forgotten the username/password combination, simply delete this version of KA Lite (delete the “ka-lite” folder that you downloaded during the installation guide steps for your system and then redo the installation steps in the Install Guide). If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
 
@@ -72,7 +86,7 @@ By registering your device with FLE, you can sync data back with our central dat
 
 You will have two options: 
 
-    #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use. **Caution**: if you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, please see **PUT LINK ON HOW TO START OVER**).
+    #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use. **Caution**: if you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, you can rerun the setup command by navigating to the folder KA Lite is in and rerunning the setup command).
 
 
     #. **Register with online access to data**. Choose this option if you're an administrator of larger projects. This option allows you to access your uploaded data and connect multiple installations to the same account. 
@@ -80,10 +94,29 @@ You will have two options:
 How to register your device with online access to data
 ########################################################
 
+.. NOTE::
+    You will need Internet access in order to perform these steps. 
 
-**system currently down, this needs updating later**
+#. Log into KA Lite with the username and password that you set during set-up.
+#. If you have not already registered your device, you will be redirected to a page that shows you your options. Click the "Register with an online account now!" button to get started with the registration process. 
 
+.. screenshot::
+    :user-role: admin
+    :url: /securesync/register/
+    :navigation-steps: 
+    :focus: #online-register
 
+If you do not see this page, click on the "Manage" tab. At the top of this page, you should see a link to register your device. It should like like the following:
+
+    .. image:: registermessage.png
+        :align: center
+
+You will be prompted to log in with your central server login credentials. Please note that these credentials are different from your login credentials created during set-up. Click on the "Sign up here" link, and you will be redirected to a page that prompts you to create an account on the central server.
+
+    .. image:: signup.png
+        :align: center
+
+Once you have filled out the form and submitted it, you will be sent an activation link via the email address you supplied. 
 
 
 Post Registration Setup
@@ -273,6 +306,12 @@ Download Language Packs
 To download language packs: 
 
 #. From the "Manage" page, click on the "Language" tab. 
+
+    .. screenshot::
+        :user-role: admin
+        :url: /learn/khan/
+        :navigation-steps: #search click | #search send_keys A search term 
+
 #. Select the language pack you wish to download by selecting from the drop-down menu.
 #. Click the "Get Language Pack" button. 
 #. Once the download finishes, you can see your language pack in the list of installed packs. Learners and coaches will now be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default". 
@@ -298,7 +337,13 @@ Restarting Your Server: Windows
 
 Restarting Your Server: Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#. Open up your terminal. For most Linux distributions, you can do this by going to **Menu -> Accessories -> Terminal** or **Applications menu -> System -> Terminal.**
 
+#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine. 
+
+#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes. 
+
+#. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
 Restarting Your Server: Mac 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -313,19 +358,10 @@ Restarting Your Server: Mac
     .. image:: terminal.png 
         :align: center
 
-    Type in ``sudo lsof -i :8008`` into the prompt, without the quotes. Running this command will prompt you for the machine password. Please enter your machine password, then hit "ENTER" on your keyboard.
+#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine. 
 
-#. After entering your password, some information should appear on your screen. Copy the number that appears under "PID". Please note that the number shown will vary, and may not be exactly the same as the one shown in the picture. Loosely speaking, this is the process ID that is currently running your server. We will need its ID in order to stop the process -- in turn, stopping the KA Lite server. 
+#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes. 
 
-    .. image:: process.png 
-        :align: center
-
-#. Type in ``sudo kill -9 <enter PID here>``. Type in the PID that you just copied from the previous step. Be sure to do this without the "< >" symbols. For example, if the PID was the same as the one in the above photo example, you would type in ``sudo kill -9 9585``. 
-
-#. You may be prompted for your machine password again. If so, please enter in your machine password and hit "Enter" on your keyboard. 
-
-#. Your KA Lite server is now stopped. Now, simply start the KA Lite server as normal. If you are unsure on how to do this, please re-visit `Accessing KA Lite`_ .
-
-.. |magglass| image:: magglass.png
+#. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
 
