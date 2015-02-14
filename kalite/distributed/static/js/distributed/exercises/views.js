@@ -249,7 +249,7 @@ window.ExerciseView = Backbone.View.extend({
         this.data_model.update_if_needed_then(function() {
 
             if (!self.data_model.get("available")) {
-                return this.warn_exercise_not_available()
+                return this.warn_exercise_not_available();
             }
 
             var framework = self.data_model.get_framework();
@@ -267,7 +267,7 @@ window.ExerciseView = Backbone.View.extend({
 
             } else if (framework == "perseus") {
 
-                self.get_assessment_item(attempts)
+                self.get_assessment_item(attempts);
 
             } else {
                 throw "Unknown framework: " + framework;
@@ -291,7 +291,7 @@ window.ExerciseView = Backbone.View.extend({
         var assessment_items = self.data_model.get("all_assessment_items") || [];
 
         if (assessment_items.length === 0) {
-            return this.warn_exercise_not_available()
+            return this.warn_exercise_not_available();
         }
 
         if (typeof attempts !== "undefined") {
