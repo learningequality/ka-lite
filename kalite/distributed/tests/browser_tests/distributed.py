@@ -470,26 +470,19 @@ class CoachHasLogoutLinkTest(KALiteBrowserTestCase, BrowserActionMixins, CreateA
 
     def test_logout_link_visible(self):
         self.browse_to(self.reverse("homepage"))
+        nav_logout = WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
+        )
+        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[10]")
         try:
-            nav_logout = WebDriverWait(self.browser, 10).until(
-                expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
+            self.browser_activate_element(elem=dropdown_menu)
+        except ElementNotVisibleException:
+            # Possible if the browser window is too small and the dropdown menu is collapsed.
+            expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
+            self.browser_activate_element(elem=expand_menus_button)
+            # Wait for the animation to finish
+            WebDriverWait(self.browser, 3).until(
+                expected_conditions.visibility_of(dropdown_menu)
             )
-            dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[10]")
-            try:
-                self.browser_activate_element(elem=dropdown_menu)
-            except ElementNotVisibleException:
-                # Possible if the browser window is too small and the dropdown menu is collapsed.
-                expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
-                self.browser_activate_element(elem=expand_menus_button)
-                # Wait for the animation to finish
-                WebDriverWait(self.browser, 3).until(
-                    expected_conditions.visibility_of(dropdown_menu)
-                )
-                self.browser_activate_element(elem=dropdown_menu)
-            self.assertTrue(nav_logout.is_displayed(), "The dropdown menu logout item is not displayed!")
-        except NoSuchElementException as e:
-            self.assertTrue(False, "Test raised a NoSuchElementException... probably an issue with `setUp` method? Exception: %s" % repr(e))
-            raise
-        except TimeoutException as e:
-            self.assertTrue(False, "Test raised a TimeoutException. Maybe the test server is tired? Exception: %s" % repr(e))
-            raise
+            self.browser_activate_element(elem=dropdown_menu)
+        self.assertTrue(nav_logout.is_displayed(), "The dropdown menu logout item is not displayed!")
