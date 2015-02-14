@@ -104,7 +104,8 @@ var NavigationContainerView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template({
-            selected: REPORT_ID
+            selected: REPORT_ID,
+            nalanda: ds.ab_testing.is_config_package_nalanda
         }));
         this.$('#group-select-container').append(this.group_view.$el);
         this.$('#facility-select-container').append(this.facility_view.$el);
@@ -115,7 +116,7 @@ var NavigationContainerView = Backbone.View.extend({
     },
 
     go_to_coach_report: function(ev) {
-        // Parse options and show the correct coach report page 
+        // Parse options and show the correct coach report page
         ev.preventDefault();
 
         var form = this.$('#coachreport-select-form');
@@ -135,6 +136,9 @@ var NavigationContainerView = Backbone.View.extend({
                 break;
             case "test":
                 url = TEST_REPORT_URL;
+                break;
+            case "spending":
+                url = SPENDING_URL;
                 break;
         }
         url += "?" + $.param({

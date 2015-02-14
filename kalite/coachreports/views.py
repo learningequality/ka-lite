@@ -572,16 +572,15 @@ def test_detail_view(request, test_id):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/spending_report_view.html")
-def spending_report_view(request, facility):
+def spending_report_view(request):
     """View total points remaining for students"""
-    group_id = request.GET.get("group", "")
+    facility, group_id, context = coach_nav_context(request, "spending")
     users = get_user_queryset(request, facility, group_id)
     user_points = {}
     for user in users:
         user_points[user] = compute_total_points(user)
-    context = plotting_metadata_context(request, facility=facility)
+    context.update(plotting_metadata_context(request, facility=facility))
     context.update({
         "user_points": user_points,
     })
