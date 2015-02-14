@@ -5,7 +5,7 @@ import kalite.student_testing.api_urls
 
 #Else block url patterns can't be empty because we have a reverse match for test/test_list/current_unit and others.
 
-if "Nalanda" in settings.CONFIG_PACKAGE:
+if "nalanda" in settings.CONFIG_PACKAGE:
     urlpatterns = patterns(
         'student_testing.views',
         url(r'^api/', include(kalite.student_testing.api_urls)),

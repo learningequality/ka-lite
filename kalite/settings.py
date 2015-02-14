@@ -212,7 +212,7 @@ if package_selected("RPi"):
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 
-if package_selected("Nalanda"):
+if package_selected("nalanda"):
     LOG.info("Nalanda package selected")
     TURN_OFF_MOTIVATIONAL_FEATURES = True
     RESTRICTED_TEACHER_PERMISSIONS = True
