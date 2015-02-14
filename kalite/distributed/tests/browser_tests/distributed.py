@@ -453,12 +453,10 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         self.browser.execute_script(log_model_object + ".set(\"points\", 9000);" )
         self.browser.execute_script(log_model_object + ".saveNow();" )
 
-class CoachHasLogoutLinkTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, FacilityMixins):
+class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):
     """
     A regression test for issue 3000. Note the judicious use of waits and expected conditions to account for
-    various browser sizes and potential server hiccups. Even though no TimeoutException or NoSuchElementException
-    is expected, I still catch it so I can have my say, dangit, given that the test server likes to throw these
-    for apparently nondeterministic reasons sometimes.
+    various browser sizes and potential server hiccups. 
     """
 
     def setUp(self):
