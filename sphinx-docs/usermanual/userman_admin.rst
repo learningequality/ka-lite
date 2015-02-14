@@ -57,7 +57,7 @@ Once you have successfully installed KA Lite, the installation script should giv
 
 Copy and paste the URL into a web browser. The KA Lite application should show up. Then, login to KA Lite using the username and password you created during the installation process. 
 
-* If you have forgotten the username/password combination, simply delete this version of KA Lite (delete the “ka-lite” folder that you downloaded during the installation guide steps for your system and then redo the installation steps in the Install Guide). If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
+* If you have forgotten the username/password combination, simply run ``bin/kalite manage createsuperuser`` from the kalite directory and then follow the instructions. If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
 
 Once you’ve logged in, the next step in the setup process is registering your device with the KA Lite Hub.
 
@@ -192,10 +192,7 @@ Removing Users from a Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If you'd like to remove a user from a group without permanently deleting the user, please follow the instructions below:
 
-#. 
-
-
-
+#. Follow the same instructions as for "Moving a User to a New Group", but select "Ungrouped" from the dropdown menu.
 
 Group Summary Statistics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -295,9 +292,13 @@ This process varies, depending on which OS you are running the KA Lite Server on
 Restarting Your Server: Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+In the system tray, right click on the KA Lite icon. Click the "Stop Server" item in the context menu. Right click on the KA Lite icon in the system tray again, and click "Start Server". If the option is not clickable, wait a while and try again or restart your computer.
+
 
 Restarting Your Server: Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In a terminal, navigate the directory where you installed KA lite. Then run the comand ``./bin/kalite restart``.
 
 
 Restarting Your Server: Mac 
