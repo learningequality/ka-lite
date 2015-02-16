@@ -56,7 +56,11 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
             zf = zipfile.ZipFile(StringIO.StringIO(zip_raw_data))
             get_method.return_value = MagicMock(content=zip_raw_data)
 
-            call_command("unpack_assessment_zip", url)
+            call_command(
+                "unpack_assessment_zip",
+                url,
+                force_download=True  # always force the download, so we can be sure the get method gets called
+            )
 
             get_method.assert_called_once_with(url)
 
