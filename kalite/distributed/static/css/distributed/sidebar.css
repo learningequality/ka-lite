@@ -27,11 +27,15 @@ Nav Panel
     background: #5AA685;
     z-index: 9999;
     position: absolute;
-    height: 130%;
+    height: 100%;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     top: 0;
     bottom: 0;
-    left: 0;
+    /* TODO: Somehow breaks everythng around it ¯\_(ツ)_/¯ */
+    /*-webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;*/
 }
 
 div.fade {
@@ -138,7 +142,15 @@ div.fade {
     color: #CCC;
 }
 
-.back-to-parent {
+.sidebar-back {
+    height: 100%;
+    width: 30px;
+    background-color: black;
+    position: absolute;
+    z-index: 10000;
+}
+
+/*.back-to-parent {
     margin: 0;
     float: left;
     height: 60px;
@@ -146,7 +158,7 @@ div.fade {
     padding-left: 20px;
     padding-top: 21px;
     padding-right: 14px;
-}
+}*/
 
 /* Sidebar panel & entry styling */
 .topic-container-inner {

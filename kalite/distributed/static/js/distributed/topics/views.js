@@ -56,7 +56,8 @@ window.SidebarView = BaseView.extend({
 
     events: {
         "click .sidebar-tab": "toggle_sidebar",
-        "click .fade": "check_external_click"
+        "click .fade": "check_external_click",
+        "click .sidebar-back": "sidebar_back_one_level"
     },
 
     initialize: function(options) {
@@ -77,7 +78,6 @@ window.SidebarView = BaseView.extend({
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
         this.listenTo(this.state_model, "change:current_level", this.resize_sidebar);
-
     },
 
     render: function() {
@@ -103,6 +103,8 @@ window.SidebarView = BaseView.extend({
 
         this.$('.sidebar-content').append(this.topic_node_view.el);
 
+        this.set_sidebar_back();
+
         return this;
     },
 
@@ -111,16 +113,18 @@ window.SidebarView = BaseView.extend({
         // TODO(jamalex): have this calculated dynamically
         var column_width = 200; // this.$(".topic-container-inner").width();
         var last_column_width = 400;
-        // hack to give the last child of .topic-container-inner to be 1.5 times the 
-        // width of their parents. 
+        // Hack to give the last child of .topic-container-inner to be 1.5 times the 
+        // width of their parents. Also, sidebar overflow out of the left side of screen
+        // is computed and set here.
+
+        // Used to get left value in number form
         var sidebarPanelPosition = $(".sidebar-panel").position();
         var sidebarPanelLeft = sidebarPanelPosition.left;
 
         this.width = (current_level - 1) * column_width + last_column_width + 10;
         this.$(".sidebar-panel").width(this.width);
-        var sidebarPanelNewLeft = -(sidebarPanelLeft + column_width * (current_level - 1));
+        var sidebarPanelNewLeft = -(column_width * (current_level - 3)) + this.$(".sidebar-back").width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
-        console.log(sidebarPanelNewLeft);
         this.$(".sidebar-panel").css({"left": sidebarPanelNewLeft});
         this.$(".sidebar-tab").css({"left": this.width});
 
@@ -134,7 +138,6 @@ window.SidebarView = BaseView.extend({
     },
 
     toggle_sidebar: function(ev) {
-        // this.$(".sidebar-tab").css("color", this.state_model.get("open") ? "red" : "blue")
         this.state_model.set("open", !this.state_model.get("open"));
 
         // TODO (rtibbles): Get render to only run after all listenTos have been bound and remove this.
@@ -146,14 +149,37 @@ window.SidebarView = BaseView.extend({
 
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
-            this.sidebar.css({left: 0});
-            this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width()}).html('<span class="icon-circle-left"></span>');
+            // Used to get left value in number form
+            var sidebarPanelPosition = $(".sidebar-panel").position();
+            this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".fade").show();
         } else {
             this.sidebar.css({left: - this.width});
             this.$(".sidebar-tab").css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".fade").hide();
         }
+
+        this.set_sidebar_back();
+    },
+
+    set_sidebar_back: function() {
+        if (!this.state_model.get("open")) {
+            this.$(".sidebar-back").offset({left: -(this.$(".sidebar-back").width())});
+            return;
+        }
+
+        // Used to get left value in number form
+        var sidebarPanelPosition = $(".sidebar-panel").position();
+        if (sidebarPanelPosition.left != 0) {
+            this.$(".sidebar-back").offset({left: 0});
+        }
+        else {
+            this.$(".sidebar-back").offset({left: -(this.$(".sidebar-back").width())});
+        }
+    },
+
+    sidebar_back_one_level: function() {
+        console.log("hit")
     },
 
     show_sidebar: function() {
@@ -208,7 +234,6 @@ window.TopicContainerInnerView = BaseView.extend({
 
         this.listenTo(this.state_model, "change:current_level", this.update_level_color);
         this.state_model.set("current_level", options.level);
-
     },
 
     render: function() {
@@ -277,9 +302,9 @@ window.TopicContainerInnerView = BaseView.extend({
         this.trigger("showSidebar");
     },
 
-    backToParent: function(ev) {
-        this.trigger('back_button_clicked', this.model);
-    },
+    // backToParent: function(ev) {
+    //     this.trigger('back_button_clicked', this.model);
+    // },
 
     node_by_slug: function(slug) {
         // Convenience method to return a node by a passed in slug
