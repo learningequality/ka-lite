@@ -127,10 +127,21 @@ def rebuild_topictree(
         # Loop through child_data to populate children with denormed data of exercises and videos.
         for child_datum in node.get("child_data", []):
             try:
-                if child_datum["kind"] == "Exercise":
-                    child_denormed_data = exercise_lookup[str(child_datum["id"])]
-                elif child_datum["kind"] == "Video":
-                    child_denormed_data = content_lookup[str(child_datum["id"])]
+                child_id = str(child_datum["id"])
+                child_kind = child_datum["kind"]
+                slug_key = channel_data["slug_key"][child_kind]
+                if child_kind == "Exercise":
+                    child_denormed_data = exercise_lookup[child_id]
+                    # Add path information here
+                    slug = exercise_lookup[child_id][slug_key] if exercise_lookup[child_id][slug_key] != "root" else "khan"
+                    slug = slugify(unicode(slug))
+                    exercise_lookup[child_id]["path"] = node["path"] + slug + "/"
+                elif child_kind == "Video":
+                    child_denormed_data = content_lookup[child_id]
+                    # Add path information here
+                    slug = content_lookup[child_id][slug_key] if content_lookup[child_id][slug_key] != "root" else "khan"
+                    slug = slugify(unicode(slug))
+                    content_lookup[child_id]["path"] = node["path"] + slug + "/"
                 else:
                     child_denormed_data = None
                 if child_denormed_data:

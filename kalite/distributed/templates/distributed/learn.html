@@ -1,9 +1,7 @@
 {% extends "distributed/base_teach.html" %}
 {% load my_filters i18n i18n_filters staticfiles %}
 
-{% block title %}
-    {% trans "Learn" %}
-{% endblock title %}
+{% block title %}{% trans "Learn" %}{% endblock title %}
 
 {% block learn_active %}active{% endblock learn_active %}
 {% block learn_subnav_active %}learn-active active-tab active-nav{% endblock learn_subnav_active %}
