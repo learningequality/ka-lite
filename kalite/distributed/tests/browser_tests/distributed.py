@@ -453,3 +453,27 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         self.browser.execute_script(log_model_object + ".set(\"points\", 9000);" )
         self.browser.execute_script(log_model_object + ".saveNow();" )
 
+class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin, KALiteBrowserTestCase):
+
+    def setUp(self):
+        super(AlertsRemovedAfterNavigationTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+
+    def test_login_alert_is_removed(self):
+        self.browser_login_student(username="johnduck", password="superpassword")
+        try:
+            self.assertTrue(WebDriverWait(self.browser, 3).until(
+                expected_conditions.presence_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+            ))
+        except TimeoutException:
+            self.fail("No alert present on page after login.")
+        # The function called by navigation event in the single-page JS app.
+        self.browser.execute_script("channel_router.control_view.topic_node_view.content_view.show_view()")
+        try:
+            self.assertTrue(WebDriverWait(self.browser, 3).until(
+                expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+            ))
+        except TimeoutException:
+            self.fail("Alert present on page after navigation event. Expected no alerts.")
