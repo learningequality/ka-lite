@@ -20,7 +20,6 @@ window.ContentAreaView = BaseView.extend({
     show_view: function(view) {
 
         // hide any messages being shown for the old view
-        clear_messages();
 
         this.close();
         // set the new view as the current view
