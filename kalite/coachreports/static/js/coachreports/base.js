@@ -142,7 +142,7 @@ var NavigationContainerView = Backbone.View.extend({
         // attached as a subview here, but that would require making a
         // new API endpoint instead of passing info as context variables
         // to the template.
-        var params = {}
+        var params = {};
         if( url === TABULAR_REPORT_URL ) {
             if( $("#report_type").length ) {
                 var report_type = $("#report_type option:selected").val();
