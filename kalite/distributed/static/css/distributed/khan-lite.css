@@ -733,22 +733,22 @@ li .progress-circle {
     white-space: normal;
 }
 
-.video-unavailable,
-.topic-unavailable,
-a:active.video-unavailable,
-a:visited.video-unavailable,
-a:active.topic-unavailable,
-a:link.topic-unavailable,
-a:link.video-unavailable,
-a:visited.topic-unavailable {
+.Video-unavailable,
+.Topic-unavailable,
+a:active.Video-unavailable,
+a:visited.Video-unavailable,
+a:active.Topic-unavailable,
+a:link.Topic-unavailable,
+a:link.Video-unavailable,
+a:visited.Topic-unavailable {
     color: #ACBDD1;
     font-weight: normal;
     text-decoration: none;
 }
-a:hover.video-unavailable {
+a:hover.Video-unavailable {
     color: #ddd;
 }
-a:hover.topic-unavailable {
+a:hover.Topic-unavailable {
     color: #ddd;
 }
 a.disabled {
