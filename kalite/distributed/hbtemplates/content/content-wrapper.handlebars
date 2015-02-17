@@ -25,7 +25,9 @@
                     </h3>
 
                     <span class="title">{{ title }}</span>
-                    <span class="organization">{{_ "by:" }} {{ organization }}</span>
+                    {{#if organization}}
+                        <span class="organization">{{_ "by:" }} {{ organization }}</span>
+                    {{/if}}
                     {{#if description }}
                     <div class="content-description">{{ description }}</div>
                     {{/if}}

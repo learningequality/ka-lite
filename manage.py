@@ -1,9 +1,13 @@
 #!/usr/bin/env python
-import glob
 import logging
 import os
 import sys
 
+# In case we have not defined an environment, try to see if manage.py is run
+# from the source tree and add python-packages to the system path
+if 'KALITE_DIR' not in os.environ:
+    if os.path.exists('./python-packages'):
+        sys.path = ['./python-packages'] + sys.path
 
 try:
     import fle_utils  # @UnusedImport

@@ -96,6 +96,8 @@ def get_ip_addresses(include_loopback=True):
         # on Windows, run ipconfig and parse the output
         ipconfig = os.popen("ipconfig /all").read()
         ips = [match[1] for match in re.findall("IP(v4)? Address[\.\: ]+([\d\.]+)", ipconfig)]
+    else:
+        ips = []
 
     # remove empty values for adapters without an IP
     ips = set(ips) - set([None, ""])
@@ -106,4 +108,3 @@ def get_ip_addresses(include_loopback=True):
         ips = ips - set(["127.0.0.1"])
 
     return list(ips)
-
