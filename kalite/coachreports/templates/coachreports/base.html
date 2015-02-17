@@ -43,7 +43,7 @@
 
 {% block content %}
     {# This call to super pulls in the subnavbar #}
-    {{ block.super }}
+    {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
     {# Now we create the coachreport selection bar #}
     <div class="container container-margin-bottom">

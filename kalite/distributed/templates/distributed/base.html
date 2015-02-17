@@ -2,6 +2,7 @@
 {% load kalite_staticfiles %}
 {% load i18n %}
 {% load i18n_filters %}
+{% load my_filters %}
 
 <html>
     <head>
@@ -190,33 +191,37 @@
                                   {% trans "Teach" %}
                                 </a>
                               </li>
-                            {% else %}
+                            {% elif request.is_django_admin %}
                               {# Teach for admins => coachreports #}
-                              <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
-                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
+                              <li class="admin-only {% block teach_active_admins %}{% endblock teach_active_admins %}">
+                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
                                   {% trans "Teach" %}
                                 </a>
                               </li>
                             {% endif %}
 
                             {# Manage for admins => zone control panel #}
+                            {% if request.is_django_user %}
                             <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">
-                              <a href="{% url 'zone_redirect' %}" class="admin-only">
+                              <a href="{% url 'zone_redirect' %}" class="">
                                 {% trans "Manage" %}
                               </a>
                             </li>
+                            {% endif %}
                             <!-- End for logged in admins -->
 
                             <!-- For logged in teachers -->
                             {# Teach for teachers => coachreports #}
+                            {% if request.is_admin and not request.is_django_admin %}
                             <li class="{% block teach_active_teachers %}{% endblock teach_active_teachers %}">
                               <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
                                 {% trans "Teach" %}
                               </a>
                             </li>
+                            {% endif %}
 
                             {# Manage for teachers => facility management #}
-                            {% if request.session.facility_user.facility %}
+                            {% if request.is_admin %}
                               <li class="{% block manage_active_teachers %}{% endblock manage_active_teachers %}">
                                 <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="teacher-only">
                                   {% trans "Manage" %}
