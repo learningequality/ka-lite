@@ -965,7 +965,7 @@ div#fade {
     line-height: 12px;
     direction: ltr;
     box-shadow: none;
-    padding: 0;
+    padding: 0 5px 0 0;
     font-size: 100%;
     line-height: 1.3;
 }
