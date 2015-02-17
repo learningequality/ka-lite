@@ -6,7 +6,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
-from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException, WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
