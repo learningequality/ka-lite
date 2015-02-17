@@ -5,6 +5,9 @@ logging = settings.LOG
 
 from datetime import datetime, timedelta
 from django.utils import unittest
+from selenium.webdriver.common.by import By 
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
@@ -226,7 +229,9 @@ class CoachNavigationTest(FacilityMixins,
         topic_select.find_elements_by_tag_name('option')[1].click()
         self.browser.find_element_by_id("display-topic-report").click()
         expected = ['first1-1 last1-1', 'first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
-        student_list = self.browser.find_elements_by_class_name("student-name")
+        student_list = WebDriverWait(self.browser, 3).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "student-name"))
+        )
         result = [item.text for item in student_list]
         self.assertEqual(expected, result)
 
@@ -241,7 +246,9 @@ class CoachNavigationTest(FacilityMixins,
         topic_select.find_elements_by_tag_name('option')[1].click()
         self.browser.find_element_by_id("display-topic-report").click()
         expected = ['first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
-        student_list = self.browser.find_elements_by_class_name("student-name")
+        student_list = WebDriverWait(self.browser, 3).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "student-name"))
+        )
         result = [item.text for item in student_list]
         self.assertEqual(expected, result)
 
@@ -258,7 +265,9 @@ class CoachNavigationTest(FacilityMixins,
         topic_select.find_elements_by_tag_name('option')[1].click()
         self.browser.find_element_by_id("display-topic-report").click()
         expected = ['first1-1 last1-1']
-        student_list = self.browser.find_elements_by_class_name("student-name")
+        student_list = WebDriverWait(self.browser, 3).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "student-name"))
+        )
         result = [item.text for item in student_list]
         self.assertEqual(expected, result)
 
