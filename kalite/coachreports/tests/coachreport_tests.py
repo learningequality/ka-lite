@@ -1,5 +1,4 @@
 import json
-import time
 
 from django.conf import settings
 logging = settings.LOG
@@ -223,9 +222,6 @@ class CoachNavigationTest(FacilityMixins,
         self.browse_to(self.reverse('tabular_view'))
         facility_select = self.browser.find_element_by_id("facility-select")
         facility_select.find_elements_by_tag_name('option')[0].click()
-        self.browser.find_element_by_id("display-coach-report").click()
-        # The above click triggers a navigation event... we need to wait for the page to load. Sadly, time.sleep is the easiest way to do this.
-        time.sleep(2)
         topic_select = self.browser_wait_for_element(css_selector="#topic")
         topic_select.find_elements_by_tag_name('option')[1].click()
         self.browser.find_element_by_id("display-topic-report").click()
@@ -241,9 +237,6 @@ class CoachNavigationTest(FacilityMixins,
         self.browse_to(self.reverse('tabular_view'))
         facility_select = self.browser.find_element_by_id("facility-select")
         facility_select.find_elements_by_tag_name('option')[1].click()
-        self.browser.find_element_by_id("display-coach-report").click()
-        # The above click triggers a navigation event... we need to wait for the page to load. Sadly, time.sleep is the easiest way to do this.
-        time.sleep(2)
         topic_select = self.browser_wait_for_element(css_selector="#topic")
         topic_select.find_elements_by_tag_name('option')[1].click()
         self.browser.find_element_by_id("display-topic-report").click()
@@ -261,9 +254,6 @@ class CoachNavigationTest(FacilityMixins,
         facility_select.find_elements_by_tag_name('option')[2].click()
         group_select = self.browser_wait_for_element(css_selector="#group-select")
         group_select.find_elements_by_tag_name('option')[1].click()
-        self.browser.find_element_by_id("display-coach-report").click()
-        # The above click triggers a navigation event... we need to wait for the page to load. Sadly, time.sleep is the easiest way to do this.
-        time.sleep(2)
         topic_select = self.browser_wait_for_element(css_selector="#topic")
         topic_select.find_elements_by_tag_name('option')[1].click()
         self.browser.find_element_by_id("display-topic-report").click()
