@@ -21,18 +21,8 @@
             // Note: Unlike other coach reports, the tabular view is generated in server side templates.
             // As such, changing any of the values of the items requires a change of URL and subsequent
             // navigation event in order to produce the new report.
-
-            $("#display-topic-report").on("click", function() {
-                var report_type = $("#report_type option:selected").val();
-                // A simple whitelist to exclude invalid urls (i.e. if the '----' option is chosen
-                if (report_type != "exercise" || report_type != "video") {
-                    report_type = "";
-                } else {
-                    report_type += "/";
-                }
-                var base_url = "{% url 'tabular_view' %}" + report_type + window.location.search;
-                var url = setGetParam(base_url, "topic", $("#topic option:selected").val());
-                window.location.href = url;
+            $("#display-topic-report").on("click", function(ev) {
+                report_select_view.go_to_coach_report(ev);
             });
 
             $("#student").change(function(){
@@ -132,7 +122,7 @@
         {% endif %}
         </div>
         <div class="selection pull-left">
-            <a href="#" class="btn btn-primary" id="display-topic-report">Go</a>
+            <button class="btn btn-primary" id="display-topic-report">Go</button>
         </div>
     </div>
     <div class="col-md-12">
