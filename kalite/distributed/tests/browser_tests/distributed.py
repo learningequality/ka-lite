@@ -6,7 +6,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
-from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException, WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
@@ -452,6 +452,39 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         self.browser_wait_for_js_object_exists(log_model_object)
         self.browser.execute_script(log_model_object + ".set(\"points\", 9000);" )
         self.browser.execute_script(log_model_object + ".saveNow();" )
+
+class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin, KALiteBrowserTestCase):
+
+    def setUp(self):
+        super(AlertsRemovedAfterNavigationTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+
+    def test_login_alert_is_removed(self):
+        self.browser_login_student(username="johnduck", password="superpassword")
+        try:
+            self.assertTrue(WebDriverWait(self.browser, 3).until(
+                expected_conditions.presence_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+            ))
+        except TimeoutException:
+            self.fail("No alert present on page after login.")
+        try:
+            # The function called by navigation event in the single-page JS app.
+            self.browser.execute_script("channel_router.control_view.topic_node_view.content_view.show_view()")
+        except WebDriverException as e:
+            if e.msg == "view is undefined":
+                # Since we're circumventing the normal control flow of the single-page JS app, we expect
+                # this JS error, which gets passed along as a WebDriverException
+                pass 
+            else:
+                raise
+        try:
+            self.assertTrue(WebDriverWait(self.browser, 3).until(
+                expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+            ))
+        except TimeoutException:
+            self.fail("Alert present on page after navigation event. Expected no alerts.")
 
 class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):
     """
