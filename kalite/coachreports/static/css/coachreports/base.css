@@ -15,3 +15,6 @@
 select.reports-select {
     width: 300px !important;
 }
+#display-topic-report {
+    margin-top: 22px;
+}

@@ -21,17 +21,12 @@
             // Note: Unlike other coach reports, the tabular view is generated in server side templates.
             // As such, changing any of the values of the items requires a change of URL and subsequent
             // navigation event in order to produce the new report.
-
-            $("#report_type").change(function(){
-                window.location.href="{% url 'tabular_view' %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
+            $("#display-topic-report").on("click", function(ev) {
+                report_select_view.go_to_coach_report(ev);
             });
 
             $("#student").change(function(){
                 window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
-            });
-
-            $("#topic").change(function(){
-                window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
             });
 
             $("#playlist").change(function(){
@@ -69,7 +64,7 @@
                 });
             });
             $(window).resize(function() {
-                $('.headrowuser').height($('.headrow.data').height()+1);
+                $('.headrowuser').height($('.headrow.data').height());
             }).resize();
         });
     </script>
@@ -127,6 +122,9 @@
                 {% endif %}
                 </div>
             {% endif %}
+            <div class="selection pull-left">
+                <button class="btn btn-primary" id="display-topic-report">Go</button>
+            </div>
         </div>
 
         <div class="row">
