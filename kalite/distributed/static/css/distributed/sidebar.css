@@ -66,6 +66,7 @@ div.fade {
 
 .missing {
     opacity: 0.4;
+    background: #93BFAC;
 }
 
 .sidebar-panel a:link,
@@ -164,6 +165,8 @@ div.fade {
 }
 .topic-container-inner .sidebar-topic-description {
     display: none;
+    font-size: 0.9em;
+    margin-top: 15px;
 }
 /* applied to all in outermost expanded panel */
 .topic-container-inner:last-child .sidebar-description {
@@ -171,7 +174,7 @@ div.fade {
     line-height: 1.1em;
     margin-bottom: -10px;
     padding-top: 10px;
-    color: #ffffff; 
+    color: #ADD3C2;
     word-wrap: break-word;
 }
 
