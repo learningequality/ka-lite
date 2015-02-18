@@ -61,3 +61,4 @@ ghostdriver.log
 /kalite/contentload/tests/fixtures/
 *.swp
 sphinx-docs/_build
+sphinx-docs/images/*
