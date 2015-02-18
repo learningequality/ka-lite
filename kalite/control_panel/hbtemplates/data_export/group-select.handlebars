@@ -1,0 +1,18 @@
+<div class="form-group">
+    <label for="group-name" class="col-xs-2">{{_ "Group" }}</label>
+    <div class="col-xs-8">
+        {{#if loading}}
+            <img src="/static/images/loading.gif" class="float-center float-over-select loading"/>
+        {{/if}}
+        <select class="form-control {{#if loading}}loading-transparency{{/if}}" id="group-name" {{#if is_disabled}}disabled{{/if}}>
+            {{#if groups }}
+                <option value="">{{_ "All" }}</option>
+                {{#each groups}}{{_ "s" }}
+                    <option value="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
+                {{/each}}
+            {{else}}
+                <option disabled>{{_ "All" }}</option>
+            {{/if}}
+        </select>
+    </div>
+</div>

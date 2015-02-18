@@ -1,0 +1,17 @@
+{
+  "id": "g6_t2",
+  "title": "Grade VI - Unit Test 2",
+  "seed": 2537,
+  "playlist_ids": [ "g5_p5", "g6_p6", "g6_p7" ],
+  "repeats": "3",
+  "ids": [
+    "adding_and_subtracting_negative_numbers", "adding_negative_numbers",
+    "multiplication_1", "multiplication_1.5", "multiplication_2",
+    "multiplication_3", "multiplication_4",
+    "multiplying_and_dividing_negative_numbers", "multiplying_radicals",
+    "negative_number_word_problems", "number_line_2", "number_line_3",
+    "ordering_negative_numbers", "simplifying_radicals", "square_roots",
+    "square_roots_2"
+  ],
+  "is_practice": false
+}

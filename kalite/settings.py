@@ -71,7 +71,7 @@ ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 TIME_ZONE      = getattr(local_settings, "TIME_ZONE", None)
-#USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
+# USE_TZ         = True  # needed for timezone-aware datetimes (particularly in updates code)
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -105,13 +105,17 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
     "kalite.distributed",
+    "kalite.store",
 )
 
 if not BUILT:
     INSTALLED_APPS += (
         "fle_utils.testing",
         "kalite.testing",
+        "kalite.basetests",
     ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
+else:
+    INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
@@ -146,8 +150,13 @@ MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
 
+# only allow, and use by default, JSON in tastypie, and remove api page limit
+TASTYPIE_DEFAULT_FORMATS = ['json']
+API_LIMIT_PER_PAGE = 0
+
 # Default to a 20 minute timeout for a session - set to 0 to disable.
-SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
+# TODO(jamalex): re-enable this to something sensible, once #2800 is resolved
+SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 ########################
 # After all settings, but before config packages,
@@ -160,22 +169,13 @@ SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 1200)
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
-if 'CACHE_NAME' in locals():
-    if CACHE_NAME == "file_based_cache":
-        LOG.debug("Cache location = %s" % CACHE_LOCATION)
-    else:
-        LOG.debug("Using %s caching" % CACHE_NAME)
+KHAN_EXERCISES_RELPATH = os.path.join("static", "perseus", "ke")
+
+KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), KHAN_EXERCISES_RELPATH)
 
 # Override
-KHAN_EXERCISES_DIRPATH = getattr(local_settings, "KHAN_EXERCISES_DIRPATH", os.path.join(STATIC_ROOT, "khan-exercises"))
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 TEST_RUNNER = KALITE_TEST_RUNNER
-
-LOG.debug("======== MIDDLEWARE ========")
-LOG.debug("\n".join(MIDDLEWARE_CLASSES))
-LOG.debug("====== INSTALLED_APPS ======")
-LOG.debug("\n".join(INSTALLED_APPS))
-LOG.debug("============================")
 
 ########################
 # IMPORTANT: Do not add new settings below this line
@@ -212,6 +212,18 @@ if package_selected("RPi"):
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 
+if package_selected("Nalanda"):
+    LOG.info("Nalanda package selected")
+    TURN_OFF_MOTIVATIONAL_FEATURES = True
+    RESTRICTED_TEACHER_PERMISSIONS = True
+    FIXED_BLOCK_EXERCISES = 5
+    QUIZ_REPEATS = 3
+UNIT_POINTS = 2000
+
+# for extracting assessment item resources
+ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(PROJECT_PATH, "..", "content", "khan")
+
+
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
 
@@ -228,3 +240,8 @@ if package_selected("Demo"):
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
     MIDDLEWARE_CLASSES += ('distributed.demo_middleware.StopAdminAccess','distributed.demo_middleware.LinkUserManual','distributed.demo_middleware.ShowAdminLogin',)
+
+if DEBUG:
+    """Show DeprecationWarning messages when in debug"""
+    import warnings
+    warnings.simplefilter('always', DeprecationWarning)

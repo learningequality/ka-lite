@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Adding and subtracting vectors</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars" data-ensure="SOLUTION[0] * SOLUTION[1] !== 0 &amp;&amp;
+        abs(SOLUTION[0]) &lt; 10 &amp;&amp; abs(SOLUTION[1]) &lt; 10 &amp;&amp; abs(AX / AY) !== abs(BX / BY)">
+        <var id="AX">randRangeNonZero( -9, 9 )</var>
+        <var id="AY">randRangeNonZero( -9, 9 )</var>
+        <var id="BX">randRangeNonZero( -9, 9 )</var>
+        <var id="BY">randRangeNonZero( -9, 9 )</var>
+        <var id="SIGN">randFromArray(["+", "-"])</var>
+        <var id="SOLUTION">SIGN === '+' ? [AX + BX, AY + BY] : [AX - BX, AY - BY]</var>
+    </div>
+
+    <div class="problems">
+        <div>
+            <p class="question">What is <code>\vec a <var>SIGN</var> \vec b</code>?</p>
+
+            <p><code>\begin{align*}
+                \vec a &amp;= <var>AX</var> \hat\imath + <var>AY</var> \hat\jmath \\
+                \vec b &amp;= <var>BX</var> \hat\imath + <var>BY</var> \hat\jmath
+            \end{align*}</code></p>
+
+            <div class="render-answer-area-here"></div>
+
+            <div class="graphie" id="graph">
+                graphInit({
+                    range: 10,
+                    scale: 20,
+                    tickStep: 1,
+                    labelStep: 1,
+                    unityLabels: false,
+                    labelFormat: function( s ) { return "\\small{" + s + "}"; },
+                    axisArrows: "&lt;-&gt;"
+                });
+
+                line( [0, 0], [AX, AY], { stroke: BLUE, arrows: "-&gt;" } );
+                line( [0, 0], [BX, BY], { stroke: GREEN, arrows: "-&gt;" } );
+
+                var AF = 1 + 0.8 / sqrt( AX * AX + AY * AY );
+                label( [AF * AX, AF * AY], "\\vec a", { color: BLUE } );
+
+                var BF = 1 + 0.8 / sqrt( BX * BX + BY * BY );
+                label( [BF * BX, BF * BY], "\\vec b", { color: GREEN } );
+            </div>
+
+            <div class="solution" data-type="multiple">
+                <p>
+                    <span class="sol short40" data-forms="integer, coefficient"><var>SOLUTION[0]</var></span><code>\hat\imath + {}</code>
+                    <span class="sol short40" data-forms="integer, coefficient"><var>SOLUTION[1]</var></span> <code>\hat\jmath</code>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <p>Sum the <code>\hat\imath</code> and <code>\hat\jmath</code> components separately.</p>
+        <div>
+            <div>
+                <code>
+                    \blue{\vec a} <var>SIGN</var>  \green{\vec b} = 
+                    \blue{(<var>AX</var> \hat\imath + <var>AY</var> \hat\jmath)} <var>SIGN</var>
+                    \green{(<var>BX</var> \hat\imath + <var>BY</var> \hat\jmath)}
+                </code>
+            </div>
+            <div data-if="SIGN === '+'">
+                <code>
+                    \hphantom{\vec a + \vec b} = 
+                    \blue{<var>AX</var> \hat\imath + <var>AY</var> \hat\jmath}
+                </code>
+                <span data-if="BX > 0"><code>+</code></span><span data-else=""><code>-</code></span>
+                <code>\green{<var>abs(BX)</var> \hat\imath + <var>BY</var> \hat\jmath}</code>
+            </div>
+            <div data-else="">
+                <code>
+                    \hphantom{\vec a + \vec b} = 
+                    \blue{<var>AX</var> \hat\imath + <var>AY</var> \hat\jmath}
+                </code>
+                <span data-if="BX > 0"><code>-</code></span><span data-else=""><code>+</code></span>
+                <code>\green{<var>abs(BX)</var> \hat\imath + <var>-BY</var> \hat\jmath}</code>
+            </div>
+            <div data-if="SIGN === '+'">
+                <code>\hphantom{\vec a + \vec b} = (\blue{<var>AX</var>}</code>
+                <span data-if="BX > 0"><code>+</code></span><span data-else=""><code>-</code></span>
+                <code>\green{<var>abs(BX)</var>}) \hat\imath + (\blue{<var>AY</var>}</code>
+                <span data-if="BY > 0"><code>+</code></span><span data-else=""><code>-</code></span>
+                <code>\green{<var>abs(BY)</var>}) \hat\jmath</code>
+            </div>
+            <div data-else="">
+                <code>\hphantom{\vec a + \vec b} = (\blue{<var>AX</var>}</code>
+                <span data-if="BX > 0"><code>-</code></span><span data-else=""><code>+</code></span>
+                <code>\green{<var>abs(BX)</var>}) \hat\imath + (\blue{<var>AY</var>}</code>
+                <span data-if="BY > 0"><code>-</code></span><span data-else=""><code>+</code></span>
+                <code>\green{<var>abs(BY)</var>}) \hat\jmath</code>
+            </div>
+            <div class="graphie" data-update="graph">
+                line([AX, AY], SOLUTION, { stroke: GREEN, arrows: "-&gt;" });
+                var SF = 1 + 0.8 / sqrt(SOLUTION[0] * SOLUTION[0] + SOLUTION[1] * SOLUTION[1]);
+
+                if (SIGN === '+') {
+                    label([SF * SOLUTION[0], SF * SOLUTION[1]], "\\vec b", { color: GREEN });
+                } else {
+                    label([SF * SOLUTION[0], SF * SOLUTION[1]], "-\\vec b", { color: GREEN });
+                }
+            </div>
+        </div>
+        <div>
+            <p><code>\hphantom{\vec a + \vec b} = <var>SOLUTION[0]</var>\hat\imath + <var>SOLUTION[1]</var>\hat\jmath</code></p>
+            <div class="graphie" data-update="graph">
+                line([0, 0], [SOLUTION[0], SOLUTION[1]], { stroke: RED, arrows: "-&gt;" });
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

@@ -16,8 +16,9 @@ class VeeHDIE(InfoExtractor):
 
     _TEST = {
         'url': 'http://veehd.com/video/4686958',
-        'file': '4686958.mp4',
         'info_dict': {
+            'id': '4686958',
+            'ext': 'mp4',
             'title': 'Time Lapse View from Space ( ISS)',
             'uploader_id': 'spotted',
             'description': 'md5:f0094c4cf3a72e22bc4e4239ef767ad7',
@@ -47,11 +48,11 @@ class VeeHDIE(InfoExtractor):
         video_url = compat_urlparse.unquote(config['clip']['url'])
         title = clean_html(get_element_by_id('videoName', webpage).rpartition('|')[0])
         uploader_id = self._html_search_regex(r'<a href="/profile/\d+">(.+?)</a>',
-            webpage, 'uploader')
+                                              webpage, 'uploader')
         thumbnail = self._search_regex(r'<img id="veehdpreview" src="(.+?)"',
-            webpage, 'thumbnail')
+                                       webpage, 'thumbnail')
         description = self._html_search_regex(r'<td class="infodropdown".*?<div>(.*?)<ul',
-            webpage, 'description', flags=re.DOTALL)
+                                              webpage, 'description', flags=re.DOTALL)
 
         return {
             '_type': 'video',

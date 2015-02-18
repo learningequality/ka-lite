@@ -1,22 +1,13 @@
 import json
-import os
 
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.management import call_command
-from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
-from django.utils import unittest
+from tastypie.exceptions import Unauthorized
 
-from kalite.facility.models import Facility, FacilityUser
-from kalite.main.tests.base import MainTestCase
-from kalite.main.models import VideoLog, ExerciseLog
 from kalite.testing import KALiteClient, KALiteTestCase
+from kalite.testing.mixins import CreateAdminMixin, CreatePlaylistProgressMixin, FacilityMixins
 
 
 class TestGetTopicTree(KALiteTestCase):
-    def setUp(self):
-        self.client = KALiteClient()
 
     def test_get_root(self):
         """Get the root node of the topic tree"""

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems graphie graphie-helpers">
+<head>
+        <title>Converting mixed numbers and improper fractions</title>
+        <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    </head>
+    <body>
+        <div class="exercise">
+            <div class="vars" data-ensure="M_NUM &lt; M_DENOM">
+                <var id="WHOLE">randRange(1, 10)</var>
+                <var id="M_NUM">randRange(1, 9)</var>
+                <var id="M_DENOM">randRange(M_NUM + 1, 10)</var>
+                <var id="GCD">getGCD(M_NUM, M_DENOM)</var>
+                <var id="M_REDUCED_NUM">M_NUM / GCD</var>
+                <var id="M_REDUCED_DENOM">M_DENOM / GCD</var>
+                <var id="I_NUM">WHOLE * M_REDUCED_DENOM + M_REDUCED_NUM</var>
+                <var id="I_DENOM">M_REDUCED_DENOM</var>
+                <var id="FRACTION">"\\dfrac{1}{" + I_DENOM + "}"</var>
+                <var id="WHOLE_FRAC">"\\dfrac{" + I_DENOM + "}{" + I_DENOM + "}"</var>
+                <var id="WHOLE_TEXT">$._("whole")</var>
+            </div>
+
+            <div class="problems">
+                <div id="improper-to-mixed">
+                    <p class="question">Rewrite <code><var>fraction(I_NUM, I_DENOM, false, true)</var></code> as a mixed number.</p>
+
+                    <p class="solution" data-type="mixed"><var>I_NUM / I_DENOM</var></p>
+
+                    <div class="hints">
+                        <div>
+                            <p>
+                                <code>\blue{<var>fraction(I_NUM, I_DENOM, false, true)</var>}</code>
+                                is the same as the fraction <code><var>FRACTION</var></code>
+                                added <code><var>I_NUM</var></code> times.
+                            </p>
+                            <p>
+                                We can add <code><var>I_DENOM</var></code> of the <code><var>FRACTION</var></code>
+                                fractions together to get <code>1</code> whole.
+                            </p>
+                            <p>
+                                <code>\qquad<var>_(I_DENOM).times(function() { return FRACTION; }).join("+")</var>
+                                = \green{<var>WHOLE_FRAC</var>}</code>
+                            </p>
+                            <div class="graphie">
+                                init({ range: [[-3, 8], [-2, 2]], scale: 25 });
+                                piechart([I_DENOM], [GREEN], 1.5);
+                                label([2, 0], WHOLE_FRAC + " = 1 \\text{ " + WHOLE_TEXT + "}", "right", { color: GREEN });
+                            </div>
+                        </div>
+
+                        <div>
+                            <p>So we can write <code>\blue{<var>fraction(I_NUM, I_DENOM, false, true)</var>}</code> like this:</p>
+                            <p>
+                                <code>\blue{<var>fraction(I_NUM, I_DENOM, false, true)</var>} = 
+                                <var>_(WHOLE).times(function() { return "\\green{" + WHOLE_FRAC + "}"; }).join("+")</var>
+                                + \pink{\dfrac{<var>M_REDUCED_NUM</var>}{<var>I_DENOM</var>}}</code>
+                            </p>
+                            <div class="graphie">
+                                init({ range: [[-0.5, 10.5], [-0.5, 0.5]], scale: 40 });
+                                for (var i = 0; i &lt; WHOLE; i++) {
+                                    piechart([I_DENOM], [GREEN], 0.48, "#fff", i);
+                                }
+                                piechart([M_REDUCED_NUM, I_DENOM - M_REDUCED_NUM], [PINK, '#bbb'], 0.48, "#fff", WHOLE);
+                            </div>
+                        </div>
+
+                        <div>
+                            <p>
+                                <code>\green{<var>WHOLE_FRAC</var>} = \green{1\text{ <var>WHOLE_TEXT</var>}}</code>,
+                                so we can rewrite our equation like this:
+                            </p>
+                            <p>
+                                <code>\blue{<var>fraction(I_NUM, I_DENOM, false, true)</var>} = 
+                                <var>_(WHOLE).times(function() { return "\\green{1}"; }).join("+")</var>
+                                + \pink{\dfrac{<var>M_REDUCED_NUM</var>}{<var>I_DENOM</var>}}</code>
+                            </p>
+                            <p>
+                                <code>\blue{<var>fraction(I_NUM, I_DENOM, false, true)</var>} =
+                                \green{<var>WHOLE</var>} + \pink{\dfrac{<var>M_REDUCED_NUM</var>}{<var>I_DENOM</var>}}</code>
+                            </p>
+                        </div>
+
+                        <p>The mixed number is <code><var>WHOLE</var>\dfrac{<var>M_REDUCED_NUM</var>}{<var>I_DENOM</var>}</code></p>
+                    </div>
+                </div>
+
+                <div id="mixed-to-improper">
+                    <p class="question">
+                        Rewrite <code><var>WHOLE</var><var>fraction(M_NUM, M_DENOM, false, true)</var></code> as a fraction,
+                        <code>\dfrac{a}{b}</code>, where <code>a &gt; b</code>.
+                    </p>
+
+                    <p class="solution" data-type="improper"><var>I_NUM / I_DENOM</var></p>
+
+                    <div class="hints">
+                        <div>
+                            <p>
+                                <code>\blue{<var>WHOLE</var><var>fraction(M_NUM, M_DENOM, false, true)</var>} = 
+                                \green{<var>WHOLE</var>} + \pink{<var>fraction(M_NUM, M_DENOM, false, true)</var>}</code>
+                            </p>
+                            <p>
+                                <code>\blue{<var>WHOLE</var><var>fraction(M_NUM, M_DENOM, false, true)</var>} = 
+                                <var>_(WHOLE).times(function() { return "\\green{1}"; }).join("+")</var>
+                                + \pink{<var>fraction(M_NUM, M_DENOM, false, true)</var>}</code>
+                            </p>
+                            <div class="graphie">
+                                init({ range: [[-0.5, 10.5], [-0.5, 0.5]], scale: 40 });
+
+                                for (var x = 0; x &lt; WHOLE; x++) {
+                                    circle([x, 0], 0.48, { fill: GREEN, stroke: null });
+                                }
+                                piechart([M_REDUCED_NUM, I_DENOM - M_REDUCED_NUM], [PINK, '#bbb'], 0.48, "#fff", WHOLE);
+                            </div>
+                        </div>
+
+                        <div>
+                             <p>
+                                <code>\green{1\text{ <var>WHOLE_TEXT</var>}} = \green{<var>WHOLE_FRAC</var>}</code>,
+                                so we can rewrite our equation like this:
+                            </p>
+                            <p>
+                                <code>\blue{<var>WHOLE</var><var>fraction(M_NUM, M_DENOM, false, true)</var>} = 
+                                <var>_(WHOLE).times(function() { return "\\green{" + WHOLE_FRAC + "}"; }).join("+")</var>
+                                + \pink{<var>fraction(M_NUM, M_DENOM, false, true)</var>}</code>
+                            </p>
+                            <div class="graphie">
+                                init({ range: [[-0.5, 10.5], [-0.5, 0.5]], scale: 40 });
+                                for (var i = 0; i &lt; WHOLE; i++) {
+                                    piechart([I_DENOM], [GREEN], 0.48, "#fff", i);
+                                }
+                                piechart([M_REDUCED_NUM, I_DENOM - M_REDUCED_NUM], [PINK, '#bbb'], 0.48, "#fff", WHOLE);
+                            </div>
+                        </div>
+
+                        <div>
+                            <p>Now we can add the fractions:</p>
+                            <p>
+                                <code>\blue{<var>WHOLE</var><var>fraction(M_NUM, M_DENOM, false, true)</var>} = 
+                                \green{\dfrac{<var>I_DENOM * WHOLE</var>}{<var>I_DENOM</var>}} +
+                                \pink{\dfrac{<var>M_REDUCED_NUM</var>}{<var>I_DENOM</var>}}</code>
+                            </p>
+                            <p>
+                                <code>\blue{<var>WHOLE</var><var>fraction(M_NUM, M_DENOM, false, true)</var>} = 
+                                <var>fraction(I_NUM, I_DENOM, true, true)</var></code>
+                            </p>
+                        </div>
+
+                        <p>The fraction is <code><var>fraction(I_NUM, I_DENOM, true, true)</var></code>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+</html>

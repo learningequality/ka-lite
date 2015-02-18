@@ -6,7 +6,6 @@ from .common import InfoExtractor
 
 
 class FirstpostIE(InfoExtractor):
-    IE_NAME = 'Firstpost.com'
     _VALID_URL = r'http://(?:www\.)?firstpost\.com/[^/]+/.*-(?P<id>[0-9]+)\.html'
 
     _TEST = {
@@ -16,7 +15,7 @@ class FirstpostIE(InfoExtractor):
             'id': '1025403',
             'ext': 'mp4',
             'title': 'India to launch indigenous aircraft carrier INS Vikrant today',
-            'description': 'Its flight deck is over twice the size of a football field, its power unit can light up the entire Kochi city and the cabling is enough to cover the distance between here to Delhi.',
+            'description': 'md5:feef3041cb09724e0bdc02843348f5f4',
         }
     }
 
@@ -24,15 +23,30 @@ class FirstpostIE(InfoExtractor):
         mobj = re.match(self._VALID_URL, url)
         video_id = mobj.group('id')
 
-        webpage = self._download_webpage(url, video_id)
-        video_url = self._html_search_regex(
-            r'<div.*?name="div_video".*?flashvars="([^"]+)">',
-            webpage, 'video URL')
+        page = self._download_webpage(url, video_id)
+        title = self._html_search_meta('twitter:title', page, 'title')
+        description = self._html_search_meta('twitter:description', page, 'title')
+
+        data = self._download_xml(
+            'http://www.firstpost.com/getvideoxml-%s.xml' % video_id, video_id,
+            'Downloading video XML')
+
+        item = data.find('./playlist/item')
+        thumbnail = item.find('./image').text
+
+        formats = [
+            {
+                'url': details.find('./file').text,
+                'format_id': details.find('./label').text.strip(),
+                'width': int(details.find('./width').text.strip()),
+                'height': int(details.find('./height').text.strip()),
+            } for details in item.findall('./source/file_details') if details.find('./file').text
+        ]
 
         return {
             'id': video_id,
-            'url': video_url,
-            'title': self._og_search_title(webpage),
-            'description': self._og_search_description(webpage),
-            'thumbnail': self._og_search_thumbnail(webpage),
+            'title': title,
+            'description': description,
+            'thumbnail': thumbnail,
+            'formats': formats,
         }

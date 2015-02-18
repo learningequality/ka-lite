@@ -1,0 +1,2 @@
+# Use the master branch from the repo.
+# -e git+https://github.com/mrpau/i18nize_templates/#egg=i18nize_templates

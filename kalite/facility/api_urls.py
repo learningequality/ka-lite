@@ -1,4 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
+
+from .api_resources import FacilityGroupResource, FacilityUserResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -11,5 +13,10 @@ urlpatterns = patterns(__package__ + '.api_views',
 
     url(r'^group_delete$', 'group_delete', {}, 'group_delete'),
     url(r'^group_delete/(?P<group_id>\w+)$', 'group_delete', {}, 'group_delete'),
-)
 
+    # For group management
+    url(r'^', include(FacilityGroupResource().urls)),
+
+    # For user management (not yet used, but needed here to enable URI for tastypie exercise logging endpoints)
+    url(r'^', include(FacilityUserResource().urls)),
+)

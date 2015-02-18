@@ -1,0 +1,48 @@
+{
+  "name": "perseus",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "make server",
+    "test": "jest"
+  },
+  "dependencies": {
+    "rcss": "khan/RCSS#9e5ec9614e391d28a621297a63bc2d850eae89e8"
+  },
+  "devDependencies": {
+    "jest-cli": "~0.1.17",
+    "jsdom": "^0.10.5",
+    "json-loader": "~0.5.1",
+    "jstransform": "~6.3.2",
+    "jsx-i18n": "0.0.0",
+    "jsx-loader": "~0.11.0",
+    "less": "~1.7.0",
+    "loader-utils": "~0.2.5",
+    "mocha": "^1.19.0",
+    "node-jsx": "git://github.com/spicyj/node-jsx#0.12.0-rc1",
+    "react-tools": "0.12.0-rc1",
+    "requirejs": "~2.1.11",
+    "webpack": "~1.4.3",
+    "webpack-dev-server": "~1.6.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Khan/perseus.git"
+  },
+  "jest": {
+    "scriptPreprocessor": "jest/preprocessor.js",
+    "setupEnvScriptFile": "jest/environment.js",
+    "testFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "testPathDirs": [
+      "src"
+    ],
+    "unmockedModulePathPatterns": [
+      ""
+    ]
+  },
+  "browser": {
+    "fs": false
+  }
+}

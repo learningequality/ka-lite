@@ -1,13 +1,13 @@
 import sys
 
 from datetime import datetime
+from hashlib import sha1 as sha_constructor
 from threading import local
 
 from django.conf import settings
 from django.template import Node
 from django.utils import simplejson
 from django.utils.encoding import force_unicode, smart_str
-from django.utils.hashcompat import sha_constructor
 
 from debug_toolbar.utils import ms_from_timedelta, tidy_stacktrace, \
                                 get_template_info, get_stack

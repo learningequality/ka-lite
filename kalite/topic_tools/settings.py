@@ -4,12 +4,11 @@
 
 INSTALLED_APPS = (
     "kalite.i18n",  # get_video_id
-    "kalite.khanload",  # because we have KA path weirdness in our topic tree.  TODO: remove for LEX
+    "kalite.contentload",  # because we have KA path weirdness in our topic tree.  TODO: remove for LEX
     "kalite.testing",
 )
 
 #######################
 # Set module settings
 #######################
-
-TOPICS_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = getattr(local_settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False)

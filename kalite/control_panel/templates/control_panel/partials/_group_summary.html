@@ -1,0 +1,17 @@
+{% load my_filters %}
+{% load i18n %}
+
+<dl class="dl-horizontal">
+<dt>{% trans "# Learners" %}</dt>
+<dd>{{ group_data.total_users }}</dd>
+<dt>{% trans "Logins" %}</dt>
+<dd>{{ group_data.total_logins }}</dd>
+<dt>{% trans "Login Time" %}</dt>
+<dd>{{ group_data.total_hours|floatformat }}</dd>
+<dt>{% trans "Videos Viewed" %}</dt>
+<dd>{{ group_data.total_videos }}</dd>
+<dt>{% trans "Exercises Completed" %}</dt>
+<dd>{{ group_data.total_exercises }}</dd>
+<dt>{% trans "Mastery " %}</dt>
+<dd>{{ group_data.pct_mastery|percent:1 }}</dd>
+</dl>

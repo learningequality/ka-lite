@@ -1,0 +1,10 @@
+<label for="group-select">{{_ "Group" }}&nbsp;&nbsp;&nbsp;</label>
+<select id="group-select" class="reports-select form-control">
+    {{#if groups}}
+        {{#each groups}}
+            <option value="{{ id }}" {{#ifcond ../selected "===" id }}selected{{/ifcond}}>{{ name }}</option>
+        {{/each}}
+    {{else}}
+        <option value="">{{_ "No groups" }}</option>
+    {{/if}}
+</select>

@@ -38,29 +38,26 @@ function display_languages() {
     //
     // show list of installed languages
     //
-    $("div.installed-languages").empty();
+    $("table.installed-languages").empty();
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
             if (lang['code'] !== defaultLanguage) {
-                link_text = sprintf("<a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'>(Set server default)</a>", {
+                link_text = sprintf("<span><a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'><button type='button' class='btn btn-default btn-sm'>%(link_text)s</button></a></span>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
                 });
             } else {
-                link_text = "(Default)";
+                link_text = gettext("Default");
             }
-            var lang_name = sprintf("<b>%(name)s</b> (%(code)s)", lang);
+            lang["subtitles"] = gettext("Subtitles");
+            lang["translated"] = gettext("Translated");
+            var lang_name_data = sprintf("<b>%(name)s</b><br>%(subtitle_count)d %(subtitles)s <br> %(percent_translated)d%% %(translated)s", lang);
             var lang_code = lang['code'];
-            var lang_data = sprintf(gettext("%(subtitle_count)d Subtitles / %(percent_translated)d%% Translated"), lang);
-            var lang_description = sprintf("<div class='lang-link'>%s </div><div class='lang-name'>%s</div><div class='lang-data'> - %s</div>", link_text, lang_name, lang_data);
+            
+            var lang_description = sprintf("<tr><td class='lang-name'>%s</td><td class='lang-link'>%s </td>", lang_name_data, link_text);
 
-            if ( lang_code != 'en')
-                lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s'), lang));
-            else
-                if (lang['subtitle_count'] > 0) {
-                    lang_description += sprintf("<div class='delete-language-button'> <button value='%s' type='button'>%s</button></div>", lang_code, sprintf(gettext('Delete %(name)s Subtitles'), lang));
-                }
+            
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
             // NOTE: N^2 algorithm right here, but meh
@@ -75,9 +72,9 @@ function display_languages() {
                         var percent_translated_diff = matching_installable.percent_translated - lang.percent_translated;
                         var subtitle_count_diff = matching_installable.subtitle_count - lang.subtitle_count;
                         lang_description += sprintf(
-                            "<div class='upgrade-link'><a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>%(upgrade_text)s</a> (+%(translated)d%% %(translated_text)s / +%(srt)d %(srt_text)s / %(size)s)</div>", {
+                            "<td class='upgrade-link'><a href='#' onclick='start_languagepack_download(\"%(lang.code)s\")'>%(upgrade_text)s</a> <br> +%(translated)d%% %(translated_text)s <br> +%(srt)d %(srt_text)s / %(size)s</td>", {
                                 lang: lang,
-                                upgrade_text: gettext("Upgrade"),
+                                upgrade_text: gettext("<button type='button' class='btn btn-info'>Upgrade</button>"),
                                 translated: percent_translated_diff,
                                 translated_text: gettext("Translated"),
                                 srt: subtitle_count_diff,
@@ -85,11 +82,24 @@ function display_languages() {
                                 size: sprintf("%5.2f MB", matching_installable.zip_size/1.0E6 || 0)
                         });
                     }
+                    else {
+                        lang_description += sprintf("<td class='upgrade-link'>%(up_to_date_text)s</td>", {
+                            up_to_date_text: gettext("Up to Date")
+                        });
+                    }
                 }
             }
-            lang_description += "<div class='clear'></div>";
 
-            $("div.installed-languages").append(lang_description);
+            if ( lang_code != 'en')
+                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete'));
+            else
+                if (lang['subtitle_count'] > 0) {
+                    lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete Subtitles'));
+                }
+
+            lang_description += "<td class='clear'></td></tr>";
+
+            $("table.installed-languages").append(lang_description);
         }
     });
 
@@ -128,35 +138,60 @@ $(function () {
 
     });
 });
-
+  
+function populate_installable_lang_pack_dd(){
     //
     // show list of installable languages in the dropdown box
     //
-    $('#language-packs').find('option').remove();
-    $('#language-packs').append("<option value='' selected=''>--</option>");
+    var lp_ul = $('#language-packs-ul');
+    lp_ul.find('li').remove();
+
     installables.forEach(function(langdata, langindex) {
         var srtcount = langdata["subtitle_count"];
         var percent_translated = langdata["percent_translated"];
         var langcode = langdata["code"];
+        var langbeta = langdata["beta"];
 
         // if language already installed, dont show in dropdown box
         var installed_languages = installed.map(function(elem) { return elem['code']; });
         if ($.inArray(langcode, installed_languages) === -1) { // lang not yet installed
             if (percent_translated > 0 || srtcount > 0) {
-                $('#language-packs').append(sprintf('<option id="option-%(code)s" value="%(code)s">%(name)s (%(code)s)</option>', langdata));
+                var li = $('<li></li>').attr('id', sprintf('option-%(code)s', langdata))
+                                       .attr('role', 'presentation')
+                                       .attr('value', sprintf('%(code)s', langdata))
+                                       .click( {caller_value: sprintf('%(code)s', langdata)}, select_lang_pack )
+                                       .append( $('<a></a>').attr('role','menu-item')
+                                                            .html(sprintf('%(name)s', langdata))
+                                       );
+                if(langbeta && $("#beta-checkbox").is(':checked')){
+                    li.find('a')
+                      .append( $('<span></span>').text(gettext('beta'))
+                                                 .attr('class', 'beta-text')
+                      );
+                    lp_ul.append(li);
+                }else if(!langbeta){
+                    lp_ul.append(li);
+                }
             }
         }
     });
+}
 
-    if (installables.length > 0) {
-        $('#language-packs').change(); // trigger the 'Get Language' Button update
-    }
+populate_installable_lang_pack_dd();
+
+$('#beta-checkbox').click(function() {
+     populate_installable_lang_pack_dd();
+});
+
 }
 
 //
 // Messy UI stuff incoming
 //
 
+var languagepack_callbacks = {
+    reset: languagepack_reset_callback
+};
 
 function start_languagepack_download(lang_code) {
     clear_messages();  // get rid of any lingering messages before starting download
@@ -176,51 +211,47 @@ function start_languagepack_download(lang_code) {
 }
 
 // when we make a selection on the language pack select box, enable the 'Get Language' Button
-$(function() {
-    $("#language-packs").change(function(event) {
-        var lang_code = $("#language-packs").val();
-        var found = false;
+function select_lang_pack( event ) {
+    var lang_code = event.data.caller_value;
+    var found = false;
+    var li = $(sprintf('#option-%s', lang_code));
+    $('#language-packs-selection').html( li.html() )
+                                  .append( $('<span></span>').attr('class', 'caret') );
+    $('#language-packs').attr('value', li.attr('value'));
 
-        var matching_installable = installable_languages.filter(function(installable_lang) { return lang_code === installable_lang.code; });
-        var found = (matching_installable.length != 0);
+    var matching_installable = installable_languages.filter(function(installable_lang) { return lang_code === installable_lang.code; });
+    var found = (matching_installable.length != 0);
 
-        if( !downloading){
-                $("#get-language-button").prop("disabled", !found);
-        }
-        if (found) {
-            var langdata = matching_installable[0];
-            // For each of the following, || 0 will return 0 if the quantity is undefined.
-            $("#lp-num-srts").text(sprintf("%d", langdata["subtitle_count"] || 0));
-            $("#lp-pct-trans").text(sprintf("%5.2f%%", langdata["percent_translated"] || 0));
-            $("#lp-down-size").text(sprintf("%5.2f MB", langdata["zip_size"]/1.0E6 || 0));
-            $("#lp-disk-size").text(sprintf("%5.2f MB", langdata["package_size"]/1.0E6 || 0));
-            $("#lp-num-exers").text(sprintf("%d", langdata["num_exercises"] || 0));
-        }
-        $("#langpack-details").toggle(found);
-    });
-});
+    if(!downloading){
+        $("#get-language-button").prop("disabled", !found);
+    }
+    if (found) {
+        var langdata = matching_installable[0];
+        // For each of the following, || 0 will return 0 if the quantity is undefined.
+        $("#lp-num-srts").text(sprintf("%d", langdata["subtitle_count"] || 0));
+        $("#lp-pct-trans").text(sprintf("%5.2f%%", langdata["percent_translated"] || 0));
+        $("#lp-down-size").text(sprintf("%5.2f MB", langdata["zip_size"]/1.0E6 || 0));
+        $("#lp-disk-size").text(sprintf("%5.2f MB", langdata["package_size"]/1.0E6 || 0));
+        $("#lp-num-exers").text(sprintf("%d", langdata["num_exercises"] || 0));
+    }
+    $("#langpack-details").toggle(found);
+}
 
 var language_downloading = null;
 
 // start download process once button is clicked
 $(function () {
     $("#get-language-button").click(function(event) {
-        language_downloading = $("#language-packs").val();
+        language_downloading = $("#language-packs").attr('value');
         start_languagepack_download(language_downloading);
-
     });
 });
-
 
 function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
     downloading = false;
 }
-
-var languagepack_callbacks = {
-    reset: languagepack_reset_callback
-};
 
 function set_server_language(lang) {
     doRequest(SET_DEFAULT_LANGUAGE_URL,

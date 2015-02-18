@@ -1,0 +1,42 @@
+{{#if has_related_videos }}
+<div class="info-box related-video-box">
+    <div id="related-video-content">
+        <span class="info-box-header">{{_ "Stuck? Watch a video." }}</span>
+
+        <div id="related-video-list">
+            <ul class="related-video-list">
+
+                <li>
+                    <div class="thumbnail">
+                        <a class="related-video" href="{{ first_video.path }}" title="{{ first_video.title }}" target="_blank">
+                            <div class="thumb">
+                                <img class="thumbimage" src="{{ first_video.availability.en.thumbnail }}"/>
+                                <div class="thumbnail_label" style="margin-top: 68px; ">
+                                    <div class="thumbnail_desc">
+                                        <span class="progress-circle" data-video-id="{{ first_video.id }}"></span>
+                                        <span>{{ first_video.title }}</span>
+                                    </div>
+                                    <div class="thumbnail_teaser" style="height: 0px;">{{#if first_video.description }}{{ first_video.description }}{{/if }}</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+
+            {{#each other_videos }}
+                <li>
+                    <a class="related-video related-video-inline" href="{{ path }}" title="{{ title }}" target="_blank">
+                        <span class="video-title">
+                            <span class="progress-circle" data-video-id="{{ id }}"></span>
+                            {{ title }}
+                        </span>
+                    </a>
+                </li>
+            {{/each }}
+
+            </ul>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+{{/if }}

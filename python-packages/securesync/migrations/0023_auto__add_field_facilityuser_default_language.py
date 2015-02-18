@@ -8,8 +8,11 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # delete the column first before adding it
-        db.delete_column('securesync_facilityuser', 'default_language') # looks like this doesnt error out no matter what. Nice!
+        # try deleting the column first, before adding it, just... in case? (see @aron)
+        try:
+            db.delete_column('securesync_facilityuser', 'default_language')
+        except:
+            pass
         # Adding field 'FacilityUser.default_language'
         db.add_column('securesync_facilityuser', 'default_language',
                       self.gf('django.db.models.fields.CharField')(max_length=8, blank=True, null=True),

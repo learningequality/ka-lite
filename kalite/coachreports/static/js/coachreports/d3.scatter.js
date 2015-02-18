@@ -42,16 +42,18 @@ function d3_scatter(data, options, appendtohtml) {
       .attr("height", height + margin.top + margin.bottom)
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
+
   // Create tooltip object for displaying user specific information
   var tooltip = d3.select("body").append("div")
         .style("visibility", "hidden")
         .attr("id", "summary");
-  
+
   // Set x and y range
+  // x.domain([0, 100]);
+  // y.domain([0, 100]);
   x.domain(d3.extent(data, function(d) { return d[xCoordinate]; })).nice();
   y.domain(d3.extent(data, function(d) { return d[yCoordinate]; })).nice();
-  
+
   // Click anywhere on SVG object to hide tooltip
   svg.on("click", function() {
     tooltip.style("visibility", "hidden");
@@ -69,56 +71,56 @@ function d3_scatter(data, options, appendtohtml) {
 
   // Create four different rectangles to highlight and label the different quadrants of the graph.
   // Each rectangle is a group with a coloured (fill) rectangle, and a text label.
-  var struggling = svg.append("g")
+  var struggling = svg.append("g");
   struggling.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", 0)
     .attr("y", 0)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#FF0000")
+    .attr("fill", "#FF0000");
   struggling.append("text")
     .attr("class", "quadrant-label")
     .attr("x", width/4)
     .attr("y", height/4)
     .text(gettext("Struggling"));
 
-  var bored = svg.append("g")
+  var bored = svg.append("g");
   bored.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", width/2)
     .attr("y", height/2)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#000000")
+    .attr("fill", "#000000");
   bored.append("text")
     .attr("class", "quadrant-label")
     .attr("x", 3*width/4)
     .attr("y", 3*height/4)
     .text(gettext("Bored"));
 
-  var disengaged = svg.append("g")
+  var disengaged = svg.append("g");
   disengaged.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", 0)
     .attr("y", height/2)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#FFFF00")
+    .attr("fill", "#FFFF00");
   disengaged.append("text")
     .attr("class", "quadrant-label")
     .attr("x", width/4)
     .attr("y", 3*height/4)
     .text(gettext("Disengaged"));
 
-  var ontarget = svg.append("g")
+  var ontarget = svg.append("g");
   ontarget.append("rect")
     .attr("class", "quadrant-rectangle")
     .attr("x", width/2)
     .attr("y", 0)
     .attr("width", width/2)
     .attr("height", height/2)
-    .attr("fill", "#00FF00")
+    .attr("fill", "#00FF00");
   ontarget.append("text")
     .attr("class", "quadrant-label")
     .attr("x", 3*width/4)
@@ -174,7 +176,7 @@ function d3_scatter(data, options, appendtohtml) {
         if(tooltip.style("visibility")=="hidden") {
           tooltip.html(d["tooltip"])
             .style("visibility", "visible")
-            .style("left", (d3.event.pageX) + "px")     
+            .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY - 28) + "px");
           // Mark this item as having the tooltip
           d3.select(this).attr("tooltip", true);
@@ -192,7 +194,7 @@ function d3_scatter(data, options, appendtohtml) {
               // Position tooltip based on data point
               // TODO: Intelligently position tooltip when near the edge
               // of the plot area to prevent overflow.
-              .style("left", (d3.event.pageX) + "px")     
+              .style("left", (d3.event.pageX) + "px")
               .style("top", (d3.event.pageY - 28) + "px");
           }
         }

@@ -32,7 +32,7 @@ class ExtendedModel(models.Model):
         """
         Return list of which class names have objects
         referencing this one.
-        
+
         passable_classes means classes to ignore.
         """
         class_names = []
@@ -55,8 +55,15 @@ class ExtendedModel(models.Model):
         """
         This is like Django's get_or_create method, but without calling save().
         Allows for more efficient post-initialize updates.
-        
+
         Like get_or_Create, returns a tuple of the object, and whether it was created (True) or retrieved (False)
         """
         obj = get_object_or_None(cls, **kwargs)
         return (obj or cls(**kwargs), not bool(obj))
+
+
+    def reload(self):
+        '''reload the model from the database'''
+        new_self = self.__class__.objects.get(pk=self.pk)
+        self.__dict__.update(new_self.__dict__)
+        return self

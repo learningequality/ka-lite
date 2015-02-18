@@ -53,6 +53,14 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         )
         cherrypy.tree.mount(static_handler, settings.STATIC_URL)
 
+        # Serve the static files
+        static_handler = cherrypy.tools.staticdir.handler(
+            section="/",
+            dir=os.path.split(settings.CONTENT_DATA_PATH)[1],
+            root=os.path.abspath(os.path.split(settings.CONTENT_DATA_PATH)[0])
+        )
+        cherrypy.tree.mount(static_handler, settings.CONTENT_DATA_URL)
+
         # Serve the static admin media. From django's internal (django.core.servers.basehttp)
         admin_static_dir = os.path.join(django.__path__[0], 'contrib', 'admin', 'static')
         admin_static_handler = cherrypy.tools.staticdir.handler(
@@ -77,6 +85,8 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         finally:
             if fd: fd.close()
 
+# TODO: This is not used anymore and does not comply with OS agnostic ideals
+# /benjaoming
 def poll_process(pid):
     """
     Poll for process with given pid up to 10 times waiting .25 seconds in between each poll.
@@ -95,6 +105,8 @@ def poll_process(pid):
                 raise Exception
     return True
 
+# TODO: This is not used anymore and does not comply with OS agnostic ideals
+# /benjaoming
 def stop_server(pidfile):
     """
     Stop process whose pid was written to supplied pidfile.
@@ -116,14 +128,18 @@ def stop_server(pidfile):
         os.remove(pidfile)
 
 
-def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=False, pidfile=None, autoreload=False):
+def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=False, pidfile=None, autoreload=False, startuplock=None):
     port = port or getattr(settings, "CHERRYPY_PORT", 8008)
     threads = threads or getattr(settings, "CHERRYPY_THREAD_COUNT", 18)
 
     if daemonize:
         if not pidfile:
             pidfile = '~/cpwsgi_%d.pid' % port
-        stop_server(pidfile)
+        
+        # benjaoming: stopping the server is an explicit logic that has already
+        # been implemented other places. Killing some process related to a
+        # possibly out-dated pidfile is not exactly best practice
+        # stop_server(pidfile)
 
         from django.utils.daemonize import become_daemon
         become_daemon()
