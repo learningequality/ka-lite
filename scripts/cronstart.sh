@@ -11,4 +11,4 @@ if [ "$pids" ]; then
     source "$SCRIPT_DIR/cronstop.sh"
 fi
 
-"$pyexec" "manage.py" cronserver $1 &
+"$pyexec" "$KALITE_DIR/manage.py" cronserver $1 &
