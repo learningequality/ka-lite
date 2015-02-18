@@ -10,7 +10,10 @@
 {% block headcss %}{{block.super}}{% endblock headcss %}
 
 {% block subnavbar %}
-	<div class="teach-nav admin-only">
+
+<!-- Prevents nav bar from showing up for students/guests on learn tab -->
+{% if request.is_admin %}
+	<div class="teach-nav">
         <ul>
             <li class="reports {% block reports_active %}{% endblock reports_active %}"><a href="{% url 'tabular_view' %}" title="{% trans 'Track the progress of your learners' %}"><div class=""><span class="icon icon-uniE605"></span><br/>{% trans "Reports" %}</div></a></li>
             {% if is_config_package_nalanda %}
@@ -21,6 +24,7 @@
             <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}"><a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}"><div><span class="icon icon-uniE601"></span><br/>{% trans "Learn" %}</div></a></li>
         </ul>
     </div>
+{% endif %}
 {% endblock subnavbar %}
 
 
