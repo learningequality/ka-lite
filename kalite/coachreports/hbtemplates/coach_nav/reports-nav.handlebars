@@ -1,7 +1,7 @@
 <form id="coachreport-select-form" class="form-inline">
     <div class="form-group">
-        <label for="report-select">{{_ "Report Type" }}</label>
-        <select id="report-select">
+        <label for="report-select">{{_ "Report Type" }}&nbsp;&nbsp;&nbsp;</label>
+        <select id="report-select" class="reports-select form-control">
             <option value="tabular" 
             {{#ifcond selected "===" "tabular" }}selected{{/ifcond}}>
                 {{_ "Tabular Report" }}
@@ -14,17 +14,20 @@
             {{#ifcond selected "===" "timeline" }}selected{{/ifcond}}>
                 {{_ "Timeline Report" }}
             </option>
-            <option value="test"
+            {{!-- Nalanda Specific Only
+             <option value="test"
             {{#ifcond selected "===" "test" }}selected{{/ifcond}}>
                 {{_ "Test Report" }}
             </option>
+            --}}
         </select>
-    </div> 
+    </div><br/>
     <div id="facility-select-container" class="form-group">
         {{!-- Insert facility select template here --}}
-    </div>
+    </div><br/>
     <div id="group-select-container" class="form-group">
         {{!-- Insert group select template here --}}
-    </div>
-    <button id="display-coach-report" class="btn btn-primary">{{_ "Go" }}</button>
+    </div><br/>
+    <br/>
+    <button id="display-coach-report" class="btn btn-primary btn">{{_ "Go" }}</button>
 </form>

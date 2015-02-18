@@ -31,6 +31,7 @@ writeup/
 /content/*.srt
 /content/*.mp3
 /content/*.pdf
+/content/khan/
 /data/logs
 /data/i18n
 /data/subtitles
@@ -43,6 +44,8 @@ writeup/
 /kalite/media
 /data/*
 !/data/khan/
+/data/khan/assessmentitems.json
+/data/khan/assessment_item_images
 /kalite/private_key.pem
 /kalite/secrets.py
 /kalite/static
@@ -53,3 +56,5 @@ writeup/
 /.vagrant/
 ghostdriver.log
 /kalite/_built.touch
+*.swp
+/data/khan/assessmentitems.json.version

@@ -4,20 +4,6 @@
     <meta charset="UTF-8">
     <title>Complex number polar form intuition</title>
     <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
-    <style>
-        .info-box .mini-button {
-            margin: 0px 10px 0px 0px;
-            padding: 0px 5px;
-            width: 25px;
-            height: 18px;
-        }
-
-        #number-label {
-            clear: both;
-            margin: 0px 0px;
-            padding: 14px 0px 0px 0px;
-        }
-    </style>
 </head>
 <body>
     <div class="exercise">
@@ -38,7 +24,7 @@
                 <p>
                     How do these numbers affect the complex number they represent?
                 </p>
-
+                <p class="render-answer-area-here"></p>
                 <div class="graphie">
                     graphInit({
                         range: [[-10, 10], [-10, 10]],
@@ -60,22 +46,22 @@
                 </div>
 
                 <div class="solution" data-type="custom">
-                    <div class="instruction">
+                    <div class="instruction" style="width: 180px;">
                         <div>
                             <div style="float: left;">Radius: <span id="current-radius"><code>1</code></span></div>
-                            <div style="float: right;">
+                            <div style="float: right; margin-bottom: 4px;">
                                 <input class="simple-button mini-button" onclick="updateComplexPolarForm(0, -1)" type="button" value="-">
                                 <input class="simple-button mini-button" onclick="updateComplexPolarForm(0, 1)" type="button" value="+">
                             </div>
                         </div>
                         <div style="clear: both;">
                             <div style="float: left;">Angle: <span id="current-angle"><code>0</code></span></div>
-                            <div style="float: right;">
+                            <div style="float: right; margin-bottom: 14px;">
                                 <input class="simple-button mini-button" onclick="updateComplexPolarForm(-1, 0)" type="button" value="-">
                                 <input class="simple-button mini-button" onclick="updateComplexPolarForm(1, 0)" type="button" value="+">
                             </div>
                         </div>
-                        <div id="number-label">1</div>
+                        <div id="number-label" style="background: #eee; padding: 5px; text-align: center;">1</div>
                     </div>
                     <div class="guess">[
                         graph.currComplexPolar.getAngleNumerator(),

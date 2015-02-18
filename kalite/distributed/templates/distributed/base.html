@@ -13,13 +13,12 @@
         <meta name="wot-verification" content="075abe861486e6bb3ab9"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% block titletag %}
-        <title>{% block title %}{% trans title %}{% endblock title %} | KA Lite</title>
+        <title>{% block title %}{% trans "Welcome" %}{% trans title %}{% endblock title %} | KA Lite</title>
         {% endblock %}
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' True %}">
-        <!-- <link rel="stylesheet/less" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.less' True %}"> -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' True %}">
         <link href="{% static "fonts/style.css" %}" rel="stylesheet" type="text/css">
@@ -95,20 +94,18 @@
          var STATUS_URL                  = "{% url 'status' %}";
          var FORCE_SYNC_URL              = "{% url 'api_force_sync' %}";
 
-         // TODO(rtibbles): This looks like it could do with some cleanup
-         var GET_VIDEO_LOGS_URL          = "{% url 'get_video_logs' %}";
-         var GET_EXERCISE_LOGS_URL       = "{% url 'get_exercise_logs' %}";
-         var GET_CONTENT_LOGS_URL       = "{% url 'get_content_logs' %}";
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
          var USER_LOGIN_URL              = "{% url 'login' %}";
          var SET_DEFAULT_LANGUAGE_URL    = "{% url 'set_default_language' %}";
          var DELETE_USERS_URL            = "{% url 'delete_users' %}";
          var DELETE_GROUPS_URL           = "{% url 'group_delete' %}";
          var MOVE_TO_GROUP_URL           = "{% url 'move_to_group' %}";
-         var SAVE_VIDEO_LOG_URL          = "{% url 'save_video_log' %}";
          var STATIC_URL                  = "{% static "" True %}"; // pass "True" to avoid build id being appended
 
-         var ALL_ASSESSMENT_ITEMS_URL = "{% url 'api_dispatch_list' resource_name='assessment_item' %}";
+         var ALL_ASSESSMENT_ITEMS_URL    = "{% url 'api_dispatch_list' resource_name='assessment_item' %}";
+         var GET_VIDEO_LOGS_URL          = "{% url 'api_dispatch_list' resource_name='videolog' %}";
+         var GET_EXERCISE_LOGS_URL       = "{% url 'api_dispatch_list' resource_name='exerciselog' %}";
+         var GET_CONTENT_LOGS_URL        = "{% url 'api_dispatch_list' resource_name='contentlog' %}";
 
          var KHAN_EXERCISES_SCRIPT_URL = "{% static 'perseus/ke/khan-exercise.js' %}";
 
@@ -118,7 +115,6 @@
          var CURRENT_LANGUAGE            = "{{ current_language }}";
 
         </script>
-        <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/modernizr.js' %}"></script>
@@ -173,7 +169,7 @@
                               <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
                                 {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
                                 <div class="input-group">
-                                  <input type="text" name="query" id="search" class="form-control" placeholder="{% trans 'video, topic, or exercise...' %}" />
+                                  <input type="text" name="query" id="search" class="form-control" placeholder="{% trans 'Topic, video, exercise...' %}" />
                                   <button id="search-button" class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
                                 </div>
                               </form>
@@ -187,12 +183,21 @@
                             <!-- End for all users -->
 
                             <!-- For logged in admins -->
-                            {# Teach for admins => assigning playlists #}
-                            <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
-                              <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
-                                {% trans "Teach" %}
-                              </a>
-                            </li>
+                            {% if is_config_package_nalanda %}
+                              {# Teach for admins => assigning playlists #}
+                              <li class="{% block teach_active_admins-nalanda %}{% endblock teach_active_admins-nalanda %}">
+                                <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
+                                  {% trans "Teach" %}
+                                </a>
+                              </li>
+                            {% else %}
+                              {# Teach for admins => coachreports #}
+                              <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
+                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
+                                  {% trans "Teach" %}
+                                </a>
+                              </li>
+                            {% endif %}
 
                             {# Manage for admins => zone control panel #}
                             <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">

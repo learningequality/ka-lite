@@ -185,6 +185,9 @@ class ExerciseLog(DeferredCountSyncedModel):
     def get_points_for_user(user):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
+    def get_attempt_logs(self):
+        return AttemptLog.objects.filter(user=self.user, exercise_id=self.exercise_id, context_type__in=["playlist", "exercise"])
+
 
 class UserLogSummary(DeferredCountSyncedModel):
     """Like UserLogs, but summarized over a longer period of time.
@@ -276,7 +279,12 @@ class UserLogSummary(DeferredCountSyncedModel):
             start_datetime__lte=user_log.end_datetime,
             end_datetime__gte=user_log.end_datetime,
         )
-        assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
+
+        # TODO(anuragkanungo): Figure out and fix the issue for duplicate entries and enable assert check with if condition removed.
+        #assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
+        if log_summary.count() > 1:
+            for log in log_summary[1:]:
+                log.soft_delete()
 
         # Get (or create) the log item
         log_summary = log_summary[0] if log_summary.count() else cls(
@@ -486,10 +494,13 @@ class AttemptLog(DeferredCountSyncedModel):
     time_taken = models.IntegerField(blank=True, null=True) # time spent on exercise before initial response (in ms)
     version = models.CharField(blank=True, max_length=100) # the version of KA Lite at the time the answer was given
     response_log = models.TextField(default="[]")
-    response_count = models.IntegerField(default=0)
+    response_count = models.IntegerField(default=0),
+    assessment_item_id = models.CharField(max_length=100, blank=True, default="")
 
-    class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
-        pass
+    class Meta:
+        index_together = [
+            ["user", "exercise_id", "context_type"],
+        ]
 
 
 class ContentLog(DeferredCountSyncedModel):
@@ -506,7 +517,7 @@ class ContentLog(DeferredCountSyncedModel):
     completion_counter = models.IntegerField(blank=True, null=True)
     time_spent = models.FloatField(blank=True, null=True)
     progress_timestamp = models.DateTimeField(blank=True, null=True)
-    content_source = models.CharField(max_length=100, db_index=True)
+    content_source = models.CharField(max_length=100, db_index=True, default=settings.CHANNEL)
     content_kind = models.CharField(max_length=100, db_index=True)
     progress = models.FloatField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)

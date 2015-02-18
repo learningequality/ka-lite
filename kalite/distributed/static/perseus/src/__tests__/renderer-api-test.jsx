@@ -1,96 +1,18 @@
-/** @jsx React.DOM */
 var assert = require("assert");
 var Perseus = require("../perseus.js");
 var Renderer = Perseus.Renderer;
+var AnswerAreaRenderer = Perseus.AnswerAreaRenderer;
 
 var TestUtils = React.addons.TestUtils;
+var delayedPromise = require("../testutils/delayed-promise.jsx");
 
-var inputNumber1Item = {
-    "question": {
-        "content": "[[☃ input-number 1]]",
-        "images": {},
-        "widgets": {
-            "input-number 1": {
-                "type": "input-number",
-                "graded": true,
-                "options": {
-                    "value": 5,
-                    "simplify": "required",
-                    "size": "normal",
-                    "inexact": false,
-                    "maxError": 0.1,
-                    "answerType": "number"
-                }
-            }
-        }
-    },
-    "answerArea": {
-        "type": "multiple",
-        "options": {
-            "content": "",
-            "images": {},
-            "widgets": {}
-        },
-        "calculator": false
-    },
-    "hints": []
-};
-
-var inputNumber2Item = {
-    "question": {
-        "content": "[[☃ input-number 1]] [[☃ input-number 2]]",
-        "images": {},
-        "widgets": {
-            "input-number 1": {
-                "type": "input-number",
-                "graded": true,
-                "options": {
-                    "value": 5,
-                    "simplify": "required",
-                    "size": "normal",
-                    "inexact": false,
-                    "maxError": 0.1,
-                    "answerType": "number"
-                }
-            },
-            "input-number 2": {
-                "type": "input-number",
-                "graded": true,
-                "options": {
-                    "value": 6,
-                    "simplify": "required",
-                    "size": "normal",
-                    "inexact": false,
-                    "maxError": 0.1,
-                    "answerType": "number"
-                }
-            }
-        }
-    },
-    "answerArea": {
-        "type": "multiple",
-        "options": {
-            "content": "",
-            "images": {},
-            "widgets": {}
-        },
-        "calculator": false
-    },
-    "hints": []
-};
-
-// Returns a promise that will resolve shortly after the end of this
-// browser tick (roughly a `setTimeout(0)`)
-var delayedPromise = (value) => {
-    var deferred = $.Deferred();
-    _.defer(() => {
-        deferred.resolve(value);
-    });
-    if (typeof jest !== "undefined") {
-        jest.runAllTimers();
-    }
-    return deferred.promise();
-};
+// Items for testing!
+var inputNumber1Item = require("./test-items/input-number-1-item.json");
+var inputNumber2Item = require("./test-items/input-number-2-item.json");
+var tableItem = require("./test-items/table-item.json");
+var answerAreaInputsItem = require(
+    "./test-items/answer-area-inputs-item.json"
+);
 
 // Jasmine requires us to use `pit` to support promises;
 // mocha supports this already with `it`.
@@ -111,11 +33,24 @@ var renderQuestionArea = function(item, apiOptions, enabledFeatures) {
     return renderer;
 };
 
+var renderAnswerArea = function(item, apiOptions, enabledFeatures) {
+    var answerAreaRenderer = TestUtils.renderIntoDocument(
+        <AnswerAreaRenderer
+            type={item.answerArea.type}
+            options={item.answerArea.options}
+            calculator={item.answerArea.calculator}
+            problemNum={0}
+            apiOptions={apiOptions}
+            enabledFeatures={enabledFeatures} />
+    );
+    return answerAreaRenderer;
+};
+
 describe("Perseus API", function() {
     describe("setInputValue", function() {
         it("should be able to produce a correctly graded value", function() {
             var renderer = renderQuestionArea(inputNumber1Item);
-            renderer.setInputValue("input-number 1", "5");
+            renderer.setInputValue(["input-number 1"], "5");
             var score = renderer.guessAndScore()[1];
             assert.strictEqual(score.type, "points");
             assert.strictEqual(score.earned, score.total);
@@ -123,7 +58,7 @@ describe("Perseus API", function() {
 
         it("should be able to produce a wrong value", function() {
             var renderer = renderQuestionArea(inputNumber1Item);
-            renderer.setInputValue("input-number 1", "3");
+            renderer.setInputValue(["input-number 1"], "3");
             var score = renderer.guessAndScore()[1];
             assert.strictEqual(score.type, "points");
             assert.strictEqual(score.earned, 0);
@@ -131,47 +66,65 @@ describe("Perseus API", function() {
 
         it("should be able to produce an empty score", function() {
             var renderer = renderQuestionArea(inputNumber1Item);
-            renderer.setInputValue("input-number 1", "3");
+            renderer.setInputValue(["input-number 1"], "3");
             var score = renderer.guessAndScore()[1];
             assert.strictEqual(score.type, "points");
             assert.strictEqual(score.earned, 0);
-            renderer.setInputValue("input-number 1", "");
+            renderer.setInputValue(["input-number 1"], "");
             var score = renderer.guessAndScore()[1];
             assert.strictEqual(score.type, "invalid");
         });
+
+        it("should be able to accept a callback", function() {
+            var x = 3;
+            var renderer = renderQuestionArea(inputNumber1Item);
+            assert.strictEqual(x, 3);
+            renderer.setInputValue(["input-number 1"], "3", function() {
+                x = 5;
+            });
+            assert.strictEqual(x, 5);
+        });
     });
 
-    describe("interceptInputFocus", function() {
-        it("should intercept a focus and get a widget id", function() {
-            var interceptedWidgetId;
-
-            var renderer = renderQuestionArea(inputNumber1Item, {
-                interceptInputFocus: function(widgetId) {
-                    interceptedWidgetId = widgetId;
-                }
-            });
-
-            var input = renderer.getDOMNode().querySelector('input');
-
-            TestUtils.Simulate.focus(input);
-
-            assert.strictEqual(interceptedWidgetId, "input-number 1");
+    describe("getInputPaths", function() {
+        it("should be able to find all the input widgets", function() {
+            var renderer = renderQuestionArea(inputNumber2Item);
+            var numPaths = renderer.getInputPaths().length;
+            assert.strictEqual(numPaths, 2);
         });
 
-        it("should be able to inject the correct value and grade", function() {
-            var renderer = renderQuestionArea(inputNumber1Item, {
-                interceptInputFocus: function(widgetId) {
-                    renderer.setInputValue(widgetId, "5");
-                }
+        it("should be able to find all inputs within widgets", function() {
+            var renderer = renderQuestionArea(tableItem);
+            var numPaths = renderer.getInputPaths().length;
+            assert.strictEqual(numPaths, 8);
+        });
+
+        it("should be able to find inputs in the answer-area", function() {
+            var answerAreaRenderer = renderAnswerArea(answerAreaInputsItem);
+            var numPaths = answerAreaRenderer.getInputPaths().length;
+            assert.strictEqual(numPaths, 2);
+        });
+    });
+
+    describe("getDOMNodeForPath", function() {
+        it("should find one DOM node per <input>", function() {
+            var renderer = renderQuestionArea(inputNumber2Item);
+            var inputPaths = renderer.getInputPaths();
+            var allInputs = TestUtils.scryRenderedDOMComponentsWithTag(
+                renderer, "input");
+            assert.strictEqual(inputPaths.length, allInputs.length);
+        });
+
+        it("should find the right DOM nodes for the <input>s", function() {
+            var renderer = renderQuestionArea(inputNumber2Item);
+            var inputPaths = renderer.getInputPaths();
+            var allInputs = TestUtils.scryRenderedDOMComponentsWithTag(
+                renderer, "input");
+            _.each(inputPaths, (inputPath, i) => {
+                var $node = $(renderer.getDOMNodeForPath(inputPath));
+                var $input = $(allInputs[i].getDOMNode());
+                assert.ok($input.closest($node).length);
             });
-
-            var input = renderer.getDOMNode().querySelector('input');
-
-            TestUtils.Simulate.focus(input);
-
-            var score = renderer.guessAndScore()[1];
-            assert.strictEqual(score.type, "points");
-            assert.strictEqual(score.earned, score.total);
         });
     });
 
@@ -250,7 +203,7 @@ describe("Perseus API", function() {
         });
     });
 
-    describe("onChangeFocus", function() {
+    describe("onFocusChange", function() {
         pit("should be called from focused to blurred to back on one input",
                 function() {
             var callCount = 0;
@@ -277,10 +230,8 @@ describe("Perseus API", function() {
             return delayedPromise().then(() => {
                 assert.strictEqual(callCount, 1,
                         "onFocusChange was not called during onFocus");
-                assert.strictEqual(oldFocusResult.path, null);
-                assert.strictEqual(oldFocusResult.element, null);
-                assert.deepEqual(newFocusResult.path, ["input-number 1"]);
-                assert.deepEqual(newFocusResult.element, input);
+                assert.strictEqual(oldFocusResult, null);
+                assert.deepEqual(newFocusResult, ["input-number 1"]);
 
                 callCount = 0;
                 TestUtils.Simulate.blur(input);
@@ -288,10 +239,8 @@ describe("Perseus API", function() {
             }).then(() => {
                 assert.strictEqual(callCount, 1,
                         "onFocusChange was not called during onBlur");
-                assert.deepEqual(oldFocusResult.path, ["input-number 1"]);
-                assert.deepEqual(oldFocusResult.element, input);
-                assert.strictEqual(newFocusResult.path, null);
-                assert.strictEqual(newFocusResult.element, null);
+                assert.deepEqual(oldFocusResult, ["input-number 1"]);
+                assert.strictEqual(newFocusResult, null);
             });
         });
 
@@ -325,10 +274,8 @@ describe("Perseus API", function() {
                 assert.strictEqual(callCount, 1,
                         "onFocusChange was called the wrong number of" +
                         "times while switching between input-numbers");
-                assert.deepEqual(oldFocusResult.path, ["input-number 1"]);
-                assert.deepEqual(oldFocusResult.element, input1);
-                assert.deepEqual(newFocusResult.path, ["input-number 2"]);
-                assert.deepEqual(newFocusResult.element, input2);
+                assert.deepEqual(oldFocusResult, ["input-number 1"]);
+                assert.deepEqual(newFocusResult, ["input-number 2"]);
             });
         });
     });

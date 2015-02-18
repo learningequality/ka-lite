@@ -5,6 +5,8 @@ from collections_local_copy import OrderedDict
 from math import sqrt
 
 from django.conf import settings; logging = settings.LOG
+from django.contrib import messages
+from django.contrib.messages import ERROR
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -17,12 +19,14 @@ from django.shortcuts import get_object_or_404
 from kalite.distributed.api_views import compute_total_points
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.i18n import lcode_to_django_lang
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
+from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
-from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_exercise_cache
+from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_exercise_cache, get_node_cache
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
@@ -191,29 +195,42 @@ def tabular_view(request, report_type="exercise"):
     """Tabular view also gets data server-side."""
     # important for setting the defaults for the coach nav bar
 
+    language = lcode_to_django_lang(request.language)
+
     facility, group_id, context = coach_nav_context(request, "tabular")
 
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
-    topics = [tid for tid in get_knowledgemap_topics() if report_type.title() in tid["contains"]]
+    topics = [get_node_cache("Topic", language=language).get(tid["id"]) for tid in get_knowledgemap_topics(language=language) if report_type.title() in tid["contains"]]
+    playlists = Playlist.all()
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
 
     context.update(plotting_metadata_context(request, facility=facility))
+
     context.update({
         # For translators: the following two translations are nouns
-        "report_types": (_("exercise"), _("video")),
+        "report_types": ({"value": "exercise", "name":_("exercise")}, {"value": "video", "name": _("video")}),
         "request_report_type": report_type,
         "topics": [{"id": t["id"], "title": t["title"]} for t in topics if t],
+        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag} for p in playlists if p],
     })
 
     # get querystring info
     topic_id = request.GET.get("topic", "")
+    playlist_id = request.GET.get("playlist", "")
     # No valid data; just show generic
-    if not topic_id or not re.match("^[\w\-]+$", topic_id):
+    # Exactly one of topic_id or playlist_id should be present
+    if not ((topic_id or playlist_id) and not (topic_id and playlist_id)):
+        if playlists:
+            messages.add_message(request, ERROR, _("Please select a playlist."))
+        elif topics:
+            messages.add_message(request, ERROR, _("Please select a topic."))
         return context
+
+    playlist = (filter(lambda p: p.id == playlist_id, Playlist.all()) or [None])[0]
 
     if group_id:
         # Narrow by group
@@ -254,7 +271,11 @@ def tabular_view(request, report_type="exercise"):
     # Get type-specific information
     if report_type == "exercise":
         # Fill in exercises
-        exercises = get_topic_exercises(topic_id=topic_id)
+        if topic_id:
+            exercises = get_topic_exercises(topic_id=topic_id)
+        elif playlist:
+            exercises = playlist.get_playlist_entries("Exercise", language=language)
+
         context["exercises"] = exercises
 
         # More code, but much faster
@@ -285,7 +306,10 @@ def tabular_view(request, report_type="exercise"):
 
     elif report_type == "video":
         # Fill in videos
-        context["videos"] = get_topic_videos(topic_id=topic_id)
+        if topic_id:
+            context["videos"] = get_topic_videos(topic_id=topic_id)
+        elif playlist:
+            context["videos"] = playlist.get_playlist_entries("Video", language=language)
 
         # More code, but much faster
         video_ids = [vid["id"] for vid in context["videos"]]
@@ -312,9 +336,31 @@ def tabular_view(request, report_type="exercise"):
                 "id": user.id,
                 "video_logs": log_table,
             })
-
     else:
         raise Http404(_("Unknown report_type: %(report_type)s") % {"report_type": report_type})
+
+    # Validate results by showing user messages.
+    if not users:
+        # 1. check group facility groups
+        if len(groups) > 0 and not groups[0]['groups']:
+            # 1. No groups available (for facility) and "no students" returned.
+            messages.add_message(request, ERROR,
+                                 _("No learner accounts have been created for selected facility/group."))
+        elif topic_id and playlist_id:
+            # 2. Both topic and playlist are selected.
+            messages.add_message(request, ERROR, _("Please select either a topic or a playlist above, but not both."))
+        elif not topic_id and not playlist_id:
+            # 3. Group was selected, but data not queried because a topic or playlist was not selected.
+            if playlists:
+                # 4. No playlist was selected.
+                messages.add_message(request, ERROR, _("Please select a playlist."))
+            elif topics:
+                # 5. No topic was selected.
+                messages.add_message(request, ERROR, _("Please select a topic."))
+        else:
+            # 6. Everything specified, but no users fit the query.
+            messages.add_message(request, ERROR, _("No learner accounts in this group have been created."))
+    # End: Validate results by showing user messages.
 
     log_coach_report_view(request)
 
@@ -395,7 +441,6 @@ def test_view(request):
                         "status": status,
                         "cell_display": display_score,
                         "title": status.title() + ": " + ungettext("%(n_remaining)d problem remaining",
-                                                                   "%(n_remaining)d problems remaining",
                                                                    n_remaining) % {'n_remaining': n_remaining},
                     })
             else:

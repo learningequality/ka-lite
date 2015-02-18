@@ -6,18 +6,21 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException, WebDriverException
+from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils import unittest
 from django.test.utils import override_settings
 from django.utils.translation import ugettext as _
 
 from fle_utils.general import isnumeric
-from kalite.facility.models import FacilityUser
+from kalite.facility.models import FacilityUser, Facility
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
-from kalite.topic_tools import get_exercise_paths, get_node_cache
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins, CreateFacilityMixin
+from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
 
@@ -75,9 +78,14 @@ class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase):
 
 
 @unittest.skipIf(settings.DISABLE_SELF_ADMIN, "Registration not allowed when DISABLE_SELF_ADMIN set.")
-class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase):
+class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin, CreateFacilityMixin):
     username = "user1"
     password = "password"
+
+    def setUp(self):
+        super(UserRegistrationCaseTest, self).setUp();
+        self.create_admin()
+        self.create_facility()
 
     def test_register_login_exact(self):
         """Tests that a user can login with the exact same email address as registered"""
@@ -176,7 +184,7 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
                                            facility=self.facility)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
-        self.browse_to(self.live_server_url + get_node_cache("Exercise")[self.EXERCISE_SLUG]["path"])
+        self.browse_to(self.live_server_url + reverse("learn") + get_node_cache("Exercise")[self.EXERCISE_SLUG]["path"])
         self.nanswers = self.browser.execute_script('return window.ExerciseParams.STREAK_CORRECT_NEEDED;')
 
     def browser_get_current_points(self):
@@ -195,14 +203,21 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         From an exercise page, insert an answer into the text box and submit.
         """
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.ID, 'solutionarea'))
+        )
         self.browser.find_element_by_id('solutionarea').find_element_by_css_selector('input[type=text]').click()
         self.browser_send_keys(unicode(answer))
-        self.browser_send_keys(Keys.RETURN)
+        self.browser.find_element_by_id('check-answer-button').click()
 
-        # Convert points to a number, when appropriate
-        time.sleep(0.25)
-        points = self.browser_get_current_points()
-        return float(points) if isnumeric(points) else points
+        try:
+            ui.WebDriverWait(self.browser, 10).until(
+                expected_conditions.visibility_of_element_located((By.ID, 'next-question-button'))
+            )
+            correct = self.browser.find_element_by_id('next-question-button').get_attribute("value")=="Correct! Next question..."
+        except TimeoutException:
+            correct = False
+        return correct
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
     @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
@@ -210,14 +225,13 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         Answer an exercise correctly
         """
-        numbers = self.browser.find_elements_by_class_name('mn')
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'mord'))
+        )
+        numbers = self.browser.find_elements_by_css_selector("span[class=mord][style]")
         answer = sum(int(num.text) for num in numbers)
-        points = self.browser_submit_answer(answer)
-        self.assertTrue(self.MIN_POINTS <= points <= self.MAX_POINTS,
-                        "point update is wrong: %s. Should be %s <= points <= %s" % (points,
-                                                                                     self.MIN_POINTS,
-                                                                                     self.MAX_POINTS))
-
+        correct = self.browser_submit_answer(answer)
+        self.assertTrue(correct, "answer was incorrect")
         elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
         self.assertEqual(elog.streak_progress, 100 / self.nanswers, "Streak progress should be 10%")
         self.assertFalse(elog.struggling, "Student is not struggling.")
@@ -226,12 +240,15 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         self.assertEqual(elog.attempts_before_completion, None, "Student should not have a value for attempts_before_completion.")
 
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
-    def test_question_incorrect_no_points_are_added(self):
+    def test_question_incorrect_false(self):
         """
         Answer an exercise incorrectly.
         """
-        points = self.browser_submit_answer('this is a wrong answer')
-        self.assertEquals(points, "", "points text should be empty")
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'mord'))
+        )
+        correct = self.browser_submit_answer(0)
+        self.assertFalse(correct, "answer was correct")
 
         elog = ExerciseLog.objects.get(exercise_id=self.EXERCISE_SLUG, user=self.student)
         self.assertEqual(elog.streak_progress, 0, "Streak progress should be 0%")
@@ -245,11 +262,15 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         Answer an exercise incorrectly, and make sure button text changes.
         """
-        self.browser_submit_answer('this is a wrong answer')
+        ui.WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.CLASS_NAME, 'mord'))
+        )
+
+        self.browser_submit_answer(0)
 
         answer_button_text = self.browser.find_element_by_id("check-answer-button").get_attribute("value")
 
-        self.assertTrue(answer_button_text == "Try Again!", "Answer button did not change to 'Try Again' on incorrect answer!")
+        self.assertTrue(answer_button_text == "Check Answer", "Answer button changed on incorrect answer!")
 
     # @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "I CAN'T TAKE THIS ANYMORE!")
@@ -258,7 +279,6 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         """
         Answer an exercise til mastery
         """
-        points = 0
         for ai in range(1, 1 + self.nanswers):
             # Hey future maintainer! The visibility_of_element_located
             # requires that the element be ACTUALLY visible on the screen!
@@ -266,17 +286,12 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
             # the side while you have the world cup occupying a big part of your
             # screen.
             ui.WebDriverWait(self.browser, 10).until(
-                expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'mn'))
+                expected_conditions.visibility_of_element_located((By.CLASS_NAME, 'mord'))
             )
-            numbers = self.browser.find_elements_by_class_name('mn')
+            numbers = self.browser.find_elements_by_css_selector("span[class=mord][style]")
             answer = sum(int(num.text) for num in numbers)
-            expected_min_points = points + self.MIN_POINTS
-            expected_max_points = points + self.MAX_POINTS
-            points = self.browser_submit_answer(answer)
-            self.assertGreaterEqual(points, expected_min_points, "Too few points were given: %s < %s" % (points,
-                                                                                                         expected_min_points))
-            self.assertLessEqual(points, expected_max_points, "Too many points were given: %s > %s" % (points,
-                                                                                                       expected_max_points))
+            correct = self.browser_submit_answer(answer)
+            self.assertTrue(correct, "answer was incorrect")
 
             self.browser_send_keys(Keys.RETURN)  # move on to next question.
 
@@ -287,32 +302,6 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         self.assertEqual(elog.attempts, self.nanswers, "Student should have %s attempts. Got %s" % (self.nanswers, elog.attempts))
         self.assertTrue(elog.complete, "Student should have completed the exercise.")
         self.assertEqual(elog.attempts_before_completion, self.nanswers, "Student should have %s attempts for completion." % self.nanswers)
-
-
-@unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
-class LoadExerciseTest(BrowserActionMixins, KALiteBrowserTestCase):
-    """Tests if the exercise is loaded without any JS error.
-
-    The test is run over all urls and check for any JS error.
-    """
-    student_username = 'test_student'
-    student_password =  'socrates'
-
-    def setUp(self):
-        super(LoadExerciseTest, self).setUp()
-        self.student = self.create_student()
-        self.browser_login_student(self.student_username, self.student_password)
-
-    def test_get_exercise_load_status(self):
-        for path in get_exercise_paths():
-            logging.debug("Testing path : " + path)
-            self.browser.get(self.live_server_url + path)
-            error_list = self.browser.execute_script("return window.js_errors;")
-            if error_list:
-                logging.error("Found JS error(s) while loading path: " + path)
-                for e in error_list:
-                    logging.error(e)
-            self.assertFalse(error_list)
 
 
 class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase):
@@ -377,3 +366,154 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         time.sleep(3)
         self.browse_to(self.reverse("homepage"))
         self.assertTrue(self.browser_is_logged_in(), "Timeout should not logout teacher")
+
+class WatchingVideoAccumulatesPointsTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase, CreateFacilityMixin):
+    """
+    Addresses issue 2864. Ensure that watching a video accumulates points for a student.
+    """
+
+    def setUp(self):
+        super(WatchingVideoAccumulatesPointsTest, self).setUp()
+        self.browser.set_page_load_timeout(30)
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+        self.browser_login_student(username="johnduck", password="superpassword")
+
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
+    def test_watching_video_increases_points(self):
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        self._play_video()
+        updated_points = self.browser_get_points()
+        self.assertNotEqual(updated_points, points, "Points were not increased after video seek position was changed")
+
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
+    def test_points_update(self):
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
+        self.browser_wait_for_js_object_exists(video_js_object)
+        self.browser.execute_script(video_js_object + ".set_progress(1);")
+        updated_points = self.browser_get_points()
+        self.assertNotEqual(updated_points, points, "Points were not increased after video progress was updated")
+
+    def _play_video(self):
+        """Video might not be downloaded, so simulate "playing" it by firing off appropriate js events."""
+        video_js_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view"
+        self.browser_wait_for_js_object_exists(video_js_object)
+        self.browser.execute_script(video_js_object + ".activate()")
+        self.browser.execute_script(video_js_object + ".set_progress(0.5)")
+        self.browser.execute_script(video_js_object + ".update_progress()")
+
+class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin):
+    """
+    A regression test for issue 2858. When a user with X points gets Y more points and 
+    navigates to a new item, the points display reamins X. Only after a third navigation 
+    event are the points updated correctly to X + Y + any other points accumulated in the meantime.
+    We need to test two different backbone router events here (under distributed/topics/router.js)
+    """
+
+    def setUp(self):
+        super(PointsDisplayUpdatesCorrectlyTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+        self.browser_login_student(username="johnduck", password="superpassword")
+
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "This is a Schroedinger's Cat test - a superposition of fail/ok whose outcome depends on the observer.")
+    def test_points_update_after_backbone_navigation(self):
+        """
+        Tests a navigation event caught by loading another backbone view.
+        """
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        self._play_video()
+        self.browse_to_random_video()
+        updated_points = self.browser_get_points()
+        self.assertNotEqual(updated_points, points, "Points were not updated after a backbone navigation event.")
+    
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
+    def test_points_update_after_non_backbone_navigation(self):
+        """
+        Tests navigation event not triggered by loading another backbone view, e.g.
+        refreshing the page.
+        """
+        self.browse_to_random_video()
+        points = self.browser_get_points()
+        self._play_video()
+        self.browse_to(self.reverse("homepage"))
+        updated_points = self.browser_get_points()
+        self.assertNotEqual(updated_points, points, "Points were not updated after a non-backbone navigation event.")
+
+    def _play_video(self):
+        """The video might not be downloaded, so instead we simulate playing it by changing the points on the log_model."""
+        log_model_object = "channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view.log_model"
+        self.browser_wait_for_js_object_exists(log_model_object)
+        self.browser.execute_script(log_model_object + ".set(\"points\", 9000);" )
+        self.browser.execute_script(log_model_object + ".saveNow();" )
+
+class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin, KALiteBrowserTestCase):
+
+    def setUp(self):
+        super(AlertsRemovedAfterNavigationTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.browser_register_user(username="johnduck", password="superpassword")
+
+    def test_login_alert_is_removed(self):
+        self.browser_login_student(username="johnduck", password="superpassword")
+        try:
+            self.assertTrue(WebDriverWait(self.browser, 3).until(
+                expected_conditions.presence_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+            ))
+        except TimeoutException:
+            self.fail("No alert present on page after login.")
+        try:
+            # The function called by navigation event in the single-page JS app.
+            self.browser.execute_script("channel_router.control_view.topic_node_view.content_view.show_view()")
+        except WebDriverException as e:
+            if e.msg == "view is undefined":
+                # Since we're circumventing the normal control flow of the single-page JS app, we expect
+                # this JS error, which gets passed along as a WebDriverException
+                pass 
+            else:
+                raise
+        try:
+            self.assertTrue(WebDriverWait(self.browser, 3).until(
+                expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+            ))
+        except TimeoutException:
+            self.fail("Alert present on page after navigation event. Expected no alerts.")
+
+class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):
+    """
+    A regression test for issue 3000. Note the judicious use of waits and expected conditions to account for
+    various browser sizes and potential server hiccups. 
+    """
+
+    def setUp(self):
+        super(CoachHasLogoutLinkTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.create_teacher(username="teacher1", password="password")
+        self.browser_login_user(username="teacher1", password="password")
+
+    def test_logout_link_visible(self):
+        self.browse_to(self.reverse("homepage"))
+        nav_logout = WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
+        )
+        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[10]")
+        try:
+            self.browser_activate_element(elem=dropdown_menu)
+        except ElementNotVisibleException:
+            # Possible if the browser window is too small and the dropdown menu is collapsed.
+            expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
+            self.browser_activate_element(elem=expand_menus_button)
+            # Wait for the animation to finish
+            WebDriverWait(self.browser, 3).until(
+                expected_conditions.visibility_of(dropdown_menu)
+            )
+            self.browser_activate_element(elem=dropdown_menu)
+        self.assertTrue(nav_logout.is_displayed(), "The dropdown menu logout item is not displayed!")

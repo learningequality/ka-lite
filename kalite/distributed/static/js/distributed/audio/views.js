@@ -138,7 +138,7 @@ window.AudioPlayerView = ContentBaseView.extend({
     close: function() {
         this.audio_object.stop();
         this.audio_object.destruct();
-        this.remove();
+        window.ContentBaseView.prototype.close.apply(this);
     }
 
 

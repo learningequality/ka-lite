@@ -8,7 +8,62 @@ from selenium.common.exceptions import NoSuchElementException
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin, StoreMixins
 
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 logging = settings.LOG
+
+
+class DeviceRegistrationTests(FacilityMixins,
+                       StudentProgressMixin,
+                       BrowserActionMixins,
+                       CreateZoneMixin,
+                       CreateAdminMixin,
+                       KALiteBrowserTestCase):
+
+    def setUp(self):
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+
+        super(DeviceRegistrationTests, self).setUp()
+
+
+    def test_device_registration_availability(self):
+        """
+        This test simulate the device registration availability.
+        The Registration button must appear else the test will fail.
+        """
+        facility_name = 'default'
+        self.fac = self.create_facility(name=facility_name)
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+        element = self.browser.find_element_by_id('not-registered')
+        try:
+             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+        except TimeoutException:
+             pass
+        self.assertTrue(element.is_displayed())
+
+
+    def test_device_already_register(self):
+        """
+        This test will simulate the device that has already registered and the only option is available is update
+        the software else the test will fail.
+        """
+        facility_name = 'default'
+        self.zone = self.create_zone()
+        self.device_zone = self.create_device_zone(self.zone)
+        self.fac = self.create_facility(name=facility_name)
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+        element = self.browser.find_element_by_id('force-sync')
+        try:
+             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+        except TimeoutException:
+            pass
+        self.assertTrue(element.is_displayed())
 
 
 class FacilityControlTests(FacilityMixins,
@@ -107,6 +162,24 @@ class GroupControlTests(FacilityMixins,
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
+
+    def test_checkbox_not_autocompleted(self):
+        # This is a regression test for issue #2929
+        # Firefox aggressively autocompletes form elements, meaning if a checkbox is checked
+        # upon page refresh, it will stay checked. This then disrupts our checkbox/highlight
+        # UI and makes them desynchronized.
+        # N.B. This assumes that our browser tests are running on Firefox, otherwise, this test is moot.
+        self.browser_login_admin(**self.admin_data)
+
+        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
+
+        group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
+        group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
+        group_delete_checkbox.click()
+
+        self.browser.refresh()
+
+        self.assertNotEqual(self.browser.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]').get_attribute("checked"), u'true')
 
 
 @override_settings(RESTRICTED_TEACHER_PERMISSIONS=True)
@@ -467,12 +540,46 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
 
         # Select facility, wait, and ensure group is enabled
         facility_select = self.browser.find_element_by_id("facility-name")
+
+        self.assertEqual(len(facility_select.find_elements_by_tag_name('option')), 2, "Invalid Number of Facilities")
+
         for option in facility_select.find_elements_by_tag_name('option'):
             if option.text == 'facility1':
                 option.click() # select() in earlier versions of webdriver
                 break
 
         self.browser_wait_for_ajax_calls_to_finish()
+
+        # Check that group is enabled now
+        group_select = self.browser.find_element_by_id("group-name")
+        self.assertTrue(group_select.is_enabled(), "UI error")
+
+        # Click and make sure something happens
+        # note: not actually clicking the download since selenium cannot handle file save dialogs
+        export = self.browser.find_element_by_id("export-button")
+        self.assertTrue(export.is_enabled(), "UI error")
+
+    def test_user_interface_teacher(self):
+        teacher_username, teacher_password = 'teacher1', 'password'
+        self.teacher = self.create_teacher(username=teacher_username,
+                                           password=teacher_password)
+        self.browser_login_teacher(username=teacher_username,
+                                   password=teacher_password,
+                                   facility_name=self.teacher.facility.name)
+        self.browse_to(self.distributed_data_export_url)
+
+        # Why is this here? Is the intention to wait for the page to load?
+        #self.browser_wait_for_ajax_calls_to_finish()
+
+        facility_select = self.browser.find_element_by_id("facility-name")
+        self.assertFalse(facility_select.is_enabled(), "UI error")
+
+        for option in facility_select.find_elements_by_tag_name('option'):
+            if option.text == self.teacher.facility.name:
+                self.assertTrue(option.is_selected(), "Invalid Facility Selected")
+                break
+
+        # self.browser_wait_for_ajax_calls_to_finish()
 
         # Check that group is enabled now
         group_select = self.browser.find_element_by_id("group-name")

@@ -5,6 +5,7 @@ warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.pa
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 sys.path = [
+    PROJECT_PATH,
     os.path.join(PROJECT_PATH, "../"),
     os.path.join(PROJECT_PATH, "../python-packages/"),
 ] + sys.path

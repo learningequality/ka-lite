@@ -5,9 +5,9 @@
 
 {% block title %}{% blocktrans with device_name=device.name %}{{ device_name }} Device Syncing History{% endblocktrans %}{{ block.super }}{% endblock title %}
 
-{% block users_active %}active{% endblock users_active %}
-{% block manage_active %}active{% endblock manage_active %}
-{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
+{% block users_active %}{% trans "active" %}{% endblock users_active %}
+{% block manage_active %}{% trans "active" %}{% endblock manage_active %}
+{% block facility_active %}{% trans "facility-active active-tab active-nav" %}{% endblock facility_active %}
 
 {% block headcss %}{{ block.super }}
     <style>

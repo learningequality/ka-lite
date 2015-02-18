@@ -1,23 +1,3 @@
-// add some dummy features onto the Exercises object to make khan-exercises.js happy
-window.Exercises = {
-    completeStack: {
-        getUid: function() { return 0; },
-        getCustomStackID: function() { return 0; }
-    },
-    currentCard: {
-        attributes: {},
-        get: function() {}
-    },
-    RelatedVideos: {
-        render: function() {}
-    },
-    getCurrentFramework: function() { return "khan-exercises"; },
-    incompleteStack: [0],
-    PerseusBridge: {
-        cleanupProblem: function() {}
-    }
-};
-
 window.ExerciseParams = {
     STREAK_CORRECT_NEEDED: ds.distributed.streak_correct_needed || 8,
     STREAK_WINDOW: 10,
@@ -77,7 +57,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
                 "secondsPerFastProblem": this.get("seconds_per_fast_problem"),
                 "authorName": this.get("author_name"),
                 "relatedVideos": this.get("related_videos"),
-                "fileName": this.get("name") + ".html" // this.get("file_name")
+                "fileName": this.get("template")
             },
             "exerciseProgress": {
                 "level": "" // needed to keep khan-exercises from blowing up
@@ -147,6 +127,10 @@ window.ExerciseLogModel = Backbone.Model.extend({
         return this.get("attempts") - this.get("attempts_before_completion");
     },
 
+    fixed_block_questions_remaining: function() {
+        return ExerciseParams.FIXED_BLOCK_EXERCISES - this.attempts_since_completion();
+    },
+
     urlRoot: "/api/exerciselog/"
 
 });
@@ -157,14 +141,21 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
     model: ExerciseLogModel,
 
     initialize: function(models, options) {
+        options = typeof options !== "undefined" && options !== null ? options : {};
         this.exercise_id = options.exercise_id;
+        this.exercise_ids = options.exercise_ids;
     },
 
     url: function() {
-        return "/api/exerciselog/?" + $.param({
-            "exercise_id": this.exercise_id,
+        data = {
             "user": window.statusModel.get("user_id")
-        });
+        };
+        if (typeof this.exercise_id !== "undefined") {
+            data["exercise_id"] = this.exercise_id;
+        } else if (typeof this.exercise_ids !== "undefined") {
+            data["exercise_id__in"] = this.exercise_ids;
+        }
+        return setGetParamDict(this.model.prototype.urlRoot, data);
     },
 
     get_first_log_or_new_log: function() {
@@ -227,17 +218,14 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     model: AttemptLogModel,
 
     initialize: function(models, options) {
-        this.exercise_id = options.exercise_id;
-        this.context_type = options.context_type;
+        this.filters = $.extend({
+            "user": window.statusModel.get("user_id"),
+            "limit": ExerciseParams.STREAK_WINDOW
+        }, options);
     },
 
     url: function() {
-        return "/api/attemptlog/?" + $.param({
-            "exercise_id": this.exercise_id,
-            "user": window.statusModel.get("user_id"),
-            "limit": ExerciseParams.STREAK_WINDOW,
-            "context_type": this.context_type
-        });
+        return "/api/attemptlog/?" + $.param(this.filters, true);
     },
 
     add_new: function(attemptlog) {
@@ -439,7 +427,7 @@ window.TestLogCollection = Backbone.Collection.extend({
 var QuizDataModel = Backbone.Model.extend({
 
     defaults: {
-        repeats: 3
+        repeats: ds.distributed.quiz_repeats || 3
     },
 
     initialize: function() {
@@ -626,7 +614,8 @@ window.QuizLogCollection = Backbone.Collection.extend({
             return this.at(0);
         } else { // create a new exercise log if none existed
             return new QuizLogModel({
-                "user": window.statusModel.get("user_uri")
+                "user": window.statusModel.get("user_uri"),
+                "quiz": this.quiz
             });
         }
     }

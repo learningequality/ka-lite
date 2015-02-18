@@ -204,9 +204,9 @@ class PackagesTests(DependenciesTests):
         "annoying": NO_VERSION,
         "async": NO_VERSION,
         "cherrypy": "3.2.2",
+        "contextlib2": NO_VERSION,
         "dateutil": "1.5",
         "debug_toolbar": "unknown",
-        "decorator": NO_VERSION,
         "django": DependenciesTests.DJANGO_VERSION_STR,
         "django_extensions": "1.0.1",
         "django_snippets": "1.0.1",
@@ -228,7 +228,7 @@ class PackagesTests(DependenciesTests):
         "rsa": "3.1.1",
         "securesync": "0.13.0",
         "smmap": "0.8.2",
-        "south": "0.7.6",
+        "south": "0.8.4",
         "tastypie": "0.11.0",
         "unittest2": "0.7.1",
         "werkzeug": "0.8.3",
@@ -312,9 +312,8 @@ class PathsTests(DependenciesTests):
     Check that we have access to all paths and files we need read or write access to.
     """
 
-    JSON_FILES = ("assessmentitems.json", "channel_data.json", "content.json", "contents.json", "exercises.json",
-                  "map_domains.json", "map_subjects.json", "map_topics.json", "map_tutorials.json",
-                  "topic_hierarchy.json", "topics.json", "videos.json",)
+    JSON_FILES = ("assessmentitems.json", "channel_data.json", "contents.json", "exercises.json",
+                  "topic_hierarchy.json", "topics.json",)
 
     def test_content_path(self):
         content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))

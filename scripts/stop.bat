@@ -1,5 +1,8 @@
 @echo off
 
+echo RUNNING THIS SCRIPT IS DEPRECATED
+echo Use bin\windows\kalite.bat
+
 rem determine the script directory (could be in scripts, could be in root folder)
 set "SCRIPT_DIR=%~dp0"
 if not exist "%SCRIPT_DIR%\python.bat" (

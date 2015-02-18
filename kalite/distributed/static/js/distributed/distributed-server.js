@@ -88,7 +88,6 @@ var StatusModel = Backbone.Model.extend({
 
         this.loaded.then(this.after_loading);
 
-        this.listenTo(this, "change:points", this.update_total_points);
         this.listenTo(this, "change:newpoints", this.update_total_points);
 
     },
@@ -125,7 +124,7 @@ var StatusModel = Backbone.Model.extend({
 
     update_total_points: function() {
         // add the points that existed at page load and the points earned since page load, to get the total current points
-        this.set("totalpoints", this.get("points") + this.get("newpoints"));
+        this.set("points", this.get("points") + this.get("newpoints"));
     }
 
 });
@@ -141,13 +140,13 @@ var TotalPointView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this);
-        this.model.bind("change:totalpoints", this.render);
+        this.model.bind("change:points", this.render);
         this.render();
     },
 
     render: function() {
 
-        var points = this.model.get("totalpoints");
+        var points = this.model.get("points");
         var message = null;
 
         // only display the points if they are greater than zero, and the user is logged in

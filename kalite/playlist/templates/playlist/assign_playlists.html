@@ -36,8 +36,6 @@
 {% endblock headjs %}
 
 {% block content %}
-
-  {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
@@ -52,18 +50,35 @@
       <div class="col-xs-3">
         <table class="table table-hover" id="student-groups">
           <tr>
-            <th>{% trans "Student Groups" %}</th>
+            <th>{% trans "Learner Groups" %}</th>
           </tr>
         </table>
       </div>
       <div class="col-xs-9">
         <table class="table table-hover" id="playlists">
-          <tr>
-            <th>{% trans "Playlists" %}</th>
-          </tr>
+            <tr>
+                <th>Playlists</th>
+            </tr>
+            <tbody id="core-playlists">
+                <tr></tr>
+                <tr>
+                      <th>Core</th>
+                </tr>
+            </tbody>
+            <tbody id="pre-playlists">
+            <tr></tr>
+            <tr>
+                <th>PreRequisites</th>
+            </tr>
+            </tbody>
+            <tbody id="advanced-playlists">
+                <tr></tr>
+                <tr>
+                    <th>Advanced</th>
+                </tr>
+            </tbody>
         </table>
        </div>
     </div>
   </div>
-
-  {% endblock content %}
+{% endblock content %}

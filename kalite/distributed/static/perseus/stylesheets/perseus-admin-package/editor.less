@@ -87,7 +87,7 @@
 
 .perseus-single-editor {
     box-sizing: border-box;
-    width: @leftCellWidth;
+    width: 100%;
 }
 
 .perseus-json-editor {
@@ -163,6 +163,9 @@
             margin-right: 5px;
         }
     }
+    > .range-input {
+        margin-left: 10px;
+    }
 }
 
 .perseus-answer-editor {
@@ -183,6 +186,14 @@
     padding: @editorPadding;
 }
 
+.perseus-answer-none {
+    & > div {
+        display: none;
+    }
+
+    border-bottom: @editorBorder;
+}
+
 .perseus-widget-editor {
     border: @editorBorder;
     border-radius: @editorBorderRadius;
@@ -191,14 +202,28 @@
     .perseus-widget-editor-title {
         .pod-title;
         border: 0;
-        color: inherit;
         display: block;
-        text-decoration: none;
+        position: relative;
 
-        > i {
-            float: left;
-            font-size: 14px;
-            margin-right: 10px;
+        > a {
+            color: inherit;
+            text-decoration: none;
+
+            > i {
+                float: left;
+                font-size: 14px;
+                margin-right: 10px;
+            }
+        }
+
+        .remove-widget {
+            position: absolute;
+            right: 5px;
+        }
+
+        .simple-button {
+            font-size: 13px;
+            padding: 0 10px;
         }
     }
 
@@ -226,7 +251,11 @@
     border: 1px solid @grayLighter;
     border-top: 0;
     border-radius: 0 0 @editorBorderRadius @editorBorderRadius;
-    padding: 5px @editorPadding;
+    padding: @editorPadding/2;
+
+    select {
+        margin: 2px;
+    }
 }
 
 .perseus-editor-widgets > div.selected > strong {
@@ -276,13 +305,6 @@
     #answer_area {
         position: relative;
 
-        #examples-show {
-            float: none;
-            left: 109px;
-            position: absolute;
-            top: -30px;
-        }
-
         #solutionarea, .answer-buttons {
             border: 0; // override ke
             box-sizing: border-box;
@@ -331,6 +353,8 @@
     padding-right: 30px;
     vertical-align: top;
     width: @leftCellWidth;
+    max-width: @leftCellWidth;
+    min-width: @leftCellWidth;
 }
 
 .perseus-editor-right-cell {
@@ -354,7 +378,7 @@
         margin-bottom: 5px;
     }
 
-    .reorder-hints a {
+    .reorder-hints button {
         font-size: 16px;
 
         &:hover, &:active {
@@ -368,9 +392,14 @@
     }
 
     .remove-hint {
-        padding: 0 10px;
         float: right;
+        font-size: 13px;
+        padding: 0 10px;
     }
+}
+
+.perseus-hints-editor .add-hint {
+    font-size: 13px;
 }
 
 // Only apply borders to hints if they immediately follow a hint-editor
@@ -383,6 +412,27 @@
     // Force the hint width to make too-wide items visually overflow,
     // to indicate that there is a problem to content creators
     width: @questionWidth;
+}
+
+// Article Editor
+.perseus-article {
+    .perseus-single-editor {
+        margin-bottom: 10px;
+    }
+
+    .section-control-button, .step-control-button {
+        font-size: 13px;
+        padding: 2px 10px;
+        margin: 0 2px;
+    }
+
+    .perseus-editor-left-cell {
+        min-width: 360px;
+    }
+
+    .perseus-editor-right-cell > div {
+        width: 640px;
+    }
 }
 
 //
@@ -453,6 +503,41 @@
             background-color: @grayLighter;
             cursor: pointer;
         }
+    }
+}
+
+//
+// Expression editor
+//
+.perseus-widget-expression-editor {
+    .answer-options-list li {
+        margin: 5px 0;
+    }
+
+    .answer-status {
+        color: inherit;
+        cursor: pointer;
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+        width: 75%; // TODO(joel) 60%?
+        .user-select(none);
+
+        &.wrong {
+            background-color: @wrongRed;
+        }
+
+        &.correct {
+            background-color: @correctGreen;
+        }
+
+        &.ungraded {
+            background-color: @ungradedBlue;
+        }
+    }
+
+    .expression-editor-h3 {
+        margin: 10px 0 4px;
     }
 }
 
@@ -530,6 +615,7 @@
     }
 
     .options-toggle,
+    .answer-trash,
     .answer-status {
         height: 26px;
         line-height: 26px;
@@ -541,18 +627,32 @@
         border-top: @widgetBorder;
     }
 
-    .options-toggle {
-        background-color: #eee;
+    .options-toggle,
+    .answer-trash {
         border-left: @widgetBorder;
         .border-box-sizing();
-        color: #444;
         cursor: pointer;
         display: inline-block;
         text-align: center;
         text-decoration: none;
-        width: 25%;
+        width: 20%;
+    }
+
+    .options-toggle {
+        background-color: #eee;
+        color: #444;
         &:hover {
             background-color: #ccc;
+        }
+    }
+
+    .answer-trash {
+        background-color: #C04F03;
+        background-image: linear-gradient(to bottom, #E35D04, #C04F03);
+        color: #FFF;
+        &:hover {
+            color: #FFF;
+            background-image: linear-gradient(to bottom, #F46E15, #D16014);
         }
     }
 
@@ -593,7 +693,7 @@
         display: inline-block;
         text-align: center;
         text-decoration: none;
-        width: 75%;
+        width: 60%;
         .user-select(none);
 
         &.wrong {
@@ -885,6 +985,10 @@
 }
 
 // Info-tip lives in react-components but these styles are perseus-specific.
+.info-tip {
+    display: inline-block;
+}
+
 .info-tip-content-container p {
     font-size: 12px;
     line-height: 1.4;
@@ -893,4 +997,171 @@
 
 .info-tip-content-container p + p {
     margin-top: 22px;
+}
+
+.expression-answer-option {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+
+    .answer-handle {
+        // textured draggy handle
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==) no-repeat 50% 50%;
+        border-right: 1px solid #ddd;
+        cursor: move;
+        display: table-cell;
+        width: 20px;
+    }
+
+    .answer-body {
+        display: table-cell;
+    }
+
+    .answer-considered {
+        display: table;
+    }
+
+    .answer-expression {
+        display: table-cell;
+    }
+
+    .answer-status {
+        display: table-cell;
+        width: 100px;
+    }
+
+    .answer-option {
+        padding-left: 5px;
+    }
+
+    .remove-container {
+        padding: 5px;
+
+        button {
+            width: 100%;
+        }
+    }
+
+    .perseus-math-input{
+        width: 236px;
+
+        .mq-root-block {
+            border-top: none;
+            border-right: none;
+            border-bottom: 1px solid #ddd !important;
+            border-left: 1px solid #ddd !important;
+        }
+    }
+}
+
+//
+// Interaction Editor
+//
+
+.perseus-widget-interaction-editor {
+    .perseus-widget-interaction-editor-select-element {
+        background-color: #eee;
+        border: 1px solid #ddd;
+        border-top: 0;
+        border-radius: 0 0 3px 3px;
+        padding: 5px 10px;
+        margin: 20px -11px -11px -11px;
+    }
+
+    .colorpicker-circle {
+        border-radius: 50%;
+        width: 14px;
+        height: 14px;
+        position: absolute;
+        left: 5px;
+        top: 5px;
+    }
+}
+
+.perseus-interaction-element {
+    border: @editorBorder;
+    border-radius: @editorBorderRadius;
+
+    .perseus-interaction-element-title {
+        .pod-title;
+        border: 0;
+        color: inherit;
+        display: block;
+        text-decoration: none;
+        white-space: nowrap;
+        font-size: 1em;
+
+        overflow: hidden;
+
+        > i {
+            float: left;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+    }
+
+    .perseus-interaction-element-content {
+        border-radius: 0 0 @editorBorderRadius @editorBorderRadius;
+        border-top: @editorBorder;
+        padding: @editorPadding;
+
+        .edit-controls {
+            text-align: right;
+            margin-top: -30px;
+            > button {
+                background: #fff;
+                border: 0;
+                cursor: pointer;
+                padding: 0;
+                margin-left: 7px;
+                font-size: 18px;
+                color: #555;
+            }
+        }
+
+        &.enter {}
+        &.leave {
+            display: none;
+        }
+    }
+}
+
+.button-set-label {
+    display: block;
+}
+
+// Float the first one left because it has a suboption.
+// This is a minor hack.
+.button-set-label-float {
+    display: block;
+    float: left;
+    margin-right: 10px;
+}
+
+.button-set-separator {
+    margin: 10px 0;
+}
+
+// Don't allow selection on this label because I found it very easy to select
+// (don't know why...) which caused the selection to not actually be made.
+// I know this is autoprefixed in prod, but I want it to work in the perseus
+// repo.
+.show-div-button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+// double selector for specificity
+.perseus-widget-editor .unit-radio {
+    color: black;
+    text-decoration: none;
+}
+
+.unit-example-not-okay {
+    color: red;
+}
+
+.unit-example-okay {
+    color: green;
 }

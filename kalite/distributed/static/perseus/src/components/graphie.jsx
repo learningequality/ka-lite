@@ -1,5 +1,4 @@
-/** @jsx React.DOM */
-
+var _ = require("underscore");
 var GraphieClasses = require("./graphie-classes.jsx");
 var Movables = require("./graphie-movables.jsx");
 
@@ -62,7 +61,9 @@ var Graphie = React.createClass({
                     "the same setup function reference to <Graphie> on " +
                     "every render.");
         }
-        if (!deepEq(this.props.options, prevProps.options)) {
+        if (!deepEq(this.props.options, prevProps.options) ||
+                !deepEq(this.props.box, prevProps.box) ||
+                !deepEq(this.props.range, prevProps.range)) {
             this._setupGraphie();
         }
         this._updateMovables();
@@ -127,8 +128,13 @@ var Graphie = React.createClass({
             onMouseUp: this.props.onMouseUp,
             onMouseMove: this.props.onMouseMove
         });
+
         graphie.snap = this.props.options.snapStep || [1, 1];
-        this.props.setup(graphie, this.props.options);
+
+        this.props.setup(graphie, _.extend({
+            range: this._range(),
+            scale: this._scale()
+        }, this.props.options));
     },
 
     _removeMovables: function() {
@@ -175,23 +181,29 @@ var Graphie = React.createClass({
         // elements occurring afterwards. If this happens, we set
         // `areMovablesOutOfOrder` to true:
         var areMovablesOutOfOrder = false;
-        return nestedMap(children, (child) => {
-            if (!child) {
+        return nestedMap(children, (childDescriptor) => {
+            if (!childDescriptor) {
                 // Still increment the key to avoid cascading key changes
                 // on hiding/unhiding children, i.e. by using
                 // {someBoolean && <MovablePoint />}
                 options.nextKey++;
                 // preserve the null/undefined in the resulting array
-                return child;
+                return childDescriptor;
             }
 
+            // Instantiate the descriptor to turn it into a real Movable
+            var child = new childDescriptor.type(childDescriptor);
             assert(child instanceof GraphieMovable,
                 "All children of a Graphie component must be Graphie " +
                 "movables");
 
             // Give each child a key
-            var key = child.key() || ("_no_id_" + options.nextKey);
+            var keyProp = childDescriptor.key;
+            var key = (keyProp == null) ?
+                    ("_no_id_" + options.nextKey) :
+                    keyProp;
             options.nextKey++;
+            var ref = childDescriptor.ref;
 
             // We render our children first. This allows us to replace any
             // `movableProps` on our child with the on-screen movables
@@ -222,7 +234,7 @@ var Graphie = React.createClass({
 
                 // This generally is a bad idea, so warn about it if this
                 // is being caused by implicit keys
-                if (!child.key()) {
+                if (keyProp == null) {
                     if (typeof console !== "undefined" && console.warn) {
                         console.warn("Replacing a <Graphie> child with a " +
                                 "child of a different type. Please add keys " +
@@ -241,6 +253,10 @@ var Graphie = React.createClass({
                 newMovables[key].toFront();
             }
 
+            if (ref) {
+                this.movables[ref] = newMovables[key];
+            }
+
             return newMovables[key];
         });
     },
@@ -252,6 +268,7 @@ var Graphie = React.createClass({
         var oldMovables = this._movables;
         var newMovables = {};
         this._movables = newMovables;
+        this.movables = {};
 
         this._renderMovables(this.props.children, {
             nextKey: 1,

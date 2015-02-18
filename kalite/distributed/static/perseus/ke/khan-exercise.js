@@ -71,7 +71,11 @@ var primes = [197, 3, 193, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,
     userExercise,
 
     // Check to see if we're in local mode
-    localMode = typeof Exercises === "undefined",
+    localMode = Exercises.localMode,
+
+    // This is an additional flag to trigger certain behaviour that is helpful when
+    // running Khan Exercises while embedded inside another app
+    embeddedMode = Exercises.embeddedMode || false,
 
     // Set in prepareSite when Exercises.init() has already been called
     assessmentMode,
@@ -155,13 +159,10 @@ var primes = [197, 3, 193, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,
 
     // Keeps track of failures in MakeProblem so we don't endlessly try and
     // re-Make a bad problem
-    failureRetryCount = 0,
-
-    // The ul#examples (keep in a global because we need to modify it even when it's out of the DOM)
-    examples = null;
+    failureRetryCount = 0;
 
 // Add in the site stylesheets
-if (localMode) {
+if (localMode && !embeddedMode) {
     (function() {
         var addLink = function(url) {
             var link = document.createElement("link");
@@ -173,12 +174,16 @@ if (localMode) {
         addLink("css/khan-site.css");
         addLink("css/khan-exercise.css");
         addLink("local-only/katex/katex.css");
-        addLink("local-only/katex/fonts/fonts.css");
     })();
 }
 
 // The main Khan Module
-var Khan = {
+// Extend any existing Khan module in the window, rather than overwriting
+// Do this deeply/recursively to allow for Khan.Utils to already have components
+var Khan = $.extend(true, {
+
+    // Add a reference to the Deferred that gets resolved when modules have finished loading
+    loaded: initialModulesPromise,
 
     // Set of modules currently in use -- keys are module names, value is
     // always true
@@ -324,6 +329,7 @@ var Khan = {
             if (localeFixed === "-0") {
                 localeFixed = "0";
             }
+
             return localeFixed;
         }
     },
@@ -763,7 +769,7 @@ var Khan = {
                 $("#issue-throbber").hide();
             };
 
-            $.post("/api/v1/bigbingo/mark_conversions", {
+            $.post("/api/internal/bigbingo/mark_conversions", {
                 conversion_ids: "exercise_submit_issue"
             });
 
@@ -774,8 +780,13 @@ var Khan = {
     cleanupProblem: function() {
         $("#workarea, #hintsarea").runModules(problem, "Cleanup");
     }
-};
+}, window.Khan || {});
 // see line 178. this ends the main Khan module
+
+// Assign these here so that when we load the base modules, `Khan` is already
+// defined on the global namespace
+window.Khan = Khan;
+window.KhanUtil = Khan.Util;
 
 // Load query string params
 Khan.query = Khan.queryString();
@@ -796,20 +807,7 @@ if (localMode && Khan.query.seed) {
     randomSeed = userCRC32 || (new Date().getTime() & 0xffffffff);
 }
 
-if (localMode) {
-    // Load in jQuery and underscore, as well as the interface glue code
-    // TODO(cbhl): Don't load history.js if we aren't in readOnly mode.
-    require([
-        "./exercises-stub.js",
-        "./history.js",
-        "./interface.js",
-        "./related-videos.js"
-    ], function() {
-        onjQueryLoaded();
-    });
-} else {
-    onjQueryLoaded();
-}
+onjQueryLoaded();
 
 function onjQueryLoaded() {
     initEvents();
@@ -872,6 +870,7 @@ function onjQueryLoaded() {
             return this;
         }
     });
+
 }
 
 function loadAndRenderExercise(nextUserExercise) {
@@ -886,11 +885,6 @@ function loadAndRenderExercise(nextUserExercise) {
         exerciseFile = userExercise.exerciseModel.fileName;
 
     function finishRender() {
-        // Get all problems of this exercise type...
-        var problems = exercises.filter(function() {
-            return $.data(this, "name") === exerciseId;
-        }).children(".problems").children();
-
         // Make scratchpad persistent per-user
         if (user && window.LocalStore) {
             var lastScratchpad = LocalStore.get("scratchpad:" + user);
@@ -1046,12 +1040,13 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
 
     debugLog("cloned problem");
 
-    // problem has to be child of visible #workarea for MathJax metrics to all work right
     $("#workarea").append(problem);
 
     // If there's an original problem, add inherited elements
     var parentType = problem.data("type");
 
+    // We want to wait until problem is "fully formed" before
+    // attempting to move #solutionarea
     while (parentType) {
         // Copy over the parent element to the child
         var original = exercise.find(".problems #" + parentType).clone();
@@ -1152,17 +1147,22 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
     }
 
     // Store the solution to the problem
-    var solution = problem.find(".solution"),
+    var solution = problem.find(".solution");
 
-        // Get the multiple choice problems
-        choices = problem.find(".choices"),
+    // Get the multiple choice problems
+    var choices = problem.find(".choices");
 
-        // Get the area into which solutions will be inserted,
-        // Removing any previous answer
-        solutionarea = $("#solutionarea").empty(),
+    // Get the area into which solutions will be inserted,
+    // Removing any previous answer
+    var solutionarea = $("#solutionarea").empty();
 
-        // See if we're looking for a specific style of answer
-        answerType = solution.data("type");
+    // XXX(alex): Proactively move #solutionarea back to its original location,
+    // in case it is not already there. This should never be the case,
+    // but that's somehow not very reassuring.
+    $(".solutionarea-placeholder").after($("#solutionarea"));
+
+    // See if we're looking for a specific style of answer
+    var answerType = solution.data("type");
 
     // Make sure that the answer type exists
     if (answerType) {
@@ -1187,6 +1187,17 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
     // (this includes possibly generating the multiple choice problems,
     // if this fails then we will need to try generating another one.)
     debugLog("decided on answer type " + answerType);
+
+    // Move the answer area into the question:
+    if (problem.find(".render-answer-area-here").length) {
+        // Either to a specific place in the question...
+        problem.find(".render-answer-area-here").before($("#solutionarea"));
+    } else {
+        // ...or else just to the end of the question.
+        problem.append($("#solutionarea"));
+    }
+
+    // This is where we actually insert content into #solutionarea
     answerData = Khan.answerTypes[answerType].setup(solutionarea, solution);
 
     validator = answerData.validator;
@@ -1223,6 +1234,13 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
     } else {
         // Making the problem failed, let's try again (up to 3 times)
         debugLog("validator was falsey");
+
+        // Put back #solutionarea
+        // TODO(alex): Consider delaying the #solutionarea move until after we
+        // have confirmed that a working solution was generated so that we
+        // don't have to put it back right away if one wasn't
+        $(".solutionarea-placeholder").after($("#solutionarea"));
+
         problem.remove();
         if (failureRetryCount < 100) {
             failureRetryCount++;
@@ -1271,46 +1289,6 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
         .not("#check-answer-button, #show-prereqs-button")
         .prop("disabled", false);
 
-    // Show acceptable formats
-    if (examples !== null && answerData.examples && answerData.examples.length > 0) {
-        $("#examples-show").show();
-        examples.empty();
-
-        $.each(answerData.examples, function(i, example) {
-            examples.append("<li>" + example + "</li>");
-        });
-
-        if ($("#examples-show").data("qtip")) {
-            $("#examples-show").qtip("destroy", /* immediate */ true);
-        }
-
-        $("#examples-show").qtip({
-            content: {
-                text: examples.remove(),
-                prerender: true
-            },
-            style: {classes: "qtip-light leaf-tooltip"},
-            position: {
-                my: "center right",
-                at: "center left"
-            },
-            show: {
-                delay: 200,
-                effect: {
-                    length: 0
-                }
-            },
-            hide: {delay: 0},
-            events: {
-                render: function() {
-                    // Only run the modules when the qtip is actually shown
-                    examples.children().runModules();
-                }
-            }
-        });
-    } else {
-        $("#examples-show").hide();
-    }
     // save a normal JS array of hints so we can shift() through them later
     hints = hints.tmpl().children().get();
 
@@ -1331,11 +1309,17 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
         problem: problem
     });
 
-    hintsUsed = userExercise ? userExercise.lastCountHints : 0;
+    hintsUsed = 0;
 
     // The server says the user has taken hints on this problem already
     // show all lastCountHints it says we have seen
-    _(hintsUsed).times(showHint);
+    if (userExercise && userExercise.lastCountHints) {
+        _(userExercise.lastCountHints).times(showHint);
+    }
+
+    // Let listeners (like the mobile app) know that we've finished rendering
+    // the initial hints.
+    $(Exercises).trigger("initialHintsShown");
 
     // Add autocomplete="off" attribute so IE doesn't try to display previous answers
     $("#problem-and-answer").find("input[type='text'], input[type='number']")
@@ -1566,11 +1550,15 @@ function renderExerciseBrowserPreview() {
 }
 
 function renderNextProblem(data) {
-    if (localMode) {
+    if (localMode && !embeddedMode) {
         // Just generate a new problem from existing exercise
         $(Exercises).trigger("clearExistingProblem");
         makeProblem(currentExerciseId);
     } else {
+        if (embeddedMode) {
+            randomSeed = data.userExercise.seed;
+        }
+
         loadAndRenderExercise(data.userExercise);
     }
 }
@@ -1583,8 +1571,6 @@ function renderNextProblem(data) {
  */
 function prepareSite() {
     debugLog("prepareSite()");
-    // Grab example answer format container
-    examples = $("#examples");
 
     assessmentMode = !localMode && Exercises.assessmentMode;
     function initializeCalculator() {
@@ -1592,7 +1578,6 @@ function prepareSite() {
         var calculator = $(".calculator"),
             history = calculator.children(".history"),
             output = $("#calc-output-content"),
-            outputContainer = $("#calc-output"),
             inputRow = history.children(".calc-row.input"),
             input = inputRow.children("input"),
             buttons = calculator.find("a"),
@@ -1794,8 +1779,9 @@ function prepareSite() {
                         Calculator.settings.angleMode === "DEG" ?
                         "RAD" : "DEG";
                     if (typeof window.localStorage !== "undefined") {
+                        var userID = window.KA && window.KA.getUserID();
                         window.localStorage["calculator_settings:" +
-                            window.USERNAME] = JSON.stringify(
+                            userID] = JSON.stringify(
                             Calculator.settings);
                     }
                     updateAngleMode();
@@ -1814,7 +1800,7 @@ function prepareSite() {
 
         $(Exercises).on("gotoNextProblem", function() {
             input.val("");
-            history.children().not(inputRow).remove();
+            output.children().not(inputRow).remove();
         });
 
         updateAngleMode();
@@ -1856,7 +1842,7 @@ function prepareSite() {
         });
 
     $(Khan).bind("gotoNextProblem", function() {
-        if (localMode) {
+        if (localMode && !embeddedMode) {
             // Automatically advance to the next problem
             nextProblem(1);
             renderNextProblem();
@@ -1988,7 +1974,7 @@ function loadExercise(exerciseId, fileName) {
 
     debugLog("loadExercise start " + fileName);
     // Packing occurs on the server but at the same "exercises/" URL
-    $.get(urlBase + "exercises/" + fileName).done(function(data) {
+    $.get(Khan.urlBase + "exercises/" + fileName).done(function(data) {
         debugLog("loadExercise got " + fileName);
 
         // Get rid of any external scripts in data before we shove data
@@ -2136,7 +2122,7 @@ function loadMathJax() {
     if (window.MathJax) {
         waitForMathJaxReady();
     } else {
-        loadScript(urlBase + "third_party/MathJax/2.1/MathJax.js?config=KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d", waitForMathJaxReady);
+        loadScript(Khan.urlBase + "third_party/MathJax/2.1/MathJax.js?config=KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d", waitForMathJaxReady);
     }
 
     function waitForMathJaxReady() {
@@ -2150,7 +2136,7 @@ function loadLocalModeSite() {
     // TODO(alpert): Is the DOM really not yet ready?
     $(function() {
         // Inject the site markup
-        if (localMode) {
+        if (localMode && !embeddedMode) {
             $.get(urlBase + "exercises/khan-site.html", function(site) {
                 $.get(urlBase + "exercises/khan-exercise.html",
                     function(ex) {
@@ -2174,14 +2160,8 @@ function injectLocalModeSite(html, htmlExercise) {
     $(Exercises).trigger("problemTemplateRendered");
 
     exercises = exercises.add($("div.exercise").detach());
-    var problems = exercises.children(".problems").children();
-
     // Generate the initial problem when dependencies are done being loaded
     makeProblem(currentExerciseId);
 }
-
-// Make these publicly accessible
-window.Khan = Khan;
-window.KhanUtil = Khan.Util;
 
 });

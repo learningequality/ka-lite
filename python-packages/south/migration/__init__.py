@@ -2,6 +2,8 @@
 Main migration logic.
 """
 
+from __future__ import print_function
+
 import sys
 
 from django.core.exceptions import ImproperlyConfigured
@@ -50,16 +52,21 @@ def inner_problem_check(problems, done, verbosity):
     "Takes a set of possible problems and gets the actual issues out of it."
     result = []
     for last, migration in problems:
+        checked = set([])
         # 'Last' is the last applied migration. Step back from it until we
         # either find nothing wrong, or we find something.
         to_check = list(last.dependencies)
         while to_check:
             checking = to_check.pop()
+            if checking in checked:
+                continue
+            checked.add(checking)
+
             if checking not in done:
                 # That's bad. Error.
                 if verbosity:
-                    print (" ! Migration %s should not have been applied "
-                           "before %s but was." % (last, checking))
+                    print((" ! Migration %s should not have been applied "
+                           "before %s but was." % (last, checking)))
                 result.append((last, checking))
             else:
                 to_check.extend(checking.dependencies)
@@ -155,11 +162,11 @@ def migrate_app(migrations, target_name=None, merge=False, fake=False, db_dry_ru
 
     verbosity = int(verbosity)
     # Fire off the pre-migrate signal
-    pre_migrate.send(None, app=app_label)
+    pre_migrate.send(None, app=app_label, verbosity=verbosity, interactive=verbosity, db=database)
     
     # If there aren't any, quit quizically
     if not migrations:
-        print "? You have no migrations for the '%s' app. You might want some." % app_label
+        print("? You have no migrations for the '%s' app. You might want some." % app_label)
         return
     
     # Load the entire dependency graph
@@ -177,11 +184,11 @@ def migrate_app(migrations, target_name=None, merge=False, fake=False, db_dry_ru
         if applied.count() > 1:
             previous_migration = applied[applied.count() - 2]
             if verbosity:
-                print 'previous_migration: %s (applied: %s)' % (previous_migration.migration, previous_migration.applied)
+                print('previous_migration: %s (applied: %s)' % (previous_migration.migration, previous_migration.applied))
             target_name = previous_migration.migration
         else:
             if verbosity:
-                print 'previous_migration: zero'
+                print('previous_migration: zero')
             target_name = 'zero'
     elif target_name == 'current+1':
         try:
@@ -196,9 +203,9 @@ def migrate_app(migrations, target_name=None, merge=False, fake=False, db_dry_ru
     target = migrations.guess_migration(target_name)
     if verbosity:
         if target_name not in ('zero', None) and target.name() != target_name:
-            print " - Soft matched migration %s to %s." % (target_name,
-                                                           target.name())
-        print "Running migrations for %s:" % app_label
+            print(" - Soft matched migration %s to %s." % (target_name,
+                                                           target.name()))
+        print("Running migrations for %s:" % app_label)
     
     # Get the forwards and reverse dependencies for this target
     direction, problems, workplan = get_direction(target, applied_all, migrations,
@@ -213,11 +220,11 @@ def migrate_app(migrations, target_name=None, merge=False, fake=False, db_dry_ru
         success = migrator.migrate_many(target, workplan, database)
         # Finally, fire off the post-migrate signal
         if success:
-            post_migrate.send(None, app=app_label)
+            post_migrate.send(None, app=app_label, verbosity=verbosity, interactive=verbosity, db=database)
     else:
         if verbosity:
             # Say there's nothing.
-            print '- Nothing to migrate.'
+            print('- Nothing to migrate.')
         # If we have initial data enabled, and we're at the most recent
         # migration, do initial data.
         # Note: We use a fake Forwards() migrator here. It's never used really.
@@ -225,4 +232,4 @@ def migrate_app(migrations, target_name=None, merge=False, fake=False, db_dry_ru
             migrator = LoadInitialDataMigrator(migrator=Forwards(verbosity=verbosity))
             migrator.load_initial_data(target, db=database)
         # Send signal.
-        post_migrate.send(None, app=app_label)
+        post_migrate.send(None, app=app_label, verbosity=verbosity, interactive=verbosity, db=database)

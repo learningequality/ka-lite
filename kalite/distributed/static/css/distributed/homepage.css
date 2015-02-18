@@ -5,7 +5,6 @@
     margin-bottom: 0;
     padding: 14px;
     position: relative;
-    width: 370px;
     float: left;
     margin-right: 25px;
     min-height: 221px;
@@ -17,22 +16,19 @@
 
 .suggested-action:hover {
     border-color: #C3CA7D;
-    -webkit-box-shadow: 0 0 10px #76A005;
-    -moz-box-shadow: 0 0 10px #76a005;
-    box-shadow: 0 0 10px #76A005;
+    -webkit-box-shadow: 0 0 6px 3px #5AA685;
+    -moz-box-shadow: 0 0 6px 3px #5AA685;
+    box-shadow: 0 0 6px 3px #5AA685;
 }
 
 .suggested-action a:hover {
     text-decoration: none!important;
     color: #005987;
 }
-.suggested-action-image-link {
-    background-size: cover;
-    background-repeat: no-repeat;
-    border-bottom: 1px solid #DCE0B3;
+
+#suggested-action-image-link-homepage {
     display: block;
-    height: 130px;
-    margin: -5px -14px -15px -14px;
+    width: 100%;
 }
 
 .suggested-action-title {
@@ -72,15 +68,6 @@ a:hover, a:hover .suggested-action-title {
     padding-left: 7px;
 }
 
-.video-unavailable,
-.topic-unavailable,
-a:active.topic-unavailable,
-a:hover.topic-unavailable,
-a:link.topic-unavailable,
-a:visited.topic-unavailable {
-    color: #ACBDD1;
-}
-
 .float-center {
     display: table;
     margin-left: auto;
@@ -88,7 +75,7 @@ a:visited.topic-unavailable {
 }
 
 .table {
-    width: 84%;
+    width: 100%;
 }
 
 .block {

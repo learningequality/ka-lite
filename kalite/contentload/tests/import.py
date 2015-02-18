@@ -110,7 +110,7 @@ class TestContentImportTopicTree(MainTestCase):
         }
         self.recursively_create_nodes(topic_tree)
         import_channel.path = self.tempdir
-        generated_topic_tree, exercises, videos, assessment_items, content = import_channel.retrieve_API_data(self.channel)
+        generated_topic_tree, exercises, assessment_items, content = import_channel.retrieve_API_data(self.channel)
 
         self.recursively_test_nodes(topic_tree, generated_topic_tree)
 
@@ -125,9 +125,9 @@ class TestContentImportTopicTree(MainTestCase):
         node_cache = []
         self.recursively_find_nodes(topic_tree, "kind", "Video", node_cache)
 
-        retrieve_API_data = lambda channel: (topic_tree, [], [], [], [])
+        retrieve_API_data = lambda channel: (topic_tree, [], [], [])
 
-        topic_tree, exercises, videos, assessment_items, contents = base.rebuild_topictree(whitewash_node_data=import_channel.whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=import_channel.channel_data)
+        topic_tree, exercises, assessment_items, contents = base.rebuild_topictree(whitewash_node_data=import_channel.whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=import_channel.channel_data)
 
         new_node_cache = []
         self.recursively_find_nodes(topic_tree, "kind", "Video", new_node_cache)

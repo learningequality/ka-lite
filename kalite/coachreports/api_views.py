@@ -26,6 +26,7 @@ from fle_utils.testing.decorators import allow_api_profiling
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
 from kalite.topic_tools import get_topic_by_path, get_node_cache, get_exercise_cache
+from kalite.i18n import lcode_to_django_lang
 
 
 # Global variable of all the known stats, their internal and external names,
@@ -168,7 +169,7 @@ def query_logs(users, items, logtype, logdict):
     return logdict
 
 
-def compute_data(data_types, who, where):
+def compute_data(data_types, who, where, language=settings.LANGUAGE_CODE):
     """
     Compute the data in "data_types" for each user in "who", for the topics selected by "where"
 
@@ -204,9 +205,9 @@ def compute_data(data_types, who, where):
     # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
     search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t["id"] for t in filter(sf, get_node_cache('Topic').values())], sf=search_fun_single_path)
-    query_exercises = partial(lambda e, sf: e if e is not None else [ex["id"] for ex in filter(sf, get_exercise_cache().values())], sf=search_fun_single_path)
-    query_videos = partial(lambda v, sf: v if v is not None else [vid["id"] for vid in filter(sf, get_node_cache('Video').values())], sf=search_fun_single_path)
+    query_topics = partial(lambda t, sf: t if t is not None else [t["id"] for t in filter(sf, get_node_cache('Topic', language=language).values())], sf=search_fun_single_path)
+    query_exercises = partial(lambda e, sf: e if e is not None else [ex["id"] for ex in filter(sf, get_exercise_cache(language=language).values())], sf=search_fun_single_path)
+    query_videos = partial(lambda v, sf: v if v is not None else [vid["id"] for vid in filter(sf, get_node_cache('Content', language=language).values())], sf=search_fun_single_path)
 
     # No users, don't bother.
     if len(who) > 0:
@@ -350,6 +351,7 @@ def api_data(request, xaxis="", yaxis=""):
     * the rest of the data is metadata, useful for displaying detailed info about data.
     """
 
+    language = lcode_to_django_lang(request.language)
     # Get the request form
     try:
         form = get_data_form(request, xaxis=xaxis, yaxis=yaxis)  # (data=request.REQUEST)
@@ -390,10 +392,10 @@ def api_data(request, xaxis="", yaxis=""):
         return HttpResponseNotFound(_("Must specify a topic path"))
 
     # Query out the data: what?
-    computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"))
+    computed_data = compute_data(data_types=[form.data.get("xaxis"), form.data.get("yaxis")], who=users, where=form.data.get("topic_path"), language=language)
 
     # Quickly add back in exercise meta-data (could potentially be used in future for other data too!)
-    ex_nodes = get_node_cache()["Exercise"]
+    ex_nodes = get_node_cache(language=language)["Exercise"]
     exercises = []
     for e in computed_data["exercises"]:
         exercises.append({

@@ -15,8 +15,7 @@ from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
 from fle_utils.general import isnumeric
 from fle_utils.internet import get_ip_addresses
-from kalite.topic_tools import get_topic_tree
-from kalite.updates import stamp_availability_on_topic
+from kalite.caching import initialize_content_caches
 from securesync.models import Device
 
 
@@ -58,6 +57,13 @@ class Command(BaseCommand):
             help="PID file"
         ),
         make_option(
+            '--startup-lock-file',
+            action='store',
+            dest='startuplock',
+            default=None,
+            help="Remove this file after successful startup"
+        ),
+        make_option(
             '--production',
             action='store_true',
             dest='production',
@@ -88,10 +94,7 @@ class Command(BaseCommand):
         call_command("videoscan")
 
         # Finally, pre-load global data
-        def preload_global_data():
-            logging.info("Preloading topic data.")
-            stamp_availability_on_topic(get_topic_tree(), force=True, stamp_urls=True)
-        preload_global_data()
+        initialize_content_caches()
 
 
     def handle(self, *args, **options):
@@ -136,6 +139,9 @@ class Command(BaseCommand):
         logging.debug("Writing %s as BUILD_HASH" % build_hash)
         Settings.set('BUILD_HASH', build_hash)
 
+        if options['startuplock']:
+            os.unlink(options['startuplock'])
+        
         # Now call the proper command
         if not options["production"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))

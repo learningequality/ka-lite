@@ -41,7 +41,7 @@ function plotJsonData(chart_div, base_url, props) {
             if (json["objects"].length > 0) {
                 drawJsonChart(chart_div, json, props["xaxis"], props["yaxis"]);
             } else {
-                show_message("error", gettext("No student accounts in this group have been created."));
+                show_message("error", gettext("No learner accounts in this group have been created."));
             }
             $("#loading").text("");
 

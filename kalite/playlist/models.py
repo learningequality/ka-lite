@@ -1,11 +1,12 @@
 import json
 import os
 from django.db import models
+from django.conf import settings
 
 from fle_utils.django_utils import ExtendedModel
 
 from kalite.facility.models import FacilityGroup, FacilityUser
-from kalite.topic_tools import get_flat_topic_tree
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache
 
 from securesync.models import DeferredCountSyncedModel
 
@@ -102,6 +103,9 @@ class VanillaPlaylist:
 
     @classmethod
     def all(cls, limit_to_shown=True):
+        if "nalanda" not in settings.CONFIG_PACKAGE:
+            return []
+
         with open(cls.playlistjson) as f:
             raw_playlists = json.load(f)
 
@@ -132,6 +136,19 @@ class VanillaPlaylist:
 
         return playlists
 
+    def get_playlist_entries(playlist, entry_type, language=settings.LANGUAGE_CODE):
+        """
+        Given a VanillaPlaylist, inspect its 'entries' attribute and return a list
+        containing corresponding nodes for each item from the topic tree.
+        entry_type should be "Exercise" or "Video".
+        """
+        unprepared = filter(lambda e: e["entity_kind"]==entry_type, playlist.entries)
+        prepared = []
+        for entry in unprepared:
+            new_item = get_node_cache(language=language)[entry_type].get(entry['entity_id'], None)
+            if new_item:
+                prepared.append(new_item)
+        return prepared
 
 class VanillaPlaylistEntry:
     """

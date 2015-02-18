@@ -1,6 +1,7 @@
 <h3 class="row">
     <div class="col-xs-12">
-        <span class="practice-exercise-topic-context">{{_ "Practicing" }}</span>{{ title }}
+        <span class="exercise-title-prefix">{{#if test_id }}{{_ "Test" }}{{ else }}{{_ "Practicing" }}{{/if }}</span>
+        <span class="exercise-title">{{ title }}</span>
     {{#if description }}<br/><span class="practice-exercise-description">{{ description }}</span>{{/if }}
     </div>
 </h3>
@@ -22,11 +23,11 @@
                                 <div class="exercise-progress-wrapper"></div>
                                 <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px">
                                 <div id="answercontent" class="info-box">
-                                <span id="examples-show"> {{_ "Acceptable formats" }}</span>
                                     <span class="info-box-header">{{_ "Answer" }}</span>
                                     <ul id="examples" style="display: none"></ul>
                                     <div id="questionpoints"></div>
-                                    <div id="solutionarea" class="fancy-scrollbar"></div>
+                                    <div class="solutionarea-placeholder"></div>
+                                    <div id="solutionarea" class="solutionarea fancy-scrollbar"></div>
                                     <div class="answer-buttons">
                                         <div class="answer-buttons-enabled">
                                             <input type="button" class="simple-button green" disabled id="check-answer-button" value="{{_ "Check Answer" }}"/>
@@ -37,6 +38,7 @@
                                             {{_ "Loading..." }}
                                         </div>
                                     </div>
+                                    <div id="software-keyboard-container"></div>
                                 </div>
                                 <div class="exercise-hint-wrapper"></div>
                                 <div class="exercise-related-video-wrapper"></div>
@@ -47,14 +49,10 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <ul>
-                    <li>
-                        <a id="scratchpad-show" href style>{{_ "Show scratchpad" }}</a>
-                        <span id="scratchpad-not-available" style="display: none;">{{_ "Scratchpad not available" }}</span>
-                    </li>
-                </ul>
-            </div>
+        </div>
+        <div id="scratchpad-btn-container">
+            <button class="simple-button orange" id="scratchpad-show" href style>{{_ "Show scratchpad" }}</button>
+            <span class="simple-button disabled" id="scratchpad-not-available" style="display: none;">{{_ "Scratchpad not available" }}</span>
         </div>
     </div>
 </div>

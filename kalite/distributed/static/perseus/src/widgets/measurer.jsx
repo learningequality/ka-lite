@@ -1,10 +1,10 @@
-/** @jsx React.DOM */
-
 var React        = require('react');
-var Changeable   = require("../mixins/changeable.jsx");
-var JsonifyProps = require("../mixins/jsonify-props.jsx");
+var _ = require("underscore");
 
-var InfoTip       = require("react-components/info-tip");
+var Changeable   = require("../mixins/changeable.jsx");
+var EditorJsonify = require("../mixins/editor-jsonify.jsx");
+
+var InfoTip       = require("react-components/info-tip.jsx");
 var NumberInput   = require("../components/number-input.jsx");
 var PropCheckBox  = require("../components/prop-check-box.jsx");
 var RangeInput    = require("../components/range-input.jsx");
@@ -139,12 +139,13 @@ var Measurer = React.createClass({
         }
     },
 
-    toJSON: function() {
+    getUserInput: function() {
         return {};
     },
 
     simpleValidate: function(rubric) {
-        return Measurer.validate(this.toJSON(), rubric);
+        // TODO(joel) - I don't understand how this is useful!
+        return Measurer.validate(this.getUserInput(), rubric);
     },
 
     focus: $.noop,
@@ -168,7 +169,7 @@ _.extend(Measurer, {
 
 
 var MeasurerEditor = React.createClass({
-    mixins: [Changeable, JsonifyProps],
+    mixins: [Changeable, EditorJsonify],
     className: "perseus-widget-measurer",
 
     propTypes: {

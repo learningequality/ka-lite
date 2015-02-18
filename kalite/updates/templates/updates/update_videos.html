@@ -3,9 +3,9 @@
 {% load staticfiles %}
 {% load i18n_filters %}
 
-{% block users_active %}active{% endblock users_active %}
-{% block manage_active %}active{% endblock manage_active %}
-{% block video_active %}video-active active-tab active-nav{% endblock video_active %}
+{% block users_active %}{% trans "active" %}{% endblock users_active %}
+{% block manage_active %}{% trans "active" %}{% endblock manage_active %}
+{% block video_active %}{% trans "video-active active-tab active-nav" %}{% endblock video_active %}
 
 {% block title %}{% trans "Update Videos" %}{{ block.super }}{% endblock %}
 
@@ -83,7 +83,7 @@
             </h4>
             <div id="help-info">
                 <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
-                    {% trans "Q: How do I bulk-download videos?" %}
+                    {% trans "Q: How do I bulk-download videos or download videos via Torrent?" %}
                 </a>
             </div>
         </div>
