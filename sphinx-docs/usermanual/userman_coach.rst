@@ -48,9 +48,10 @@ Effort Versus Achievement
 #. Select "Scatter Report" from the drop down menu.
 
 .. screenshot::
-	:user-role: coach
-	:url: /coachreports/scatter
-	:navigation-steps:
+    :user-role: coach
+    :url: /coachreports/scatter
+    :navigation-steps:
+    :class: screenshot
 
 #. Select the facility and/or group that you'd like to view the report for from the drop down menus.
 #. Select the range of time that you'd like to view data for. 

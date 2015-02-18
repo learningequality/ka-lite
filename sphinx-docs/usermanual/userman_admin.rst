@@ -124,6 +124,7 @@ How to register your device with online access to data
     :url: /securesync/register/
     :navigation-steps: 
     :focus: #online-register
+    :class: screenshot
 
 If you do not see this page, click on the "Manage" tab. At the top of this page, you should see a link to register your device. It should like like the following:
 
@@ -343,11 +344,6 @@ Download Language Packs
 To download language packs: 
 
 #. From the "Manage" page, click on the "Language" tab. 
-
-    .. screenshot::
-        :user-role: admin
-        :url: /learn/khan/
-        :navigation-steps: #search click | #search send_keys A search term 
 
 #. Select the language pack you wish to download by selecting from the drop-down menu.
 #. Click the "Get Language Pack" button. 
