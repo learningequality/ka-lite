@@ -467,9 +467,12 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
         """Tabs with the class admin-only should not be displayed, and tabs
         with the class teacher-only should be displayed
         """
-        admin_only_elements = WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "admin-only"))
-        )
+        try:
+            admin_only_elements = WebDriverWait(self.browser, 10).until(
+                expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "admin-only"))
+            )
+        except TimeoutException:
+            admin_only_elements = []
         teacher_only_elements = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "teacher-only"))
         )
@@ -541,7 +544,7 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
         nav_logout = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
         )
-        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[10]")
+        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[8]")
         try:
             self.browser_activate_element(elem=dropdown_menu)
         except ElementNotVisibleException:
