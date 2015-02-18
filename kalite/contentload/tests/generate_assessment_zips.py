@@ -9,8 +9,10 @@ from mock import patch, MagicMock
 
 from django.core.management import call_command
 
+import kalite.version as version
 from kalite.testing import KALiteTestCase
 from kalite.contentload.management.commands import generate_assessment_zips as mod
+
 
 TEST_FIXTURES_DIR = os.path.join(os.path.dirname(__file__),
                                         "fixtures")
@@ -73,6 +75,16 @@ class UtilityFunctionTests(KALiteTestCase):
             self.assessment_sample = json.load(f)
 
         self.imgurl = "https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png"
+
+    @patch.object(zipfile, "ZipFile", autospec=True)
+    def test_write_assessment_item_version_to_zip(self, zipfile_class):
+        with open(mod.ZIP_FILE_PATH, "w") as f:
+            zf = zipfile.ZipFile(f, "w")
+            mod.write_assessment_item_version_to_zip(zf)
+
+            zf.writestr.assert_called_once_with("assessmentitems.json.version", version.SHORTVERSION)
+
+            zf.close()
 
     @patch.object(zipfile, "ZipFile", autospec=True)
     def test_write_assessment_json_to_zip(self, zipfile_class):
@@ -138,8 +150,8 @@ class UtilityFunctionTests(KALiteTestCase):
         download_method.return_value = 1
 
         urls = ["http://test1.com", "http://test2.com"]
-        with open(mod.ZIP_FILE_PATH) as f:
-            zf = zipfile.ZipFile(mod.ZIP_FILE_PATH)
+        with open(mod.ZIP_FILE_PATH, "w") as f:
+            zf = zipfile.ZipFile(f, "w")
             mod.download_urls(zf, urls)
             zf.close()
 
