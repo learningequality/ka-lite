@@ -55,7 +55,12 @@ Setting up KA Lite
 -------------------
 Once you have successfully installed KA Lite, the installation script should give you a URL (http://127.0.0.1:8008/) to visit so that you can open KA Lite and login for the first time. 
 
-Copy and paste the URL into a web browser. The KA Lite application should show up. Then, login to KA Lite using the username and password you created during the installation process. 
+Copy and paste the URL into a web browser. The KA Lite application should show up. Then, login to KA Lite using the username and password you created during the installation process.
+
+.. screenshot::
+    :navigation-steps: LOGIN admin superpassword
+    :focus: #id_username | Enter your username and password using this form!
+    :class: screenshot
 
 * If you have forgotten the username/password combination, simply run ``bin/kalite manage createsuperuser`` from the kalite directory and then follow the instructions. If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
 
@@ -72,10 +77,31 @@ By registering your device with FLE, you can sync data back with our central dat
 
 You will have two options: 
 
-    #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use. **Caution**: if you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, please see **PUT LINK ON HOW TO START OVER**).
+    #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use. **Caution**: if you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, please see **PUT LINK ON HOW TO START OVER**). |first| |one-click|
+
+    #. **Register with online access to data**. Choose this option if you're an administrator of larger projects. This option allows you to access your uploaded data and connect multiple installations to the same account. |long-register|
 
 
-    #. **Register with online access to data**. Choose this option if you're an administrator of larger projects. This option allows you to access your uploaded data and connect multiple installations to the same account. 
+.. |first| screenshot::
+    :user-role: admin
+    :url: /management/zone/
+    :navigation-steps:
+    :focus: li a.not-registered-only | Click here to register!
+    :class: screenshot
+
+.. |one-click| screenshot::
+    :user-role: admin
+    :url: /management/zone/
+    :navigation-steps: .not-registered-only click
+    :focus: #one-click-register | Click here for one-click registration!
+    :class: screenshot
+
+.. |long-register| screenshot::
+    :user-role: admin
+    :url: /management/zone/
+    :navigation-steps: .not-registered-only click
+    :focus: #online-register | Or here for online access!
+    :class: screenshot
 
 How to register your device with online access to data
 ########################################################
@@ -95,12 +121,33 @@ Create a Facility
 KA Lite assumes that you are going to be using the software primarily in one place. This could be a school, a home, a community center, etc. We call this place a “facility”, and use it to help differentiate users who are syncing back data with our central data hub. In order to create a facility, follow the steps below.
 
 #. Log in to KA Lite.
-#. Click the "Manage" tab at the top of the page.
+#. Click the "Manage" tab at the top of the page. |manage-highlight|
 #. Make sure that the "Facilities" tab is selected.
-#. Under the Facilities section, click on "Add a new facility..."
+#. Under the Facilities section, click on "Add a new facility..." |add-new-facility-highlight|
 #. Fill in the information for all the fields you find below the map
-#. Click the "Save facility" button when you are finished.
+#. Click the "Save facility" button when you are finished. |save-facility-highlight|
 #. Once the information has been saved, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully saved your new facility.
+
+.. |manage-highlight| screenshot::
+    :user-role: admin
+    :url: /
+    :navigation-steps:
+    :focus: ul.nav li a.admin-only[href=\"/management/zone/\"] | Click here!
+    :class: screenshot
+
+.. |add-new-facility-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps:
+    :focus: a.create-facility
+    :class: screenshot
+
+.. |save-facility-highlight| screenshot::
+    :user-role: admin
+    :url: /securesync/zone/None/facility/new/
+    :navigation-steps: #id_name click | #id_name send_keys Your School | NEXT send_keys An optional description of your school...
+    :focus: input.submit | Click here to create a new facility after filling in the form above.
+    :class: screenshot
 
 
 Delete a Facility
