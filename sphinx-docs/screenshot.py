@@ -20,11 +20,9 @@ display = Display(visible=0, size=(1024, 768))
 display.start()
 
 USER_ROLES = ["guest", "coach", "admin", "learner"]
-# Formatted from subprocess.Popen
-SCREENSHOT_COMMAND = "python ../kalite/manage.py screenshots"
-SCREENSHOT_COMMAND_OPTS = " -v 0 --from-str '%s' --output-dir %s"
 OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "images"))
 MANAGE_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","kalite","manage.py"))
+# Formatted from subprocess.Popen
 SCREENSHOT_COMMAND = ["/usr/bin/python", MANAGE_PATH, "screenshots"]
 SCREENSHOT_COMMAND_OPTS = ["-v", "0", "--output-dir", OUTPUT_PATH]
 # These keys are css styles but they need to be camelCased
