@@ -181,10 +181,24 @@ Delete a Facility
 -------------------------
 #. Log in to KA Lite.
 #. Click the "Manage" tab at the top of the page. 
-#. Make sure that the "Facilities" tab is selected.
-#. Find the facility you would like to delete, and click the trash can icon to delete the facility.
+#. Make sure that the "Facilities" tab is selected. |facilities-tab-highlight|
+#. Find the facility you would like to delete, and click the trash can icon to delete the facility. |trash-icon-highlight|
 #. You will be prompted to type in the name of the facility you wish to delete for confirmation.
 #. If your delete is successful, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully deleted the facility.
+
+.. |facilities-tab-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps:
+    :focus: li.facility
+    :class: screenshot
+
+.. |trash-icon-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps:
+    :focus: span.glyphicon-trash
+    :class: screenshot
 
 User Management
 -------------------------
@@ -195,10 +209,31 @@ Adding Learners
 #. Log in to KA Lite.
 #. Click on the "Manage" tab at the top of the page.
 #. Make sure that the "Facilities" tab is selected.
-#. Select the facility that the learner will belong to.
-#. Under the "Learners" header, click on "Add a new Learner".
-#. You will be redirected to a page that says "Add a new Learner". Select the facility this Learner belongs to, and fill in all the information.
-#. Click "Create user". You should be redirected to the "Facilities" page, where you will see a message indicating that you have successfully created a Learner user. 
+#. Select the facility that the learner will belong to. |facility-name-highlight|
+#. Under the "Learners" header, click on "Add a new Learner". |add-new-learner-highlight|
+#. You will be redirected to a page that says "Add a new Learner". Fill in all the information. The facility dropdown defaults to the facility you selected in the previous steps.
+#. Click "Create user". You should be redirected to the "Facilities" page, where you will see a message indicating that you have successfully created a Learner user. |create-user-highlight| 
+
+.. |facility-name-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps:
+    :focus: a.facility-name | Click the facility's name to select it.
+    :class: screenshot
+
+.. |add-new-learner-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: a.create-student
+    :class: screenshot
+
+.. |create-user-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click | .create-student click
+    :focus: input.submit
+    :class: screenshot
 
 Permanently Deleting Learners
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -206,20 +241,50 @@ Permanently Deleting Learners
 #. Click on the "Manage" tab at the top of the page.
 #. Make sure that the "Facilities" tab is selected.
 #. Under the "Facilities" header, select the facility the Learner belongs to.
-#. Under the "Learners" header, mark the box to the left of the Learner account you would like to delete.
-#. Press the "Delete Learners" button.
+#. Under the "Learners" header, mark the box to the left of the Learner account you would like to delete. |checkbox-highlight|
+#. Press the "Delete Learners" button. |delete-button-highlight|
 #. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
-Adding Learners
+.. |checkbox-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #students td input
+    :class: screenshot
+
+.. |delete-button-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #students .form-inline .form-group:last-child
+    :class: screenshot
+
+Adding Coaches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Log in to KA Lite.
 #. Click on the "Manage" tab at the top of the page.
 #. Make sure that the "Facilities" tab is selected.
 #. Select the facility that the coach will belong to.
-#. Under the "Coaches" header, click on "Add a new coach".
-#. You will be redirected to a page that says "Add a new coach". Select the facility this coach belongs to, and fill in all the information.
-#. Click "Create user". 
+#. Under the "Coaches" header, click on "Add a new coach". [add-new-coach-highlight]_
+#. You will be redirected to a page that says "Add a new coach". Fill in all the information. The facility dropdown defaults to the facility you selected in the previous steps.
+#. Click the "Create User" button. [create-coach-highlight]_
 #. If the user was successfully created, the page will reload with a message indicating that you have created the user.
+
+.. [add-new-coach-highlight]
+.. screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #coaches .add-new-table-item a
+    :class: screenshot
+
+.. [create-coach-highlight] 
+.. screenshot::
+    :user-role: admin
+    :url: /securesync/teacher/
+    :navigation-steps:
+    :focus: input.submit
+    :class: screenshot
 
 Permanently Deleting Coaches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -230,6 +295,22 @@ Permanently Deleting Coaches
 #. Under the "Coaches" header, mark the box to the left of the coach account you would like to delete.
 #. Press the "Delete Coaches" button.
 #. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+
+Step 5:
+.. screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #coaches td input
+    :class: screenshot
+
+Step 6:
+.. screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #coaches div.row div.col-md-2 button
+    :class: screenshot
 
 Adding a Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -243,6 +324,24 @@ You can create groups within a facility. Each group can represent a classroom, a
 #. Fill out the name of the group, and provide a description.
 #. Click "create group".
 #. You should be redirected back to the page for the facility. If the group was successfully created, you will see it listed under the "Learner Groups" section.
+
+Step 5:
+|add-a-new-group-highlight|
+.. |add-a-new-group-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #groups .add-new-table-item a 
+    :class: screenshot
+
+Step 7:
+|create-group-highlight|
+.. |create-group-highlight| screenshot::
+    :user-role: admin
+    :url: /securesync/group/
+    :navigation-steps:
+    :focus: input.submit
+    :class: screenshot
 
 Deleting a Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
