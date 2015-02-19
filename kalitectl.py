@@ -219,7 +219,7 @@ def get_pid():
     listen_port = getattr(settings, "CHERRYPY_PORT", LISTEN_PORT)
 
     # Timeout is 1 second, we don't want the status command to be slow
-    conn = httplib.HTTPConnection(LISTEN_ADDRESS, listen_port, timeout=1)
+    conn = httplib.HTTPConnection(LISTEN_ADDRESS, listen_port, timeout=3)
     try:
         conn.request("GET", PING_URL)
         response = conn.getresponse()

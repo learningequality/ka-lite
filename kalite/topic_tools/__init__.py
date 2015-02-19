@@ -66,6 +66,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
         # Loop through all the nodes in the topic tree
         # and cross reference with the content_cache to check availability.
         content_cache = get_content_cache(language=language)
+        exercise_cache = get_exercise_cache(language=language)
         def recurse_nodes(node):
 
             child_availability = []
@@ -80,9 +81,12 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
                 node["available"] = any(child_availability)
             else:
                 # By default this is very charitable, assuming if something has not been annotated
-                # it is available - needs to be updated for exercises.
-                if content_cache.get(node.get("id"), {}).get("available", True):
-                    node["available"] = True
+                # it is available.
+                if node.get("kind") == "Exercise":
+                    cache_node = exercise_cache.get(node.get("id"), {})
+                else:
+                    cache_node = content_cache.get(node.get("id"), {})
+                node["available"] = cache_node.get("available", True)
 
             # Translate everything for good measure
             with i18n.translate_block(language):
@@ -117,13 +121,20 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
     global EXERCISES, EXERCISES_FILEPATH
     if EXERCISES is None:
         EXERCISES = {}
-    if EXERCISES.get(language) is None or force:
+    if EXERCISES.get(language) is None:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            exercises = softload_json(EXERCISES_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
+            if exercises:
+                EXERCISES[language] = exercises
+                return EXERCISES[language]
         EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
         exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
         if os.path.exists(exercise_root):
             exercise_templates = os.listdir(exercise_root)
         else:
             exercise_templates = []
+        assessmentitems = get_assessment_item_cache()
+        TEMPLATE_FILE_PATH = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s")
         for exercise in EXERCISES[language].values():
             exercise_file = exercise["name"] + ".html"
             exercise_template = exercise_file
@@ -138,11 +149,31 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
             else:
                 exercise_template = os.path.join(exercise_lang, exercise_file)
 
+            if exercise.get("uses_assessment_items", False):
+                available = False
+                items = []
+                for item in exercise.get("all_assessment_items","[]"):
+                    item = json.loads(item)
+                    if assessmentitems.get(item.get("id")):
+                        items.append(item)
+                        available = True
+                exercise["all_assessment_items"] = items
+            else:
+                available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
+
             with i18n.translate_block(exercise_lang):
+                exercise["available"] = available
                 exercise["lang"] = exercise_lang
                 exercise["template"] = exercise_template
                 exercise["title"] = _(exercise.get("title", ""))
                 exercise["description"] = _(exercise.get("description", "")) if exercise.get("description") else ""
+
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+            try:
+                with open(EXERCISES_FILEPATH + "_" + language + ".cache", "w") as f:
+                    json.dump(EXERCISES[language], f)
+            except IOError as e:
+                logging.warn("Annotated exercise cache file failed in saving with error {e}".format(e=e))
 
     return EXERCISES[language]
 
@@ -233,6 +264,8 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
                             "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
                             "thumbnail": thumbnail,
                         }
+                    else:
+                        content["available"] = False
                 else:
                     content["available"] = False
             else:
@@ -461,7 +494,6 @@ def get_assessment_item_data(request, assessment_item_id=None):
     # TODO (rtibbles): Enable internationalization for the assessment_items.
 
     try:
-        logging.info('Wrapping the Assessment Item with _()')
         item_data = json.loads(assessment_item['item_data'])
         question_content = _(item_data['question']['content'])
         answerarea_content = item_data['answerArea']['options']['content']
@@ -482,10 +514,9 @@ def get_assessment_item_data(request, assessment_item_id=None):
         item_data['answerArea']['options']['content'] = answerarea_content
         # dump data to make it to a proper json format.
         assessment_item['item_data'] = json.dumps(item_data)
-        logging.info('Successfully wrapped New Assessment Item with _()')
 
     except KeyError:
-        logging.log("Something wrong with the format on assessment items json.")
+        logging.error("There is something wrong with the format of the assessment items:%s" % KeyError)
 
     return assessment_item
 
