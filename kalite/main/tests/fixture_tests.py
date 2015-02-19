@@ -1,7 +1,6 @@
 """
 """
 import os
-import sys
 
 from django.conf import settings
 from django.core.management import call_command
@@ -14,7 +13,7 @@ from kalite.testing import KALiteTestCase
 class FixtureTestCases(KALiteTestCase):
     """ """
 
-    @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, 'usually times out on travis')
     def test_loaddata(self):
         cur_dir = os.path.split(__file__)[0]
 
