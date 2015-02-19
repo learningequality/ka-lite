@@ -13,6 +13,7 @@ from kalite.testing import KALiteTestCase
 class FixtureTestCases(KALiteTestCase):
     """ """
 
+    @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
     def test_loaddata(self):
         cur_dir = os.path.split(__file__)[0]
 
