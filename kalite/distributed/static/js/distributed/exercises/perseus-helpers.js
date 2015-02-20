@@ -59,7 +59,8 @@ $(Exercises).bind({
     checkAnswer: Exercises.proxyTrigger,
     gotoNextProblem: Exercises.proxyTrigger,
     newProblem: Exercises.proxyTrigger,
-    newProblemhintUsed: Exercises.proxyTrigger
+    newProblemhintUsed: Exercises.proxyTrigger,
+    hintUsed: Exercises.proxyTrigger
 });
 
 // React.initializeTouchEvents(true);
