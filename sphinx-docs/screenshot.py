@@ -13,11 +13,11 @@ from selenium.webdriver.common.keys import Keys
 from errors import ActionError
 from errors import OptionError
 
-from pyvirtualdisplay import Display
-
-# Start a virtual headless display
-display = Display(visible=0, size=(1024, 768))
-display.start()
+if 'SPHINX_SS_USE_PVD' in os.environ.keys() and os.environ['SPHINX_SS_USE_PVD'] == "true":
+    from pyvirtualdisplay import Display
+    # Start a virtual headless display
+    display = Display(visible=0, size=(1024, 768))
+    display.start()
 
 USER_ROLES = ["guest", "coach", "admin", "learner"]
 SS_DUMP_DIR = ".screenshot_dump"
