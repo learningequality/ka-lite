@@ -12,7 +12,7 @@
     <div class="row progress-block">
         <div class="col-xs-2">
             <div class="progress-indicator progress-indicator-lg center-block {{vid_status}}">
-                <span class="glyphicon glyphicon-facetime-video icon-label icon-label-lg"></span><span class="progress-indicator content-counter">x{{n_pl_videos}}</span>
+                <div class="sidebar-icon icon-Video icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary">{{#if n_pl_videos}}{{n_pl_videos}}{{/if}}</span></div>
             </div>
         </div>
         <div class="col-xs-10">
@@ -34,7 +34,7 @@
     <div class="row progress-block">
         <div class="col-xs-2">
             <div class="progress-indicator progress-indicator-lg center-block {{ex_status}}">
-                <span class="glyphicon glyphicon-pencil icon-label icon-label-lg"></span><span class="progress-indicator content-counter">x{{n_pl_exercises}}</span>
+                <div class="sidebar-icon icon-Exercise icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary">{{#if n_pl_exercises}}{{n_pl_exercises}}{{/if}}</span></div>
             </div>
         </div>
         <div class="col-xs-10">
@@ -62,7 +62,7 @@
     <div class="row progress-block">
         <div class="col-xs-2">
             <div class="progress-indicator progress-indicator-lg center-block {{quiz_status}}">
-                <span class="glyphicon glyphicon-ok icon-label icon-label-lg"></span>
+                <span class="sidebar-icon icon-Quiz icon-label icon-label-lg"></span>
             </div>
         </div>
         <div class="col-xs-10">

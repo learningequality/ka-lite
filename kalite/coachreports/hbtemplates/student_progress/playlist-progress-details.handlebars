@@ -22,17 +22,7 @@
             data-content="Score: {{attributes.score}}%"
         {{/ifcond}}
     > {{!-- Close starting div --}}
-        <span class="icon-label icon-label-sm glyphicon 
-            {{#ifcond attributes.kind "===" "Video"}}
-                glyphicon-facetime-video
-            {{/ifcond}}            
-            {{#ifcond attributes.kind "===" "Exercise"}}
-                glyphicon-pencil
-            {{/ifcond}}
-            {{#ifcond attributes.kind "===" "Quiz"}}
-                glyphicon-ok
-            {{/ifcond}}
-        "></span>
+        <div class="sidebar-icon icon-{{ attributes.kind }} icon-label icon-label-sm"></div>
     </div>
     {{!-- TODO(dylanjbarth): post RCT3, this path can be used to direct link to videos and exercises --}}
     {{!-- <a href="/{{attributes.path}}">{{attributes.title}}</a> --}}
