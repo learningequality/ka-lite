@@ -35,6 +35,9 @@ from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
+from kalite.playlist import UNITS
+from kalite.student_testing.utils import get_current_unit_settings_value
+from kalite.ab_testing.data.groups import get_grade_by_facility
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
@@ -263,6 +266,134 @@ def tabular_view(request, facility, report_type="exercise"):
 
     else:
         raise Http404(_("Unknown report_type: %(report_type)s") % {"report_type": report_type})
+
+    log_coach_report_view(request)
+
+    return context
+
+
+@require_authorized_admin
+@facility_required
+@render_to("coachreports/exercise_mastery_view.html")
+def exercise_mastery_view(request, facility):
+
+    student_ordering = ["last_name", "first_name", "username"]
+
+    grade = "Grade " + str(get_grade_by_facility(facility))
+    playlists = (filter(lambda p: p.unit >= 100 and p.unit <= 104 and p.tag==grade, Playlist.all()) or [None])
+    context = plotting_metadata_context(request, facility=facility)
+    context.update({
+        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise"), "unit": p.unit } for p in playlists if p],
+    })
+
+    exercises = str(request.GET.get("playlist", ""))
+
+    if not exercises:
+         return context
+
+    exercises =  exercises.split(',')
+    group_id = request.GET.get("group", "")
+    users = get_user_queryset(request, facility, group_id)
+
+    temp = []
+    for p in playlists:
+        for ex in p.get_playlist_entries("Exercise"):
+            if ex['id'] in exercises:
+                temp.append(ex)
+
+    exercises = sorted(temp, key=lambda e: (e["h_position"], e["v_position"]))
+    context["exercises"] = exercises
+    exercise_count = len(exercises)
+
+    exercise_names = [ex["name"] for ex in context["exercises"]]
+
+    context["students"] = []
+    exlogs = ExerciseLog.objects \
+        .filter(user__in=users, exercise_id__in=exercise_names) \
+        .order_by(*["user__%s" % field for field in student_ordering]) \
+        .values("user__id", "struggling", "complete", "exercise_id", "attempts", "streak_progress")
+    exlogs = list(exlogs)
+
+    exercise_ids = [ex["id"] for ex in context["exercises"]]
+    user_count = len(users)
+
+    exercise_stats = {}
+    for ex_id in exercise_ids:
+        exercise_stats[ex_id] = { "struggling" :0 , "mastered": 0, "progress": 0, "mastery": 0}
+
+    for ex in exlogs:
+        if ex["complete"] == True:
+            exercise_stats[ex["exercise_id"]]["mastered"] = exercise_stats[ex["exercise_id"]]["mastered"] + 1
+        elif ex["struggling"] == True:
+            exercise_stats[ex["exercise_id"]]["struggling"] = exercise_stats[ex["exercise_id"]]["struggling"] + 1
+        elif ex["attempts"] > 0:
+            exercise_stats[ex["exercise_id"]]["progress"] = exercise_stats[ex["exercise_id"]]["progress"] + 1
+
+        if user_count:
+            exercise_stats[ex["exercise_id"]]["mastery"] = "{0:.2f}".format( exercise_stats[ex["exercise_id"]]["mastered"] * 100.0 / user_count )
+
+    context["exercise_stats"] = exercise_stats
+    context["exercise_count"] = exercise_count
+
+    exlog_idx = 0
+    for user in users:
+        log_table = {}
+        while exlog_idx < len(exlogs) and exlogs[exlog_idx]["user__id"] == user.id:
+            exlogs[exlog_idx]["streak_progress"] = exlogs[exlog_idx]["streak_progress"] / 12
+            log_table[exlogs[exlog_idx]["exercise_id"]] = exlogs[exlog_idx]
+            exlog_idx += 1
+
+        progress = 0
+        mastered = 0
+        struggling = 0
+        mastery = 0
+
+        for ex in log_table:
+            if log_table[ex]["complete"] == True:
+                mastered = mastered + 1
+            elif log_table[ex]["struggling"] == True:
+                struggling = struggling + 1
+            elif log_table[ex]["attempts"] > 0:
+                progress = progress + 1
+
+        if exercise_count:
+            mastery = "{0:.2f}".format( (mastered * 100.0)/exercise_count )
+
+        context["students"].append({
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "username": user.username,
+            "name": user.get_name(),
+            "id": user.id,
+            "exercise_logs": log_table,
+            "progress": progress,
+            "mastered": mastered,
+            "struggling": struggling,
+            "mastery" : mastery,
+        })
+
+
+    progress = 0
+    mastered = 0
+    struggling = 0
+    for student in  context["students"]:
+        for ex in student["exercise_logs"].values():
+            if ex["complete"] == True:
+                mastered = mastered + 1
+            elif ex["struggling"] == True:
+                struggling = struggling + 1
+            elif ex["attempts"] > 0:
+                progress = progress + 1
+
+
+    context["progress"] = 0
+    context["mastered"] = 0
+    context["struggling"] = 0
+
+    if user_count > 0 and exercise_count > 0:
+        context["progress"] = "{0:.2f}".format( (100.0/exercise_count) * progress/user_count )
+        context["mastered"] = "{0:.2f}".format( (100.0/exercise_count) * mastered/user_count )
+        context["struggling"] = "{0:.2f}".format( (100.0/exercise_count) * struggling/user_count )
 
     log_coach_report_view(request)
 
