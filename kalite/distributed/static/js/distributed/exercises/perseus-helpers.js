@@ -114,7 +114,6 @@ Exercises.PerseusBridge = {
             Exercises.PerseusBridge._loaded.resolve();
         });
 
-
     },
 
     render_item: function(item_data) {
