@@ -71,7 +71,7 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     __package__ + ".middleware.LockdownCheck",
-    "student_testing.middleware.ExamModeCheck",
+    "kalite.student_testing.middleware.ExamModeCheck",
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
