@@ -114,6 +114,7 @@ Exercises.PerseusBridge = {
             Exercises.PerseusBridge._loaded.resolve();
         });
 
+
     },
 
     render_item: function(item_data) {
@@ -131,6 +132,15 @@ Exercises.PerseusBridge = {
             }
         }, null), Exercises.PerseusBridge.itemMountNode);
         zk.focus();
+
+        // First, unbind any old listeners, otherwise multiple hints will be shown at a time
+        $(Exercises.PerseusBridge).unbind("showHint");
+
+        // Show the hint, and decrement the hint count
+        $(Exercises.PerseusBridge).bind("showHint", function(data) {
+            zk.showHint();
+            $(Exercises).trigger("hintShown");
+        });
 
     }
 
