@@ -13,14 +13,15 @@ from selenium.webdriver.common.keys import Keys
 from errors import ActionError
 from errors import OptionError
 
-from pyvirtualdisplay import Display
-
-# Start a virtual headless display
-display = Display(visible=0, size=(1024, 768))
-display.start()
+if 'SPHINX_SS_USE_PVD' in os.environ.keys() and os.environ['SPHINX_SS_USE_PVD'] == "true":
+    from pyvirtualdisplay import Display
+    # Start a virtual headless display
+    display = Display(visible=0, size=(1024, 768))
+    display.start()
 
 USER_ROLES = ["guest", "coach", "admin", "learner"]
-OUTPUT_PATH = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "images"))
+SS_DUMP_DIR = ".screenshot_dump"
+OUTPUT_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), SS_DUMP_DIR))
 MANAGE_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","kalite","manage.py"))
 # Formatted from subprocess.Popen
 SCREENSHOT_COMMAND = ["/usr/bin/python", MANAGE_PATH, "screenshots"]
@@ -218,7 +219,7 @@ class Screenshot(Image):
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
         })
-        self.arguments.append(os.path.join("/", "images", self.filename+".png"))
+        self.arguments.append(os.path.join("/", SS_DUMP_DIR, self.filename+".png"))
         open(os.path.join(OUTPUT_PATH, self.filename+".png"), 'w').close()
         (image_node,) = Image.run(self)
         return image_node
@@ -243,7 +244,7 @@ class Screenshot(Image):
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
         })
-        self.arguments.append(os.path.join("/", "images", self.filename+".png"))
+        self.arguments.append(os.path.join("/", SS_DUMP_DIR, self.filename+".png"))
         open(os.path.join(OUTPUT_PATH, self.filename+".png"), 'w').close()
         (image_node,) = Image.run(self)
         return image_node

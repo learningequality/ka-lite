@@ -15,6 +15,8 @@
 import sys
 import os
 
+# Will use pyvirtualdisplay if "true", but if unset or for any other value will not
+# os.environ['SPHINX_SS_USE_PVD'] = "true"
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

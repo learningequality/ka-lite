@@ -18,8 +18,6 @@ from fle_utils.general import ensure_dir
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
 
-from local_settings import *
-
 USER_TYPE_ADMIN = "admin"
 USER_TYPE_COACH = "coach"
 USER_TYPE_GUEST = "guest"

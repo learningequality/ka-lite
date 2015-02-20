@@ -3,9 +3,9 @@ Coach User Manual
 **Who is a "coach"?**
 
 A person who :
-	* adds, manages, and tracks the progress of groups of students.
-	* has access to student progress data in the form of coach reports
-	* provides instructions to students
+    * adds, manages, and tracks the progress of groups of students.
+    * has access to student progress data in the form of coach reports
+    * provides instructions to students
 
 Coach Reports
 -------------------------------------------
@@ -33,8 +33,7 @@ The color of the rectangles in the table indicate how that student is doing on a
 +---------------------+-------------------------------------------------------------+
 | .. image:: gray.png | Not Attempted: The student has not attempted the subtopic.  | 
 +---------------------+-------------------------------------------------------------+
-| .. image:: lime.png | In Progress: The student has completed a few questions,   	|
-|					  | 															|
+| .. image:: lime.png | In Progress: The student has completed a few questions,     |
 +---------------------+-------------------------------------------------------------+
 
 
