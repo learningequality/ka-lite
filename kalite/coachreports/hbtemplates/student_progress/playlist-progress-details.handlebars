@@ -1,5 +1,6 @@
 {{#each data}}
 <div class="col-xs-1 progress-block">
+    <a href="/learn/{{attributes.path}}">
     <div 
         class="progress-indicator progress-indicator-sm {{attributes.status}}"
         data-toggle="popover" data-placement="top" 
@@ -24,7 +25,6 @@
     > {{!-- Close starting div --}}
         <div class="sidebar-icon icon-{{ attributes.kind }} icon-label icon-label-sm"></div>
     </div>
-    {{!-- TODO(dylanjbarth): post RCT3, this path can be used to direct link to videos and exercises --}}
-    {{!-- <a href="/{{attributes.path}}">{{attributes.title}}</a> --}}
+    <span class="progress-item-title">{{attributes.title}}</span></a>
 </div>
 {{/each}}
