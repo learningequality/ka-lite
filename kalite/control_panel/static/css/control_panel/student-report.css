@@ -7,7 +7,7 @@
     border-radius: 50%/50%;
     border: 1px transparent solid;
     -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15); 
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 .progress-indicator-lg {
     width:60px;
@@ -17,15 +17,16 @@
     width:30px;
     height:30px;
 }
-/*
-TODO(dylanjbarth): activate this style post RCT3 when 
-students can click through to individual videos 
-and exercises
 
 .progress-indicator-sm:hover {
     cursor: pointer;
     border: 1px solid #2C2C2C;
-}*/
+}
+
+.progress-item-title {
+    font-size: 0.8em;
+}
+
 .icon-label {
     color: rgb(43, 43, 43);
     opacity: 0.9;
@@ -38,16 +39,15 @@ and exercises
 .icon-label-sm {
     font-size: 15px;
     margin-top: 7px;
-    margin-left: 8px;
+    margin-left: 7px;
 }
 .content-counter {
     position: relative;
-    top: -45px;
-    right: -43px;
-    font-size: 11px;
+    top: 10px;
+    font-size: 14px;
     background-color: rgb(97, 140, 204);
     color: white;
-    padding: 2px;
+    padding: 4px;
 }
 .playlist-progress-bar {
     margin-top: 20px;
