@@ -18,6 +18,8 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'^table/$', 'tabular_view', {}, 'tabular_view'),
     url(r'^table/(?P<report_type>\w+)/$', 'tabular_view', {}, 'tabular_view'),
 
+    url(r'^report/$', 'exercise_mastery_view', {}, 'exercise_mastery_view'),
+
     url(r'^test/$', 'test_view', {}, 'test_view'),
     url(r'^test/(?P<test_id>\w+)/$', 'test_detail_view', {}, 'test_detail_view'),
 

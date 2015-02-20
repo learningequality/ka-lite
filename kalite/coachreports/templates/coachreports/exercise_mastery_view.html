@@ -1,0 +1,156 @@
+{% extends "coachreports/base.html" %}
+
+{% load i18n %}
+{% load kalite_staticfiles %}
+{% load my_filters %}
+
+{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block title %}{% trans "Progress by topic" %} {{ block.super }}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/exercise_mastery_view.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.defaultoff.css' %}">
+
+{% endblock headcss %}
+
+
+
+{% block headjs %}{{ block.super }}
+    <script type="text/javascript" src="{% static 'js/jquery.cookie.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dynatree.extensions.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/coachreports/exercise_mastery_view.js' %}"></script>
+
+{% endblock headjs %}
+
+{% block content %}
+    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+
+    <div id="selection-bar">
+
+        {% if groups %}
+            {% if playlists %}
+                <div class="selection">
+                    <div class="subtitle">{% trans "Select Playlist" %}</div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+  <div id="tree">
+    <ul>
+
+     {% for playlist in playlists %}
+        <li id= "{{ playlist.id }}" class="folder" > {% trans "Unit" %} {{ playlist.unit }} {% trans playlist.title %}
+            <ul>
+            {% for exercise in playlist.exercises %}
+                <li id="{{ exercise.id }}"> {{ exercise.title }} </li>
+            {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+
+    </ul>
+  </div>
+
+
+
+    <div id="content">
+        <div id="legend">
+            <div class="legend"><div class="partial"></div>{% trans "In Progress" %} {{ progress }} %</div>
+            <div class="legend"><div class="complete"></div>{% trans "Mastered" %} {{ mastered }} %</div>
+            <div class="legend"><div class="struggle"></div>{% trans "Struggling" %} {{ struggling }} %</div>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+
+
+    {% if not students %}
+        <p>
+            <div class="subtitle error" id="error_message">
+                {% if not request.GET.playlist %}
+                    <div id="no_topic_or_playlist_error">
+                        {% if playlists %}
+                            {% trans "Please select a playlist above." %}
+                        {% else %}
+                            {% trans "No student accounts in this group have been created." %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </p>
+
+    {% else %}
+        {% block students_header %}
+        <div id="displaygrid">
+            <div style="clear: both;"></div>
+            <div class="users">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th class="headrowuser">
+                                {% trans "Student" %}
+                            </th>
+                        </tr>
+                        {% for student in students %}
+                            <tr>
+                                <th class="username">
+                                    <span title="{{ student.name }} ({{ student.username }})">
+                                        <div class="student-name"><a href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a></div>
+                                    </span>
+                                </th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+        {% endblock students_header %}
+
+        {% block exercise_data %}
+            <div class="userstatus">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="headrowuser">
+                                Student Mastery
+                            </th>
+                            {% for exercise in exercises %}
+                                <th class="headrow data" >
+                                    <div class="exercise-name"><a href="{{ exercise.path }}" title='"{% trans exercise.display_name %}"{% if exercise.description %} ({% trans exercise.description %}){% endif %}'>{% trans exercise.title %}</a></div>
+                                <div id="exercise-mastery">
+                                Mastered: {{ exercise_stats|get_item:exercise.id|get_item:"mastered" }}
+                                Progress: {{ exercise_stats|get_item:exercise.id|get_item:"progress" }}
+                                Struggling: {{ exercise_stats|get_item:exercise.id|get_item:"struggling" }}
+                                Mastery: {{ exercise_stats|get_item:exercise.id|get_item:"mastery" }} %
+                                </div>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <th>
+                                {{ student.mastery }} %
+                                </th>
+                                {% for exercise in exercises %}
+                                    {% if not student.exercise_logs|get_item:exercise.slug %}
+                                        <td class="status data" title="{% trans "Not Attempted" %}">
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"struggling" %}
+                                        <td class="status data struggle" title="{% trans "Struggling" %}"> {{ student.exercise_logs|get_item:exercise.slug|get_item:"streak_progress" }} / {{ student.exercise_logs|get_item:exercise.slug|get_item:"attempts" }} </td>
+                                    {% elif student.exercise_logs|get_item:exercise.slug|get_item:"complete" %}
+                                        <td class="status data complete" title="{% trans "Complete" %}"> {{ student.exercise_logs|get_item:exercise.slug|get_item:"streak_progress" }} / {{ student.exercise_logs|get_item:exercise.slug|get_item:"attempts" }} </td>
+                                    {% else %}
+                                        <td class="status data partial" title="{% trans "Attempted" %}"> {{ student.exercise_logs|get_item:exercise.slug|get_item:"streak_progress" }} / {{ student.exercise_logs|get_item:exercise.slug|get_item:"attempts" }} </td>
+                                    {% endif %}
+                                        </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endblock exercise_data %}
+    {% endif %}
+{% endblock content %}
