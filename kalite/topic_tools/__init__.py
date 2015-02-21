@@ -547,8 +547,8 @@ def convert_leaf_url_to_id(leaf_url):
 def generate_recommendation_data():
 
     #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values
-    #data = {'early-math': {'related_subtopics': ['arithmetic'], 'exercises': ['counting'] } }
-
+    data = {};
+    '''
     data = {
         "early-math": {"related_subtopics": ["early-math", "arithmetic", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
         "arithmetic": {"related_subtopics": ["arithmetic", "pre-algebra", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
@@ -601,9 +601,46 @@ def generate_recommendation_data():
         "Exploratorium": {"related_subtopics": ["chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "CAS-biodiversity", "art-history", "music"]},
         "asian-art-museum": {"related_subtopics": ["art-history", "history", "ap-art-history"]},
         "ssf-cci": {"related_subtopics": ["art-history", "history"]},
-    }
+    }'''
 
-    ### block box magic for later ###
+    ### populate data exploiting structure of topic tree ###
+    tree = get_topic_tree() #Is there a better way of getting the tree without calling get_topic_tree() again and again?
+
+
+
+    ##
+    # ITERATION 1 - grabs all immediate neighbors of each subtopic
+    ##
+
+    #array indices for the current topic and subtopic
+    topic_index = 0
+    subtopic_index = 0
+
+    #for each topic 
+    for topic in tree['children']:
+
+        subtopic_index = 0
+
+        #for each subtopic add the neighbors at distance 1 (2 for each)
+        for subtopic in topic['children']:
+
+            neighbors_dist_1 = get_neighbors_at_dist_1(topic_index, subtopic_index, tree)
+            data[ subtopic['id'] ] = { 'related_subtopics' : neighbors_dist_1 }
+            subtopic_index+=1
+            
+        topic_index+=1
+
+
+    ##
+    # ITERATION 2 - grabs all subsequent neighbors of each subtopic via 
+    # Breadth-first search (BFS)
+    ##
+
+    #loop through all subtopics currently in data dict
+    for subtopic in data:
+        related = data[subtopic]['related_subtopics'] # list of related subtopics (right now only 2)
+
+        ''' TODO '''
 
 
     return data
@@ -632,7 +669,9 @@ def get_recommendation_tree(data):
                 recommendation_tree[str(subtopic)].append(ex['id'])
 
     return recommendation_tree
-                
+      
+
+
 ###
 # Returns a list of recommended exercise ids given a
 # subtopic id.
@@ -648,6 +687,50 @@ def get_recommended_exercises(subtopic_id):
     #recommendations to a set amount??
     return tree[subtopic_id]
 
+
+
+###
+# Helper function for generating recommendation data using the topic tree.
+# Returns a list of the neihbors at distance 1 from the specified subtopic.
+#
+# @param topic: the index of the topic that the subtopic belongs to (e.g. math, sciences)
+#        subtopic_id: the index of the subtopic to find the neighbors for
+###
+def get_neighbors_at_dist_1(topic, subtopic, tree):
+    neighbors = []  #neighbor list to be returned
+    topic = tree['children'][topic] #subtree rooted at the topic that we are looking at
+    #curr_subtopic = tree['children'][topic]['children'][subtopic]['id'] #id of topic passed in
+
+    #pointers to the previous and next subtopic (list indices)
+    prev = subtopic - 1 
+    next = subtopic + 1
+
+    #if there is a previous topic (neighbor to left)
+    if(prev > -1 ):
+        neighbors.append(topic['children'][prev]['id']) # neighbor on the left side
+
+    else:
+        neighbors.append(' ') # no neighbor to the left
+
+    #if there is a neighbor to the right
+    if(next < len(topic['children'])):
+        neighbors.append(topic['children'][next]['id']) # neighbor on the right side
+
+    else:
+        neighbors.append(' ') # no neighbor
+
+    return neighbors
+
+
+
+###
+# Performs Breadth-first search given recommendation data.
+# Returns neighbors of a node in order of increasing distance.
+# 
+# @param
+###
+def get_subsequent_neighbors():
+    pass '''TODO'''
 
 
 
