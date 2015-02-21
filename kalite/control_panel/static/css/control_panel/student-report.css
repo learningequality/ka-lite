@@ -25,6 +25,7 @@
 
 .progress-item-title {
     font-size: 0.8em;
+    word-wrap: break-word;
 }
 
 .icon-label {
