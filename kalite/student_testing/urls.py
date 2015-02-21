@@ -7,7 +7,7 @@ import kalite.student_testing.api_urls
 
 if "nalanda" in settings.CONFIG_PACKAGE:
     urlpatterns = patterns(
-        'student_testing.views',
+        'kalite.student_testing.views',
         url(r'^api/', include(kalite.student_testing.api_urls)),
         url(r'^t/(?P<test_id>.+)/$', 'test', {}, 'test'),
         url(r'^list/$', 'test_list', {}, 'test_list'),
@@ -15,7 +15,7 @@ if "nalanda" in settings.CONFIG_PACKAGE:
     )
 else:
     urlpatterns = patterns(
-        'student_testing.views',
+        'kalite.student_testing.views',
         url(r'^/$', include(kalite.student_testing.api_urls)),
         url(r'^/$', 'test', {}, 'test'),
         url(r'^/$', 'test_list', {}, 'test_list'),

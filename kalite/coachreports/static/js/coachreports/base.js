@@ -141,10 +141,30 @@ var NavigationContainerView = Backbone.View.extend({
                 url = SPENDING_URL;
                 break;
         }
-        url += "?" + $.param({
-            facility_id: facility,
-            group_id: group
-        });
+        // Following 2 objects should only exists on tabular coach reports
+        // Better would be to refactor the template so that it can be
+        // attached as a subview here, but that would require making a
+        // new API endpoint instead of passing info as context variables
+        // to the template.
+        var params = {};
+        if( url === TABULAR_REPORT_URL ) {
+            if( $("#report_type").length ) {
+                var report_type = $("#report_type option:selected").val();
+                if( report_type === "exercise" || report_type === "video" ) {
+                    url += report_type + "/";
+                }
+            }
+            if( $("#topic").length ) {
+                var topic = $("#topic option:selected").val();
+                if( topic !== "----" ) {
+                    params["topic"] = topic;
+                }
+            }
+        }
+        
+        params["facility_id"] = facility;
+        params["group_id"] = group; 
+        url += "?" + $.param(params);
 
         window.location = url;
     }

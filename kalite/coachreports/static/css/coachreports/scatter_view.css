@@ -54,13 +54,13 @@ table.detail td.data {
     background-color: #cfc;
 }
 
-#legend {
+#legend-list {
     vertical-align:middle;
     margin:12px 25px 2px 10px;
     overflow: hidden;
 }
 
-.legend {
+.legend-item {
     float:left;
     height:20px;
     text-align:center;
@@ -71,7 +71,7 @@ table.detail td.data {
     margin-right: 2px;
 
 }
-.legend div {
+.legend-item div {
     float:left;
     width:35px;
     height:21px;

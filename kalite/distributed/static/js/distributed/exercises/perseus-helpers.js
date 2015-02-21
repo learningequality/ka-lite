@@ -59,7 +59,8 @@ $(Exercises).bind({
     checkAnswer: Exercises.proxyTrigger,
     gotoNextProblem: Exercises.proxyTrigger,
     newProblem: Exercises.proxyTrigger,
-    newProblemhintUsed: Exercises.proxyTrigger
+    newProblemhintUsed: Exercises.proxyTrigger,
+    hintUsed: Exercises.proxyTrigger
 });
 
 // React.initializeTouchEvents(true);
@@ -131,6 +132,15 @@ Exercises.PerseusBridge = {
             }
         }, null), Exercises.PerseusBridge.itemMountNode);
         zk.focus();
+
+        // First, unbind any old listeners, otherwise multiple hints will be shown at a time
+        $(Exercises.PerseusBridge).unbind("showHint");
+
+        // Show the hint, and decrement the hint count
+        $(Exercises.PerseusBridge).bind("showHint", function(data) {
+            zk.showHint();
+            $(Exercises).trigger("hintShown");
+        });
 
     }
 

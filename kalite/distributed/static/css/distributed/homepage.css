@@ -5,7 +5,6 @@
     margin-bottom: 0;
     padding: 14px;
     position: relative;
-    width: 370px;
     float: left;
     margin-right: 25px;
     min-height: 221px;
@@ -26,13 +25,10 @@
     text-decoration: none!important;
     color: #005987;
 }
-.suggested-action-image-link {
-    background-size: cover;
-    background-repeat: no-repeat;
-    border-bottom: 1px solid #DCE0B3;
+
+#suggested-action-image-link-homepage {
     display: block;
-    height: 130px;
-    margin: -5px -14px -15px -14px;
+    width: 100%;
 }
 
 .suggested-action-title {

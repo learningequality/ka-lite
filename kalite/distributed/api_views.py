@@ -33,7 +33,8 @@ from django.views.decorators.gzip import gzip_page
 from .api_forms import DateTimeForm
 from fle_utils.config.models import Settings
 from fle_utils.general import break_into_chunks
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, JsonResponseMessageError, JsonResponseMessageWarning
+from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, \
+    JsonResponseMessageError, JsonResponseMessageWarning
 from fle_utils.orderedset import OrderedSet
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite import version
@@ -67,7 +68,8 @@ def time_set(request):
             raise PermissionDenied
 
     except PermissionDenied as e:
-        return JsonResponseMessageError(_("System permissions prevented time setting, please run with root permissions."))
+        return JsonResponseMessageError(
+            _("System permissions prevented time setting, please run with root permissions."))
 
     now = datetime.datetime.now().isoformat(" ").split(".")[0]
 
@@ -82,9 +84,25 @@ def compute_total_points(user):
         return None
     else:
         return (VideoLog.get_points_for_user(user) +
-           ExerciseLog.get_points_for_user(user) +
-           StoreTransactionLog.get_points_for_user(user) +
-           ContentLog.get_points_for_user(user))
+                ExerciseLog.get_points_for_user(user) +
+                StoreTransactionLog.get_points_for_user(user) +
+                ContentLog.get_points_for_user(user))
+
+
+def get_messages_for_api_calls(request):
+    """
+    Re-usable function that returns a list of messages to be used by API calls.
+    """
+    message_lists = []
+    for message in get_messages(request):
+        # Make sure to escape strings not marked as safe.
+        # Note: this duplicates a bit of Django template logic.
+        msg_txt = message.message
+        if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
+            msg_txt = cgi.escape(unicode(msg_txt))
+        msg_type = message.tags
+        message_lists.append({msg_type: msg_txt})
+    return message_lists
 
 
 # On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
@@ -109,15 +127,8 @@ def status(request):
     # Build a list of messages to pass to the user.
     #   Iterating over the messages removes them from the
     #   session storage, thus they only appear once.
-    message_dicts = []
-    for message in get_messages(request):
-        # Make sure to escape strings not marked as safe.
-        # Note: this duplicates a bit of Django template logic.
-        msg_txt = message.message
-        if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
-            msg_txt = cgi.escape(unicode(msg_txt))
-        msg_type = message.tags
-        message_dicts.append({msg_type: msg_txt})
+
+    message_dicts = get_messages_for_api_calls(request)
 
     # Default data
     data = {
