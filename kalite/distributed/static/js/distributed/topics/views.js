@@ -86,6 +86,8 @@ window.SidebarView = BaseView.extend({
         this.$el.html(this.template());
 
         this.sidebar = this.$(".sidebar-panel");
+        this.sidebarTab = this.$(".sidebar-tab");
+        this.sidebarBack = this.$(".sidebar-back");
 
         _.defer(function() {
             self.show_sidebar();
@@ -118,17 +120,17 @@ window.SidebarView = BaseView.extend({
         // is computed and set here.
 
         // Used to get left value in number form
-        var sidebarPanelPosition = $(".sidebar-panel").position();
+        var sidebarPanelPosition = this.sidebar.position();
         var sidebarPanelLeft = sidebarPanelPosition.left;
 
         this.width = (current_level - 1) * column_width + last_column_width + 10;
-        this.$(".sidebar-panel").width(this.width);
-        var sidebarPanelNewLeft = -(column_width * (current_level - 3)) + this.$(".sidebar-back").width();
+        this.sidebar.width(this.width);
+        var sidebarPanelNewLeft = -(column_width * (current_level - 3)) + this.sidebarBack.width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
-        this.$(".sidebar-panel").css({"left": sidebarPanelNewLeft});
-        this.$(".sidebar-tab").css({"left": this.width});
+        this.sidebar.css({"left": sidebarPanelNewLeft});
+        this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelNewLeft});
 
-        this.update_sidebar_visibility();
+        this.set_sidebar_back();
     }, 100),
 
     check_external_click: function(ev) {
@@ -150,12 +152,15 @@ window.SidebarView = BaseView.extend({
     update_sidebar_visibility: function() {
         if (this.state_model.get("open")) {
             // Used to get left value in number form
-            var sidebarPanelPosition = $(".sidebar-panel").position();
-            this.$(".sidebar-tab").css({left: this.$(".sidebar-panel").width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
+            var sidebarPanelPosition = this.sidebar.position();
+            this.sidebar.css({left: 0});
+            this.resize_sidebar();
+            this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".fade").show();
-        } else {
+        } 
+        else {
             this.sidebar.css({left: - this.width});
-            this.$(".sidebar-tab").css({left: 0}).html('<span class="icon-circle-right"></span>');
+            this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".fade").hide();
         }
 
@@ -164,22 +169,23 @@ window.SidebarView = BaseView.extend({
 
     set_sidebar_back: function() {
         if (!this.state_model.get("open")) {
-            this.$(".sidebar-back").offset({left: -(this.$(".sidebar-back").width())});
+            this.sidebarBack.offset({left: -(this.sidebarBack.width())});
             return;
         }
 
         // Used to get left value in number form
-        var sidebarPanelPosition = $(".sidebar-panel").position();
+        var sidebarPanelPosition = this.sidebar.position();
         if (sidebarPanelPosition.left != 0) {
-            this.$(".sidebar-back").offset({left: 0});
+            this.sidebarBack.offset({left: 0});
         }
         else {
-            this.$(".sidebar-back").offset({left: -(this.$(".sidebar-back").width())});
+            this.sidebarBack.offset({left: -(this.sidebarBack.width())});
         }
     },
 
     sidebar_back_one_level: function() {
-        console.log("hit")
+        // TODO: Need to unselect currently active topic
+        this.topic_node_view.back_to_parent();
     },
 
     show_sidebar: function() {
@@ -438,7 +444,7 @@ window.TopicContainerOuterView = BaseView.extend({
         this.entity_collection = options.entity_collection;
 
         this.inner_views = [];
-        this.model =  this.model || new TopicNode({channel: options.channel});
+        this.model = this.model || new TopicNode({channel: options.channel});
         this.model.fetch().then(this.render);
         this.content_view = new ContentAreaView({
             el: "#content-area"
@@ -557,7 +563,6 @@ window.TopicContainerOuterView = BaseView.extend({
     back_to_parent: function() {
         this.remove_topic_views(1);
         window.channel_router.url_back();
-        
     },
 
     entry_requested: function(entry) {
