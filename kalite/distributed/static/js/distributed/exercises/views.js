@@ -249,7 +249,7 @@ window.ExerciseView = Backbone.View.extend({
         this.data_model.update_if_needed_then(function() {
 
             if (!self.data_model.get("available")) {
-                return this.warn_exercise_not_available();
+                return self.warn_exercise_not_available();
             }
 
             var framework = self.data_model.get_framework();

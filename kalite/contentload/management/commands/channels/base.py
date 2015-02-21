@@ -60,7 +60,7 @@ def whitewash_node_data(node, path="", channel_data={}):
         # For each exercise, need to set the exercise_id
         #   get related videos
         #   and compute base points
-        node["exercise_id"] = node["slug"]
+        node["exercise_id"] = node["id"]
 
         # compute base points
         # Minimum points per exercise: 5

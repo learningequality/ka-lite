@@ -453,6 +453,46 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         self.browser.execute_script(log_model_object + ".set(\"points\", 9000);" )
         self.browser.execute_script(log_model_object + ".saveNow();" )
 
+class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, FacilityMixins):
+    """ Addresses issue #2990. """
+
+    def setUp(self):
+        super(AdminOnlyTabsNotDisplayedForCoachTest, self).setUp()
+        self.create_admin()
+        self.create_facility()
+        self.create_teacher(username="teacher1", password="password")
+        self.browser_login_user(username="teacher1", password="password")
+    
+    def test_correct_tabs_are_displayed(self):
+        """Tabs with the class admin-only should not be displayed, and tabs
+        with the class teacher-only should be displayed
+        """
+        try:
+            admin_only_elements = WebDriverWait(self.browser, 10).until(
+                expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "admin-only"))
+            )
+        except TimeoutException:
+            admin_only_elements = []
+        teacher_only_elements = WebDriverWait(self.browser, 10).until(
+            expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "teacher-only"))
+        )
+        # Make sure nav bar is expanded e.g. in a small screen
+        try:
+            navbar_expand = self.browser.find_element_by_class_name('navbar-toggle')
+            self.browser_activate_element(elem=navbar_expand)
+            # Wait for the animation to finish
+            WebDriverWait(self.browser, 3).until(
+                expected_conditions.visibility_of_element_located((By.CLASS_NAME, "nav"))
+            )
+        except ElementNotVisibleException:
+            # browser_activate_element could throw this, meaning nav bar is already visible
+            pass
+           
+        for el in admin_only_elements:
+            self.assertFalse(el.is_displayed(), "Elements with `admin-only` class should not be displayed!")
+        for el in teacher_only_elements:
+            self.assertTrue(el.is_displayed(), "Elements with `teacher-only` class should be displayed!")
+
 class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin, KALiteBrowserTestCase):
 
     def setUp(self):
@@ -504,7 +544,7 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
         nav_logout = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
         )
-        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[10]")
+        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[8]")
         try:
             self.browser_activate_element(elem=dropdown_menu)
         except ElementNotVisibleException:
