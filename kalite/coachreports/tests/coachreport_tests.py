@@ -399,6 +399,7 @@ class PlaylistProgressTest(FacilityMixins,
         self.assertTrue(playlist_details, "Didn't load details")
 
 
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class SpendingReportTests(FacilityMixins,
                           CreateAdminMixin,
                           StoreMixins,
