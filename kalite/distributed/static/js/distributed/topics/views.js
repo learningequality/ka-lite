@@ -184,7 +184,6 @@ window.SidebarView = BaseView.extend({
     },
 
     sidebar_back_one_level: function() {
-        // TODO: Need to unselect currently active topic
         this.topic_node_view.back_to_parent();
     },
 
@@ -308,9 +307,9 @@ window.TopicContainerInnerView = BaseView.extend({
         this.trigger("showSidebar");
     },
 
-    // backToParent: function(ev) {
-    //     this.trigger('back_button_clicked', this.model);
-    // },
+    backToParent: function(ev) {
+        this.trigger('back_button_clicked', this.model);
+    },
 
     node_by_slug: function(slug) {
         // Convenience method to return a node by a passed in slug
@@ -545,6 +544,7 @@ window.TopicContainerOuterView = BaseView.extend({
 
     remove_topic_views: function(number) {
         for (var i=0; i < number; i++) {
+            this.inner_views[0].model.set("active", false);
             if (_.isFunction(this.inner_views[0].close)) {
                 this.inner_views[0].close();
             } else {
