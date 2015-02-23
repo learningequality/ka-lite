@@ -57,7 +57,19 @@ denormed_attribute_list = {
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res", "MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "cs", "cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math", "hour-of-code"]
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"] # not relevant
+slug_blacklist += ["cs"] # not (yet) compatible
+slug_blacklist += ["cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math"] # common core
+slug_blacklist += ["MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "hour-of-code", "metropolitan-museum", "bitcoin", "tate", "crash-course1", "crash-course-bio-ecology", "british-museum", "aspeninstitute", "asian-art-museum", "amnh"] # partner content
+
+# TODO(jamalex): re-check these videos later and remove them from here if they've recovered
+slug_blacklist += ["mortgage-interest-rates", "factor-polynomials-using-the-gcf", "inflation-overview", "time-value-of-money", "changing-a-mixed-number-to-an-improper-fraction", "applying-the-metric-system"] # errors on video downloads
+# 'Mortgage interest rates' at http://s3.amazonaws.com/KA-youtube-converted/vy_pvstdBhg.mp4/vy_pvstdBhg.mp4...
+# 'Inflation overview' at http://s3.amazonaws.com/KA-youtube-converted/-Z5kkfrEc8I.mp4/-Z5kkfrEc8I.mp4...
+# 'Factor expressions using the GCF' at http://s3.amazonaws.com/KA-youtube-converted/_sIuZHYrdWM.mp4/_sIuZHYrdWM.mp4...
+# 'Time value of money' at http://s3.amazonaws.com/KA-youtube-converted/733mgqrzNKs.mp4/733mgqrzNKs.mp4...
+# 'Applying the metric system' at http://s3.amazonaws.com/KA-youtube-converted/CDvPPsB3nEM.mp4/CDvPPsB3nEM.mp4...
+# 'Mixed numbers: changing to improper fractions' at http://s3.amazonaws.com/KA-youtube-converted/xkg7370cpjs.mp4/xkg7370cpjs.mp4...
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
 temp_ok_atts = ["x_pos", "y_pos", "icon_src", u'topic_page_url', u'hide', "live", "node_slug", "extended_slug"]
@@ -93,6 +105,9 @@ def build_full_cache(items, id_key="id"):
     Uses list of items retrieved from Khan Academy API to
     create an item cache with fleshed out meta-data.
     """
+
+    output = {}
+
     for item in items:
         for attribute in item._API_attributes:
             logging.info("Fetching item information for {id}, attribute: {attribute}".format(id=item.get(id_key, "Unknown"), attribute=attribute))
@@ -104,7 +119,7 @@ def build_full_cache(items, id_key="id"):
                             try:
                                 subitem = json.loads(subitem.toJSON())
                             except AttributeError:
-                                True
+                                pass
                             if subitem.has_key("kind"):
                                 subitem = whitewash_node_data(
                                     {key: value for key, value in subitem.items()})
@@ -113,7 +128,7 @@ def build_full_cache(items, id_key="id"):
                     try:
                         item[attribute] = json.loads(item[attribute].toJSON())
                     except AttributeError:
-                        True
+                        pass
                     if item[attribute].has_key("kind"):
                         item[attribute] = whitewash_node_data(
                             {key: value for key, value in item.attribute.items()})
@@ -123,14 +138,17 @@ def build_full_cache(items, id_key="id"):
         try:
             item = json.loads(item.toJSON())
         except AttributeError:
-            True
-        for key in item.keys():
-            if hasattr(item[key], '__call__'):
-                logging.warn('{kind}: {item} had a function on key {key}'.format(kind=item.get('kind', ''), item=item.get('id', ''), key=key))
-                del item[key]
-    return {item["id"]: whitewash_node_data(item) for item in items}
+            logging.error("Unable to serialize %r" % item)
+
+        output[item["id"]] = whitewash_node_data(item)
+
+    return output
 
 def retrieve_API_data(channel=None):
+
+    # TODO(jamalex): See how much of what we do here can be replaced by KA's new projection-based API
+    # http://www.khanacademy.org/api/v2/topics/topictree?projection={"topics":[{"slug":1,"childData":[{"id":1}]}]}
+
     khan = Khan()
 
     logging.info("Fetching Khan topic tree")
@@ -140,6 +158,8 @@ def retrieve_API_data(channel=None):
     logging.info("Fetching Khan exercises")
 
     exercises = khan.get_exercises()
+
+    exercises_dummy = khan.get_exercises()
 
     logging.info("Fetching Khan videos")
 
@@ -198,7 +218,7 @@ def retrieve_API_data(channel=None):
                     logging.info("Fetching assessment item {assessment} failed more than 5 times, aborting".format(assessment=assessment_item["id"]))
                     break
 
-    threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises]
+    threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises_dummy]
 
     for thread in threads:
         thread.start()
@@ -242,7 +262,7 @@ def get_content_length(content):
         except requests.Timeout:
             logging.warning("Timed out on try {i} while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
         except TypeError:
-            logging.warning("No numeric content-length returned while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
+            logging.warning("No numeric content-length returned while checking remote file size for '{title}' ({readable_id})!".format(**content))
             break
     if size:
         logging.info("Finished checking remote file size for content '{title}'!".format(title=content.get("title")))
