@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-urlpatterns = patterns('updates.api_views',
+urlpatterns = patterns('kalite.updates.api_views',
     url(r'^videos/topic_tree$', 'get_annotated_topic_tree', {}, 'get_annotated_topic_tree'),
     url(r'^videos/start$', 'start_video_download', {}, 'start_video_download'),
     url(r'^videos/delete$', 'delete_videos', {}, 'delete_videos'),

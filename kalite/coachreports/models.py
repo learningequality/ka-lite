@@ -182,7 +182,7 @@ class PlaylistProgress(PlaylistProgressParent):
             try:
                 progress["url"] = reverse("view_playlist", kwargs={"playlist_id": p.get("id")})
             except NoReverseMatch:
-                progress["url"] = ""
+                progress["url"] = reverse("learn") + p.get("path")
 
             user_progress.append(cls(**progress))
 
@@ -207,7 +207,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
             elif kind == "Exercise":
                 topic_node = get_exercise_cache().get(entity_id)
             title = topic_node["title"]
-            path = topic_node["path"][1:] # remove pre-prended slash
+            path = topic_node["path"]
         else:
             title = playlist["title"]
             path = ""

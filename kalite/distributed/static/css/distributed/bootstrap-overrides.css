@@ -14,11 +14,11 @@ html, body {
 }
 #content-container {
     padding-top: 20px;
-    padding-bottom: 80px;  /* Must be same height as footer */
+    padding-bottom: 90px;  /* Must be same height as footer */
 }
 footer {
     width: 100%;
-    height: 80px;
+    height: 90px;
     position: absolute;
     bottom: 0;
     left: 0;
