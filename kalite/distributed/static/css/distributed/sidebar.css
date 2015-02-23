@@ -135,8 +135,12 @@ div.fade {
 
 .sidebar-back {
     height: 100%;
-    width: 30px;
-    background-color: #47856A;
+    width: 45px;
+    padding-top: 100px;
+    text-align: center;
+    color: #fff;
+    background-color: #467471;
+    font-size: 24px;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     position: absolute;
     z-index: 10000;

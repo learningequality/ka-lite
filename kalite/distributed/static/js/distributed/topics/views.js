@@ -128,6 +128,7 @@ window.SidebarView = BaseView.extend({
         var sidebarPanelNewLeft = -(column_width * (current_level - 3)) + this.sidebarBack.width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
 
+        this.sidebarBack.css('background-color', '#5AA685').animate({'background-color': '#467471'})
         var thisTemp = this;
         this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function() {
             thisTemp.set_sidebar_back();
