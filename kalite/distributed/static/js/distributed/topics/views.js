@@ -127,10 +127,13 @@ window.SidebarView = BaseView.extend({
         this.sidebar.width(this.width);
         var sidebarPanelNewLeft = -(column_width * (current_level - 3)) + this.sidebarBack.width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
-        this.sidebar.css({"left": sidebarPanelNewLeft});
-        this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelNewLeft});
 
-        this.set_sidebar_back();
+        var thisTemp = this;
+        this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function() {
+            thisTemp.set_sidebar_back();
+        });
+
+        this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
     }, 100),
 
     check_external_click: function(ev) {
