@@ -66,8 +66,8 @@ class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
             reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
         hash_value = urllib.urlparse(self.browser.current_url).fragment
         self.browser.delete_all_cookies()
-        self.browser.implicitly_wait(10)
         self.browser.find_element_by_id('solutionarea').find_element_by_css_selector('input[type=text]').click()
+        self.browser.implicitly_wait(20)
         self.browser_send_keys(unicode("Anurag"))
         self.browser_send_keys(Keys.RETURN)
         #Not using urlencode for next param as its hassle to use escape character for params only.
