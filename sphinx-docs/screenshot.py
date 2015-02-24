@@ -51,6 +51,8 @@ def process_screenshots(app, env):
     all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
     subprocess = Popen(SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str", json.dumps(all_args)])
     subprocess.wait()
+    if display:
+        display.stop()
 
 def _parse_focus(arg_str):
     """ Returns id and annotation after splitting input string.
