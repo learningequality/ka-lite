@@ -42,6 +42,14 @@ a:hover {
     color: #2F92A5;
 }*/
 
+/*hide points display in the navbar*/
+@media (max-width: 768px) {
+    #points-xs {
+        display: none !important;
+    }
+}
+
+
 #top-header {
     height: 60px;
     position: relative;
