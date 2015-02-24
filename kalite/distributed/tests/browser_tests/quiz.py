@@ -8,10 +8,11 @@ from django.test.utils import override_settings
 
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
+from selenium.webdriver.common.keys import Keys
 
 import urllib
 
-PLAYLIST_ID = "g3_p1"
+PLAYLIST_ID = "g4_u400_ap1"
 
 
 class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
@@ -59,9 +60,12 @@ class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
 
     def test_unauthorized_request_redirect_to_login(self):
 
-        self.browser_logout_user()
         self.browse_to(
             self.live_server_url +
             reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
-        #Using urllib.quote to convert "/" from url to "%2F"
-        self.assertEqual(self.browser.current_url, self.reverse('login') + "?next=" + urllib.quote( reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}), ''))
+        hash_value = urllib.urlparse(self.browser.current_url).fragment
+        self.browser.delete_all_cookies()
+        self.browser.find_element_by_id('solutionarea').find_element_by_css_selector('input[type=text]').click()
+        self.browser_send_keys(unicode("Anurag"))
+        self.browser_send_keys(Keys.RETURN)
+        self.assertEqual(self.browser.current_url, self.reverse('login') + "?next=" + reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}) + "#" + hash_value)
