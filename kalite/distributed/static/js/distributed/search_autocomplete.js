@@ -65,7 +65,7 @@ $(document).ready(function() {
         $("#search-button").attr('disabled', 'disabled');
     }
 
-    $("#search").keyup(function() {
+    $("#search").on('input', function() {
          searchValue =  $("#search").val();
          if (searchValue != "") {
             $("#search-button").removeAttr("disabled");
