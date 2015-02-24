@@ -205,8 +205,6 @@ window.TopicContainerInnerView = BaseView.extend({
 
         this.add_all_entries();
 
-        // Sidebar text used to fade out when new topics were opened
-        // this.listenTo(this.state_model, "change:current_level", this.update_level_color);
         this.state_model.set("current_level", options.level);
 
     },
@@ -239,12 +237,6 @@ window.TopicContainerInnerView = BaseView.extend({
 
         return this;
     },
-
-    // Sidebar text used to fade out when new topics were opened
-    // update_level_color: function() {
-    //     var opacity = (this.level+1) / (this.state_model.get("current_level")+1);
-    //     this.$el.css("opacity", opacity);
-    // },
 
     add_new_entry: function(entry) {
         var view = new SidebarEntryView({model: entry});
