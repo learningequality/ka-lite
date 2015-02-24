@@ -97,6 +97,8 @@ function display_languages() {
                     lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete Subtitles'));
                 }
 
+            lang_description += "<td class='clear'></td></tr>";
+
             $("table.installed-languages").append(lang_description);
         }
     });
