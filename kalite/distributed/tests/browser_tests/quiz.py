@@ -9,6 +9,8 @@ from django.test.utils import override_settings
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 
+import urllib
+
 PLAYLIST_ID = "g3_p1"
 
 
@@ -53,3 +55,13 @@ class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
         self.browser.execute_script("quizlog.add_response_log_item({correct: true});")
         self.assertEqual(self.browser.execute_script("return quizlog.get('total_correct')"), 1)
         self.assertEqual(self.browser.execute_script("return quizlog._response_log_cache[0]"), 1)
+
+
+    def test_unauthorized_request_redirect_to_login(self):
+
+        self.browser_logout_user()
+        self.browse_to(
+            self.live_server_url +
+            reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}))
+        #Using urllib.quote to convert "/" from url to "%2F"
+        self.assertEqual(self.browser.current_url, self.reverse('login') + "?next=" + urllib.quote( reverse("view_playlist", kwargs={"playlist_id": PLAYLIST_ID}), ''))
