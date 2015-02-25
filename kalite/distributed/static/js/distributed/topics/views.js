@@ -110,7 +110,15 @@ window.SidebarView = BaseView.extend({
         return this;
     },
 
-    resize_sidebar: _.debounce(function() {
+    resize_sidebar: function() {
+        if ($(window).width() < 1200)
+            this.resize_for_narrow();
+
+        else
+            this.resize_for_wide();
+    },
+
+    resize_for_narrow: _.debounce(function() {
         var current_level = this.state_model.get("current_level");
         // TODO(jamalex): have this calculated dynamically
         var column_width = 200; // this.$(".topic-container-inner").width();
@@ -135,6 +143,17 @@ window.SidebarView = BaseView.extend({
         });
 
         this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
+    }, 100),
+
+    resize_for_wide: _.debounce(function() {
+        var current_level = this.state_model.get("current_level");
+        var column_width = this.$(".topic-container-inner").width();
+        var last_column_width = 400;
+        
+        this.width = (current_level-1) * column_width + last_column_width + 10;
+        this.$(".sidebar-panel").width(this.width);
+        this.$(".sidebar-tab").css({left: this.width});
+        this.update_sidebar_visibility();
     }, 100),
 
     check_external_click: function(ev) {
