@@ -147,7 +147,10 @@ function handleFailedAPI(resp, error_prefix) {
                 console.log(e);
             }
             break;
+        case 401:
         case 403:
+            // Redirect to Login Page and add the current url as next
+            window.location.href = setGetParam(USER_LOGIN_URL, "next", window.location.pathname + window.location.hash)
             messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
                 login_url: USER_LOGIN_URL
             })};
