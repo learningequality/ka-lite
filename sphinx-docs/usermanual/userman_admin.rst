@@ -46,8 +46,8 @@ The first string will vary depending on which folder you installed KA Lite in. S
 
 During the process, your operating system might prompt you to allow "Python.app" to accept incoming connections. The message dialogue may look like the following, depending on your operating system:
 
-    .. image:: acceptconnections.png
-        :align: center
+.. image:: acceptconnections.png
+    :align: center
 
 Please allow the app to run. This will make it possible for the KA Lite application to be accessible.
 
@@ -128,13 +128,13 @@ How to register your device with online access to data
 
 If you do not see this page, click on the "Manage" tab. At the top of this page, you should see a link to register your device. It should like like the following:
 
-    .. image:: registermessage.png
-        :align: center
+.. image:: registermessage.png
+    :align: center
 
 You will be prompted to log in with your central server login credentials. Please note that these credentials are different from your login credentials created during set-up. Click on the "Sign up here" link, and you will be redirected to a page that prompts you to create an account on the central server.
 
-    .. image:: signup.png
-        :align: center
+.. image:: signup.png
+    :align: center
 
 Once you have filled out the form and submitted it, you will be sent an activation link via the email address you supplied. 
 
@@ -265,21 +265,19 @@ Adding Coaches
 #. Click on the "Manage" tab at the top of the page.
 #. Make sure that the "Facilities" tab is selected.
 #. Select the facility that the coach will belong to.
-#. Under the "Coaches" header, click on "Add a new coach". [add-new-coach-highlight]_
+#. Under the "Coaches" header, click on "Add a new coach". |add-new-coach-highlight|
 #. You will be redirected to a page that says "Add a new coach". Fill in all the information. The facility dropdown defaults to the facility you selected in the previous steps.
-#. Click the "Create User" button. [create-coach-highlight]_
+#. Click the "Create User" button. |create-coach-highlight|
 #. If the user was successfully created, the page will reload with a message indicating that you have created the user.
 
-.. [add-new-coach-highlight]
-.. screenshot::
+.. |add-new-coach-highlight| screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #coaches .add-new-table-item a
     :class: screenshot
 
-.. [create-coach-highlight] 
-.. screenshot::
+.. |create-coach-highlight| screenshot::
     :user-role: admin
     :url: /securesync/teacher/
     :navigation-steps:
@@ -292,20 +290,18 @@ Permanently Deleting Coaches
 #. Click on the "Manage" tab at the top of the page.
 #. Make sure that the "Facilities" tab is selected.
 #. Under the "Facilities" header, select the facility the coach belongs to.
-#. Under the "Coaches" header, mark the box to the left of the coach account you would like to delete.
-#. Press the "Delete Coaches" button.
+#. Under the "Coaches" header, mark the box to the left of the coach account you would like to delete. |pdc-step-5|
+#. Press the "Delete Coaches" button. |pdc-step-6|
 #. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
-Step 5:
-.. screenshot::
+.. |pdc-step-5| screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #coaches td input
     :class: screenshot
 
-Step 6:
-.. screenshot::
+.. |pdc-step-6| screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
@@ -320,23 +316,19 @@ You can create groups within a facility. Each group can represent a classroom, a
 #. Click on the "Manage" tab at the top of the page.
 #. Make sure that the "Facilities" tab is selected.
 #. Select the facility that the group will belong to.
-#. Under the "Learner Groups" header, click on "Add a new group".
+#. Under the "Learner Groups" header, click on "Add a new group". |ag-step-5|
 #. Fill out the name of the group, and provide a description.
-#. Click "create group".
+#. Click "create group". |ag-step-7|
 #. You should be redirected back to the page for the facility. If the group was successfully created, you will see it listed under the "Learner Groups" section.
 
-Step 5:
-|add-a-new-group-highlight|
-.. |add-a-new-group-highlight| screenshot::
+.. |ag-step-5| screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #groups .add-new-table-item a 
     :class: screenshot
 
-Step 7:
-|create-group-highlight|
-.. |create-group-highlight| screenshot::
+.. |ag-step-7| screenshot::
     :user-role: admin
     :url: /securesync/group/
     :navigation-steps:
@@ -348,18 +340,46 @@ Deleting a Group
 #. Log in to KA Lite.
 #. Click on the "Manage" tab at the top of the page.
 #. Make sure that the "Facilities" tab is selected.
+#. Select the facility that the group you would like to delete belongs to.
 #. Mark the box to the left of the group you would like to delete.
-#. Press the "Delete Groups" button under the "Learner Groups" header.
+#. Press the "Delete Groups" button under the "Learner Groups" header. |del-group-button|
 #. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
+.. |del-group-button| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: .delete-group
+    :class: screenshot
 
 Moving a User to a New Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Navigate to the page for the facility the user belongs to.
-#. Under the "Learners" header, select the Learner you would like to move by clicking in the checkbox to the left of the Learner name.
-#. In the dropbox, select the group you would like to move the user to.
-#. Click the "Change Learner Groups" button.
+#. Under the "Learners" header, select the Learner you would like to move by clicking in the checkbox to the left of the Learner name. |learner-checkbox|
+#. In the dropbox, select the group you would like to move the user to. |learner-group-dropbox|
+#. Click the "Change Learner Groups" button. |change-group-button|
 #. The page will refresh, with a message at the top indicating a successful move.
+
+.. |learner-checkbox| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #students td input :first
+    :class: screenshot
+
+.. |learner-group-dropbox| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click | .movegrouplist click
+    :focus: .movegrouplist | Select one of these options!
+    :class: screenshot
+
+.. |change-group-button| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #students .delete
+    :class: screenshot
 
 Removing Users from a Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -372,8 +392,15 @@ Group Summary Statistics
 For each group, you should be able to view some statistics. 
 
 #. Navigate to the Learner Groups section of the facility you wish to look at. 
-#. Click on the group that you wish to view.
+#. Click on the group that you wish to view. |group-name|
 #. The statistics for the group should be displayed at the top of the page.
+
+.. |group-name| screenshot::
+    :user-role: admin
+    :url: /management/zone/None/
+    :navigation-steps: .facility-name click
+    :focus: #groups td a :first | Click here to view group statistics!
+    :class: screenshot
 
 Edit User Information
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
@@ -397,12 +424,27 @@ Now that you've created a facility and user accounts, it's time to add video con
 
 Downloading Individual Videos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+After registering your device:
 #. Click the "Manage" tab at the top of the page.
-#. Click on the "Videos" tab.
+#. Click on the "Videos" tab. |video-tab-highlight|
 #. View subtopics by clicking on the '+' symbol to the left of a subject of your choice. You can cose them by clicking on the '-' symbol.
 #. Mark the content you wish to download by clicking the checkbox to the left of the content name. 
-#. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
+#. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content. |download-button-highlight|
 #. Once the download is completed, video content will be ready for Learners to watch!
+
+.. |video-tab-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/
+    :navigation-steps:
+    :focus: li.video
+    :class: screenshot
+
+.. |download-button-highlight| screenshot::
+    :user-role: admin
+    :url: /update/videos/
+    :navigation-steps: .dynatree-checkbox click
+    :focus: #download-videos
+    :class: screenshot
 
 Downloading Videos in Bulk
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -443,7 +485,6 @@ Download Language Packs
 To download language packs: 
 
 #. From the "Manage" page, click on the "Language" tab. 
-
 #. Select the language pack you wish to download by selecting from the drop-down menu.
 #. Click the "Get Language Pack" button. 
 #. Once the download finishes, you can see your language pack in the list of installed packs. Learners and coaches will now be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default". 
@@ -483,14 +524,14 @@ Restarting Your Server: Mac
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. You may do this by navigating to the magnifying glass |magglass| at the top right corner of your screen, and typing in "Terminal", then hitting "Enter" on your keyboard.
 
-    .. image:: search.png
-        :align: center
-        :width: 700
+.. image:: search.png
+    :align: center
+    :width: 700
         
 #. Your terminal should be opened up. It should look a little something like the following: 
 
-    .. image:: terminal.png 
-        :align: center
+.. image:: terminal.png 
+    :align: center
 
 #. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine. 
 
