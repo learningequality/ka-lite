@@ -151,6 +151,7 @@ $(function() {
                             $(".enable-when-server-online").removeAttr("disabled");
                             updatesStart("videodownload", 5000, video_callbacks);
                         } else {
+                            clear_messages();
                             show_message("error", gettext("The server does not have internet access; videos cannot be downloaded at this time."));
                         }
                     });
