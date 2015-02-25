@@ -10,7 +10,7 @@ urlpatterns = patterns(__package__ + '.views',
 
 #Else block url patterns can't be empty because we may have a reverse match for update_software.
 
-if "Nalanda" in settings.CONFIG_PACKAGE:
+if "nalanda" in settings.CONFIG_PACKAGE:
     urlpatterns += patterns(__package__ + '.views',
         url(r'^software/$', 'update_software', {}, 'update_software')
 
