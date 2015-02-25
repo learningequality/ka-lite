@@ -438,13 +438,14 @@ footer {
     h3.suggested-action-title { margin-top: 0; }
 }
 
-@media only screen and (max-width: 767px) {
-    h3.suggested-action-title { margin-top: 0; }
-    form#search-box, #language_selector { margin-top:32px; 13px; margin-bottom: 0px; padding-bottom: 0px; }
-    a#nav_learn,#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice, #nav_tests, #manage, #user-name {margin-top: 36px;}
-}
-
-@media only screen and (max-width: 690px) {
-    #language_selector {position: absolute; width: 80px}
-    a#nav_learn,#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_signup, #nav_login, #nav_update, #nav_logout, #nav_registerdevice, #nav_tests {float:left;}
+@media (max-width: 768px) {
+    .navbar-form {
+        padding: 0px 0px;
+    }
+    form#search-box{
+        margin-left: 5px;
+    }
+    form#search-box, #language_selector {
+        margin-bottom: 0px;
+    }
 }
