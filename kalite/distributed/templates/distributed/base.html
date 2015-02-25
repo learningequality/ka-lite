@@ -156,7 +156,7 @@
                               <span class="icon-bar"></span>
                           </button>
                           <div class="navbar-brand">
-                              <a href="{% url 'learn' %}" title="{{ channel_data.channel_name }} {% trans 'Home' %}">
+                              <a href="{% url 'homepage' %}" title="{{ channel_data.channel_name }} {% trans 'Home' %}">
                                   <img src="/data/{{ channel }}/images/horizontal-logo-small.png" alt="{{ channel_data.channel_name }} {% trans 'logo' %}">
                               </a>
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
@@ -204,7 +204,7 @@
                             {# Manage for admins => zone control panel #}
                             {% if request.is_django_user %}
                             <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">
-                              <a href="{% url 'zone_redirect' %}" class="">
+                              <a href="{% url 'zone_redirect' %}" id="manage" class="">
                                 {% trans "Manage" %}
                               </a>
                             </li>
@@ -224,7 +224,7 @@
                             {# Manage for teachers => facility management #}
                             {% if request.session.facility_user.facility %}
                               <li class="{% block manage_active_teachers %}{% endblock manage_active_teachers %}">
-                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="teacher-only">
+                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" id="manage" class="teacher-only">
                                   {% trans "Manage" %}
                                 </a>
                               </li>
@@ -258,7 +258,7 @@
                               {% endif %}
                             </li>
                             <!-- Farthest right nav is logged in user dropdown -->
-                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}">
+                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}" id="user-name">
                               <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown">
                                   <span id="username">
                                     <!-- Username injected here w/ js -->
