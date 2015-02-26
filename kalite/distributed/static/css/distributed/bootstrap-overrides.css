@@ -438,6 +438,46 @@ footer {
     h3.suggested-action-title { margin-top: 0; }
 }
 
+@media (max-width: 454px) {
+    .form-control {
+        width: 83%;
+        margin-left: 15px;
+    }
+    .navbar-nav {
+        margin: 0px 0px;
+    }
+    .navbar-collapse.in {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+}
+
+@media only screen and (min-width: 455px) and (max-width: 600px) {
+    .form-control {
+        width: 87%;
+        margin-left: 15px;
+
+    }
+    .navbar-nav {
+        margin: 0px 0px;
+    }
+
+
+}
+
+@media only screen and (min-width: 600px) and (max-width: 767px) {
+
+    .form-control{
+        width: 90%;
+        margin-left: 15px;
+    }
+
+    .navbar-nav {
+         margin: 0px 0px;
+    }
+}
+
+
 @media (max-width: 767px) {
     .navbar-form {
         padding: 0px 0px;
@@ -451,22 +491,16 @@ footer {
     .navbar-collapse{
         margin-left: 10px;
     }
-    .form-control{
-        width: 80%;
-        margin-left: 15px;
-    }
-    .navbar-collapse.in {
-        overflow-y: hidden;
-        overflow-x: hidden;
-    }
-    #search_btn {
-        margin-right: 21px;
-    }
+
     #search_input{
         margin-bottom: 10px;
     }
     #search_btn {
         color: #fff !important;
         background: #5AA685 !important;
+    }
+    .navbar-collapse.in {
+        overflow-y: hidden;
+        overflow-x: hidden;
     }
 }
