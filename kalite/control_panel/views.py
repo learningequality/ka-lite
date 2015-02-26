@@ -379,6 +379,10 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
         },
         "ungrouped_id": ungrouped_id
     })
+
+    if not settings.CENTRAL_SERVER:
+        context["base_template"] = "distributed/base_manage.html"
+
     return context
 
 
