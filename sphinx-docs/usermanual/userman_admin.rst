@@ -135,6 +135,7 @@ You will be prompted to log in with your central server login credentials. Pleas
 
 .. image:: signup.png
     :align: center
+    :class: screenshot
 
 Once you have filled out the form and submitted it, you will be sent an activation link via the email address you supplied. 
 
@@ -249,7 +250,7 @@ Permanently Deleting Learners
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
-    :focus: #students td input
+    :focus: #students td input | You can check one or more of these checkboxes.
     :class: screenshot
 
 .. |delete-button-highlight| screenshot::
@@ -298,7 +299,7 @@ Permanently Deleting Coaches
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
-    :focus: #coaches td input
+    :focus: #coaches td input | Click a checkbox to select a coach.
     :class: screenshot
 
 .. |pdc-step-6| screenshot::
@@ -364,7 +365,7 @@ Moving a User to a New Group
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
-    :focus: #students td input :first
+    :focus: #students td input :first | Click this checkbox.
     :class: screenshot
 
 .. |learner-group-dropbox| screenshot::
@@ -378,7 +379,7 @@ Moving a User to a New Group
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
-    :focus: #students .delete
+    :focus: #students .movegroup
     :class: screenshot
 
 Removing Users from a Group
@@ -429,7 +430,7 @@ After registering your device:
 #. Click on the "Videos" tab. |video-tab-highlight|
 #. View subtopics by clicking on the '+' symbol to the left of a subject of your choice. You can cose them by clicking on the '-' symbol.
 #. Mark the content you wish to download by clicking the checkbox to the left of the content name. 
-#. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content. |download-button-highlight|
+#. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 #. Once the download is completed, video content will be ready for Learners to watch!
 
 .. |video-tab-highlight| screenshot::
@@ -437,13 +438,6 @@ After registering your device:
     :url: /management/zone/
     :navigation-steps:
     :focus: li.video
-    :class: screenshot
-
-.. |download-button-highlight| screenshot::
-    :user-role: admin
-    :url: /update/videos/
-    :navigation-steps: .dynatree-checkbox click
-    :focus: #download-videos
     :class: screenshot
 
 Downloading Videos in Bulk
@@ -484,10 +478,31 @@ Download Language Packs
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 To download language packs: 
 
-#. From the "Manage" page, click on the "Language" tab. 
-#. Select the language pack you wish to download by selecting from the drop-down menu.
-#. Click the "Get Language Pack" button. 
+#. From the "Manage" page, click on the "Language" tab. |language-tab-highlight| 
+#. Select the language pack you wish to download by selecting from the drop-down menu. |lp-dropdown|
+#. Click the "Get Language Pack" button. |lp-button| 
 #. Once the download finishes, you can see your language pack in the list of installed packs. Learners and coaches will now be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default". 
+
+.. |language-tab-highlight| screenshot::
+    :user-role: admin
+    :url: /management/zone/
+    :navigation-steps:
+    :focus: li.languages
+    :class: screenshot
+
+.. |lp-dropdown| screenshot::
+    :user-role: admin
+    :url: /update/languages/
+    :navigation-steps:
+    :focus: #language-packs-selection | Select language packs to download from this menu!
+    :class: screenshot
+
+.. |lp-button| screenshot::
+    :user-role: admin
+    :url: /update/languages/
+    :navigation-steps:
+    :focus: #get-language-button
+    :class: screenshot
 
 Delete Language Packs
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -495,7 +510,14 @@ To delete language packs:
 
 #. Log in as the administrator.
 #. Click the "Languages" link in the navigation bar
-#. In the Installed Languages section, there is a button for deletion of each language.
+#. In the Installed Languages section, there is a button for deletion of each language. |del-lang-btn|
+
+.. |del-lang-btn| screenshot::
+    :user-role: admin
+    :url: /update/languages/
+    :navigation-steps:
+    :focus: #delete-language-button button | Use the buttons in this column to delete language packs.
+    :class: screenshot
 
 
 Restarting Your Server
