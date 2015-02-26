@@ -111,7 +111,7 @@ window.SidebarView = BaseView.extend({
     },
 
     resize_sidebar: function() {
-        if ($(window).width() < 1200)
+        if ($(window).width() < 1260)
             this.resize_for_narrow();
 
         else
@@ -136,7 +136,10 @@ window.SidebarView = BaseView.extend({
         var sidebarPanelNewLeft = -(column_width * (current_level - 3)) + this.sidebarBack.width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
 
-        this.sidebarBack.css('background-color', '#5AA685').animate({'background-color': '#467471'})
+        // Signature color flash
+        var originalBackColor = this.sidebarBack.css('background-color');
+        this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
+        
         var thisTemp = this;
         this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function() {
             thisTemp.set_sidebar_back();
@@ -145,6 +148,7 @@ window.SidebarView = BaseView.extend({
         this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
     }, 100),
 
+    // Pretty much the code for pre-back-button sidebar resize
     resize_for_wide: _.debounce(function() {
         var current_level = this.state_model.get("current_level");
         var column_width = this.$(".topic-container-inner").width();
