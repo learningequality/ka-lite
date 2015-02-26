@@ -12,14 +12,24 @@
     margin-top: 22px;
 }
 
- #display-coach-report{
+#display-coach-report {
     margin-top: 20px;
     margin-left: 16px;
 }
 
+#display-topic-report {
+    margin-top: 35px;
+    margin-left: 16px;
+}
+
 @media (min-width: 768px) {
-    #display-coach-report{
+    #display-coach-report {
         margin-top: 35px;
         margin-left: 10px;
+    }
+
+    #display-topic-report {
+        margin-top: 35px;
+        margin-left: 0px;
     }
 }
