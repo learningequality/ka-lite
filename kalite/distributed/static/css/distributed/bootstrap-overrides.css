@@ -438,7 +438,7 @@ footer {
     h3.suggested-action-title { margin-top: 0; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .navbar-form {
         padding: 0px 0px;
     }
@@ -447,5 +447,26 @@ footer {
     }
     form#search-box, #language_selector {
         margin-bottom: 0px;
+    }
+    .navbar-collapse{
+        margin-left: 10px;
+    }
+    .form-control{
+        width: 80%;
+        margin-left: 15px;
+    }
+    .navbar-collapse.in {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+    #search_btn {
+        margin-right: 21px;
+    }
+    #search_input{
+        margin-bottom: 10px;
+    }
+    #search_btn {
+        color: #fff !important;
+        background: #5AA685 !important;
     }
 }
