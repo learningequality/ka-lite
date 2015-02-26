@@ -127,13 +127,22 @@ window.SidebarView = BaseView.extend({
         // width of their parents. Also, sidebar overflow out of the left side of screen
         // is computed and set here.
 
+        // THE magic variable that controls number of visible panels
+        var numOfPanelsToShow = 3;
+
+        if ($(window).width() < 920)
+            numOfPanelsToShow = 2;
+
+        if ($(window).width() < 720)
+            numOfPanelsToShow = 1;
+
         // Used to get left value in number form
         var sidebarPanelPosition = this.sidebar.position();
         var sidebarPanelLeft = sidebarPanelPosition.left;
 
         this.width = (current_level - 1) * column_width + last_column_width + 10;
         this.sidebar.width(this.width);
-        var sidebarPanelNewLeft = -(column_width * (current_level - 3)) + this.sidebarBack.width();
+        var sidebarPanelNewLeft = -(column_width * (current_level - numOfPanelsToShow)) + this.sidebarBack.width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
 
         // Signature color flash
