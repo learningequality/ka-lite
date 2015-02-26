@@ -1274,3 +1274,7 @@ body.mobile ul.inequalities-one-line-radios > li {
 .inequalities-padding#grid {
     margin-bottom: 2em;
 }
+
+.perseus-widget-radio.above-scratchpad.blank-background {
+    width: 40%;
+}
