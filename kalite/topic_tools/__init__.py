@@ -544,6 +544,7 @@ def convert_leaf_url_to_id(leaf_url):
 # Returns a dictionary with each subtopic and their related
 # topics, as well as the subtopic courses.
 ###
+import time
 def generate_recommendation_data():
 
     #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values
@@ -602,7 +603,7 @@ def generate_recommendation_data():
         "asian-art-museum": {"related_subtopics": ["art-history", "history", "ap-art-history"]},
         "ssf-cci": {"related_subtopics": ["art-history", "history"]},
     }'''
-
+    t0 = time.clock()
     ### populate data exploiting structure of topic tree ###
     tree = get_topic_tree() #Is there a better way of getting the tree without calling get_topic_tree() again and again?
 
@@ -639,10 +640,10 @@ def generate_recommendation_data():
     #loop through all subtopics currently in data dict
     for subtopic in data:
         related = data[subtopic]['related_subtopics'] # list of related subtopics (right now only 2)
+        other_neighbors = get_subsequent_neighbors(related, data)
+        data[subtopic]['related_subtopics'] += other_neighbors
 
-        ''' TODO '''
-
-
+    print 'time taken: ' + str(time.clock() - t0)
     return data
 
 
@@ -694,10 +695,11 @@ def get_recommended_exercises(subtopic_id):
 # Returns a list of the neihbors at distance 1 from the specified subtopic.
 #
 # @param topic: the index of the topic that the subtopic belongs to (e.g. math, sciences)
-#        subtopic_id: the index of the subtopic to find the neighbors for
+#        subtopic: the index of the subtopic to find the neighbors for
 ###
 def get_neighbors_at_dist_1(topic, subtopic, tree):
     neighbors = []  #neighbor list to be returned
+    topic_index = topic #store topic index
     topic = tree['children'][topic] #subtree rooted at the topic that we are looking at
     #curr_subtopic = tree['children'][topic]['children'][subtopic]['id'] #id of topic passed in
 
@@ -709,15 +711,27 @@ def get_neighbors_at_dist_1(topic, subtopic, tree):
     if(prev > -1 ):
         neighbors.append(topic['children'][prev]['id']) # neighbor on the left side
 
+    #else check if there is a neighboring topic (left)    
     else:
-        neighbors.append(' ') # no neighbor to the left
+        if (topic_index-1) > -1:
+            neighbor_length = len(tree['children'][(topic_index-1)]['children'])
+            neighbors.append(tree['children'][(topic_index-1)]['children'][(neighbor_length-1)]['id'])
+
+        else:
+            neighbors.append(' ') # no neighbor to the left
 
     #if there is a neighbor to the right
     if(next < len(topic['children'])):
         neighbors.append(topic['children'][next]['id']) # neighbor on the right side
 
+    #else check if there is a neighboring topic (right)
     else:
-        neighbors.append(' ') # no neighbor
+        if (topic_index + 1) < len(tree['children']):
+            neighbors.append(tree['children'][(topic_index+1)]['children'][0]['id'])
+
+        else:
+            neighbors.append(' ') # no neighbor on right side
+
 
     return neighbors
 
@@ -727,10 +741,34 @@ def get_neighbors_at_dist_1(topic, subtopic, tree):
 # Performs Breadth-first search given recommendation data.
 # Returns neighbors of a node in order of increasing distance.
 # 
-# @param
+# @param nearest_neighbors: array holding the current left and right neighbors (always 2)
+# @param data: dictionary of subtopics and their neighbors at distance 1
 ###
-def get_subsequent_neighbors():
-    pass '''TODO'''
+
+def get_subsequent_neighbors(nearest_neighbors, data):
+    left = nearest_neighbors[0]  # subtopic id string of left neighbor
+    right = nearest_neighbors[1]
+
+    other_neighbors = []
+
+    # Loop while there are still neighbors
+    while left != ' ' or right != ' ':
+
+        # If there is a left neighbor, append its left neighbor
+        if left != ' ':
+            if data[left]['related_subtopics'][0] != ' ':
+                other_neighbors.append(data[left]['related_subtopics'][0])
+            left = data[left]['related_subtopics'][0]
+
+        # Repeat for right neighbor
+        if right != ' ':
+            if data[right]['related_subtopics'][1] != ' ':
+                other_neighbors.append(data[right]['related_subtopics'][1])
+            right = data[right]['related_subtopics'][1]
+
+    return other_neighbors
+
+
 
 
 
