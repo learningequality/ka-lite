@@ -17,6 +17,6 @@ if "nalanda" in settings.CONFIG_PACKAGE:
     )
 else:
     urlpatterns += patterns(__package__ + '.views',
-        url(r'^/$', 'update_software', {}, 'update_software')
+        url(r'^$', 'update_software', {}, 'update_software')
 
     )

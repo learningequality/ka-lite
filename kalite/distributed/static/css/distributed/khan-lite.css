@@ -354,6 +354,16 @@ a:hover {
     background-position: center 7px;
     height: 87px;
 }
+.update {
+    background: url("../../images/distributed/update-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
+.update:hover, .update-active {
+    background: url("../../images/distributed/update-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 87px;
+}
 /********* End "Admin" Sub-Navigation bar **********/
 
 
