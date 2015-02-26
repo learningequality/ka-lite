@@ -243,10 +243,6 @@ window.TopicContainerInnerView = BaseView.extend({
 
     template: HB.template("topics/sidebar-content"),
 
-    events: {
-        'click .back-to-parent' : 'backToParent'
-    },
-
     initialize: function(options) {
 
         var self = this;
@@ -295,12 +291,6 @@ window.TopicContainerInnerView = BaseView.extend({
             self.$(".slimScrollDiv, .sidebar").height(height);
         }, 200));
         $(window).resize();
-
-        if (this.has_parent){
-            this.$(".back-to-parent").show();
-        } else {
-            this.$(".back-to-parent").hide();
-        }
 
         return this;
     },
