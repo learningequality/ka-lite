@@ -266,14 +266,14 @@
                                 <span class="caret"></span>
                               </a>
                               <ul class="dropdown-menu" role="menu">
-                                <li role="presentation">
-                                  <span id="points">
+                                <li role="presentation student-only">
+                                  <span id="points student-only">
                                     <!-- Points injected here w/ js -->
                                   </span>
                                 </li>
-                                <li role="presentation" class="divider"></li>
+                                <li role="presentation" class="divider student-only"></li>
                                 {# Student account management #}
-                                <li role="presentation" class="motivational-feature">
+                                <li role="presentation" class="motivational-feature student-only">
                                   <a role="menuitem" tabindex="-1" href="{% url 'account_management' %}" id="nav_progress" title="{% trans 'My Progress'%}" class="student-only">
                                     {% trans "My Progress" %}
                                   </a>
@@ -283,7 +283,7 @@
                                 <li role="presentation">
                                   <a role="menuitem" tabindex="-1" href="{% url 'help' %}" id="nav_help">{% trans "Help" %}</a>
                                 </li> -->
-                                <li role="presentation" class="divider"></li>
+                                <li role="presentation" class="divider student-only"></li>
                                 <!-- Logout goes at the bottom! -->
                                 <li role="presentation">
                                   <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}" href="{% url 'logout' %}">
