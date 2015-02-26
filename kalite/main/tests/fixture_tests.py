@@ -13,6 +13,7 @@ from kalite.testing import KALiteTestCase
 class FixtureTestCases(KALiteTestCase):
     """ """
 
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, 'usually times out on travis')
     def test_loaddata(self):
         cur_dir = os.path.split(__file__)[0]
 

@@ -10,13 +10,15 @@
                     <img id="fle-logo" src="{% static 'images/distributed/FLE.png' %}" alt="{% trans 'Foundation for Learning Equality logo' %}"/>
                 </p>
                 <p class="footer-text">
-                    {% trans "KA Lite version" %} {{ VERSION }} &copy; {% trans "2014" %}
+                    {% trans "KA Lite version" %} {{ VERSION }} &copy; {% trans "2015" %}
                 </p>
                 {% if channel_data.footer_text %}
-                <p class="footer-text">
-                    {{ channel_data.footer_text }}
-                    <img id="creative-commons-icon" src="{% static 'images/distributed/' True %}{{ channel_data.channel_license }}.png">
-                </p>
+                    <p class="footer-text">
+                        {{ channel_data.footer_text }}
+                    </p>
+                    <p class="footer-text">
+                        <img id="creative-commons-icon" src="{% static 'images/distributed/' True %}{{ channel_data.channel_license }}.png">
+                    </p>
                 {% endif %}
             </div>
         </div>

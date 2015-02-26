@@ -1,9 +1,30 @@
 #coachreport-navigation-container {
-    padding-bottom: 10px;
+    padding-bottom: 30px;
     margin-bottom: 15px;
-    border-bottom: 1px solid rgb(231, 231, 231);
 }
 
 .container-margin-bottom {
     margin-bottom: 50px;
+}
+
+.coach-reports-row {
+    border-bottom: 3px solid #5AA685;
+    margin-bottom: 20px;
+}
+
+select.reports-select {
+    width: 300px !important;
+}
+#display-topic-report {
+    margin-top: 22px;
+}
+
+#display-coach-report{
+    margin-top: 10px;
+
+}
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 0px;
+    }
 }

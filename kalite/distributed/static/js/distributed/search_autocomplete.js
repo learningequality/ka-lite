@@ -59,9 +59,22 @@ function fetchLocalOrRemote() {
 
 
 $(document).ready(function() {
+    var searchValue =  $("#search").val();
+
+    if (searchValue === "") {
+        $("#search-button").attr('disabled', 'disabled');
+    }
+
+    $("#search").on('input', function() {
+         searchValue =  $("#search").val();
+         if (searchValue != "") {
+            $("#search-button").removeAttr("disabled");
+         }else {
+            $("#search-button").attr('disabled', 'disabled');
+         }
+    });
 
     $("#search").focus(fetchLocalOrRemote);
-
     $("#search").autocomplete({
         autoFocus: true,
         minLength: 3,

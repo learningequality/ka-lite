@@ -3,7 +3,7 @@
 {% load staticfiles %}
 {% load include_block %}
 
-{% block title %}{{ zone.name }} - {% trans "Sharing Network Management Console" %} {{ block.super }}{% endblock title %}
+{% block title %}{% if zone.name %}{{ zone.name }} - {% endif %}{% trans "Sharing Network Management Console" %}{% endblock title %}
 
 {% block users_active %}active{% endblock users_active %}
 {% block manage_active %}active{% endblock manage_active %}

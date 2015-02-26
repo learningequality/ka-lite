@@ -32,7 +32,7 @@
                     <table class="table selectable-table">
                         <thead>
                             <tr class="success">
-                                <th><input class="select-all" type="checkbox" value="#groups"></th>
+                                <th><input class="select-all" type="checkbox" value="#groups" autocomplete="off"/></th>
                                 <th>{% trans "Group" %}</th>
                                 <th>{% trans "Edit" %}</th>
                                 <th>{% trans "Coach" %}</th>
@@ -48,7 +48,7 @@
                             {% for group in groups %}
                                 {% if group.name != ungrouped or group.total_users != 0 %}
                                 <tr {% if group.id %}class="selectable"{% endif %} value="{{ group.id }}" type="groups">
-                                    <td>{% if group.id %}<input type="checkbox" value="#groups">{% endif %}</td>
+                                    <td>{% if group.id %}<input type="checkbox" value="#groups" autocomplete="off"/>{% endif %}</td>
                                     <td>
                                         {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
                                         <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"

@@ -5,6 +5,8 @@ from collections_local_copy import OrderedDict
 from math import sqrt
 
 from django.conf import settings; logging = settings.LOG
+from django.contrib import messages
+from django.contrib.messages import ERROR
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -222,9 +224,13 @@ def tabular_view(request, report_type="exercise"):
     # No valid data; just show generic
     # Exactly one of topic_id or playlist_id should be present
     if not ((topic_id or playlist_id) and not (topic_id and playlist_id)):
+        if playlists:
+            messages.add_message(request, ERROR, _("Please select a playlist."))
+        elif topics:
+            messages.add_message(request, ERROR, _("Please select a topic."))
         return context
 
-    playlist = (filter(lambda p: p.id==playlist_id, Playlist.all()) or [None])[0]
+    playlist = (filter(lambda p: p.id == playlist_id, Playlist.all()) or [None])[0]
 
     if group_id:
         # Narrow by group
@@ -330,9 +336,31 @@ def tabular_view(request, report_type="exercise"):
                 "id": user.id,
                 "video_logs": log_table,
             })
-
     else:
         raise Http404(_("Unknown report_type: %(report_type)s") % {"report_type": report_type})
+
+    # Validate results by showing user messages.
+    if not users:
+        # 1. check group facility groups
+        if len(groups) > 0 and not groups[0]['groups']:
+            # 1. No groups available (for facility) and "no students" returned.
+            messages.add_message(request, ERROR,
+                                 _("No learner accounts have been created for selected facility/group."))
+        elif topic_id and playlist_id:
+            # 2. Both topic and playlist are selected.
+            messages.add_message(request, ERROR, _("Please select either a topic or a playlist above, but not both."))
+        elif not topic_id and not playlist_id:
+            # 3. Group was selected, but data not queried because a topic or playlist was not selected.
+            if playlists:
+                # 4. No playlist was selected.
+                messages.add_message(request, ERROR, _("Please select a playlist."))
+            elif topics:
+                # 5. No topic was selected.
+                messages.add_message(request, ERROR, _("Please select a topic."))
+        else:
+            # 6. Everything specified, but no users fit the query.
+            messages.add_message(request, ERROR, _("No learner accounts in this group have been created."))
+    # End: Validate results by showing user messages.
 
     log_coach_report_view(request)
 
@@ -572,16 +600,15 @@ def test_detail_view(request, test_id):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/spending_report_view.html")
-def spending_report_view(request, facility):
+def spending_report_view(request):
     """View total points remaining for students"""
-    group_id = request.GET.get("group", "")
+    facility, group_id, context = coach_nav_context(request, "spending")
     users = get_user_queryset(request, facility, group_id)
     user_points = {}
     for user in users:
         user_points[user] = compute_total_points(user)
-    context = plotting_metadata_context(request, facility=facility)
+    context.update(plotting_metadata_context(request, facility=facility))
     context.update({
         "user_points": user_points,
     })
