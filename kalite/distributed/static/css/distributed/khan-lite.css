@@ -924,6 +924,7 @@ to items you want to have the icon appear with.
 div#modal {
     position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
     margin: auto;
+    padding-bottom: 50px;
     height: 50px;
     width: 400px;
     top: 0;
