@@ -10,7 +10,7 @@
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
         <script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/backbone/backbone.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone.js' %}"></script>
 
         <link rel="stylesheet" type="text/css" href="{% static "css/distributed/khan-site.css" %}">
         <style>
@@ -248,22 +248,7 @@
 
             var video_sequence = [
                 function(input, callback) {
-                    this.goto("/", callback);
-                },
-                function(input, callback) {
-                    this.click(".topic-link", callback);
-                },
-                function(input, callback) {
-                    this.click(".topic-link", callback);
-                },
-                function(input, callback) {
-                    this.click(".topic-link", callback);
-                },
-                function(input, callback) {
-                    this.click(".topic-link", callback);
-                },
-                function(input, callback) {
-                    this.click(".video-link", callback);
+                    this.goto("/math/arithmetic/addition-subtraction/basic_addition/v/basic-addition/", callback);
                 },
                 function(input, callback) {
                     try {
@@ -278,7 +263,7 @@
 
             var exercise_sequence = [
                 function(input, callback) {
-                    this.goto("/learn/khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/", callback);
+                    this.goto("/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/", callback);
                 },
                 function(input, callback) {
                     var numbers = this.$("span[class=mord][style]")
