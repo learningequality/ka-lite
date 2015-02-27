@@ -219,7 +219,7 @@ def get_pid():
     listen_port = getattr(settings, "CHERRYPY_PORT", LISTEN_PORT)
 
     # Timeout is 1 second, we don't want the status command to be slow
-    conn = httplib.HTTPConnection(LISTEN_ADDRESS, listen_port, timeout=3)
+    conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
     try:
         conn.request("GET", PING_URL)
         response = conn.getresponse()
@@ -337,7 +337,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     # This command is run before starting the server, in case the server
     # should be configured to not run in daemon mode or in case the
     # server fails to go to daemon mode.
-    if not skip_job_scheduler:
+    if False:
         manage(
             'cronserver',
             in_background=True,
