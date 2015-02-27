@@ -1,7 +1,7 @@
 {% extends "control_panel/base.html" %}
 {% load i18n %}
 
-{% block title %}{{ zone.name }} - {% trans "Sharing Network Add / Edit" %} {{ block.super }}{% endblock title %}
+{% block title %}{% if zone.name %}{{ zone.name }} - {% endif %}{% trans "Sharing Network Add / Edit" %}{% endblock title %}
 
 {% block control_panel_content %}
 <div id="zone_container">

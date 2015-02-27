@@ -15,7 +15,7 @@ from .models import StoreTransactionLog, playlist_group_mapping_reset_for_a_faci
 
 logging = settings.LOG
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BaseTest(FacilityMixins, KALiteTestCase):
 
     client_class = KALiteClient
@@ -33,7 +33,7 @@ class BaseTest(FacilityMixins, KALiteTestCase):
         self.teacher = self.create_teacher(**self.teacher_data)
         self.student = self.create_student(**self.student_data)
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class SwitchTest(BaseTest):
 
     def setUp(self):
@@ -48,7 +48,7 @@ class SwitchTest(BaseTest):
 
         StoreTransactionLog.objects.all().soft_delete()
 
-    @override_settings(CONFIG_PACKAGE=["Nalanda"])
+    @override_settings(CONFIG_PACKAGE=["nalanda"])
     def test_exam_unset(self):
         """
         Tests that when an exam is unset in the output condition
@@ -69,7 +69,7 @@ class SwitchTest(BaseTest):
             self.assertTrue(transactionlog.value == int(round(settings.UNIT_POINTS*float(testlog.total_correct)/testlog.total_number)))
 
 
-    @override_settings(CONFIG_PACKAGE=["Nalanda"])
+    @override_settings(CONFIG_PACKAGE=["nalanda"])
     def test_unit_switch(self):
         """
         Tests that when a unit is switched a negative value gift_card
@@ -105,7 +105,7 @@ class SwitchTest(BaseTest):
         transactionlogs = StoreTransactionLog.objects.filter(user=self.student, context_id="2", context_type="unit_points_reset", item="gift_card")
         self.assertTrue(len(transactionlogs)==0)
 
-    @override_settings(CONFIG_PACKAGE=["Nalanda"])
+    @override_settings(CONFIG_PACKAGE=["nalanda"])
     def test_playlist_group_mapping_reset_for_a_facility(self):
         from kalite.playlist.models import PlaylistToGroupMapping
         from kalite.facility.models import FacilityGroup

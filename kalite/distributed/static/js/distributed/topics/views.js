@@ -5,11 +5,8 @@ window.ContentAreaView = BaseView.extend({
     template: HB.template("topics/content-area"),
 
     initialize: function() {
-
         this.model = new Backbone.Model();
-
         this.render();
-
     },
 
     render: function() {
@@ -18,9 +15,8 @@ window.ContentAreaView = BaseView.extend({
     },
 
     show_view: function(view) {
-
         // hide any messages being shown for the old view
-        clear_messages();
+        clear_messages();        
 
         this.close();
         // set the new view as the current view
@@ -49,9 +45,7 @@ window.ContentAreaView = BaseView.extend({
 });
 
 window.SidebarView = BaseView.extend({
-
     el: "#sidebar-container",
-
     template: HB.template("topics/sidebar"),
 
     events: {
@@ -61,7 +55,6 @@ window.SidebarView = BaseView.extend({
     },
 
     initialize: function(options) {
-
         var self = this;
 
         this.entity_key = options.entity_key;
@@ -110,14 +103,30 @@ window.SidebarView = BaseView.extend({
         return this;
     },
 
-    resize_sidebar: _.debounce(function() {
+    resize_sidebar: function() {
+        if ($(window).width() < 1260)
+            this.resize_for_narrow();
+
+        else
+            this.resize_for_wide();
+    },
+
+    resize_for_narrow: _.debounce(function() {
         var current_level = this.state_model.get("current_level");
-        // TODO(jamalex): have this calculated dynamically
-        var column_width = 200; // this.$(".topic-container-inner").width();
+        var column_width = this.$(".topic-container-inner").width();
         var last_column_width = 400;
         // Hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. Also, sidebar overflow out of the left side of screen
         // is computed and set here.
+
+        // THE magic variable that controls number of visible panels
+        var numOfPanelsToShow = 3;
+
+        if ($(window).width() < 920)
+            numOfPanelsToShow = 2;
+
+        if ($(window).width() < 720)
+            numOfPanelsToShow = 1;
 
         // Used to get left value in number form
         var sidebarPanelPosition = this.sidebar.position();
@@ -125,16 +134,31 @@ window.SidebarView = BaseView.extend({
 
         this.width = (current_level - 1) * column_width + last_column_width + 10;
         this.sidebar.width(this.width);
-        var sidebarPanelNewLeft = -(column_width * (current_level - 3)) + this.sidebarBack.width();
+        var sidebarPanelNewLeft = -(column_width * (current_level - numOfPanelsToShow)) + this.sidebarBack.width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
 
-        this.sidebarBack.css('background-color', '#5AA685').animate({'background-color': '#467471'})
+        // Signature color flash
+        var originalBackColor = this.sidebarBack.css('background-color');
+        this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
+        
         var thisTemp = this;
         this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function() {
             thisTemp.set_sidebar_back();
         });
 
         this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
+    }, 100),
+
+    // Pretty much the code for pre-back-button sidebar resize
+    resize_for_wide: _.debounce(function() {
+        var current_level = this.state_model.get("current_level");
+        var column_width = this.$(".topic-container-inner").width();
+        var last_column_width = 400;
+        
+        this.width = (current_level-1) * column_width + last_column_width + 10;
+        this.$(".sidebar-panel").width(this.width);
+        this.$(".sidebar-tab").css({left: this.width});
+        this.update_sidebar_visibility();
     }, 100),
 
     check_external_click: function(ev) {
@@ -206,29 +230,17 @@ window.SidebarView = BaseView.extend({
 });
 
 window.TopicContainerInnerView = BaseView.extend({
-
     className: "topic-container-inner",
-
     template: HB.template("topics/sidebar-content"),
 
-    events: {
-        'click .back-to-parent' : 'backToParent'
-    },
-
     initialize: function(options) {
-
         var self = this;
 
         this.state_model = options.state_model;
-
         this.entity_key = options.entity_key;
-
         this.entity_collection = options.entity_collection;
-
         this.level = options.level;
-
         this._entry_views = [];
-
         this.has_parent = options.has_parent;
 
         if (!(this.model.get(this.entity_key) instanceof this.entity_collection)) {
@@ -241,7 +253,6 @@ window.TopicContainerInnerView = BaseView.extend({
 
         this.add_all_entries();
 
-        this.listenTo(this.state_model, "change:current_level", this.update_level_color);
         this.state_model.set("current_level", options.level);
     },
 
@@ -265,18 +276,7 @@ window.TopicContainerInnerView = BaseView.extend({
         }, 200));
         $(window).resize();
 
-        if (this.has_parent){
-            this.$(".back-to-parent").show();
-        } else {
-            this.$(".back-to-parent").hide();
-        }
-
         return this;
-    },
-
-    update_level_color: function() {
-        var opacity = (this.level+1) / (this.state_model.get("current_level")+1);
-        this.$el.css("opacity", opacity);
     },
 
     add_new_entry: function(entry) {
@@ -325,14 +325,6 @@ window.TopicContainerInnerView = BaseView.extend({
             view.model.set("active", false);
         });
         this.remove();
-    },
-
-    move_back: function() {
-        for (i=0; i < this._entry_views.length; i++) {
-            if(this._entry_views[i].model.get("active")) {
-                window.channel_router.url_back();
-            }
-        }
     },
 
     load_entry_progress: _.debounce(function() {

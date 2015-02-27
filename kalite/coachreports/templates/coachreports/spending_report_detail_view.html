@@ -24,7 +24,7 @@
 {% block content %}
     {% block navbar_title %}
         <h1>
-            <a href="{% url 'spending_report_view' %}">&larr; {% trans "Back" %}</a>&nbsp;|&nbsp;<span title="{{ user.get_name }}">Store transactions for {{ user.username }}</span>
+            <span>Store transactions for {{ student.get_name }} ({{ student.username }})</span>
         </h1>
     {% endblock navbar_title %}
     <div id="content">

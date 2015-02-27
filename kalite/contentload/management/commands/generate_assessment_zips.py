@@ -10,6 +10,8 @@ from multiprocessing.dummy import Pool as ThreadPool
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
 
+import kalite.version as version
+
 logging = settings.LOG
 
 ZIP_FILE_PATH = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
@@ -33,12 +35,16 @@ class Command(NoArgsCommand):
         # without redownloading all files. Not possible currently because ZipFile has no `delete`.
         logging.info("downloading images")
         with open(ZIP_FILE_PATH, "w") as f:
-            zf = zipfile.ZipFile(ZIP_FILE_PATH, "w")  # zipfile.ZipFile isn't a context manager yet for python 2.6
+            zf = zipfile.ZipFile(f, "w")  # zipfile.ZipFile isn't a context manager yet for python 2.6
             write_assessment_to_zip(zf, new_assessment_items)
             zip_file_path = download_urls(zf, image_urls)
             zf.close()
 
         logging.info("Zip File with images placed in %s" % zip_file_path)
+
+
+def write_assessment_item_version_to_zip(zf, versionnumber=version.SHORTVERSION):
+    zf.writestr("assessmentitems.json.version", versionnumber)
 
 
 def write_assessment_to_zip(zf, assessment_items):

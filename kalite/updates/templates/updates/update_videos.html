@@ -7,7 +7,7 @@
 {% block manage_active %}{% trans "active" %}{% endblock manage_active %}
 {% block video_active %}{% trans "video-active active-tab active-nav" %}{% endblock video_active %}
 
-{% block title %}{% trans "Update Videos" %}{{ block.super }}{% endblock %}
+{% block title %}{% trans "Update Videos" %}{% endblock %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
@@ -30,7 +30,6 @@
     </script>
 
     <script type="text/javascript" src="{% static 'js/updates/update_videos.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
 
 {% block ga_setmetrics %}
@@ -83,7 +82,7 @@
             </h4>
             <div id="help-info">
                 <a id="download-help-link" target="_new" href="http://{{ central_server_host }}/faq/installation/bittorrent/">
-                    {% trans "Q: How do I bulk-download videos?" %}
+                    {% trans "Q: How do I bulk-download videos or download videos via Torrent?" %}
                 </a>
             </div>
         </div>

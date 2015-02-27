@@ -65,6 +65,7 @@ div.fade {
 
 .missing {
     opacity: 0.4;
+    background: #93BFAC;
 }
 
 .sidebar-panel a:link,
@@ -74,10 +75,6 @@ div.fade {
     margin: 3px 3px 3px 0;
 }
 
-/*.sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
-    background: #8dc63f;
-}
-*/
 .sidebar-panel .active-entry {
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -106,10 +103,7 @@ div.fade {
     border-bottom-right-radius: 5px;
     cursor: pointer;
     box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
-    -webkit-transition: all 115ms ease-out;
-    -moz-transition: all 115ms ease-out;
-    -o-transition: all 115ms ease-out;
-    transition: all 115ms ease-out;
+
 }
 
 .sidebar-tab:hover {
@@ -147,32 +141,21 @@ div.fade {
     z-index: 10000;
 }
 
-/*.back-to-parent {
-    margin: 0;
-    float: left;
-    height: 60px;
-    position: relative;
-    padding-left: 20px;
-    padding-top: 21px;
-    padding-right: 14px;
-}*/
-
 /* Sidebar panel & entry styling */
 .topic-container-inner {
     float: left;
     width: 200px;
     /*max-width: 25%;*/
     border-right: 1px solid rgba(0, 0, 0, 0.3);
-    -webkit-transition: all 115ms ease-out;
-    -moz-transition: all 115ms ease-out;
-    -o-transition: all 115ms ease-out;
-    transition: all 115ms ease-out;
+
 }
 .topic-container-inner:last-child {
     width: 400px;
 }
 .topic-container-inner .sidebar-topic-description {
     display: none;
+    font-size: 0.9em;
+    margin-top: 15px;
 }
 /* applied to all in outermost expanded panel */
 .topic-container-inner:last-child .sidebar-description {
@@ -180,7 +163,7 @@ div.fade {
     line-height: 1.1em;
     margin-bottom: -10px;
     padding-top: 10px;
-    color: #ffffff; 
+    color: #ADD3C2;
     word-wrap: break-word;
 }
 
@@ -270,7 +253,6 @@ div.fade {
     padding-top: 0px;
     padding-bottom: 0px;
 }
-
 
 .topic-container-inner:last-child .sidebar-entry-header > .sidebar-icon {
     height: 100%;

@@ -2,6 +2,7 @@
 {% load kalite_staticfiles %}
 {% load i18n %}
 {% load i18n_filters %}
+{% load my_filters %}
 
 <html>
     <head>
@@ -13,13 +14,12 @@
         <meta name="wot-verification" content="075abe861486e6bb3ab9"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% block titletag %}
-        <title>{% block title %}{% trans title %}{% endblock title %} | KA Lite</title>
+        <title>{% block title %}{% trans "Welcome" %}{% trans title %}{% endblock title %} | KA Lite</title>
         {% endblock %}
 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' True %}">
-        <!-- <link rel="stylesheet/less" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.less' True %}"> -->
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' True %}">
         <link href="{% static "fonts/style.css" %}" rel="stylesheet" type="text/css">
@@ -116,7 +116,6 @@
          var CURRENT_LANGUAGE            = "{{ current_language }}";
 
         </script>
-        <script type="text/javascript" src="{% static 'js/less.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/sprintf.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/purl.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/modernizr.js' %}"></script>
@@ -157,7 +156,7 @@
                               <span class="icon-bar"></span>
                           </button>
                           <div class="navbar-brand">
-                              <a href="{% url 'learn' %}" title="{{ channel_data.channel_name }} {% trans 'Home' %}">
+                              <a href="{% url 'homepage' %}" title="{{ channel_data.channel_name }} {% trans 'Home' %}">
                                   <img src="/data/{{ channel }}/images/horizontal-logo-small.png" alt="{{ channel_data.channel_name }} {% trans 'logo' %}">
                               </a>
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
@@ -165,9 +164,19 @@
                       </div>
                       <div class="collapse navbar-collapse">
                           <ul class="nav navbar-nav navbar-right nav-tabs" role="tablist">
+                              <div class="visible-xs">
+                                  <li id="search_input">
+                                      <form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
+                                          {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
+                                          <input type="text" name="query"  class="form-control pull-left" placeholder="{% trans 'Topic, video, exercise...' %}" />
+                                          <button class="btn btn-default" id="search_btn" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                                      </form>
+                                  </li>
+                              </div>
                             <!-- For all users -->
+
                             {# Search box #}
-                            <li>
+                            <li class="hidden-xs">
                               <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
                                 {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
                                 <div class="input-group">
@@ -192,7 +201,8 @@
                                   {% trans "Teach" %}
                                 </a>
                               </li>
-                            {% else %}
+                            {% endif %}
+                            {% if request.is_django_user %}
                               {# Teach for admins => coachreports #}
                               <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
                                 <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
@@ -202,25 +212,29 @@
                             {% endif %}
 
                             {# Manage for admins => zone control panel #}
+                            {% if request.is_django_user %}
                             <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">
-                              <a href="{% url 'zone_redirect' %}" class="admin-only">
+                              <a href="{% url 'zone_redirect' %}" id="manage" class="">
                                 {% trans "Manage" %}
                               </a>
                             </li>
+                            {% endif %}
                             <!-- End for logged in admins -->
 
                             <!-- For logged in teachers -->
                             {# Teach for teachers => coachreports #}
+                            {% if request.is_admin and not request.is_django_admin %}
                             <li class="{% block teach_active_teachers %}{% endblock teach_active_teachers %}">
                               <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
                                 {% trans "Teach" %}
                               </a>
                             </li>
+                            {% endif %}
 
                             {# Manage for teachers => facility management #}
                             {% if request.session.facility_user.facility %}
                               <li class="{% block manage_active_teachers %}{% endblock manage_active_teachers %}">
-                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" class="teacher-only">
+                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" id="manage" class="teacher-only">
                                   {% trans "Manage" %}
                                 </a>
                               </li>
@@ -254,7 +268,7 @@
                               {% endif %}
                             </li>
                             <!-- Farthest right nav is logged in user dropdown -->
-                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}">
+                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}" id="user-name">
                               <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown">
                                   <span id="username">
                                     <!-- Username injected here w/ js -->
@@ -262,24 +276,24 @@
                                 <span class="caret"></span>
                               </a>
                               <ul class="dropdown-menu" role="menu">
-                                <li role="presentation">
-                                  <span id="points">
+                                <li role="presentation student-only">
+                                  <span id="points student-only">
                                     <!-- Points injected here w/ js -->
                                   </span>
                                 </li>
-                                <li role="presentation" class="divider"></li>
+                                <li role="presentation" class="divider student-only"></li>
                                 {# Student account management #}
-                                <li role="presentation" class="motivational-feature">
+                                <li role="presentation" class="motivational-feature student-only">
                                   <a role="menuitem" tabindex="-1" href="{% url 'account_management' %}" id="nav_progress" title="{% trans 'My Progress'%}" class="student-only">
                                     {% trans "My Progress" %}
                                   </a>
                                 </li>
                                 <!-- TODO-BLOCKER(jamalex): re-enable these links once non-playlist "my progress" works, and help link is meaningful again -->
-                                <!-- 
+                                <!--
                                 <li role="presentation">
                                   <a role="menuitem" tabindex="-1" href="{% url 'help' %}" id="nav_help">{% trans "Help" %}</a>
                                 </li> -->
-                                <li role="presentation" class="divider"></li>
+                                <li role="presentation" class="divider student-only"></li>
                                 <!-- Logout goes at the bottom! -->
                                 <li role="presentation">
                                   <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}" href="{% url 'logout' %}">
