@@ -343,13 +343,12 @@ window.TopicContainerInnerView = BaseView.extend({
         var video_ids = $.map(this.$(".icon-Video[data-content-id]"), function(el) { return $(el).data("content-id"); });
         if (video_ids.length > 0) {
             videologs = new VideoLogCollection([], {content_ids: video_ids});
-            videologs.fetch()
-                .then(function() {
-                    videologs.models.forEach(function(model) {
-                        var newClass = model.get("complete") ? "complete" : "partial";
-                        self.$("[data-video-id='" + model.get("video_id") + "']").removeClass("complete partial").addClass(newClass);
-                    });
+            videologs.fetch().then(function() {
+                videologs.models.forEach(function(model) {
+                    var newClass = model.get("complete") ? "complete" : "partial";
+                    self.$("[data-video-id='" + model.get("video_id") + "']").removeClass("complete partial").addClass(newClass);
                 });
+            });
         }
 
         // load progress data for all exercises

@@ -278,3 +278,19 @@ div.fade {
     display:table-cell;
     vertical-align:middle;
 }
+
+@media only screen and (min-width: 500px) {
+    .sidebar-panel { font-size: 85%; }
+}
+
+@media only screen and (min-width: 720px) {
+    .sidebar-panel { font-size: 95%; }
+}
+
+@media only screen and (min-width: 1000px) {
+    .sidebar-panel { font-size: 100%; }
+}
+
+@media only screen and (min-width: 1300px) {
+    .sidebar-panel { font-size: 110%; }
+}
