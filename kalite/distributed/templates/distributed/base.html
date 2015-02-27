@@ -168,7 +168,7 @@
                                   <li id="search_input">
                                       <form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
                                           {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
-                                          <input type="text" name="query"  class="form-control pull-left" placeholder="{% trans 'Topic, video, exercise...' %}" />
+                                          <input type="text" name="query" id="search_box" class="form-control pull-left" placeholder="{% trans 'Topic, video, exercise...' %}" />
                                           <button class="btn btn-default" id="search_btn" type="submit"><i class="glyphicon glyphicon-search"></i></button>
                                       </form>
                                   </li>

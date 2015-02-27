@@ -74,7 +74,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-sm-3 selection pull-left">
+        <div class="col-xs-12 col-sm-4 col-md-3 selection pull-left">
         {# Select the coach report type #}
         {% if report_types %}
             <label for="report_type">{% trans "Select Report" %}</label>
@@ -86,13 +86,13 @@
             </select>
         {% else %}
             <label for="report_type">{% trans "No report types available." %}</label>
-            <select class="form-control" id="report_type">
+            <select class="form-control" >
                 <option>Not available</option>
             </select>
         {% endif %}
         </div>
         {% if users and request_report_type == "student" %}
-            <div class="col-sm-3 selection pull-left">
+            <div class="col-xs-12 selection pull-left">
                 <label for="student">{% trans "Select Learner" %}</label>
                 <select class="form-control" id="student">
                     <option {% if not request.GET.user %}selected{% endif %}>----</option>
@@ -103,7 +103,7 @@
             </div>
         {% elif groups %}
             {% if playlists %}
-                <div class="col-sm-3 selection">
+                <div class="col-xs-12 col-sm-8 col-md-4 selection">
                     <label for="playlist">{% trans "Select Playlist" %}</label>
                     <select class="form-control" id="playlist">
                         <option {% if not request.GET.playlist %}selected{% endif %}>----</option>
@@ -113,7 +113,7 @@
                     </select>
                 </div>
             {% elif topics %}
-                <div class="col-sm-4 selection">
+                <div class="col-xs-12 col-sm-6 col-md-4 selection">
                     <label for="topic">{% trans "Select Topic" %}</label>
                     <select class="form-control" id="topic">
                         <option {% if not request.GET.topic %}selected{% endif %}>----</option>
@@ -130,7 +130,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6 col-md-push-1 col-xs-4 col-xs-push-1">
+        <div class="col-md-6 col-xs-12">
             <ul id="legend">
                 <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
                 <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>

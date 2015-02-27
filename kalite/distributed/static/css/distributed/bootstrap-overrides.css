@@ -436,7 +436,7 @@ footer {
 }
 
 @media (max-width: 454px) {
-    .form-control {
+    #search_box {
         width: 83%;
         margin-left: 15px;
     }
@@ -450,7 +450,7 @@ footer {
 }
 
 @media only screen and (min-width: 455px) and (max-width: 600px) {
-    .form-control {
+    #search_box {
         width: 87%;
         margin-left: 15px;
 
@@ -464,7 +464,7 @@ footer {
 
 @media only screen and (min-width: 600px) and (max-width: 767px) {
 
-    .form-control{
+    #search_box{
         width: 90%;
         margin-left: 15px;
     }
