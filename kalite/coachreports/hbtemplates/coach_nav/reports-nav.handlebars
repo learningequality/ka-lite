@@ -1,36 +1,42 @@
-<form id="coachreport-select-form" class="form-inline">
-    <div class="form-group">
-        <label for="report-select">{{_ "Report Type" }} ({{ selected }})&nbsp;&nbsp;</label>
-        <select id="report-select" class="reports-select form-control">
-            <option value="tabular" 
-            {{#ifcond selected "===" "tabular" }}selected{{/ifcond}}>
-                {{_ "Tabular Report" }}
-            </option>
-            <option value="scatter"
-            {{#ifcond selected "===" "scatter" }}selected{{/ifcond}}>
-                {{_ "Scatter Report" }}
-            </option>
-            <option value="timeline"
-            {{#ifcond selected "===" "timeline" }}selected{{/ifcond}}>
-                {{_ "Timeline Report" }}
-            </option>
-            {{#if nalanda }}
-            <option value="test"
-            {{#ifcond selected "===" "test" }}selected{{/ifcond}}>
-                {{_ "Test Report" }}
-            </option>
-            <option value="spending"
-            {{#ifcond selected "===" "spending" }}selected{{/ifcond}}>
-                {{_ "Spending Report" }}
-            </option>
-            {{/if}}
-        </select>
+<form id="coachreport-select-form" class="form-vertical">
+    <div class="col-sm-4">
+        <div class="form-group">
+            <label for="report-select">{{_ "Report Type" }} ({{ selected }})&nbsp;&nbsp;</label>
+            <select id="report-select" class="reports-select form-control">
+                <option value="tabular" 
+                {{#ifcond selected "===" "tabular" }}selected{{/ifcond}}>
+                    {{_ "Tabular Report" }}
+                </option>
+                <option value="scatter"
+                {{#ifcond selected "===" "scatter" }}selected{{/ifcond}}>
+                    {{_ "Scatter Report" }}
+                </option>
+                <option value="timeline"
+                {{#ifcond selected "===" "timeline" }}selected{{/ifcond}}>
+                    {{_ "Timeline Report" }}
+                </option>
+                {{#if nalanda }}
+                <option value="test"
+                {{#ifcond selected "===" "test" }}selected{{/ifcond}}>
+                    {{_ "Test Report" }}
+                </option>
+                <option value="spending"
+                {{#ifcond selected "===" "spending" }}selected{{/ifcond}}>
+                    {{_ "Spending Report" }}
+                </option>
+                {{/if}}
+            </select>
+        </div>
     </div>
-    <div id="facility-select-container" class="form-group">
-        {{!-- Insert facility select template here --}}
+    <div class="col-sm-3">
+        <div id="facility-select-container" class="form-group">
+            {{!-- Insert facility select template here --}}
+        </div>
     </div>
-    <div id="group-select-container" class="form-group">
-        {{!-- Insert group select template here --}}
+    <div class="col-sm-3">
+        <div id="group-select-container" class="form-group">
+            {{!-- Insert group select template here --}}
+        </div>
     </div>
-    <button id="display-coach-report" class="btn btn-primary btn">{{_ "Go" }}</button>
+    <button id="display-coach-report" class="btn btn-primary btn reports-go-btn">{{_ "Go" }}</button>
 </form>
