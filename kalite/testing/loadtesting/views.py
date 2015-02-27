@@ -5,7 +5,7 @@ from kalite.facility.models import Facility, FacilityUser
 
 n_users_created = 0  # keep a global, to let us know if we've initialized, or need to re-initialize.
 
-@render_to("loadtesting/load_test.html")
+@render_to("distributed/loadtesting/load_test.html")
 def load_test(request, nusers=None):
     global n_users_created
 
@@ -26,7 +26,7 @@ def load_test(request, nusers=None):
             user.save()
 
     return {
-        "pct_videos": request.GET.get("pct_videos", 0.9),
+        "pct_videos": request.GET.get("pct_videos", 0.5),
         "pct_logout": request.GET.get("pct_logout", 0.0),
         "nusers": n_users_created,
     }
