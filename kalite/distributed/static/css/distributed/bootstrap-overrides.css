@@ -12,7 +12,7 @@ html, body {
     min-height: 100%;
     position: relative;
     display: block;
-    overflow: auto;
+    overflow: visible;
 }
 #content-container {
     padding-top: 20px;
