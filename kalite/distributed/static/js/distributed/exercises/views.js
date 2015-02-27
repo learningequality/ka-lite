@@ -158,11 +158,11 @@ window.ExerciseView = Backbone.View.extend({
         var self = this;
 
         // TODO-BLOCKER(jamalex): does this need to wait on something, to avoid race conditions?
-        _.defer(this.khan_loaded);
-        if (Khan.loaded) {
+        if(Khan.loaded) {
             Khan.loaded.then(this.khan_loaded);
+        } else {
+            _.defer(this.khan_loaded);
         }
-
 
         this.listenTo(Exercises, "checkAnswer", this.check_answer);
 
