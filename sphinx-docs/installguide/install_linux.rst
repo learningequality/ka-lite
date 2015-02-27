@@ -7,13 +7,13 @@ Linux Installation Guide
 #. Check if Python is already installed with *python -V*.
 #. If not already installed or outdated, install Python v2.6 (*sudo apt-get install python2.6*) or v2.7 (*sudo apt-get install python2.7*).
 	* Or use your Distro's Package Manager by searching for *Python*.
-#. If not already installed or outdated, install Git with *apt-get install git-core*.
+#. If not already installed or outdated, install Git with *sudo apt-get install git-core*.
 	* Or use your Distro's Package Manager by searching for *Git*.
 #. Switch to the directory in which you wish to install KA-Lite.
 #. Enter *git clone https://github.com/learningequality/ka-lite.git* to download KA Lite.
-#. Switch into the newly downloaded ka-lite directory
+#. Switch into the newly downloaded ka-lite directory with *cd ka-lite*
 #. Run the install script with *./setup_unix.sh*.
-#. **IF** you want the server to start automatically in the background after your server starts then:
+#. **IF** you want the server to start automatically in the background when your system boots and you did not choose this option during setup then:
 	* Setup the server (one time) to automatically run in the background
 	* Enter *sudo ./runatboot.sh* in the terminal from inside the ka-lite/kalite directory
 	* Use *sudo service kalite stop* to stop the server
