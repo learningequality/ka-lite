@@ -20,7 +20,7 @@ def load_test(request, nusers=None):
         # Loop over all needed students
         while n_users_created < int(request.GET.get("nusers", 1)):
             n_users_created += 1
-            unpw = "s%d" % n_users_created
+            unpw = "sssss%d" % n_users_created
             (user, _) = FacilityUser.get_or_initialize(username=unpw, facility=fac)
             user.set_password(unpw)
             user.save()
