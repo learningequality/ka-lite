@@ -5,11 +5,8 @@ window.ContentAreaView = BaseView.extend({
     template: HB.template("topics/content-area"),
 
     initialize: function() {
-
         this.model = new Backbone.Model();
-
         this.render();
-
     },
 
     render: function() {
@@ -18,7 +15,6 @@ window.ContentAreaView = BaseView.extend({
     },
 
     show_view: function(view) {
-
         // hide any messages being shown for the old view
         clear_messages();        
 
@@ -49,9 +45,7 @@ window.ContentAreaView = BaseView.extend({
 });
 
 window.SidebarView = BaseView.extend({
-
     el: "#sidebar-container",
-
     template: HB.template("topics/sidebar"),
 
     events: {
@@ -61,7 +55,6 @@ window.SidebarView = BaseView.extend({
     },
 
     initialize: function(options) {
-
         var self = this;
 
         this.entity_key = options.entity_key;
@@ -120,8 +113,7 @@ window.SidebarView = BaseView.extend({
 
     resize_for_narrow: _.debounce(function() {
         var current_level = this.state_model.get("current_level");
-        // TODO(jamalex): have this calculated dynamically
-        var column_width = 200; // this.$(".topic-container-inner").width();
+        var column_width = this.$(".topic-container-inner").width();
         var last_column_width = 400;
         // Hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. Also, sidebar overflow out of the left side of screen
@@ -238,25 +230,17 @@ window.SidebarView = BaseView.extend({
 });
 
 window.TopicContainerInnerView = BaseView.extend({
-
     className: "topic-container-inner",
-
     template: HB.template("topics/sidebar-content"),
 
     initialize: function(options) {
-
         var self = this;
 
         this.state_model = options.state_model;
-
         this.entity_key = options.entity_key;
-
         this.entity_collection = options.entity_collection;
-
         this.level = options.level;
-
         this._entry_views = [];
-
         this.has_parent = options.has_parent;
 
         if (!(this.model.get(this.entity_key) instanceof this.entity_collection)) {
@@ -341,14 +325,6 @@ window.TopicContainerInnerView = BaseView.extend({
             view.model.set("active", false);
         });
         this.remove();
-    },
-
-    move_back: function() {
-        for (i=0; i < this._entry_views.length; i++) {
-            if(this._entry_views[i].model.get("active")) {
-                window.channel_router.url_back();
-            }
-        }
     },
 
     load_entry_progress: _.debounce(function() {
