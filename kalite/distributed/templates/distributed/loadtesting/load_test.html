@@ -8,9 +8,9 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
-        <script type="text/javascript" src="{% static "js/jquery-1.9.1.min.js" %}"></script>
-        <script type="text/javascript" src="{% static "js/underscore-min.js" %}"></script>
-        <script type="text/javascript" src="{% static "js/backbone-min.js" %}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/backbone/backbone.js' %}"></script>
 
         <link rel="stylesheet" type="text/css" href="{% static "css/distributed/khan-site.css" %}">
         <style>
@@ -127,7 +127,7 @@
                 submitForm: function(callback) {
                     this.startTimer();
                     this.whenLoaded(callback);
-                    this.$("article form").submit();
+                    this.$("form").submit();
                 },
 
                 startTimer: function() {
@@ -266,52 +266,16 @@
                     this.goto("/learn/khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/", callback);
                 },
                 function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
-                    this.click("#check-answer-button");
-                    callback()
-                },
-                function(input, callback) {
-                    this.$("#solutionarea input").val(100).keypress()
+                    var numbers = this.$("span[class=mord][style]")
+                    var answer = 0
+                    if (Math.random() > 0.5) {
+                        for (var i=0; i < numbers.length; i++){
+                            if (!isNaN(Number(numbers[i].textContent))) {
+                                answer += Number(numbers[i].textContent)
+                            }
+                        }
+                    }
+                    this.$("#solutionarea input").val(answer).keypress()
                     this.click("#check-answer-button");
                     callback()
                 }
@@ -326,8 +290,8 @@
 
                     this.$("#id_facility option")[1].selected = true;
                     this.fillForm({
-                        username: "s" + sidx,
-                        password: "s" + sidx,
+                        username: "sssss" + sidx,
+                        password: "sssss" + sidx,
                     });
                     this.submitForm(callback);
                 }
