@@ -17,7 +17,7 @@ from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
 from fle_utils.config.models import Settings
-from fle_utils.django_utils import verify_raw_password
+from fle_utils.django_utils.users import verify_raw_password
 from securesync.models import DeviceZone
 from securesync.engine.models import DeferredCountSyncedModel
 

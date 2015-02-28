@@ -25,7 +25,7 @@ from django.core.urlresolvers import reverse
 
 from .classes import UpdatesStaticCommand
 from fle_utils import crypto
-from fle_utils.django_utils import call_outside_command_with_output, call_command_async
+from fle_utils.django_utils.command import call_outside_command_with_output, call_command_async
 from fle_utils.general import ensure_dir
 from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping, _default_callback_unzip
 from kalite.i18n import get_dubbed_video_map

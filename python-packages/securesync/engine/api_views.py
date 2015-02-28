@@ -18,7 +18,7 @@ from . import get_serialized_models, save_serialized_models, get_device_counters
 from .models import *
 from ..devices.models import *  # inter-dependence
 from fle_utils.chronograph import force_job
-from fle_utils.django_utils import get_request_ip
+from fle_utils.django_utils.functions import get_request_ip
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
 from kalite.shared.decorators.auth import require_admin
 

@@ -10,7 +10,7 @@ from django.core.management.base import CommandError
 from django.utils import unittest
 
 from ..models import VideoFile
-from fle_utils.django_utils import call_command_with_output
+from fle_utils.django_utils.command import call_command_with_output
 from kalite import caching, topic_tools
 from kalite.main.tests.base import MainTestCase  # TODO: remove this dependency
 from kalite.testing.client import KALiteClient
