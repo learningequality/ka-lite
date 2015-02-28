@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from tastypie.exceptions import NotFound, Unauthorized
+from tastypie.exceptions import NotFound
 from tastypie.authorization import Authorization, ReadOnlyAuthorization
 
 
