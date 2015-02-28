@@ -1,9 +1,7 @@
 """
 """
-import sys
 
 from django.conf import settings; logging = settings.LOG
-from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
 
 from ...models import UpdateProgressLog
