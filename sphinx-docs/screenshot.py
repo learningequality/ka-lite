@@ -19,12 +19,16 @@ if 'SPHINX_SS_USE_PVD' in os.environ.keys() and os.environ['SPHINX_SS_USE_PVD'] 
     # Start a virtual headless display
     display = Display(visible=0, size=(1024, 768))
     display.start()
+else:
+    display = None
 
 USER_ROLES = ["guest", "coach", "admin", "learner"]
 SS_DUMP_DIR = ".screenshot_dump"
 OUTPUT_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), SS_DUMP_DIR))
 MANAGE_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","kalite","manage.py"))
 # Formatted from subprocess.Popen
+# Trying to import call_command to execute a Django mgmt command gets you
+# into a weird import hell, probably because of import_all_child_modules...
 SCREENSHOT_COMMAND = [sys.executable, MANAGE_PATH, "screenshots"]
 SCREENSHOT_COMMAND_OPTS = ["-v", "0", "--output-dir", OUTPUT_PATH]
 # These keys are css styles but they need to be camelCased
@@ -183,8 +187,8 @@ class Screenshot(Image):
 
     Since it inherits from the Image directive, it can take Image options.
 
-    When parsed, returns an image node pointing to a temporary file (that we `touch`
-    with `os.utime`). The actual image is created later in the build process,
+    When parsed, returns an image node pointing to a temporary file.
+    The actual image is created later in the build process,
     when the 'env-updated' event is triggered. If the file doesn't exist when the
     image node is created, it can cause unexpected behavior, like not copying images
     properly for html builds.
@@ -192,12 +196,56 @@ class Screenshot(Image):
     required_arguments = 0
     optional_arguments = 0
     has_content = False
+    
+    # Add options to the image directive.
+    option_spec = Image.option_spec.copy()
+    option_spec['url'] = directives.unchanged
+    option_spec['user-role'] = _parse_user_role
+    option_spec['navigation-steps'] = _parse_nav_steps
+    option_spec['focus'] = _parse_focus
 
-    #########################################################
-    # Handlers will be invoked in the run method should     #
-    # both return appropriate nodes and spawn a process     #
-    # to generate the screenshot (once the script is ready).#
-    #########################################################
+    def run(self):
+        """ During the build process directives are parsed as nodes, and then
+        later the nodes are built into the target format (html, latex, pdf, etc.)
+        
+        run is called automatically during the parsing process and is expected to
+        return a list of nodes. Here we set up our parsing environment, then defer
+        to a runhandler callback for parsing. The callback is determined by the
+        navigation-steps option of the screenshot directive (in _parse_nav_steps).
+
+        Language xx can be set in conf.py or by:
+        make SPHINXOPTS="-D language=xx" html
+        Build language can be accessed from the BuildEnvironment.
+        """
+        self.env = self.state.document.settings.env
+        language = self.env.config.language
+        return_nodes = []
+        if not hasattr(self.env, 'screenshot_all_screenshots'):
+            self.env.screenshot_all_screenshots = []
+
+        if 'focus' in self.options:
+            self.focus_selector = self.options['focus']['id']
+            self.focus_annotation = self.options['focus']['annotation']
+
+        if 'user-role' in self.options:
+            self.user_role = self.options['user-role']
+        else:
+            self.user_role = "guest"
+
+        if 'url' in self.options:
+            self.url = self.options['url']
+
+        if 'navigation-steps' in self.options:
+            self.filename = uuid.uuid4().__str__()
+            runhandler = self.options['navigation-steps']['runhandler']
+            args = self.options['navigation-steps']['args']
+            return_nodes.append(getattr(self, runhandler)(**args))
+        else:
+            raise NotImplementedError("navigation-steps is a required option for screenshot directives!")
+
+        return return_nodes
+
+    # Handlers are invoked by the run function to parse the directives.
     def _login_handler(self, username, password, submit):
         from_str_arg = { "users": ["guest"], # This will fail if not guest, because of a redirect
                          "slug": "",
@@ -216,8 +264,6 @@ class Screenshot(Image):
             from_str_arg["focus"]["selector"] = self.focus_selector
             from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
             from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
-        # Trying to import django.core.management.call_command gets you into some sort of import hell
-        # Apparently due to a circular import, according to Ben Bach.
         self.env.screenshot_all_screenshots.append({
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
@@ -251,60 +297,6 @@ class Screenshot(Image):
         open(os.path.join(OUTPUT_PATH, self.filename+".png"), 'w').close()
         (image_node,) = Image.run(self)
         return image_node
-
-    # Add options to the image directive.
-    option_spec = Image.option_spec.copy()
-    option_spec['url'] = directives.unchanged
-    option_spec['user-role'] = _parse_user_role
-    option_spec['navigation-steps'] = _parse_nav_steps
-    option_spec['focus'] = _parse_focus
-
-    def run(self):
-        """ During the build process directives are parsed as nodes, and then
-        later the nodes are built into the target format (html, latex, pdf, etc.)
-        
-        run is called automatically during the parsing process and is expected to
-        return a list of nodes. Here we set up our parsing environment, then defer
-        to a runhandler callback for parsing. The callback is determined by the
-        navigation-steps option of the screenshot directive (in _parse_nav_steps).
-
-        Language xx can be set in conf.py or by:
-        make SPHINXOPTS="-D language=xx" html
-        Build language can be accessed from the BuildEnvironment.
-        """
-        # sphinx.environment.BuildEnvironment
-        self.env = self.state.document.settings.env
-        language = self.env.config.language
-        return_nodes = []
-        if not hasattr(self.env, 'screenshot_all_screenshots'):
-            self.env.screenshot_all_screenshots = []
-
-        if len(self.arguments) == 1:
-            (image_node,) = Image.run(self)
-            return_nodes.append(image_node)
-
-        if 'focus' in self.options:
-            self.focus_selector = self.options['focus']['id']
-            self.focus_annotation = self.options['focus']['annotation']
-
-        if 'user-role' in self.options:
-            self.user_role = self.options['user-role']
-        else:
-            self.user_role = "guest"
-
-        if 'url' in self.options:
-            self.url = self.options['url']
-
-        if 'navigation-steps' in self.options:
-            self.filename = uuid.uuid4().__str__()
-            runhandler = self.options['navigation-steps']['runhandler']
-            args = self.options['navigation-steps']['args']
-            return_nodes.append(getattr(self, runhandler)(**args))
-        else:
-            raise NotImplementedError("navigation-steps is a required option for screenshot directives!")
-
-        return return_nodes
-
 
 # Implementation-specific functions for the screenshots management command
 def _specialkeys(k):
