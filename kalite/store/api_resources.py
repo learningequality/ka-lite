@@ -2,8 +2,6 @@ from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 
 from django.conf.urls import url
-from django.core.urlresolvers import reverse
-from django.utils.translation import ugettext as _
 
 from .models import StoreItem, StoreTransactionLog
 
