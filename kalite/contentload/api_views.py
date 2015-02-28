@@ -19,20 +19,12 @@ Here's how it works:
 * The distributed server gets that data, loads it, saves it, and then redirects the user--to their account page.
 * The account page shows again, this time including the imported KA data
 """
-import datetime
 import json
-import oauth
-import os
-import requests
-import sys
-import time
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
-from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.translation import ugettext as _
+from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
 from fle_utils.internet.classes import JsonResponseMessageError, JsonResponseMessageSuccess
