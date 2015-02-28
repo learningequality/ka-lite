@@ -251,10 +251,11 @@
                     this.goto("/learn/khan/math/arithmetic/addition-subtraction/basic_addition/basic-addition/", callback);
                 },
                 function(input, callback) {
+                    var video_view = this.window.channel_router.control_view.topic_node_view.content_view.currently_shown_view.content_view;
                     try {
-                        this.window.videoWrapperView.videoPlayerView.play();
-                        this.window.videoWrapperView.videoPlayerView.player.addEvent("pause", callback);
-                        this.window.videoWrapperView.videoPlayerView.player.addEvent("error", callback);
+                        video_view.play();
+                        video_view.player.addEvent("pause", callback);
+                        video_view.player.addEvent("error", callback);
                         setTimeout(callback, 10000);
                     } catch(e) {
                         callback(e, null);
