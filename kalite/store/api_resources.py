@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 
 from .models import StoreItem, StoreTransactionLog
 
-from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
 

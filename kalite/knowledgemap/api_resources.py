@@ -6,7 +6,7 @@ from kalite.shared.decorators import get_user_from_request
 
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.coachreports.api_resources import ExerciseSummaryResource
-from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.main.models import ExerciseLog
 
 class KnowledgeMapExerciseResource(ExerciseSummaryResource):

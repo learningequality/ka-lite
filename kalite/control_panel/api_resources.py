@@ -16,7 +16,7 @@ from securesync.models import Zone, Device, SyncSession
 from kalite.facility import get_accessible_objects_from_logged_in_user
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog
-from kalite.shared.api_auth import ObjectAdminAuthorization
+from kalite.shared.api_auth.auth import ObjectAdminAuthorization
 from kalite.store.models import StoreTransactionLog, StoreItem
 from kalite.student_testing.models import TestLog
 
