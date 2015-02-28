@@ -922,13 +922,12 @@ to items you want to have the icon appear with.
 /* BEGIN styles for modal dialog */
 
 div#modal {
-    position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
+    position: fixed; /* makes the div go into a position that’s absolute to the browser viewing area */
     margin: auto;
-    height: 50px;
+    height: auto;
     width: 400px;
-    top: 0;
+    top: 50%;
     left: 0;
-    bottom: 0;
     right: 0;
     z-index: 1100; /* makes the div the top layer, so it’ll lay on top of the other content */
     font-weight: bold;
@@ -936,7 +935,7 @@ div#modal {
 
 
 div#fade {
-    position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
+    position: fixed;  /* makes the div go into a position that’s absolute to the browser viewing area */
     left: 0%; /* makes the div span all the way across the viewing area */
     top: 0%; /* makes the div span all the way across the viewing area */
     background-color: black;
