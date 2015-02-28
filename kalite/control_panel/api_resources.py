@@ -1,5 +1,3 @@
-import logging
-
 from annoying.functions import get_object_or_None
 from datetime import datetime
 
@@ -8,8 +6,8 @@ from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 
 from tastypie import fields
-from tastypie.exceptions import NotFound, BadRequest
-from tastypie.resources import Resource, ModelResource
+from tastypie.exceptions import BadRequest
+from tastypie.resources import ModelResource
 
 from securesync.models import Zone, Device, SyncSession
 
