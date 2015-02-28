@@ -2,18 +2,13 @@
 """
 from __future__ import absolute_import
 
-import datetime
-import uuid
-import zlib
 from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib.auth.models import check_password
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import Q
-from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
 from fle_utils.config.models import Settings
