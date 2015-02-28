@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
-from fle_utils.internet import render_to_csv
+from fle_utils.internet.decorators import render_to_csv
 from securesync.models import Device, Zone, SyncSession
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context

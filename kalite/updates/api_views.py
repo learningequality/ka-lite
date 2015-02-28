@@ -23,7 +23,8 @@ from .views import get_installed_language_packs
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils.command import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
+from fle_utils.internet.decorators import api_handle_error_with_json
+from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
 from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language
 from kalite.shared.decorators.auth import require_admin

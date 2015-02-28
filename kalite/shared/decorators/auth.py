@@ -13,7 +13,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from fle_utils.internet import JsonResponse, JsonpResponse
 from kalite.facility.decorators import facility_from_request
 from kalite.facility.models import FacilityUser
 from securesync.models import Device, Zone

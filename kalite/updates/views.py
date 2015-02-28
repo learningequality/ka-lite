@@ -23,7 +23,6 @@ from django.contrib import messages
 
 from .models import VideoFile
 from fle_utils.chronograph import force_job
-from fle_utils.internet import am_i_online, JsonResponse
 from kalite import topic_tools
 from kalite.control_panel.views import local_install_context
 from kalite.i18n import get_installed_language_packs, get_language_name

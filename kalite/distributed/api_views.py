@@ -33,8 +33,8 @@ from django.views.decorators.gzip import gzip_page
 from .api_forms import DateTimeForm
 from fle_utils.config.models import Settings
 from fle_utils.general import break_into_chunks
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessage, \
-    JsonResponseMessageError, JsonResponseMessageWarning
+from fle_utils.internet.decorators import api_handle_error_with_json
+from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonResponseMessageError
 from fle_utils.orderedset import OrderedSet
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite import version

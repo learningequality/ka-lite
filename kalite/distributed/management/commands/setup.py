@@ -30,7 +30,6 @@ from django.core.management.base import BaseCommand, CommandError
 import kalite
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
-from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
 from kalite.version import VERSION
 from kalite.facility.models import Facility

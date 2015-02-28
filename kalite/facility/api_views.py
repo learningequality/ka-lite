@@ -10,7 +10,8 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
-from fle_utils.internet import api_response_causes_reload, JsonResponseMessageSuccess
+from fle_utils.internet.decorators import api_response_causes_reload
+from fle_utils.internet.classes import JsonResponseMessageSuccess
 from kalite.shared.decorators.auth import require_authorized_admin
 
 

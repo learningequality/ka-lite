@@ -35,7 +35,8 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from fle_utils.internet import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, set_query_params
+from fle_utils.internet.classes import JsonResponseMessageError, JsonResponseMessageSuccess
+from fle_utils.internet.functions import set_query_params
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.shared.decorators.auth import require_login

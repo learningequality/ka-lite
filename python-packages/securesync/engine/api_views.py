@@ -19,7 +19,8 @@ from .models import *
 from ..devices.models import *  # inter-dependence
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils.functions import get_request_ip
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
+from fle_utils.internet.decorators import api_handle_error_with_json
+from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 from kalite.shared.decorators.auth import require_admin
 
 def require_sync_session(handler):

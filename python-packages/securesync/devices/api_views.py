@@ -20,7 +20,9 @@ from django.views.decorators.gzip import gzip_page
 from .models import *
 from .. import engine
 from fle_utils.django_utils.functions import get_request_ip
-from fle_utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
+from fle_utils.internet.decorators import allow_jsonp, api_handle_error_with_json
+from fle_utils.internet.functions import am_i_online
+from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 
 from securesync import ERROR_CODES as EC
 

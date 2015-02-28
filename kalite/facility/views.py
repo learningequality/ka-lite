@@ -19,7 +19,7 @@ from .decorators import facility_required, facility_from_request
 from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
-from fle_utils.internet import set_query_params
+from fle_utils.internet.functions import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.i18n import get_default_language, lcode_to_django_lang
 from kalite.main.models import UserLog

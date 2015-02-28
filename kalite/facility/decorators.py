@@ -21,7 +21,6 @@ from django.utils.translation import ugettext as _
 from .middleware import refresh_session_facility_info
 from .models import Facility
 from fle_utils.config.models import Settings
-from fle_utils.internet import JsonResponse, JsonpResponse
 from securesync.models import Device
 
 

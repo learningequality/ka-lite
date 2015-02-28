@@ -11,7 +11,6 @@ from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
 
 from fle_utils.config.models import Settings
-from fle_utils.internet import api_handle_error_with_json
 
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource

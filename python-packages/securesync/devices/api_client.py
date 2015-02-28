@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from .models import *
 from .. import engine
 from ..api_client import BaseClient
-from fle_utils.internet import set_query_params
+from fle_utils.internet.functions import set_query_params
 
 class RegistrationClient(BaseClient):
     """

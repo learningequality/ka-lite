@@ -8,7 +8,7 @@ import re
 import requests
 import shutil
 from collections_local_copy import OrderedDict, defaultdict
-from fle_utils.internet import invalidate_web_cache
+from fle_utils.internet.webcache import invalidate_web_cache
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command

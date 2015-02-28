@@ -21,7 +21,8 @@ from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .forms import DataForm
-from fle_utils.internet import StatusException, JsonResponse, api_handle_error_with_json
+from fle_utils.internet.classes import JsonResponse
+from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
