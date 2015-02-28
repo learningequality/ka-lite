@@ -1,10 +1,21 @@
 window.SoftwareKeyboardView = Backbone.View.extend({
 
+    template: HB.template("exercise/software-keyboard"),
+
     events: {
        "click button.key" : "key_pressed",
        "click button#show-keyboard": "toggle_keypad",
        "keypress button": "catch_keypress"
      },
+
+
+    keys: [
+        [ "1", "2", "3" ],
+        [ "4", "5", "6" ],
+        [ "7", "8", "9" ],
+        [ "/", "0", "-" ],
+        [ ".", "c", "Del" ]
+    ],
 
     initialize: function () {
 
@@ -45,7 +56,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         var field = this.field[0];
         var key = $(ev.target).val();
         // backspace key
-        if (key == "bs") {
+        if (key == "Del") {
             if (_.isFunction(field.setRangeText)) {
                 // delete the currently selected text or the last character
                 if (field.selectionStart === field.selectionEnd) {
@@ -89,33 +100,9 @@ window.SoftwareKeyboardView = Backbone.View.extend({
     render: function () {
         var self = this;
 
-        // TODO-BLOCKER (rtibbles): 0.13 - Turn this into a handlebars template, conditionally render templates based on exercise types.
-
-        this.$el.append("<button class='simple-button orange' id='show-keyboard'>" + gettext("Hide Keypad") + "</button>");
-
-        this.$el.append("<div class='container-fluid' id='software-keyboard'></div>");
-
-        // TODO-BLOCKER (rtibbles): 0.13 - Remove extraneous &nbsp; added here to make styling work without Bootstrap
-
-        var keys = [ [ "1", "2", "3" ], [ "4", "5", "6" ], [ "7", "8", "9" ], ["/&nbsp;", "0", "&nbsp;-" ],[ ".", "c", "bs" ] ];
-        var corners = {
-            "1": "ui-corner-tl",
-            "3": "ui-corner-tr",
-            ".": "ui-corner-bl",
-            "bs": "ui-corner-br"
-        };
+        this.$el.html(this.template({keys: this.keys}));
 
         this.software_keyboard = this.$("#software-keyboard");
-
-        jQuery.each(keys, function(i, row) {
-            var rowDiv = jQuery("<div>")
-                .attr("class", "row")
-                .appendTo(self.software_keyboard);
-
-            jQuery.each(row, function(j, key) {
-                var keySpan = $("<div class='.col-xs-4'><button class='key simple-button' value='" + key + "'>" + (key === "bs" ? "Del" : key) + "</button></div>").appendTo(rowDiv);
-            });
-        });
 
         if(!this.touch){
             this.toggle_keypad();
