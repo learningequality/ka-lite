@@ -252,9 +252,10 @@
                 },
                 function(input, callback) {
                     try {
-                        this.window.videoView.play();
-                        this.window.videoView.player.addEvent("pause", callback);
-                        this.window.videoView.player.addEvent("error", callback);
+                        this.window.videoWrapperView.videoPlayerView.play();
+                        this.window.videoWrapperView.videoPlayerView.player.addEvent("pause", callback);
+                        this.window.videoWrapperView.videoPlayerView.player.addEvent("error", callback);
+                        setTimeout(callback, 10000);
                     } catch(e) {
                         callback(e, null);
                     }
