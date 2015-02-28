@@ -1,4 +1,3 @@
-import re
 from annoying.decorators import render_to
 from ast import literal_eval
 from collections_local_copy import OrderedDict

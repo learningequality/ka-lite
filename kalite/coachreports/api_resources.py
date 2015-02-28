@@ -1,11 +1,9 @@
 from tastypie import fields
 from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
-from tastypie.utils import now
 
-from django.db.models import Sum, Count
+from django.db.models import Sum
 from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse
 
 from kalite.shared.decorators.auth import get_user_from_request
 from .models import PlaylistProgress, PlaylistProgressDetail
@@ -13,7 +11,6 @@ from .models import PlaylistProgress, PlaylistProgressDetail
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.main.models import ExerciseLog
-from copy import deepcopy
 
 from kalite.topic_tools import get_exercise_cache
 

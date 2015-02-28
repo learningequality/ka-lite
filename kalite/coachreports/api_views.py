@@ -1,23 +1,14 @@
 """
 """
-import datetime
 import re
-import json
-import sys
-from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
 from functools import partial
 from collections_local_copy import OrderedDict
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, Http404
+from django.http import HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404
-from django.template import RequestContext
-from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
-from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
 from .forms import DataForm
