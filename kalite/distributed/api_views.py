@@ -41,7 +41,8 @@ from kalite import version
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import lcode_to_ietf
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
-from kalite.shared.decorators import require_admin
+from kalite.shared.decorators.auth import require_admin
+
 
 
 @require_admin

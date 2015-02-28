@@ -2,7 +2,7 @@ from django.http.response import Http404
 
 from annoying.decorators import render_to
 
-from kalite.shared.decorators import require_login, require_admin
+from kalite.shared.decorators.auth import require_login, require_admin
 from kalite.facility.models import Facility
 
 from .utils import get_exam_mode_on

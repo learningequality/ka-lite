@@ -7,7 +7,7 @@ from django.db.models import Sum, Count
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 
-from kalite.shared.decorators import get_user_from_request
+from kalite.shared.decorators.auth import get_user_from_request
 from .models import PlaylistProgress, PlaylistProgressDetail
 
 from kalite.facility.api_resources import FacilityUserResource

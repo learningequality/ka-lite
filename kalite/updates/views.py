@@ -27,7 +27,7 @@ from fle_utils.internet import am_i_online, JsonResponse
 from kalite import topic_tools
 from kalite.control_panel.views import local_install_context
 from kalite.i18n import get_installed_language_packs, get_language_name
-from kalite.shared.decorators import require_admin
+from kalite.shared.decorators.auth import require_admin
 from securesync.models import Device
 from securesync.devices import require_registration
 

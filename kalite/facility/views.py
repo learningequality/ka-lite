@@ -23,7 +23,7 @@ from fle_utils.internet import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.i18n import get_default_language, lcode_to_django_lang
 from kalite.main.models import UserLog
-from kalite.shared.decorators import require_authorized_admin
+from kalite.shared.decorators.auth import require_authorized_admin
 from kalite.student_testing.utils import set_exam_mode_off
 
 

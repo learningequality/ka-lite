@@ -2,7 +2,7 @@ from tastypie import fields
 from tastypie.exceptions import Unauthorized
 from tastypie.resources import ModelResource
 
-from kalite.shared.decorators import get_user_from_request
+from kalite.shared.decorators.auth import get_user_from_request
 
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.coachreports.api_resources import ExerciseSummaryResource

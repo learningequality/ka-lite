@@ -38,7 +38,7 @@ from django.views.decorators.csrf import csrf_exempt
 from fle_utils.internet import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, set_query_params
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.shared.decorators import require_login
+from kalite.shared.decorators.auth import require_login
 from kalite.topic_tools import get_node_cache
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
