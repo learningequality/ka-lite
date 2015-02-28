@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _
 
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
-from fle_utils.internet.decorators import backend_cache_page
+from fle_utils.internet.webcache import backend_cache_page
 from kalite import topic_tools
 from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient

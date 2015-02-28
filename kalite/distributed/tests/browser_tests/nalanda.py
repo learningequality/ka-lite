@@ -3,7 +3,6 @@ These use a web-browser, along with selenium, to simulate user actions.
 """
 import time
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
