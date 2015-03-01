@@ -28,6 +28,7 @@ writeup/
 /content/*.mp4
 /content/*.mp4.part
 /content/*.srt
+/content/khan
 /data/logs
 /data/i18n
 /data/subtitles
