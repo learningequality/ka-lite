@@ -273,7 +273,7 @@
                     this.goto("/learn/khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/", callback);
                 },
                 function(input, callback) {
-                    var numbers = this.$("span.mn");
+                    var numbers = this.$("span[class=mord][style]");
                     if (numbers.length == 0 || isNaN(Number(numbers[0].textContent))) {
                         callback("Question had not finished loading!");
                     }
