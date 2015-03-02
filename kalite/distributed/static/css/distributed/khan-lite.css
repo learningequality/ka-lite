@@ -794,12 +794,12 @@ a.disabled {
     margin-top: 10px;
 }
 
-#software-keyboard div {
+#software-keyboard .row {
     min-width: 100%;
     padding: 1px;
 }
 
-#software-keyboard div .key {
+#software-keyboard .row .key {
     width: 28%;
     padding: 3px;
     text-align: center;
