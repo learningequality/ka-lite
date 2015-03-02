@@ -67,7 +67,7 @@ copyright = u'2015, FLE'
 # built documents.
 #
 # The short X.Y version.
-version = V.MAJOR_VERSION + "." + V.MINOR_VERSION
+version = V.SHORTVERSION
 # The full version, including alpha/beta/rc tags.
 release = V.PATCH_VERSION
 

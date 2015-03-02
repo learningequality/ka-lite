@@ -428,7 +428,7 @@ Downloading Individual Videos
 After registering your device:
 #. Click the "Manage" tab at the top of the page.
 #. Click on the "Videos" tab. |video-tab-highlight|
-#. View subtopics by clicking on the '+' symbol to the left of a subject of your choice. You can cose them by clicking on the '-' symbol.
+#. View subtopics by clicking on the '+' symbol to the left of a subject of your choice. You can close them by clicking on the '-' symbol.
 #. Mark the content you wish to download by clicking the checkbox to the left of the content name. 
 #. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 #. Once the download is completed, video content will be ready for Learners to watch!

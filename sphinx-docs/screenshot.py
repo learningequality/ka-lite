@@ -132,14 +132,16 @@ def _parse_nav_steps(arg_str):
         1. selector action [options] ["|" selector action [options]] ...
         2. aliased_action_sequence [options]
 
-        selector will identify the element... for now we'll just implement
-            selection by id e.g. "#username-field"
+        An explanation of navigation steps follows. Some examples can be found
+        in ss_examples.rst in this directory.
+
+        Selector is a single css selector (no whitespace allowed).
             "NEXT", which just sends a tab keystroke
             "SAME", which just stays focused on the element from the last action
         Where action could be one of "click", "send_keys", or "submit":
             click has no options and just clicks the element
             send_keys sends a sequence of keystrokes specified as a string by options
-                (potentially with special characters representing tab, enter, etc.)
+                
             submit submits a form and has no options
         Multiple actions on a page can be specified by putting a | separator,
             and specifying the action using the same syntax.
@@ -157,8 +159,6 @@ def _parse_nav_steps(arg_str):
             args:       a dictionary of arguments passed to the runhandler function
     """
     # The alias with its parse function
-    # Restored to its original position so that function references are not used
-    # before they are defined
     COMMAND_ALIASES = [("LOGIN", _parse_login)]
     
     if not arg_str:
@@ -166,9 +166,9 @@ def _parse_nav_steps(arg_str):
 
     # First check if we've been passed an aliased_action_sequence
     words = arg_str.split(' ')
-    for e in COMMAND_ALIASES:
-        if words[0] == e[0]:
-            return e[1](*words[1:])
+    for name, callback in COMMAND_ALIASES:
+        if words[0] == name:
+            return callback(*words[1:])
 
     commands = arg_str.split('|')
     parsed_commands = reduce(lambda x,y: x+[y] if y else x, map(_parse_command, commands), [])
@@ -250,8 +250,8 @@ class Screenshot(Image):
         from_str_arg = { "users": ["guest"], # This will fail if not guest, because of a redirect
                          "slug": "",
                          "start_url": "/securesync/login",
-                         "inputs": [{"#id_username":username},
-                                    {"#id_password":password},
+                         "inputs": [{"#id_username": username},
+                                    {"#id_password": password},
                                    ],
                          "pages": [],
                          "notes": "",
@@ -300,11 +300,11 @@ class Screenshot(Image):
 
 # Implementation-specific functions for the screenshots management command
 def _specialkeys(k):
-    if k=="TAB":
+    if k == "TAB":
         return Keys.TAB
-    elif k=="ENTER":
+    elif k == "ENTER":
         return Keys.ENTER
-    elif k=="BACKSPACE":
+    elif k == "BACKSPACE":
         return Keys.BACKSPACE
     else:
         return k

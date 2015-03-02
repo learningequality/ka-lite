@@ -1,7 +1,7 @@
 Mac Installation Guide
 ===========================
 
-Macintosh installation uses the command line, but if you follow the instructions carefully, you should have no problem installing KA Lite.
+Macintosh installation uses the command line, but if you follow the instructions carefully, you should have no problem installing KA Lite. KA Lite uses the `git` program to distribute its software to developers and other users.
 
 #. Download and install either Python2.6_ or Python2.7_ for Mac
 	.. _Python2.6: https://www.python.org/download/releases/2.6/
@@ -10,9 +10,6 @@ Macintosh installation uses the command line, but if you follow the instructions
 	* Click the magnifier icon on the upper right corner and search "terminal".
 	* Press *'Enter'* with the "Terminal" app selected and it should open.
 #. In the Terminal, enter *Python -V* and press *'Enter'*. **The version number should reflect the Python version you just installed.**
-#. KA Lite uses Git to distribute it's code for non-Windows operating systems.
-	* Proceed to the Git_ website to download and install if you don't have it already.
-	.. _Git: http://git-scm.com/downloads
 #. Create the folder where you would like to install KA Lite.	
 	* In the Terminal, type *cd* and then drag the folder you created into the Terminal.
 	* This will copy the path name into the Terminal window.
