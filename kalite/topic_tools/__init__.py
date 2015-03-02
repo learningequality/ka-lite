@@ -480,7 +480,7 @@ def get_assessment_item_data(request, assessment_item_id=None):
         item_data['hints'] = new_hints
         item_data['question']['content'] = question_content
         item_data['answerArea']['options']['content'] = answerarea_content
-        # dump data to make it to a proper json format.
+        # dump the data for a proper json format.
         assessment_item['item_data'] = json.dumps(item_data)
         logging.info('Successfully wrapped New Assessment Item with _()')
 
