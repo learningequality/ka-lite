@@ -501,3 +501,10 @@ footer {
         overflow-x: hidden;
     }
 }
+
+@media (max-width: 480px) {
+    .manage-nav ul li {
+        text-align: center;
+        margin: 0 2px -10px -4px;
+    }
+}
