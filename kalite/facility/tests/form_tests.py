@@ -288,3 +288,13 @@ class FormGroupTest(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, 
         txt = 'Ungrouped'
         self.assertEqual(txt, select)
 
+
+class HomePageTest(BrowserActionMixins, KALiteBrowserTestCase):
+
+    def test_homepage_search(self):
+        self.browse_to(self.reverse("homepage"));
+        searchButton = self.browser_wait_for_element(css_selector="#search-button[disabled='disabled']")
+        self.assertNotEqual(None, searchButton);
+        self.browser.find_element_by_id("search").send_keys('search')
+        searchButton = self.browser_wait_for_element(css_selector="#search-button[disabled='disabled']")
+        self.assertEqual(None, searchButton);

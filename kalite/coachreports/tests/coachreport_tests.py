@@ -164,7 +164,7 @@ class CoachNavigationTest(FacilityMixins,
         #Student-Testing is only the feature of Nalanda.
         #So tests related coachreports would be available with nalanda only.
         #Reverse of test_view with argument won't be available unless Nalanda.
-        if "Nalanda" in settings.CONFIG_PACKAGE:
+        if "nalanda" in settings.CONFIG_PACKAGE:
             self.urls.append(self.reverse('test_view'))
 
         self.browser_login_admin(**self.admin_data)
@@ -272,7 +272,7 @@ class CoachNavigationTest(FacilityMixins,
         self.assertEqual(expected, result)
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
@@ -367,7 +367,7 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(overall[0:4], '100%')
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistProgressTest(FacilityMixins,
                            CreateAdminMixin,
                            CreatePlaylistProgressMixin,
@@ -399,6 +399,7 @@ class PlaylistProgressTest(FacilityMixins,
         self.assertTrue(playlist_details, "Didn't load details")
 
 
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class SpendingReportTests(FacilityMixins,
                           CreateAdminMixin,
                           StoreMixins,

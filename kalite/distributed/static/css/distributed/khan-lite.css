@@ -42,6 +42,14 @@ a:hover {
     color: #2F92A5;
 }*/
 
+/*hide points display in the navbar*/
+@media (max-width: 768px) {
+    #points-xs {
+        display: none !important;
+    }
+}
+
+
 #top-header {
     height: 60px;
     position: relative;
@@ -999,4 +1007,13 @@ div#fade {
   box-shadow: 0 0 5px rgba(81, 203, 238, 1);
   border-color: rgba(81, 203, 238, 1);
   border-style: solid;
+}
+
+#workarea {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

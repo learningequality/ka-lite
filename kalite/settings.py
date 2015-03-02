@@ -169,10 +169,6 @@ SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
-KHAN_EXERCISES_RELPATH = os.path.join("static", "perseus", "ke")
-
-KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), KHAN_EXERCISES_RELPATH)
-
 # Override
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 TEST_RUNNER = KALITE_TEST_RUNNER
@@ -212,7 +208,7 @@ if package_selected("RPi"):
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
 
-if package_selected("Nalanda"):
+if package_selected("nalanda"):
     LOG.info("Nalanda package selected")
     TURN_OFF_MOTIVATIONAL_FEATURES = True
     RESTRICTED_TEACHER_PERMISSIONS = True
