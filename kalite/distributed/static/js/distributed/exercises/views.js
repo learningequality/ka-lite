@@ -482,22 +482,20 @@ window.ExercisePracticeView = Backbone.View.extend({
             if (context.remaining > 1) {
                 msg = gettext("You have completed your streak.") + " " + gettext("Answer %(remaining)d additional questions to finish this exercise.");
                 if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
-                    show_modal("info", sprintf(msg, context));
+                    show_message("info", sprintf(msg, context));
                 }
             } else if (context.remaining == 1) {
                 msg = gettext("You have completed your streak.") + " " + gettext("Answer 1 additional question to finish this exercise.");
                 if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
-                    show_modal("info", sprintf(msg, context));
+                    show_message("info", sprintf(msg, context));
                 }
             } else {
                 msg = gettext("You have finished this exercise!");
                 if (context.remaining === 0) {
-                    show_modal("info", sprintf(msg, context));
+                    show_message("info", sprintf(msg, context));
                 }
             }
         }
-
-        show_message("info", sprintf(msg, context), "id_exercise_status");
     },
 
     user_data_loaded: function() {
