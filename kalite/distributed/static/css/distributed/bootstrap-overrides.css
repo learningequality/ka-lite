@@ -11,15 +11,16 @@ html, body {
 #wrapper {
     min-height: 100%;
     position: relative;
+    display: block;
+    overflow: visible;
 }
 #content-container {
     padding-top: 20px;
-    padding-bottom: 80px;  /* Must be same height as footer */
+    padding-bottom: 90px;  /* Must be same height as footer */
 }
 footer {
     width: 100%;
-    height: 80px;
-    position: absolute;
+    height: 90px;
     bottom: 0;
     left: 0;
 }
@@ -211,13 +212,13 @@ form .input-group {
 }
 /* Navbar collapse styles for hamburger */
 .navbar-toggle {
-    background-color: rgb(214, 214, 214);
+    background-color: #5AA685;
 }
 .navbar-toggle:hover {
     opacity: 0.7;
 }
 .navbar-toggle .icon-bar {
-    background-color: #858B78;
+    background-color: #fff;
 }
 /* ======= Logged in student only ======== */
 .relative-block{
@@ -306,10 +307,6 @@ form .input-group {
 /* ===================================
     Coach Page
 =================================== */
-#suggested-action-coachpage-effort {
-    margin-left: 10px;
-    margin-right: 10px;
-}
 #suggested-action-image-link-coachpage-progress,
 #suggested-action-image-link-coachpage-effort,
 #suggested-action-image-link-coachpage-mastery {
@@ -436,4 +433,78 @@ footer {
 }
 @media only screen and (min-width: 470px) and (max-width: 767px) {
     h3.suggested-action-title { margin-top: 0; }
+}
+
+@media (max-width: 454px) {
+    #search_box {
+        width: 83%;
+        margin-left: 15px;
+    }
+    .navbar-nav {
+        margin: 0px 0px;
+    }
+    .navbar-collapse.in {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+}
+
+@media only screen and (min-width: 455px) and (max-width: 600px) {
+    #search_box {
+        width: 87%;
+        margin-left: 15px;
+
+    }
+    .navbar-nav {
+        margin: 0px 0px;
+    }
+
+
+}
+
+@media only screen and (min-width: 600px) and (max-width: 767px) {
+
+    #search_box{
+        width: 90%;
+        margin-left: 15px;
+    }
+
+    .navbar-nav {
+         margin: 0px 0px;
+    }
+}
+
+
+@media (max-width: 767px) {
+    .navbar-form {
+        padding: 0px 0px;
+    }
+    form#search-box{
+        margin-left: 5px;
+    }
+    form#search-box, #language_selector {
+        margin-bottom: 0px;
+    }
+    .navbar-collapse{
+        margin-left: 10px;
+    }
+
+    #search_input{
+        margin-bottom: 10px;
+    }
+    #search_btn {
+        color: #fff !important;
+        background: #5AA685 !important;
+    }
+    .navbar-collapse.in {
+        overflow-y: hidden;
+        overflow-x: hidden;
+    }
+}
+
+@media (max-width: 480px) {
+    .manage-nav ul li {
+        text-align: center;
+        margin: 0 2px -10px -4px;
+    }
 }

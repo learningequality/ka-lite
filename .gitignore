@@ -45,7 +45,7 @@ writeup/
 /kalite/media
 /data/*
 !/data/khan/
-/data/khan/assessment_items.json
+/data/khan/assessmentitems.json
 /data/khan/assessment_item_images
 /kalite/private_key.pem
 /kalite/secrets.py
@@ -58,7 +58,7 @@ writeup/
 /.vagrant/
 ghostdriver.log
 /kalite/_built.touch
-/kalite/contentload/tests/fixtures/
 *.swp
 sphinx-docs/_build
 sphinx-docs/images/*
+/data/khan/assessmentitems.json.version

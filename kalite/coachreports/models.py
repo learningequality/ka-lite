@@ -9,9 +9,6 @@ from kalite.main.models import ExerciseLog, VideoLog
 from kalite.playlist.models import VanillaPlaylist as Playlist, QuizLog
 from kalite.topic_tools import get_slug2id_map, get_id2slug_map, convert_leaf_url_to_id, get_leafed_topics, get_content_cache, get_exercise_cache
 
-ID2SLUG_MAP = get_id2slug_map()
-SLUG2ID_MAP = get_slug2id_map()
-
 class PlaylistProgressParent:
     """Parent class for helpful class methods"""
 
@@ -20,7 +17,7 @@ class PlaylistProgressParent:
         """Return a tuple of the playlist's video ids and exercise ids as sets"""
         playlist_entries = playlist.get("entries") or playlist.get("children")
         # TODO(dylanjbarth): 0.13 playlist entities shouldn't have the /v or /e in them at all.
-        pl_video_ids = set([SLUG2ID_MAP.get(entry.get("entity_id")) or entry.get("id") for entry in playlist_entries if entry.get("entity_kind") == "Video"])
+        pl_video_ids = set([get_slug2id_map().get(entry.get("entity_id")) or entry.get("id") for entry in playlist_entries if entry.get("entity_kind") == "Video"])
         pl_exercise_ids = set([entry.get("entity_id") or entry.get("id") for entry in playlist_entries if (entry.get("entity_kind") or entry.get("kind")) == "Exercise"])
         return (pl_video_ids, pl_exercise_ids)
 
@@ -87,7 +84,7 @@ class PlaylistProgress(PlaylistProgressParent):
         user_vid_logs, user_ex_logs = cls.get_user_logs(user)
 
         exercise_ids = set([ex_log["exercise_id"] for ex_log in user_ex_logs])
-        video_ids = set([ID2SLUG_MAP.get(vid_log["video_id"]) for vid_log in user_vid_logs])
+        video_ids = set([get_id2slug_map().get(vid_log["video_id"]) for vid_log in user_vid_logs])
         quiz_log_ids = [ql_id["quiz"] for ql_id in QuizLog.objects.filter(user=user).values("quiz")]
         # Build a list of playlists for which the user has at least one data point
         ## TODO(dylanjbarth) this won't pick up playlists the user is assigned but has not started yet.
@@ -182,7 +179,7 @@ class PlaylistProgress(PlaylistProgressParent):
             try:
                 progress["url"] = reverse("view_playlist", kwargs={"playlist_id": p.get("id")})
             except NoReverseMatch:
-                progress["url"] = ""
+                progress["url"] = reverse("learn") + p.get("path")
 
             user_progress.append(cls(**progress))
 
@@ -207,7 +204,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
             elif kind == "Exercise":
                 topic_node = get_exercise_cache().get(entity_id)
             title = topic_node["title"]
-            path = topic_node["path"][1:] # remove pre-prended slash
+            path = topic_node["path"]
         else:
             title = playlist["title"]
             path = ""
@@ -248,7 +245,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
             if kind == "Divider":
                 continue
             elif kind == "Video":
-                entity_id = SLUG2ID_MAP.get(ent.get("entity_id")) or ent.get("id")
+                entity_id = get_slug2id_map().get(ent.get("entity_id")) or ent.get("id")
                 vid_log = next((vid_log for vid_log in user_vid_logs if vid_log["video_id"] == entity_id), None)
                 if vid_log:
                     if vid_log.get("complete"):

@@ -127,7 +127,6 @@ class Command(BaseCommand):
             dest='description',
             default="",
             help='Computer description'),
-
         make_option('-n', '--noinput',
             action='store_false',
             dest='interactive',
@@ -251,6 +250,12 @@ class Command(BaseCommand):
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
+        # This can take a long time and lead to Travis stalling. None of this is required for tests.
+        if not settings.RUNNING_IN_TRAVIS:
+            # download assessment items
+            # TODO-BLOCKER (aron): do not hardcode this, and put in the proper URL once we have a redirect set up
+            call_command("unpack_assessment_zip", "http://eslgenie.com/media/assessment_item_resources.zip")
+
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
             call_command("generatekeys", verbosity=options.get("verbosity"))
@@ -301,7 +306,7 @@ class Command(BaseCommand):
                     shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
                 except OSError:  # even if we have write permission, we might not have permission to change file mode
                     sys.stdout.write("WARNING: Unable to set file permissions on %s! \n" % script_file)
-            
+
             kalite_executable = 'kalite'
             if not spawn.find_executable('kalite'):
                 if os.name == 'posix':

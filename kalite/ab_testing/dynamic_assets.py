@@ -1,13 +1,15 @@
+from django.conf import settings
+
 from .data.groups import get_condition_by_facility_and_unit, get_grade_by_facility
 from .data.conditions import CONDITION_SETTINGS
 
 from kalite.student_testing.utils import get_current_unit_settings_value
-
 from kalite.dynamic_assets import DynamicSettingsBase, fields
 
 class DynamicSettings(DynamicSettingsBase):
     student_grade_level = fields.IntegerField(default=0)
     unit = fields.IntegerField(default=1)
+    is_config_package_nalanda = fields.BooleanField(default="nalanda" in settings.CONFIG_PACKAGE)
 
 
 # modify ds in-place. Use when you're modifying ds rather than defining new dynamic settings

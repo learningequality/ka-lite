@@ -21,6 +21,7 @@
         var SCATTER_REPORT_URL = "{% url 'scatter_view' %}";
         var TIMELINE_REPORT_URL = "{% url 'timeline_view' %}";
         var TEST_REPORT_URL = "{% url 'test_view' %}";
+        var SPENDING_URL = "{% url 'spending_report_view' %}";
 
         var REPORT_ID = "{{ nav_state.report_id }}"
         var FACILITY_ID = "{{ nav_state.facility_id }}";
@@ -43,19 +44,17 @@
 
 {% block content %}
     {# This call to super pulls in the subnavbar #}
-    {{ block.super }}
+    {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
 
     {# Now we create the coachreport selection bar #}
     <div class="container container-margin-bottom">
-        <div class="row">
-            <div class="col-md-12">
-                <h4>
-                    {# Note to translators: following this phrase is the name of a class. #}
-                    {% trans "Coach Reports" %}
-                </h4>
-                <div id="coachreport-navigation-container">
-                    {# insert backbone magic here for coachreport navigation #}
-                </div>
+        <div class="row coach-reports-row">
+            <div class="subtitle coach-heading">
+                {# Note to translators: following this phrase is the name of a class. #}
+                {% trans "Coach Reports" %}
+            </div>
+            <div id="coachreport-navigation-container">
+                {# insert backbone magic here for coachreport navigation #}
             </div>
         </div>
         {% block report_content %}

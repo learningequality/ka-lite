@@ -36,12 +36,9 @@
     </script>
 {% endblock headjs %}
 
-{% block content %}
+{% block report_content %}
     {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
     <div id="content">
-        <div id="back-nav">
-            <a href="{% url 'coach_reports' %}">&larr; {% trans "Back" %}</a>
-        </div>
         {% if not user_points %}
             <p>
                 {% trans "There are no learners at this facility." %}
@@ -75,5 +72,5 @@
             </table>
         {% endif %}
     </div>
-{% endblock content %}
+{% endblock report_content %}
 

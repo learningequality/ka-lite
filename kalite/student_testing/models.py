@@ -74,7 +74,7 @@ class Test():
 
     @classmethod
     def all(cls, force=False, show_all=False):
-        if "Nalanda" not in settings.CONFIG_PACKAGE:
+        if "nalanda" not in settings.CONFIG_PACKAGE:
             return {}
 
         if not cls._testscache or force:
