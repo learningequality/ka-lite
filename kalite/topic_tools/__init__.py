@@ -542,15 +542,17 @@ def convert_leaf_url_to_id(leaf_url):
 
 ###
 # Returns a dictionary with each subtopic and their related
-# topics, as well as the subtopic courses.
+# topics.
+#
+# @param temp_index: a temporary index for comparison tests
 ###
 import time
-def generate_recommendation_data():
+def generate_recommendation_data(temp_index):
 
     #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values
     data = {};
-    '''
-    data = {
+    
+    data_hardcoded = {
         "early-math": {"related_subtopics": ["early-math", "arithmetic", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
         "arithmetic": {"related_subtopics": ["arithmetic", "pre-algebra", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
         "pre-algebra": {"related_subtopics": ["pre-algebra", "algebra", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
@@ -565,8 +567,8 @@ def generate_recommendation_data():
         "multivariate-calculus": {"related_subtopics": ["multivariate-calculus", "differential-equations", "physics", "microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium"]},
         "differential-equations": {"related_subtopics": ["differential-equations", "physics", "microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
         "linear-algebra": {"related_subtopics": ["linear-algebra", "precalculus"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
-        "recreational-math": {"related_subtopics": ["pre-algebra", "algebra", "geometry", "algebra2"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
-        "competition-math": {"related_subtopics": ["algebra", "geometry", "algebra2"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
+        "recreational-math": {"related_subtopics": ["recreational-math", "pre-algebra", "algebra", "geometry", "algebra2"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
+        "competition-math": {"related_subtopics": ["competition-math","algebra", "geometry", "algebra2"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
 
 
         "biology": {"related_subtopics": ["biology", "health-and-medicine", "CAS-biodiversity", "Exploratorium", "chemistry", "physics", "cosmology-and-astronomy", "nasa"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
@@ -588,26 +590,31 @@ def generate_recommendation_data():
         "music": {"related_subtopics": ["music"], "unrelated_subtopics": ["biology", "health-and-medicine"]},
         "philosophy": {"related_subtopics": ["philosophy"]},
 
-        "computing": {"related_subtopics": ["early-math", "arithmetic", "pre-algebra", "geometry", "probability", "recreational-math", "biology", "physics", "chemistry", "organic-chemistry", "health-and-medicine", "discoveries-projects", "microeconomics", "macroeconomics", "core-finance", "music"]},
+        "computing": {"related_subtopics": ["computing", "early-math", "arithmetic", "pre-algebra", "geometry", "probability", "recreational-math", "biology", "physics", "chemistry", "organic-chemistry", "health-and-medicine", "discoveries-projects", "microeconomics", "macroeconomics", "core-finance", "music"]},
 
-        "sat": {"related_subtopics": ["arithmetic", "pre-algebra", "algebra", "algebra2", "geometry", "probability", "recreational-math"]},
-        "mcat": {"related_subtopics": ["arithmetic", "pre-algebra", "geometry", "probability", "recreational-math", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine"]},
-        "NCLEX-RN": {"related_subtopics": ["chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine"]},
-        "gmat": {"related_subtopics": ["arithmetic", "pre-algebra", "algebra", "algebra2" "geometry", "probability", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "history", "microeconomics", "macroeconomics"]},
-        "cahsee-subject": {"related_subtopics": ["early-math", "arithmetic", "pre-algebra", "geometry", "probability", "recreational-math"]},
-        "iit-jee-subject": {"related_subtopics": ["arithmetic", "pre-algebra", "geometry", "differential-equations", "differential-calculus", "integral-calculus", "linear-algebra", "probability", "chemistry", "physics", "organic-chemistry"]},
-        "ap-art-history": {"related_subtopics": ["art-history", "history"]},
+        "sat": {"related_subtopics": ["sat", "arithmetic", "pre-algebra", "algebra", "algebra2", "geometry", "probability", "recreational-math"]},
+        "mcat": {"related_subtopics": ["mcat", "arithmetic", "pre-algebra", "geometry", "probability", "recreational-math", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine"]},
+        "NCLEX-RN": {"related_subtopics": ["NCLEX-RN", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine"]},
+        "gmat": {"related_subtopics": ["gmat", "arithmetic", "pre-algebra", "algebra", "algebra2" "geometry", "probability", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "history", "microeconomics", "macroeconomics"]},
+        "cahsee-subject": {"related_subtopics": ["cahsee-subject", "early-math", "arithmetic", "pre-algebra", "geometry", "probability", "recreational-math"]},
+        "iit-jee-subject": {"related_subtopics": ["iit-jee-subject", "arithmetic", "pre-algebra", "geometry", "differential-equations", "differential-calculus", "integral-calculus", "linear-algebra", "probability", "chemistry", "physics", "organic-chemistry"]},
+        "ap-art-history": {"related_subtopics": ["ap-art-history", "art-history", "history"]},
 
-        "CAS-biodiversity": {"related_subtopics": ["chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "Exploratorium"]},
-        "Exploratorium": {"related_subtopics": ["chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "CAS-biodiversity", "art-history", "music"]},
-        "asian-art-museum": {"related_subtopics": ["art-history", "history", "ap-art-history"]},
-        "ssf-cci": {"related_subtopics": ["art-history", "history"]},
-    }'''
-    t0 = time.clock()
+        "CAS-biodiversity": {"related_subtopics": ["CAS-biodiversity", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "Exploratorium"]},
+        "Exploratorium": {"related_subtopics": ["Exploratorium", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "CAS-biodiversity", "art-history", "music"]},
+        "asian-art-museum": {"related_subtopics": ["asian-art-museum", "art-history", "history", "ap-art-history"]},
+        "ssf-cci": {"related_subtopics": ["ssf-cci", "art-history", "history"]},
+    }
+
+
+    '''t0 = time.clock()'''
+
+
     ### populate data exploiting structure of topic tree ###
     tree = get_topic_tree() #Is there a better way of getting the tree without calling get_topic_tree() again and again?
 
-
+    '''print 'time taken to create topic_tree: ' + str(time.clock() - t0)
+    t1 = time.clock() #running time of actual alg'''
 
     ##
     # ITERATION 1 - grabs all immediate neighbors of each subtopic
@@ -626,7 +633,9 @@ def generate_recommendation_data():
         for subtopic in topic['children']:
 
             neighbors_dist_1 = get_neighbors_at_dist_1(topic_index, subtopic_index, tree)
-            data[ subtopic['id'] ] = { 'related_subtopics' : neighbors_dist_1 }
+
+            #add to data - distance 0 (itself) + distance 1
+            data[ subtopic['id'] ] = { 'related_subtopics' : ([subtopic['id']] + neighbors_dist_1) }
             subtopic_index+=1
             
         topic_index+=1
@@ -643,8 +652,14 @@ def generate_recommendation_data():
         other_neighbors = get_subsequent_neighbors(related, data)
         data[subtopic]['related_subtopics'] += other_neighbors
 
-    print 'time taken: ' + str(time.clock() - t0)
+    '''print 'time taken for actual algorithm exlcuding topic_tree: ' + str(time.clock() - t1)'''
+
+    #0 is for hardcoded data ###### DELETE AFTER TESTS ########
+    if(temp_index == 0):
+        return data_hardcoded
+
     return data
+
 
 
 ### 
@@ -746,8 +761,8 @@ def get_neighbors_at_dist_1(topic, subtopic, tree):
 ###
 
 def get_subsequent_neighbors(nearest_neighbors, data):
-    left = nearest_neighbors[0]  # subtopic id string of left neighbor
-    right = nearest_neighbors[1]
+    left = nearest_neighbors[1]  # subtopic id string of left neighbor
+    right = nearest_neighbors[2]
 
     other_neighbors = []
 
@@ -756,19 +771,64 @@ def get_subsequent_neighbors(nearest_neighbors, data):
 
         # If there is a left neighbor, append its left neighbor
         if left != ' ':
-            if data[left]['related_subtopics'][0] != ' ':
-                other_neighbors.append(data[left]['related_subtopics'][0])
-            left = data[left]['related_subtopics'][0]
+            if data[left]['related_subtopics'][1] != ' ':
+                other_neighbors.append(data[left]['related_subtopics'][1])
+            left = data[left]['related_subtopics'][1]
 
         # Repeat for right neighbor
         if right != ' ':
-            if data[right]['related_subtopics'][1] != ' ':
-                other_neighbors.append(data[right]['related_subtopics'][1])
-            right = data[right]['related_subtopics'][1]
+            if data[right]['related_subtopics'][2] != ' ':
+                other_neighbors.append(data[right]['related_subtopics'][2])
+            right = data[right]['related_subtopics'][2]
 
     return other_neighbors
 
 
+###
+# Tester that will compare the similarity and accuracy of both 
+# content recommendation algorithms (hardcoded and dynamic) 
+#
+###
+def recommendation_alg_tester():
+    data_hardcoded = generate_recommendation_data(0) # grabs hardecoded data dict
+    data_dyn = generate_recommendation_data(1)       # grabs dyn gen data dict
+
+    results = {}
+    numTotalMatches = 0 #number of total matching recommendations
+    numTotalRecs = 0 #number of total recommendations made
+
+    #we will base comparisons using the hardcoded data as the referent data
+
+    for subtopic in data_hardcoded:
+
+        recommended_hc = data_hardcoded[subtopic]['related_subtopics'][:10] #grab first 10 recommendations
+    
+        if subtopic in data_dyn:
+            recommended_dy = data_dyn[subtopic]['related_subtopics'][:10]
+        else:
+            continue #this means that hardocded data had a subtopic not present in topic tree
+
+        #comparisons will be made on the first 10 recommendations, with an emphasis on first 5
+
+        numCompatible = 0 #number of instances where dynamic data matched hardcoded rec data
+        for recommendation in recommended_hc:
+            if recommendation in recommended_dy:
+                numCompatible+=1
+                numTotalMatches+=1
+
+            numTotalRecs+=1
+
+
+        ### init some results! ###
+        
+        results[subtopic] = {'numCorrect': numCompatible} #number of compatible within a subtopic
+
+        #now focus on first 5 recs for each, for creating the table later
+        results[subtopic]['recommendations'] = {'hc': recommended_hc[:5], 'dyn': recommended_dy[:5]}
+
+    results['percentageOfMatching'] = str((round((float(numTotalMatches)/numTotalRecs)*100.0, 2))) + '%'
+
+    return results
 
 
 
