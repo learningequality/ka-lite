@@ -26,13 +26,11 @@ Nav Panel
     -webkit-transform: translateZ(0);
     background: #5AA685;
     z-index: 9999;
-    position: fixed;
-    height: 130%;
+    position: absolute;
+    height: 100%;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     top: 0;
     bottom: 0;
-    left: 0;
-    width: 220px;
 }
 
 div.fade {
@@ -76,10 +74,6 @@ div.fade {
     margin: 3px 3px 3px 0;
 }
 
-/*.sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
-    background: #8dc63f;
-}
-*/
 .sidebar-panel .active-entry {
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -108,18 +102,11 @@ div.fade {
     border-bottom-right-radius: 5px;
     cursor: pointer;
     box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
-    -webkit-transition: all 115ms ease-out;
-    -moz-transition: all 115ms ease-out;
-    -o-transition: all 115ms ease-out;
-    transition: all 115ms ease-out;
+
 }
 
 .sidebar-tab:hover {
     padding-left: 20px;
-    -webkit-transition: all 115ms ease-out;
-    -moz-transition: all 115ms ease-out;
-    -o-transition: all 115ms ease-out;
-    transition: all 115ms ease-out;
 }
 
 .sidebar-tab a {
@@ -140,25 +127,26 @@ div.fade {
     color: #CCC;
 }
 
-.back-to-parent {
-    margin: 0;
-    float: left;
-    height: 60px;
-    position: relative;
-    padding-left: 20px;
-    padding-top: 21px;
-    padding-right: 14px;
+.sidebar-back {
+    height: 100%;
+    width: 45px;
+    padding-top: 100px;
+    text-align: center;
+    color: #fff;
+    background-color: #467471;
+    font-size: 24px;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    position: absolute;
+    z-index: 10000;
 }
 
 /* Sidebar panel & entry styling */
 .topic-container-inner {
     float: left;
     width: 200px;
+    /*max-width: 25%;*/
     border-right: 1px solid rgba(0, 0, 0, 0.3);
-    -webkit-transition: all 115ms ease-out;
-    -moz-transition: all 115ms ease-out;
-    -o-transition: all 115ms ease-out;
-    transition: all 115ms ease-out;
+
 }
 .topic-container-inner:last-child {
     width: 400px;
@@ -264,7 +252,6 @@ div.fade {
     padding-top: 0px;
     padding-bottom: 0px;
 }
-
 
 .topic-container-inner:last-child .sidebar-entry-header > .sidebar-icon {
     height: 100%;

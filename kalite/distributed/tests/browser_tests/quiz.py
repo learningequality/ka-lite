@@ -12,7 +12,7 @@ from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 
 PLAYLIST_ID = "g3_p1"
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
 
     """

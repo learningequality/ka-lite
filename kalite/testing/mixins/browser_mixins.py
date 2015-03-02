@@ -4,6 +4,7 @@ import re
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -95,6 +96,7 @@ class BrowserActionMixins(object):
         WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
 
         # Get messages (and limit by type)
+        WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
         messages = self.browser.find_elements_by_class_name("alert")
 
         # Check that we got as many as expected
@@ -182,7 +184,7 @@ class BrowserActionMixins(object):
                 pass
             except:
                 break
-    
+
     def browser_wait_for_js_condition(self, condition, max_wait_time=4, step_time=0.25):
         """
         Waits for the script in condition to return True.
@@ -203,7 +205,7 @@ class BrowserActionMixins(object):
                 # possible if the object you want to exist is an attribute of an object
                 # that doesn't yet exist, e.g. does_not_exist_yet.i_want_to_test_this_one
                 pass
-    
+
     def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=4, step_time=0.25):
         exists_condition = "typeof(%s) != 'undefined'" % obj_name
         self.browser_wait_for_js_condition(exists_condition, max_wait_time, step_time)
@@ -414,7 +416,7 @@ class BrowserActionMixins(object):
     @classmethod
     def _admin_exists(cls):
         return User.objects.filter(is_superuser=True).exists()
-    
+
     @classmethod
     def _facility_exists(cls):
         return Facility.objects.all().exists()
@@ -428,12 +430,12 @@ class BrowserActionMixins(object):
             # available = (len(video['languages']) > 0)
             available = True
         video_url = video['path']
-        self.browse_to(self.reverse("learn") + video_url) 
+        self.browse_to(self.reverse("learn") + video_url)
 
     def browser_get_points(self):
         # The following commented line of code returns an element with blank text,
         # possibly due to a race condition, hence querying the element with js which "just works"
-        #points_elem = self.browser.find_element_by_id("points")    
+        #points_elem = self.browser.find_element_by_id("points")
         # Ensure the element has been populated by triggering an event
         self.browser_wait_for_js_object_exists("window.statusModel");
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")

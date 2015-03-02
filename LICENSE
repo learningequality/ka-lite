@@ -21,12 +21,19 @@ See: https://khan-exercises.readthedocs.org/en/latest/#small-print
 
 
 ------------------------------------------------------------------------------
-For the Khan Academy content (exercises and videos):
+For the Khan Academy content (Perseus exercises):
 ------------------------------------------------------------------------------
-Unless otherwise indicated, all Licensed Educational Content is the property of Khan Academy or its subsidiaries or affiliated companies and/or third-party licensors and, subject to the terms and conditions of these Terms, is licensed to You under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 United States License (available at http://creativecommons.org/licenses/by-nc-sa/3.0/us/) (the “Creative Commons License”).
+Perseus exercise data is copyright Khan Academy and its partners, and is included here with permission.  
 
-See: http://www.khanacademy.org/about/tos#7
+For full content license, see: http://www.khanacademy.org/about/tos#7
 
+
+------------------------------------------------------------------------------
+For the Khan Academy content (videos):
+------------------------------------------------------------------------------
+Unless otherwise indicated, the subset of the Khan Academy videos that are downloadable into KA Lite are released under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 United States License (available at http://creativecommons.org/licenses/by-nc-sa/3.0/us/) (the “Creative Commons License”).
+
+For full content license, see: http://www.khanacademy.org/about/tos#7
 
 ------------------------------------------------------------------------------
 For the Python packages found under "ka-lite/python-packages":
@@ -57,6 +64,3 @@ requests
 Under the ASL license v2 (http://www.apache.org/licenses/LICENSE-2.0.html):
 rsa
 south
-
-Under LGPL version 3 (http://www.gnu.org/licenses/lgpl.html):
-mplayer
