@@ -293,7 +293,7 @@
 
             var login_sequence = [
                 function(input, callback) {
-                    this.goto("/securesync/login/", callback);
+                    this.goto("/securesync/login/?next=/", callback);
                 },
                 function(input, callback) {
                     var username = "{{ username }}";
