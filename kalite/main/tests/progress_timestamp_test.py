@@ -3,7 +3,7 @@
 
 from ..models import ContentLog
 from kalite.facility.models import Facility, FacilityUser
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 
 
 class TestSaveContentLog(KALiteTestCase):

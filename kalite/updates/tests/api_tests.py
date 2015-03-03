@@ -5,7 +5,7 @@ from django.core.management import call_command
 
 from ..models import VideoFile
 from kalite.main.tests.base import MainTestCase
-from kalite.testing import KALiteClient
+from kalite.testing.client import KALiteClient
 
 
 class TestAdminApiCalls(MainTestCase):

@@ -6,7 +6,7 @@ from django.utils import unittest
 
 from ..models import *
 from fle_utils.testing import UnicodeModelsTest
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 
 
 class UpdatesUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):

@@ -2,7 +2,7 @@ import json
 
 from django.core.urlresolvers import reverse
 
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 
 class TestGetTopicTree(KALiteTestCase):
 
