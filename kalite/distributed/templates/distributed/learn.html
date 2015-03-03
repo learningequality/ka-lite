@@ -31,6 +31,13 @@
         <link rel="stylesheet" type="text/css" href="{% static "perseus/lib/katex/katex.css" %}" />
         <link rel="stylesheet" type="text/css" href="{% static "perseus/lib/mathquill/mathquill.css" %}" />
         <link rel="stylesheet" type="text/css" href="{% static "perseus/stylesheets/exercise-content-package/perseus.css" %}" />
+
+        <style type="text/css">
+            /* Overridding perseus.css to make answer box highlighted in four sides */
+            .perseus-widget-container.widget-highlight {
+                box-shadow: -4px 0 9px 5px #ffa500;
+            }
+        </style>
         <!-- END PERSEUS STUFF -->
     {% endif %}
     
