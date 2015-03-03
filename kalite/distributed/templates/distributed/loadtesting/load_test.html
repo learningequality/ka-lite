@@ -54,6 +54,7 @@
 
             var fastInterval = 5000;
             var slowInterval = 20000;
+            var maxDelayTimeout = 60000;
 
             var PuppetModel = Backbone.Model.extend({
 
@@ -205,7 +206,11 @@
                         var task = tasks[index];
                         index++;
                         setTimeout(function() {
-                            task.call(self, result, _.once(runNext));
+                            var new_callback = _.once(runNext);
+                            // run the next step of the task sequence
+                            task.call(self, result, new_callback);
+                            // set a timeout to continue even if page fails
+                            setTimeout(new_callback, maxDelayTimeout);
                         }, this.model.get("clickDelay"));
                     }
                     runNext(null, input);
