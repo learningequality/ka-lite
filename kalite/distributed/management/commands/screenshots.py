@@ -14,9 +14,12 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.urlresolvers import reverse
 from django.utils.six import StringIO
 
+from securesync.models import Device, DeviceZone, Zone
+
 from fle_utils.general import ensure_dir
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
+from kalite.distributed.management.commands.katest import unregister_distributed_server
 
 USER_TYPE_ADMIN = "admin"
 USER_TYPE_COACH = "coach"
@@ -249,6 +252,10 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
             if self.browser_is_logged_in():
                 self.browser_logout_user()
 
+            # Make sure to unregister after finishing for the next shot
+            if shot["registered"]:
+                self._do_fake_registration()
+
             if USER_TYPE_STUDENT in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.student_username):
                 self.browser_login_student(self.student_username, self.default_password, self.facility.name)
             elif USER_TYPE_COACH in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.coach_username):
@@ -287,6 +294,9 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
             if shot[self.KEY_SLUG]:
                 self.snap(slug=shot[self.KEY_SLUG], focus=focus, note=note)
+            
+            if shot["registered"]:
+                self._undo_fake_registration()
         except Exception as exc:
             log.error("====> EXCEPTION snapping url %s: %s" % (start_url, exc,))
             log.error("'shot' object: %s" % repr(shot))
@@ -311,3 +321,14 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
             log.error("Cannot open `screenshots.json` at %s:\n  exception:  %s" %
                       (settings.SCREENSHOTS_JSON_FILE, exc,))
             raise
+
+    def _do_fake_registration(self):
+        # Create a Zone and DeviceZone to fool the Device into thinking it's registered
+        zone = Zone(name="The Danger Zone", description="Welcome to it.")
+        zone.save()
+        device = Device.get_own_device()
+        deviceZone = DeviceZone(device=device, zone=zone)
+        deviceZone.save()
+    
+    def _undo_fake_registration(self):
+        unregister_distributed_server()

@@ -496,6 +496,7 @@ To download language packs:
     :navigation-steps:
     :focus: #language-packs-selection | Select language packs to download from this menu!
     :class: screenshot
+    :registered: true
 
 .. |lp-button| screenshot::
     :user-role: admin
@@ -503,6 +504,7 @@ To download language packs:
     :navigation-steps:
     :focus: #get-language-button
     :class: screenshot
+    :registered: true
 
 Delete Language Packs
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -518,6 +520,7 @@ To delete language packs:
     :navigation-steps:
     :focus: #delete-language-button button | Use the buttons in this column to delete language packs.
     :class: screenshot
+    :registered: true
 
 
 Restarting Your Server

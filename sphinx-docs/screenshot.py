@@ -203,6 +203,7 @@ class Screenshot(Image):
     option_spec['user-role'] = _parse_user_role
     option_spec['navigation-steps'] = _parse_nav_steps
     option_spec['focus'] = _parse_focus
+    option_spec['registered'] = lambda x: directives.choice(x, ("true", "false"))
 
     def run(self):
         """ During the build process directives are parsed as nodes, and then
@@ -222,6 +223,11 @@ class Screenshot(Image):
         return_nodes = []
         if not hasattr(self.env, 'screenshot_all_screenshots'):
             self.env.screenshot_all_screenshots = []
+
+        if not 'registered' in self.options:
+            self.options['registered'] = False
+        else:
+            self.options['registered'] = True if self.options['registered'] == "true" else False
 
         if 'focus' in self.options:
             self.focus_selector = self.options['focus']['id']
@@ -258,20 +264,12 @@ class Screenshot(Image):
                        }
         if submit:
             from_str_arg["inputs"].append({"<submit>":""})
-        from_str_arg["inputs"].append({"<slug>":self.filename})
-        if hasattr(self, "focus_selector"):
-            from_str_arg["focus"] = {}
-            from_str_arg["focus"]["selector"] = self.focus_selector
-            from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
-            from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
+        from_str_arg = self._common_arg_prep(from_str_arg)
         self.env.screenshot_all_screenshots.append({
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
         })
-        self.arguments.append(os.path.join("/", SS_DUMP_DIR, self.filename+".png"))
-        open(os.path.join(OUTPUT_PATH, self.filename+".png"), 'w').close()
-        (image_node,) = Image.run(self)
-        return image_node
+        return self._make_image_node()
 
     def _command_handler(self, commands):
         if not self.url:
@@ -283,20 +281,32 @@ class Screenshot(Image):
                          "notes": "",
                        }        
         from_str_arg['inputs'] = reduce(lambda x,y: x+y, map(_cmd_to_inputs, commands), [])
-        from_str_arg["inputs"].append({"<slug>":self.filename})
-        if hasattr(self, "focus_selector"):
-            from_str_arg["focus"] = {}
-            from_str_arg["focus"]["selector"] = self.focus_selector
-            from_str_arg["focus"]["styles"] = FOCUS_CSS_STYLES
-            from_str_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
+        from_str_arg = self._common_arg_prep(from_str_arg)
         self.env.screenshot_all_screenshots.append({
             'docname':  self.env.docname,
             'from_str_arg': from_str_arg,
         })
+        return self._make_image_node()
+
+    def _common_arg_prep(self, arg):
+        """All commands are handled in the same way regarding these options. """
+        new_arg = arg
+        new_arg["inputs"].append({"<slug>":self.filename})
+        if hasattr(self, "focus_selector"):
+            new_arg["focus"] = {}
+            new_arg["focus"]["selector"] = self.focus_selector
+            new_arg["focus"]["styles"] = FOCUS_CSS_STYLES
+            new_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
+        new_arg["registered"] = self.options["registered"]
+        return new_arg
+
+    def _make_image_node(self):
+        """Make an image node by safely calling Image.run (i.e. ensure the file exists)."""
         self.arguments.append(os.path.join("/", SS_DUMP_DIR, self.filename+".png"))
         open(os.path.join(OUTPUT_PATH, self.filename+".png"), 'w').close()
         (image_node,) = Image.run(self)
         return image_node
+
 
 # Implementation-specific functions for the screenshots management command
 def _specialkeys(k):
