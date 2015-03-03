@@ -44,25 +44,6 @@ class SwitchTest(BaseTest):
         StoreTransactionLog.objects.all().soft_delete()
 
     @override_settings(CONFIG_PACKAGE=["Nalanda"])
-    def test_exam_unset(self):
-        """
-        Tests that when an exam is unset in the output condition
-        that a gift_card is created with appropriate points.
-        """
-        test_object = Test.all().get(self.exam_id, None)
-        self.assertTrue(test_object)
-        testlog = TestLog(user=self.student, test=self.exam_id, index=20, started=True, complete=True, total_correct=15, total_number=21)
-        testlog.save()
-        # Set and unset exam mode to trigger signal.
-        set_exam_mode_on(test_object)
-        set_exam_mode_on(test_object)
-        transactionlogs = StoreTransactionLog.objects.filter(user=self.student, item="gift_card")
-        self.assertTrue(len(transactionlogs))
-        for transactionlog in transactionlogs:
-            self.assertTrue(transactionlog.value == int(round(settings.POINTS*float(testlog.total_correct)/testlog.total_number)))
-
-
-    @override_settings(CONFIG_PACKAGE=["Nalanda"])
     def test_playlist_group_mapping_reset_for_a_facility(self):
         from kalite.playlist.models import PlaylistToGroupMapping
         from kalite.facility.models import FacilityGroup
