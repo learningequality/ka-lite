@@ -6,14 +6,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from kalite.playlist import UNITS
 from kalite.student_testing.models import TestLog
 from kalite.testing.client import KALiteClient
 from kalite.testing.base import KALiteClientTestCase, KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateTeacherMixin, CreateStudentMixin
 
-from .utils import get_exam_mode_on, set_exam_mode_on, \
-    get_current_unit_settings_value, set_current_unit_settings_value
+from .utils import get_exam_mode_on, set_exam_mode_on
 
 logging = settings.LOG
 

@@ -41,7 +41,7 @@
     <ul>
 
      {% for playlist in playlists %}
-        <li id= "{{ playlist.id }}" class="folder" > {% trans "Unit" %} {{ playlist.unit }} {% trans playlist.title %}
+        <li id= "{{ playlist.id }}" class="folder" > {% trans playlist.title %}
             <ul>
             {% for exercise in playlist.exercises %}
                 <li id="{{ exercise.id }}"> {{ exercise.title }} </li>

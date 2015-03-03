@@ -56,7 +56,6 @@ class Test():
         self.seed = kwargs.get('seed')
         self.repeats = kwargs.get('repeats')
         self.practice = kwargs.get('is_practice')
-        self.unit = kwargs.get('unit')
         self.show = kwargs.get('show')
         self.grade = kwargs.get('grade')
         self.test_id = test_id

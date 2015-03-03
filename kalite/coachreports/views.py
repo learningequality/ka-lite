@@ -35,8 +35,6 @@ from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
-from kalite.playlist import UNITS
-from kalite.student_testing.utils import get_current_unit_settings_value
 from kalite.ab_testing.data.groups import get_grade_by_facility
 
 # shared by test_view and test_detail view
@@ -280,10 +278,10 @@ def exercise_mastery_view(request, facility):
     student_ordering = ["last_name", "first_name", "username"]
 
     grade = "Grade " + str(get_grade_by_facility(facility))
-    playlists = (filter(lambda p: p.unit >= 100 and p.unit <= 104 and p.tag==grade, Playlist.all()) or [None])
+    playlists = (filter(lambda p: p.tag==grade, Playlist.all()) or [None])
     context = plotting_metadata_context(request, facility=facility)
     context.update({
-        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise"), "unit": p.unit } for p in playlists if p],
+        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise")} for p in playlists if p],
     })
 
     exercises = str(request.GET.get("playlist", ""))

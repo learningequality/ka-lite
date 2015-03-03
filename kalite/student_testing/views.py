@@ -32,13 +32,3 @@ def test_list(request):
     """
     context = {}
     return context
-
-
-@require_admin
-@render_to("student_testing/current_unit.html")
-def current_unit(request):
-    """
-    Display list of facilities with the current unit column accessible only for the admin user like the teacher.
-    """
-    context = {}
-    return context

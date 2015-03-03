@@ -11,8 +11,3 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
 from kalite.shared.decorators import require_login
-
-@require_login
-@render_to("store/store.html")
-def store(request):
-    return {}

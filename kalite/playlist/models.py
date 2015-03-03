@@ -98,7 +98,6 @@ class VanillaPlaylist:
         self.tag = kwargs.get('tag')
         self.description = kwargs.get('description')
         self.groups_assigned = kwargs.get('groups_assigned')
-        self.unit = kwargs.get('unit')
 
     @classmethod
     def all(cls, limit_to_shown=True):
@@ -118,7 +117,7 @@ class VanillaPlaylist:
                            show=playlist_dict.get('show', False),
                            id=playlist_dict['id'],
                            tag=playlist_dict['tag'],
-                           unit=playlist_dict['unit'])
+                           )
 
             # instantiate the groups assigned to this playlist
             groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')

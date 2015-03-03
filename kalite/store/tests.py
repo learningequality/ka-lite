@@ -8,7 +8,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateTeacherM
 from kalite.main.models import ExerciseLog
 
 from kalite.student_testing.models import Test, TestLog
-from kalite.student_testing.utils import set_exam_mode_on, set_current_unit_settings_value
+from kalite.student_testing.utils import set_exam_mode_on
 
 from .models import StoreTransactionLog, playlist_group_mapping_reset_for_a_facility
 
