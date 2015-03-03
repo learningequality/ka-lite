@@ -257,6 +257,7 @@ def exercise(request, ds, exercise_id):
         if student_grade:
             for playlist in Playlist.all():
                 grade = int(playlist.id[1])
+                EXERCISES[grade] = []
                 for entry in playlist.entries:
                     if entry["entity_kind"] == "Exercise":
                         EXERCISES[grade].append(entry["entity_id"])
