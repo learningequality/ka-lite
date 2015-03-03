@@ -5,7 +5,8 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from .models import Playlist
-from kalite.testing.mixins import CreateAdminMixin, CreateTeacherMixin, CreateStudentMixin, FacilityMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateTeacherMixin, CreateStudentMixin
 from kalite.testing.base import KALiteTestCase, KALiteClient
 
 @unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")

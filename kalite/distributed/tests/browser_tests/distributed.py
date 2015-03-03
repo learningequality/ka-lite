@@ -18,7 +18,9 @@ from django.utils.translation import ugettext as _
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins, CreateFacilityMixin
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateFacilityMixin
 from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
