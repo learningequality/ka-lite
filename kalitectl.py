@@ -71,6 +71,7 @@ from docopt import docopt
 import httplib
 from urllib2 import URLError
 from socket import timeout
+from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
 from kalite.version import VERSION
 
 # Necessary for loading default settings from kalite
@@ -290,8 +291,11 @@ def manage(command, args=[], in_background=False):
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        thread = ManageThread(command, args=args)
-        thread.start()
+        if os.name != "nt":
+            thread = ManageThread(command, args=args, name=" ".join([command]+args))
+            thread.start()
+        else:
+            Popen([sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args, creationflags=CREATE_NEW_PROCESS_GROUP)
 
 
 def start(debug=False, args=[], skip_job_scheduler=False):
@@ -337,7 +341,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     # This command is run before starting the server, in case the server
     # should be configured to not run in daemon mode or in case the
     # server fails to go to daemon mode.
-    if False:
+    if not skip_job_scheduler:
         manage(
             'cronserver',
             in_background=True,
