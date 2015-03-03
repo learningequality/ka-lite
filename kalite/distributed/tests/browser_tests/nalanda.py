@@ -42,5 +42,5 @@ class ExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
         self.set_navigate_to_exercise("telling_time")
         time.sleep(5)
         actual_points = self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')")
-        expected_points = 25
+        expected_points = 0
         self.assertEqual(actual_points, expected_points, "Basepoints should be %s in input condition; is actually %s" % (expected_points, actual_points))
