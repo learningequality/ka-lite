@@ -3,9 +3,11 @@
 {% load staticfiles %}
 {% load i18n_filters %}
 
-{% block users_active %}{% trans "active" %}{% endblock users_active %}
-{% block manage_active %}{% trans "active" %}{% endblock manage_active %}
-{% block video_active %}{% trans "video-active active-tab active-nav" %}{% endblock video_active %}
+{% block i18n_do_not_translate %}
+    {% block users_active %}active{% endblock users_active %}
+    {% block manage_active %}active{% endblock manage_active %}
+    {% block video_active %}video-active active-tab active-nav{% endblock video_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block title %}{% trans "Update Videos" %}{% endblock %}
 
