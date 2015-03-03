@@ -44,3 +44,4 @@ class ExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
         actual_points = self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')")
         expected_points = 0
         self.assertEqual(actual_points, expected_points, "Basepoints should be %s in input condition; is actually %s" % (expected_points, actual_points))
+
