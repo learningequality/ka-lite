@@ -35,7 +35,7 @@ def register_device(request):
     # attempt to load the client device data from the request data
     data = simplejson.loads(request.body or "{}")
     if "client_device" not in data:
-        return JsonResponseMessageError("Serialized client device must be provided.")
+        return JsonResponseMessageError("Serialized client device must be provided.", status=400)
     try:
         # When hand-shaking on the device models, since we don't yet know the version,
         #   we have to just TRY with our own version.

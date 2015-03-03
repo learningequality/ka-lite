@@ -32,7 +32,7 @@ def require_sync_session(handler):
             data = request.GET
         try:
             if "client_nonce" not in data:
-                return JsonResponseMessageError("Client nonce must be specified.")
+                return JsonResponseMessageError("Client nonce must be specified.", status=400)
             session = SyncSession.objects.get(client_nonce=data["client_nonce"])
             if not session.verified:
                 return JsonResponseMessageError("Session has not yet been verified.")
@@ -51,7 +51,7 @@ def require_sync_session(handler):
 def create_session(request):
     data = simplejson.loads(request.body or "{}")
     if "client_nonce" not in data:
-        return JsonResponseMessageError("Client nonce must be specified.")
+        return JsonResponseMessageError("Client nonce must be specified.", status=400)
     if len(data["client_nonce"]) != 32 or re.match("[^0-9a-fA-F]", data["client_nonce"]):
         return JsonResponseMessageError("Client nonce is malformed (must be 32-digit hex).")
     if "client_device" not in data:

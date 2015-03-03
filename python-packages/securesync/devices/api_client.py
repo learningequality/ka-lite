@@ -120,7 +120,8 @@ class RegistrationClient(BaseClient):
         })
 
         # If they don't understand, our assumption is broken.
-        if r.status_code == 500 and "Device has no field named 'version'" in r.content:
+        # TODO BLOCKER 0.14 (rtibbles) update all our HTTP response codes to be properly semantic
+        if (r.status_code == 500 or r.status_code == 400) and "Device has no field named 'version'" in r.content:
             raise Exception("Central server is of an older version than us?")
 
         # Failed to register with any certificate
