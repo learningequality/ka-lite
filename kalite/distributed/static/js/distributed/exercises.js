@@ -1417,7 +1417,7 @@ window.ExerciseQuizView = Backbone.View.extend({
                     item: "/api/store/storeitem/gift_card/",
                     purchased_at: window.statusModel.get_server_time(),
                     reversible: false,
-                    context_id: ds.ab_testing.unit || 0,
+                    context_id: 0,
                     context_type: "unit",
                     user: window.statusModel.get("user_uri"),
                     value: this.points

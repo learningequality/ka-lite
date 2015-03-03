@@ -20,18 +20,10 @@ class Command(BaseCommand):
             # iterfile = iter(f.readline, "")
             reader = csv.DictReader(f, delimiter="\t")
 
-            facility_unit_mappings = {}
             facility_grade_mappings = {}
 
             for row in reader:
-                facility = {}
-                facility["101"] = row["unit_1"]
-                facility["102"] = row["unit_2"]
-                facility["103"] = row["unit_3"]
-                facility["104"] = row["unit_4"]
-
                 id = row["facility_id"]
-                facility_unit_mappings[id] = facility
                 facility_grade_mappings[id] = row["grade"]
 
         savedir = os.path.join(os.path.dirname(__file__),
@@ -40,20 +32,11 @@ class Command(BaseCommand):
                                "data"
         )
 
-        facility_unit_mappings_file = os.path.join(
-            savedir,
-            "facility_unit_mappings.json"
-        )
 
         facility_grade_mappings_file = os.path.join(
             savedir,
             "facility_grade_mappings.json"
         )
-
-        with open(facility_unit_mappings_file, "w") as f:
-            json.dump(facility_unit_mappings, f,
-                      sort_keys=True,
-                      indent=4)
 
         with open(facility_grade_mappings_file, "w") as f:
             json.dump(facility_grade_mappings, f,

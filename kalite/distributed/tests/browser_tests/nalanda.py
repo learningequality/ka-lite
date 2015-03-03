@@ -8,17 +8,12 @@ from django.core.urlresolvers import reverse
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 from kalite.topic_tools import get_node_cache
-from kalite.student_testing.utils import set_current_unit_settings_value
-
-PLAYLIST_ID = "g4_u403_p1"
 
 logging = settings.LOG
 
 
-class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
-    """
-    Tests that dynamic settings are properly set for different units.
-    """
+class ExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
+
     student_username = 'test_student'
     student_password = 'socrates'
     facility_name = 'facility1'
@@ -27,44 +22,25 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         """
         Create a student, log the student in.
         """
-        super(UnitSwitchTest, self).setUp()
+        super(ExerciseTest, self).setUp()
         self.facility = self.create_facility(name=self.facility_name)
         self.student = self.create_student(username=self.student_username, password=self.student_password, facility=self.facility)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
 
 
-    def set_unit_navigate_to_exercise(self, unit, exercise_id):
+    def set_navigate_to_exercise(self, exercise_id):
         """
-        Set the student unit. Navigate to an exercise.
+        Navigate to an exercise.
         """
-
-        set_current_unit_settings_value(self.facility.id, unit)
         self.browse_to(self.live_server_url + get_node_cache("Exercise")[exercise_id][0]["path"])
 
-    def test_nalanda_control_exercise(self):
-        """
-        Test exercise points in control unit.
-        """
-        self.set_unit_navigate_to_exercise(102, "recognizing_fractions")
-        time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"),
-                         0,
-                         "Basepoints should be zero in control")
 
-    def test_nalanda_input_exercise(self):
+    def test_exercise_points(self):
         """
-        Test exercise points in input unit.
+        Test exercise points.
         """
-        self.set_unit_navigate_to_exercise(101, "telling_time")
+        self.set_navigate_to_exercise("telling_time")
         time.sleep(5)
         actual_points = self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')")
         expected_points = 25
         self.assertEqual(actual_points, expected_points, "Basepoints should be %s in input condition; is actually %s" % (expected_points, actual_points))
-
-    def test_nalanda_output_exercise(self):
-        """
-        Test exercise points in output unit.
-        """
-        self.set_unit_navigate_to_exercise(101, "conditional_statements_2")
-        time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 0, "Basepoints should be zero in output")

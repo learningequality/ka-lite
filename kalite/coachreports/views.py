@@ -633,7 +633,7 @@ def spending_report_view(request, facility):
 def spending_report_detail_view(request, user_id):
     """View transaction logs for student"""
     student = get_object_or_404(FacilityUser, id=user_id)
-    transactions = StoreTransactionLog.objects.filter(user=student, context_type='unit').order_by('purchased_at') # TODO(dylanjbarth): filter out gift cards?
+    transactions = StoreTransactionLog.objects.filter(user=student).order_by('purchased_at') # TODO(dylanjbarth): filter out gift cards?
     context = plotting_metadata_context(request)
     store_items = StoreItem.all()
     humanized_transactions = []
