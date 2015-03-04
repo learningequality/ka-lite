@@ -488,14 +488,12 @@ def get_exercise_data(request, exercise_id=None):
 def get_assessment_item_data(request, assessment_item_id=None):
     assessment_item = get_assessment_item_cache().get(assessment_item_id, None)
 
-
     if not assessment_item:
         return None
 
     # TODO (rtibbles): Enable internationalization for the assessment_items.
 
     try:
-        logging.info('Wrapping the Assessment Item with _()')
         item_data = json.loads(assessment_item['item_data'])
         question_content = _(item_data['question']['content'])
         answerarea_content = item_data['answerArea']['options']['content']
@@ -516,12 +514,12 @@ def get_assessment_item_data(request, assessment_item_id=None):
         item_data['answerArea']['options']['content'] = answerarea_content
         # dump the data for a proper json format.
         assessment_item['item_data'] = json.dumps(item_data)
-        logging.info('Successfully wrapped New Assessment Item with _()')
 
     except KeyError:
-        logging.log("Something wrong with the format on assessment items json.")
+        logging.error("There is something wrong with the format of the assessment items:%s" % KeyError)
 
     return assessment_item
+
 
 
 def get_content_data(request, content_id=None):
