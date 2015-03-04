@@ -71,8 +71,10 @@ from docopt import docopt
 import httplib
 from urllib2 import URLError
 from socket import timeout
-from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
 from kalite.version import VERSION
+
+if os.name == "nt":
+    from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
 
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
