@@ -3,7 +3,6 @@ from kalite.dynamic_assets import DynamicSettingsBase, fields
 
 
 class DynamicSettings(DynamicSettingsBase):
-    show_store_link_once_points_earned = fields.BooleanField(default=False)
 
     # Teacher restrictions
     teacher_can_create_facilities = fields.BooleanField(default=not settings.RESTRICTED_TEACHER_PERMISSIONS)

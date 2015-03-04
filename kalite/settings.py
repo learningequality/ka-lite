@@ -210,12 +210,10 @@ if package_selected("RPi"):
 
 if package_selected("Nalanda"):
     LOG.info("Nalanda package selected")
-    TURN_OFF_MOTIVATIONAL_FEATURES = True
+    TURN_OFF_MOTIVATIONAL_FEATURES = False
     RESTRICTED_TEACHER_PERMISSIONS = True
     FIXED_BLOCK_EXERCISES = 5
     QUIZ_REPEATS = 3
-    POINTS = 2000
-
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")

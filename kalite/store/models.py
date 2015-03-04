@@ -1,14 +1,7 @@
 import datetime
 
 from django.db import models
-from django.db.models import Sum
-from django.dispatch import receiver
 from django.core.exceptions import ValidationError
-
-from kalite.student_testing.signals import exam_unset
-from kalite.student_testing.models import TestLog
-
-from kalite.dynamic_assets.utils import load_dynamic_settings
 
 from kalite.facility.models import FacilityUser, Facility
 
@@ -66,10 +59,6 @@ class StoreTransactionLog(DeferredCountSyncedModel):
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
-    @staticmethod
-    def get_points_for_user(user):
-        return StoreTransactionLog.objects.filter(user=user).aggregate(Sum("value")).get("value__sum", 0) or 0
-
     def save(self, *args, **kwargs):
         if not kwargs.get("imported", False):
             self.full_clean()
@@ -87,33 +76,3 @@ class StoreTransactionLog(DeferredCountSyncedModel):
                     raise ValidationError("Store Item cost different from transaction_log value")
 
         super(StoreTransactionLog, self).save(*args, **kwargs)
-
-
-@receiver(exam_unset, dispatch_uid="exam_unset")
-def handle_exam_unset(sender, **kwargs):
-    test_id = kwargs.get("test_id")
-    if test_id:
-        testlogs = TestLog.objects.filter(test=test_id)
-        for testlog in testlogs:
-            facility_user = testlog.user
-            facility = facility_user.facility
-            ds = load_dynamic_settings(user=facility_user)
-            if ds["student_testing"].turn_on_points_for_practice_exams:
-                transaction_log, created = StoreTransactionLog.objects.get_or_create(user=testlog.user, context_id=0, context_type="output_condition", item="gift_card")
-                try:
-                    transaction_log.value = int(round(settings.POINTS * float(testlog.total_correct)/testlog.total_number))
-                except ZeroDivisionError:  # one of the students just hasn't started answering a test when we turn it off
-                    continue
-                transaction_log.save()
-
-
-def playlist_group_mapping_reset_for_a_facility(facility_id):
-    from kalite.playlist.models import PlaylistToGroupMapping
-    from kalite.facility.models import FacilityGroup
-
-    groups = FacilityGroup.objects.filter(facility=facility_id).values("id")
-    playlist_group = PlaylistToGroupMapping.objects.all()
-    for group in groups:
-        for assigned_group in playlist_group:
-            if assigned_group.group_id == group['id']:
-                assigned_group.delete()
