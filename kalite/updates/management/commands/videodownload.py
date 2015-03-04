@@ -217,6 +217,10 @@ class Command(UpdatesDynamicCommand, CronCommand):
             })
             caching.initialize_content_caches()
 
+        except TypeError:
+            failed_youtube_ids.append(video.youtube_id)
+            logging.info("TypeError due to internet disconnect")
+
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})
             raise
