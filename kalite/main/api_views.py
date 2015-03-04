@@ -33,7 +33,6 @@ from kalite.dynamic_assets.decorators import dynamic_settings
 
 from kalite.playlist.models import VanillaPlaylist as Playlist
 
-
 class student_log_api(object):
     """
     Decorator (wrapper) for telling the user what happens
@@ -247,23 +246,9 @@ def flat_topic_tree(request, lang_code):
 EXERCISES = {}
 
 @dynamic_settings
-@api_handle_error_with_json
 @backend_cache_page
 def exercise(request, ds, exercise_id):
     exercise = get_exercise_data(request, exercise_id)
-    if "facility_user" in request.session:
-        facility_id = request.session["facility_user"].facility.id
-        student_grade = ds["ab_testing"].student_grade_level
-        if student_grade:
-            for playlist in Playlist.all():
-                grade = int(playlist.id[1])
-                EXERCISES[grade] = []
-                for entry in playlist.entries:
-                    if entry["entity_kind"] == "Exercise":
-                        EXERCISES[grade].append(entry["entity_id"])
-
-            current_exercises = EXERCISES.get(student_grade, [])
-
     return JsonResponse(exercise)
 
 
