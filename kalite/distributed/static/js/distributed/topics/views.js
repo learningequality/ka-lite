@@ -114,7 +114,7 @@ window.SidebarView = BaseView.extend({
     resize_for_narrow: _.debounce(function() {
         var current_level = this.state_model.get("current_level");
         var column_width = this.$(".topic-container-inner").width();
-        var last_column_width = 400;
+        var last_column_width = this.$(".topic-container-inner:last-child").width();
         // Hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. Also, sidebar overflow out of the left side of screen
         // is computed and set here.
