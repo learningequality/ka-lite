@@ -23,7 +23,7 @@ from functools import partial
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.utils import translation
-from django.utils.translation import ugettext as _
+from django.utils.translation import activate, ugettext as _
 
 from fle_utils.general import softload_json
 from kalite import i18n
@@ -519,7 +519,6 @@ def get_assessment_item_data(request, assessment_item_id=None):
         logging.error("There is something wrong with the format of the assessment items:%s" % KeyError)
 
     return assessment_item
-
 
 
 def get_content_data(request, content_id=None):
