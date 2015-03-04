@@ -987,3 +987,7 @@ to items you want to have the icon appear with.
     -ms-user-select: none;
     user-select: none;
 }
+
+#workarea .perseus-widget-container.widget-highlight {
+    box-shadow: -4px 0 9px 5px #ffa500;
+}
