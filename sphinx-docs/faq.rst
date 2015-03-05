@@ -74,6 +74,7 @@ What are some possible hardware configurations for deploying KA Lite?
 ---------------------------------------------------------------------
 
 You will need:
+
 1. A computer that is running the KA Lite software (e.g. a desktop computer, laptop, or Raspberry Pi).
 2. One or more client devices that have web browsers (laptops, tablets, desktop computers, etc)
 
@@ -116,13 +117,9 @@ KA Lite is an independent, open-source project maintained by a distributed team 
 How can local curriculum be generated?
 --------------------------------------
 
-Local content creation is something that KA Lite intends to pursue in the future. This feature is not available at this time, but steps are being taken, as you can read about `here`_. If you would like to be notified when it is available, subscribe for updates on our `home page`_, or if you would like to fund this project, please click `here`_.
-
-.. _here: https://learningequality.org/blog/2013/bringing-ka-lite-gitwe/ 
+Local content creation is something that KA Lite intends to pursue in the future. This feature is not available at this time, but steps are being taken, as you can read about `here <https://learningequality.org/blog/2013/bringing-ka-lite-gitwe/>`_. If you would like to be notified when it is available, subscribe for updates on our `home page`_, or if you would like to fund this project, please click `here <https://learningequality.org/give/>`_.
 
 .. _home page: http://kalite.learningequality.org/
-
-.. _here: https://learningequality.org/give/
 
 How is it possible to compress the content into KA Lite?
 --------------------------------------------------------
