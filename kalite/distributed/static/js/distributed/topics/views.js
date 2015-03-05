@@ -57,6 +57,10 @@ window.SidebarView = BaseView.extend({
     initialize: function(options) {
         var self = this;
 
+        $(window).on("resize", function() {
+            self.resize_sidebar();
+        });
+
         this.entity_key = options.entity_key;
         this.entity_collection = options.entity_collection;
 
@@ -120,12 +124,15 @@ window.SidebarView = BaseView.extend({
         // is computed and set here.
 
         // THE magic variable that controls number of visible panels
-        var numOfPanelsToShow = 3;
+        var numOfPanelsToShow = 4;
+
+        if ($(window).width() < 1120)
+            numOfPanelsToShow = 3;
 
         if ($(window).width() < 920)
             numOfPanelsToShow = 2;
 
-        if ($(window).width() < 720)
+        if ($(window).width() < 620)
             numOfPanelsToShow = 1;
 
         // Used to get left value in number form
@@ -141,9 +148,9 @@ window.SidebarView = BaseView.extend({
         var originalBackColor = this.sidebarBack.css('background-color');
         this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
         
-        var thisTemp = this;
+        var self = this;
         this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function() {
-            thisTemp.set_sidebar_back();
+            self.set_sidebar_back();
         });
 
         this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
