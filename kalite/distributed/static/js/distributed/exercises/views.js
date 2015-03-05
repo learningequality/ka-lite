@@ -118,7 +118,18 @@ window.ExerciseView = Backbone.View.extend({
     events: {
         "submit .answer-form": "answer_form_submitted",
         "keyup .perseus-input": "click_check_answer_button",
+        "click .perseus-input": "assign_input_id",
         "keyup #solutionarea>input": "click_check_answer_button"
+    },
+
+    assign_input_id: function(e) {
+        $(".perseus-input").each(function () {
+            if ( $(this).prop("id").length > 0 ) {
+                $(this).removeAttr("id");
+            }
+        })
+        $(e.currentTarget).attr("id", "selected-input");
+
     },
 
     click_check_answer_button: function(e) {
