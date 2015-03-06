@@ -52,6 +52,7 @@
     {% if load_perseus_assets %}
         <!-- START PERSEUS STUFF -->
         <script src="{% static "perseus/lib/es5-shim.js" %}"></script>
+        <script src="{% static "js/es5-sham.js" %}"></script>
         <script src="{% static "perseus/lib/react-with-addons.js" %}"></script>
         <script src="{% static "perseus/ke/third_party/MathJax/2.1/MathJax.js" True %}?config={% static "perseus/ke/third_party/MathJax/2.1/config/KAthJax-8f02f65cba7722b3e529bd9dfa6ac25d" %}"></script>
         <script src="{% static "perseus/lib/katex/katex.js" %}"></script>
@@ -103,6 +104,7 @@
     <script src="{% static 'js/distributed/audio/views.js' %}"></script>
 
     {% if pdfjs %}
+    <!--[if gt IE 8]> <!-- -->
     <script src="{% url 'handlebars_templates' module_name='pdf' %}"></script>
     <script src="{% static 'pdfjs/web/compatibility.js' %}"></script>
     <script src="{% static 'pdfjs/web/l10n.js' %}"></script>
@@ -116,6 +118,7 @@
     </script>
     <script src="{% static 'pdfjs/web/viewer.js' %}"></script>
     <script src="{% static 'js/distributed/pdf/views.js' %}"></script>
+    <!-- <![endif]-->
     {% endif %}
 
     <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>

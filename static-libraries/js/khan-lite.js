@@ -120,7 +120,11 @@ function handleSuccessAPI(obj) {
     }
 
     if (messages) {
-        show_api_messages(messages);
+        try {
+            show_api_messages(messages);
+        } catch(e) {
+            console.log(e);
+        }
     }
 }
 
