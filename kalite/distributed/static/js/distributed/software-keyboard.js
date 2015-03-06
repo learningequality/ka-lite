@@ -40,10 +40,12 @@ window.SoftwareKeyboardView = Backbone.View.extend({
     key_pressed: function(ev) {
 
         var input = this.inputs.first();
+        var inputIndex = 0;
 
-        $(this.inputs).each(function () {
+        $(this.inputs).each(function (index) {
             if ( $(this).attr("id") ) {
                 input = $(this);
+                inputIndex = index;
             }
         });
 
@@ -87,12 +89,12 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         //setInputValue method of the itemRenderer. Directly interacting with the DOM element
         //doesn't seem to trigger the right events for the React Element to notice.
 
-        //if (typeof Exercises.PerseusBridge.itemRenderer !== "undefined") {
-        //    var inputPaths = Exercises.PerseusBridge.itemRenderer.getInputPaths() || [];
-        //    if (inputPaths.length > 0) {
-        //        Exercises.PerseusBridge.itemRenderer.setInputValue(inputPaths[0], this.field.val());
-        //    }
-        //}
+        if (typeof Exercises.PerseusBridge.itemRenderer !== "undefined") {
+            var inputPaths = Exercises.PerseusBridge.itemRenderer.getInputPaths() || [];
+            if (inputPaths.length > 0) {
+                Exercises.PerseusBridge.itemRenderer.setInputValue(inputPaths[inputIndex], this.field.val());
+            }
+        }
 
         return false;
     },
