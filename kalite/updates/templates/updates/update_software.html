@@ -5,7 +5,9 @@
 
 {% block title %}{% trans "Update Software" %}{% endblock %}
 
-{% block facility_active %}{% trans "facility-active active-tab active-nav" %}{% endblock facility_active %}
+{% block i18n_do_not_translate %}
+    {% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />

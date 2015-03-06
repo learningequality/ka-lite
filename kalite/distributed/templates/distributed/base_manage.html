@@ -4,8 +4,10 @@
 {% load i18n %}
 {% load my_filters %}
 
-{% block manage_active_teachers %}{% trans "active" %}{% endblock manage_active_teachers %}
-{% block manage_active_admins %}{% trans "active" %}{% endblock manage_active_admins %}
+{% block i18n_do_not_translate %}
+    {% block manage_active_teachers %}active{% endblock manage_active_teachers %}
+    {% block manage_active_admins %}active{% endblock manage_active_admins %}
+{% endblock i18n_do_not_translate %}
 
 {% block subnavbar %}
     <div class="manage-nav logged-in-only">
