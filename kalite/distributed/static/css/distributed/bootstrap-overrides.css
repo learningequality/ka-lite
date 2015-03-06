@@ -119,9 +119,6 @@ input[type="submit"] {
 .nav-tabs li a:hover,
 .nav-tabs li.active a {
     background-color: white;
-    border-left: 2px solid #5AA685;
-    border-top: 2px solid #5AA685;
-    border-right: 2px solid #5AA685;
     color: #5AA685;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
