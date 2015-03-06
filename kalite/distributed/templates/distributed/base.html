@@ -204,7 +204,7 @@
                                 </a>
                               </li>
                             {% endif %}
-                            {% if request.is_admin and not request.session.facility_user.facility %}
+                            {% if request.is_admin and not request.session.facility_user.facility and not is_config_package_nalanda %}
                               {# Teach for admins => coachreports #}
                               <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
                                 <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">

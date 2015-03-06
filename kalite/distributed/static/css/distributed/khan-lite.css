@@ -213,7 +213,6 @@ a:hover {
 .reports:hover, .reports-active {
     background-position: center 7px;
     height: 87px;
-    color: #5AA685 !important;
 }
 .playlist {
     background-position: center 7px;
