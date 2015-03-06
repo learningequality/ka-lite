@@ -544,10 +544,9 @@ def convert_leaf_url_to_id(leaf_url):
 # Returns a dictionary with each subtopic and their related
 # topics.
 #
-# @param temp_index: a temporary index for comparison tests
 ###
 import time
-def generate_recommendation_data(temp_index):
+def generate_recommendation_data():
 
     #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values
     data = {};
@@ -655,8 +654,6 @@ def generate_recommendation_data(temp_index):
     '''print 'time taken for actual algorithm exlcuding topic_tree: ' + str(time.clock() - t1)'''
 
     #0 is for hardcoded data ###### DELETE AFTER TESTS ########
-    if(temp_index == 0):
-        return data_hardcoded
 
     return data
 
@@ -789,6 +786,7 @@ def get_subsequent_neighbors(nearest_neighbors, data):
 # content recommendation algorithms (hardcoded and dynamic) 
 #
 ###
+import csv
 def recommendation_alg_tester():
     data_hardcoded = generate_recommendation_data(0) # grabs hardecoded data dict
     data_dyn = generate_recommendation_data(1)       # grabs dyn gen data dict
@@ -828,8 +826,62 @@ def recommendation_alg_tester():
 
     results['percentageOfMatching'] = str((round((float(numTotalMatches)/numTotalRecs)*100.0, 2))) + '%'
 
+
+    '''temporary writing to csv file 
+    headers = ['Subtopic', 'HC', 'DYN']
+    test_file = open('alg_comparisons_first_5.csv', 'wb')
+    csvwriter = csv.DictWriter(test_file, delimiter=',', fieldnames = headers)
+    csvwriter.writerow({'Subtopic': 'Subtopic', 'HC': 'HC', 'DYN': 'DYN'})
+    for subtopic in results:
+        print subtopic
+        if(subtopic =='percentageOfMatching'):
+            continue
+        #grab recommendations
+        recs = results[subtopic]['recommendations']
+
+        i = 0
+        while i < len(recs['hc']):
+            row = {'Subtopic': subtopic, 'HC': recs['hc'][i], 'DYN': recs['dyn'][i]} #row to write
+            csvwriter.writerow(row)
+            i+=1 
+    '''
+
+
     return results
 
+
+
+##
+# Attempt to generate recommendations using only the topic tree structure.
+# Given specified prerequisites, this function will return related
+# and/or suggested other prereqs, solely by looking at the topic tree.
+# As of now, the method will also compute and compare these to the
+# ones in get_exercise_cache().
+#
+# @param prereq_list: a list of specified prequisite courses (by the user).
+##
+def get_prerequisite_recommendations(prereq_list):
+    cached_exercises = get_exercise_cache()
+
+    prereqs = {}  #will be in the form { exercise_id: {from_cache:[...], from_topic_tree:[...]} }
+
+    for exercise in cached_exercises:
+
+        prereqs[exercise] = {}  #create a key - value pair for the current exercise
+
+
+        ''' this block of code adds the prereqs defined in the cached exercises object'''
+        from_cache = cached_exercises[exercise]['prerequisites'] # array of cached prereqs
+        prereqs[exercise]['from_cache'] = from_cache
+
+        ''' this block of code adds the prereqs dynamically generated with the topic tree '''
+        print get_topic_by_path(cached_exercises[exercise]['path'], None)
+
+
+    #TODO LATER : return prereqs pertaining to those in the prereq_list, with priority given
+    # to those that appear in all (shared by all)
+
+    #print prereqs
 
 
 def is_content_on_disk(content_id, format="mp4", content_path=None):
