@@ -204,10 +204,10 @@
                                 </a>
                               </li>
                             {% endif %}
-                            {% if request.is_django_user and not is_config_package_nalanda %}
+                            {% if request.is_admin and not request.session.facility_user.facility %}
                               {# Teach for admins => coachreports #}
                               <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
-                                <a href="{% url 'tabular_view' %}" id="nav_coachreports">
+                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
                                   {% trans "Teach" %}
                                 </a>
                               </li>
@@ -225,13 +225,11 @@
 
                             <!-- For logged in teachers -->
                             {# Teach for teachers => coachreports #}
-                            {% if request.is_admin %}
                             <li class="{% block teach_active_teachers %}{% endblock teach_active_teachers %}">
                               <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
                                 {% trans "Teach" %}
                               </a>
                             </li>
-                            {% endif %}
 
                             {# Manage for teachers => facility management #}
                             {% if request.session.facility_user.facility %}
