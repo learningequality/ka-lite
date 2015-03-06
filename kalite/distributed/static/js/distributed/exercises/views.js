@@ -127,7 +127,7 @@ window.ExerciseView = Backbone.View.extend({
             if ( $(this).prop("id").length > 0 ) {
                 $(this).removeAttr("id");
             }
-        })
+        });
         $(e.currentTarget).attr("id", "selected-input");
 
     },
