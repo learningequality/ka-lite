@@ -5,8 +5,8 @@
 {% load my_filters %}
 
 {% block i18n_do_not_translate %}
-    {% block manage_active_teachers %}active{% endblock manage_active_teachers %}
-    {% block manage_active_admins %}active{% endblock manage_active_admins %}
+    {% block manage_active_teachers %}active top-level-active{% endblock manage_active_teachers %}
+    {% block manage_active_admins %}active top-level-active{% endblock manage_active_admins %}
 {% endblock i18n_do_not_translate %}
 
 {% block subnavbar %}

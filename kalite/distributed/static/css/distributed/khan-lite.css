@@ -200,36 +200,19 @@ a:hover {
     font-weight: bold;
 }
 .active-tab {
-    height: 89px;
-    width: 110px;
+
 }
 .active-tab div {
     color: #5AA685 !important;
 }
-.reports {
+.reports, .reports:hover, .reports-active,
+.playlist, .playlist:hover, .playlists-active,
+.exams, .exams:hover, .exams-active, 
+.learn, .learn:hover, .learn-active {
     background-position: center 7px;
     height: 87px;
 }
-.reports:hover, .reports-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.playlist {
-    background-position: center 7px;
-    height: 87px;
-}
-.playlist:hover, .playlists-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.exams {
-    background-position: center 7px;
-    height: 87px;
-}
-.exams:hover, .exams-active {
-    background-position: center 7px;
-    height: 87px;
-}
+
 .units {
     background: url("../../images/distributed/units-icon.png") no-repeat;
     background-position: center 7px;
@@ -240,14 +223,7 @@ a:hover {
     background-position: center 7px;
     height: 87px;
 }
-.learn {
-    background-position: center 7px;
-    height: 87px;
-}
-.learn:hover, .learn-active {
-    background-position: center 7px;
-    height: 87px;
-}
+
 /********* End Sub-Navigation bar **********/
 
 
@@ -260,7 +236,7 @@ a:hover {
 }
 .manage-nav ul {
     padding-left: 1%;
-    height: 87px;
+    margin-bottom: -1px;
 }
 .manage-nav li {
     background-color: #5AA685;
@@ -303,6 +279,20 @@ a:hover {
 .manage-nav span.icon {
     font-size: 40pt;
 }
+.top-level-active {
+    padding-right: 0px !important;
+    margin-right: 7px;
+    background-color: white;
+    color: #5AA685;
+    border-top: 2px solid #eee;
+    border-right: 2px solid #eee;
+    border-left: 2px solid #eee;
+    border-radius: 5px 15px 0 0;
+    -webkit-transition: all 80ms ease-out;
+    -moz-transition: all 80ms ease-out;
+    -o-transition: all 80ms ease-out;
+    transition: all 80ms ease-out;
+} 
 .active-nav {
     color: #405D32 !important;
     background-color: white !important;
