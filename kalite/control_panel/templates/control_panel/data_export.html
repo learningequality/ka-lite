@@ -3,7 +3,9 @@
 {% load staticfiles %}
 {% load include_block %}
 
+{% block i18n_do_not_translate %}
 {% block facility_active %}active{% endblock facility_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block title %}{{ zone.name }} - {% trans "Data Export" %} {{ block.super }}{% endblock title %}
 

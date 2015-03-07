@@ -199,9 +199,6 @@ a:hover {
     border-top-right-radius: 16px;
     font-weight: bold;
 }
-.active-tab {
-
-}
 .active-tab div {
     color: #5AA685 !important;
 }

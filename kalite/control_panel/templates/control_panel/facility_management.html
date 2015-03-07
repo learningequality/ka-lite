@@ -3,8 +3,10 @@
 {% load my_filters %}
 {% load staticfiles %}
 
+{% block i18n_do_not_translate %}
 {% block control_panel_active %}{% endblock %}
 {% block user_active %}active{% endblock user_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block title %}{{ facility.name }} - {% trans "Facility Management" %}{% endblock title %}
 
