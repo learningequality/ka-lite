@@ -196,7 +196,7 @@
                             <!-- End for all users -->
 
                             <!-- For logged in admins -->
-                            {% if is_config_package_nalanda and not request.session.facility_user.facility %}
+                            {% if request.is_admin and is_config_package_nalanda and not request.session.facility_user.facility %}
                               {# Teach for admins => assigning playlists #}
                               <li class="{% block teach_active_admins-nalanda %}{% endblock teach_active_admins-nalanda %}">
                                 <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">

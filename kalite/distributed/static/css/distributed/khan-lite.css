@@ -279,7 +279,7 @@ a:hover {
 .manage-nav span.icon {
     font-size: 40pt;
 }
-.top-level-active {
+/*.top-level-active {
     padding-right: 0px !important;
     margin-right: 7px;
     background-color: white;
@@ -292,7 +292,7 @@ a:hover {
     -moz-transition: all 80ms ease-out;
     -o-transition: all 80ms ease-out;
     transition: all 80ms ease-out;
-} 
+} */
 .active-nav {
     color: #405D32 !important;
     background-color: white !important;

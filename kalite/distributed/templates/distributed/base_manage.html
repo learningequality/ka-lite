@@ -5,13 +5,13 @@
 {% load my_filters %}
 
 {% block i18n_do_not_translate %}
-    {% block manage_active_teachers %}active top-level-active{% endblock manage_active_teachers %}
-    {% block manage_active_admins %}active top-level-active{% endblock manage_active_admins %}
+    {% block manage_active_teachers %}active{% endblock manage_active_teachers %}
+    {% block manage_active_admins %}active{% endblock manage_active_admins %}
 {% endblock i18n_do_not_translate %}
 
 {% block subnavbar %}
-    
-    <div class="manage-nav logged-in-only">
+
+    <div class="manage-nav logged-in-only admin-only">
         <ul class="nav nav-tabs">
             {% if request.session.facility_user.facility.id %}
                     <li role="presentation" class="teacher-only users {% block user_active %}{% endblock user_active %}"><a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" title="{% trans 'Manage Users' %}"><div><span class="icon icon-uniE606"></span><br/>{% trans "Users" %}</div></a></li>
