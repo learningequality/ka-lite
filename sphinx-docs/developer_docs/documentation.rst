@@ -3,7 +3,7 @@ How to contribute to documentation
 
 You can propose changes to the docs directly on github (instructions below) or email your recommendations to info@learningequality.org.
 
-To propose changes directly, you'll need to create an account on github and open a pull request. This document assumes you are somewhat familiar with that process, and will not explain all the steps in detail. Some guidelines:
+To propose changes directly, you'll need to create an account on github and open a pull request. This document assumes you are somewhat familiar with that process, and will not explain all the steps in detail. For full instructions on how to make a pull request, see `Github's help section <https://help.github.com/articles/creating-a-pull-request/>`_. Some guidelines:
 
 * Work from the *develop* branch.
 * From the base directory, the documenation can be found in the *sphinx-docs* subdirectory. Specific pages of the docs are each associated with a different .rst file, potentially in a subdirectory of *sphinx-docs*.
