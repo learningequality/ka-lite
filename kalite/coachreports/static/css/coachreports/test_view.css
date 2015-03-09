@@ -17,7 +17,6 @@ th, td {
     max-width: 80px;
     min-width: 60px;
     font-weight: bold;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -83,4 +82,7 @@ th, td {
     width: 15px;
     top: 3px;
     left: 10px;
+}
+.data-header, .student-header  {
+    height: 80px;
 }

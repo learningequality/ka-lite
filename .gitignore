@@ -31,7 +31,7 @@ writeup/
 /content/*.srt
 /content/*.mp3
 /content/*.pdf
-/content/khan/
+/content/khan
 /data/logs
 /data/i18n
 /data/subtitles

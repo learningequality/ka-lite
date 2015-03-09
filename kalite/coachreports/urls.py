@@ -22,11 +22,11 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'^api/', include(api_urls)),
 )
 
-
 #Else block url patterns can't be empty because we have a reverse match for test_view/test_detail_view
 
 if "nalanda" in settings.CONFIG_PACKAGE:
     urlpatterns += patterns(__package__ + '.views',
+        url(r'^report/$', 'exercise_mastery_view', {}, 'exercise_mastery_view'),
         url(r'^test/$', 'test_view', {}, 'test_view'),
         url(r'^test/(?P<test_id>\w+)/$', 'test_detail_view', {}, 'test_detail_view'),
         url(r'^spending_report/$', 'spending_report_view', {}, 'spending_report_view'),
@@ -34,6 +34,7 @@ if "nalanda" in settings.CONFIG_PACKAGE:
     )
 else:
     urlpatterns += patterns(__package__ + '.views',
+        url(r'^/$', 'exercise_mastery_view', {}, 'exercise_mastery_view'),
         url(r'^/$', 'test_view', {}, 'test_view'),
         url(r'^/$', 'test_detail_view', {}, 'test_detail_view'),
         url(r'^/$', 'spending_report_view', {}, 'spending_report_view'),
