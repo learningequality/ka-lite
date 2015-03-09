@@ -251,7 +251,7 @@ class Command(BaseCommand):
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
-        if not settings.RUNNING_IN_TRAVIS:
+        if not settings.RUNNING_IN_TRAVIS and not settings.CENTRAL_SERVER:
             # download assessment items
             # TODO-BLOCKER (aron): do not hardcode this, and put in the proper URL once we have a redirect set up
             call_command("unpack_assessment_zip", "http://eslgenie.com/media/assessment_item_resources.zip")
