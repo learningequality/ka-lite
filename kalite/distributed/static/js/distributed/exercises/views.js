@@ -118,7 +118,18 @@ window.ExerciseView = Backbone.View.extend({
     events: {
         "submit .answer-form": "answer_form_submitted",
         "keyup .perseus-input": "click_check_answer_button",
+        "click .perseus-input": "assign_input_id",
         "keyup #solutionarea>input": "click_check_answer_button"
+    },
+
+    assign_input_id: function(e) {
+        $(".perseus-input").each(function () {
+            if ( $(this).prop("id").length > 0 ) {
+                $(this).removeAttr("id");
+            }
+        });
+        $(e.currentTarget).attr("id", "selected-input");
+
     },
 
     click_check_answer_button: function(e) {
@@ -158,11 +169,11 @@ window.ExerciseView = Backbone.View.extend({
         var self = this;
 
         // TODO-BLOCKER(jamalex): does this need to wait on something, to avoid race conditions?
-        _.defer(this.khan_loaded);
-        if (Khan.loaded) {
+        if(Khan.loaded) {
             Khan.loaded.then(this.khan_loaded);
+        } else {
+            _.defer(this.khan_loaded);
         }
-
 
         this.listenTo(Exercises, "checkAnswer", this.check_answer);
 
@@ -482,22 +493,20 @@ window.ExercisePracticeView = Backbone.View.extend({
             if (context.remaining > 1) {
                 msg = gettext("You have completed your streak.") + " " + gettext("Answer %(remaining)d additional questions to finish this exercise.");
                 if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
-                    show_modal("info", sprintf(msg, context));
+                    show_message("info", sprintf(msg, context));
                 }
             } else if (context.remaining == 1) {
                 msg = gettext("You have completed your streak.") + " " + gettext("Answer 1 additional question to finish this exercise.");
                 if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
-                    show_modal("info", sprintf(msg, context));
+                    show_message("info", sprintf(msg, context));
                 }
             } else {
                 msg = gettext("You have finished this exercise!");
                 if (context.remaining === 0) {
-                    show_modal("info", sprintf(msg, context));
+                    show_message("info", sprintf(msg, context));
                 }
             }
         }
-
-        show_message("info", sprintf(msg, context), "id_exercise_status");
     },
 
     user_data_loaded: function() {

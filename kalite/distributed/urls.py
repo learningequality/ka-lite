@@ -78,7 +78,7 @@ urlpatterns += patterns('',
 )
 
 # Testing
-if "tests.loadtesting" in settings.INSTALLED_APPS:
+if "kalite.testing.loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns(__package__ + '.views',
         url(r'^loadtesting/', include('kalite.testing.loadtesting.urls')),
     )

@@ -38,6 +38,9 @@ class KALiteClientTestCase(KALiteTestCase):
 
 
 class KALiteBrowserTestCase(KALiteTestCase, LiveServerTestCase):
+    """ This should be inherited after any mixins (like FacilityMixins)
+    as the mixins may override *TestCase methods.
+    """
 
     def setUp(self):
         self.browser = setup_browser(browser_type="Firefox")

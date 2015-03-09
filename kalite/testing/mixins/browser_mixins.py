@@ -11,8 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from django.utils.translation import ugettext as _
 
 from ..browser import browse_to, setup_browser, wait_for_page_change
-
-from kalite.facility.models import Facility
+from kalite.facility.models import Facility, FacilityUser
 from kalite.topic_tools import get_content_cache
 
 from django.contrib.auth.models import User
@@ -68,7 +67,7 @@ class BrowserActionMixins(object):
             max_retries = int(self.max_wait_time/float(wait_time))
         return wait_for_page_change(self.browser, source_url, wait_time=wait_time, max_retries=max_retries)
 
-    def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None, browser=None):
+    def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None, browser=None, css_class=None):
         """
         Given the identifier to a page element, make it active.
         Currently done by clicking TODO(bcipolli): this won't work for buttons,
@@ -82,6 +81,8 @@ class BrowserActionMixins(object):
                 elem = browser.find_element_by_name(name)
             elif tag_name:
                 elem = browser.find_element_by_tag_name(tag_name)
+            elif css_class:
+                elem = browser.find_element_by_class_name(css_class)
         elem.click()
 
     def browser_send_keys(self, keys, browser=None):

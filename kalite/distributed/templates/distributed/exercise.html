@@ -2,7 +2,9 @@
 {% load i18n %}
 {% load kalite_staticfiles %}
 
-{% block practice_active %}{% trans "active" %}{% endblock practice_active %}
+{% block i18n_do_not_translate %}
+    {% block practice_active %}active{% endblock practice_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'perseus/ke/css/khan-exercise.css' True %}">
