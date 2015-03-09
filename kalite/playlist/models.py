@@ -5,7 +5,7 @@ from django.db import models
 from fle_utils.django_utils import ExtendedModel
 
 from kalite.facility.models import FacilityGroup, FacilityUser
-from kalite.topic_tools import get_flat_topic_tree
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache
 
 from securesync.models import DeferredCountSyncedModel
 
@@ -132,6 +132,19 @@ class VanillaPlaylist:
 
         return playlists
 
+    def get_playlist_entries(playlist, entry_type):
+        """
+        Given a VanillaPlaylist, inspect its 'entries' attribute and return a list
+        containing corresponding nodes for each item from the topic tree.
+        entry_type should be "Exercise" or "Video".
+        """
+        unprepared = filter(lambda e: e["entity_kind"]==entry_type, playlist.entries)
+        prepared = []
+        for entry in unprepared:
+            new_item = get_node_cache()[entry_type].get(entry['entity_id'], [None])[0]
+            if new_item:
+                prepared.append(new_item)
+        return prepared
 
 class VanillaPlaylistEntry:
     """

@@ -32,8 +32,10 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
     def test_no_groups_with_topic_selected(self):
         self.browser_login_admin(**self.admin_data)
         self.browse_to(url_name="tabular_view")
-        self.browser.find_element_by_css_selector('#error_message')
-        self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("Please select a topic above."), "Error message with no users available, no topic selected.")
+        try:
+            self.browser.find_element_by_css_selector('#no_topic_or_playlist_error')
+        except NoSuchElementException:
+            fail("Error message with no users available, no topic selected.")
 
 
     def test_groups_group_selected_no_topic_selected(self):
@@ -42,7 +44,10 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.reverse("tabular_view") + "?group=" + group.id)
         self.browser.find_element_by_css_selector('#error_message')
-        self.assertEqual(self.browser.find_element_by_css_selector('#error_message').text, _("Please select a topic above."), "Error message with no topic selected.")
+        try:
+            self.browser.find_element_by_css_selector('#no_topic_or_playlist_error')
+        except NoSuchElementException:
+            fail("Error message with no topic selected.")
 
 
     def test_groups_group_selected_topic_selected_no_users(self):

@@ -222,7 +222,12 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     },
 
     url: function() {
-        return "/api/attemptlog/?" + $.param(this.filters, true);
+        if (window.statusModel.get("is_logged_in")) {
+            return "/api/attemptlog/?" + $.param(this.filters, true);
+        }
+        else {
+            window.location = "/securesync/login";
+        }
     },
 
     add_new: function(attemptlog) {
