@@ -9,7 +9,7 @@ Information on how to install KA Lite is available via our :doc:`user guides </u
 How much does KA Lite cost to install?
 --------------------------------------
 
-It is **FREE**.
+It is **FREE** -- both free as in "free speech" and free as in "free beer"!
 
 How do I report a problem?
 --------------------------
