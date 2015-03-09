@@ -14,11 +14,6 @@
     width: 100%;
 }
 
-.subtitle {
-    font-size: 1.15em;
-    font-weight: bold;
-}
-
 .subtitle.error {
     margin-left: 4px;
     margin-top: 15px;
