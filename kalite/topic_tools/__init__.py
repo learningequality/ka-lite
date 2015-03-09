@@ -23,7 +23,7 @@ from functools import partial
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.utils import translation
-from django.utils.translation import ugettext as _
+from django.utils.translation import activate, ugettext as _
 
 from fle_utils.general import softload_json
 from kalite import i18n
@@ -493,7 +493,33 @@ def get_assessment_item_data(request, assessment_item_id=None):
 
     # TODO (rtibbles): Enable internationalization for the assessment_items.
 
+    try:
+        item_data = json.loads(assessment_item['item_data'])
+        question_content = _(item_data['question']['content'])
+        answerarea_content = item_data['answerArea']['options']['content']
+        if answerarea_content != "":
+             answerarea_content = _(answerarea_content)
+
+        # Loop over multiple hints contents.
+        # Pickup the wrapped strings and append to hints dict
+        new_hints = []
+        for contents_dict in item_data['hints']:
+            content_value = contents_dict.get('content')
+            converted_content = _(content_value)
+            contents_dict['content'] = converted_content
+            new_hints.append(contents_dict)
+
+        item_data['hints'] = new_hints
+        item_data['question']['content'] = question_content
+        item_data['answerArea']['options']['content'] = answerarea_content
+        # dump the data for a proper json format.
+        assessment_item['item_data'] = json.dumps(item_data)
+
+    except KeyError:
+        logging.error("There is something wrong with the format of the assessment items:%s" % KeyError)
+
     return assessment_item
+
 
 def get_content_data(request, content_id=None):
 

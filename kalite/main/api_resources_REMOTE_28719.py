@@ -7,7 +7,7 @@ from django.conf.urls import url
 from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
-from kalite.distributed.api_views import get_messages_for_api_calls
+
 from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
@@ -87,6 +87,7 @@ class VideoLogResource(ModelResource):
 class Exercise():
 
     def __init__(self, **kwargs):
+        self.ancestor_ids = kwargs.get('ancestor_ids')
         self.lang = kwargs.get('lang')
         self.kind = kwargs.get('kind')
         self.all_assessment_items = kwargs.get('all_assessment_items')
@@ -98,6 +99,7 @@ class Exercise():
         self.name = kwargs.get('name')
         self.id = kwargs.get('id')
         self.seconds_per_fast_problem = kwargs.get('seconds_per_fast_problem')
+        self.parent_id = kwargs.get('parent_id')
         self.template = kwargs.get('template')
         self.path = kwargs.get('path')
         self.x_pos = kwargs.get('x_pos')
@@ -107,9 +109,11 @@ class Exercise():
 
 
 class ExerciseResource(Resource):
+
+    ancestor_ids = fields.CharField(attribute='ancestor_ids')
     lang = fields.CharField(attribute='lang', default='en')
     kind = fields.CharField(attribute='kind')
-    all_assessment_items = fields.ListField(attribute='all_assessment_items', default=[])
+    all_assessment_items = fields.ListField(attribute='all_assessment_items')
     display_name = fields.CharField(attribute='display_name')
     description = fields.CharField(attribute='description')
     y_pos = fields.IntegerField(attribute='y_pos', default=0)
@@ -118,6 +122,7 @@ class ExerciseResource(Resource):
     name = fields.CharField(attribute='name')
     id = fields.CharField(attribute='id')
     seconds_per_fast_problem = fields.CharField(attribute='seconds_per_fast_problem')
+    parent_id = fields.CharField(attribute='parent_id', null=True)
     template = fields.CharField(attribute='template')
     path = fields.CharField(attribute='path')
     x_pos = fields.IntegerField(attribute='x_pos', default=0)
@@ -310,9 +315,8 @@ class ContentResource(Resource):
     def obj_get(self, bundle, **kwargs):
         content_id = kwargs.get("id", None)
         content = get_content_data(bundle.request, content_id)
-        # MUST: Include messages in the api call.
+
         if content:
-            content['messages'] = get_messages_for_api_calls(bundle.request)
             return Content(**content)
         else:
             raise NotFound('Content with id %s not found' % content_id)
