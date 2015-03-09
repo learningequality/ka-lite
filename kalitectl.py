@@ -297,6 +297,7 @@ def manage(command, args=[], in_background=False):
             thread = ManageThread(command, args=args, name=" ".join([command]+args))
             thread.start()
         else:
+            # TODO (aron): for versions > 0.13, see if we can just have everyone spawn another process (Popen vs. ManageThread)
             Popen([sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args, creationflags=CREATE_NEW_PROCESS_GROUP)
 
 
