@@ -57,8 +57,15 @@ window.SidebarView = BaseView.extend({
     initialize: function(options) {
         var self = this;
 
+        // Fancy algorithm to run a resize sidebar when window width 
+        // changes significantly (100px steps) to avoid unnecessary computation
+        var windowWidth = $(window).width();
         $(window).on("resize", function() {
-            self.resize_sidebar();
+            newWindowWidth = $(window).width();
+            if (Math.floor(newWindowWidth/100) != Math.floor(windowWidth/100)) {
+                self.resize_sidebar();
+                windowWidth = $(window).width();
+            }
         });
 
         this.entity_key = options.entity_key;
@@ -144,7 +151,7 @@ window.SidebarView = BaseView.extend({
         var sidebarPanelNewLeft = -(column_width * (current_level - numOfPanelsToShow)) + this.sidebarBack.width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
 
-        // Signature color flash
+        // Signature color flash (also hides a slight UI glitch)
         var originalBackColor = this.sidebarBack.css('background-color');
         this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
         
@@ -163,9 +170,11 @@ window.SidebarView = BaseView.extend({
         var last_column_width = 400;
         
         this.width = (current_level-1) * column_width + last_column_width + 10;
-        this.$(".sidebar-panel").width(this.width);
-        this.$(".sidebar-tab").css({left: this.width});
-        this.update_sidebar_visibility();
+        this.sidebar.width(this.width);
+        this.sidebar.css({left: 0});
+        this.sidebarTab.css({left: this.width});
+        
+        this.set_sidebar_back();
     }, 100),
 
     check_external_click: function(ev) {
