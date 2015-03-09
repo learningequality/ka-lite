@@ -289,7 +289,7 @@ div.fade {
 
 @media only screen and (min-width: 1300px) {
     .sidebar-panel { 
-        font-size: 110%;
+        font-size: 105%;
     }
     .topic-container-inner:last-child {
         width: 400px;
