@@ -128,6 +128,16 @@ input[type="submit"] {
     -o-transition: all 80ms ease-out;
     transition: all 80ms ease-out;
 }
+.top-nav li.active a:hover,
+.top-nav li.active a,
+.top-nav li a:hover,
+.top-nav li a,
+.top-nav li.active a,
+.top-nav li a:active {
+    border-left: 2px solid #5AA685;
+    border-top: 2px solid #5AA685;
+    border-right: 2px solid #5AA685;
+}
 .navbar ul li.dropdown {
     padding-right: 0;
 }
