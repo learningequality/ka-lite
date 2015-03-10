@@ -132,6 +132,11 @@ class Command(BaseCommand):
             dest='interactive',
             default=True,
             help='Run in non-interactive mode'),
+        make_option('--no-assessment-download',
+                    action='store_false',
+                    dest='download_assessment_items',
+                    default=True,
+                    help="Don't download the assessment items"),
     )
 
     def handle(self, *args, **options):
@@ -229,7 +234,7 @@ class Command(BaseCommand):
             description = options["description"]
 
         if username and not validate_username(username):
-            raise CommandError("Username must contain only letters, digits, and underscores, and start with a letter.\n")
+            raise
 
 
         ########################
@@ -251,7 +256,7 @@ class Command(BaseCommand):
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
-        if not settings.RUNNING_IN_TRAVIS and not settings.CENTRAL_SERVER:
+        if options['download_assessment_items'] and not settings.RUNNING_IN_TRAVIS and not settings.CENTRAL_SERVER:
             # download assessment items
             # TODO-BLOCKER (aron): do not hardcode this, and put in the proper URL once we have a redirect set up
             call_command("unpack_assessment_zip", "http://eslgenie.com/media/assessment_item_resources.zip")
