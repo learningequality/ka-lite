@@ -205,13 +205,12 @@ class AssessmentItemResource(Resource):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
     def obj_get(self, bundle, **kwargs):
-        id = kwargs.get("id", None)
-        # assessment_item = get_assessment_item_cache().get(id, None)
-        assessment_item = get_assessment_item_data(bundle.request, id)
+        assessment_item_id = kwargs.get("id", None)
+        assessment_item = get_assessment_item_data(bundle.request, assessment_item_id)
         if assessment_item:
             return AssessmentItem(**assessment_item)
         else:
-            raise NotFound('AssessmentItem with id %s not found' % id)
+            raise NotFound('AssessmentItem with id %s not found' % assessment_item_id)
 
     def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
