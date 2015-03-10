@@ -116,11 +116,11 @@ window.SidebarView = BaseView.extend({
 
     resize_sidebar: function() {
         if (this.state_model.get("open")) {
-            if ($(window).width() < 1260)
+            if ($(window).width() < 1260) {
                 this.resize_for_narrow();
-
-            else
+            } else {
                 this.resize_for_wide();
+            }
         }
     },
 
