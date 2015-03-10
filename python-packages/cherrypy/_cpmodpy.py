@@ -70,7 +70,11 @@ except ImportError as error:
 
 
 def setup(req):
-    from mod_python import apache
+    try:
+        from mod_python import apache
+    except ImportError as error:
+        print("[-] Error, you're lacking %s", error)
+        sys.exit()
     
     # Run any setup functions defined by a "PythonOption cherrypy.setup" directive.
     options = req.get_options()
