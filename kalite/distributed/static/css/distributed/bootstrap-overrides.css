@@ -67,10 +67,9 @@ input[type="submit"] {
     border-top: 1px solid #999;
     border-bottom: none;
 }
-.faded-green-bg {
-    /*background: #c6d1ad; Previous color */
-    /*background: #CDE4B7; */ /* Also controls footer color */
-    /* temporary bloue from the footer */
+/* Controls background of header, footer and all elements with
+   the same colors across the site. */
+.header-footer-bg {
     background: #C4D7E3;
 }
 .kalite-navbar {
