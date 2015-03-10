@@ -52,8 +52,9 @@
 
         <script>
 
-            var fastInterval = 1000;
-            var slowInterval = 10000;
+            var fastInterval = 5000;
+            var slowInterval = 20000;
+            var maxDelayTimeout = 60000;
 
             var PuppetModel = Backbone.Model.extend({
 
@@ -205,7 +206,11 @@
                         var task = tasks[index];
                         index++;
                         setTimeout(function() {
-                            task.call(self, result, runNext);
+                            var new_callback = _.once(runNext);
+                            // run the next step of the task sequence
+                            task.call(self, result, new_callback);
+                            // set a timeout to continue even if page fails
+                            setTimeout(new_callback, maxDelayTimeout);
                         }, this.model.get("clickDelay"));
                     }
                     runNext(null, input);
@@ -252,9 +257,10 @@
                 },
                 function(input, callback) {
                     try {
-                        this.window.videoView.play();
-                        this.window.videoView.player.addEvent("pause", callback);
-                        this.window.videoView.player.addEvent("error", callback);
+                        this.window.videoWrapperView.videoPlayerView.play();
+                        this.window.videoWrapperView.videoPlayerView.player.addEvent("pause", callback);
+                        this.window.videoWrapperView.videoPlayerView.player.addEvent("error", callback);
+                        setTimeout(callback, 10000);
                     } catch(e) {
                         callback(e, null);
                     }
@@ -266,16 +272,19 @@
                     this.goto("/math/arithmetic/addition-subtraction/basic_addition/e/addition_1/", callback);
                 },
                 function(input, callback) {
-                    var numbers = this.$("span[class=mord][style]")
-                    var answer = 0
+                    var numbers = this.$("span.mn")
+                    if (numbers.length == 0 || isNaN(Number(numbers[0].textContent))) {
+                        callback("Question had not finished loading!")
+                    }
+                    var answer = 0;
                     if (Math.random() > 0.5) {
-                        for (var i=0; i < numbers.length; i++){
+                        for (var i = 0; i < numbers.length; i++) {
                             if (!isNaN(Number(numbers[i].textContent))) {
-                                answer += Number(numbers[i].textContent)
+                                answer += Number(numbers[i].textContent);
                             }
                         }
                     }
-                    this.$("#solutionarea input").val(answer).keypress()
+                    this.$("#solutionarea input").val(answer).keypress();
                     this.click("#check-answer-button");
                     callback()
                 }
@@ -286,12 +295,14 @@
                     this.goto("/securesync/login/", callback);
                 },
                 function(input, callback) {
-                    var sidx = Math.ceil(Math.random() * {{ nusers }});
+                    var username = "{{ username }}";
 
-                    this.$("#id_facility option")[1].selected = true;
+                    if (this.$("#id_facility option")[1]) {
+                        this.$("#id_facility option")[1].selected = true;
+                    }
                     this.fillForm({
-                        username: "sssss" + sidx,
-                        password: "sssss" + sidx,
+                        username: username,
+                        password: username,
                     });
                     this.submitForm(callback);
                 }
@@ -311,18 +322,15 @@
                 window.infobar = new InfoBarView({model: model, el: $("#infobar")});
                 puppet.goto(window.location.hash.slice(1) || "/");
 
-                function watchVideos() {
-                    if(Math.random() < {{ pct_videos }}){
-                        puppet.watchVideo(watchVideos);
+                function viewContent() {
+                    if (Math.random() < {{ pct_videos }}) {
+                        puppet.watchVideo(viewContent);
                     } else {
-                        puppet.watchExercise(watchVideos);
-                    }
-                    if (Math.random() < {{ pct_logout }}) {
-                        puppet.logout(function() { puppet.login(watchVideos); });
+                        puppet.watchExercise(viewContent);
                     }
                 }
 
-                puppet.login(watchVideos);
+                puppet.login(viewContent);
 
             });
 
