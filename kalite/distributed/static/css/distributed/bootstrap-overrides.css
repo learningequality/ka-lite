@@ -101,7 +101,7 @@ input[type="submit"] {
 }
 .nav-tabs li a,
 .nav-tabs li.active a,
-.nav-tabls li a:active {
+.nav-tabs li a:active {
     border: 0;
     border-radius: 5px 15px 0 0;
     margin: 0;
@@ -115,13 +115,13 @@ input[type="submit"] {
 #points {
     margin-left: 20px;
 }
+.nav-tabs li.active a:hover {
+    border: none;
+}
 .nav-tabs li.active a:hover,
 .nav-tabs li a:hover,
 .nav-tabs li.active a {
     background-color: white;
-    border-left: 2px solid #5AA685;
-    border-top: 2px solid #5AA685;
-    border-right: 2px solid #5AA685;
     color: #5AA685;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
