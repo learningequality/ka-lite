@@ -972,7 +972,7 @@ window.ExerciseQuizView = Backbone.View.extend({
                 });
                 purchased_model.save();
 
-                statusModel.set("newpoints", statusModel.get("newpoints") + this.points);
+                statusModel.update_total_points(statusModel.get("newpoints") + this.points);
             }
         }
 
