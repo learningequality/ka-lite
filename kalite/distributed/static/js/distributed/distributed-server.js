@@ -56,7 +56,6 @@ var StatusModel = Backbone.Model.extend({
 
     defaults: {
         points: 0,
-        newpoints: 0,
         client_server_time_diff: 0
     },
 
@@ -70,8 +69,6 @@ var StatusModel = Backbone.Model.extend({
         this.loaded = this.fetch();
 
         this.loaded.then(this.after_loading);
-
-        this.listenTo(this, "change:newpoints", this.update_total_points);
 
     },
 
@@ -101,13 +98,12 @@ var StatusModel = Backbone.Model.extend({
             $('.navbar-right').show();
         });
 
-        this.update_total_points();
-
     },
 
-    update_total_points: function() {
+    update_total_points: function(points) {
+        points = points || 0;
         // add the points that existed at page load and the points earned since page load, to get the total current points
-        this.set("points", this.get("points") + this.get("newpoints"));
+        this.set("points", this.get("points") + points);
     }
 
 });
