@@ -514,8 +514,8 @@ def get_assessment_item_data(request, assessment_item_id=None):
         # dump the data for a proper json format.
         assessment_item['item_data'] = json.dumps(item_data)
 
-    except KeyError:
-        logging.error("There is something wrong with the format of the assessment items:%s" % KeyError)
+    except KeyError as e:
+        logging.error("Assessment item did not have the expected key %s. Assessment item: \n %s" % (e, assessment_item))
 
     return assessment_item
 
