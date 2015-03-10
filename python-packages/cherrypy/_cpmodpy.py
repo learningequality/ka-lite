@@ -57,13 +57,14 @@ Then restart apache2 and access http://127.0.0.1:8080
 
 import logging
 import sys
-
-import cherrypy
-from cherrypy._cpcompat import BytesIO, copyitems, ntob
-from cherrypy._cperror import format_exc, bare_error
-from cherrypy.lib import httputil
-
-
+try:
+    import cherrypy
+    from cherrypy._cpcompat import BytesIO, copyitems, ntob
+    from cherrypy._cperror import format_exc, bare_error
+    from cherrypy.lib import httputil
+except ImportError as error:
+    print("[-] Error, you're lacking packages %s", error)
+    sys.exit()
 # ------------------------------ Request-handling
 
 
