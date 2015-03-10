@@ -57,6 +57,17 @@ window.SidebarView = BaseView.extend({
     initialize: function(options) {
         var self = this;
 
+        // Fancy algorithm to run a resize sidebar when window width 
+        // changes significantly (100px steps) to avoid unnecessary computation
+        var windowWidth = $(window).width();
+        $(window).on("resize", function() {
+            newWindowWidth = $(window).width();
+            if (Math.floor(newWindowWidth/100) != Math.floor(windowWidth/100)) {
+                self.resize_sidebar();
+                windowWidth = $(window).width();
+            }
+        });
+
         this.entity_key = options.entity_key;
         this.entity_collection = options.entity_collection;
 
@@ -104,28 +115,33 @@ window.SidebarView = BaseView.extend({
     },
 
     resize_sidebar: function() {
-        if ($(window).width() < 1260)
-            this.resize_for_narrow();
+        if (this.state_model.get("open")) {
+            if ($(window).width() < 1260)
+                this.resize_for_narrow();
 
-        else
-            this.resize_for_wide();
+            else
+                this.resize_for_wide();
+        }
     },
 
     resize_for_narrow: _.debounce(function() {
         var current_level = this.state_model.get("current_level");
         var column_width = this.$(".topic-container-inner").width();
-        var last_column_width = 400;
+        var last_column_width = this.$(".topic-container-inner:last-child").width();
         // Hack to give the last child of .topic-container-inner to be 1.5 times the 
         // width of their parents. Also, sidebar overflow out of the left side of screen
         // is computed and set here.
 
         // THE magic variable that controls number of visible panels
-        var numOfPanelsToShow = 3;
+        var numOfPanelsToShow = 4;
+
+        if ($(window).width() < 1120)
+            numOfPanelsToShow = 3;
 
         if ($(window).width() < 920)
             numOfPanelsToShow = 2;
 
-        if ($(window).width() < 720)
+        if ($(window).width() < 620)
             numOfPanelsToShow = 1;
 
         // Used to get left value in number form
@@ -137,13 +153,13 @@ window.SidebarView = BaseView.extend({
         var sidebarPanelNewLeft = -(column_width * (current_level - numOfPanelsToShow)) + this.sidebarBack.width();
         if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
 
-        // Signature color flash
+        // Signature color flash (also hides a slight UI glitch)
         var originalBackColor = this.sidebarBack.css('background-color');
         this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
         
-        var thisTemp = this;
+        var self = this;
         this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function() {
-            thisTemp.set_sidebar_back();
+            self.set_sidebar_back();
         });
 
         this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
@@ -156,9 +172,11 @@ window.SidebarView = BaseView.extend({
         var last_column_width = 400;
         
         this.width = (current_level-1) * column_width + last_column_width + 10;
-        this.$(".sidebar-panel").width(this.width);
-        this.$(".sidebar-tab").css({left: this.width});
-        this.update_sidebar_visibility();
+        this.sidebar.width(this.width);
+        this.sidebar.css({left: 0});
+        this.sidebarTab.css({left: this.width});
+        
+        this.set_sidebar_back();
     }, 100),
 
     check_external_click: function(ev) {
@@ -335,13 +353,12 @@ window.TopicContainerInnerView = BaseView.extend({
         var video_ids = $.map(this.$(".icon-Video[data-content-id]"), function(el) { return $(el).data("content-id"); });
         if (video_ids.length > 0) {
             videologs = new VideoLogCollection([], {content_ids: video_ids});
-            videologs.fetch()
-                .then(function() {
-                    videologs.models.forEach(function(model) {
-                        var newClass = model.get("complete") ? "complete" : "partial";
-                        self.$("[data-video-id='" + model.get("video_id") + "']").removeClass("complete partial").addClass(newClass);
-                    });
+            videologs.fetch().then(function() {
+                videologs.models.forEach(function(model) {
+                    var newClass = model.get("complete") ? "complete" : "partial";
+                    self.$("[data-video-id='" + model.get("video_id") + "']").removeClass("complete partial").addClass(newClass);
                 });
+            });
         }
 
         // load progress data for all exercises
