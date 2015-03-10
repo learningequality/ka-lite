@@ -496,7 +496,7 @@ def get_assessment_item_data(request, assessment_item_id=None):
         item_data = json.loads(assessment_item['item_data'])
         question_content = _(item_data['question']['content'])
         answerarea_content = item_data['answerArea']['options']['content']
-        if answerarea_content != "":
+        if answerarea_content:  # Not an empty string
             answerarea_content = _(answerarea_content)
 
         # Loop over contents for multiple hints.
