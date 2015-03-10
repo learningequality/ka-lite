@@ -101,7 +101,7 @@ var StatusModel = Backbone.Model.extend({
     },
 
     update_total_points: function(points) {
-        points = points || 0
+        points = points || 0;
         // add the points that existed at page load and the points earned since page load, to get the total current points
         this.set("points", this.get("points") + points);
     }
