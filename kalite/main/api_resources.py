@@ -2,14 +2,13 @@ import json
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
-from django.utils.translation import ugettext as _
 from django.conf.urls import url
 from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
 from kalite.distributed.api_views import get_messages_for_api_calls
-from kalite.topic_tools import get_exercise_data, get_assessment_item_cache, get_content_data
+from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -72,6 +71,7 @@ class ContentLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+
 class VideoLogResource(ModelResource):
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
@@ -84,6 +84,7 @@ class VideoLogResource(ModelResource):
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
+
 
 class Exercise():
 
@@ -205,7 +206,8 @@ class AssessmentItemResource(Resource):
 
     def obj_get(self, bundle, **kwargs):
         id = kwargs.get("id", None)
-        assessment_item = get_assessment_item_cache().get(id, None)
+        # assessment_item = get_assessment_item_cache().get(id, None)
+        assessment_item = get_assessment_item_data(bundle.request, id)
         if assessment_item:
             return AssessmentItem(**assessment_item)
         else:

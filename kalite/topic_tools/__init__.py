@@ -492,8 +492,27 @@ def get_assessment_item_data(request, assessment_item_id=None):
         return None
 
     # TODO (rtibbles): Enable internationalization for the assessment_items.
+    # logging.info('Assessment Item =>%s' % assessment_item)
+    # logging.info('Assessment Item type%s' % type(assessment_item["item_data"]))
+
+    item_data = json.loads(assessment_item['item_data'])
+    # logging.info("Json Loads Item Data =>%s" % item_data)
+    question_content = _(item_data['question']['content'])
+    answerarea_content = _(item_data['answerArea']['options']['content'])
+    hints_content = _(item_data['hints'][0]['content'])
+
+    item = item_data
+    item['question']['content'] = question_content
+    item['answerArea']['options']['content'] = answerarea_content
+    item['hints'][0]['content'] = hints_content
+
+    item = json.dumps(item)
+    assessment_item['item_data'] = item
+
+    # logging.info('New Assessment Item =>%s' % assessment_item)
 
     return assessment_item
+
 
 def get_content_data(request, content_id=None):
 
@@ -513,7 +532,6 @@ def get_content_data(request, content_id=None):
             messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
 
     return content
-
 
 
 def video_dict_by_video_id(flat_topic_tree=None):
