@@ -491,22 +491,31 @@ def get_assessment_item_data(request, assessment_item_id=None):
     if not assessment_item:
         return None
 
-    # TODO (rtibbles): Enable internationalization for the assessment_items.
-    item_data = json.loads(assessment_item['item_data'])
-    # logging.info("Json Loads Item Data =>%s" % item_data)
-    question_content = _(item_data['question']['content'])
-    answerarea_content = _(item_data['answerArea']['options']['content'])
-    hints_content = _(item_data['hints'][0]['content'])
+    # Enable internationalization for the assessment_items.
+    try:
+        item_data = json.loads(assessment_item['item_data'])
+        question_content = _(item_data['question']['content'])
+        answerarea_content = item_data['answerArea']['options']['content']
+        if answerarea_content != "":
+            answerarea_content = _(answerarea_content)
 
-    item = item_data
-    item['question']['content'] = question_content
-    item['answerArea']['options']['content'] = answerarea_content
-    item['hints'][0]['content'] = hints_content
+        # Loop over contents for multiple hints.
+        # Pickup the wrapped strings and append to hints dict
+        new_hints = []
+        for contents_dict in item_data['hints']:
+            content_value = contents_dict.get('content')
+            converted_content = _(content_value)
+            contents_dict['content'] = converted_content
+            new_hints.append(contents_dict)
 
-    item = json.dumps(item)
-    assessment_item['item_data'] = item
+        item_data['hints'] = new_hints
+        item_data['question']['content'] = question_content
+        item_data['answerArea']['options']['content'] = answerarea_content
+        # dump the data for a proper json format.
+        assessment_item['item_data'] = json.dumps(item_data)
 
-    # logging.info('New Assessment Item =>%s' % assessment_item)
+    except KeyError:
+        logging.error("There is something wrong with the format of the assessment items:%s" % KeyError)
 
     return assessment_item
 
@@ -547,6 +556,7 @@ def video_dict_by_video_id(flat_topic_tree=None):
             video_title_dict[video_key] = video_node
 
     return video_title_dict
+
 
 def convert_leaf_url_to_id(leaf_url):
     """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""
