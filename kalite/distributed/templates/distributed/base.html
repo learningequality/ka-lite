@@ -165,7 +165,7 @@
                           </div>
                       </div>
                       <div class="collapse navbar-collapse">
-                          <ul class="nav navbar-nav navbar-right nav-tabs ka-nav" role="tablist">
+                          <ul class="nav navbar-nav navbar-right nav-tabs top-nav" role="tablist">
                               <div class="visible-xs">
                                   <li id="search_input">
                                       <form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
@@ -197,7 +197,7 @@
 
                             <!-- For logged in admins -->
                             {% if request.is_admin and is_config_package_nalanda and not request.session.facility_user.facility %}
-                              {# Teach for admins => assigning playlists #}
+                              {# Teach for admins => assigning playlists for Nalanda #}
                               <li class="{% block teach_active_admins-nalanda %}{% endblock teach_active_admins-nalanda %}">
                                 <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
                                   {% trans "Teach" %}
