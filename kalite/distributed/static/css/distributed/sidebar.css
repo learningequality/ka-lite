@@ -260,7 +260,7 @@ div.fade {
     vertical-align:middle;
 }
 
-@media only screen and (min-width: 500px) {
+@media only screen and (max-width: 720px) {
     .sidebar-panel { 
         font-size: 85%;
     }
