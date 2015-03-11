@@ -9,3 +9,7 @@ Hello! If you know what OS you're installing on then click ahead.
 	Mac Installation Guide <install_mac>
 	Linux Installation Guide <install_linux>
 	Raspberry Pi <install_rasp_pi>
+
+Supported Browsers
+------------------
+KA Lite is currently *not* supported on Internet Explorer version 8 or lower. You must use IE9 or later.
