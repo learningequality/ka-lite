@@ -160,11 +160,6 @@ var UsernameView = Backbone.View.extend({
             return;
         }
 
-        // TODO-BLOCKER(jamalex): only include the hex user ID when Nalanda package is enabled
-        if (this.model.has("user_id")) {
-            username_span += sprintf(" (%s)", this.model.get("user_id").slice(0, 8));
-        }
-
         this.$el.html(username_span);
         this.$el.show();
     }
