@@ -6,8 +6,8 @@ pyexec=`"$SCRIPT_DIR"/python.sh`
 "$pyexec" "$current_dir/bin/kalite" manage setup
 
 # TODO: make a check to see if we're running the rpi
-we_are_rpi="False"
-if [[ $we_are_rpi = "True" ]]; then
+we_are_rpi=`"$SCRIPT_DIR/get_setting.sh" package_selected\(\"RPi\"\)`
+if [ -n "$we_are_rpi" ]; then
     while true
     do
         echo
