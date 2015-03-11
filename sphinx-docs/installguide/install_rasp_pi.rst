@@ -44,24 +44,6 @@ Installation
 #. Complete the access point configuration
 	* *sudo python ./configure_network_interfaces.py*
 	* *sudo insserv hostapd*
-	* *sudo nano /etc/default/ifplugd*
-#. Amend these two settings:
-	...
-	
-	INTERFACES="eth0"
-	HOTPLUG_INTERFACES="eth0"
-	
-	...
-#. Set wireless to start automatically
-	* *sudo nano /etc/network/interfaces*
-	* Add the "auto wlan0" option and save the file
-	...
-	
-	auto wlan0
-	iface wlan0 inet static
-		address 1.1.1.1
-		
-	...
 #. Finally
 	* *sudo reboot*
 	* A wireless network named "kalite" should be available.
