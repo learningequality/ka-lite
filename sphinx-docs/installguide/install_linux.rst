@@ -7,8 +7,10 @@ Linux Installation Guide
 #. Check if Python is already installed with *python -V*.
 #. If not already installed or outdated, install Python v2.6 (*sudo apt-get install python2.6*) or v2.7 (*sudo apt-get install python2.7*).
 	* Or use your Distro's Package Manager by searching for *Python*.
-#. If not already installed or outdated, install Git with *sudo apt-get install git-core*.
+#. If not already installed or if outdated, install Git with *sudo apt-get install git-core*.
 	* Or use your Distro's Package Manager by searching for *Git*.
+#. (Recommended; essential on slower platforms like Raspberry Pi) Install M2Crypto with *sudo apt-get install python-m2crypto*.
+	* Or use your Distro's Package Manager by searching for *M2Crypto*.
 #. Switch to the directory in which you wish to install KA-Lite.
 #. Enter *git clone https://github.com/learningequality/ka-lite.git* to download KA Lite.
 #. Switch into the newly downloaded ka-lite directory with *cd ka-lite*
