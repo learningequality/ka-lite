@@ -38,7 +38,7 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 ### 5. Run the server
 
-(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
+(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](https://github.com/learningequality/ka-lite/wiki) instead.)
 
 To start the server, run the `start.sh` script in the `ka-lite` directory.
 
@@ -127,7 +127,7 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 ### 5. Run the server
 
-(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
+(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](https://github.com/learningequality/ka-lite/wiki) instead.)
 
 To start the server, double-click the `start.command` script in the `ka-lite` directory.  Wait for the script to show the following:
 
