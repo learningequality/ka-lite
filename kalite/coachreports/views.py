@@ -6,7 +6,7 @@ from math import sqrt
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
-from django.contrib.messages import ERROR
+from django.contrib.messages import WARNING
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -225,9 +225,9 @@ def tabular_view(request, report_type="exercise"):
     # Exactly one of topic_id or playlist_id should be present
     if not ((topic_id or playlist_id) and not (topic_id and playlist_id)):
         if playlists:
-            messages.add_message(request, ERROR, _("Please select a playlist."))
+            messages.add_message(request, WARNING, _("Please select a playlist."))
         elif topics:
-            messages.add_message(request, ERROR, _("Please select a topic."))
+            messages.add_message(request, WARNING, _("Please select a topic."))
         return context
 
     playlist = (filter(lambda p: p.id == playlist_id, Playlist.all()) or [None])[0]
@@ -344,22 +344,22 @@ def tabular_view(request, report_type="exercise"):
         # 1. check group facility groups
         if len(groups) > 0 and not groups[0]['groups']:
             # 1. No groups available (for facility) and "no students" returned.
-            messages.add_message(request, ERROR,
+            messages.add_message(request, WARNING,
                                  _("No learner accounts have been created for selected facility/group."))
         elif topic_id and playlist_id:
             # 2. Both topic and playlist are selected.
-            messages.add_message(request, ERROR, _("Please select either a topic or a playlist above, but not both."))
+            messages.add_message(request, WARNING, _("Please select either a topic or a playlist above, but not both."))
         elif not topic_id and not playlist_id:
             # 3. Group was selected, but data not queried because a topic or playlist was not selected.
             if playlists:
                 # 4. No playlist was selected.
-                messages.add_message(request, ERROR, _("Please select a playlist."))
+                messages.add_message(request, WARNING, _("Please select a playlist."))
             elif topics:
                 # 5. No topic was selected.
-                messages.add_message(request, ERROR, _("Please select a topic."))
+                messages.add_message(request, WARNING, _("Please select a topic."))
         else:
             # 6. Everything specified, but no users fit the query.
-            messages.add_message(request, ERROR, _("No learner accounts in this group have been created."))
+            messages.add_message(request, WARNING, _("No learner accounts in this group have been created."))
     # End: Validate results by showing user messages.
 
     log_coach_report_view(request)
