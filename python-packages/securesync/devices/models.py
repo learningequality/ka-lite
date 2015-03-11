@@ -207,10 +207,15 @@ class Device(SyncedModel):
         self.key = key
 
     def get_key(self):
+        self.key = None
         if not self.key:
-            if self.get_metadata().is_own_device:
-                self.key = crypto.get_own_key()
-            elif self.public_key:
+            try:
+                if self.get_metadata().is_own_device:
+                    self.key = crypto.get_own_key()
+            except:
+                # If device has not yet been saved, but ID is set, then getting metadata may fail (on MySQL)
+                pass
+            if not self.key and self.public_key:
                 self.key = crypto.Key(public_key_string=self.public_key)
         return self.key
 

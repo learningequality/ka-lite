@@ -154,7 +154,6 @@ a:hover {
     -moz-transition: all 115ms ease-out;
     -o-transition: all 115ms ease-out;
     transition: all 115ms ease-out;
-
 }
 .teach-nav li div {
     position: relative;
@@ -199,38 +198,17 @@ a:hover {
     border-top-right-radius: 16px;
     font-weight: bold;
 }
-.active-tab {
-    height: 89px;
-    width: 110px;
-}
 .active-tab div {
     color: #5AA685 !important;
 }
-.reports {
+.reports, .reports:hover, .reports-active,
+.playlist, .playlist:hover, .playlists-active,
+.exams, .exams:hover, .exams-active, 
+.learn, .learn:hover, .learn-active {
     background-position: center 7px;
     height: 87px;
 }
-.reports:hover, .reports-active {
-    background-position: center 7px;
-    height: 87px;
-    color: #5AA685 !important;
-}
-.playlist {
-    background-position: center 7px;
-    height: 87px;
-}
-.playlist:hover, .playlists-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.exams {
-    background-position: center 7px;
-    height: 87px;
-}
-.exams:hover, .exams-active {
-    background-position: center 7px;
-    height: 87px;
-}
+
 .units {
     background: url("../../images/distributed/units-icon.png") no-repeat;
     background-position: center 7px;
@@ -241,14 +219,7 @@ a:hover {
     background-position: center 7px;
     height: 87px;
 }
-.learn {
-    background-position: center 7px;
-    height: 87px;
-}
-.learn:hover, .learn-active {
-    background-position: center 7px;
-    height: 87px;
-}
+
 /********* End Sub-Navigation bar **********/
 
 
@@ -261,8 +232,7 @@ a:hover {
 }
 .manage-nav ul {
     padding-left: 1%;
-    margin-bottom: -4px;
-    height: 87px;
+    margin-bottom: -1px;
 }
 .manage-nav li {
     background-color: #5AA685;
@@ -294,20 +264,10 @@ a:hover {
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
 }
-.manage-nav li div {
-    position: relative;
-    width: 110px;
-    height: 85px;
-    /*line-height: 9.5;*/
-    margin-left: -3px;
-    margin-top: 5px;
-}
 .manage-nav li div:hover {
     color: #5AA685;
 }
 .manage-nav li a:hover {
-    border-top-left-radius: 5px !important;
-    border-top-right-radius: 16px !important;
     color: #5AA685;
     font-weight: bold;
     text-decoration: none;
@@ -315,44 +275,13 @@ a:hover {
 .manage-nav span.icon {
     font-size: 40pt;
 }
+
 .active-nav {
     color: #405D32 !important;
     background-color: white !important;
-    border-top-left-radius: 5px !important;
-    border-top-right-radius: 16px !important;
     font-weight: bold;
 }
-.users {
-    background-position: center 7px;
-    height: 87px;
-}
-.users:hover, .users-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.video {
-    background-position: center 7px;
-    height: 87px;
-}
-.video:hover, .video-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.languages {
-    background-position: center 7px;
-    height: 87px;
-}
-.languages:hover, .languages-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.facility {
-    background-position: center 7px;
-    height: 87px;
-}
-.facility:hover, .facility-active {
-    background-position: center 7px;
-    height: 87px;
+
 }
 /********* End "Admin" Sub-Navigation bar **********/
 

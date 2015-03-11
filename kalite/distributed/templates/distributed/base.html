@@ -165,7 +165,7 @@
                           </div>
                       </div>
                       <div class="collapse navbar-collapse">
-                          <ul class="nav navbar-nav navbar-right nav-tabs" role="tablist">
+                          <ul class="nav navbar-nav navbar-right nav-tabs top-nav" role="tablist">
                               <div class="visible-xs">
                                   <li id="search_input">
                                       <form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
@@ -196,15 +196,15 @@
                             <!-- End for all users -->
 
                             <!-- For logged in admins -->
-                            {% if is_config_package_nalanda %}
-                              {# Teach for admins => assigning playlists #}
+                            {% if request.is_admin and is_config_package_nalanda and not request.session.facility_user.facility %}
+                              {# Teach for admins => assigning playlists for Nalanda #}
                               <li class="{% block teach_active_admins-nalanda %}{% endblock teach_active_admins-nalanda %}">
                                 <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
                                   {% trans "Teach" %}
                                 </a>
                               </li>
                             {% endif %}
-                            {% if request.is_django_user %}
+                            {% if request.is_admin and not request.session.facility_user.facility and not is_config_package_nalanda %}
                               {# Teach for admins => coachreports #}
                               <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
                                 <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
@@ -216,7 +216,7 @@
                             {# Manage for admins => zone control panel #}
                             {% if request.is_django_user %}
                             <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">
-                              <a href="{% url 'zone_redirect' %}" id="manage" class="">
+                              <a href="{% url 'zone_redirect' %}" id="manage" class="admin-only">
                                 {% trans "Manage" %}
                               </a>
                             </li>
@@ -225,13 +225,11 @@
 
                             <!-- For logged in teachers -->
                             {# Teach for teachers => coachreports #}
-                            {% if request.is_admin and not request.is_django_admin %}
                             <li class="{% block teach_active_teachers %}{% endblock teach_active_teachers %}">
                               <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
                                 {% trans "Teach" %}
                               </a>
                             </li>
-                            {% endif %}
 
                             {# Manage for teachers => facility management #}
                             {% if request.session.facility_user.facility %}

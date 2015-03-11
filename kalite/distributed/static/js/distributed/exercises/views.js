@@ -530,7 +530,7 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         // store the number of points that are currently in the ExerciseLog, so we can calculate the difference
         // once it changes, for updating the "total points" in the nav bar display
-        this.starting_points = this.log_model.get("points");
+        this.status_points = this.log_model.get("points");
 
         this.progress_view = new ExerciseProgressView({
             el: this.$(".exercise-progress-wrapper"),
@@ -651,7 +651,8 @@ window.ExercisePracticeView = Backbone.View.extend({
             this.log_model.save()
                 .then(function(data) {
                     // update the top-right point display, now that we've saved the points successfully
-                    window.statusModel.set("newpoints", self.log_model.get("points") - self.starting_points);
+                    window.statusModel.update_total_points(self.log_model.get("points") - self.status_points);
+                    self.status_points = self.log_model.get("points");
                 });
 
             this.$(".hint-reminder").hide(); // hide message about hints
@@ -971,7 +972,7 @@ window.ExerciseQuizView = Backbone.View.extend({
                 });
                 purchased_model.save();
 
-                statusModel.set("newpoints", statusModel.get("newpoints") + this.points);
+                statusModel.update_total_points(statusModel.get("newpoints") + this.points);
             }
         }
 
