@@ -8,7 +8,7 @@ from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from django.db.models import Q
 from django.db.models.expressions import F
 from django.utils.text import compress_string
@@ -211,7 +211,7 @@ class Device(SyncedModel):
             try:
                 if self.get_metadata().is_own_device:
                     self.key = crypto.get_own_key()
-            except:
+            except IntegrityError:
                 # If device has not yet been saved, but ID is set, then getting metadata may fail (on MySQL)
                 pass
             if not self.key and self.public_key:
