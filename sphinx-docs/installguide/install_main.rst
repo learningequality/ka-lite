@@ -1,4 +1,4 @@
-KA Lite Installation Guide
+KA Lite Installation Guides
 ===========================
 Hello! If you know what OS you're installing on then click ahead.
 
@@ -9,6 +9,7 @@ Hello! If you know what OS you're installing on then click ahead.
 	Mac Installation Guide <install_mac>
 	Linux Installation Guide <install_linux>
 	Raspberry Pi <install_rasp_pi>
+    Release Notes <release_notes>
 
 Supported Browsers
 ------------------
