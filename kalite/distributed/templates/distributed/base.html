@@ -291,13 +291,13 @@
                                 </li>
                               </ul>
                             </li>
-                            <!-- Language selection -->
+                            <!-- Language selection, admins do not need to see this. -->
                             {% if request.session.facility_user.is_teacher %}
-                            <li class="teacher-only">
+                              <li class="teacher-only">
                             {% else %}
-                            <li class="not-admin-only">
+                              <li class="not-admin-only">
                             {% endif %}
-                              {% if num_language_choices > 1 %}
+                            {% if num_language_choices > 1 %}
                               <select id="language_selector">
                               {% for lang_code, lang_meta in language_choices.iteritems %}
                                 <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
@@ -305,8 +305,9 @@
                                 </option>
                               {% endfor %}
                               </select>
-                              {% endif %}
+                            {% endif %}
                             </li>
+                            <!-- End: Language selection -->
                           </ul>
                         </div>
                   </div>
