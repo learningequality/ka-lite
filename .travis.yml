@@ -18,7 +18,7 @@ script:
 - bin/kalite stop --traceback -v 2
 - python python-packages/fle_utils/tests.py
 - bin/kalite manage syncdb --migrate --noinput --traceback
-- coverage run bin/kalite test --traceback -v 2
+- coverage run --source=kalite,python-packages bin/kalite test --traceback -v 2
 - grunt jshint
 after_success:
   coveralls
