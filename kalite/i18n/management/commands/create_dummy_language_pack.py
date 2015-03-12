@@ -25,7 +25,7 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self):
         langpack_zip = download_language_pack(lang)
-        django_mo, djangojs_mo = retrieve_mo_file(langpack_zip)
+        django_mo, djangojs_mo = retrieve_mo_files(langpack_zip)
         dummy_django_mo, dummy_djangojs_mo = (create_mofile_with_dummy_strings(django_mo),
                                               create_mofile_with_dummy_strings(djangojs_mo))
         # then save those dummy mos into po files
@@ -45,8 +45,9 @@ def download_language_pack(lang):
     return zipfile.ZipFile(StringIO(resp.content))
 
 
-def retrieve_mo_files(langpack_obj):
-    pass
+def retrieve_mo_files(langpack_zip):
+    return (langpack_zip.read("LC_MESSAGES/django.mo"),
+            langpack_zip.read("LC_MESSAGES/djangojs.mo"))
 
 
 def create_mofile_with_dummy_strings(mofile_obj):
