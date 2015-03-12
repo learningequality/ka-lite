@@ -81,11 +81,21 @@ def register_public_key_client(request):
 
     error_msg = reg_response.get("error", "")
     if error_msg:
+        return central_server_down_or_error(error_msg)
+
+    return HttpResponse(_("Registration status: ") + reg_status)
+
+
+def central_server_down_or_error(error_msg):
+    """ If the central server is down, return a context that says so.
+    Otherwise, pass along the actual error returned by the central server.
+    error_msg: a string
+    """
+    if error_msg:
         if urllib.urlopen(settings.CENTRAL_SERVER).getcode() != 200:
             return {"error_msg": "Central Server is not reachable, Please try after sometime."}
         else:
             return {"error_msg": error_msg}
-    return HttpResponse(_("Registration status: ") + reg_status)
 
 
 #@central_server_only
