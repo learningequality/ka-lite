@@ -181,7 +181,7 @@ window.ContentBaseView = BaseView.extend({
     },
 
     close: function() {
-        if (window.statusModel.get("is_logged_in")) {
+        if (window.statusModel.get("is_logged_in") && !window.statusModel.get("is_admin") ) {
             this.log_model.saveNow();
         }
         this.remove();
