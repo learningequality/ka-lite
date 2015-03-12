@@ -526,6 +526,7 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
         except TimeoutException:
             self.fail("Alert present on page after navigation event. Expected no alerts.")
 
+
 class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):
     """
     A regression test for issue 3000. Note the judicious use of waits and expected conditions to account for
@@ -538,22 +539,27 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
         self.create_facility()
         self.create_teacher(username="teacher1", password="password")
         self.browser_login_user(username="teacher1", password="password")
+        self.browse_to(self.reverse("homepage"))
 
     def test_logout_link_visible(self):
-        self.browse_to(self.reverse("homepage"))
         nav_logout = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
         )
-        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[8]")
-        try:
-            self.browser_activate_element(elem=dropdown_menu)
-        except ElementNotVisibleException:
-            # Possible if the browser window is too small and the dropdown menu is collapsed.
-            expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
-            self.browser_activate_element(elem=expand_menus_button)
-            # Wait for the animation to finish
-            WebDriverWait(self.browser, 3).until(
-                expected_conditions.visibility_of(dropdown_menu)
-            )
-            self.browser_activate_element(elem=dropdown_menu)
+        self.assertFalse(nav_logout.is_displayed(), "The dropdown menu logout item must not be displayed yet!")
+        # Activate the dropdown menu and see if the logout link is visible.
+        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[7]/a")
+        WebDriverWait(self.browser, 3).until(
+            expected_conditions.visibility_of(dropdown_menu)
+        )
+        self.browser_activate_element(elem=dropdown_menu)
         self.assertTrue(nav_logout.is_displayed(), "The dropdown menu logout item is not displayed!")
+
+    def test_logout_link_visible_small_browser_size(self):
+        # Check if browser size is too small and menu is collapsed, for mobile.
+        self.browser.set_window_size(640, 480)
+        expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
+        WebDriverWait(self.browser, 3).until(
+            expected_conditions.visibility_of(expand_menus_button)
+        )
+        self.browser_activate_element(elem=expand_menus_button)
+        self.test_logout_link_visible()
