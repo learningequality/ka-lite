@@ -110,14 +110,15 @@ def localhosted_image_urls(items):
     # we copy so we make sure we don't modify the items passed in to this function
     newitems = copy.deepcopy(items)
 
-    url_to_replace = r'https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg))'
-
     for _, v in newitems.iteritems():
-        old_item_data = v['item_data']
-        v['item_data'] = re.sub(url_to_replace, _old_item_url_to_content_url, old_item_data)
+        v['item_data'] = convert_urls(v['item_data'])
 
     return newitems
 
+def convert_urls(string):
+    """ Convert urls in i18n strings into localhost urls. """
+    url_to_replace = r'https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg|JPEG|JPG))'
+    return re.sub(url_to_replace, _old_item_url_to_content_url, string)
 
 def _old_item_url_to_content_url(matchobj):
     return "/content/khan/%s" % matchobj.group("filename")
