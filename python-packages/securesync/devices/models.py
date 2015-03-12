@@ -207,7 +207,6 @@ class Device(SyncedModel):
         self.key = key
 
     def get_key(self):
-        self.key = None
         if not self.key:
             try:
                 if self.get_metadata().is_own_device:
