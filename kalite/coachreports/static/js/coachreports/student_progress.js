@@ -94,6 +94,7 @@ var PlaylistProgressView = Backbone.View.extend({
         this.$(".playlist-progress-details").slideToggle();
     }
 });
+var count=0;  //A variable to keep a count of the number of reports of quizes/videos that would be present in the student's progress report.
 
 var StudentProgressContainerView = Backbone.View.extend({
     // The containing view
@@ -101,10 +102,24 @@ var StudentProgressContainerView = Backbone.View.extend({
 
     initialize: function() {
         this.listenTo(this.collection, 'add', this.add_one);
+        this.count=0;
+        var self=this;
 
         this.render();
 
-        this.collection.fetch();
+        this.collection.fetch({
+                success: function() {
+                   
+                    self.count=self.collection.length;    //number of reports of quizes/videos
+                
+                     if(self.count==0)                    //if the student visits the my progress page before attempting any quizes/videos
+                          {
+				self.$el.html("<h>You have not started your learning journey yet.</h><br>Click on the LEARN button above to 						get started");
+				 
+                          }
+                    
+                }
+            });
     },
 
     render: function() {
