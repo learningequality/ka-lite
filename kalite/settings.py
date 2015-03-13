@@ -206,6 +206,8 @@ if package_selected("RPi"):
 
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
+    DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
+
 
 if package_selected("nalanda"):
     LOG.info("Nalanda package selected")
