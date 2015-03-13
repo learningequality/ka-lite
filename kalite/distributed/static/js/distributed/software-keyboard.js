@@ -54,7 +54,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
     },
 
     render: function () {
-        self = this;
+        var self = this;
 
         // TODO-BLOCKER (rtibbles): 0.13 - Turn this into a handlebars template, conditionally render templates based on exercise types.
 
