@@ -228,7 +228,7 @@ class Device(SyncedModel):
         except IntegrityError as e:
             # Possible from get_or_create if the DeviceMetadata object doesn't exist
             # and the Device hasn't been persisted to the database yet.
-            raise Device.DoesNotExist(e.message)
+            raise Device.DoesNotExist()
 
     def get_counter_position(self):
         """
