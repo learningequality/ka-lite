@@ -105,7 +105,6 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
     "kalite.distributed",
-    "kalite.store",
 )
 
 if not BUILT:
