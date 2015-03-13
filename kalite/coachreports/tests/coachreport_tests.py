@@ -5,14 +5,14 @@ logging = settings.LOG
 
 from datetime import datetime, timedelta
 from django.utils import unittest
-from selenium.webdriver.common.by import By 
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
 from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, CreateZoneMixin, \
-    FacilityMixins, StudentProgressMixin, StoreMixins
+    FacilityMixins, StudentProgressMixin
 
 
 class APIDropdownTests(FacilityMixins,
@@ -402,7 +402,6 @@ class PlaylistProgressTest(FacilityMixins,
 @unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class SpendingReportTests(FacilityMixins,
                           CreateAdminMixin,
-                          StoreMixins,
                           BrowserActionMixins,
                           KALiteBrowserTestCase):
 

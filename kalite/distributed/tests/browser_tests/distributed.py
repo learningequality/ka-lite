@@ -432,7 +432,7 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         self.browse_to_random_video()
         updated_points = self.browser_get_points()
         self.assertNotEqual(updated_points, points, "Points were not updated after a backbone navigation event.")
-    
+
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
     def test_points_update_after_non_backbone_navigation(self):
         """
@@ -462,7 +462,7 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
         self.create_facility()
         self.create_teacher(username="teacher1", password="password")
         self.browser_login_user(username="teacher1", password="password")
-    
+
     def test_correct_tabs_are_displayed(self):
         """Tabs with the class admin-only should not be displayed, and tabs
         with the class teacher-only should be displayed
@@ -487,7 +487,7 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
         except ElementNotVisibleException:
             # browser_activate_element could throw this, meaning nav bar is already visible
             pass
-           
+
         for el in admin_only_elements:
             self.assertFalse(el.is_displayed(), "Elements with `admin-only` class should not be displayed!")
         for el in teacher_only_elements:
@@ -516,7 +516,7 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
             if e.msg == "view is undefined":
                 # Since we're circumventing the normal control flow of the single-page JS app, we expect
                 # this JS error, which gets passed along as a WebDriverException
-                pass 
+                pass
             else:
                 raise
         try:
@@ -530,7 +530,7 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
 class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):
     """
     A regression test for issue 3000. Note the judicious use of waits and expected conditions to account for
-    various browser sizes and potential server hiccups. 
+    various browser sizes and potential server hiccups.
     """
 
     def setUp(self):

@@ -105,7 +105,6 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
     "kalite.distributed",
-    "kalite.store",
 )
 
 if not BUILT:
@@ -206,6 +205,8 @@ if package_selected("RPi"):
     PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 500)
 
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
+
+    DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
 
 
 if package_selected("nalanda"):
