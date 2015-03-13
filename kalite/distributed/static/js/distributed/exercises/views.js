@@ -183,7 +183,11 @@ window.ExerciseView = Backbone.View.extend({
         this.listenTo(Exercises, "newProblem", function (ev, data) {
             var answerType = data.answerType;
             if (typeof answerType === "undefined") {
-                answerType = (_.flatten((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])) || [""]).join("");
+                answerType = (_.flatten((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])) || [""]).join();
+            }
+
+            if (answerType == "multiple") {
+                answerType = $("span.sol").map(function(index, item){return $(item).attr("data-forms");}).get().join();
             }
 
             var checkVal = /number|decimal|rational|proper|improper|mixed|radical|integer|cuberoot/gi;
