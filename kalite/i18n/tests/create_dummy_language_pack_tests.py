@@ -1,7 +1,8 @@
+import accenting
 import requests
 import zipfile
 from cStringIO import StringIO
-from mock import patch, MagicMock, call
+from mock import patch, MagicMock, call, mock_open
 
 from kalite.i18n import get_language_pack_url
 from kalite.i18n.management.commands import create_dummy_language_pack as mod
@@ -36,6 +37,23 @@ class CreateDummyLanguagePackUtilityFunctionTests(KALiteTestCase):
 
         result = mod.retrieve_mo_files(dummy_lang_pack)
 
-        dummy_lang_pack.call_args_list == [call("LC_MESSAGES/django.mo"),
-                                           call("LC_MESSAGES/djangojs.mo")]
+        dummy_lang_pack.read.call_args_list == [call("LC_MESSAGES/django.mo"),
+                                                call("LC_MESSAGES/djangojs.mo")]
         self.assertIsInstance(result, tuple)
+
+
+    @patch("accenting.convert_msg")
+    @patch("polib.MOFile")
+    def test_create_mofile_with_dummy_strings(self, mofile_class, convert_msg_method):
+        """
+        Check if it writes to a file, and if it calls convert_msg
+        """
+        with patch('%s.open' % mod.__name__, mock_open(), create=True) as mopen:
+            dummycontent = "writethis"
+            dummylocation = "/this/doesnt/exist"
+            mofile_class.return_value = [MagicMock(), MagicMock(), MagicMock()]  # 3 "MOEntries"
+
+            mod.create_mofile_with_dummy_strings(dummycontent, dummylocation)
+
+            mopen.assert_called_once_with(dummylocation, 'w')
+            self.assertEqual(convert_msg_method.call_count, 3)
