@@ -196,6 +196,10 @@ window.ExerciseView = Backbone.View.extend({
                 }
                 if (Exercises.getCurrentFramework()==="khan-exercises"){
                     self.software_keyboard_view.set_input("#solutionarea :input");
+                    self.software_keyboard_view.inputs.click(function(event){
+                        self.software_keyboard_view.inputs.removeAttr("id");
+                        $(event.target).attr("id", "selected-input");
+                    });
                 } else {
                     self.software_keyboard_view.set_input(".perseus-input:input");
                 }
