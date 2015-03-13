@@ -12,6 +12,10 @@ If you are pulling the source from git, you will need to run the setup command t
 
     /path/to/python/interpreter bin/kalite manage setup
 
+On Windows, use the ``bin\windows\kalite.bat`` in the cmd.exe prompt::
+
+    bin\windows\kalite.bat manage setup
+
 When you are asked whether or not to delete your database, you should choose to keep your database!
 
 Windows
