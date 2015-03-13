@@ -186,7 +186,7 @@ window.ExerciseView = Backbone.View.extend({
                 answerType = (_.flatten((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])) || [""]).join("");
             }
 
-            var checkVal = /number|decimal|rational|improper|mixed|radical/gi;
+            var checkVal = /number|decimal|rational|proper|improper|mixed|radical|integer|cuberoot/gi;
 
             if (checkVal.test(answerType)){
                 if (typeof self.software_keyboard_view === "undefined") {
