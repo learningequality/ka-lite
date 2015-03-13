@@ -211,8 +211,8 @@ class Device(SyncedModel):
             try:
                 if self.get_metadata().is_own_device:
                     self.key = crypto.get_own_key()
-            except IntegrityError:
-                # If device has not yet been saved, but ID is set, then getting metadata may fail (on MySQL)
+            except Device.DoesNotExist:
+                # get_metadata can fail if the Device instance hasn't been persisted to the db
                 pass
             if not self.key and self.public_key:
                 self.key = crypto.Key(public_key_string=self.public_key)
@@ -223,7 +223,12 @@ class Device(SyncedModel):
         return super(Device, self)._hashable_representation(fields=fields)
 
     def get_metadata(self):
-        return DeviceMetadata.objects.get_or_create(device=self)[0]
+        try:
+            return DeviceMetadata.objects.get_or_create(device=self)[0]
+        except IntegrityError as e:
+            # Possible from get_or_create if the DeviceMetadata object doesn't exist
+            # and the Device hasn't been persisted to the database yet.
+            raise Device.DoesNotExist(e.message)
 
     def get_counter_position(self):
         """
