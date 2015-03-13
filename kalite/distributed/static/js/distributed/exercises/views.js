@@ -183,10 +183,10 @@ window.ExerciseView = Backbone.View.extend({
         this.listenTo(Exercises, "newProblem", function (ev, data) {
             var answerType = data.answerType;
             if (typeof answerType === "undefined") {
-                answerType = ((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])[0] || [""])[0];
+                answerType = (_.flatten((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])) || [""]).join("");
             }
 
-            var checkVal = /number|decimal|rational|improper|mixed/gi;
+            var checkVal = /number|decimal|rational|improper|mixed|radical/gi;
 
             if (checkVal.test(answerType)){
                 if (typeof self.software_keyboard_view === "undefined") {
