@@ -38,7 +38,7 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 ### 5. Run the server
 
-(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
+(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](https://github.com/learningequality/ka-lite/wiki) instead.)
 
 To start the server, use the `bin/kalite` executable from a command line. For instance, on Linux/Mac:
 
@@ -87,7 +87,7 @@ Inside the `ka-lite` folder (that you cloned above) you should find a script cal
 
 ### 5. Run the server
 
-(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
+(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](https://github.com/learningequality/ka-lite/wiki) instead.)
 
 To start the server, double-click the `start.bat` script in the `ka-lite` folder.
 
@@ -132,7 +132,7 @@ Inside the `ka-lite` directory (that you cloned above) you should find a script 
 
 ### 5. Run the server
 
-(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](docs/DEVELOPMENT.md) instead.)
+(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](https://github.com/learningequality/ka-lite/wiki) instead.)
 
 To start the server, double-click the `start.command` script in the `ka-lite` directory.  Wait for the script to show the following:
 
