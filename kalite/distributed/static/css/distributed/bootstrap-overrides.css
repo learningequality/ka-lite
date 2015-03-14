@@ -182,6 +182,23 @@ form#search-box {
     margin-top: 14px;
     position: relative;
     right: 30px;
+	width:277px;
+}
+.search-label{
+	font-size:13px;
+	font-weight:bold;
+	margin:0;
+	color:#335C49;
+}
+form#search-box .search-label{
+	font-size:13px;
+	text-align:center;
+	position: relative;
+	top: -8px;
+	left:28px;
+}
+.search-label-mini{
+	margin-left:15px;
 }
 input #search.ui-autocomplete-input {
     font-size: 12px;
