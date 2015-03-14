@@ -241,5 +241,3 @@ if DEBUG:
     """Show DeprecationWarning messages when in debug"""
     import warnings
     warnings.simplefilter('always', DeprecationWarning)
-
-#test comment
