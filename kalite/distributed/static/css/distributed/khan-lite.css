@@ -407,6 +407,14 @@ div.exercises-card {
     width: 100%;
 }
 
+.attempts .incorrect {
+    color: red;
+}
+
+.attempts .correct {
+    color: green;
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 .progress-points {
     width: 90%;
     text-align: center;
@@ -414,12 +422,12 @@ div.exercises-card {
     white-space: nowrap;
     font-size: 1.1em;
     padding: 4px 8px;
-    color: #414141;
+    color: #414141                                                                                                                                                                                                                                                                                                                                                                        ;
 }
 
 .practice-exercise-description {
     opacity: 0.5;
-    font-size: 0.7em;
+    font-size: 0.7em;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 }
 
 .current-card #problemarea {

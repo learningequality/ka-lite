@@ -1162,7 +1162,7 @@ window.ExerciseProgressView = Backbone.View.extend({
         var attempt_text = "";
 
         this.collection.forEach(function(model) {
-                attempt_text = (model.get("correct") ? "<span style='color:green;'><b>&#10003;</b></span> " : "<span style='color:red;'>&#10007;</span> ") + attempt_text;
+                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
         });
 
         this.$(".attempts").html(attempt_text);
