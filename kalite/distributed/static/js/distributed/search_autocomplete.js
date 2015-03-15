@@ -115,7 +115,7 @@ $(document).ready(function() {
                     continue;
                 }
 
-                var label = "<span class='autocomplete icon-" + node.kind + " " + (node.available ? "" : "un") + "available'>" + " " + gettext(node.title) + "</span>&nbsp;";
+                var label = "<span class='autocomplete icon-" + node.kind + " " + (node.available ? "" : "un") + "available'>" + "<span class = 'dropdown-icon'>" + " " + "</span><span>" + gettext(node.title) + "</span></span>&nbsp;";
                 results.push({
                     label: label,
                     value: ids_filtered[i]

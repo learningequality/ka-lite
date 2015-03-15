@@ -34,11 +34,20 @@ a.ui-corner-all.ui-state-focus span.autocomplete.icon-Document.available {
     padding-top: 10px;
     padding-bottom: 0;
     border-radius: 6px;
+    padding-left: 16px;
+    height: 40px;
 }
 .ui-menu .ui-menu-item span {
     font-weight: 300;
-    font-size: 1em;
+    font-size: 0.95em;
     padding-right: 0;
+}
+.ui-menu .ui-menu-item .dropdown-icon {
+    font-weight: 300;
+    font-size: 1em;
+    padding-right: 16px;
+    float: left;
+    height: 30px;
 }
 .available {
     color: #000;
