@@ -69,7 +69,7 @@ if [ -f /etc/nginx/sites-enabled/kalite ]; then
 fi
 
 sudo touch /etc/nginx/sites-available/kalite
-sudo sh -c "python $KALITE_DIR/manage.py nginxconfig > /etc/nginx/sites-available/kalite"
+sudo sh -c "python $KALITE_DIR/../kalitectl.py manage nginxconfig > /etc/nginx/sites-available/kalite"
 sudo ln -s /etc/nginx/sites-available/kalite /etc/nginx/sites-enabled/kalite
 
 echo "Step 3 - Optimize nginx configuration"
