@@ -40,7 +40,7 @@ Installation
 		* *sudo ./use_wipi.sh*
 	* If using the Edimax EW-7811Un, run this command:
 		* *cd /opt/ka-lite-pi-scripts*
-		* *sudo ./use_edimax*
+		* *sudo ./use_edimax.sh*
 #. Complete the access point configuration
 	* *sudo python ./configure_network_interfaces.py*
 	* *sudo insserv hostapd*
