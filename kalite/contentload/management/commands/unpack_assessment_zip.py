@@ -4,6 +4,7 @@ import requests
 import os
 import urlparse
 import zipfile
+import tempfile
 from distutils.version import StrictVersion
 from fle_utils.general import ensure_dir
 from optparse import make_option
@@ -54,17 +55,22 @@ class Command(BaseCommand):
             logging.warn("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
             #this way we can download stuff larger than the device's RAM
             r = requests.get(ziplocation, prefetch=False)
-            f = open("tobezipped", "w+")
-            for chunk in r.iter_content(chunk_size=1024): 
-                if chunk: # filter out keep-alive new chunks
-                    f.write(chunk)
-                    f.flush()
+            # f = open("tobezipped", "w+")
+            # for chunk in r.iter_content(chunk_size=1024): 
+            #     if chunk: # filter out keep-alive new chunks
+            #         f.write(chunk)
+            #         f.flush()
+            with tempfile.TemporaryFile() as f:
+                for chunk in r.iter_content(chunk_size=1024): 
+                    if chunk: # filter out keep-alive new chunks
+                        f.write(chunk)
+                        f.flush()
         else:                   # file; just open it normally
             f = open(ziplocation, "r")
 
         zf = zipfile.ZipFile(f, "r")
 
-        os.remove("tobezipped")
+        # os.remove("tobezipped")
 
         extract_assessment_items_to_data_dir(zf)
         unpack_zipfile_to_khan_content(zf)
