@@ -170,8 +170,8 @@
                                   <li id="search_input">
                                       <form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
                                           {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
-                                          <input type="text" name="query" id="search_box" class="form-control pull-left" placeholder="{% trans 'Topic, video, exercise...' %}" />
-                                          <button class="btn btn-default" id="search_btn" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                                          <input type="text" name="query" id="search_box" class="form-control pull-left" title="Type search term here" placeholder="{% trans 'Topic, video, exercise...' %}" />
+                                          <button class="btn btn-default" id="search_btn" type="submit" value="Search"><i class="glyphicon glyphicon-search"></i></button>
                                       </form>
                                   </li>
                               </div>
@@ -182,8 +182,8 @@
                               <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
                                 {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
                                 <div class="input-group">
-                                  <input type="text" name="query" id="search" class="form-control" placeholder="{% trans 'Topic, video, exercise...' %}" />
-                                  <button id="search-button" class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                                  <input type="text" name="query" id="search" class="form-control" title="Type search term here" placeholder="{% trans 'Topic, video, exercise...' %}" />
+                                  <button id="search-button" class="btn btn-default" type="submit" value="Search"><i class="glyphicon glyphicon-search"></i></button>
                                 </div>
                               </form>
                             </li>
