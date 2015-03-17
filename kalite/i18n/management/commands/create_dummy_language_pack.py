@@ -7,6 +7,7 @@ that. Make sure you have internet!
 """
 
 import accenting
+import json
 import os
 import polib
 import requests
@@ -55,12 +56,25 @@ def retrieve_mo_files(langpack_zip):
             langpack_zip.read("LC_MESSAGES/djangojs.mo"))
 
 
-def create_mofile_with_dummy_strings(filecontents, filename, molocation=None):
-    if not molocation:
-        molocation = get_locale_path(TARGET_LANGUAGE_PACK)
+def create_mofile_with_dummy_strings(filecontents, filename):
+    target_lang_dir = get_locale_path(TARGET_LANGUAGE_PACK)
+    molocation = os.path.join(target_lang_dir, "LC_MESSAGES")
 
     ensure_dir(molocation)
-    mo_file_path = os.path.join(molocation, "LC_MESSAGES", filename)
+
+    # create the language metadata file. Needed for KA Lite to
+    # actually detect the language
+    barebones_metadata = {"code": TARGET_LANGUAGE_PACK,
+                          "name": "DEBUGLANG"}
+    lang_metadata_path = os.path.join(
+        target_lang_dir,
+        "%s_metadata.json" % TARGET_LANGUAGE_PACK
+    )
+    with open(lang_metadata_path, "w") as f:
+        json.dump(barebones_metadata, f)
+
+    # Now create the actual MO files
+    mo_file_path = os.path.join(molocation, filename)
     # Alright, so polib can only read (p|m)ofiles already written to
     # disk, so let's go write it to a temporary file first
     # with tempfile.NamedTemporaryFile(delete=True) as tmp:
@@ -68,7 +82,7 @@ def create_mofile_with_dummy_strings(filecontents, filename, molocation=None):
     with open(mo_file_path, "w") as f:
         f.write(filecontents)
 
-    mofile = polib.MOFile(fpath=mo_file_path)
+    mofile = polib.mofile(mo_file_path)
     for moentry in mofile:
         accenting.convert_msg(moentry)
-    mofile.save()
+    mofile.save(fpath=mo_file_path)
