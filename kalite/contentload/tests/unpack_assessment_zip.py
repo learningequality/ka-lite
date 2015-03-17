@@ -54,7 +54,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
         with open(self.zipfile_path) as f:
             zip_raw_data = f.read()
             zf = zipfile.ZipFile(StringIO.StringIO(zip_raw_data))
-            get_method.return_value = MagicMock(content=zip_raw_data)
+            get_method.return_value.iter_content = MagicMock(return_value=zip_raw_data)
 
             call_command(
                 "unpack_assessment_zip",
@@ -62,7 +62,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
                 force_download=True  # always force the download, so we can be sure the get method gets called
             )
 
-            get_method.assert_called_once_with(url)
+            get_method.assert_called_once_with(url, prefetch=False)
 
             # verify that the assessment json just extracted is written to the khan data dir
             self.assertEqual(zf.open("assessmentitems.json").read(),
