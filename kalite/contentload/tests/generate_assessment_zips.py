@@ -8,6 +8,7 @@ from fle_utils.general import ensure_dir
 from mock import patch, MagicMock
 
 from django.core.management import call_command
+from django.test import TestCase
 
 import kalite.version as version
 from kalite.testing import KALiteTestCase
@@ -18,6 +19,19 @@ TEST_FIXTURES_DIR = os.path.join(os.path.dirname(__file__),
                                         "fixtures")
 ASSESSMENT_ITEMS_SAMPLE_PATH = os.path.join(TEST_FIXTURES_DIR,
                                             "assessment_items_sample.json")
+
+
+class TestUrlConversion(TestCase):
+    
+    def test_url_converted(self):
+        url_string = "A string with http://example.com/cat_pics.gif"
+        expected_string = "A string with /content/khan/cat_pics.gif"
+        self.assertEqual(expected_string, mod.convert_urls(url_string))
+    
+    def test_multiple_urls_in_one_string_converted(self):
+        url_string = "A string with http://example.com/cat_pics.JPEG http://example.com/cat_pics2.gif"
+        expected_string = "A string with /content/khan/cat_pics.JPEG /content/khan/cat_pics2.gif"
+        self.assertEqual(expected_string, mod.convert_urls(url_string))
 
 
 class GenerateAssessmentItemsCommandTests(KALiteTestCase):

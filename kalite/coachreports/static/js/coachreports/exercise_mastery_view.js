@@ -30,7 +30,7 @@ $(function() {
 
         // adjust view in data cells
         $(selector).each(function() {
-            $(this).toggle()
+            $(this).toggle();
         });
         $(selector).each(function() {
             $(this).height(20);

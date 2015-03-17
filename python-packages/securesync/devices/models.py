@@ -8,7 +8,7 @@ from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from django.db.models import Q
 from django.db.models.expressions import F
 from django.utils.text import compress_string
@@ -207,13 +207,12 @@ class Device(SyncedModel):
         self.key = key
 
     def get_key(self):
-        self.key = None
         if not self.key:
             try:
                 if self.get_metadata().is_own_device:
                     self.key = crypto.get_own_key()
-            except:
-                # If device has not yet been saved, but ID is set, then getting metadata may fail (on MySQL)
+            except Device.DoesNotExist:
+                # get_metadata can fail if the Device instance hasn't been persisted to the db
                 pass
             if not self.key and self.public_key:
                 self.key = crypto.Key(public_key_string=self.public_key)
@@ -224,7 +223,12 @@ class Device(SyncedModel):
         return super(Device, self)._hashable_representation(fields=fields)
 
     def get_metadata(self):
-        return DeviceMetadata.objects.get_or_create(device=self)[0]
+        try:
+            return DeviceMetadata.objects.get_or_create(device=self)[0]
+        except IntegrityError as e:
+            # Possible from get_or_create if the DeviceMetadata object doesn't exist
+            # and the Device hasn't been persisted to the database yet.
+            raise Device.DoesNotExist()
 
     def get_counter_position(self):
         """
