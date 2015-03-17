@@ -59,22 +59,76 @@ var StatusModel = Backbone.Model.extend({
         client_server_time_diff: 0
     },
 
-    url: STATUS_URL,
+    url: USER_URL + "status/",
 
     initialize: function() {
 
         _.bindAll(this);
 
+        this.load_status();
+    },
+
+    load_status: function() {
         // save the deferred object from the fetch, so we can run stuff after this model has loaded
         this.loaded = this.fetch();
 
         this.loaded.then(this.after_loading);
-
     },
 
     get_server_time: function () {
         // Function to return time corrected to server clock based on status update.
         return (new Date(new Date() - this.get("client_server_time_diff"))).toISOString().slice(0, -1);
+    },
+
+    login: function(username, password, facility) {
+        var self = this;
+
+        data = {
+            username: username || "",
+            password: password || "",
+            facility: facility || ""
+        };
+
+        $.ajax({
+            url: USER_URL + "login/",
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'POST',
+            data: JSON.stringify(data),
+            success: function(response) {
+                if (response.redirect) {
+                    window.location = response.redirect;
+                } else {
+                    self.load_status();
+                }
+            },
+            error: function(response) {
+                handleFailedAPI(response);
+            }
+        });
+    },
+
+    logout: function() {
+        var self = this;
+
+        $.ajax({
+            url: USER_URL + "logout/",
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    if (response.redirect) {
+                        window.location = response.redirect;
+                    } else {
+                        self.load_status();
+                    }
+                }
+            },
+            error: function(response) {
+                handleFailedAPI(response);
+            }
+        });
     },
 
     after_loading: function() {
