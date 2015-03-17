@@ -3,6 +3,24 @@
 VERSION = "0.12.0"
 VERSION_INFO = {
 
+    "0.12.11": {
+        "release_date": "2014/12/20",
+        "git_commit": "b880fe4",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["Get the keypad working for IE8."],
+            "students": [],
+            "coaches": [],
+            "admins": ["handle metadata check when Device is imported."],
+        },
+
+    },
+
     "0.12.10": {
         "release_date": "2014/12/20",
         "git_commit": "b880fe4",
