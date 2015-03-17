@@ -20,6 +20,7 @@ from django.core.management.base import NoArgsCommand
 
 from fle_utils.general import ensure_dir
 from kalite.i18n import get_language_pack_url, get_locale_path
+from kalite.version import VERSION
 
 logging = settings.LOG
 
