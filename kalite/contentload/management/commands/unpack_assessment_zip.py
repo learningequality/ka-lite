@@ -53,7 +53,7 @@ class Command(BaseCommand):
 
         if is_valid_url(ziplocation):  # url; download the zip
             logging.warn("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
-            #this way we can download stuff larger than the device's RAM
+            # this way we can download stuff larger than the device's RAM
             r = requests.get(ziplocation, prefetch=False)
             f = tempfile.TemporaryFile("r+w")
 
