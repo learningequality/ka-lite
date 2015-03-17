@@ -89,13 +89,13 @@ div.fade {
     z-index: 10000;
     position: fixed;
     left: 0;
-    top: 40%;
+    top: 12%;
     background: #5AA685;
     color: #fff;
     font-weight: bold;
     font-size: 1.9em;
-    padding: 30px 10px;
-    padding-left: 14px;
+    padding: 23px 7px;
+    padding-left: 6px;
     border-color: rgba(0, 0, 0, 0.5);
     border-style: solid;
     border-width: 1px 1px 1px 0;
@@ -107,7 +107,7 @@ div.fade {
 }
 
 .sidebar-tab:hover {
-    padding-left: 20px;
+    padding-left: 10px;
 }
 
 .sidebar-tab a {
