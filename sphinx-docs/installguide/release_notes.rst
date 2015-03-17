@@ -16,7 +16,12 @@ On Windows, use the ``bin\windows\kalite.bat`` in the cmd.exe prompt::
 
     bin\windows\kalite.bat manage setup
 
-When you are asked whether or not to delete your database, you should choose to keep your database!
+When you are asked whether or not to delete your database, you should choose to keep your database! You will also be prompted to download an assessment items package, or to specify the location if you have already downloaded it. If you wish to download the package and specify the location during the setup process: 
+
+* Download the assessment items package `here <http://eslgenie.com/media/assessment_item_resources.zip>`_. Save it in the same folder as the setup script. Take note of the filename, as you will need to enter it exactly!
+* During the setup process you will see the prompt "Do you wish to download the assessment items package now?". Type "no" and press enter to continue.
+* You will then see the prompt "Have you already downloaded the assessment items package?". Type "yes" and press enter.
+* Finally, you will see the prompt "Please enter the filename of the assessment items package you have downloaded (leave blank to skip this step): ". Enter the filename of the assessment items package that you downloaded earlier.
 
 Windows
 ^^^^^^^
