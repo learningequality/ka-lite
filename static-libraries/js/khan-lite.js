@@ -137,18 +137,19 @@ function handleFailedAPI(resp, error_prefix) {
         case 0:
             messages = {error: gettext("Could not connect to the server.") + " " + gettext("Please try again later.")};
             break;
+        
+        case 401:
 
-        case 200:  // return JSON messages
+        case 403:
+            messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
+                login_url: USER_LOGIN_URL
+            })};
+            break;
 
-        case 201:  // return JSON messages
-
-        case 500:  // also currently return JSON messages
-
-            // handle empty responses gracefully
-            resp.responseText = resp.responseText || "{}";
+        default:
 
             try {
-                messages = $.parseJSON(resp.responseText || "{}");
+                messages = $.parseJSON(resp.responseText || "{}").messages || $.parseJSON(resp.responseText || "{}");
             } catch (e) {
                 var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
@@ -156,20 +157,6 @@ function handleFailedAPI(resp, error_prefix) {
                 console.log(e);
             }
             break;
-        case 401:
-
-        case 403:
-            // Redirect to Login Page and add the current url as next
-            window.location.href = setGetParam(USER_LOGIN_URL, "next", window.location.pathname + window.location.hash)
-            messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
-                login_url: USER_LOGIN_URL
-            })};
-            break;
-
-        default:
-            console.log(resp);
-            var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
-            messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
     }
 
     clear_messages();  // Clear all messages before showing the new (error) message.
