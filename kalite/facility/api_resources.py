@@ -82,7 +82,8 @@ class FacilityUserResource(ModelResource):
             else:
                 error_message = _("Username was not found. Did you type your username correctly?")
             return self.create_response(request, {
-                'error': error_message,
+                'messages': {'error': error_message},
+                'error_highlight': "username"
                 }, HttpUnauthorized )
 
         for user in users:
@@ -94,7 +95,9 @@ class FacilityUserResource(ModelResource):
 
         if not user:
             return self.create_response(request, {
-                'error': _("Password was incorrect. Please try again."),
+                'messages': {'error': _("Password was incorrect. Please try again.")},
+                # Specify which field to highlight as in error.
+                'error_highlight': "password"
                 }, HttpUnauthorized )
         else:
             try:
@@ -112,7 +115,10 @@ class FacilityUserResource(ModelResource):
     def logout(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         logout(request)
-        return self.create_response(request, {'success': True})
+        return self.create_response(request, {
+            'success': True,
+            'redirect': reverse("homepage")
+            })
 
     def status(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
@@ -156,6 +162,7 @@ class FacilityUserResource(ModelResource):
             "messages": message_dicts,
             "status_timestamp": datetime.datetime.now(),
             "version": version.VERSION,
+            "facilities": [{"id": id, "name": name} for id, name in Facility.objects.values_list("id", "name")],
         }
 
         # Override properties using facility data
