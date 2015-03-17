@@ -5,7 +5,7 @@ from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 
 from .api_authorizations import TeacherOrAdminCanReadWrite
-from .models import FacilityGroup, FacilityUser
+from .models import Facility, FacilityGroup, FacilityUser
 
 from django.conf import settings; logging = settings.LOG
 from django.conf.urls import url
@@ -65,8 +65,9 @@ class FacilityUserResource(ModelResource):
             if user:
                 login(request, user)
                 return self.create_response(request, {
-                    'data': self.generate_status(request),
-                })
+                    'success': True,
+                    'redirect': reverse("zone_redirect")
+                    })
 
         # Find all matching users
         users = FacilityUser.objects.filter(username=username, facility=facility)
@@ -76,7 +77,7 @@ class FacilityUserResource(ModelResource):
             users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
 
         if users.count() == 0:
-            if self.fields["facility"].queryset.count() > 1:
+            if Facility.objects.count() > 1:
                 error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
             else:
                 error_message = _("Username was not found. Did you type your username correctly?")
@@ -105,13 +106,13 @@ class FacilityUserResource(ModelResource):
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ")
                 + _("-- be sure to log out when you finish."))
 
-            return self.create_response(request, self.generate_status(request))
+            return self.create_response(request, {'success': True})
 
 
     def logout(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         logout(request)
-        return self.create_response(request, { 'success': True })
+        return self.create_response(request, {'success': True})
 
     def status(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
