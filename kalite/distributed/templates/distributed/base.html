@@ -168,7 +168,7 @@
                           <ul class="nav navbar-nav navbar-right nav-tabs top-nav" role="tablist">
                               <div class="visible-xs">
                                   <li id="search_input">
-                                      <form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
+					<form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
                                           {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
                                           <input type="text" name="query" id="search_box" class="form-control pull-left" placeholder="{% trans 'Topic, video, exercise...' %}" title="{% trans 'Search for topic, video, exercise' %}" />
                                           <button class="btn btn-default" id="search_btn" type="submit"><i class="glyphicon glyphicon-search"></i></button>
