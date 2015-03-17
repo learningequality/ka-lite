@@ -31,8 +31,6 @@ class Command(NoArgsCommand):
         django_mo_contents, djangojs_mo_contents = retrieve_mo_files(langpack_zip)
         dummy_django_mo, dummy_djangojs_mo = (create_mofile_with_dummy_strings(django_mo_contents),
                                               create_mofile_with_dummy_strings(djangojs_mo_contents))
-        import pdb; pdb.set_trace()
-        print 1
         # then save those dummy mos into po files
         # dummy_django_mo.save_as_pofile
         # dummy_djangojs_mo.save_as_pofile
@@ -69,3 +67,4 @@ def create_mofile_with_dummy_strings(filecontents, molocation=None):
     mofile = polib.MOFile(pofile=molocation)
     for moentry in mofile:
         accenting.convert_msg(moentry)
+    mofile.save()
