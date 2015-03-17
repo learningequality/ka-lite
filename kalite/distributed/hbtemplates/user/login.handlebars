@@ -1,0 +1,28 @@
+<div class="login">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{#if facilities}}
+            <div class="input-group">
+              <span class="input-group-addon" id="login-facility-addon">Facility</span>
+              <select class="form-control" id="login-facility" aria-describedby="login-facility-addon">
+                {{#each facilities}}
+                  <option value="{{this.id}}">{{this.name}}</option>
+                {{/each}}
+              </select>
+            </div>
+            </br>
+            {{/if}}
+            <div class="input-group">
+              <span class="input-group-addon" id="login-username-addon">Username</span>
+              <input type="text" class="form-control" id="login-username" placeholder="Username" aria-describedby="login-username-addon">
+            </div>
+            </br>
+            <div class="input-group">
+              <span class="input-group-addon" id="login-password-addon">Password</span>
+              <input type="password" class="form-control" id="login-password" placeholder="" aria-describedby="login-password-addon">
+            </div>
+            </br>
+            <button class="login-btn btn btn-primary" type="submit">Login</button>
+        </div>
+    </div>
+</div>
