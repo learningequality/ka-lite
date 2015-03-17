@@ -17,7 +17,7 @@
                         {{ channel_data.footer_text }}
                     </p>
                     <p class="footer-text">
-                        <img id="creative-commons-icon" src="{% static 'images/distributed/' True %}{{ channel_data.channel_license }}.png" alt="Creative Commons logo">
+                        <img id="creative-commons-icon" src="{% static 'images/distributed/' True %}{{ channel_data.channel_license }}.png" alt="{% trans 'Creative Commons Attribution-NonCommercial-ShareAlike 3.0 United States License' %}">
                     </p>
                 {% endif %}
             </div>
