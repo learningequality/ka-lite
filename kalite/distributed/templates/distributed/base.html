@@ -93,11 +93,10 @@
          // TODO(jamalex): include these in some Backbone Model state instead, synced via AJAX
          var INSTALLED_LANGUAGES_URL     = "{% url 'installed_language_packs' %}";
          var SEARCH_TOPICS_URL           = "{% url 'flat_topic_tree' lang_code=current_language %}";
-         var STATUS_URL                  = "{% url 'api_dispatch_list' resource_name='user' %}status";
+         var USER_URL                  = "{% url 'api_dispatch_list' resource_name='user' %}";
          var FORCE_SYNC_URL              = "{% url 'api_force_sync' %}";
 
          var LOCAL_DEVICE_MANAGEMENT_URL = "{% url 'device_redirect' %}";
-         var USER_LOGIN_URL              = "{% url 'login' %}";
          var SET_DEFAULT_LANGUAGE_URL    = "{% url 'set_default_language' %}";
          var DELETE_USERS_URL            = "{% url 'delete_users' %}";
          var DELETE_GROUPS_URL           = "{% url 'group_delete' %}";
