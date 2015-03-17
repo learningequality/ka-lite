@@ -64,8 +64,16 @@ def create_mofile_with_dummy_strings(filecontents, filename):
 
     # create the language metadata file. Needed for KA Lite to
     # actually detect the language
-    barebones_metadata = {"code": TARGET_LANGUAGE_PACK,
-                          "name": "DEBUGLANG"}
+    barebones_metadata = {
+        "code": TARGET_LANGUAGE_PACK,
+        'software_version': VERSION,
+        'language_pack_version': 1,
+        'percent_translated': 100,
+        'subtitle_count': 0,
+        "name": "DEBUG",
+        'native_name': 'DEBUG',
+    }
+
     lang_metadata_path = os.path.join(
         target_lang_dir,
         "%s_metadata.json" % TARGET_LANGUAGE_PACK
