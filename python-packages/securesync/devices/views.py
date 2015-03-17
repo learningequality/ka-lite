@@ -92,7 +92,7 @@ def central_server_down_or_error(error_msg):
     error_msg: a string
     """
     if error_msg:
-        if urllib.urlopen(settings.CENTRAL_SERVER).getcode() != 200:
+        if urllib.urlopen(settings.CENTRAL_SERVER_HOST).getcode() != 200:
             return {"error_msg": "Central Server is not reachable, Please try after sometime."}
         else:
             return {"error_msg": error_msg}
