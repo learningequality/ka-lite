@@ -43,7 +43,7 @@ class CreateDummyLanguagePackUtilityFunctionTests(KALiteTestCase):
 
 
     @patch("accenting.convert_msg")
-    @patch("polib.MOFile", create=True)
+    @patch("polib.mofile", create=True)
     def test_create_mofile_with_dummy_strings(self, mofile_class, convert_msg_method):
         """
         Check if it writes to a file, and if it calls convert_msg
@@ -56,6 +56,7 @@ class CreateDummyLanguagePackUtilityFunctionTests(KALiteTestCase):
 
             mod.create_mofile_with_dummy_strings(dummycontent, dummylocation)
 
-            mopen.assert_called_once_with(dummylocation, 'w')
+            mopen.call_args_list == [call(dummylocation, 'w'),
+                                     call(dummylocation)]
             self.assertEqual(convert_msg_method.call_count, 3)
-            mofile_class.return_value.save.assert_called_once_with()
+            mofile_class.return_value.save.assert_called_once_with(fpath=dummylocation)
