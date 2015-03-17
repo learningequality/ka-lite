@@ -38,6 +38,10 @@ def check_setup_status(handler):
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
 
+        #Fix for #2047: prompt user to create an admin account if none exists
+        if not User.objects.exists():
+            messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
+
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
             if not request.session.get("registered", True) and BaseClient().test_connection() == "success":

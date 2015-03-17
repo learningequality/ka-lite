@@ -9,8 +9,8 @@ from securesync.devices.views import *  # ARGH! TODO(aron): figure out what thin
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
@@ -228,10 +228,6 @@ def login(request, facility):
 
     facility_id = (facility and facility.id) or None
     facilities = list(Facility.objects.all())
-
-    #Fix for #2047: prompt user to create an admin account if none exists
-    if not User.objects.exists():
-        messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
 
     # Fix for #1211: refresh cached facility info when it's free and relevant
     refresh_session_facility_info(request, facility_count=len(facilities))
