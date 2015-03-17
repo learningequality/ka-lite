@@ -96,6 +96,25 @@ def get_hostname_and_description(hostname=None, description=None):
     return (hostname, description)
 
 
+def get_assessment_items_filename():
+    def validate_fn(fn):
+        try:
+            open(fn, "r").close()
+            return True
+        except IOError:
+            sys.stderr.write("Error: couldn't open the specified file: \"%s\"\n" % fn)
+            return False
+
+    prompt = "Please enter the filename of the assessment items package you have downloaded (leave blank to skip this step): "
+    filename = raw_input(prompt)
+    while not validate_fn(filename):
+        if not filename:
+            break
+        filename = raw_input(prompt)
+
+    return filename
+
+
 class Command(BaseCommand):
     help = "Initialize or update the database."
 
@@ -250,11 +269,25 @@ class Command(BaseCommand):
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
+        # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
-        if not settings.RUNNING_IN_TRAVIS:
-            # download assessment items
-            # TODO-BLOCKER (aron): do not hardcode this, and put in the proper URL once we have a redirect set up
-            call_command("unpack_assessment_zip", "http://eslgenie.com/media/assessment_item_resources.zip")
+        if not settings.RUNNING_IN_TRAVIS and options['interactive']:
+            sys.stdout.write("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.\n")
+            sys.stdout.write("If you have an internet connection, you can download the needed package. Warning: this may take a long time!\n")
+            sys.stdout.write("If you have already downloaded the assessment items package, you can specify the file in the next step.\n")
+            
+            if raw_input_yn("Do you wish to download the assessment items package now?"):
+                ass_item_fn = settings.ASSESSMENT_ITEMS_ZIP_URL
+            elif raw_input_yn("Have you already downloaded the assessment items package?"):
+                ass_item_fn = get_assessment_items_filename()
+
+            if not ass_item_fn:
+                sys.stderr.write("No assessment items package file given. You will need to download and unpack it later.\n")
+            else:
+                call_command("unpack_assessment_zip", ass_item_fn)
+        else:        
+            sys.stderr.write("No assessment items package file given. You will need to download and unpack it later.\n")
+                
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
