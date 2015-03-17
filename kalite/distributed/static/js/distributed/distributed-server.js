@@ -80,7 +80,7 @@ var StatusModel = Backbone.Model.extend({
         return (new Date(new Date() - this.get("client_server_time_diff"))).toISOString().slice(0, -1);
     },
 
-    login: function(username, password, facility) {
+    login: function(username, password, facility, callback) {
         var self = this;
 
         data = {
@@ -95,20 +95,26 @@ var StatusModel = Backbone.Model.extend({
             dataType: 'json',
             type: 'POST',
             data: JSON.stringify(data),
-            success: function(response) {
-                if (response.redirect) {
-                    window.location = response.redirect;
+            success: function(data, status, response) {
+                if (data.redirect) {
+                    window.location = data.redirect;
                 } else {
                     self.load_status();
+                    if (callback) {
+                        callback(response);
+                    }
                 }
             },
             error: function(response) {
                 handleFailedAPI(response);
+                if (callback) {
+                    callback(response);
+                }
             }
         });
     },
 
-    logout: function() {
+    logout: function(callback) {
         var self = this;
 
         $.ajax({
@@ -116,17 +122,23 @@ var StatusModel = Backbone.Model.extend({
             contentType: 'application/json',
             dataType: 'json',
             type: 'GET',
-            success: function(response) {
-                if (response.success) {
-                    if (response.redirect) {
-                        window.location = response.redirect;
+            success: function(data, status, response) {
+                if (data.success) {
+                    if (data.redirect) {
+                        window.location = data.redirect;
                     } else {
                         self.load_status();
+                        if (callback) {
+                            callback(response);
+                        }
                     }
                 }
             },
             error: function(response) {
                 handleFailedAPI(response);
+                if (callback) {
+                    callback(response);
+                }
             }
         });
     },
