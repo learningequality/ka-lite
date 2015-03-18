@@ -113,6 +113,7 @@ window.LoginView = Backbone.View.extend({
     },
 
     login: function() {
+        this.$("input").parent().removeClass("has-error");
         username = this.$("#login-username").val();
         password = this.$("#login-password").val();
         facility = this.facility || this.$("#login-facility").val();
