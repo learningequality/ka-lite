@@ -1,4 +1,4 @@
-window.UserView = BaseView.extend({
+window.UserView = Backbone.View.extend({
 
     events: {
         "click #nav_logout": "logout"
@@ -52,7 +52,7 @@ window.UserView = BaseView.extend({
 // Separate out the modal behaviour from the login functionality
 // This allows the LoginView to be embedded more flexibly across the site if needed
 
-window.LoginModalView = BaseView.extend({
+window.LoginModalView = Backbone.View.extend({
     template: HB.template("user/loginmodal"),
 
     initialize: function() {
@@ -80,7 +80,7 @@ window.LoginModalView = BaseView.extend({
     }
 })
 
-window.LoginView = BaseView.extend({
+window.LoginView = Backbone.View.extend({
 
     events: {
         "click .login-btn": "login",
