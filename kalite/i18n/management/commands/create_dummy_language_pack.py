@@ -11,6 +11,7 @@ import json
 import os
 import polib
 import requests
+import sys
 import tempfile
 import zipfile
 from cStringIO import StringIO
@@ -88,6 +89,8 @@ def create_mofile_with_dummy_strings(filecontents, filename):
     # Now create the actual MO files
 
     mo_file_path = os.path.join(MO_FILE_LOCATION, filename)
+    po_file_path = "{po_path}.po".format(po_path=os.path.splitext(mo_file_path)[0])
+
     logging.debug("Creating accented %s for %s." % (filename, TARGET_LANGUAGE_PACK))
     with open(mo_file_path, "w") as f:
         f.write(filecontents)
@@ -96,5 +99,6 @@ def create_mofile_with_dummy_strings(filecontents, filename):
     for moentry in mofile:
         accenting.convert_msg(moentry)
     mofile.save(fpath=mo_file_path)
+    mofile.save_as_pofile(fpath=po_file_path)
 
     logging.debug("Finished creating %s for %s." % (filename, TARGET_LANGUAGE_PACK))
