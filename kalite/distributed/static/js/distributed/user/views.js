@@ -34,7 +34,7 @@ window.LoginView = Backbone.View.extend({
     events: {
         "click .login-btn": "login",
         "click .password-btn": "toggle_password",
-        "change #login-facility": "facility_change"
+        "change #id_facility": "facility_change"
     },
 
     template: HB.template("user/login"),
@@ -63,13 +63,13 @@ window.LoginView = Backbone.View.extend({
 
     login: function() {
         this.$("input").parent().removeClass("has-error");
-        username = this.$("#login-username").val();
-        password = this.$("#login-password").val();
-        facility = this.facility || this.$("#login-facility").val();
+        username = this.$("#id_username").val();
+        password = this.$("#id_password").val();
+        facility = this.facility || this.$("#id_facility").val();
         if (!username) {
-            this.$("#login-username").parent().addClass("has-error");
+            this.$("#id_username").parent().addClass("has-error");
         } else if (!password && (!this.model.get("simplified_login") || this.admin)) {
-            this.$("#login-password").parent().addClass("has-error");
+            this.$("#id_password").parent().addClass("has-error");
         } else {
             this.model.login(username, password, facility, this.handle_login);
         }
@@ -80,9 +80,9 @@ window.LoginView = Backbone.View.extend({
             this.trigger("login_success");
         } else {
             var error_data = JSON.parse(response.responseText);
-            this.$("#login-" + error_data.error_highlight).parent().addClass("has-error");
+            this.$("#id_" + error_data.error_highlight).parent().addClass("has-error");
             if (error_data.error_highlight == "password") {
-                this.$("#login-" + error_data.error_highlight).val("");
+                this.$("#id_" + error_data.error_highlight).val("");
             }
         }
     },
@@ -90,16 +90,16 @@ window.LoginView = Backbone.View.extend({
     toggle_password: function() {
         this.admin = !this.admin;
         if (this.admin) {
-            this.$("#login-username").autocomplete("disable");
-            this.$("#login-password-container").show();
+            this.$("#id_username").autocomplete("disable");
+            this.$("#id_password-container").show();
         } else {
-            this.$("#login-username").autocomplete("enable");
-            this.$("#login-password-container").hide();
+            this.$("#id_username").autocomplete("enable");
+            this.$("#id_password-container").hide();
         }
     },
 
     facility_change: function(event) {
-        this.facility = this.$("#login-facility").val();
+        this.facility = this.$("#id_facility").val();
         if (this.model.get("simplified_login")) {
             this.set_autocomplete();
         }
@@ -131,7 +131,7 @@ window.LoginView = Backbone.View.extend({
     start_autocomplete: function() {
         var self = this;
 
-        this.$("#login-username").autocomplete({
+        this.$("#id_username").autocomplete({
             autoFocus: true,
             minLength: 2,
             delay: 0,
