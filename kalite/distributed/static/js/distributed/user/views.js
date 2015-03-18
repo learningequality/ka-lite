@@ -84,13 +84,19 @@ window.LoginView = BaseView.extend({
 
     events: {
         "click .login-btn": "login",
-        "click .password-btn": "show_password"
+        "click .password-btn": "toggle_password",
+        "change #login-facility": "facility_change"
     },
 
     template: HB.template("user/login"),
 
     initialize: function() {
         _.bindAll(this);
+        this.facility = (this.model.get("facilities")[0] || {id:""}).id;
+        this.admin = false;
+        if (this.model.get("simplified_login")) {
+            this.set_autocomplete();
+        }
         this.render();
     },
 
@@ -110,7 +116,13 @@ window.LoginView = BaseView.extend({
         username = this.$("#login-username").val();
         password = this.$("#login-password").val();
         facility = this.facility || this.$("#login-facility").val();
-        this.model.login(username, password, facility, this.handle_login);
+        if (!username) {
+            this.$("#login-username").parent().addClass("has-error");
+        } else if (!password && (!this.model.get("simplified_login") || this.admin)) {
+            this.$("#login-password").parent().addClass("has-error");
+        } else {
+            this.model.login(username, password, facility, this.handle_login);
+        }
     },
 
     handle_login: function(response) {
@@ -125,8 +137,62 @@ window.LoginView = BaseView.extend({
         }
     },
 
-    show_password: function() {
-        this.$("#login-password").parent().show();
+    toggle_password: function() {
+        this.admin = !this.admin;
+        if (this.admin) {
+            this.$("#login-username").autocomplete("disable");
+            this.$("#login-password-container").show();
+        } else {
+            this.$("#login-username").autocomplete("enable");
+            this.$("#login-password-container").hide();
+        }
+    },
+
+    facility_change: function(event) {
+        this.facility = this.$("#login-facility").val();
+        if (this.model.get("simplified_login")) {
+            this.set_autocomplete();
+        }
+    },
+
+    set_autocomplete: function() {
+        var self = this;
+        var data = {
+            facility: this.facility,
+            is_teacher: false
+        }
+        var url = setGetParamDict(USER_URL, data);
+        doRequest(url, null, {
+            cache: true,
+            dataType: "json",
+            timeout: _timeout_length,
+            ifModified: true
+        }).success(function(data, textStatus, xhr) {
+            self.student_usernames = [];
+
+            for (var i=0; i < data.objects.length; i++) {
+                self.student_usernames.push(data.objects[i].username);
+            }
+
+            self.start_autocomplete();
+        });
+    },
+
+    start_autocomplete: function() {
+        var self = this;
+
+        this.$("#login-username").autocomplete({
+            autoFocus: true,
+            minLength: 2,
+            delay: 0,
+            html: true,  // extension allows html-based labels
+            appendTo: ".login",
+            source: self.student_usernames
+        });
+        // Cannot disable autocomplete before it has been enabled
+        // So start this button off disabled and enable it when autocomplete
+        // has finished loading.
+        this.$(".password-btn").removeAttr("disabled");
     }
 });
 
