@@ -138,16 +138,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
         for exercise in EXERCISES[language].values():
             exercise_file = exercise["name"] + ".html"
             exercise_template = exercise_file
-
-            # Get the language codes for exercise templates that exist
-            available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
-
-            # Return the best available exercise template
-            exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
-            if exercise_lang == "en":
-                exercise_template = exercise_file
-            else:
-                exercise_template = os.path.join(exercise_lang, exercise_file)
+            exercise_lang = "en"
 
             if exercise.get("uses_assessment_items", False):
                 available = False
@@ -160,6 +151,18 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 exercise["all_assessment_items"] = items
             else:
                 available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
+
+                # Get the language codes for exercise templates that exist
+                available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
+
+                # Return the best available exercise template
+                exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
+
+            if exercise_lang == "en":
+                exercise_template = exercise_file
+            else:
+                exercise_template = os.path.join(exercise_lang, exercise_file)
+
 
             with i18n.translate_block(exercise_lang):
                 exercise["available"] = available
@@ -237,7 +240,7 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
     if CONTENT.get(language) is None:
         CONTENT[language] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
         annotate = True
-    
+
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             content = softload_json(CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
