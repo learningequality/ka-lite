@@ -645,3 +645,7 @@ div#fade {
 .password-btn {
     float: right;
 }
+
+.login .ui-menu .ui-menu-item a{
+    font-size: 1.5em;
+}
