@@ -37,8 +37,8 @@ class CreateDummyLanguagePackUtilityFunctionTests(KALiteTestCase):
 
         result = mod.retrieve_mo_files(dummy_lang_pack)
 
-        dummy_lang_pack.read.call_args_list == [call("LC_MESSAGES/django.mo"),
-                                                call("LC_MESSAGES/djangojs.mo")]
+        self.assertTrue(dummy_lang_pack.read.call_args_list == [call("LC_MESSAGES/django.mo"),
+                                                                call("LC_MESSAGES/djangojs.mo")])
         self.assertIsInstance(result, tuple)
 
 
@@ -56,7 +56,7 @@ class CreateDummyLanguagePackUtilityFunctionTests(KALiteTestCase):
 
             mod.create_mofile_with_dummy_strings(dummycontent, dummylocation)
 
-            mopen.call_args_list == [call(dummylocation, 'w'),
-                                     call(dummylocation)]
+            self.assertTrue(mopen.call_args_list == [call(mod.TARGET_LANGUAGE_METADATA_PATH, 'w'),
+                                                     call(dummylocation, 'w')])
             self.assertEqual(convert_msg_method.call_count, 3)
             mofile_class.return_value.save.assert_called_once_with(fpath=dummylocation)
