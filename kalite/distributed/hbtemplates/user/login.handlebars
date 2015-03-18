@@ -4,9 +4,9 @@
             <form class="form-horizontal">
             {{#if facilities}}
             <div class="form-group form-group-lg">
-              <label class="col-sm-3 control-label h3" for="login-facility" id="login-facility-addon">{{_ "Facility" }}</label>
+              <label class="col-sm-3 control-label h3" for="id_facility" id="id_facility-addon">{{_ "Facility" }}</label>
               <div class="col-sm-9">
-                <select class="form-control input-lg" id="login-facility" aria-describedby="login-facility-addon">
+                <select class="form-control input-lg" id="id_facility" aria-describedby="id_facility-addon">
                   {{#each facilities}}
                     <option value="{{this.id}}">{{this.name}}</option>
                   {{/each}}
@@ -16,16 +16,16 @@
             </br>
             {{/if}}
             <div class="form-group form-group-lg">
-              <label class="col-sm-3 control-label h3" for="login-username" id="login-username-addon">{{_ "Username" }}</label>
+              <label class="col-sm-3 control-label h3" for="id_username" id="id_username-addon">{{_ "Username" }}</label>
               <div class="col-sm-9">
-                <input type="text" class="form-control input-lg" id="login-username" placeholder="Username" aria-describedby="login-username-addon">
+                <input type="text" class="form-control input-lg" id="id_username" placeholder="Username" aria-describedby="id_username-addon">
               </div>
             </div>
             </br>
-            <div class="form-group form-group-lg" id="login-password-container" {{#if simplified_login}}style="display: none;"{{/if}}>
-              <span class="col-sm-3 control-label h3" for="login-password" id="login-password-addon">{{_ "Password" }}</span>
+            <div class="form-group form-group-lg" id="id_password-container" {{#if simplified_login}}style="display: none;"{{/if}}>
+              <span class="col-sm-3 control-label h3" for="id_password" id="id_password-addon">{{_ "Password" }}</span>
               <div class="col-sm-9">
-                <input type="password" class="form-control input-lg" id="login-password" aria-describedby="login-password-addon">
+                <input type="password" class="form-control input-lg" id="id_password" aria-describedby="id_password-addon">
               </div>
             </div>
             </br>
