@@ -80,6 +80,7 @@ $(document).ready(function() {
 
     $("#search").autocomplete({
         minLength: 3,
+        appendTo: ".navbar-collapse",
         html: true,  // extension allows html-based labels
         source: function(request, response) {
             clear_messages();
