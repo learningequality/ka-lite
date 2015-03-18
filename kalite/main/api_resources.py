@@ -254,8 +254,11 @@ class Content:
 
         # the computed values
         self.extra_fields = json.dumps(extra_fields)
-        # TODO-BLOCKER (MCGallaspy) this is inappropriate if multiple channels are active at once
-        self.source = settings.CHANNEL
+        # TODO(MCGallaspy) This is inappropriate if multiple channels are active at once,
+        # TODO(MCGallaspy) but given that there's only one active channel for 0.13 initially (khan)
+        # TODO(MCGallaspy) I guess it's okay. In a multiple available channel situation then we should
+        # TODO(MCGallaspy) probably get the source attribute from the content data itself.
+        self.source = kwargs.pop("source", settings.CHANNEL)
 
 
 class ContentResource(Resource):
