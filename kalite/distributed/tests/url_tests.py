@@ -31,7 +31,6 @@ class UrlTestCases(KALiteTestCase):
         settings.DEBUG=False
         self.validate_url('/')
         self.validate_url('/exercisedashboard/')
-        self.validate_url(reverse('login'))
         self.validate_url(reverse('facility_user_signup'), status_code=302)
         self.validate_url('/math/')
         self.validate_url('/content/', status_code=404)
