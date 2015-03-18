@@ -55,8 +55,6 @@ window.LoginView = BaseView.extend({
         };
         if (this.model.get("facilities").length > 1) {
             this.render_data["facilities"] = this.model.get("facilities");
-        } else {
-            this.facility = this.model.get("facilities")[0].id || "";
         }
         this.$el.html(this.template(this.render_data));
     },
