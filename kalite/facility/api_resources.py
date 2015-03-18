@@ -1,7 +1,8 @@
 import datetime
 
+from tastypie import fields
 from tastypie.http import HttpUnauthorized
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 
 from .api_authorizations import TeacherOrAdminCanReadWrite
@@ -22,6 +23,12 @@ from kalite.distributed.api_views import compute_total_points, get_messages_for_
 from kalite.main.models import UserLog
 
 
+class FacilityResource(ModelResource):
+    class Meta:
+        queryset = Facility.objects.all()
+        resource_name = 'facility'
+        authorization = TeacherOrAdminCanReadWrite()
+
 class FacilityGroupResource(ModelResource):
     class Meta:
         queryset = FacilityGroup.objects.all()
@@ -30,10 +37,17 @@ class FacilityGroupResource(ModelResource):
 
 
 class FacilityUserResource(ModelResource):
+    facility = fields.ForeignKey(FacilityResource, 'facility')
+
     class Meta:
         queryset = FacilityUser.objects.all()
         resource_name = 'user'
         authorization = TeacherOrAdminCanReadWrite()
+        filtering = {
+            'facility': ALL_WITH_RELATIONS,
+            'is_teacher': ['exact']
+        }
+        exclude = ["password"]
 
     def override_urls(self):
         return [
