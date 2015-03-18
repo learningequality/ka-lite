@@ -653,3 +653,7 @@ div#fade {
 .login {
     font-size: 1.5em;
 }
+
+.has-error input {
+    border: 2px solid red;
+}
