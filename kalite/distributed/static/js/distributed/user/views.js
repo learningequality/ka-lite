@@ -70,7 +70,7 @@ window.LoginModalView = Backbone.View.extend({
         if (this.loginView) {
             this.loginView.render()
         } else {
-            this.loginView = new LoginView({model: this.model, el: "#login-container"})
+            this.loginView = new LoginView({model: this.model, el: "#login-container"});
             this.listenTo(this.loginView, "login_success", this.close_modal);
         }
     },
