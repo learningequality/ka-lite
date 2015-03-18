@@ -26,6 +26,12 @@ logging = settings.LOG
 
 BASE_LANGUAGE_PACK = "en"       # language where we base the dummy langpack from
 TARGET_LANGUAGE_PACK = "eo"     # what the "dummy" language's language code. Will be. Sorry, Esperantists.
+TARGET_LANGUAGE_DIR = get_locale_path(TARGET_LANGUAGE_PACK)
+MO_FILE_LOCATION = os.path.join(TARGET_LANGUAGE_DIR, "LC_MESSAGES")
+TARGET_LANGUAGE_METADATA_PATH = os.path.join(
+    TARGET_LANGUAGE_DIR,
+    "%s_metadata.json" % TARGET_LANGUAGE_PACK,
+)
 
 
 class Command(NoArgsCommand):
@@ -55,10 +61,7 @@ def retrieve_mo_files(langpack_zip):
 
 
 def create_mofile_with_dummy_strings(filecontents, filename):
-    target_lang_dir = get_locale_path(TARGET_LANGUAGE_PACK)
-    molocation = os.path.join(target_lang_dir, "LC_MESSAGES")
-
-    ensure_dir(molocation)
+    ensure_dir(MO_FILE_LOCATION)
 
     # create the language metadata file. Needed for KA Lite to
     # actually detect the language
@@ -72,15 +75,11 @@ def create_mofile_with_dummy_strings(filecontents, filename):
         'native_name': 'DEBUG',
     }
 
-    lang_metadata_path = os.path.join(
-        target_lang_dir,
-        "%s_metadata.json" % TARGET_LANGUAGE_PACK
-    )
-    with open(lang_metadata_path, "w") as f:
+    with open(TARGET_LANGUAGE_METADATA_PATH, "w") as f:
         json.dump(barebones_metadata, f)
 
     # Now create the actual MO files
-    mo_file_path = os.path.join(molocation, filename)
+    mo_file_path = os.path.join(MO_FILE_LOCATION, filename)
     # Alright, so polib can only read (p|m)ofiles already written to
     # disk, so let's go write it to a temporary file first
     # with tempfile.NamedTemporaryFile(delete=True) as tmp:
