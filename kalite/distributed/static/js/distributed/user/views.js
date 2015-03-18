@@ -94,7 +94,9 @@ window.LoginView = BaseView.extend({
     },
 
     render: function() {
-        this.render_data = {}
+        this.render_data = {
+            "simplified_login": this.model.get("simplified_login")
+        };
         if (this.model.get("facilities").length > 1) {
             this.render_data["facilities"] = this.model.get("facilities");
         } else {

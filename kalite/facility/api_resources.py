@@ -87,6 +87,9 @@ class FacilityUserResource(ModelResource):
                 }, HttpUnauthorized )
 
         for user in users:
+            if settings.SIMPLIFIED_LOGIN and not user.is_teacher:
+                # For simplified login, as long as it is a student account just take the first one!
+                break
             # if we find a user whose password matches, stop looking
             if user.check_password(password):
                 break
@@ -163,6 +166,7 @@ class FacilityUserResource(ModelResource):
             "status_timestamp": datetime.datetime.now(),
             "version": version.VERSION,
             "facilities": [{"id": id, "name": name} for id, name in Facility.objects.values_list("id", "name")],
+            "simplified_login": settings.SIMPLIFIED_LOGIN,
         }
 
         # Override properties using facility data
