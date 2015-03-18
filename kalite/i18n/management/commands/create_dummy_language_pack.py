@@ -55,6 +55,7 @@ def download_language_pack(lang):
         resp.raise_for_status()
     except requests.ConnectionError as e:
         logging.error("Error downloading %s language pack: %s" % (lang, e))
+        sys.exit(1)
 
     logging.debug("Successfully downloaded base language pack %s" % lang)
     return zipfile.ZipFile(StringIO(resp.content))
