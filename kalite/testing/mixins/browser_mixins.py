@@ -106,11 +106,19 @@ class BrowserActionMixins(object):
                   (num_messages, message_type if message_type else "(any)")
             self.assertEqual(num_messages, len(messages), msg)
 
-        for message in messages:
-            if contains is not None:
-                self.assertIn(contains, message.text, "Make sure message contains '%s'" % contains)
-            if exact is not None:
-                self.assertEqual(exact, message.text, "Make sure message = '%s'" % exact)
+        for i, message in enumerate(messages):
+            if type(contains) == list:
+                contain = contains[i]
+            else:
+                contain = contains
+            if type(exact) == list:
+                exac = exact[i]
+            else:
+                exac = exact
+            if contain is not None:
+                self.assertIn(contain, message.text, "Make sure message contains '%s'" % contain)
+            if exac is not None:
+                self.assertEqual(exac, message.text, "Make sure message = '%s'" % exac)
 
     def browser_wait_for_ajax_calls_to_finish(self):
             num_ajax_calls = 1 # to ensure at least one loop
@@ -320,7 +328,7 @@ class BrowserActionMixins(object):
         self.browse_to(login_url, browser=browser)  # Load page
         WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "nav_login")))
         self.browser.find_element_by_id("nav_login").click()
-        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "id_facility")))
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "id_username")))
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.

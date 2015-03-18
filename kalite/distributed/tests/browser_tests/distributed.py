@@ -70,11 +70,8 @@ class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase):
 
         # First, get the homepage without any automated information.
         self.browse_to(home_url) # Load page
-        self.browser_check_django_message(message_type="warning", contains="complete the setup.")
+        self.browser_check_django_message(message_type="warning", contains=["No administrator account detected", "complete the setup."], num_messages=2)
         self.assertFalse(self.browser_is_logged_in(), "Not (yet) logged in")
-
-        # Now, log in as admin
-        self.browser_login_admin()
 
 
 @unittest.skipIf(settings.DISABLE_SELF_ADMIN, "Registration not allowed when DISABLE_SELF_ADMIN set.")
