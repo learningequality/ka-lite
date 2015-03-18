@@ -278,6 +278,7 @@ class BrowserActionMixins(object):
 
         login_url = self.reverse("homepage")
         self.browse_to(login_url, browser=browser)  # Load page
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "nav_login")))
         self.browser.find_element_by_id("nav_login").click()
         WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "id_facility")))
 
@@ -296,7 +297,7 @@ class BrowserActionMixins(object):
         # self.browser_send_keys(Keys.RETURN)
 
         # wait for 5 seconds for the page to refresh
-        WebDriverWait(browser, 5).until(EC.invisibility_of_element_located(username_field))
+        WebDriverWait(browser, 5).until(EC.invisibility_of_element_located((By.ID,"id_username")))
 
     def browser_login_admin(self, username=None, password=None, browser=None):
         self.browser_login_user(username=username, password=password, browser=browser)
