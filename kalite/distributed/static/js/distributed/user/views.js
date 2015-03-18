@@ -83,7 +83,8 @@ window.LoginModalView = BaseView.extend({
 window.LoginView = BaseView.extend({
 
     events: {
-        "click .login-btn": "login"
+        "click .login-btn": "login",
+        "click .password-btn": "show_password"
     },
 
     template: HB.template("user/login"),
@@ -122,6 +123,10 @@ window.LoginView = BaseView.extend({
                 this.$("#login-" + error_data.error_highlight).val("");
             }
         }
+    },
+
+    show_password: function() {
+        this.$("#login-password").parent().show();
     }
 });
 
