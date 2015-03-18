@@ -1,54 +1,3 @@
-window.UserView = BaseView.extend({
-
-    events: {
-        "click #nav_logout": "logout"
-    },
-
-    initialize: function() {
-        _.bindAll(this);
-
-        this.model.loaded.then(this.render);
-
-        this.listenTo(this.model, "change", this.render);
-
-    },
-
-    render: function() {
-
-        if (this.model.get("is_logged_in")) {
-            // create an instance of the total point view, which encapsulates the point display in the top right of the screen
-            if (this.usernameView) {
-                this.usernameView.render();
-            } else {
-                this.usernameView = new UsernameView({model: this.model, el: "#username"});
-            }
-
-            if (this.totalPointView) {
-                this.totalPointView.render();
-            } else {
-                this.totalPointView = new TotalPointView({model: this.model, el: "#points"});
-            }
-
-            // For mobile (Bootstrap xs) view
-            if (this.totalPointViewXs) {
-                this.totalPointViewXs.render();
-            } else {
-                this.totalPointViewXs = new TotalPointView({model: this.model, el: "#points-xs"});
-            }
-        } else {
-            if (this.loginModalView) {
-                this.loginModalView.render();
-            } else {
-                this.loginModalView = new LoginModalView({model: this.model});
-            }
-        }
-    },
-
-    logout: function() {
-        this.model.logout();
-    }
-});
-
 // Separate out the modal behaviour from the login functionality
 // This allows the LoginView to be embedded more flexibly across the site if needed
 
@@ -78,7 +27,7 @@ window.LoginModalView = BaseView.extend({
     close_modal: function() {
         $("#loginModal").modal('hide');
     }
-})
+});
 
 window.LoginView = BaseView.extend({
 
@@ -161,7 +110,7 @@ window.LoginView = BaseView.extend({
         var data = {
             facility: this.facility,
             is_teacher: false
-        }
+        };
         var url = setGetParamDict(USER_URL, data);
         doRequest(url, null, {
             cache: true,
@@ -250,4 +199,55 @@ var UsernameView = Backbone.View.extend({
         this.$el.show();
     }
 
+});
+
+window.UserView = BaseView.extend({
+
+    events: {
+        "click #nav_logout": "logout"
+    },
+
+    initialize: function() {
+        _.bindAll(this);
+
+        this.model.loaded.then(this.render);
+
+        this.listenTo(this.model, "change", this.render);
+
+    },
+
+    render: function() {
+
+        if (this.model.get("is_logged_in")) {
+            // create an instance of the total point view, which encapsulates the point display in the top right of the screen
+            if (this.usernameView) {
+                this.usernameView.render();
+            } else {
+                this.usernameView = new UsernameView({model: this.model, el: "#username"});
+            }
+
+            if (this.totalPointView) {
+                this.totalPointView.render();
+            } else {
+                this.totalPointView = new TotalPointView({model: this.model, el: "#points"});
+            }
+
+            // For mobile (Bootstrap xs) view
+            if (this.totalPointViewXs) {
+                this.totalPointViewXs.render();
+            } else {
+                this.totalPointViewXs = new TotalPointView({model: this.model, el: "#points-xs"});
+            }
+        } else {
+            if (this.loginModalView) {
+                this.loginModalView.render();
+            } else {
+                this.loginModalView = new LoginModalView({model: this.model});
+            }
+        }
+    },
+
+    logout: function() {
+        this.model.logout();
+    }
 });
