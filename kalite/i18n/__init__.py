@@ -18,6 +18,8 @@ from django.views.i18n import javascript_catalog
 
 from contextlib import contextmanager
 
+from kalite.version import SHORTVERSION
+
 ################################################
 ###                                          ###
 ###   NOTE TO US:                            ###
@@ -452,3 +454,12 @@ def translate_block(language):
     translation.activate(language)
     yield
     translation.deactivate()
+
+
+def get_language_pack_url(lang_code, version=SHORTVERSION):
+    """As published"""
+    return "http://%(host)s/media/language_packs/%(version)s/%(lang_code)s.zip" % {
+        "host": settings.CENTRAL_SERVER_HOST,
+        "lang_code": lang_code,
+        "version": version,
+    }
