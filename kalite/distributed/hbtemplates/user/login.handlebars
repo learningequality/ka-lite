@@ -17,9 +17,9 @@
               <input type="text" class="form-control" id="login-username" placeholder="Username" aria-describedby="login-username-addon">
             </div>
             </br>
-            <div class="input-group">
-              <span class="input-group-addon" id="login-password-addon">Password</span>
-              <input type="password" class="form-control" id="login-password" placeholder="" aria-describedby="login-password-addon">
+            <div class="input-group" {{#if simplified_login}}style="display: none;"{{/if}}>
+              <span class="input-group-addon" id="login-password-addon">{{_ "Password" }}</span>
+              <input type="password" class="form-control" id="login-password" aria-describedby="login-password-addon">
             </div>
             </br>
             <button class="login-btn btn btn-primary" type="submit">Login</button>
