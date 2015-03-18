@@ -39,7 +39,7 @@ window.UserView = Backbone.View.extend({
             if (this.loginModalView) {
                 this.loginModalView.render();
             } else {
-                this.loginModalView = new LoginModalView({model: this.model})
+                this.loginModalView = new LoginModalView({model: this.model});
             }
         }
     },
@@ -68,7 +68,7 @@ window.LoginModalView = Backbone.View.extend({
 
     addLoginView: function() {
         if (this.loginView) {
-            this.loginView.render()
+            this.loginView.render();
         } else {
             this.loginView = new LoginView({model: this.model, el: "#login-container"});
             this.listenTo(this.loginView, "login_success", this.close_modal);
