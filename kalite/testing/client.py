@@ -44,7 +44,7 @@ class KALiteClient(Client):
             "password": password,
         }
         response = self.post_json(self.login_url, data=data)
-        return response.status_code == 302
+        return response.status_code == 200
 
     def login_user(self, data, facility=None, use_default_facility=True, follow=True):
         if facility:
