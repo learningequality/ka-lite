@@ -37,13 +37,16 @@ TARGET_LANGUAGE_METADATA_PATH = os.path.join(
 class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
+        logging.info("Creating a debugging language pack, with %s language code." % TARGET_LANGUAGE_PACK)
         langpack_zip = download_language_pack(BASE_LANGUAGE_PACK)
         django_mo_contents, djangojs_mo_contents = retrieve_mo_files(langpack_zip)
         dummy_django_mo, dummy_djangojs_mo = (create_mofile_with_dummy_strings(django_mo_contents, filename="django.mo"),
                                               create_mofile_with_dummy_strings(djangojs_mo_contents, filename="djangojs.mo"))
+        logging.info("Finished creating debugging language pack %s." % TARGET_LANGUAGE_PACK)
 
 
 def download_language_pack(lang):
+    logging.debug("Downloading base language pack %s for creating the debugging language." % BASE_LANGUAGE_PACK)
     url = get_language_pack_url(lang)
 
     try:
@@ -52,6 +55,7 @@ def download_language_pack(lang):
     except requests.ConnectionError as e:
         logging.error("Error downloading %s language pack: %s" % (lang, e))
 
+    logging.debug("Successfully downloaded base language pack %s" % lang)
     return zipfile.ZipFile(StringIO(resp.content))
 
 
@@ -61,6 +65,8 @@ def retrieve_mo_files(langpack_zip):
 
 
 def create_mofile_with_dummy_strings(filecontents, filename):
+
+    logging.debug("Creating %s if it does not exist yet." % MO_FILE_LOCATION)
     ensure_dir(MO_FILE_LOCATION)
 
     # create the language metadata file. Needed for KA Lite to
@@ -75,12 +81,14 @@ def create_mofile_with_dummy_strings(filecontents, filename):
         'native_name': 'DEBUG',
     }
 
+    logging.debug("Creating fake metadata json for %s." % TARGET_LANGUAGE_PACK)
     with open(TARGET_LANGUAGE_METADATA_PATH, "w") as f:
         json.dump(barebones_metadata, f)
 
     # Now create the actual MO files
 
     mo_file_path = os.path.join(MO_FILE_LOCATION, filename)
+    logging.debug("Creating accented %s for %s." % (filename, TARGET_LANGUAGE_PACK))
     with open(mo_file_path, "w") as f:
         f.write(filecontents)
 
@@ -88,3 +96,5 @@ def create_mofile_with_dummy_strings(filecontents, filename):
     for moentry in mofile:
         accenting.convert_msg(moentry)
     mofile.save(fpath=mo_file_path)
+
+    logging.debug("Finished creating %s for %s." % (filename, TARGET_LANGUAGE_PACK))
