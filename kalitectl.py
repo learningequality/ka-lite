@@ -349,16 +349,17 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=[
-                '--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)]
+            args=['--daemon',
+                  '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)
+                  ]
         )
-    args = "--host={host:s} --daemonize{production:s} --pidfile={pid:s} --startup-lock-file={startup:s}".format(
-        host=LISTEN_ADDRESS,
-        pid=PID_FILE,
-        production=" --production" if not debug else "",
-        startup=STARTUP_LOCK,
-    )
-    manage('kaserve', args=args.split(" "))
+    args = ["--host=%s" % LISTEN_ADDRESS,
+            "--daemonize",
+            "--pidfile=%s" % PID_FILE,
+            "--startup-lock-file=%s" % STARTUP_LOCK,
+            ]
+    args += ["--production"] if not debug else []
+    manage('kaserve', args)
 
 
 def setting(setting_name):
