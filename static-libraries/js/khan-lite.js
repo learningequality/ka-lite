@@ -156,6 +156,8 @@ function handleFailedAPI(resp, error_prefix) {
                 console.log(e);
             }
             break;
+        case 401:
+
         case 403:
             // Redirect to Login Page and add the current url as next
             window.location.href = setGetParam(USER_LOGIN_URL, "next", window.location.pathname + window.location.hash)
