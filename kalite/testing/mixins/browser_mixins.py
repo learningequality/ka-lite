@@ -332,11 +332,11 @@ class BrowserActionMixins(object):
         username_field.click()  # explicitly set the focus, to start
         self.browser_form_fill(username, browser=browser)
         self.browser_form_fill(password, browser=browser)
-        username_field.submit()
+        self.browser.find_element_by_class_name("login-btn").click()
         # self.browser_send_keys(Keys.RETURN)
 
         # wait for 5 seconds for the page to refresh
-        WebDriverWait(browser, 5).until(EC.staleness_of(username_field))
+        WebDriverWait(browser, 5).until(EC.invisibility_of_element_located(username_field))
 
     def browser_login_admin(self, username=None, password=None, browser=None):
         self.browser_login_user(username=username, password=password, browser=browser)
