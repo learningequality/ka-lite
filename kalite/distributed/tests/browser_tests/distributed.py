@@ -317,9 +317,6 @@ class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteB
 
         super(MainEmptyFormSubmitCaseTest, self).setUp()
 
-    def test_login_form(self):
-        self.empty_form_test(url=self.reverse("login"), submission_element_id="id_username")
-
     def test_add_student_form(self):
         self.empty_form_test(url=self.reverse("add_facility_student"), submission_element_id="id_username")
 
@@ -347,8 +344,6 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         time.sleep(3)
         self.browse_to(self.reverse("exercise_dashboard"))
         self.browser_check_django_message(message_type="error", contains="Your session has been timed out")
-        # Check if user redirects to login page after session timeout.
-        self.assertEquals(self.browser.current_url, self.reverse("login") )
 
     def test_admin_no_logout_after_interval(self):
         """Admin should not be auto-logged out"""

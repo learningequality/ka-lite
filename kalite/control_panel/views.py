@@ -392,7 +392,7 @@ def account_management(request):
 
     # Only log 'coachreport' activity for students,
     #   (otherwise it's hard to compare teachers)
-    if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):
+    if "facility_user" in request.session and not request.session["facility_user"].is_teacher:
         try:
             # Log a "begin" and end here
             user = request.session["facility_user"]
