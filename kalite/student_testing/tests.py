@@ -22,8 +22,8 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
     exam_id = 'g4_u401_t1'  # needs to be the first exam in the test list UI
-    login_url = reverse('login')
-    logout_url = reverse('logout')
+    login_url = reverse('homepage')
+    logout_url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'logout/'
     test_list_url = reverse('test_list') if "nalanda" in settings.CONFIG_PACKAGE else  ""
     exam_page_url = reverse('test', args=[exam_id]) if "nalanda" in settings.CONFIG_PACKAGE else  ""
     put_url = '/test/api/test/%s/' % exam_id
@@ -269,8 +269,8 @@ class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
 
         super(CurrentUnitTests, self).setUp()
 
-        self.login_url = reverse('login')
-        self.logout_url = reverse('logout')
+        self.login_url = reverse('homepage')
+        self.logout_url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'logout/'
         self.current_unit_url = reverse('current_unit')
 
         self.facility = self.create_facility()
@@ -346,8 +346,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrows
 
         # We're a browser test now, so make sure we have the full path by reversing using the
         # KALiteBrowserTestCase.reverse method
-        self.login_url = self.reverse('login')
-        self.logout_url = self.reverse('logout')
+        self.login_url = self.reverse('homepage')
+        self.logout_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'logout/'
         self.current_unit_url = self.reverse('current_unit')
         set_current_unit_settings_value(self.facility.id, 101)
 
