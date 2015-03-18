@@ -316,8 +316,10 @@ class BrowserActionMixins(object):
         """
         browser = browser or self.browser
 
-        login_url = self.reverse("login")
+        login_url = self.reverse("homepage")
         self.browse_to(login_url, browser=browser)  # Load page
+        self.browser.find_element_by_id("nav_login").click()
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "id_facility")))
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
