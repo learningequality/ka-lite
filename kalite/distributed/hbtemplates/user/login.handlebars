@@ -22,7 +22,10 @@
               <input type="password" class="form-control" id="login-password" aria-describedby="login-password-addon">
             </div>
             </br>
-            <button class="login-btn btn btn-primary" type="submit">Login</button>
+            <button class="login-btn btn btn-lg btn-primary" type="submit">{{_ "Login" }}</button>
+            {{#if simplified_login}}
+              <button class="password-btn btn btn-danger" type="submit">{{_ "Admin" }}/{{_ "Coach" }}</button>
+            {{/if}}
         </div>
     </div>
 </div>

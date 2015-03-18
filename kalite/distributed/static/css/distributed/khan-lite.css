@@ -640,3 +640,8 @@ div#fade {
 }
 
 /* END styles for modal dialog */
+
+/* Styling for simplified login toggle button */
+.password-btn {
+    float: right;
+}
