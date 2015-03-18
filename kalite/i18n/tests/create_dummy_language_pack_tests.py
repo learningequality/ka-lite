@@ -22,6 +22,7 @@ class CreateDummyLanguagePackUtilityFunctionTests(KALiteTestCase):
         # creating a dummy zipfile that is readable by zipfile.ZipFile
         dummy_file = StringIO()
         zf = zipfile.ZipFile(dummy_file, mode="w")
+        zf.write(__file__)      # write the current file into the zipfile, just so we have something in here
         zf.close()
         get_method.return_value.content = dummy_file.getvalue()  # should still be convertible to a zipfile
 
