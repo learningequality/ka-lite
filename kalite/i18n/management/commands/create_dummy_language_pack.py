@@ -79,11 +79,8 @@ def create_mofile_with_dummy_strings(filecontents, filename):
         json.dump(barebones_metadata, f)
 
     # Now create the actual MO files
+
     mo_file_path = os.path.join(MO_FILE_LOCATION, filename)
-    # Alright, so polib can only read (p|m)ofiles already written to
-    # disk, so let's go write it to a temporary file first
-    # with tempfile.NamedTemporaryFile(delete=True) as tmp:
-    #     tmp.write(filecontents)
     with open(mo_file_path, "w") as f:
         f.write(filecontents)
 
