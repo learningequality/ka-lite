@@ -145,7 +145,7 @@ a:hover {
     border-top: 3px solid #5AA685;
     border-right: 3px solid #5AA685;
     border-left: 3px solid #5AA685;
-    width: 110px;
+    width: 130px;
     text-align: center;
     font-weight: bold;
     display: inline-block;
@@ -157,9 +157,10 @@ a:hover {
 }
 .teach-nav li div {
     position: relative;
-    width: 110px;
-    height: 88px;
+    width: 130px;
+    height: 95px;
     margin: -18px 0px -47px -3px;
+    padding-top: 5px;
 }
 .teach-nav li div:hover {
     color: #5AA685;
@@ -206,18 +207,18 @@ a:hover {
 .exams, .exams:hover, .exams-active, 
 .learn, .learn:hover, .learn-active {
     background-position: center 7px;
-    height: 87px;
+    height: 95px;
 }
 
 .units {
     background: url("../../images/distributed/units-icon.png") no-repeat;
     background-position: center 7px;
-    height: 87px;
+    height: 95px;
 }
 .units:hover, .units-active {
     background: url("../../images/distributed/units-active-icon.png") no-repeat;
     background-position: center 7px;
-    height: 87px;
+    height: 95px;
 }
 
 /********* End Sub-Navigation bar **********/
@@ -241,7 +242,7 @@ a:hover {
     border-top: 3px solid #5AA685;
     border-right: 3px solid #5AA685;
     border-left: 3px solid #5AA685;
-    width: 110px;
+    width: 130px;
     text-align: center;
     font-weight: bold;
     display: inline-block !important;
