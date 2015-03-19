@@ -98,19 +98,32 @@ def get_hostname_and_description(hostname=None, description=None):
 
 
 def get_assessment_items_filename():
-    def validate_fn(fn):
+    def validate_filename(filename):
         try:
-            open(fn, "r").close()
+            open(filename, "r").close()
             return True
         except IOError:
-            logging.error("Error: couldn't open the specified file: \"%s\"\n" % fn)
             return False
 
-    prompt = "Please enter the filename of the assessment items package you have downloaded (leave blank to skip this step): "
+    def find_recommended_file():
+        filename_guess = "assessment_item_resources.zip"
+        curdir = os.path.abspath(os.curdir)
+        pardir = os.path.abspath(os.path.join(curdir, os.pardir))
+        while curdir != pardir:
+            recommended = os.path.join(curdir, filename_guess)
+            if os.path.exists(recommended):
+                return recommended
+            tmp = curdir
+            curdir = pardir
+            pardir = os.path.abspath(os.path.join(tmp, os.pardir))
+
+    recommended_filename = find_recommended_file()
+    prompt = "Please enter the filename of the assessment items package you have downloaded (%s): " % recommended_filename
     filename = raw_input(prompt)
-    while not validate_fn(filename):
-        if not filename:
-            break
+    if not filename:
+        filename = recommended_filename
+    while not validate_filename(filename):
+        logging.error("Error: couldn't open the specified file: \"%s\"\n" % filename)
         filename = raw_input(prompt)
 
     return filename
@@ -278,16 +291,16 @@ class Command(BaseCommand):
             print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
            
             if raw_input_yn("Do you wish to download the assessment items package now?"):
-                ass_item_fn = settings.ASSESSMENT_ITEMS_ZIP_URL
+                ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
             elif raw_input_yn("Have you already downloaded the assessment items package?"):
-                ass_item_fn = get_assessment_items_filename()
+                ass_item_filename = get_assessment_items_filename()
             else:
-                ass_item_fn = None
+                ass_item_filename = None
 
-            if not ass_item_fn:
+            if not ass_item_filename:
                 logging.error("No assessment items package file given. You will need to download and unpack it later.")
             else:
-                call_command("unpack_assessment_zip", ass_item_fn)
+                call_command("unpack_assessment_zip", ass_item_filename)
         else:        
             logging.error("No assessment items package file given. You will need to download and unpack it later.")
                 
