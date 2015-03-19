@@ -344,7 +344,7 @@ class BrowserActionMixins(object):
         self.browser.find_element_by_class_name("login-btn").click()
         # self.browser_send_keys(Keys.RETURN)
 
-        # wait for 5 seconds for the page to refresh
+        # wait for 5 seconds for the modal to disappear
         WebDriverWait(browser, 5).until(EC.invisibility_of_element_located((By.ID,"id_username")))
 
     def browser_login_admin(self, username=None, password=None, browser=None):
@@ -375,11 +375,11 @@ class BrowserActionMixins(object):
             # Since logout redirects to the homepage, browse_to will fail (with no good way to avoid).
             #   so be smarter in that case.
             homepage_url = self.reverse("homepage")
-            logout_url = self.reverse("logout")
-            if homepage_url == browser.current_url:
-                browser.get(logout_url)
-            else:
-                self.browse_to(logout_url, browser=browser)
+            self.browser.find_element_by_id("username").click()
+            WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.ID, "nav_logout")))
+            logout = self.browser.find_element_by_id("nav_logout")
+            logout.click()
+            WebDriverWait(browser, 5).until(EC.staleness_of(logout))
             self.assertEqual(homepage_url, browser.current_url, "Logout redirects to the homepage")
             self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
 
