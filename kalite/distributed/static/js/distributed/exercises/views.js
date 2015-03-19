@@ -430,6 +430,7 @@ window.ExerciseView = Backbone.View.extend({
         if (this.related_video_view) {
             this.related_video_view.remove();
         }
+        this.$("input").qtip("destroy", /* immediate */ true);
         this.remove();
     }
 

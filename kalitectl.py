@@ -8,6 +8,7 @@ www.learningequality.org
 Usage:
   kalite start [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
+  kalite setting SETTING_NAME
   kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite status [job-scheduler] [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
@@ -348,17 +349,22 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=[
-                '--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)]
+            args=['--daemon',
+                  '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)
+                  ]
         )
-    args = "--host={host:s} --daemonize{production:s} --pidfile={pid:s} --startup-lock-file={startup:s}".format(
-        host=LISTEN_ADDRESS,
-        pid=PID_FILE,
-        production=" --production" if not debug else "",
-        startup=STARTUP_LOCK,
-    )
-    manage('kaserve', args=args.split(" "))
+    args = ["--host=%s" % LISTEN_ADDRESS,
+            "--daemonize",
+            "--pidfile=%s" % PID_FILE,
+            "--startup-lock-file=%s" % STARTUP_LOCK,
+            ]
+    args += ["--production"] if not debug else []
+    manage('kaserve', args)
 
+
+def setting(setting_name):
+    import kalite.settings
+    print(kalite.settings.package_selected(setting_name))
 
 def stop(args=[], sys_exit=True):
     """
@@ -508,6 +514,9 @@ if __name__ == "__main__":
             skip_job_scheduler=arguments['--skip-job-scheduler'],
             args=arguments['DJANGO_OPTIONS']
         )
+
+    elif arguments['setting']:
+        setting(setting_name=arguments['SETTING_NAME'])
 
     elif arguments['status']:
         if arguments['job-scheduler']:

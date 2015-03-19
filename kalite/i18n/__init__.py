@@ -18,6 +18,8 @@ from django.views.i18n import javascript_catalog
 
 from contextlib import contextmanager
 
+from kalite.version import SHORTVERSION
+
 ################################################
 ###                                          ###
 ###   NOTE TO US:                            ###
@@ -394,6 +396,7 @@ def select_best_available_language(target_code, available_codes=None):
     target_code = lcode_to_django_lang(target_code)
     if available_codes is None:
         available_codes = get_installed_language_packs().keys()
+    logging.debug("choosing best language among %s" % available_codes)
     available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
@@ -451,3 +454,12 @@ def translate_block(language):
     translation.activate(language)
     yield
     translation.deactivate()
+
+
+def get_language_pack_url(lang_code, version=SHORTVERSION):
+    """As published"""
+    return "http://%(host)s/media/language_packs/%(version)s/%(lang_code)s.zip" % {
+        "host": settings.CENTRAL_SERVER_HOST,
+        "lang_code": lang_code,
+        "version": version,
+    }

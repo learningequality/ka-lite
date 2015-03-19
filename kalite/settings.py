@@ -242,3 +242,5 @@ if DEBUG:
     """Show DeprecationWarning messages when in debug"""
     import warnings
     warnings.simplefilter('always', DeprecationWarning)
+
+CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)

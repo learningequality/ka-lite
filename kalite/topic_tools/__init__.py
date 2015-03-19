@@ -138,16 +138,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
         for exercise in EXERCISES[language].values():
             exercise_file = exercise["name"] + ".html"
             exercise_template = exercise_file
-
-            # Get the language codes for exercise templates that exist
-            available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
-
-            # Return the best available exercise template
-            exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
-            if exercise_lang == "en":
-                exercise_template = exercise_file
-            else:
-                exercise_template = os.path.join(exercise_lang, exercise_file)
+            exercise_lang = "en"
 
             if exercise.get("uses_assessment_items", False):
                 available = False
@@ -160,6 +151,18 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 exercise["all_assessment_items"] = items
             else:
                 available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
+
+                # Get the language codes for exercise templates that exist
+                available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
+
+                # Return the best available exercise template
+                exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
+
+            if exercise_lang == "en":
+                exercise_template = exercise_file
+            else:
+                exercise_template = os.path.join(exercise_lang, exercise_file)
+
 
             with i18n.translate_block(exercise_lang):
                 exercise["available"] = available
@@ -237,7 +240,7 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
     if CONTENT.get(language) is None:
         CONTENT[language] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
         annotate = True
-    
+
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             content = softload_json(CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
@@ -491,9 +494,34 @@ def get_assessment_item_data(request, assessment_item_id=None):
     if not assessment_item:
         return None
 
-    # TODO (rtibbles): Enable internationalization for the assessment_items.
+    # Enable internationalization for the assessment_items.
+    try:
+        item_data = json.loads(assessment_item['item_data'])
+        question_content = _(item_data['question']['content'])
+        answerarea_content = item_data['answerArea']['options']['content']
+        if answerarea_content:  # Not an empty string
+            answerarea_content = _(answerarea_content)
+
+        # Loop over contents for multiple hints.
+        # Pickup the wrapped strings and append to hints dict
+        new_hints = []
+        for contents_dict in item_data['hints']:
+            content_value = contents_dict.get('content')
+            converted_content = _(content_value)
+            contents_dict['content'] = converted_content
+            new_hints.append(contents_dict)
+
+        item_data['hints'] = new_hints
+        item_data['question']['content'] = question_content
+        item_data['answerArea']['options']['content'] = answerarea_content
+        # dump the data for a proper json format.
+        assessment_item['item_data'] = json.dumps(item_data)
+
+    except KeyError as e:
+        logging.error("Assessment item did not have the expected key %s. Assessment item: \n %s" % (e, assessment_item))
 
     return assessment_item
+
 
 def get_content_data(request, content_id=None):
 
@@ -515,7 +543,6 @@ def get_content_data(request, content_id=None):
     return content
 
 
-
 def video_dict_by_video_id(flat_topic_tree=None):
     # TODO (aron): Add i18n by varying the language of the topic tree here
     topictree = flat_topic_tree if flat_topic_tree else get_flat_topic_tree()
@@ -532,6 +559,7 @@ def video_dict_by_video_id(flat_topic_tree=None):
             video_title_dict[video_key] = video_node
 
     return video_title_dict
+
 
 def convert_leaf_url_to_id(leaf_url):
     """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""

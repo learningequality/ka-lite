@@ -138,6 +138,8 @@ function handleFailedAPI(resp, error_prefix) {
             messages = {error: gettext("Could not connect to the server.") + " " + gettext("Please try again later.")};
             break;
 
+        case 401:
+
         case 403:
             messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
                 login_url: USER_LOGIN_URL
