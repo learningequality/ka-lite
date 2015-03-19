@@ -20,7 +20,15 @@ logging = settings.LOG
 ZIP_FILE_PATH = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
 ASSESSMENT_ITEMS_PATH = os.path.join(settings.PROJECT_PATH, "..", "data", "khan", "assessmentitems.json")
 
+IMAGE_URL_REGEX = re.compile('https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg|jpeg))', flags=re.IGNORECASE)
+
+# this ugly regex looks for links to content on the KA site, also including the markdown link text and surrounding bold markers (*), e.g.
+# **[Read this essay to review](https://www.khanacademy.org/humanities/art-history/art-history-400-1300-medieval---byzantine-eras/anglo-saxon-england/a/the-lindisfarne-gospels)**
+# TODO(jamalex): answer any questions people might have when this breaks!
+CONTENT_LINK_REGEX = re.compile("(?P<prefix>\**\[[^\]\[]+\]\()https?://www\.khanacademy\.org/[\/\w\-]*/./(?P<slug>[\w\-]+)(?P<suffix>\)\**)", flags=re.IGNORECASE)
+
 ZIP_WRITE_MUTEX = Lock()
+
 
 class Command(NoArgsCommand):
 
@@ -106,12 +114,9 @@ def fetch_file_from_url_or_cache(url):
 
 
 def all_image_urls(items):
-    for _, v in items.iteritems():
 
-        item_data = v["item_data"]
-        imgurlregex = r"https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg|jpeg))"
-
-        for match in re.finditer(imgurlregex, item_data, flags=re.IGNORECASE):
+    for v in items.itervalues():
+        for match in re.finditer(IMAGE_URL_REGEX, v["item_data"]):
             yield str(match.group(0))  # match.group(0) means get the entire string
 
 
@@ -127,9 +132,7 @@ def localize_all_image_urls(items):
 
 def localize_image_urls(item_data):
 
-    url_to_replace = r'https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg|jpeg))'
-
-    return re.sub(url_to_replace, _old_image_url_to_content_url, item_data, flags=re.IGNORECASE)
+    return re.sub(IMAGE_URL_REGEX, _old_image_url_to_content_url, item_data)
 
 
 def convert_urls(item_data):
@@ -156,12 +159,7 @@ def localize_all_content_links(items):
 
 
 def localize_content_links(item_data):
-    # this ugly regex looks for links to content on the KA site, also including the markdown link text and surrounding bold markers (*), e.g.
-    # **[Read this essay to review](https://www.khanacademy.org/humanities/art-history/art-history-400-1300-medieval---byzantine-eras/anglo-saxon-england/a/the-lindisfarne-gospels)**
-    # TODO(jamalex): answer any questions people might have when this breaks!
-    url_pattern = r"(?P<prefix>\**\[[^\]\[]+\]\()https?://www\.khanacademy\.org/[\/\w\-]*/./(?P<slug>[\w\-]+)(?P<suffix>\)\**)"
-
-    return re.sub(url_pattern, _old_content_links_to_local_links, item_data)
+    return re.sub(CONTENT_LINK_REGEX, _old_content_links_to_local_links, item_data)
 
 
 def _old_content_links_to_local_links(matchobj):
