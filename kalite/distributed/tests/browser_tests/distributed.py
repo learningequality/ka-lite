@@ -330,9 +330,6 @@ class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteB
         super(MainEmptyFormSubmitCaseTest, self).setUp()
         self.browser_login_admin(**self.admin_data)
 
-    def test_login_form(self):
-        self.empty_form_test(url=self.reverse("login"), submission_element_id="id_username")
-
     def test_add_student_form(self):
         self.empty_form_test(url=self.reverse("add_facility_student"), submission_element_id="id_username")
 
