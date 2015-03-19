@@ -9,7 +9,6 @@ from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
-from selenium.webdriver.common.keys import Keys
 
 PLAYLIST_ID = "g3_p1"
 
