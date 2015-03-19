@@ -152,6 +152,11 @@ class Command(BaseCommand):
             dest='interactive',
             default=True,
             help='Run in non-interactive mode'),
+        make_option('-a', '--dl-assessment-items',
+            action='store_true',
+            dest='force-assessment-item-dl',
+            default=False,
+            help='Downloads assessment items from the url specified by settings.ASSESSMENT_ITEM_ZIP_URL, without interaction'),
     )
 
     def handle(self, *args, **options):
@@ -265,7 +270,9 @@ class Command(BaseCommand):
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
-        if not settings.RUNNING_IN_TRAVIS and options['interactive']:
+        if options['force-assessment-item-dl']:
+            call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEM_ZIP_URL)
+        elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
             print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
             print("If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
             print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
