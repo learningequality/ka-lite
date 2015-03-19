@@ -37,6 +37,17 @@ CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
 
+ASSESSMENT_DATA_TRANSLATABLE_FIELDS = [
+    'widgets',
+    'hints',
+    'question',
+    'answerArea',
+    'radio 1',
+    'choices',
+    'options',
+]
+
+
 if not os.path.exists(settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
@@ -496,31 +507,38 @@ def get_assessment_item_data(request, assessment_item_id=None):
 
     # Enable internationalization for the assessment_items.
     try:
+
         item_data = json.loads(assessment_item['item_data'], object_hook=json_ascii_decoder)
-        question_content = _(item_data['question']['content'])
-        answerarea_content = item_data['answerArea']['options']['content']
-        if answerarea_content:  # Not an empty string
-            answerarea_content = _(answerarea_content)
-
-        # Loop over contents for multiple hints.
-        # Pickup the wrapped strings and append to hints dict
-        new_hints = []
-        for contents_dict in item_data['hints']:
-            content_value = contents_dict.get('content')
-            converted_content = _(content_value)
-            contents_dict['content'] = converted_content
-            new_hints.append(contents_dict)
-
-        item_data['hints'] = new_hints
-        item_data['question']['content'] = question_content
-        item_data['answerArea']['options']['content'] = answerarea_content
-        # dump the data for a proper json format.
+        item_data = smart_translate_item_data(item_data)
         assessment_item['item_data'] = json.dumps(item_data)
 
     except KeyError as e:
         logging.error("Assessment item did not have the expected key %s. Assessment item: \n %s" % (e, assessment_item))
 
     return assessment_item
+
+
+def smart_translate_item_data(item_data):
+    """Auto translate the content fields of a given assessment item data.
+
+    An assessment item doesn't have the same fields; they change
+    depending on the question. Instead of manually specifying the
+    fields to translate, this function loops over all the relevant
+    fields of item_data and translates only the content field.
+    """
+    if 'content' in item_data:
+        item_data['content'] = _(item_data['content'])
+
+    for field in ASSESSMENT_DATA_TRANSLATABLE_FIELDS:
+        if field in item_data:
+            field_data = item_data[field]
+            if isinstance(field_data, dict):
+                item_data[field] = smart_translate_item_data(field_data)
+            elif isinstance(field_data, list):
+                item_data[field] = map(smart_translate_item_data, field_data)
+
+    return item_data
+
 
 
 def get_content_data(request, content_id=None):
