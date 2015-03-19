@@ -332,9 +332,12 @@ class BrowserActionMixins(object):
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
-        if facility_name and browser.find_element_by_id("id_facility"):
-            self.browser_activate_element(id="id_facility")
-            self.browser_send_keys(facility_name)
+        try:
+            if facility_name and browser.find_element_by_id("id_facility"):
+                self.browser_activate_element(id="id_facility")
+                self.browser_send_keys(facility_name)
+        except NoSuchElementException:
+            pass
 
         username_field = browser.find_element_by_id("id_username")
         username_field.clear()  # clear any data
