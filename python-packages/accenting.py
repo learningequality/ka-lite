@@ -104,7 +104,10 @@ class Converter(object):
         """substitutes each tag back into string, into occurrences of <0>, <1> etc"""
         for i, tag in enumerate(tags):
             bracketed = '<%s>' % i
-            string = re.sub(bracketed, tag, string, 1)
+            try:
+                string = re.sub(bracketed, tag, string, 1)
+            except Exception as e:  # re module raising vague errors, WHY
+                continue
         return string
 
     def inner_convert_string(self, string):
