@@ -22,10 +22,17 @@ window.LoginModalView = BaseView.extend({
             this.loginView = new LoginView({model: this.model, el: "#login-container"});
             this.listenTo(this.loginView, "login_success", this.close_modal);
         }
+        if (window.location.search.includes("login")) {
+            this.show_modal();
+        }
     },
 
     close_modal: function() {
         $("#loginModal").modal('hide');
+    },
+
+    show_modal: function() {
+        $("#loginModal").modal('show');
     }
 });
 

@@ -30,7 +30,7 @@ class SessionIdleTimeout:
                     messages.add_message(request, messages.ERROR, 'Your session has been timed out')
 
                     # Redirect to the login page if session has timed-out.
-                    redirect_to = reverse('login')
+                    redirect_to = request.path + "?login"
                     response = HttpResponseRedirect(redirect_to)
                     return response
                 else:
