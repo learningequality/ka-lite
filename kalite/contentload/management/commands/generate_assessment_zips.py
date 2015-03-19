@@ -89,9 +89,8 @@ def download_url_to_zip(zf, url):
         return
 
     # Without a mutex, the generated zip files were corrupted when writing with concurrency > 1
-    ZIP_WRITE_MUTEX.acquire()
-    zf.writestr(filename, filecontent)
-    ZIP_WRITE_MUTEX.release()
+    with ZIP_WRITE_MUTEX:
+        zf.writestr(filename, filecontent)
 
 
 def fetch_file_from_url_or_cache(url):
