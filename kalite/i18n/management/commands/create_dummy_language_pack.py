@@ -25,7 +25,7 @@ from kalite.version import VERSION
 
 logging = settings.LOG
 
-BASE_LANGUAGE_PACK = "en"       # language where we base the dummy langpack from
+BASE_LANGUAGE_PACK = "de"       # language where we base the dummy langpack from
 TARGET_LANGUAGE_PACK = "eo"     # what the "dummy" language's language code. Will be. Sorry, Esperantists.
 TARGET_LANGUAGE_DIR = get_locale_path(TARGET_LANGUAGE_PACK)
 MO_FILE_LOCATION = os.path.join(TARGET_LANGUAGE_DIR, "LC_MESSAGES")
