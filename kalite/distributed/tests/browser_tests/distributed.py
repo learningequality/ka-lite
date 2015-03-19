@@ -16,7 +16,7 @@ from fle_utils.general import isnumeric
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
+from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins, CreateFacilityMixin
 from kalite.topic_tools import get_exercise_paths, get_node_cache
 
 logging = settings.LOG
@@ -315,7 +315,7 @@ class LoadExerciseTest(BrowserActionMixins, KALiteBrowserTestCase):
             self.assertFalse(error_list)
 
 
-class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase):
+class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase, CreateFacilityMixin):
     """
     Submit forms with no values, make sure there are no errors.
 
@@ -325,8 +325,10 @@ class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteB
     def setUp(self):
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
+        self.facility = self.create_facility()
 
         super(MainEmptyFormSubmitCaseTest, self).setUp()
+        self.browser_login_admin(**self.admin_data)
 
     def test_login_form(self):
         self.empty_form_test(url=self.reverse("login"), submission_element_id="id_username")
@@ -338,7 +340,6 @@ class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteB
         self.empty_form_test(url=self.reverse("add_facility_teacher"), submission_element_id="id_username")
 
     def test_add_group_form(self):
-        self.browser_login_admin(**self.admin_data)
         self.empty_form_test(url=self.reverse("add_group"), submission_element_id="id_name")
 
 
