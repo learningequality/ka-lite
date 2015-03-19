@@ -182,7 +182,7 @@ def _get_content_by_readable_id(readable_id):
         return CONTENT_BY_READABLE_ID.get(re.sub("\-+", "-", readable_id).lower(), None)
 
 
-def list_all_exercises_with_bad_links():
+def _list_all_exercises_with_bad_links():
     """This is a standalone helper method used to provide KA with a list of exercises with bad URLs in them."""
     url_pattern = r"https?://www\.khanacademy\.org/[\/\w\-]*/./(?P<slug>[\w\-]+)"
     assessment_items = json.load(open(ASSESSMENT_ITEMS_PATH))
