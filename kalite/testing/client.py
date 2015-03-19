@@ -52,7 +52,7 @@ class KALiteClient(Client):
             data['facility'] = data['facility'].id
         else:
             data['facility'] = None
-        response = self.post_json(self.login_url, data=data, follow=follow)
+        response = self.post_json(self.login_url, data=data)
         return response
 
     def login_teacher(self, data=None, facility=None, use_default_facility=True, follow=True):
