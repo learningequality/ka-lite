@@ -328,7 +328,7 @@ class BrowserActionMixins(object):
         self.browse_to(login_url, browser=browser)  # Load page
         WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "nav_login")))
         self.browser.find_element_by_id("nav_login").click()
-        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "id_username")))
+        WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.ID, "id_username")))
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
@@ -344,7 +344,7 @@ class BrowserActionMixins(object):
         username_field.click()  # explicitly set the focus, to start
         self.browser_form_fill(username, browser=browser)
         self.browser_form_fill(password, browser=browser)
-        self.browser.find_element_by_class_name("login-btn").click()
+        browser.find_element_by_class_name("login-btn").click()
         # self.browser_send_keys(Keys.RETURN)
 
         # wait for 5 seconds for the modal to disappear
