@@ -502,16 +502,7 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
             ))
         except TimeoutException:
             self.fail("No alert present on page after login.")
-        try:
-            # The function called by navigation event in the single-page JS app.
-            self.browser.execute_script("channel_router.control_view.topic_node_view.content_view.show_view()")
-        except WebDriverException as e:
-            if e.msg == "view is undefined":
-                # Since we're circumventing the normal control flow of the single-page JS app, we expect
-                # this JS error, which gets passed along as a WebDriverException
-                pass
-            else:
-                raise
+        self.browse_to(self.reverse("learn"))
         try:
             self.assertTrue(WebDriverWait(self.browser, 3).until(
                 expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
