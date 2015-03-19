@@ -29,7 +29,7 @@ class SessionIdleTimeout:
                     logout(request)
                     messages.add_message(request, messages.ERROR, 'Your session has been timed out')
 
-                    if request.is_ajax:
+                    if request.is_ajax():
                         response = HttpResponse(status=401)
                     else:
                         # Redirect to the login page if session has timed-out.
