@@ -531,7 +531,7 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
         )
         self.assertFalse(nav_logout.is_displayed(), "The dropdown menu logout item must not be displayed yet!")
         # Activate the dropdown menu and see if the logout link is visible.
-        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[7]/a")
+        dropdown_menu = self.browser.find_element_by_id("username")
         WebDriverWait(self.browser, 3).until(
             expected_conditions.visibility_of(dropdown_menu)
         )
@@ -541,7 +541,8 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
     def test_logout_link_visible_small_browser_size(self):
         # Check if browser size is too small and menu is collapsed, for mobile.
         self.browser.set_window_size(640, 480)
-        expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
+        # import pdb; pdb.set_trace()
+        expand_menus_button = self.browser.find_element_by_css_selector("button.navbar-toggle")
         WebDriverWait(self.browser, 3).until(
             expected_conditions.visibility_of(expand_menus_button)
         )
