@@ -91,6 +91,8 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
 
 @patch.object(mod, "KHAN_DATA_PATH", TEMP_KHAN_DATA_PATH)
+@patch.object(mod, "ASSESSMENT_ITEMS_PATH", TEMP_ASSESSMENT_ITEMS_PATH)
+@patch.object(mod, "ASSESSMENT_ITEMS_VERSION_PATH", TEMP_ASSESSMENT_ITEMS_VERSION_PATH)
 class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
     def setUp(self):
