@@ -6,6 +6,7 @@ import requests
 import tempfile
 import zipfile
 from multiprocessing.dummy import Pool as ThreadPool
+from threading import Lock
 
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
@@ -19,6 +20,7 @@ logging = settings.LOG
 ZIP_FILE_PATH = os.path.join(settings.PROJECT_PATH, "assessment_item_resources.zip")
 ASSESSMENT_ITEMS_PATH = os.path.join(settings.PROJECT_PATH, "..", "data", "khan", "assessmentitems.json")
 
+ZIP_WRITE_MUTEX = Lock()
 
 class Command(NoArgsCommand):
 
@@ -60,16 +62,14 @@ def download_urls(zf, urls):
 
     urls = set(urls)
 
-    # TODO(jamalex): this can be changed to 5 or so during download, but multiple threads writing to the zip
-    # at the same time leads to corruption, so you'll then need to re-run with it set to 1
-    pool = ThreadPool(1)
+    pool = ThreadPool(10)
     download_to_zip_func = lambda url: download_url_to_zip(zf, url)
     pool.map(download_to_zip_func, urls)
 
     return ZIP_FILE_PATH
 
 
-def download_url_to_zip(zipfile, url):
+def download_url_to_zip(zf, url):
     url = url.replace("https://ka-", "http://ka-")
     filename = os.path.basename(url)
     try:
@@ -80,7 +80,10 @@ def download_url_to_zip(zipfile, url):
         logging.error("Error when downloading from URL: %s (%s)" % (url, e))
         return
 
-    zipfile.writestr(filename, filecontent)
+    # Without a mutex, the generated zip files were corrupted when writing with concurrency > 1
+    ZIP_WRITE_MUTEX.acquire()
+    zf.writestr(filename, filecontent)
+    ZIP_WRITE_MUTEX.release()
 
 
 def fetch_file_from_url_or_cache(url):
