@@ -25,7 +25,7 @@ from django.contrib import messages
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from fle_utils.general import softload_json
+from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
 
 TOPICS_FILEPATHS = {
@@ -496,7 +496,7 @@ def get_assessment_item_data(request, assessment_item_id=None):
 
     # Enable internationalization for the assessment_items.
     try:
-        item_data = json.loads(assessment_item['item_data'])
+        item_data = json.loads(assessment_item['item_data'], object_hook=json_ascii_decoder)
         question_content = _(item_data['question']['content'])
         answerarea_content = item_data['answerArea']['options']['content']
         if answerarea_content:  # Not an empty string
