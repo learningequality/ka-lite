@@ -345,7 +345,7 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         self.student = self.create_student(username=student_username, password=student_password)
         self.browser_login_student(student_username, student_password)
         time.sleep(3)
-        self.browse_to(self.reverse("exercise_dashboard"))
+        self.browse_to(self.reverse("homepage"))
         self.browser_check_django_message(message_type="error", contains="Your session has been timed out")
         # Check if user redirects to login page after session timeout.
         self.assertEquals(self.browser.current_url, self.reverse("login") )

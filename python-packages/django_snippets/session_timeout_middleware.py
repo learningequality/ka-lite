@@ -4,7 +4,7 @@ import datetime
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 
 
 class SessionIdleTimeout:
@@ -29,9 +29,12 @@ class SessionIdleTimeout:
                     logout(request)
                     messages.add_message(request, messages.ERROR, 'Your session has been timed out')
 
-                    # Redirect to the login page if session has timed-out.
-                    redirect_to = reverse('login')
-                    response = HttpResponseRedirect(redirect_to)
+                    if request.is_ajax():
+                        response = HttpResponse(status=401)
+                    else:
+                        # Redirect to the login page if session has timed-out.
+                        redirect_to = reverse('login')
+                        response = HttpResponseRedirect(redirect_to)
                     return response
                 else:
                     # Set last activity time in current session.
