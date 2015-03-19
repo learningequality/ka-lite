@@ -20,7 +20,7 @@ from django.conf import settings
 from django.core.management.base import NoArgsCommand
 
 from fle_utils.general import ensure_dir
-from kalite.i18n import get_language_pack_url, get_locale_path
+from kalite.i18n import get_language_pack_url, get_locale_path, update_jsi18n_file
 from kalite.version import VERSION
 
 logging = settings.LOG
@@ -43,6 +43,8 @@ class Command(NoArgsCommand):
         django_mo_contents, djangojs_mo_contents = retrieve_mo_files(langpack_zip)
         dummy_django_mo, dummy_djangojs_mo = (create_mofile_with_dummy_strings(django_mo_contents, filename="django.mo"),
                                               create_mofile_with_dummy_strings(djangojs_mo_contents, filename="djangojs.mo"))
+        logging.debug("Creating i18n JS file for %s" % TARGET_LANGUAGE_PACK)
+        update_jsi18n_file(code=TARGET_LANGUAGE_PACK)
         logging.info("Finished creating debugging language pack %s." % TARGET_LANGUAGE_PACK)
 
 
