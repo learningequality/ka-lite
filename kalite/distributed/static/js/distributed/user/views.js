@@ -22,7 +22,7 @@ window.LoginModalView = BaseView.extend({
             this.loginView = new LoginView({model: this.model, el: "#login-container"});
             this.listenTo(this.loginView, "login_success", this.close_modal);
         }
-        if (window.location.search.includes("login")) {
+        if (this.start_open) {
             this.show_modal();
         }
     },
@@ -248,6 +248,10 @@ window.UserView = BaseView.extend({
                 this.loginModalView.render();
             } else {
                 this.loginModalView = new LoginModalView({model: this.model});
+            }
+            if (window.location.search.includes("login") || this.login_start_open) {
+                this.loginModalView.start_open = true;
+                delete this.login_start_open;
             }
         }
     },
