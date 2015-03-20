@@ -44,7 +44,7 @@ def raw_input_yn(prompt):
         ans = raw_input("%s (yes or no) " % prompt.strip()).lower()
         if ans in ["yes", "no"]:
             break
-        logging.error("Please answer yes or no.\n")
+        logging.warning("Please answer yes or no.\n")
     return ans == "yes"
 
 
@@ -116,6 +116,7 @@ def get_assessment_items_filename():
             tmp = curdir
             curdir = pardir
             pardir = os.path.abspath(os.path.join(tmp, os.pardir))
+        return ""
 
     recommended_filename = find_recommended_file()
     prompt = "Please enter the filename of the assessment items package you have downloaded (%s): " % recommended_filename
@@ -289,7 +290,7 @@ class Command(BaseCommand):
             print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
             print("If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
             print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
-            print("Otherwise, we will download it from {url}.".format(settings.ASSESSMENT_ITEMS_ZIP_URL))
+            print("Otherwise, we will download it from {url}.".format(url=settings.ASSESSMENT_ITEMS_ZIP_URL))
 
             if raw_input_yn("Do you wish to download the assessment items package now?"):
                 ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
@@ -299,11 +300,11 @@ class Command(BaseCommand):
                 ass_item_filename = None
 
             if not ass_item_filename:
-                logging.error("No assessment items package file given. You will need to download and unpack it later.")
+                logging.warning("No assessment items package file given. You will need to download and unpack it later.")
             else:
                 call_command("unpack_assessment_zip", ass_item_filename)
         else:
-            logging.error("No assessment items package file given. You will need to download and unpack it later.")
+            logging.warning("No assessment items package file given. You will need to download and unpack it later.")
 
 
         # Individually generate any prerequisite models/state that is missing
