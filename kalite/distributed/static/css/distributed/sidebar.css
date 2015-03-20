@@ -141,6 +141,10 @@ div.fade {
     z-index: 10000;
 }
 
+.sidebar-back button {
+    height: 3em;
+}
+
 .sidebar-back-hover {
     background-color: #3D6663 !important;
 }
