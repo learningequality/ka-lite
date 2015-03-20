@@ -99,10 +99,13 @@ var StatusModel = Backbone.Model.extend({
                 if (data.redirect) {
                     window.location = data.redirect;
                 } else {
-                    self.load_status();
-                    if (callback) {
-                        callback(response);
-                    }
+                    // TODO (rtibbles) Reinstate the code below once
+                    // the front end app responds better to statusModel changes
+                    window.location.reload();
+                    // self.load_status();
+                    // if (callback) {
+                    //     callback(response);
+                    // }
                 }
             },
             error: function(response) {
