@@ -195,7 +195,7 @@ window.SidebarView = BaseView.extend({
         return false;
     },
 
-    update_sidebar_visibility: function() {
+    update_sidebar_visibility: _.debounce(function() {
         if (this.state_model.get("open")) {
             // Used to get left value in number form
             var sidebarPanelPosition = this.sidebar.position();
@@ -203,19 +203,27 @@ window.SidebarView = BaseView.extend({
             this.resize_sidebar();
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".sidebar-fade").show();
-        } 
-        else {
+        } else {
             this.sidebar.css({left: - this.width});
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".sidebar-fade").hide();
         }
 
         this.set_sidebar_back();
-    },
+    }, 100),
 
     set_sidebar_back: function() {
         if (!this.state_model.get("open")) {
             this.sidebarBack.offset({left: -(this.sidebarBack.width())});
+            
+            this.sidebarBack.hover(
+            function() {
+                $(this).addClass("sidebar-back-hover");
+            },
+            function() {
+                $(this).removeClass("sidebar-back-hover");
+            });
+
             return;
         }
 

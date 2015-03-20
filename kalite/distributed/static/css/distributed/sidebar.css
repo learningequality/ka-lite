@@ -141,6 +141,14 @@ div.sidebar-fade {
     z-index: 10000;
 }
 
+.sidebar-back button {
+    height: 3em;
+}
+
+.sidebar-back-hover {
+    background-color: #3D6663 !important;
+}
+
 /* Sidebar panel & entry styling */
 .topic-container-inner {
     float: left;
