@@ -886,3 +886,12 @@ to items you want to have the icon appear with.
 #workarea .perseus-widget-container.widget-highlight {
     box-shadow: -4px 0 9px 5px #ffa500;
 }
+
+/* Styling for simplified login toggle button */
+.password-btn {
+    float: right;
+}
+
+.login .ui-menu .ui-menu-item a{
+    font-size: 1.5em;
+}

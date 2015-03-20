@@ -8,23 +8,19 @@ from securesync.devices.views import *  # ARGH! TODO(aron): figure out what thin
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
-from .decorators import facility_required, facility_from_request
-from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
-from .middleware import refresh_session_facility_info
+from .decorators import facility_required
+from .forms import FacilityUserForm, FacilityForm, FacilityGroupForm
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
-from kalite.i18n import get_default_language, lcode_to_django_lang
-from kalite.main.models import UserLog
+from kalite.i18n import get_default_language
 from kalite.shared.decorators import require_authorized_admin
-from kalite.student_testing.utils import set_exam_mode_off
 
 
 @require_authorized_admin
@@ -167,7 +163,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
             else:
                 # Double check permissions
                 messages.success(request, _("You successfully registered."))
-                return HttpResponseRedirect(reverse("login"))
+                return HttpResponseRedirect(reverse("homepage"))
 
     # render form for editing
     elif user_being_edited:
@@ -219,88 +215,3 @@ def group_edit(request, facility, group_id):
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
-
-@facility_from_request
-@render_to("facility/login.html")
-def login(request, facility):
-    if request.user.is_authenticated():
-        return HttpResponseRedirect(reverse("homepage"))
-
-    facility_id = (facility and facility.id) or None
-    facilities = list(Facility.objects.all())
-
-    #Fix for #2047: prompt user to create an admin account if none exists
-    if not User.objects.exists():
-        messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
-
-    # Fix for #1211: refresh cached facility info when it's free and relevant
-    refresh_session_facility_info(request, facility_count=len(facilities))
-
-    if request.method != 'POST':  # render the unbound login form
-        referer = urlparse.urlparse(request.META["HTTP_REFERER"]).path if request.META.get("HTTP_REFERER") else None
-        # never use the homepage as the referer
-        if referer in [reverse("homepage"), reverse("add_facility_student"), reverse("add_facility_teacher"), reverse("facility_user_signup")]:
-            referer = None
-        form = LoginForm(initial={"facility": facility_id, "callback_url": referer})
-
-    else:  # process the login form
-        # log out any Django user or facility user
-        logout(request)
-
-        username = request.POST.get("username", "")
-        password = request.POST.get("password", "")
-
-        # first try logging in as a Django user
-        if not settings.CENTRAL_SERVER:
-            user = authenticate(username=username, password=password)
-            if user:
-                auth_login(request, user)
-                return HttpResponseRedirect(request.next or reverse("zone_redirect"))
-
-        # try logging in as a facility user
-        form = LoginForm(data=request.POST, request=request, initial={"facility": facility_id})
-        if not form.is_valid():
-            messages.error(
-                request,
-                _("There was an error logging you in. Please correct any errors listed below, and try again."),
-            )
-
-        else:
-            user = form.get_user()
-
-            try:
-                UserLog.begin_user_activity(user, activity_type="login", language=lcode_to_django_lang(request.language))  # Success! Log the event (ignoring validation failures)
-            except ValidationError as e:
-                logging.error("Failed to begin_user_activity upon login: %s" % e)
-
-            request.session["facility_user"] = user
-            messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
-                                        _("-- be sure to log out when you finish."))
-
-            # Send them back from whence they came (unless it's the sign up page)
-            landing_page = form.cleaned_data["callback_url"] if form.cleaned_data["callback_url"] != reverse("facility_user_signup") else None
-            if not landing_page or landing_page == reverse("login"):
-                # Just going back to the homepage?  We can do better than that.
-                if form.get_user().is_teacher:
-                    landing_page = reverse("tabular_view")
-                else:
-                    landing_page = reverse("learn")
-
-            return HttpResponseRedirect(request.next or landing_page)
-
-    return {
-        "form": form,
-        "facilities": facilities,
-    }
-
-
-def logout(request):
-    # TODO(dylanjbarth) this is Nalanda specific
-    if request.is_teacher:
-        set_exam_mode_off()
-
-    auth_logout(request)
-    next = request.GET.get("next", reverse("homepage"))
-    if next[0] != "/":
-        next = "/"
-    return HttpResponseRedirect(next)

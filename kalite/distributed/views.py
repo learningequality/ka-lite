@@ -38,6 +38,10 @@ def check_setup_status(handler):
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
 
+        #Fix for #2047: prompt user to create an admin account if none exists
+        if not User.objects.exists():
+            messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
+
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
             if not request.session.get("registered", True) and BaseClient().test_connection() == "success":
@@ -59,8 +63,8 @@ def check_setup_status(handler):
                 redirect_url = None
             if redirect_url:
                 messages.warning(request, mark_safe(
-                    "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
-                    to complete the setup." % (reverse("login"), redirect_url)))
+                    "Please login with the account you created while running the installation script, \
+                    to complete the setup."))
 
         return handler(request, *args, **kwargs)
     return check_setup_status_wrapper_fn
@@ -238,7 +242,7 @@ def handler_403(request, *args, **kwargs):
         return JsonResponseMessageError(_("You must be logged in with an account authorized to view this page (API)."), status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
-        return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
+        return HttpResponseRedirect(set_query_params(reverse("homepage"), {"next": request.get_full_path()}))
 
 @render_to("distributed/perseus.html")
 def perseus(request):

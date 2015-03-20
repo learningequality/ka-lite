@@ -106,11 +106,19 @@ class BrowserActionMixins(object):
                   (num_messages, message_type if message_type else "(any)")
             self.assertEqual(num_messages, len(messages), msg)
 
-        for message in messages:
-            if contains is not None:
-                self.assertIn(contains, message.text, "Make sure message contains '%s'" % contains)
-            if exact is not None:
-                self.assertEqual(exact, message.text, "Make sure message = '%s'" % exact)
+        for i, message in enumerate(messages):
+            if type(contains) == list:
+                contain = contains[i]
+            else:
+                contain = contains
+            if type(exact) == list:
+                exac = exact[i]
+            else:
+                exac = exact
+            if contain is not None:
+                self.assertIn(contain, message.text, "Make sure message contains '%s'" % contain)
+            if exac is not None:
+                self.assertEqual(exac, message.text, "Make sure message = '%s'" % exac)
 
     def browser_wait_for_ajax_calls_to_finish(self):
             num_ajax_calls = 1 # to ensure at least one loop
@@ -316,25 +324,31 @@ class BrowserActionMixins(object):
         """
         browser = browser or self.browser
 
-        login_url = self.reverse("login")
+        login_url = self.reverse("homepage")
         self.browse_to(login_url, browser=browser)  # Load page
+        WebDriverWait(self.browser, 10).until(EC.visibility_of_element_located((By.ID, "nav_login")))
+        self.browser.find_element_by_id("nav_login").click()
+        WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.ID, "id_username")))
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
-        if facility_name and browser.find_element_by_id("id_facility").is_displayed():
-            self.browser_activate_element(id="id_facility")
-            self.browser_send_keys(facility_name)
+        try:
+            if facility_name and browser.find_element_by_id("id_facility"):
+                self.browser_activate_element(id="id_facility")
+                self.browser_send_keys(facility_name)
+        except NoSuchElementException:
+            pass
 
         username_field = browser.find_element_by_id("id_username")
         username_field.clear()  # clear any data
         username_field.click()  # explicitly set the focus, to start
         self.browser_form_fill(username, browser=browser)
         self.browser_form_fill(password, browser=browser)
-        username_field.submit()
+        browser.find_element_by_class_name("login-btn").click()
         # self.browser_send_keys(Keys.RETURN)
 
-        # wait for 5 seconds for the page to refresh
-        WebDriverWait(browser, 5).until(EC.staleness_of(username_field))
+        # wait for 5 seconds for the modal to disappear
+        WebDriverWait(browser, 5).until(EC.invisibility_of_element_located((By.ID,"id_username")))
 
     def browser_login_admin(self, username=None, password=None, browser=None):
         self.browser_login_user(username=username, password=password, browser=browser)
@@ -364,11 +378,11 @@ class BrowserActionMixins(object):
             # Since logout redirects to the homepage, browse_to will fail (with no good way to avoid).
             #   so be smarter in that case.
             homepage_url = self.reverse("homepage")
-            logout_url = self.reverse("logout")
-            if homepage_url == browser.current_url:
-                browser.get(logout_url)
-            else:
-                self.browse_to(logout_url, browser=browser)
+            self.browser.find_element_by_id("username").click()
+            WebDriverWait(browser, 5).until(EC.visibility_of_element_located((By.ID, "nav_logout")))
+            logout = self.browser.find_element_by_id("nav_logout")
+            logout.click()
+            WebDriverWait(browser, 5).until(EC.staleness_of(logout))
             self.assertEqual(homepage_url, browser.current_url, "Logout redirects to the homepage")
             self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
 

@@ -13,7 +13,13 @@ ChannelRouter = Backbone.Router.extend({
     },
 
     navigate_default_channel: function() {
-        this.navigate(this.default_channel + "/", {trigger: true, replace: true});
+        var addParam;
+        if (window.location.split("?").length > 1) {
+            addParam = "?" + Backbone.history.getFragment().split("?")[1];
+        } else {
+            addParam = "";
+        }
+        this.navigate(this.default_channel + "/" + addParam, {trigger: true, replace: true});
     },
 
     navigate_channel: function(channel, splat) {
