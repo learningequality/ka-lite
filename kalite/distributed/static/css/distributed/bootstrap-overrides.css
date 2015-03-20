@@ -20,7 +20,6 @@ html, body {
 }
 footer {
     width: 100%;
-    height: 90px;
     bottom: 0;
     left: 0;
 }
@@ -98,6 +97,9 @@ input[type="submit"] {
 .navbar ul.nav-tabs {
     border-bottom: 2px solid #5AA685;
 }
+.nav-tabs {
+    border-bottom: none;
+}
 .nav-tabs li a,
 .nav-tabs li.active a,
 .nav-tabs li a:active {
@@ -120,12 +122,15 @@ input[type="submit"] {
 .nav-tabs li.active a:hover,
 .nav-tabs li a:hover,
 .nav-tabs li.active a {
-    background-color: white;
+    background: white !important;
     color: #5AA685;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
     -o-transition: all 80ms ease-out;
     transition: all 80ms ease-out;
+}
+.nav-tabs div li.active {
+    background: white !important;
 }
 .top-nav li.active a:hover,
 .top-nav li.active a,
@@ -139,9 +144,6 @@ input[type="submit"] {
 }
 .navbar ul li.dropdown {
     padding-right: 0;
-}
-.navbar ul li.dropdown.open ul.dropdown-menu {
-    padding: 9px 0;
 }
 .navbar ul li.dropdown.open a {
     color: #5AA685;
@@ -165,6 +167,12 @@ input[type="submit"] {
     color: black;
     border: 0;
     border-radius: 0;
+}
+.mobile-nav {
+    display: inline-block;
+}
+.mobile-manage-nav {
+    display: inline-block;
 }
 
 @media (min-width: 768px) {
@@ -212,11 +220,11 @@ form .input-group {
 .source .note {
     font-style: italic;
 }
-/* Language selector */
+/* Language selector 
 #language_selector {
-    position: relative;
+    
     vertical-align: middle;
-    top: 15px;
+    
     margin-left: 10px;
 }
 /* Navbar collapse styles for hamburger */
@@ -426,12 +434,18 @@ footer {
 }
 @media only screen and (max-width: 991px) {
     h3.suggested-action-title { font-size: 18px; }
+
 }
 @media only screen and (max-width: 767px) {
     .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
-    form#search-box, #language_selector { margin-left: 13px; margin-bottom: 10px; }
+    form#search-box { margin-bottom: 10px; }
     h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
     .suggested-action .topic-list a { font-size: 1.25em; }
+    .language-select { text-align: center; margin: 10px 0px; }
+    .language-select select { top: 0 !important; }
+    .teacher-only.language-select { height: 20px !important; }
+    .navbar-nav .open .dropdown-menu { background: white; }
+    
 }
 @media only screen and (max-width: 469px) {
     h3.suggested-action-title { font-size: 18px; padding-top: 0; }
@@ -444,9 +458,10 @@ footer {
     h3.suggested-action-title { margin-top: 0; }
 }
 
+/* SMALLEST MOBILE SCREEN */
 @media (max-width: 454px) {
     #search_box {
-        width: 83%;
+        width: 75%;
         margin-left: 15px;
     }
     .navbar-nav {
@@ -457,7 +472,14 @@ footer {
         overflow-x: hidden;
     }
 }
+@media (max-width: 480px) {
+    .manage-nav ul li {
+        text-align: center;
+        margin: 0 2px -10px -4px;
+    }
+}
 
+/* SMALL TABLET */
 @media only screen and (min-width: 455px) and (max-width: 600px) {
     #search_box {
         width: 87%;
@@ -468,9 +490,9 @@ footer {
         margin: 0px 0px;
     }
 
-
 }
 
+/* LARGER TABLETS */
 @media only screen and (min-width: 600px) and (max-width: 767px) {
 
     #search_box{
@@ -484,7 +506,7 @@ footer {
 }
 
 
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
     .navbar-form {
         padding: 0px 0px;
     }
@@ -497,7 +519,9 @@ footer {
     .navbar-collapse{
         margin-left: 10px;
     }
-
+    .nav-tabs li {
+        margin-bottom: 0;
+    }
     #search_input{
         margin-bottom: 10px;
     }
@@ -509,11 +533,16 @@ footer {
         overflow-y: hidden;
         overflow-x: hidden;
     }
-}
-
-@media (max-width: 480px) {
-    .manage-nav ul li {
-        text-align: center;
-        margin: 0 2px -10px -4px;
+    .mobile-nav, .mobile-manage-nav {
+        margin: 5px 0px;
     }
+    .teach-nav, .manage-nav {
+        border-bottom: none !important;
+        text-align: center;
+    }
+    .teach-nav li, .manage-nav li {
+        border-top-left-radius: 0px !important; 
+        border-top-right-radius: 0px !important;
+    }
+    
 }
