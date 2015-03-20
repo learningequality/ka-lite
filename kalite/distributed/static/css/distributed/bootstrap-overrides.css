@@ -113,9 +113,6 @@ input[type="submit"] {
     -o-transition: all 80ms ease-out;
     transition: all 80ms ease-out;
 }
-#points {
-    margin-left: 20px;
-}
 .nav-tabs li.active a:hover {
     border: none;
 }
@@ -148,10 +145,11 @@ input[type="submit"] {
 .navbar ul li.dropdown.open a {
     color: #5AA685;
 }
-.navbar ul li.dropdown.open ul.dropdown-menu li a {
+.navbar ul li.dropdown.open ul.dropdown-menu li a,
+.navbar ul li.dropdown.open ul.dropdown-menu li span {
     text-transform: none;
     background: white;
-    color: black;
+    color: #3d3d3d;
     border: 0;
     padding: 5px 15px;
 }
@@ -174,7 +172,7 @@ input[type="submit"] {
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
 }
-.nav>li>a:focus {
+.nav li a:focus {
     background: #5AA685;
 }
 .dropdown-menu li a {
@@ -182,6 +180,7 @@ input[type="submit"] {
     color: black;
     border: 0;
     border-radius: 0;
+    text-align: left !important;
 }
 .mobile-nav, .mobile-manage-nav {
     display: inline-block;
@@ -189,6 +188,7 @@ input[type="submit"] {
 .username-nav-menu {
     font-weight: bold;
     color: #3d3d3d;
+    text-align: left;
 }
 
 @media (min-width: 768px) {
