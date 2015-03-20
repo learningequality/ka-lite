@@ -17,7 +17,7 @@ ChannelRouter = Backbone.Router.extend({
         if (window.location.split("?").length > 1) {
             addParam = "?" + Backbone.history.getFragment().split("?")[1];
         } else {
-            addParam = ""
+            addParam = "";
         }
         this.navigate(this.default_channel + "/" + addParam, {trigger: true, replace: true});
     },
