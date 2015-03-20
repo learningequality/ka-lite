@@ -145,10 +145,11 @@ def get_id2oklang_map(video_id, force=False):
     if ID2OKLANG_MAP is None or force:
         ID2OKLANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
-            for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                cur_video_id = get_video_id(english_youtube_id)
-                ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
-                ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
+            if lang_code and dic:
+                for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                    cur_video_id = get_video_id(english_youtube_id)
+                    ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
+                    ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
     if video_id:
         # Not all IDs made it into the spreadsheet, so by default, use the video_id as the youtube_id
         return ID2OKLANG_MAP.get(video_id, {"en": get_youtube_id(video_id, None)})
