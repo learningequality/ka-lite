@@ -219,7 +219,7 @@ UNIT_POINTS = 2000
 
 # for extracting assessment item resources
 ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(PROJECT_PATH, "..", "content", "khan")
-
+ASSESSMENT_ITEMS_ZIP_URL = "http://eslgenie.com/media/assessment_item_resources.zip"
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")

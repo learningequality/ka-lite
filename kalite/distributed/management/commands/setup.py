@@ -1,6 +1,7 @@
 """
 """
 import getpass
+import logging
 import os
 import re
 import shutil
@@ -43,7 +44,7 @@ def raw_input_yn(prompt):
         ans = raw_input("%s (yes or no) " % prompt.strip()).lower()
         if ans in ["yes", "no"]:
             break
-        sys.stderr.write("Please answer yes or no.\n")
+        logging.warning("Please answer yes or no.\n")
     return ans == "yes"
 
 
@@ -51,11 +52,11 @@ def raw_input_password():
     while True:
         password = getpass.getpass("Password: ")
         if not password:
-            sys.stderr.write("\tError: password must not be blank.\n")
+            logging.error("\tError: password must not be blank.\n")
             continue
 
         elif password != getpass.getpass("Password (again): "):
-            sys.stderr.write("\tError: passwords did not match.\n")
+            logging.error("\tError: passwords did not match.\n")
             continue
         break
     return password
@@ -72,7 +73,7 @@ def get_username(username):
 
         username = raw_input("Username (leave blank to use '%s'): " % get_clean_default_username()) or get_clean_default_username()
         if not validate_username(username):
-            sys.stderr.write("\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
+            logging.error("\tError: Username must contain only letters, digits, and underscores, and start with a letter.\n")
 
     return username
 
@@ -87,13 +88,46 @@ def get_hostname_and_description(hostname=None, description=None):
         prompt = "Please enter a name for this server%s: " % ("" if not default_hostname else (" (or, press Enter to use '%s')" % get_host_name()))
         hostname = raw_input(prompt) or default_hostname
         if not hostname:
-            sys.stderr.write("\tError: hostname must not be empty.\n")
+            logging.error("\tError: hostname must not be empty.\n")
         else:
             break
 
     description = description or raw_input("Please enter a one-line description for this server (or, press Enter to leave blank): ")
 
     return (hostname, description)
+
+
+def get_assessment_items_filename():
+    def validate_filename(filename):
+        try:
+            open(filename, "r").close()
+            return True
+        except IOError:
+            return False
+
+    def find_recommended_file():
+        filename_guess = "assessment_item_resources.zip"
+        curdir = os.path.abspath(os.curdir)
+        pardir = os.path.abspath(os.path.join(curdir, os.pardir))
+        while curdir != pardir:
+            recommended = os.path.join(curdir, filename_guess)
+            if os.path.exists(recommended):
+                return recommended
+            tmp = curdir
+            curdir = pardir
+            pardir = os.path.abspath(os.path.join(tmp, os.pardir))
+        return ""
+
+    recommended_filename = find_recommended_file()
+    prompt = "Please enter the filename of the assessment items package you have downloaded (%s): " % recommended_filename
+    filename = raw_input(prompt)
+    if not filename:
+        filename = recommended_filename
+    while not validate_filename(filename):
+        logging.error("Error: couldn't open the specified file: \"%s\"\n" % filename)
+        filename = raw_input(prompt)
+
+    return filename
 
 
 class Command(BaseCommand):
@@ -132,6 +166,11 @@ class Command(BaseCommand):
             dest='interactive',
             default=True,
             help='Run in non-interactive mode'),
+        make_option('-a', '--dl-assessment-items',
+            action='store_true',
+            dest='force-assessment-item-dl',
+            default=False,
+            help='Downloads assessment items from the url specified by settings.ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
     )
 
     def handle(self, *args, **options):
@@ -139,46 +178,41 @@ class Command(BaseCommand):
             options["username"] = options["username"] or getattr(settings, "INSTALL_ADMIN_USERNAME", None) or get_clean_default_username()
             options["hostname"] = options["hostname"] or get_host_name()
 
-        sys.stdout.write("                                  \n")  # blank allows ansible scripts to dump errors cleanly.
-        sys.stdout.write("  _   __  ___    _     _ _        \n")
-        sys.stdout.write(" | | / / / _ \  | |   (_) |       \n")
-        sys.stdout.write(" | |/ / / /_\ \ | |    _| |_ ___  \n")
-        sys.stdout.write(" |    \ |  _  | | |   | | __/ _ \ \n")
-        sys.stdout.write(" | |\  \| | | | | |___| | ||  __/ \n")
-        sys.stdout.write(" \_| \_/\_| |_/ \_____/_|\__\___| \n")
-        sys.stdout.write("                                  \n")
-        sys.stdout.write("http://kalite.learningequality.org\n")
-        sys.stdout.write("                                  \n")
-        sys.stdout.write("         version %s\n" % VERSION)
-        sys.stdout.write("                                  \n")
+        print("                                  ")  # blank allows ansible scripts to dump errors cleanly.
+        print("  _   __  ___    _     _ _        ")
+        print(" | | / / / _ \  | |   (_) |       ")
+        print(" | |/ / / /_\ \ | |    _| |_ ___  ")
+        print(" |    \ |  _  | | |   | | __/ _ \ ")
+        print(" | |\  \| | | | | |___| | ||  __/ ")
+        print(" \_| \_/\_| |_/ \_____/_|\__\___| ")
+        print("                                  ")
+        print("http://kalite.learningequality.org")
+        print("                                  ")
+        print("         version %s" % VERSION)
+        print("                                  ")
 
         if sys.version_info >= (2,8) or sys.version_info < (2,6):
             raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % sys.version_info)
 
         if options["interactive"]:
-            sys.stdout.write("--------------------------------------------------------------------------------\n")
-            sys.stdout.write("\n")
-            sys.stdout.write("This script will configure the database and prepare it for use.\n")
-            sys.stdout.write("\n")
-            sys.stdout.write("--------------------------------------------------------------------------------\n")
-            sys.stdout.write("\n")
+            print("--------------------------------------------------------------------------------")
+            print("This script will configure the database and prepare it for use.")
+            print("--------------------------------------------------------------------------------")
             raw_input("Press [enter] to continue...")
-            sys.stdout.write("\n")
 
         # Tried not to be os-specific, but ... hey. :-/
         # benjaoming: This doesn't work, why is 502 hard coded!? Root is normally
         # '0' And let's not care about stuff like this, people can be free to
         # run this as root if they want :)
         if not is_windows() and hasattr(os, "getuid") and os.getuid() == 502:
-            sys.stdout.write("-------------------------------------------------------------------\n")
-            sys.stdout.write("WARNING: You are installing KA-Lite as root user!\n")
-            sys.stdout.write("\tInstalling as root may cause some permission problems while running\n")
-            sys.stdout.write("\tas a normal user in the future.\n")
-            sys.stdout.write("-------------------------------------------------------------------\n")
+            print("-------------------------------------------------------------------")
+            print("WARNING: You are installing KA-Lite as root user!")
+            print("\tInstalling as root may cause some permission problems while running")
+            print("\tas a normal user in the future.")
+            print("-------------------------------------------------------------------")
             if options["interactive"]:
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
-                sys.stdout.write("\n")
 
         # Check to see if the current user is the owner of the install directory
         if not os.access(BASE_DIR, os.W_OK):
@@ -192,19 +226,19 @@ class Command(BaseCommand):
             # We found an existing database file.  By default,
             #   we will upgrade it; users really need to work hard
             #   to delete the file (but it's possible, which is nice).
-            sys.stdout.write("-------------------------------------------------------------------\n")
-            sys.stdout.write("WARNING: Database file already exists! \n")
-            sys.stdout.write("-------------------------------------------------------------------\n")
+            print("-------------------------------------------------------------------")
+            print("WARNING: Database file already exists!")
+            print("-------------------------------------------------------------------")
             if not options["interactive"] \
                or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
                or not raw_input_yn("Remove database file '%s' now? " % database_file) \
                or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
                 install_clean = False
-                sys.stdout.write("Upgrading database to KA Lite version %s\n" % VERSION)
+                print("Upgrading database to KA Lite version %s" % VERSION)
             else:
                 install_clean = True
-                sys.stdout.write("OK.  We will run a clean install; \n")
-                sys.stdout.write("the database file will be moved to a deletable location.\n")  # After all, don't delete--just move.
+                print("OK.  We will run a clean install; ")
+                print("the database file will be moved to a deletable location.")  # After all, don't delete--just move.
 
         if not install_clean and not database_file and not kalite.is_installed():
             # Make sure that, for non-sqlite installs, the database exists.
@@ -213,11 +247,9 @@ class Command(BaseCommand):
         # Do all input at once, at the beginning
         if install_clean and options["interactive"]:
             if not options["username"] or not options["password"]:
-                sys.stdout.write("\n")
-                sys.stdout.write("Please choose a username and password for the admin account on this device.\n")
-                sys.stdout.write("\tYou must remember this login information, as you will need\n")
-                sys.stdout.write("\tto enter it to administer this installation of KA Lite.\n")
-                sys.stdout.write("\n")
+                print("Please choose a username and password for the admin account on this device.")
+                print("\tYou must remember this login information, as you will need")
+                print("\tto enter it to administer this installation of KA Lite.")
             (username, password) = get_username_password(options["username"], options["password"])
             email = options["email"]
             (hostname, description) = get_hostname_and_description(options["hostname"], options["description"])
@@ -240,7 +272,7 @@ class Command(BaseCommand):
         if install_clean and database_file and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
             dest_file = tempfile.mkstemp()[1]
-            sys.stdout.write("(Re)moving database file to temp location, starting clean install.  Recovery location: %s\n" % dest_file)
+            print("(Re)moving database file to temp location, starting clean install.  Recovery location: %s" % dest_file)
             shutil.move(database_file, dest_file)
 
         # Should clean_pyc for (clean) reinstall purposes
@@ -250,11 +282,30 @@ class Command(BaseCommand):
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
 
+        # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
-        if not settings.RUNNING_IN_TRAVIS:
-            # download assessment items
-            # TODO-BLOCKER (aron): do not hardcode this, and put in the proper URL once we have a redirect set up
-            call_command("unpack_assessment_zip", "http://eslgenie.com/media/assessment_item_resources.zip")
+        if options['force-assessment-item-dl']:
+            call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
+        elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
+            print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
+            print("If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
+            print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
+            print("Otherwise, we will download it from {url}.".format(url=settings.ASSESSMENT_ITEMS_ZIP_URL))
+
+            if raw_input_yn("Do you wish to download the assessment items package now?"):
+                ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
+            elif raw_input_yn("Have you already downloaded the assessment items package?"):
+                ass_item_filename = get_assessment_items_filename()
+            else:
+                ass_item_filename = None
+
+            if not ass_item_filename:
+                logging.warning("No assessment items package file given. You will need to download and unpack it later.")
+            else:
+                call_command("unpack_assessment_zip", ass_item_filename)
+        else:
+            logging.warning("No assessment items package file given. You will need to download and unpack it later.")
+
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
@@ -278,7 +329,7 @@ class Command(BaseCommand):
             #
             #if os.path.exists(InitCommand.data_json_file):
             #    # This is a pathway to install zone-based data on a software upgrade.
-            #    sys.stdout.write("Loading zone data from '%s'\n" % InitCommand.data_json_file)
+            #    print("Loading zone data from '%s'\n" % InitCommand.data_json_file)
             #    load_data_for_offline_install(in_file=InitCommand.data_json_file)
 
         #    confirm_or_generate_zone()
@@ -305,7 +356,7 @@ class Command(BaseCommand):
                 try:
                     shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
                 except OSError:  # even if we have write permission, we might not have permission to change file mode
-                    sys.stdout.write("WARNING: Unable to set file permissions on %s! \n" % script_file)
+                    print("WARNING: Unable to set file permissions on %s! " % script_file)
 
             kalite_executable = 'kalite'
             if not spawn.find_executable('kalite'):
@@ -317,11 +368,9 @@ class Command(BaseCommand):
                 start_script_path = kalite_executable
 
             # Run videoscan, on the distributed server.
-            sys.stdout.write("Scanning for video files in the content directory (%s)\n" % settings.CONTENT_ROOT)
+            print("Scanning for video files in the content directory (%s)" % settings.CONTENT_ROOT)
             call_command("videoscan")
 
             # done; notify the user.
-            sys.stdout.write("\n")
-            sys.stdout.write("CONGRATULATIONS! You've finished setting up the KA Lite server software.\n")
-            sys.stdout.write("You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
-            sys.stdout.write("\n")
+            print("CONGRATULATIONS! You've finished setting up the KA Lite server software.")
+            print("You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
