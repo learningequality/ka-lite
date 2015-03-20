@@ -371,7 +371,7 @@ def update_jsi18n_file(code="en"):
     request.path = output_file
     request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
-    response = javascript_catalog(request, packages=('ka-lite.locale',))
+    response = javascript_catalog(request, packages=('ka-lite.locale',), domain="django")
     icu_js = ""
     for path in settings.LOCALE_PATHS:
         try:
