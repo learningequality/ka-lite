@@ -254,7 +254,7 @@ class BrowserActionMixins(object):
         # Expected results vary based on whether a user is logged in or not.
         if not stay_logged_in:
             self.browser_logout_user()
-
+        
         register_url = self.reverse("facility_user_signup")
         self.browse_to(register_url)  # Load page
 

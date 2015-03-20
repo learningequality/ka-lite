@@ -45,9 +45,6 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     def login_teacher(self):
         response = self.client.login_teacher(data=self.teacher_data, facility=self.facility)
-        # check content for teacher
-        text = "Coach Reports"
-        self.assertContains(response, text)
         # browse to the test list page to populate the test cache
         response_tests = self.client.get(self.test_list_url, follow=True)
         self.assertEqual(response_tests.request['PATH_INFO'], self.test_list_url)

@@ -55,7 +55,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
         student.save()
 
         expected_num_queries = 29 + 3*UserLog.is_enabled()
-        with self.assertNumQueries(FuzzyInt(expected_num_queries - 3, expected_num_queries + 5)):
+        with self.assertNumQueries(FuzzyInt(expected_num_queries - 4, expected_num_queries + 5)):
             self.browser_login_student("s1", passwd, self.facility)
 
     def test_query_status_admin(self):
@@ -79,13 +79,13 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
     def test_query_logout_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(FuzzyInt(6, 7) + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(6, 8) + 0*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_teacher(self):
         """"""
         self.test_query_login_teacher()
-        with self.assertNumQueries(FuzzyInt(3, 11) + 11*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(3, 12) + 11*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_student(self):
@@ -98,7 +98,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
         """Check the # of queries when browsing to the "Math" topic page"""
 
         # Without login
-        with self.assertNumQueries(FuzzyInt(0, 7)):
+        with self.assertNumQueries(FuzzyInt(0, 8)):
             self.browse_to(self.live_server_url + "/math/")
 
     def test_query_goto_math_logged_in(self):

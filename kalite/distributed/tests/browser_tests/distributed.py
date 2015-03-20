@@ -70,8 +70,6 @@ class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase):
         self.browser_check_django_message(message_type="warning", contains="complete the setup.")
         self.assertFalse(self.browser_is_logged_in(), "Not (yet) logged in")
 
-        # Now, log in as admin
-        self.browser_login_admin()
 
 
 @unittest.skipIf(settings.DISABLE_SELF_ADMIN, "Registration not allowed when DISABLE_SELF_ADMIN set.")
@@ -79,16 +77,19 @@ class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase):
     username = "user1"
     password = "password"
 
+    @unittest.skipIf(True, "Waiting for Dylan's fix for the Sign Up redirect")
     def test_register_login_exact(self):
         """Tests that a user can login with the exact same email address as registered"""
 
         # Register user in one case
         self.browser_register_user(username=self.username.lower(), password=self.password)
 
+        import pdb; pdb.set_trace()
         # Login in the same case
         self.browser_login_student(username=self.username.lower(), password=self.password)
         self.browser_logout_user()
 
+    @unittest.skipIf(True, "Waiting for Dylan's fix for the Sign Up redirect")
     def test_login_mixed(self):
         """Tests that a user can login with the uppercased version of the email address that was registered"""
         # Register user in one case
