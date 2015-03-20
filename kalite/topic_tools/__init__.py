@@ -37,16 +37,6 @@ CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
 
-ASSESSMENT_DATA_TRANSLATABLE_FIELDS = [
-    'widgets',
-    'hints',
-    'question',
-    'answerArea',
-    'radio 1',
-    'choices',
-    'options',
-]
-
 
 if not os.path.exists(settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
@@ -523,19 +513,18 @@ def smart_translate_item_data(item_data):
 
     An assessment item doesn't have the same fields; they change
     depending on the question. Instead of manually specifying the
-    fields to translate, this function loops over all the relevant
-    fields of item_data and translates only the content field.
+    fields to translate, this function loops over all fields of
+    item_data and translates only the content field.
+
     """
     if 'content' in item_data:
         item_data['content'] = _(item_data['content'])
 
-    for field in ASSESSMENT_DATA_TRANSLATABLE_FIELDS:
-        if field in item_data:
-            field_data = item_data[field]
-            if isinstance(field_data, dict):
-                item_data[field] = smart_translate_item_data(field_data)
-            elif isinstance(field_data, list):
-                item_data[field] = map(smart_translate_item_data, field_data)
+    for field, field_data in item_data.iteritems():
+        if isinstance(field_data, dict):
+            item_data[field] = smart_translate_item_data(field_data)
+        elif isinstance(field_data, list):
+            item_data[field] = map(smart_translate_item_data, field_data)
 
     return item_data
 
