@@ -55,7 +55,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
         student.save()
 
         expected_num_queries = 29 + 3*UserLog.is_enabled()
-        with self.assertNumQueries(FuzzyInt(expected_num_queries - 5, expected_num_queries + 5)):
+        with self.assertNumQueries(FuzzyInt(expected_num_queries - 6, expected_num_queries + 5)):
             self.browser_login_student("s1", passwd, self.facility)
 
     def test_query_status_admin(self):
