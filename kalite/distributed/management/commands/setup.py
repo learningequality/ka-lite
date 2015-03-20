@@ -289,6 +289,7 @@ class Command(BaseCommand):
             print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
             print("If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
             print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
+            print("Otherwise, we will download it from {url}.".format(settings.ASSESSMENT_ITEMS_ZIP_URL))
            
             if raw_input_yn("Do you wish to download the assessment items package now?"):
                 ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
