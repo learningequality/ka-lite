@@ -160,7 +160,8 @@ class ScatterReportExerciseResource(ExerciseSummaryResource):
         return bundle
 
     def get_object_list(self, request):
-        #TODO-BLOCKER(66eli77): need to find a way to include exercises that are not completed yet.
+        #TODO(66eli77): need to find a way to include exercises that are not completed yet.
+        #TODO(MCGallaspy): Probably by adding an "attempted_timestamp" field to the ExerciseLog model
         if not request.GET.get('facility_id'):
             if not request.GET.get('group_id'):
                 return super(ExerciseSummaryResource, self).get_object_list(request).filter(
@@ -236,7 +237,8 @@ class TimelineReportExerciseResource(ExerciseSummaryResource):
         return bundle
 
     def get_object_list(self, request):
-        #TODO-BLOCKER(66eli77): need to find a way to include exercises that are not completed yet.
+        #TODO(66eli77): need to find a way to include exercises that are not completed yet.
+        #TODO(MCGallaspy): Probably by adding an "attempted_timestamp" field to the ExerciseLog model
         if not request.GET.get('facility_id'):
             if not request.GET.get('group_id'):
                 return super(ExerciseSummaryResource, self).get_object_list(request).filter(
