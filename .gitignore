@@ -43,6 +43,7 @@ writeup/
 /kalite/kalite-*.zip
 /kalite/local_settings.py
 /kalite/media
+/kalite/temp
 /data/*
 !/data/khan/
 /data/khan/assessmentitems.json

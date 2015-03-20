@@ -18,6 +18,8 @@ from django.views.i18n import javascript_catalog
 
 from contextlib import contextmanager
 
+from kalite.version import SHORTVERSION
+
 ################################################
 ###                                          ###
 ###   NOTE TO US:                            ###
@@ -143,10 +145,11 @@ def get_id2oklang_map(video_id, force=False):
     if ID2OKLANG_MAP is None or force:
         ID2OKLANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
-            for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                cur_video_id = get_video_id(english_youtube_id)
-                ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
-                ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
+            if lang_code and dic:
+                for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                    cur_video_id = get_video_id(english_youtube_id)
+                    ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
+                    ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
     if video_id:
         # Not all IDs made it into the spreadsheet, so by default, use the video_id as the youtube_id
         return ID2OKLANG_MAP.get(video_id, {"en": get_youtube_id(video_id, None)})
@@ -394,6 +397,7 @@ def select_best_available_language(target_code, available_codes=None):
     target_code = lcode_to_django_lang(target_code)
     if available_codes is None:
         available_codes = get_installed_language_packs().keys()
+    logging.debug("choosing best language among %s" % available_codes)
     available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
@@ -451,3 +455,12 @@ def translate_block(language):
     translation.activate(language)
     yield
     translation.deactivate()
+
+
+def get_language_pack_url(lang_code, version=SHORTVERSION):
+    """As published"""
+    return "http://%(host)s/media/language_packs/%(version)s/%(lang_code)s.zip" % {
+        "host": settings.CENTRAL_SERVER_HOST,
+        "lang_code": lang_code,
+        "version": version,
+    }

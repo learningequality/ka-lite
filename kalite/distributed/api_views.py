@@ -42,7 +42,6 @@ from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import lcode_to_ietf
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 from kalite.shared.decorators import require_admin
-from kalite.store.models import StoreTransactionLog
 
 
 @require_admin
@@ -85,7 +84,6 @@ def compute_total_points(user):
     else:
         return (VideoLog.get_points_for_user(user) +
                 ExerciseLog.get_points_for_user(user) +
-                StoreTransactionLog.get_points_for_user(user) +
                 ContentLog.get_points_for_user(user))
 
 
@@ -148,7 +146,7 @@ def status(request):
         user = request.session["facility_user"]
         data["is_logged_in"] = True
         data["username"] = user.get_name()
-        # TODO-BLOCKER(jamalex): re-enable this conditional once tastypie endpoints invalidate cached session value
+        # TODO(jamalex): re-enable this conditional once tastypie endpoints invalidate cached session value
         # if "points" not in request.session:
         request.session["points"] = compute_total_points(user)
         data["points"] = request.session["points"] if request.session["points"] else 0

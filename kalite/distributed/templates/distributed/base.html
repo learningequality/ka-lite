@@ -148,7 +148,7 @@
         <div id="wrapper">
 
             {# Header & Navbar #}
-            <div class="navbar kalite-navbar faded-green-bg">
+            <div class="navbar kalite-navbar header-footer-bg">
               <div class="container">
                   <div class="row">
                       <div class="navbar-header">
@@ -256,17 +256,6 @@
                                 </a>
                               </li>
                             {% endif %}
-                            <li class="not-logged-in-only">
-                              {% if num_language_choices > 1 %}
-                              <select id="language_selector">
-                              {% for lang_code, lang_meta in language_choices.iteritems %}
-                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
-                                    {{ lang_code|get_language_name }}
-                                </option>
-                              {% endfor %}
-                              </select>
-                              {% endif %}
-                            </li>
                             <!-- Farthest right nav is logged in user dropdown -->
                             <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}" id="user-name">
                               <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown">
@@ -302,6 +291,23 @@
                                 </li>
                               </ul>
                             </li>
+                            <!-- Language selection, admins do not need to see this. -->
+                            {% if request.session.facility_user.is_teacher %}
+                              <li class="teacher-only">
+                            {% else %}
+                              <li class="not-admin-only">
+                            {% endif %}
+                            {% if num_language_choices > 1 %}
+                              <select id="language_selector">
+                              {% for lang_code, lang_meta in language_choices.iteritems %}
+                                <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
+                                    {{ lang_code|get_language_name }}
+                                </option>
+                              {% endfor %}
+                              </select>
+                            {% endif %}
+                            </li>
+                            <!-- End: Language selection -->
                           </ul>
                         </div>
                   </div>

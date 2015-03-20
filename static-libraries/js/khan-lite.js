@@ -157,18 +157,19 @@ function handleFailedAPI(resp, error_prefix) {
             }
             break;
         case 401:
-        case 403:
-            // Redirect to Login Page and add the current url as next
-            window.location.href = setGetParam(USER_LOGIN_URL, "next", window.location.pathname + window.location.hash)
-            messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
-                login_url: USER_LOGIN_URL
-            })};
-            break;
 
-        default:
-            console.log(resp);
-            var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
-            messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
+    case 403:
+        // Redirect to Login Page and add the current url as next
+        window.location.href = setGetParam(USER_LOGIN_URL, "next", window.location.pathname + window.location.hash)
+        messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
+            login_url: USER_LOGIN_URL
+        })};
+        break;
+
+    default:
+        console.log(resp);
+        var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
+        messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
     }
 
     clear_messages();  // Clear all messages before showing the new (error) message.
@@ -271,7 +272,7 @@ var getParamValue = (function() {
                 while (match = regex.exec(query)) {
                     params[match[1]] = decodeURIComponent(match[2]);
                 }
-            }    
+            }
         };
 
     window.addEventListener && window.addEventListener('popstate', resetParams);
@@ -281,7 +282,7 @@ var getParamValue = (function() {
     function getParam(param) {
         return params.hasOwnProperty(param) ? params[param] : null;
     }
-    
+
     return getParam;
 
 })();

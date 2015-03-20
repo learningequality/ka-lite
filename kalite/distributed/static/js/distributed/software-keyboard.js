@@ -55,7 +55,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         var inputIndex = 0;
 
         $(this.inputs).each(function (index) {
-            if ( $(this).attr("id") ) {
+            if ( $(this).attr("id") == "selected-input" ) {
                 input = $(this);
                 inputIndex = index;
             }
