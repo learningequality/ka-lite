@@ -298,7 +298,7 @@
                               <li class="not-admin-only">
                             {% endif %}
                             {% if num_language_choices > 1 %}
-                              <select id="language_selector">
+                              <select id="language_selector" aria-label="{% trans 'Select language' %}">
                               {% for lang_code, lang_meta in language_choices.iteritems %}
                                 <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
                                     {{ lang_code|get_language_name }}
