@@ -132,7 +132,7 @@ a:hover {
     position: relative;
     top: 30px;
 }
-.teacher-only.language-select {
+.language-select {
     height: 0;
 }
 

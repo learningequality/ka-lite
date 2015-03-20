@@ -107,7 +107,7 @@ input[type="submit"] {
     border-radius: 5px 15px 0 0;
     margin: 0;
     background-color: #5AA685;
-    color: white;
+    color: #5AA685;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
     -o-transition: all 80ms ease-out;
@@ -123,7 +123,7 @@ input[type="submit"] {
 .nav-tabs li a:hover,
 .nav-tabs li.active a {
     background: white !important;
-    color: #5AA685;
+    color: #5AA685 !important;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
     -o-transition: all 80ms ease-out;
@@ -150,11 +150,10 @@ input[type="submit"] {
 }
 .navbar ul li.dropdown.open ul.dropdown-menu li a {
     text-transform: none;
-    background-color: white;
+    background: white;
     color: black;
     border: 0;
-    padding-bottom: 0;
-    padding-top: 0;
+    padding: 5px 15px;
 }
 .navbar ul li.dropdown.open ul.dropdown-menu li {
     padding: 0;
@@ -162,20 +161,34 @@ input[type="submit"] {
 .navbar ul li.dropdown.open ul.dropdown-menu li a:hover {
     background-color: rgb(237, 237, 237);
 }
-.nav .open>a, .nav .open>a:hover, .nav .open>a:focus {
-        background: white;
-    }
+.navbar-nav .open .dropdown-menu {
+    background: white !important;
+    width: 100%;
+    border-left: 2px solid #5AA685;
+    border-bottom: 2px solid #5AA685;
+    border-right: 2px solid #5AA685;
+}
+.nav .open a, .nav .open a:hover, .nav .open a:focus {
+    background: white;
+    border-left: 2px solid #5AA685;
+    border-top: 2px solid #5AA685;
+    border-right: 2px solid #5AA685;
+}
+.nav>li>a:focus {
+    background: #5AA685;
+}
 .dropdown-menu li a {
-    background-color: white;
+    background: white;
     color: black;
     border: 0;
     border-radius: 0;
 }
-.mobile-nav {
+.mobile-nav, .mobile-manage-nav {
     display: inline-block;
 }
-.mobile-manage-nav {
-    display: inline-block;
+.username-nav-menu {
+    font-weight: bold;
+    color: #3d3d3d;
 }
 
 @media (min-width: 768px) {
@@ -232,7 +245,7 @@ form .input-group {
 }
 /* Navbar collapse styles for hamburger */
 .navbar-toggle {
-    background-color: #5AA685;
+    background-color: #5AA685 !important;
 }
 .navbar-toggle:hover {
     opacity: 0.7;
@@ -444,7 +457,7 @@ footer {
     form#search-box { margin-bottom: 10px; }
     h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
     .suggested-action .topic-list a { font-size: 1.25em; }
-    .language-select { text-align: center; margin: 10px 0px; }
+    .language-select { text-align: center; margin: 10px 0px; height: 20px !important; }
     .language-select select { top: 0 !important; }
     .teacher-only.language-select { height: 20px !important; }
     .navbar-nav .open .dropdown-menu { background: white; }
@@ -543,8 +556,7 @@ footer {
         border-bottom: none !important;
         text-align: center;
     }
-    .teach-nav li, .manage-nav li, .top-nav ul li,
-    .nav-tabs ul li {
+    .teach-nav li, .manage-nav li {
         border-top-left-radius: 0px !important; 
         border-top-right-radius: 0px !important;
     }
