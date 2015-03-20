@@ -10,6 +10,7 @@ before_install:
 install:
 - pushd $TRAVIS_BUILD_DIR; npm install; popd
 - pushd $TRAVIS_BUILD_DIR; npm install -g grunt-cli; popd
+- pip install coveralls
 script:
 - cd $TRAVIS_BUILD_DIR
 - bin/kalite start --traceback -v 2
@@ -17,7 +18,9 @@ script:
 - bin/kalite stop --traceback -v 2
 - python python-packages/fle_utils/tests.py
 - bin/kalite manage syncdb --migrate --noinput --traceback
-- bin/kalite test --traceback -v 2
+# This one is commented out because the coverage command below does everything
+# - bin/kalite test --traceback -v 2
+- coverage run --source=kalite bin/kalite test --traceback -v 2
 - grunt jshint
 notifications:
   email:

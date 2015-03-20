@@ -1,5 +1,11 @@
+# File created by Coverage
+.coverage
+
+# Eclipse
 .project
 .pydevproject
+
+# Undocumented ignores
 .DS_Store
 *.db
 *.sqlite*
