@@ -20,8 +20,8 @@ script:
 - bin/kalite manage syncdb --migrate --noinput --traceback
 # This one is commented out because the coverage command below does everything
 # - bin/kalite test --traceback -v 2
-- coverage run --source=kalite manage.py test facility.FacilityUserPermissionsTests --traceback -v 2
-#- grunt jshint
+- coverage run --source=kalite manage.py test --traceback -v 2
+- grunt jshint
 notifications:
   email:
     - aron@learningequality.org
