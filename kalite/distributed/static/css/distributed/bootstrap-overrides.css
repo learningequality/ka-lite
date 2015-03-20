@@ -162,6 +162,9 @@ input[type="submit"] {
 .navbar ul li.dropdown.open ul.dropdown-menu li a:hover {
     background-color: rgb(237, 237, 237);
 }
+.nav .open>a, .nav .open>a:hover, .nav .open>a:focus {
+        background: white;
+    }
 .dropdown-menu li a {
     background-color: white;
     color: black;
@@ -540,9 +543,9 @@ footer {
         border-bottom: none !important;
         text-align: center;
     }
-    .teach-nav li, .manage-nav li {
+    .teach-nav li, .manage-nav li, .top-nav ul li,
+    .nav-tabs ul li {
         border-top-left-radius: 0px !important; 
         border-top-right-radius: 0px !important;
     }
-    
 }
