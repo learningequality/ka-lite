@@ -312,7 +312,7 @@ class PathsTests(DependenciesTests):
     Check that we have access to all paths and files we need read or write access to.
     """
 
-    JSON_FILES = ("assessmentitems.json", "channel_data.json", "contents.json", "exercises.json",
+    JSON_FILES = ("channel_data.json", "contents.json", "exercises.json",
                   "topic_hierarchy.json", "topics.json",)
 
     def test_content_path(self):
