@@ -221,6 +221,13 @@ def _decode_list(data):
 
 
 def json_ascii_decoder(data):
+    """A custom JSON decoder that can be passed to json.load/s.  This
+    parses strings into str instead of unicode. To use this, pass this
+    function to the object_hook keyword param in json.load/s.
+
+    Mainly used to help in encoding issues and memory efficiency.
+
+    """
     rv = {}
     for key, value in data.iteritems():
         if isinstance(key, unicode):
