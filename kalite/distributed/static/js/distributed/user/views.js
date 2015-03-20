@@ -249,7 +249,7 @@ window.UserView = BaseView.extend({
             } else {
                 this.loginModalView = new LoginModalView({model: this.model});
             }
-            if (window.location.search.includes("login") || this.login_start_open) {
+            if (window.location.search.search("login") > -1 || this.login_start_open) {
                 this.loginModalView.start_open = true;
                 delete this.login_start_open;
             }
