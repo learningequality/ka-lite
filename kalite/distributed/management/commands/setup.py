@@ -169,7 +169,7 @@ class Command(BaseCommand):
             action='store_true',
             dest='force-assessment-item-dl',
             default=False,
-            help='Downloads assessment items from the url specified by settings.ASSESSMENT_ITEM_ZIP_URL, without interaction'),
+            help='Downloads assessment items from the url specified by settings.ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
     )
 
     def handle(self, *args, **options):
@@ -284,13 +284,13 @@ class Command(BaseCommand):
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
         if options['force-assessment-item-dl']:
-            call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEM_ZIP_URL)
+            call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
         elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
             print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
             print("If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
             print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
             print("Otherwise, we will download it from {url}.".format(settings.ASSESSMENT_ITEMS_ZIP_URL))
-           
+
             if raw_input_yn("Do you wish to download the assessment items package now?"):
                 ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
             elif raw_input_yn("Have you already downloaded the assessment items package?"):
@@ -302,9 +302,9 @@ class Command(BaseCommand):
                 logging.error("No assessment items package file given. You will need to download and unpack it later.")
             else:
                 call_command("unpack_assessment_zip", ass_item_filename)
-        else:        
+        else:
             logging.error("No assessment items package file given. You will need to download and unpack it later.")
-                
+
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
