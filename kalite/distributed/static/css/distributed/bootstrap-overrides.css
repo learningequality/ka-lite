@@ -145,6 +145,9 @@ input[type="submit"] {
 .navbar ul li.dropdown.open a {
     color: #5AA685;
 }
+.dropdown-menu {
+    min-width: 0;
+}
 .navbar ul li.dropdown.open ul.dropdown-menu li a,
 .navbar ul li.dropdown.open ul.dropdown-menu li span {
     text-transform: none;
@@ -161,7 +164,6 @@ input[type="submit"] {
 }
 .navbar-nav .open .dropdown-menu {
     background: white !important;
-    width: 100%;
     border-left: 2px solid #5AA685;
     border-bottom: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
