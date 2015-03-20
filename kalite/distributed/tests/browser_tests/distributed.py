@@ -340,7 +340,7 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         self.student = self.create_student(username=student_username, password=student_password)
         self.browser_login_student(student_username, student_password)
         time.sleep(3)
-        self.browse_to(self.reverse("homepage"))
+        self.browse_to(self.reverse("learn"))
         self.browser_check_django_message(message_type="error", contains="Your session has been timed out")
 
     def test_admin_no_logout_after_interval(self):
