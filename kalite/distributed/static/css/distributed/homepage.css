@@ -37,6 +37,16 @@
     font-size: 21px;
 }
 
+.suggested-action-big-button {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 5px;
+}
+
+.suggested-action-big-button h1 {
+    color: white;
+    text-align: center;
+}
+
 .message {
     margin-left: 7px;
 }
