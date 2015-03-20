@@ -34,7 +34,9 @@ window.LoginView = Backbone.View.extend({
     events: {
         "click .login-btn": "login",
         "click .password-btn": "toggle_password",
-        "change #id_facility": "facility_change"
+        "change #id_facility": "facility_change",
+        "keypress #id_username": "key_user",
+        "keypress #id_password": "key_pass"
     },
 
     template: HB.template("user/login"),
@@ -141,6 +143,22 @@ window.LoginView = Backbone.View.extend({
         // So start this button off disabled and enable it when autocomplete
         // has finished loading.
         this.$(".password-btn").removeAttr("disabled");
+    },
+
+    key_user: function(event) {
+        if (event.which == 13) {
+            if (this.model.get("simplified_login") && !this.admin) {
+                this.login();
+            } else {
+                this.$("#id_password").focus();
+            }
+        }
+    },
+
+    key_pass: function(event) {
+        if (event.which == 13) {
+            this.login();
+        }
     }
 });
 
