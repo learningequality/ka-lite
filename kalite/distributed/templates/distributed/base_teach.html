@@ -15,13 +15,15 @@
 
 <!-- Prevents nav bar from showing up for students/guests on learn tab -->
 {% if request.is_admin %}
+{% if is_config_package_nalanda %}
 <div class="teach-nav">
     <ul>
         <div class="mobile-nav">
+
             <li class="reports {% block reports_active %}{% endblock reports_active %}">
                 <a href="{% url 'tabular_view' %}" title="{% trans 'Track the progress of your learners' %}"><div class=""><span class="icon icon-uniE605"></span><br/>{% trans "Reports" %}</div></a>
             </li>
-            {% if is_config_package_nalanda %}
+            
             <li class="playlist {% block playlist_active %}{% endblock playlist_active %}">
                 <a class="link-width" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to learner groups' %}"><div><span class="icon icon-uniE604"></span><br/>{% trans "Playlists" %}</div></a>
             </li>
@@ -33,7 +35,6 @@
             <li class="teacher-only units {% block current_unit_active %}{% endblock current_unit_active %}">
                 <a href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div style="position: relative; top: 56px;">{% trans "Units" %}</div></a>
             </li>
-            {% endif %}
         </div>  
         <!-- Jessica: Commenting out for now to put learn back in 1st level navbar
         <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}">
@@ -41,6 +42,7 @@
         </li> -->
     </ul>
 </div>
+{% endif %}
 {% endif %}
 
 {% endblock subnavbar %}
