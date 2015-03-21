@@ -26,12 +26,12 @@ case "$1" in
     start)
         echo "Starting ka-lite!"
         #run ka-lite as the owner of the project folder, and not as root
-        su `stat --format="%%U" "%(repo_path)s"` -c "%(script_path)s/bin/kalite start"
+        su `stat --format="%%U" "%(repo_path)s"` -c "%(repo_path)s/bin/kalite start"
         ;;
     stop)
         echo "Shutting down ka-lite!"
         echo
-        "%(script_path)s/bin/kalite stop"
+        "%(repo_path)s/bin/kalite stop"
         ;;
 esac
 
@@ -50,7 +50,7 @@ if sys.platform == 'darwin':
         <key>Label</key>
         <string>org.learningequality.kalite</string>
         <key>Program</key>
-        <string>%(script_path)s/bin/kalite start</string>
+        <string>%(repo_path)s/bin/kalite start</string>
         <key>RunAtLoad</key>
         <true/>
         <key>StandardOutPath</key>
@@ -58,7 +58,7 @@ if sys.platform == 'darwin':
         <key>StandardErrorPath</key>
         <string>/tmp/kalite.err</string>
         <key>WorkingDirectory</key>
-        <string>%(script_path)s</string>
+        <string>%(repo_path)s</string>
     </dict>
 </plist>
     """

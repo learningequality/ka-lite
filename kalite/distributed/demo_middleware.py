@@ -5,6 +5,8 @@ It does things like:
 * Links to documentation on how to use KA Lite
 * Prevents certain sensitive resources from being accessed (like the admin interface)
 """
+import re
+
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
@@ -14,7 +16,23 @@ from django.utils.translation import ugettext as _
 
 
 def is_static_file(path):
-    return path.startswith(settings.STATIC_URL) or path.startswith(settings.MEDIA_URL)
+
+    url_exceptions = [
+        "^/admin/*",
+        "^/api/*",
+        "^{url}/*".format(url=settings.STATIC_URL),
+        "^/data/*",
+        "^{url}/*".format(url=settings.MEDIA_URL),
+        "^/handlebars/*",
+        "^.*/_generated/*"
+    ]
+
+    for item in url_exceptions:
+        p = re.compile(item)
+        if p.match(path):
+            return True
+
+    return False
 
 class LinkUserManual:
     """Shows a message with a link to the user's manual, from the homepage."""

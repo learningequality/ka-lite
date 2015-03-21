@@ -183,10 +183,14 @@ window.ExerciseView = Backbone.View.extend({
         this.listenTo(Exercises, "newProblem", function (ev, data) {
             var answerType = data.answerType;
             if (typeof answerType === "undefined") {
-                answerType = ((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])[0] || [""])[0];
+                answerType = (_.flatten((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])) || [""]).join();
             }
 
-            var checkVal = /number|decimal|rational|improper|mixed/gi;
+            if (answerType == "multiple") {
+                answerType = $("span.sol").map(function(index, item){return $(item).attr("data-forms");}).get().join();
+            }
+
+            var checkVal = /number|decimal|rational|proper|improper|mixed|radical|integer|cuberoot/gi;
 
             if (checkVal.test(answerType)){
                 if (typeof self.software_keyboard_view === "undefined") {
@@ -196,6 +200,10 @@ window.ExerciseView = Backbone.View.extend({
                 }
                 if (Exercises.getCurrentFramework()==="khan-exercises"){
                     self.software_keyboard_view.set_input("#solutionarea :input");
+                    self.software_keyboard_view.inputs.click(function(event){
+                        self.software_keyboard_view.inputs.removeAttr("id");
+                        $(event.target).attr("id", "selected-input");
+                    });
                 } else {
                     self.software_keyboard_view.set_input(".perseus-input:input");
                 }
@@ -422,6 +430,7 @@ window.ExerciseView = Backbone.View.extend({
         if (this.related_video_view) {
             this.related_video_view.remove();
         }
+        this.$("input").qtip("destroy", /* immediate */ true);
         this.remove();
     }
 
@@ -1162,7 +1171,7 @@ window.ExerciseProgressView = Backbone.View.extend({
         var attempt_text = "";
 
         this.collection.forEach(function(model) {
-                attempt_text = (model.get("correct") ? "<span><b>&#10003;</b></span> " : "<span>&#10007;</span> ") + attempt_text;
+                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
         });
 
         this.$(".attempts").html(attempt_text);

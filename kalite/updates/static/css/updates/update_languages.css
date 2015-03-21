@@ -89,6 +89,11 @@ h4.button_text {
     text-align: center;
 }
 
+#get-language-button {
+    margin-right: 7%;
+    margin-top: 1%;
+}
+
 @media only screen and (max-width: 1199px) {
     .lang-link, .lang-name, .lang-data, .upgrade-link { font-size: 12px; }
 }

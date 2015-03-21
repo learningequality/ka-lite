@@ -105,7 +105,6 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
     "kalite.distributed",
-    "kalite.store",
 )
 
 if not BUILT:
@@ -207,6 +206,8 @@ if package_selected("RPi"):
 
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
+    DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
+
 
 if package_selected("nalanda"):
     LOG.info("Nalanda package selected")
@@ -218,7 +219,7 @@ UNIT_POINTS = 2000
 
 # for extracting assessment item resources
 ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(PROJECT_PATH, "..", "content", "khan")
-
+ASSESSMENT_ITEMS_ZIP_URL = "http://eslgenie.com/media/assessment_item_resources.zip"
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
@@ -235,9 +236,11 @@ if package_selected("Demo"):
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
-    MIDDLEWARE_CLASSES += ('distributed.demo_middleware.StopAdminAccess','distributed.demo_middleware.LinkUserManual','distributed.demo_middleware.ShowAdminLogin',)
+    MIDDLEWARE_CLASSES += ('kalite.distributed.demo_middleware.StopAdminAccess','kalite.distributed.demo_middleware.LinkUserManual','kalite.distributed.demo_middleware.ShowAdminLogin',)
 
 if DEBUG:
     """Show DeprecationWarning messages when in debug"""
     import warnings
     warnings.simplefilter('always', DeprecationWarning)
+
+CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)

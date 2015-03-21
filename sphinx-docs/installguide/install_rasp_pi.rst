@@ -31,7 +31,7 @@ Installation
 	* *cd /opt*
 	* *sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git*
 #. Install and configure the access point.
-	* *cd /opt/ka-lite-pi/scripts*
+	* *cd /opt/ka-lite-pi-scripts*
 	* *sudo ./configure.sh*
 	.. note:: If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
 #. Install the USB adaptor software.
@@ -39,29 +39,11 @@ Installation
 		* *cd /opt/ka-lite-pi-scripts*
 		* *sudo ./use_wipi.sh*
 	* If using the Edimax EW-7811Un, run this command:
-		* *cd /opt/ka-lite-pi/scripts*
-		* *sudo ./use_edimax*
+		* *cd /opt/ka-lite-pi-scripts*
+		* *sudo ./use_edimax.sh*
 #. Complete the access point configuration
 	* *sudo python ./configure_network_interfaces.py*
 	* *sudo insserv hostapd*
-	* *sudo nano /etc/default/ifplugd*
-#. Amend these two settings:
-	...
-	
-	INTERFACES="eth0"
-	HOTPLUG_INTERFACES="eth0"
-	
-	...
-#. Set wireless to start automatically
-	* *sudo nano /etc/network/interfaces*
-	* Add the "auto wlan0" option and save the file
-	...
-	
-	auto wlan0
-	iface wlan0 inet static
-		address 1.1.1.1
-		
-	...
 #. Finally
 	* *sudo reboot*
 	* A wireless network named "kalite" should be available.

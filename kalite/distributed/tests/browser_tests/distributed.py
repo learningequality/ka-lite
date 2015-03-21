@@ -345,7 +345,7 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         self.student = self.create_student(username=student_username, password=student_password)
         self.browser_login_student(student_username, student_password)
         time.sleep(3)
-        self.browse_to(self.reverse("exercise_dashboard"))
+        self.browse_to(self.reverse("homepage"))
         self.browser_check_django_message(message_type="error", contains="Your session has been timed out")
         # Check if user redirects to login page after session timeout.
         self.assertEquals(self.browser.current_url, self.reverse("login") )
@@ -432,7 +432,7 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         self.browse_to_random_video()
         updated_points = self.browser_get_points()
         self.assertNotEqual(updated_points, points, "Points were not updated after a backbone navigation event.")
-    
+
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
     def test_points_update_after_non_backbone_navigation(self):
         """
@@ -462,7 +462,7 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
         self.create_facility()
         self.create_teacher(username="teacher1", password="password")
         self.browser_login_user(username="teacher1", password="password")
-    
+
     def test_correct_tabs_are_displayed(self):
         """Tabs with the class admin-only should not be displayed, and tabs
         with the class teacher-only should be displayed
@@ -487,7 +487,7 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
         except ElementNotVisibleException:
             # browser_activate_element could throw this, meaning nav bar is already visible
             pass
-           
+
         for el in admin_only_elements:
             self.assertFalse(el.is_displayed(), "Elements with `admin-only` class should not be displayed!")
         for el in teacher_only_elements:
@@ -516,7 +516,7 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
             if e.msg == "view is undefined":
                 # Since we're circumventing the normal control flow of the single-page JS app, we expect
                 # this JS error, which gets passed along as a WebDriverException
-                pass 
+                pass
             else:
                 raise
         try:
@@ -526,10 +526,11 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
         except TimeoutException:
             self.fail("Alert present on page after navigation event. Expected no alerts.")
 
+
 class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):
     """
     A regression test for issue 3000. Note the judicious use of waits and expected conditions to account for
-    various browser sizes and potential server hiccups. 
+    various browser sizes and potential server hiccups.
     """
 
     def setUp(self):
@@ -538,22 +539,27 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
         self.create_facility()
         self.create_teacher(username="teacher1", password="password")
         self.browser_login_user(username="teacher1", password="password")
+        self.browse_to(self.reverse("homepage"))
 
     def test_logout_link_visible(self):
-        self.browse_to(self.reverse("homepage"))
         nav_logout = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
         )
-        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[8]")
-        try:
-            self.browser_activate_element(elem=dropdown_menu)
-        except ElementNotVisibleException:
-            # Possible if the browser window is too small and the dropdown menu is collapsed.
-            expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
-            self.browser_activate_element(elem=expand_menus_button)
-            # Wait for the animation to finish
-            WebDriverWait(self.browser, 3).until(
-                expected_conditions.visibility_of(dropdown_menu)
-            )
-            self.browser_activate_element(elem=dropdown_menu)
+        self.assertFalse(nav_logout.is_displayed(), "The dropdown menu logout item must not be displayed yet!")
+        # Activate the dropdown menu and see if the logout link is visible.
+        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[7]/a")
+        WebDriverWait(self.browser, 3).until(
+            expected_conditions.visibility_of(dropdown_menu)
+        )
+        self.browser_activate_element(elem=dropdown_menu)
         self.assertTrue(nav_logout.is_displayed(), "The dropdown menu logout item is not displayed!")
+
+    def test_logout_link_visible_small_browser_size(self):
+        # Check if browser size is too small and menu is collapsed, for mobile.
+        self.browser.set_window_size(640, 480)
+        expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
+        WebDriverWait(self.browser, 3).until(
+            expected_conditions.visibility_of(expand_menus_button)
+        )
+        self.browser_activate_element(elem=expand_menus_button)
+        self.test_logout_link_visible()

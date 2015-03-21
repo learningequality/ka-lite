@@ -35,7 +35,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         url = "%s?topic=%s" % (self.url, self.topic,)
         self.browse_to(url)
         try:
-            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-danger")))
+            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-warning")))
             # Check if error message is contained in the alert bubble container.
             self.assertTrue("No learner accounts in this group have been created." in elem.text)
         except TimeoutException:
@@ -45,7 +45,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.url)
         try:
-            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-danger")))
+            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-warning")))
             # Check if error message is contained in the alert bubble container.
             self.assertTrue("Please select a topic." in elem.text)
         except TimeoutException:
@@ -56,7 +56,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         url = "%s?group_id=%s" % (self.url, self.group.id,)
         self.browse_to(url)
         try:
-            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-danger")))
+            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-warning")))
             # Check if error message is contained in the alert bubble container.
             self.assertTrue("Please select a topic." in elem.text)
         except TimeoutException:
@@ -67,7 +67,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         url = "%s?topic=%s&group_id=%s" % (self.url, self.topic, self.group.id,)
         self.browse_to(url)
         try:
-            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-danger")))
+            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-warning")))
             # Check if error message is contained in the alert bubble container.
             self.assertTrue("No learner accounts in this group have been created." in elem.text)
         except TimeoutException:
@@ -81,7 +81,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
                                                        "test-playlist")
         self.browse_to(url)
         try:
-            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-danger")))
+            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-warning")))
             # Check if error message is contained in the alert bubble container.
             self.assertTrue("Please select a topic." in elem.text)
         except TimeoutException:
@@ -96,7 +96,7 @@ class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixin
         url = "%s?topic=%s&group_id=%s" % (self.url, self.topic, self.group.id,)
         self.browse_to(url)
         try:
-            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-danger")))
+            elem = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CLASS_NAME, "alert-warning")))
             # Check if error message is contained in the alert bubble container.
             self.assertTrue("No learner accounts in this group have been created." in elem.text)
         except TimeoutException:

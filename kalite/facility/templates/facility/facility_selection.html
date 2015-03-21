@@ -24,8 +24,8 @@
 
 
 {% block content %}
-{{% block manage_nav %}{{block.super}}{% endblock manage_nav %}}
-{% block facility_active %}active{% endblock facility_active %}
+    {{% block manage_nav %}{{  block.super }}{% endblock manage_nav %}}
+    {% block facility_active %}active{% endblock facility_active %}
     {{ path_template }}
     <div id="facility_list_container">
         <section id="facility_list">
@@ -36,7 +36,7 @@
             <ul>
                 {% if facilities %}
                     {% for facility in facilities %}
-                    <li class="facility_title">
+                        <li class="facility_title">
                             <a href="{{ selection_paths|get_item:facility.id }}">{{ facility }}</a>
                             {% if request.is_admin and facilities.count > 1 %}
                                 {% if facility.is_default %}
