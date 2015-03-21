@@ -36,13 +36,13 @@
                 <a href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div style="position: relative; top: 56px;">{% trans "Units" %}</div></a>
             </li>
         </div>  
-        {% endif %}
         <!-- Jessica: Commenting out for now to put learn back in 1st level navbar
         <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}">
             <a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}"><div><span class="icon icon-uniE601"></span><br/>{% trans "Learn" %}</div></a>
         </li> -->
     </ul>
 </div>
+{% endif %}
 {% endif %}
 
 {% endblock subnavbar %}
