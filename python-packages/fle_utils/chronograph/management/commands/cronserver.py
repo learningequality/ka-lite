@@ -1,9 +1,9 @@
 import sys
 import warnings
-from datetime import datetime
 from threading import Thread
-from time import sleep, time
+from time import sleep
 from optparse import make_option
+import os
 try:
     import memory_profiler
 except Exception as e:
@@ -60,8 +60,27 @@ class Command(BaseCommand):
             dest='prof',
             default=False,
             help='Print memory profiling information'),
+        make_option('-d', '--daemon',
+            action='store_true',
+            dest='daemon',
+            default=False,
+            help='Spawn to background process (daemonize)'),
+        make_option('-i', '--pid-file',
+            action='store',
+            dest='pidfile',
+            default='',
+            help='Write PID to file when running as daemon'),
     )
     def handle( self, *args, **options ):
+
+        # Run as daemon, ie. fork the process
+        if options['daemon']:
+            from django.utils.daemonize import become_daemon
+            become_daemon()
+            # Running as daemon now. PID is fpid
+            pid_file = file(options['pidfile'], "w")
+            pid_file.write(str(os.getpid()))
+            pid_file.close()
 
         try:
             # Specify polling frequency either on the command-line or inside settings
@@ -74,7 +93,8 @@ class Command(BaseCommand):
 
         try:
             sys.stdout.write("Starting cronserver.  Jobs will run every %d seconds.\n" % time_wait)
-            #sys.stdout.write("Quit the server with CONTROL-C.\n")
+            if not options['daemon']:
+                sys.stdout.write("Quit the server with CONTROL-C.\n")
 
             # Run server until killed
             while True:

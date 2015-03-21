@@ -10,9 +10,10 @@
     {% endif %}
     {% trans "Facility" %}
 {% endblock title %}
-{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
-{% block update_active %}active{% endblock update_active %}
-{% block users_active %}active{% endblock %}
+
+{% block i18n_do_not_translate %}
+    {% block facility_active %}active{% endblock facility_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}
     <style>
@@ -180,6 +181,7 @@
 {% block content %}
 
     {{ block.super }}
+
  
     <h3 class="no-margin-top">{% if form.instance.id %}{% trans "Edit a facility" %}{% else %}{% trans "Add a new Facility" %}{% endif %}</h3>
     <div id="id_direc_no_map">{% trans "Please enter the following information about your facility. Please enter a detailed address, because knowing where you are in the world allows us to better plan for future deployments and partnerships." %}</div>

@@ -4,11 +4,13 @@
 {% load kalite_staticfiles %}
 {% load my_filters %}
 
-{% block teacher_active %}active{% endblock teacher_active %}
-{% block admin_active %}active{% endblock admin_active %}
-{% block title %}{% trans "Progress by topic" %} | {{ block.super }}{% endblock title %}
-{% block coachnav %}progress-tab-active{% endblock coachnav %}
-{% block progress_active %}sub-active{% endblock progress_active %}
+{% block i18n_do_not_translate %}
+    {% block teacher_active %}active{% endblock teacher_active %}
+    {% block admin_active %}active{% endblock admin_active %}
+    {% block title %}{% trans "Progress by topic" %} | {{ block.super }}{% endblock title %}
+    {% block coachnav %}progress-tab-active{% endblock coachnav %}
+    {% block progress_active %}sub-active{% endblock progress_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
@@ -21,17 +23,12 @@
             // Note: Unlike other coach reports, the tabular view is generated in server side templates.
             // As such, changing any of the values of the items requires a change of URL and subsequent
             // navigation event in order to produce the new report.
-
-            $("#report_type").change(function(){
-                window.location.href="{% url 'tabular_view' %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
+            $("#display-topic-report").on("click", function(ev) {
+                report_select_view.go_to_coach_report(ev);
             });
 
             $("#student").change(function(){
                 window.location.href = setGetParam(window.location.href, "user", $("#student option:selected").val());
-            });
-
-            $("#topic").change(function(){
-                window.location.href = setGetParam(window.location.href, "topic", $("#topic option:selected").val());
             });
 
             $("#playlist").change(function(){
@@ -69,7 +66,7 @@
                 });
             });
             $(window).resize(function() {
-                $('.headrowuser').height($('.headrow.data').height()+1);
+                $('.headrowuser').height($('.headrow.data').height());
             }).resize();
         });
     </script>
@@ -77,36 +74,40 @@
 
 {% block report_content %}
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="selection pull-left">
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-md-3 selection pull-left">
         {# Select the coach report type #}
         {% if report_types %}
-            <div class="subtitle">{% trans "Select Report" %}</div>
-            <select id="report_type">
+            <label for="report_type">{% trans "Select Report" %}</label>
+            <select class="form-control" id="report_type">
                 <option {% if not request_report_type %}selected{% endif %}>----</option>
                 {% for report_type in report_types %}
-                    <option value="{% trans report_type %}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
+                    <option value="{{ report_type.value }}" {% if report_type.value == request_report_type %}selected{% endif %}>{{ report_type.name }}</option>
                 {% endfor %}
             </select>
         {% else %}
-            <div class="subtitle">{% trans "No report types available." %}</div>
+            <label for="report_type">{% trans "No report types available." %}</label>
+            <select class="form-control" >
+                <option>Not available</option>
+            </select>
         {% endif %}
         </div>
-        <div class="selection pull-left">
         {% if users and request_report_type == "student" %}
-            <div class="subtitle">{% trans "Select Student" %}</div>
-            <select id="student">
-                <option {% if not request.GET.user %}selected{% endif %}>----</option>
-                {% for user in users %}
-                    <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.name }}</option>
-                {% endfor %}
-            </select>
+            <div class="col-xs-12 selection pull-left">
+                <label for="student">{% trans "Select Learner" %}</label>
+                <select class="form-control" id="student">
+                    <option {% if not request.GET.user %}selected{% endif %}>----</option>
+                    {% for user in users %}
+                        <option value="{{ user.pk }}"{% if request.GET.user == user.pk %}selected{% endif %}>{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         {% elif groups %}
             {% if playlists %}
-                <div class="selection">
-                    <div class="subtitle">{% trans "Select Playlist" %}</div>
-                    <select id="playlist">
+                <div class="col-xs-12 col-sm-8 col-md-4 selection">
+                    <label for="playlist">{% trans "Select Playlist" %}</label>
+                    <select class="form-control" id="playlist">
                         <option {% if not request.GET.playlist %}selected{% endif %}>----</option>
                         {% for playlist in playlists %}
                             <option value="{{ playlist.id }}"{% if request.GET.playlist == playlist.id %}selected{% endif %}>{{ playlist.tag }}: {% trans playlist.title %}</option>
@@ -114,9 +115,9 @@
                     </select>
                 </div>
             {% elif topics %}
-                <div class="selection">
-                    <div class="subtitle">{% trans "Select Topic" %}</div>
-                    <select id="topic">
+                <div class="col-xs-12 col-sm-6 col-md-4 selection">
+                    <label for="topic">{% trans "Select Topic" %}</label>
+                    <select class="form-control" id="topic">
                         <option {% if not request.GET.topic %}selected{% endif %}>----</option>
                         {% for topic in topics %}
                             <option value="{{ topic.id }}"{% if request.GET.topic == topic.id %}selected{% endif %}>{% trans topic.title %}</option>
@@ -125,53 +126,35 @@
                 </div>
             {% endif %}
         {% endif %}
+        <div class="selection pull-left">
+            <button class="btn btn-primary reports-go-btn" id="display-topic-report">{% trans "Go" %}</button>
+        </div>
     </div>
-    <div class="col-md-12">
-        <ul class="pull-right" id="legend">
-            <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
-            <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>
-            {% if request_report_type != "video" %}
-            <li class="legend"><div class="struggle"></div>{% trans "Struggling" %}</li>
-            {% endif %}
-        </ul>
+
+    <div class="row">
+        <div class="col-md-6 col-xs-12">
+            <ul id="legend">
+                <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
+                <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>
+                {% if request_report_type != "video" %}
+                <li class="legend"><div class="struggle"></div>{% trans "Struggling" %}</li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
 </div>
 
 {# Table generation happens here #}
 <div class="row">
     <div class="col-md-12">
-        {% if not students %}
-            <p>
-                <div class="subtitle error" id="error_message">
-                    {% if not groups.0.groups and not groups.1 and request.GET.topic %}
-                        {% comment %}No groups available: then "ungrouped" is selected, and "no students" returned.{% endcomment %}
-                        {% trans "No student accounts have been created." %}
-                    {% elif request.GET.topic and request.GET.playlist %}
-                        {% trans "Please select either a topic or a playlist above, but not both." %}
-                    {% elif not request.GET.topic and not request.GET.playlist %}
-                        {% comment %}Group was selected, but data not queried because a topic or playlist was not selected
-                        (NOTE: this required knowledge of how the view queries data){% endcomment %}
-                        <div id="no_topic_or_playlist_error">
-                        {% if playlists %}
-                            {% trans "Please select a playlist above." %}
-                        {% elif topics %}
-                            {% trans "Please select a topic above." %}
-                        {% endif %}
-                    {% else %}
-                        {% comment %}Everything specified, but no users fit the query.{% endcomment %}
-                        {% trans "No student accounts in this group have been created." %}
-                    {% endif %}
-                </div>
-            </p>
-        {% else %}
+        {% if students %}
             <div id="displaygrid">
-                <div style="clear: both;"></div>
                 <div class="users-table">
-                    <table>
+                    <table class="table table-striped table-bordered">
                         <tbody>
                             <tr>
                                 <th class="headrowuser">
-                                    {% trans "Student" %}
+                                    {% trans "Learner" %}
                                 </th>
                             </tr>
                             {% for student in students %}

@@ -4,11 +4,13 @@
 {% load my_filters %}
 {% load include_block %}
 
-{% block username_active %}active{% endblock username_active %}
-{% block control_panel_active %}{% endblock control_panel_active %}
-{% block progress_active %}active{% endblock progress_active %}
-{% block account_management_active %}active{% endblock account_management_active %}
-
+{% block i18n_do_not_translate %}
+    {% block username_active %}active{% endblock username_active %}
+    {% block control_panel_active %}{% endblock control_panel_active %}
+    {% block progress_active %}active{% endblock progress_active %}
+    {% block account_management_active %}active{% endblock account_management_active %}
+{% endblock i18n_do_not_translate %}
+        
 {% block title %}{{ student.get_name }} - {% trans "User Management" %}{{ block.super }}{% endblock title%}
 
 {% block headjs %}

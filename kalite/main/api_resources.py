@@ -2,12 +2,13 @@ import json
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
-from django.utils.translation import ugettext as _
 from django.conf.urls import url
+from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
-from kalite.topic_tools import get_exercise_data, get_assessment_item_cache, get_content_data
+from kalite.distributed.api_views import get_messages_for_api_calls
+from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -70,6 +71,7 @@ class ContentLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+
 class VideoLogResource(ModelResource):
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
@@ -83,51 +85,32 @@ class VideoLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+
 class Exercise():
 
     def __init__(self, **kwargs):
-        self.ancestor_ids = kwargs.get('ancestor_ids')
-        self.lang = kwargs.get('lang')
-        self.kind = kwargs.get('kind')
-        self.all_assessment_items = kwargs.get('all_assessment_items')
-        self.display_name = kwargs.get('display_name')
-        self.description = kwargs.get('description')
-        self.y_pos = kwargs.get('y_pos')
-        self.title = kwargs.get('title')
-        self.prerequisites = kwargs.get('prerequisites')
-        self.name = kwargs.get('name')
-        self.id = kwargs.get('id')
-        self.seconds_per_fast_problem = kwargs.get('seconds_per_fast_problem')
-        self.parent_id = kwargs.get('parent_id')
-        self.template = kwargs.get('template')
-        self.path = kwargs.get('path')
-        self.x_pos = kwargs.get('x_pos')
-        self.slug = kwargs.get('slug')
-        self.exercise_id = kwargs.get('exercise_id')
-        self.uses_assessment_items = kwargs.get('uses_assessment_items')
+        for k, v in kwargs.iteritems():
+            setattr(self, k, v)
 
 
 class ExerciseResource(Resource):
-
-    ancestor_ids = fields.CharField(attribute='ancestor_ids')
     lang = fields.CharField(attribute='lang', default='en')
     kind = fields.CharField(attribute='kind')
-    all_assessment_items = fields.ListField(attribute='all_assessment_items')
+    all_assessment_items = fields.ListField(attribute='all_assessment_items', default=[])
     display_name = fields.CharField(attribute='display_name')
     description = fields.CharField(attribute='description')
-    y_pos = fields.IntegerField(attribute='y_pos', default=0)
     title = fields.CharField(attribute='title')
     prerequisites = fields.ListField(attribute='prerequisites')
     name = fields.CharField(attribute='name')
     id = fields.CharField(attribute='id')
     seconds_per_fast_problem = fields.CharField(attribute='seconds_per_fast_problem')
-    parent_id = fields.CharField(attribute='parent_id', null=True)
+    basepoints = fields.CharField(attribute='basepoints', default='10')
     template = fields.CharField(attribute='template')
     path = fields.CharField(attribute='path')
-    x_pos = fields.IntegerField(attribute='x_pos', default=0)
     slug = fields.CharField(attribute='slug')
     exercise_id = fields.CharField(attribute='exercise_id')
     uses_assessment_items = fields.BooleanField(attribute='uses_assessment_items')
+    available = fields.BooleanField(attribute='available', default=True)
 
     class Meta:
         resource_name = 'exercise'
@@ -184,7 +167,6 @@ class AssessmentItem():
         self.id = kwargs.get('id')
         self.kind = kwargs.get('kind')
         self.item_data = kwargs.get('item_data')
-        self.tags = kwargs.get('tags')
         self.author_names = kwargs.get('author_names')
         self.sha = kwargs.get('sha')
 
@@ -193,7 +175,6 @@ class AssessmentItemResource(Resource):
 
     kind = fields.CharField(attribute='kind')
     item_data = fields.CharField(attribute='item_data')
-    tags = fields.CharField(attribute='tags')
     author_names = fields.CharField(attribute='author_names')
     sha = fields.CharField(attribute='sha')
     id = fields.CharField(attribute='id')
@@ -224,12 +205,12 @@ class AssessmentItemResource(Resource):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
     def obj_get(self, bundle, **kwargs):
-        id = kwargs.get("id", None)
-        assessment_item = get_assessment_item_cache().get(id, None)
+        assessment_item_id = kwargs.get("id", None)
+        assessment_item = get_assessment_item_data(bundle.request, assessment_item_id)
         if assessment_item:
             return AssessmentItem(**assessment_item)
         else:
-            raise NotFound('AssessmentItem with id %s not found' % id)
+            raise NotFound('AssessmentItem with id %s not found' % assessment_item_id)
 
     def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
@@ -251,9 +232,17 @@ class Content:
 
     def __init__(self, lang_code="en", **kwargs):
 
-        self.on_disk = False
-
-        standard_fields = ["title", "description", "id", "author_name", "kind"]
+        standard_fields = [
+            "title",
+            "description",
+            "id",
+            "author_name",
+            "kind",
+            "content_urls",
+            "selected_language",
+            "subtitle_urls",
+            "available",
+        ]
 
         for k in standard_fields:
             setattr(self, k, kwargs.pop(k, ""))
@@ -264,22 +253,24 @@ class Content:
             extra_fields[k] = v
 
         # the computed values
-        self.content_urls = kwargs.get('availability', {}).get(lang_code, {})
         self.extra_fields = json.dumps(extra_fields)
-        self.selected_language = lang_code
-        if self.description == "None":
-            self.description = ""
+        # TODO(MCGallaspy) This is inappropriate if multiple channels are active at once,
+        # TODO(MCGallaspy) but given that there's only one active channel for 0.13 initially (khan)
+        # TODO(MCGallaspy) I guess it's okay. In a multiple available channel situation then we should
+        # TODO(MCGallaspy) probably get the source attribute from the content data itself.
+        self.source = kwargs.pop("source", settings.CHANNEL)
 
 
 class ContentResource(Resource):
     content_urls = fields.DictField(attribute='content_urls')
-    description = fields.CharField(attribute='description')
+    description = fields.CharField(attribute='description', default="")
     id = fields.CharField(attribute='id')
     kind = fields.CharField(attribute='kind')
-    on_disk = fields.BooleanField(attribute='on_disk')
+    available = fields.BooleanField(attribute='available')
     selected_language = fields.CharField(attribute='selected_language')
     title = fields.CharField(attribute='title')
     extra_fields = fields.CharField(attribute='extra_fields')
+    source = fields.CharField(attribute='source')
 
     class Meta:
         resource_name = 'content'
@@ -312,8 +303,9 @@ class ContentResource(Resource):
     def obj_get(self, bundle, **kwargs):
         content_id = kwargs.get("id", None)
         content = get_content_data(bundle.request, content_id)
-
+        # MUST: Include messages in the api call.
         if content:
+            content['messages'] = get_messages_for_api_calls(bundle.request)
             return Content(**content)
         else:
             raise NotFound('Content with id %s not found' % content_id)

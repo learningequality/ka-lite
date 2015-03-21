@@ -1,5 +1,5 @@
 .download-actions-languages {
-    padding-right: 0;
+    padding: 0px 20px 0px 20px;
 }
 
 #language-packs {
@@ -61,8 +61,9 @@ h4.button_text {
 }
 
 #installed-languages-div {
-    padding: 5px 0px 20px 25px;
+    padding: 5px 20px 20px 20px;
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .language-table tr {
@@ -86,6 +87,11 @@ h4.button_text {
 
 .delete-language-button {
     text-align: center;
+}
+
+#get-language-button {
+    margin-right: 7%;
+    margin-top: 1%;
 }
 
 @media only screen and (max-width: 1199px) {

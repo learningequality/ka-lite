@@ -11,7 +11,7 @@
     {{#unless organization}}
         <span class="sidebar-space-holder">  </span>
     {{else}}
-        <span class="sidebar-organization">by: {{ organization }}</span>
+        <span class="sidebar-organization">{{_ "by:" }} {{ organization }}</span>
     {{/unless}}
     <span class="sidebar-description sidebar-topic-description" data-content-id="{{ id }}">{{#truncate description 100 }}{{/truncate}}</span>
 </a>

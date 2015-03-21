@@ -3,11 +3,13 @@
 {% load i18n %}
 {% load kalite_staticfiles %}
 
-{% block home_active %}active{% endblock home_active %}
-{% block playlist_active %}playlists-active active-tab active-nav{% endblock playlist_active %}
-{% block teacher_active %}active{% endblock teacher_active %}
-{% block admin_active %}active{% endblock admin_active %}
-{% block assign_playlists_active %}active{% endblock assign_playlists_active %}
+{% block i18n_do_not_translate %}
+  {% block home_active %}active{% endblock home_active %}
+  {% block playlist_active %}playlists-active active-tab active-nav{% endblock playlist_active %}
+  {% block teacher_active %}active{% endblock teacher_active %}
+  {% block assign_playlists_active %}active{% endblock assign_playlists_active %}
+  {% block teach_active_admins-nalanda %}active{% endblock teach_active_admins-nalanda %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' %}">
@@ -36,6 +38,7 @@
 {% endblock headjs %}
 
 {% block content %}
+{% block subnavbar %}{{block.super}}{% endblock subnavbar %}
   <div class="container">
     <div class="row">
       <div class="col-xs-12">
@@ -50,7 +53,7 @@
       <div class="col-xs-3">
         <table class="table table-hover" id="student-groups">
           <tr>
-            <th>{% trans "Student Groups" %}</th>
+            <th>{% trans "Learner Groups" %}</th>
           </tr>
         </table>
       </div>

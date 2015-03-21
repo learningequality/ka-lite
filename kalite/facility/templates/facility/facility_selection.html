@@ -24,18 +24,19 @@
 
 
 {% block content %}
-{% block manage_nav %}{{block.super}}{% endblock manage_nav %}
+    {{% block manage_nav %}{{  block.super }}{% endblock manage_nav %}}
+    {% block facility_active %}active{% endblock facility_active %}
     {{ path_template }}
     <div id="facility_list_container">
         <section id="facility_list">
             <h2>{% trans "Please select a facility" %}</h2>
-            <p>{% trans "A facility is a physical location where students learn." %}</p>
+            <p>{% trans "A facility is a physical location where learners learn." %}</p>
         </section>
         <div>
             <ul>
                 {% if facilities %}
                     {% for facility in facilities %}
-                    <li class="facility_title">
+                        <li class="facility_title">
                             <a href="{{ selection_paths|get_item:facility.id }}">{{ facility }}</a>
                             {% if request.is_admin and facilities.count > 1 %}
                                 {% if facility.is_default %}
@@ -52,7 +53,7 @@
                     {% if request.is_admin %}
                         <li>{% trans "You currently have no facilities. Would you like to create a facility?" %}</li>
                     {% else %}
-                        <li>{% trans "There are currently no facilities available, please ask an administrator or teacher to set one up." %}</li>
+                        <li>{% trans "There are currently no facilities available, please ask an administrator or coach to set one up." %}</li>
                     {% endif %}
                 {% endif %}
             </ul>

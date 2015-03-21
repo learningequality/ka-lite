@@ -207,12 +207,47 @@ def max_none(data):
     return max(non_none_data) if non_none_data else None
 
 
+def _decode_list(data):
+    rv = []
+    for item in data:
+        if isinstance(item, unicode):
+            item = item.encode('utf-8')
+        elif isinstance(item, list):
+            item = _decode_list(item)
+        elif isinstance(item, dict):
+            item = json_ascii_decoder(item)
+        rv.append(item)
+    return rv
+
+
+def json_ascii_decoder(data):
+    """A custom JSON decoder that can be passed to json.load/s.  This
+    parses strings into str instead of unicode. To use this, pass this
+    function to the object_hook keyword param in json.load/s.
+
+    Mainly used to help in encoding issues and memory efficiency.
+
+    """
+    rv = {}
+    for key, value in data.iteritems():
+        if isinstance(key, unicode):
+            key = key.encode('utf-8')
+        if isinstance(value, unicode):
+            value = value.encode('utf-8')
+        elif isinstance(value, list):
+            value = _decode_list(value)
+        elif isinstance(value, dict):
+            value = json_ascii_decoder(value)
+        rv[key] = value
+    return rv
+
+
 def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
     if default == {}:
         default = {}
     try:
         with open(json_filepath, "r") as fp:
-            return json.load(fp)
+            return json.load(fp, object_hook=json_ascii_decoder)
     except Exception as e:
         if logger:
             logger("%s %s: %s" % (errmsg, json_filepath, e))

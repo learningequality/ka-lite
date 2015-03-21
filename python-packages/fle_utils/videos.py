@@ -2,6 +2,8 @@
 """
 import glob
 import os
+import socket
+from django.conf import settings; logging = settings.LOG
 
 from .general import ensure_dir
 from .internet import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
@@ -46,7 +48,14 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
         delete_downloaded_files(youtube_id, download_path)
         raise
 
+    except (socket.timeout, IOError) as e:
+        logging.exception(e)
+        logging.info("Timeout -- Network UnReachable")
+        delete_downloaded_files(youtube_id, download_path)
+        raise
+
     except Exception as e:
+        logging.exception(e)
         delete_downloaded_files(youtube_id, download_path)
         raise
 

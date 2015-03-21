@@ -2,6 +2,7 @@
 """
 import os
 import youtube_dl
+import time
 from functools import partial
 from optparse import make_option
 from youtube_dl.utils import DownloadError
@@ -175,9 +176,16 @@ class Command(UpdatesDynamicCommand, CronCommand):
                             progress_callback(percent=percent)
                         scrape_video(video.youtube_id, quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
 
+                    except IOError as e:
+                        logging.exception(e)
+                        video.download_in_progress = False
+                        video.save()
+                        failed_youtube_ids.append(video.youtube_id)
+                        time.sleep(10)
+                        continue
+
                     # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.youtube_id)
-                    caching.initialize_content_caches()
                     self.stdout.write(_("Download is complete!") + "\n")
 
                 except DownloadCancelled:
@@ -216,6 +224,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 "num_handled_videos": len(handled_youtube_ids),
                 "num_total_videos": len(handled_youtube_ids) + len(failed_youtube_ids),
             })
+            caching.initialize_content_caches()
 
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})

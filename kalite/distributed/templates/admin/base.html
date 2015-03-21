@@ -3,7 +3,9 @@
 {% load admin_static i18n %}
 {% load url from future %}
 
-{% block admin_active %}active{% endblock admin_active %}
+{% block i18n_do_not_translate %}
+    {% block admin_active %}active{% endblock admin_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}
     <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />

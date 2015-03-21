@@ -151,6 +151,8 @@ def zone_management(request, zone_id="None"):
         "upload_form": UploadFileForm(),
         "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
     })
+    if not settings.CENTRAL_SERVER:
+        context["base_template"] = "distributed/base_manage.html"
     context.update(set_clock_context(request))
 
     return context
@@ -377,6 +379,10 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
         },
         "ungrouped_id": ungrouped_id
     })
+
+    if not settings.CENTRAL_SERVER:
+        context["base_template"] = "distributed/base_manage.html"
+
     return context
 
 

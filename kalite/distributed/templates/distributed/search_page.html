@@ -10,6 +10,8 @@
     </style>
 {% endblock headcss %}
 
+{% block title %}{{ title }}{% endblock title %}
+
 {% block content %}
     {% if query_error %}
         <h2 class="errorlist">{{ query_error }}</h2>
@@ -22,13 +24,7 @@
             <ul>
             {% for node in subresults %}
                 <li>
-                {% if node.kind == 'Topic' %}
-                    <a href="{% url 'learn' %}{{ node.path }}" class="topic-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
-                {% elif node.kind == 'Video' %}
-                    <a {% if node.available %}href="{{ node.path }}" {% endif %}class="video-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
-                {% else %}
-                    <a href="{% url 'learn' %}{{ node.path }}">{% trans node.title %}</a>
-                {% endif %}
+                    <a href="{% url 'learn' %}{{ node.path }}" class="{{ node.kind }}-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
                 </li>
             {% endfor %}
             {% if hit_max|get_item:category %}

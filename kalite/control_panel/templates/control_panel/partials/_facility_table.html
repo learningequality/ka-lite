@@ -6,7 +6,7 @@
         <h2>
             {% trans "Facilities" %}
             <small>
-                <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "A facility is a physical location where students learn." %}'></span>
+                <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "A facility is a physical location where learners learn." %}'></span>
             </small>
         </h2>
         {% if not facilities %}
@@ -15,9 +15,9 @@
             </p>
         {% else %}
             <div class="table-responsive">
-                <table class="table">
+                <table class="table table-hover table-bordered">
                     <thead>
-                        <tr class="success">
+                        <tr class="header-footer-bg">
                             <th>{% trans "Facility Name" %}</th>
                             <th>{% trans "# Users" %}</th>
                             <th>{% trans "# Groups" %}</th>
@@ -59,10 +59,6 @@
                             </tr>
                         {% endfor %}
                         {# Add a new facility #}
-                        <tr>
-                            {# 5 empty cells for formatting purposes #}
-                            <td></td> <td></td> <td></td> <td></td> <td></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>

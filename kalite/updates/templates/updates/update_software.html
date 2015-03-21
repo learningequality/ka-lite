@@ -3,9 +3,11 @@
 {% load staticfiles %}
 {% load my_filters %}
 
-{% block title %}{% trans "Update Software" %} {{ block.super }}{% endblock %}
+{% block title %}{% trans "Update Software" %}{% endblock %}
 
-{% block facility_active %}facility-active active-tab active-nav{% endblock facility_active %}
+{% block i18n_do_not_translate %}
+    {% block facility_active %}active{% endblock facility_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
@@ -82,7 +84,7 @@
                         <dt>{% trans "Release Date" %}:</dt>
                         <dd>{{ software_release_date }}</dd>
                         <dt>{% trans "Database Size" %}:</dt>
-                        <dd>{{ database_size|floatformat }} MB</dd>
+                        <dd>{{ database_size|floatformat }} {% trans "MB" %}</dd>
                         <dt>{% trans "Device ID" %}:</dt>
                         <dd>{{ device_id }}</dd>
                         <dt>{% trans "Last recorded usage" %}:</dt>
@@ -131,7 +133,7 @@
                     <div id="file_update">
                         <h4>{% trans "Use local file" %}:</h4>
                         <div class="fileupload fileupload-new" data-provides="fileupload" id="upload-update-kalite">
-                            <span class="btn btn-file"><span class="fileupload-new">{% trans "Select file" %}</span><span class="fileupload-exists">Change</span><input type="file" /></span>
+                            <span class="btn btn-file"><span class="fileupload-new">{% trans "Select file" %}</span><span class="fileupload-exists">{% trans "Change" %}</span><input type="file" /></span>
                             <span class="fileupload-preview"></span>
                             <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
                         </div>
@@ -148,7 +150,7 @@
         {% include "updates/progress-bar.html" %}
     </div>
 
-    <div id="refresh-page-dialog" title="refresh page dialog">
-      <p id="dialog-content">The JS of this page isn't working properly!</p>
+    <div id="refresh-page-dialog" title="{% trans "refresh page dialog" %}">
+      <p id="dialog-content">{% trans "The JS of this page isn't working properly!" %}</p>
     </div>
 {% endblock content %}

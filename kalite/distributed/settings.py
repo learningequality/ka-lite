@@ -71,7 +71,7 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     __package__ + ".middleware.LockdownCheck",
-    "student_testing.middleware.ExamModeCheck",
+    "kalite.student_testing.middleware.ExamModeCheck",
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -95,10 +95,9 @@ ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print
 
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
 SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "https" if not DEBUG else "http")
-CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("adhoc.%s:7007" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
+CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("staging.%s" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
 
-KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), "static", "khan-exercises")
 PDFJS = getattr(local_settings, "PDFJS", True)
 
 ########################
@@ -202,3 +201,34 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
+
+########################
+# Screenshots
+########################
+
+from django.conf import settings
+PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", settings.PROJECT_PATH)) + "/"
+
+SCREENSHOTS_OUTPUT_PATH = os.path.join(os.path.realpath(PROJECT_PATH), "..", "data", "screenshots")
+SCREENSHOTS_EXTENSION = ".png"
+
+SCREENSHOTS_DATABASE_NAME = "screenshot-data.sqlite"
+SCREENSHOTS_DATABASE_PATH = os.path.join(SCREENSHOTS_OUTPUT_PATH, SCREENSHOTS_DATABASE_NAME)
+
+SCREENSHOTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "data")
+SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_JSON_PATH, 'screenshots.json')
+SCREENSHOTS_ROUTER = 'default'
+SQLITE3_ENGINE = 'django.db.backends.sqlite3'
+
+if 'screenshots' in sys.argv:
+    # use another sqlite3 database for the screenshots
+    DATABASES = {
+        SCREENSHOTS_ROUTER: {
+            "ENGINE": getattr(local_settings, "DATABASE_TYPE", SQLITE3_ENGINE),
+            "NAME": SCREENSHOTS_DATABASE_PATH,
+            "OPTIONS": {
+                "timeout": 60,
+            },
+        }
+    }

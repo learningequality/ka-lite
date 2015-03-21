@@ -2,9 +2,11 @@
 {% load i18n admin_static %}
 {% load url from future %}
 
-{% block login_active %}active{% endblock login_active %}
+{% block i18n_do_not_translate %}
+    {% block login_active %}active{% endblock login_active %}
+{% endblock i18n_do_not_translate %}
 
-{% block bodyclass %}login{% endblock %}
+{% block bodyclass %}{% trans "login" %}{% endblock %}
 
 {% block nav-global %}{% endblock %}
 

@@ -6,9 +6,64 @@ from django.test.utils import override_settings
 from selenium.common.exceptions import NoSuchElementException
 
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin, StoreMixins
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin
+
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 logging = settings.LOG
+
+
+class DeviceRegistrationTests(FacilityMixins,
+                       StudentProgressMixin,
+                       BrowserActionMixins,
+                       CreateZoneMixin,
+                       CreateAdminMixin,
+                       KALiteBrowserTestCase):
+
+    def setUp(self):
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+
+        super(DeviceRegistrationTests, self).setUp()
+
+
+    def test_device_registration_availability(self):
+        """
+        This test simulate the device registration availability.
+        The Registration button must appear else the test will fail.
+        """
+        facility_name = 'default'
+        self.fac = self.create_facility(name=facility_name)
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+        element = self.browser.find_element_by_id('not-registered')
+        try:
+             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+        except TimeoutException:
+             pass
+        self.assertTrue(element.is_displayed())
+
+
+    def test_device_already_register(self):
+        """
+        This test will simulate the device that has already registered and the only option is available is update
+        the software else the test will fail.
+        """
+        facility_name = 'default'
+        self.zone = self.create_zone()
+        self.device_zone = self.create_device_zone(self.zone)
+        self.fac = self.create_facility(name=facility_name)
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+        element = self.browser.find_element_by_id('force-sync')
+        try:
+             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+        except TimeoutException:
+            pass
+        self.assertTrue(element.is_displayed())
 
 
 class FacilityControlTests(FacilityMixins,
@@ -107,6 +162,24 @@ class GroupControlTests(FacilityMixins,
 
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//button[@id="delete-coaches"]')
+
+    def test_checkbox_not_autocompleted(self):
+        # This is a regression test for issue #2929
+        # Firefox aggressively autocompletes form elements, meaning if a checkbox is checked
+        # upon page refresh, it will stay checked. This then disrupts our checkbox/highlight
+        # UI and makes them desynchronized.
+        # N.B. This assumes that our browser tests are running on Firefox, otherwise, this test is moot.
+        self.browser_login_admin(**self.admin_data)
+
+        self.browse_to(self.reverse('facility_management', kwargs={'facility_id': self.facility.id, 'zone_id': None}))
+
+        group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
+        group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
+        group_delete_checkbox.click()
+
+        self.browser.refresh()
+
+        self.assertNotEqual(self.browser.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]').get_attribute("checked"), u'true')
 
 
 @override_settings(RESTRICTED_TEACHER_PERMISSIONS=True)
@@ -223,7 +296,6 @@ class RestrictedTeacherTests(FacilityMixins,
 
 class CSVExportTestSetup(FacilityMixins,
                          StudentProgressMixin,
-                         StoreMixins,
                          CreateZoneMixin,
                          CreateAdminMixin,
                          KALiteTestCase):
@@ -252,9 +324,6 @@ class CSVExportTestSetup(FacilityMixins,
         self.exercise_log_1 = self.create_exercise_log(user=self.stu1)
         self.exercise_log_2 = self.create_exercise_log(user=self.stu2)
 
-        self.store_transaction_log_1 = self.create_store_transaction_log(user=self.stu1)
-        self.store_transaction_log_1 = self.create_store_transaction_log(user=self.stu2)
-
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
 
@@ -267,7 +336,6 @@ class CSVExportTestSetup(FacilityMixins,
         self.api_attempt_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "attempt_log_csv"})
         self.api_exercise_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "exercise_log_csv"})
         self.api_device_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "device_log_csv"})
-        self.api_store_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "store_transaction_log_csv"})
 
 
 class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
@@ -289,8 +357,6 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertTrue(exercise_log_csv.get("objects"), "Authorization error")
         device_log_csv_resp = json.loads(self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id).content)
         self.assertTrue(device_log_csv_resp.get("objects"), "Authorization error")
-        store_log_csv_resp = json.loads(self.client.get(self.api_store_log_csv_url + "?zone_id=" + self.zone.id).content)
-        self.assertTrue(store_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
     def test_api_auth_teacher(self):
@@ -310,8 +376,6 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertTrue(exercise_log_csv.get("objects"), "Authorization error")
         device_log_csv_resp = json.loads(self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id).content)
         self.assertTrue(device_log_csv_resp.get("objects"), "Authorization error")
-        store_log_csv_resp = json.loads(self.client.get(self.api_store_log_csv_url + "?zone_id=" + self.zone.id).content)
-        self.assertTrue(store_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
     def test_api_auth_student(self):
@@ -331,8 +395,6 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertFalse(exercise_log_csv.content, "Authorization error")
         device_log_csv_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id)
         self.assertFalse(device_log_csv_resp.get("objects"), "Authorization error")
-        store_log_csv_resp = self.client.get(self.api_store_log_csv_url + "?zone_id=" + self.zone.id)
-        self.assertFalse(store_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
     def test_api_auth_not_logged_in(self):
@@ -351,8 +413,6 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertFalse(exercise_log_csv.content, "Authorization error")
         device_log_csv_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id)
         self.assertFalse(device_log_csv_resp.get("objects"), "Authorization error")
-        store_log_csv_resp = self.client.get(self.api_store_log_csv_url + "?zone_id=" + self.zone.id)
-        self.assertFalse(store_log_csv_resp.get("objects"), "Authorization error")
 
 
     def test_facility_endpoint(self):
@@ -428,20 +488,6 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.client.logout()
 
 
-    def test_store_log_csv_endpoint(self):
-        # Test filtering by facility
-        self.client.login(username='admin', password='admin')
-        facility_filtered_resp = self.client.get(self.api_store_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
-        rows = filter(None, facility_filtered_resp.split("\n"))
-        self.assertEqual(len(rows), 3, "API response incorrect")
-
-        # Test filtering by group
-        group_filtered_resp = self.client.get(self.api_store_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
-        rows = filter(None, group_filtered_resp.split("\n"))
-        self.assertEqual(len(rows), 2, "API response incorrect")
-        self.client.logout()
-
-
     def test_device_log_csv_endpoint(self):
         # Test filtering by zone
         self.client.login(username='admin', password='admin')
@@ -495,7 +541,8 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
                                    facility_name=self.teacher.facility.name)
         self.browse_to(self.distributed_data_export_url)
 
-        self.browser_wait_for_ajax_calls_to_finish()
+        # Why is this here? Is the intention to wait for the page to load?
+        #self.browser_wait_for_ajax_calls_to_finish()
 
         facility_select = self.browser.find_element_by_id("facility-name")
         self.assertFalse(facility_select.is_enabled(), "UI error")
@@ -505,8 +552,7 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
                 self.assertTrue(option.is_selected(), "Invalid Facility Selected")
                 break
 
-
-        self.browser_wait_for_ajax_calls_to_finish()
+        # self.browser_wait_for_ajax_calls_to_finish()
 
         # Check that group is enabled now
         group_select = self.browser.find_element_by_id("group-name")

@@ -25,7 +25,7 @@ from django.contrib import messages
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from fle_utils.general import softload_json
+from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
 
 TOPICS_FILEPATHS = {
@@ -33,10 +33,10 @@ TOPICS_FILEPATHS = {
 }
 EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
 ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
-KNOWLEDGEMAP_TOPICS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "map_topics.json")
 CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
+
 
 if not os.path.exists(settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
@@ -45,27 +45,29 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
-def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
+def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language=settings.LANGUAGE_CODE):
     global TOPICS, TOPICS_FILEPATHS
     if not TOPICS:
         TOPICS = {}
     if TOPICS.get(channel) is None:
-        TOPICS[channel] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
-        validate_ancestor_ids(TOPICS[channel])  # make sure ancestor_ids are set properly
+        TOPICS[channel] = {}
+    if TOPICS.get(channel, {}).get(language) is None:
+        TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
 
         # Just loaded from disk, so have to restamp.
         annotate = True
 
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            topics = softload_json(TOPICS_FILEPATHS.get(channel) + ".cache", logger=logging.debug, raises=False)
+            topics = softload_json(TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", logger=logging.debug, raises=False)
             if topics:
-                TOPICS[channel] = topics
-                return TOPICS[channel]
+                TOPICS[channel][language] = topics
+                return TOPICS[channel][language]
 
         # Loop through all the nodes in the topic tree
         # and cross reference with the content_cache to check availability.
-        content_cache = get_content_cache()
+        content_cache = get_content_cache(language=language)
+        exercise_cache = get_exercise_cache(language=language)
         def recurse_nodes(node):
 
             child_availability = []
@@ -80,27 +82,35 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL):
                 node["available"] = any(child_availability)
             else:
                 # By default this is very charitable, assuming if something has not been annotated
-                # it is available - needs to be updated for exercises.
-                if content_cache.get(node.get("id"), {}).get("languages", True):
-                    node["available"] = True
+                # it is available.
+                if node.get("kind") == "Exercise":
+                    cache_node = exercise_cache.get(node.get("id"), {})
+                else:
+                    cache_node = content_cache.get(node.get("id"), {})
+                node["available"] = cache_node.get("available", True)
 
-        recurse_nodes(TOPICS[channel])
+            # Translate everything for good measure
+            with i18n.translate_block(language):
+                node["title"] = _(node.get("title", ""))
+                node["description"] = _(node.get("description", "")) if node.get("description") else ""
+
+        recurse_nodes(TOPICS[channel][language])
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(TOPICS_FILEPATHS.get(channel) + ".cache", "w") as f:
-                    json.dump(TOPICS[channel], f)
+                with open(TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", "w") as f:
+                    json.dump(TOPICS[channel][language], f)
             except IOError as e:
                 logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
 
-    return TOPICS[channel]
+    return TOPICS[channel][language]
 
 
 NODE_CACHE = None
 CACHE_VARS.append("NODE_CACHE")
-def get_node_cache(node_type=None, force=False):
+def get_node_cache(node_type=None, force=False, language=settings.LANGUAGE_CODE):
     global NODE_CACHE
     if NODE_CACHE is None or force:
-        NODE_CACHE = generate_node_cache(get_topic_tree(force))
+        NODE_CACHE = generate_node_cache()
     if node_type is None:
         return NODE_CACHE
     else:
@@ -108,12 +118,68 @@ def get_node_cache(node_type=None, force=False):
 
 EXERCISES          = None
 CACHE_VARS.append("EXERCISES")
-def get_exercise_cache(force=False):
+def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
     global EXERCISES, EXERCISES_FILEPATH
-    if EXERCISES is None or force:
-        EXERCISES = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
+    if EXERCISES is None:
+        EXERCISES = {}
+    if EXERCISES.get(language) is None:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            exercises = softload_json(EXERCISES_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
+            if exercises:
+                EXERCISES[language] = exercises
+                return EXERCISES[language]
+        EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
+        exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+        if os.path.exists(exercise_root):
+            exercise_templates = os.listdir(exercise_root)
+        else:
+            exercise_templates = []
+        assessmentitems = get_assessment_item_cache()
+        TEMPLATE_FILE_PATH = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s")
+        for exercise in EXERCISES[language].values():
+            exercise_file = exercise["name"] + ".html"
+            exercise_template = exercise_file
+            exercise_lang = "en"
 
-    return EXERCISES
+            if exercise.get("uses_assessment_items", False):
+                available = False
+                items = []
+                for item in exercise.get("all_assessment_items","[]"):
+                    item = json.loads(item)
+                    if assessmentitems.get(item.get("id")):
+                        items.append(item)
+                        available = True
+                exercise["all_assessment_items"] = items
+            else:
+                available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
+
+                # Get the language codes for exercise templates that exist
+                available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
+
+                # Return the best available exercise template
+                exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
+
+            if exercise_lang == "en":
+                exercise_template = exercise_file
+            else:
+                exercise_template = os.path.join(exercise_lang, exercise_file)
+
+
+            with i18n.translate_block(exercise_lang):
+                exercise["available"] = available
+                exercise["lang"] = exercise_lang
+                exercise["template"] = exercise_template
+                exercise["title"] = _(exercise.get("title", ""))
+                exercise["description"] = _(exercise.get("description", "")) if exercise.get("description") else ""
+
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+            try:
+                with open(EXERCISES_FILEPATH + "_" + language + ".cache", "w") as f:
+                    json.dump(EXERCISES[language], f)
+            except IOError as e:
+                logging.warn("Annotated exercise cache file failed in saving with error {e}".format(e=e))
+
+    return EXERCISES[language]
 
 ASSESSMENT_ITEMS          = None
 CACHE_VARS.append("ASSESSMENT_ITEMS")
@@ -141,19 +207,21 @@ def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):
 
 KNOWLEDGEMAP_TOPICS = None
 CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
-def get_knowledgemap_topics(force=False):
+def get_knowledgemap_topics(force=False, language=settings.LANGUAGE_CODE):
     global KNOWLEDGEMAP_TOPICS
-    if KNOWLEDGEMAP_TOPICS is None or force:
-        KNOWLEDGEMAP_TOPICS = recurse_topic_tree_to_create_hierarchy(get_topic_tree(), {}, hierarchy=["Domain", "Subject", "Topic", "Tutorial"])["Topic"]
-    return KNOWLEDGEMAP_TOPICS
+    if KNOWLEDGEMAP_TOPICS is None:
+        KNOWLEDGEMAP_TOPICS = {}
+    if KNOWLEDGEMAP_TOPICS.get(language) is None or force:
+        KNOWLEDGEMAP_TOPICS[language] = recurse_topic_tree_to_create_hierarchy(get_topic_tree(language=language), {}, hierarchy=["Domain", "Subject", "Topic", "Tutorial"])["Topic"]
+    return KNOWLEDGEMAP_TOPICS[language]
 
 
 LEAFED_TOPICS = None
 CACHE_VARS.append("LEAFED_TOPICS")
-def get_leafed_topics(force=False):
+def get_leafed_topics(force=False, language=settings.LANGUAGE_CODE):
     global LEAFED_TOPICS
     if LEAFED_TOPICS is None or force:
-        LEAFED_TOPICS = [topic for topic in get_node_cache()["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
+        LEAFED_TOPICS = [topic for topic in get_node_cache(language=language)["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
     return LEAFED_TOPICS
 
 def create_thumbnail_url(thumbnail):
@@ -165,39 +233,47 @@ def create_thumbnail_url(thumbnail):
 
 CONTENT          = None
 CACHE_VARS.append("CONTENT")
-def get_content_cache(force=False, annotate=False):
+def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CODE):
     global CONTENT, CONTENT_FILEPATH
 
     if CONTENT is None:
-        CONTENT = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
+        CONTENT = {}
+    if CONTENT.get(language) is None:
+        CONTENT[language] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
         annotate = True
-    
+
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(CONTENT_FILEPATH + ".cache", logger=logging.debug, raises=False)
+            content = softload_json(CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
             if content:
-                CONTENT = content
-                return CONTENT
+                CONTENT[language] = content
+                return CONTENT[language]
 
         # Loop through all content items and put thumbnail urls, content urls,
         # and subtitle urls on the content dictionary, and list all languages
         # that the content is available in.
-        for content in CONTENT.values():
-            languages = []
+        for content in CONTENT[language].values():
             default_thumbnail = create_thumbnail_url(content.get("id"))
             dubmap = i18n.get_id2oklang_map(content.get("id"))
-            for lang, dubbed_id in dubmap.items():
-                # TODO (rtibbles): Explicitly stamp "mp4" on KA videos in contentload
-                format = content.get("format", "mp4")
-                if is_content_on_disk(dubbed_id, format):
-                    languages.append(lang)
-                    thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
-                    content["lang_data_" + lang] = {
-                        "stream": settings.CONTENT_URL + dubmap.get(lang) + "." + format,
-                        "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
-                        "thumbnail": thumbnail,
-                    }
-            content["languages"] = languages
+            if dubmap:
+                content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
+                if content_lang:
+                    dubbed_id = dubmap.get(content_lang)
+                    format = content.get("format", "")
+                    if is_content_on_disk(dubbed_id, format):
+                        content["available"] = True
+                        thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
+                        content["content_urls"] = {
+                            "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
+                            "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                            "thumbnail": thumbnail,
+                        }
+                    else:
+                        content["available"] = False
+                else:
+                    content["available"] = False
+            else:
+                content["available"] = False
 
             # Get list of subtitle language codes currently available
             subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
@@ -212,14 +288,19 @@ def get_content_cache(force=False, annotate=False):
             # Sort all subtitle URLs by language code
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
+            with i18n.translate_block(content_lang):
+                content["selected_language"] = content_lang
+                content["title"] = _(content["title"])
+                content["description"] = _(content.get("description", "")) if content.get("description") else ""
+
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(CONTENT_FILEPATH + ".cache", "w") as f:
-                    json.dump(CONTENT, f)
+                with open(CONTENT_FILEPATH + "_" + language + ".cache", "w") as f:
+                    json.dump(CONTENT[language], f)
             except IOError as e:
                 logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
 
-    return CONTENT
+    return CONTENT[language]
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
@@ -254,31 +335,8 @@ def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE, alldata=F
             False: {}
         }
     if not FLAT_TOPIC_TREE[alldata] or lang_code not in FLAT_TOPIC_TREE[alldata] or force:
-        FLAT_TOPIC_TREE[alldata][lang_code] = generate_flat_topic_tree(get_node_cache(force=force), lang_code=lang_code, alldata=alldata)
+        FLAT_TOPIC_TREE[alldata][lang_code] = generate_flat_topic_tree(get_node_cache(force=force, language=lang_code), lang_code=lang_code, alldata=alldata)
     return FLAT_TOPIC_TREE[alldata][lang_code]
-
-
-def validate_ancestor_ids(topictree=None):
-    """
-    Given the KA Lite topic tree, make sure all parent_id and ancestor_ids are stamped
-    """
-
-    if not topictree:
-        topictree = get_topic_tree()
-
-    def recurse_nodes(node, ancestor_ids=[]):
-        # Add ancestor properties
-        if not "parent_id" in node:
-            node["parent_id"] = ancestor_ids[-1] if ancestor_ids else None
-        if not "ancestor_ids" in node:
-            node["ancestor_ids"] = ancestor_ids
-
-        # Do the recursion
-        for child in node.get("children", []):
-            recurse_nodes(child, ancestor_ids=ancestor_ids + [node["id"]])
-    recurse_nodes(topictree)
-
-    return topictree
 
 
 def generate_slug_to_video_id_map(node_cache=None):
@@ -302,39 +360,37 @@ def generate_slug_to_video_id_map(node_cache=None):
 
 
 def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, alldata=False):
-    translation.activate(lang_code)
+    with i18n.translate_block(lang_code):
 
-    categories = node_cache or get_node_cache()
-    result = dict()
-    # make sure that we only get the slug of child of a topic
-    # to avoid redundancy
-    for category_name, category in categories.iteritems():
-        result[category_name] = {}
-        for node_name, node in category.iteritems():
-            if alldata:
-                relevant_data = node
-            else:
-                relevant_data = {
-                    'title': _(node['title']),
-                    'path': node['path'],
-                    'kind': node['kind'],
-                    'available': node.get('available', True),
-                    'keywords': node.get('keywords', []),
-                }
-            result[category_name][node_name] = relevant_data
-
-    translation.deactivate()
+        categories = node_cache or get_node_cache(language=i18n.lcode_to_django_lang(lang_code))
+        result = dict()
+        # make sure that we only get the slug of child of a topic
+        # to avoid redundancy
+        for category_name, category in categories.iteritems():
+            result[category_name] = {}
+            for node_name, node in category.iteritems():
+                if alldata:
+                    relevant_data = node
+                else:
+                    relevant_data = {
+                        'title': _(node['title']),
+                        'path': node['path'],
+                        'kind': node['kind'],
+                        'available': node.get('available', True),
+                        'keywords': node.get('keywords', []),
+                    }
+                result[category_name][node_name] = relevant_data
 
     return result
 
 
-def generate_node_cache(topictree=None):
+def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
     """
     Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Content nodes.
     """
 
     if not topictree:
-        topictree = get_topic_tree()
+        topictree = get_topic_tree(language=language)
     node_cache = {}
     node_cache["Topic"] = {}
 
@@ -351,8 +407,8 @@ def generate_node_cache(topictree=None):
                 recurse_nodes(child)
     recurse_nodes(topictree)
 
-    node_cache["Exercise"] = get_exercise_cache()
-    node_cache["Content"] = get_content_cache()
+    node_cache["Exercise"] = get_exercise_cache(language=language)
+    node_cache["Content"] = get_content_cache(language=language)
 
     return node_cache
 
@@ -425,29 +481,10 @@ def get_topic_videos(*args, **kwargs):
 
 
 def get_exercise_data(request, exercise_id=None):
-    exercise = get_exercise_cache().get(exercise_id, None)
+    exercise = get_exercise_cache(language=request.language).get(exercise_id, None)
 
     if not exercise:
         return None
-
-    exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
-    exercise_file = exercise["slug"] + ".html"
-    exercise_template = exercise_file
-
-    # Get the language codes for exercise templates that exist
-    exercise_path = partial(lambda lang, slug, eroot: os.path.join(eroot, lang, slug + ".html"), slug=exercise["slug"], eroot=exercise_root)
-    code_filter = partial(lambda lang, eroot, epath: os.path.isdir(os.path.join(eroot, lang)) and os.path.exists(epath(lang)), eroot=exercise_root, epath=exercise_path)
-    available_langs = set(["en"] + [lang_code for lang_code in os.listdir(exercise_root) if code_filter(lang_code)])
-
-    # Return the best available exercise template
-    exercise_lang = i18n.select_best_available_language(request.language, available_codes=available_langs)
-    if exercise_lang == "en":
-        exercise_template = exercise_file
-    else:
-        exercise_template = exercise_path(exercise_lang)[(len(exercise_root) + 1):]
-
-    exercise["lang"] = exercise_lang
-    exercise["template"] = exercise_template
 
     return exercise
 
@@ -458,38 +495,59 @@ def get_assessment_item_data(request, assessment_item_id=None):
     if not assessment_item:
         return None
 
-    # TODO (rtibbles): Enable internationalization for the assessment_items.
+    # Enable internationalization for the assessment_items.
+    try:
+
+        item_data = json.loads(assessment_item['item_data'], object_hook=json_ascii_decoder)
+        item_data = smart_translate_item_data(item_data)
+        assessment_item['item_data'] = json.dumps(item_data)
+
+    except KeyError as e:
+        logging.error("Assessment item did not have the expected key %s. Assessment item: \n %s" % (e, assessment_item))
 
     return assessment_item
 
+
+def smart_translate_item_data(item_data):
+    """Auto translate the content fields of a given assessment item data.
+
+    An assessment item doesn't have the same fields; they change
+    depending on the question. Instead of manually specifying the
+    fields to translate, this function loops over all fields of
+    item_data and translates only the content field.
+
+    """
+    if 'content' in item_data:
+        item_data['content'] = _(item_data['content'])
+
+    for field, field_data in item_data.iteritems():
+        if isinstance(field_data, dict):
+            item_data[field] = smart_translate_item_data(field_data)
+        elif isinstance(field_data, list):
+            item_data[field] = map(smart_translate_item_data, field_data)
+
+    return item_data
+
+
+
 def get_content_data(request, content_id=None):
 
-    content_cache = get_content_cache()
+    content_cache = get_content_cache(language=request.language)
     content = content_cache.get(content_id, None)
 
     if not content:
         return None
 
-    content_lang = i18n.select_best_available_language(request.language, available_codes=content.get("languages", [])) or ""
-    urls = content.get("lang_data_" + content_lang, None)
-
-    if not urls:
+    if not content.get("content_urls", None):
         if request.is_admin:
             # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
             messages.warning(request, _("This content was not found! You can download it by going to the Update page."))
         elif request.is_logged_in:
-            messages.warning(request, _("This content was not found! Please contact your teacher or an admin to have it downloaded."))
+            messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
         elif not request.is_logged_in:
-            messages.warning(request, _("This content was not found! You must login as an admin/teacher to download the content."))
-
-    content = content.copy()
-    content["content_urls"] = urls
-    content["selected_language"] = content_lang
-    content["title"] = _(content["title"])
-    content["description"] = _(content.get("description", ""))
+            messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
 
     return content
-
 
 
 def video_dict_by_video_id(flat_topic_tree=None):
@@ -508,6 +566,7 @@ def video_dict_by_video_id(flat_topic_tree=None):
             video_title_dict[video_key] = video_node
 
     return video_title_dict
+
 
 def convert_leaf_url_to_id(leaf_url):
     """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""

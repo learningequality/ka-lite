@@ -21,7 +21,7 @@ from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
-from kalite.i18n import get_default_language
+from kalite.i18n import get_default_language, lcode_to_django_lang
 from kalite.main.models import UserLog
 from kalite.shared.decorators import require_authorized_admin
 from kalite.student_testing.utils import set_exam_mode_off
@@ -69,7 +69,7 @@ def add_facility_teacher(request):
     If central, must be an org admin
     If distributed, must be superuser or a coach
     """
-    title = _("Add a new teacher")
+    title = _("Add a new coach")
     return _facility_user(request, new_user=True, is_teacher=True, title=title)
 
 
@@ -84,7 +84,7 @@ def add_facility_student(request, ds):
     if request.is_teacher and not ds["facility"].teacher_can_create_students:
         return HttpResponseForbidden()
 
-    title = _("Add a new student")
+    title = _("Add a new learner")
     return _facility_user(request, new_user=True, title=title)
 
 
@@ -97,7 +97,7 @@ def facility_user_signup(request):
 
     if settings.DISABLE_SELF_ADMIN:
         # Users cannot create/edit their own data when UserRestricted
-        raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
+        raise PermissionDenied(_("Please contact a coach or administrator to receive login information to this installation."))
     if settings.CENTRAL_SERVER:
         raise Http404(_("You may not sign up as a facility user on the central server."))
 
@@ -231,7 +231,7 @@ def login(request, facility):
 
     #Fix for #2047: prompt user to create an admin account if none exists
     if not User.objects.exists():
-        messages.warning(request, _("No administrator account detected. Please run 'python manage.py createsuperuser' from the terminal to create one."))
+        messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
 
     # Fix for #1211: refresh cached facility info when it's free and relevant
     refresh_session_facility_info(request, facility_count=len(facilities))
@@ -269,7 +269,7 @@ def login(request, facility):
             user = form.get_user()
 
             try:
-                UserLog.begin_user_activity(user, activity_type="login", language=request.language)  # Success! Log the event (ignoring validation failures)
+                UserLog.begin_user_activity(user, activity_type="login", language=lcode_to_django_lang(request.language))  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
                 logging.error("Failed to begin_user_activity upon login: %s" % e)
 

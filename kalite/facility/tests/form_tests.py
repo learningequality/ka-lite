@@ -11,7 +11,7 @@ from django.utils import unittest
 from ..forms import FacilityUserForm, FacilityForm, FacilityGroupForm
 from ..models import Facility, FacilityUser, FacilityGroup
 from kalite.testing import KALiteTestCase, KALiteBrowserTestCase
-from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
+from kalite.testing.mixins import FacilityMixins, BrowserActionMixins, CreateAdminMixin
 
 
 class FacilityTestCase(KALiteTestCase):
@@ -226,7 +226,7 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         self.assertFalse(user_form.is_valid(), "Form must NOT be valid.")
 
 
-class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
+class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin):
 
     def setUp(self):
         self.facility = self.create_facility()
@@ -269,3 +269,32 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         self.assertTrue(group_label.is_displayed())
         group_select = self.browser.find_element_by_id('id_group')
         self.assertTrue(group_select.is_displayed())
+
+
+class FormGroupTest(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin):
+
+    def setUp(self):
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+        self.facility = self.create_facility()
+        super(FormGroupTest, self).setUp()
+
+    def test_ungroup_student_dropdown(self):
+        self.group = self.create_group(facility=self.facility)
+        self.student = self.create_student(facility=self.facility, group=self.group)
+        self.browser_login_admin(**self.admin_data)
+        self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": self.facility.id}))
+        select = self.browser_wait_for_element(css_selector="select.movegrouplist option[value='']").text
+        txt = 'Ungrouped'
+        self.assertEqual(txt, select)
+
+
+class HomePageTest(BrowserActionMixins, KALiteBrowserTestCase):
+
+    def test_homepage_search(self):
+        self.browse_to(self.reverse("homepage"));
+        searchButton = self.browser_wait_for_element(css_selector="#search-button[disabled='disabled']")
+        self.assertNotEqual(None, searchButton);
+        self.browser.find_element_by_id("search").send_keys('search')
+        searchButton = self.browser_wait_for_element(css_selector="#search-button[disabled='disabled']")
+        self.assertEqual(None, searchButton);

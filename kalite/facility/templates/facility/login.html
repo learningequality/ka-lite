@@ -1,9 +1,11 @@
 {% extends base_template %}
 {% load i18n %}
 
-{% block login_active %}active{% endblock login_active %}
+{% block i18n_do_not_translate %}
+    {% block login_active %}active{% endblock login_active %}
+{% endblock i18n_do_not_translate %}
 
-{% block title %}{% trans "Log in" %}{{ block.super }}{% endblock title %}
+{% block title %}{% trans "Log in" %}{% endblock title %}
 
 {% block headcss %}
     <style>

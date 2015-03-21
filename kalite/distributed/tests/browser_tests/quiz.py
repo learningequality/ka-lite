@@ -12,7 +12,8 @@ from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 
 PLAYLIST_ID = "g3_p1"
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
 
     """
@@ -54,3 +55,4 @@ class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
         self.browser.execute_script("quizlog.add_response_log_item({correct: true});")
         self.assertEqual(self.browser.execute_script("return quizlog.get('total_correct')"), 1)
         self.assertEqual(self.browser.execute_script("return quizlog._response_log_cache[0]"), 1)
+

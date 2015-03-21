@@ -1,0 +1,13 @@
+<button class='simple-button orange' id='show-keyboard'> {{_ "Hide Keypad" }}</button>
+
+<div class='container-fluid' id='software-keyboard'>
+    {{#each keys }}
+        <div class="row">
+            <div class="col-xs-12">
+                {{#each this}}
+                    <button class='btn btn-success key' value='{{this.value}}'>{{{this.display}}}</button>
+                {{/each}}
+            </div>
+        </div>
+    {{/each}}
+</div>

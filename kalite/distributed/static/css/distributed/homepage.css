@@ -5,7 +5,6 @@
     margin-bottom: 0;
     padding: 14px;
     position: relative;
-    width: 370px;
     float: left;
     margin-right: 25px;
     min-height: 221px;
@@ -26,19 +25,26 @@
     text-decoration: none!important;
     color: #005987;
 }
-.suggested-action-image-link {
-    background-size: cover;
-    background-repeat: no-repeat;
-    border-bottom: 1px solid #DCE0B3;
+
+#suggested-action-image-link-homepage {
     display: block;
-    height: 130px;
-    margin: -5px -14px -15px -14px;
+    width: 100%;
 }
 
 .suggested-action-title {
     color: #005987;
     text-decoration: none;
     font-size: 21px;
+}
+
+.suggested-action-big-button {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 5px;
+}
+
+.suggested-action-big-button h1 {
+    color: white;
+    text-align: center;
 }
 
 .message {
@@ -70,15 +76,6 @@ a:hover, a:hover .suggested-action-title {
 
 .front-page {
     padding-left: 7px;
-}
-
-.video-unavailable,
-.topic-unavailable,
-a:active.topic-unavailable,
-a:hover.topic-unavailable,
-a:link.topic-unavailable,
-a:visited.topic-unavailable {
-    color: #ACBDD1;
 }
 
 .float-center {

@@ -1,0 +1,84 @@
+[
+    {
+        "users": ["guest"],
+        "slug": "home",
+        "start_url": "/",
+        "inputs": [],
+        "pages": [5],
+        "notes": "Does this annotation work?",
+        "focus": {
+          "element_id": "suggested-action-image-link-homepage",
+          "styles": {
+            "border": "4px solid",
+            "borderColor": "red"
+          }
+        }
+    },
+    {
+        "users": ["guest"],
+        "slug": "login",
+        "start_url": "/securesync/login/",
+        "inputs": [],
+        "pages": [5],
+        "notes": ""
+    },
+    {
+        "users": ["admin"],
+        "slug": "admin-home",
+        "start_url": "/",
+        "inputs": [],
+        "pages": [5],
+        "notes": ""
+    },
+    {
+        "users": ["admin"],
+        "slug": "admin-overview",
+        "start_url": "/management/zone/None/",
+        "inputs": [],
+        "pages": [5],
+        "notes": ""
+    },
+    {
+        "users": ["admin"],
+        "slug": "admin-register",
+        "start_url": "/securesync/register/",
+        "inputs": [],
+        "pages": [6],
+        "notes": ""
+    },
+    {
+        "users": ["admin"],
+        "slug": "admin-add-facility",
+        "start_url": "/securesync/zone/None/facility/new/",
+        "inputs": [],
+        "pages": [11],
+        "notes": ""
+    },
+    {
+        "users": ["admin"],
+        "slug": "",
+        "start_url": "/securesync/zone/None/facility/new/",
+        "inputs": [
+            {"name": "UCSD"},
+            {"description": "For demo and manual use."},
+            {"address": "9450 Gilman Dr. La Jolla, CA"},
+            {"contact_name": "First Last"},
+            {"contact_phone": "999-999-9999"},
+            {"contact_email": "facility@example.com"},
+            {"user_count": "10"},
+            {"<slug>": "admin-add-facility-filled"},
+            {"<submit>": ""},
+            {"<slug>": "admin-add-facility-saved"}
+        ],
+        "pages": [12],
+        "notes": "new facility form, filled and saved"
+    },
+    {
+        "users": ["coach"],
+        "slug": "coach-overview",
+        "start_url": "/management/zone/None/",
+        "inputs": [],
+        "pages": [5],
+        "notes": ""
+    }
+]

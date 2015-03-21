@@ -5,11 +5,14 @@ logging = settings.LOG
 
 from datetime import datetime, timedelta
 from django.utils import unittest
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
 from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, CreateZoneMixin, \
-    FacilityMixins, StudentProgressMixin, StoreMixins
+    FacilityMixins, StudentProgressMixin
 
 
 class APIDropdownTests(FacilityMixins,
@@ -161,7 +164,7 @@ class CoachNavigationTest(FacilityMixins,
         #Student-Testing is only the feature of Nalanda.
         #So tests related coachreports would be available with nalanda only.
         #Reverse of test_view with argument won't be available unless Nalanda.
-        if "Nalanda" in settings.CONFIG_PACKAGE:
+        if "nalanda" in settings.CONFIG_PACKAGE:
             self.urls.append(self.reverse('test_view'))
 
         self.browser_login_admin(**self.admin_data)
@@ -222,11 +225,13 @@ class CoachNavigationTest(FacilityMixins,
         self.browse_to(self.reverse('tabular_view'))
         facility_select = self.browser.find_element_by_id("facility-select")
         facility_select.find_elements_by_tag_name('option')[0].click()
-        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]').click()
         topic_select = self.browser_wait_for_element(css_selector="#topic")
         topic_select.find_elements_by_tag_name('option')[1].click()
+        self.browser.find_element_by_id("display-topic-report").click()
         expected = ['first1-1 last1-1', 'first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
-        student_list = self.browser.find_elements_by_class_name("student-name")
+        student_list = WebDriverWait(self.browser, 3).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "student-name"))
+        )
         result = [item.text for item in student_list]
         self.assertEqual(expected, result)
 
@@ -237,11 +242,13 @@ class CoachNavigationTest(FacilityMixins,
         self.browse_to(self.reverse('tabular_view'))
         facility_select = self.browser.find_element_by_id("facility-select")
         facility_select.find_elements_by_tag_name('option')[1].click()
-        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]').click()
         topic_select = self.browser_wait_for_element(css_selector="#topic")
         topic_select.find_elements_by_tag_name('option')[1].click()
+        self.browser.find_element_by_id("display-topic-report").click()
         expected = ['first1-2a last1-2', 'first1-2b last1-2', 'first1-1 last2-1']
-        student_list = self.browser.find_elements_by_class_name("student-name")
+        student_list = WebDriverWait(self.browser, 3).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "student-name"))
+        )
         result = [item.text for item in student_list]
         self.assertEqual(expected, result)
 
@@ -254,16 +261,18 @@ class CoachNavigationTest(FacilityMixins,
         facility_select.find_elements_by_tag_name('option')[2].click()
         group_select = self.browser_wait_for_element(css_selector="#group-select")
         group_select.find_elements_by_tag_name('option')[1].click()
-        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]').click()
         topic_select = self.browser_wait_for_element(css_selector="#topic")
         topic_select.find_elements_by_tag_name('option')[1].click()
+        self.browser.find_element_by_id("display-topic-report").click()
         expected = ['first1-1 last1-1']
-        student_list = self.browser.find_elements_by_class_name("student-name")
+        student_list = WebDriverWait(self.browser, 3).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "student-name"))
+        )
         result = [item.text for item in student_list]
         self.assertEqual(expected, result)
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
@@ -358,7 +367,7 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(overall[0:4], '100%')
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistProgressTest(FacilityMixins,
                            CreateAdminMixin,
                            CreatePlaylistProgressMixin,
@@ -390,9 +399,9 @@ class PlaylistProgressTest(FacilityMixins,
         self.assertTrue(playlist_details, "Didn't load details")
 
 
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class SpendingReportTests(FacilityMixins,
                           CreateAdminMixin,
-                          StoreMixins,
                           BrowserActionMixins,
                           KALiteBrowserTestCase):
 
