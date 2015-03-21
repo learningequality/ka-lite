@@ -16,7 +16,7 @@ html, body {
 }
 #content-container {
     padding-top: 20px;
-    padding-bottom: 90px;  /* Must be same height as footer */
+    /*padding-bottom: 90px; Must be same height as footer */
 }
 footer {
     width: 100%;
@@ -106,7 +106,7 @@ input[type="submit"] {
     border: 0;
     border-radius: 5px 15px 0 0;
     margin: 0;
-    background-color: #5AA685;
+    background: #5AA685;
     color: #5AA685;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
