@@ -6,7 +6,7 @@ from django.test.utils import override_settings
 from selenium.common.exceptions import NoSuchElementException
 
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, CreateAdminMixin
+from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateAttemptLogMixin, CreateExerciseLogMixin, CreateZoneMixin, CreateAdminMixin
 
 logging = settings.LOG
 
@@ -226,6 +226,8 @@ class RestrictedTeacherTests(FacilityMixins,
 
 
 class CSVExportTestSetup(FacilityMixins,
+                         CreateAttemptLogMixin,
+                         CreateExerciseLogMixin,
                          CreateZoneMixin,
                          CreateAdminMixin,
                          KALiteTestCase):
