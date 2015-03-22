@@ -9,7 +9,6 @@ from tastypie.resources import Resource, ModelResource
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog
 from kalite.shared.api_auth import ObjectAdminAuthorization
-# from kalite.student_testing.models import TestLog
 from securesync.models import Zone, Device, SyncSession
 
 from .api_serializers import CSVSerializer
@@ -129,47 +128,6 @@ class FacilityUserResource(ParentFacilityUserResource):
             bundle.data["is_teacher"] = user.is_teacher
 
         return to_be_serialized
-
-
-# class TestLogResource(ParentFacilityUserResource):
-
-#     _facility_users = None
-
-#     user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
-
-#     class Meta:
-#         queryset = TestLog.objects.all()
-#         resource_name = 'test_log_csv'
-#         authorization = ObjectAdminAuthorization()
-#         excludes = ['user', 'counter', 'signature', 'deleted', 'signed_version']
-#         serializer = CSVSerializer()
-#         limit = 0
-#         max_limit = 0
-
-#     def obj_get_list(self, bundle, **kwargs):
-#         self._facility_users = self._get_facility_users(bundle)
-#         test_logs = TestLog.objects.filter(user__id__in=self._facility_users.keys())
-#         # if not test_logs:
-#         #     raise NotFound("No test logs found.")
-#         return super(TestLogResource, self).authorized_read_list(test_logs, bundle)
-
-#     def alter_list_data_to_serialize(self, request, to_be_serialized):
-#         """Add username, user ID, facility name, and facility ID to responses"""
-#         for bundle in to_be_serialized["objects"]:
-#             user_id = bundle.data["user"].data["id"]
-#             user = self._facility_users.get(user_id)
-#             bundle.data["username"] = user.username
-#             bundle.data["user_id"] = user.id
-#             bundle.data["facility_name"] = user.facility.name
-#             bundle.data["facility_id"] = user.facility.id
-#             bundle.data["is_teacher"] = user.is_teacher
-#             attempt_logs = AttemptLog.objects.filter(user=user, context_id=bundle.data["test"], context_type="test")
-#             bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
-#             bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
-#             bundle.data.pop("user")
-
-#         return to_be_serialized
-
 
 class AttemptLogResource(ParentFacilityUserResource):
 

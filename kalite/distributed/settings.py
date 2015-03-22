@@ -54,7 +54,6 @@ INSTALLED_APPS = (
     "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
-    # "kalite.student_testing",
     "kalite.caching",
     "kalite.store",
     "kalite.remoteadmin",  # needed for remote connection
@@ -69,7 +68,6 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     __package__ + ".middleware.LockdownCheck",
-    # "student_testing.middleware.ExamModeCheck",
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
