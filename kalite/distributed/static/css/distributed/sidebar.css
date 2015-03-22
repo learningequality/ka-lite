@@ -26,7 +26,7 @@ Nav Panel
     -webkit-transform: translateZ(0);
     background: #335c49;
     z-index: 9999;
-    position: absolute;
+    position: fixed;
     height: 100%;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     top: 0;
