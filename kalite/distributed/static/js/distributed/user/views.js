@@ -217,7 +217,7 @@ var UsernameView = Backbone.View.extend({
 
 });
 
-window.UserView = BaseView.extend({
+window.UserView = Backbone.View.extend({
 
     events: {
         "click #nav_logout": "logout"
