@@ -7,7 +7,7 @@
             <tr>
                 {% for video in videos %}
                     <th class="headrow data">
-                        <div><a href="{{ video.path }}"><span title='"{% trans video.title %}"{% if video.description %} ({% trans video.description %}){% endif %}'>{% trans video.title %}</span></a></div>
+                        <div><a href="{% url 'learn' %}{{ video.path }}"><span title='"{% trans video.title %}"{% if video.description %} ({% trans video.description %}){% endif %}'>{% trans video.title %}</span></a></div>
                     </th>
                 {% endfor %}
             </tr>
