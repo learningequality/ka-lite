@@ -155,9 +155,6 @@
                 {% endif %}
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
-                <a href="{% url 'test_list' %}" id="nav_tests" class="admin-only teacher-only {% block tests_active %}{% endblock tests_active %}" title="{% trans 'See list of available tests.' %}">{% trans "Tests" %}</a>
-
-                {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
                 <a href="{% url 'assign_playlists' %}" id="nav_playlists" class="admin-only teacher-only {% block assign_playlists_active %}{% endblock assign_playlists_active %}" title="{% trans 'Assign playlists to student groups' %}">{% trans "Playlists" %}</a>
 
                 {% comment %}Translators: this will appear in the navigation bar. Please try to keep it as short as possible.{% endcomment %}
