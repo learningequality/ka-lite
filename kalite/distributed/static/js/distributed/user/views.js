@@ -137,7 +137,12 @@ window.LoginView = Backbone.View.extend({
             delay: 0,
             html: true,  // extension allows html-based labels
             appendTo: ".login",
-            source: self.student_usernames
+            source: function(request, response) {
+                var names = _.filter(self.student_usernames, function(username) {
+                    return username.search(request.term) === 0;
+                });
+                return response(names.slice(0,10));
+            }
         });
         // Cannot disable autocomplete before it has been enabled
         // So start this button off disabled and enable it when autocomplete
