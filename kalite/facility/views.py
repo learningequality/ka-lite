@@ -25,7 +25,6 @@ from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
 from kalite.shared.decorators import require_authorized_admin
-from kalite.student_testing.utils import set_exam_mode_off
 
 
 @require_authorized_admin
@@ -295,9 +294,6 @@ def login(request, facility):
 
 
 def logout(request):
-    # TODO(dylanjbarth) this is Nalanda specific
-    if request.is_teacher:
-        set_exam_mode_off()
 
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
