@@ -5,10 +5,9 @@ pyexec=`"$SCRIPT_DIR"/python.sh`
 
 "$pyexec" "$current_dir/bin/kalite" manage setup
 
-# TODO: make a check to see if we're running the rpi
-we_are_rpi=`"$current_dir/bin/kalite" setting RPi`
-
-if [[ "$we_are_rpi" = "True" ]]; then
+# Raspberry Pi
+# Check if we are on a Linux running on armv6l
+if uname | grep -q Linux && uname -m | grep -q armv6l ; then
     while true
     do
         echo
