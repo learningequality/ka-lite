@@ -17,7 +17,6 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.test.client import Client
 
-from fle_utils.internet import generate_all_paths
 from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
 from kalite.distributed.templatetags import kalite_staticfiles

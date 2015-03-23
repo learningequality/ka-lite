@@ -4,15 +4,13 @@ import copy
 import re
 
 from django import forms
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
-from securesync.devices.models import Zone
-from fle_utils.django_utils import verify_raw_password
+from fle_utils.django_utils.users import verify_raw_password
 from kalite.i18n import get_installed_language_packs, get_language_name, get_default_language
 
 

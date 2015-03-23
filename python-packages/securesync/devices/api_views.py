@@ -19,8 +19,10 @@ from django.views.decorators.gzip import gzip_page
 
 from .models import *
 from .. import engine
-from fle_utils.django_utils import get_request_ip
-from fle_utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
+from fle_utils.django_utils.functions import get_request_ip
+from fle_utils.internet.decorators import allow_jsonp, api_handle_error_with_json
+from fle_utils.internet.functions import am_i_online
+from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 
 from securesync import ERROR_CODES as EC
 
@@ -33,7 +35,7 @@ def register_device(request):
     # attempt to load the client device data from the request data
     data = simplejson.loads(request.body or "{}")
     if "client_device" not in data:
-        return JsonResponseMessageError("Serialized client device must be provided.")
+        return JsonResponseMessageError("Serialized client device must be provided.", status=400)
     try:
         # When hand-shaking on the device models, since we don't yet know the version,
         #   we have to just TRY with our own version.

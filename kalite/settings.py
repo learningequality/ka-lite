@@ -144,7 +144,7 @@ CACHES = {
 SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' + (''))
 
 # Use our custom message storage to avoid adding duplicate messages
-MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
+MESSAGE_STORAGE = 'fle_utils.django_utils.classes.NoDuplicateMessagesSessionStorage'
 
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
