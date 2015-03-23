@@ -182,7 +182,7 @@ class FacilityUserResource(ModelResource):
             "messages": message_dicts,
             "status_timestamp": datetime.datetime.now(),
             "version": version.VERSION,
-            "facilities": [{"id": id, "name": name} for id, name in Facility.objects.values_list("id", "name")],
+            "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
         }
 
