@@ -10,6 +10,7 @@ before_install:
 install:
 -  npm install
 -  npm install -g grunt-cli
+-  pip install -r requirements.txt
 script:
 - bin/kalite start --traceback -v 2
 - bin/kalite status
