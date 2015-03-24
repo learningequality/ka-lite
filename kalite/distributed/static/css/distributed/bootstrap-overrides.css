@@ -145,6 +145,9 @@ input[type="submit"] {
     min-width: 130px;
     text-align: center;
 }
+#points {
+    text-align: left;
+}
 .navbar ul li.dropdown.open a {
     color: #5AA685;
 }
