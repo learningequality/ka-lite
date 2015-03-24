@@ -6,8 +6,8 @@ pyexec=`"$SCRIPT_DIR"/python.sh`
 "$pyexec" "$current_dir/bin/kalite" manage setup
 
 # Raspberry Pi
-# Check if we are on a Linux running on armv6l
-if uname | grep -q Linux && uname -m | grep -q armv6l ; then
+# Check if we are on a Linux running on armv6l/armv7l
+if uname | grep -q Linux && uname -m | grep -q armv ; then
     while true
     do
         echo
