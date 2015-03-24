@@ -76,7 +76,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
 window.AssessmentItemModel = Backbone.Model.extend({
 
     urlRoot: function() {
-        return window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL")
+        return window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL");
     },
 
     get_item_data: function() {

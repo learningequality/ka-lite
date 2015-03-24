@@ -81,7 +81,7 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
     ],
 
     urlRoot: function() {
-        return window.sessionModel.get("GET_CONTENT_LOGS_URL")
+        return window.sessionModel.get("GET_CONTENT_LOGS_URL");
     },
 
     save: _.throttle(function(){this.saveNow();}, 30000),

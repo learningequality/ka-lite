@@ -59,8 +59,12 @@ var StatusModel = Backbone.Model.extend({
         client_server_time_diff: 0
     },
 
-    url: function() {
+    urlRoot: function() {
         return window.sessionModel.get("USER_URL")
+    },
+
+    url: function () {
+        this.urlRoot() + "status/"
     },
 
     initialize: function() {
@@ -103,7 +107,7 @@ var StatusModel = Backbone.Model.extend({
         };
 
         $.ajax({
-            url: USER_URL + "login/",
+            url: self.urlRoot() + "login/",
             contentType: 'application/json',
             dataType: 'json',
             type: 'POST',
@@ -118,7 +122,7 @@ var StatusModel = Backbone.Model.extend({
         var self = this;
 
         $.ajax({
-            url: USER_URL + "logout/",
+            url: self.urlRoot() + "logout/",
             contentType: 'application/json',
             dataType: 'json',
             type: 'GET',
