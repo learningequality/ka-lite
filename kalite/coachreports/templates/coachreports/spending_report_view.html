@@ -37,7 +37,7 @@
 {% endblock headjs %}
 
 {% block report_content %}
-    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+    {% block navbar_title %}{% endblock navbar_title %}
     <div id="content">
         {% if not user_points %}
             <p>

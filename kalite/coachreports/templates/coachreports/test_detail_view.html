@@ -38,7 +38,7 @@
 {% endblock report_title %}
 
 {% block report_content %}
-    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+    {% block navbar_title %}{% endblock navbar_title %}
     <p class="unpadded-p">
         <a class="changeable-link" href="{% url 'test_view' %}">&#x2190; {% trans "Back" %}</a>
     </p>
