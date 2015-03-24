@@ -10,8 +10,10 @@ from django.utils import unittest
 
 from ..forms import FacilityUserForm, FacilityForm, FacilityGroupForm
 from ..models import Facility, FacilityUser, FacilityGroup
-from kalite.testing import KALiteTestCase, KALiteBrowserTestCase
-from kalite.testing.mixins import FacilityMixins, BrowserActionMixins, CreateAdminMixin
+from kalite.testing.base import KALiteTestCase, KALiteBrowserTestCase
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 class FacilityTestCase(KALiteTestCase):

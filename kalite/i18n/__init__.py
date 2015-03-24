@@ -2,16 +2,14 @@
 i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
-import json
 import os
 import re
 import requests
 import shutil
-from collections_local_copy import OrderedDict, defaultdict
-from fle_utils.internet import invalidate_web_cache
+from collections_local_copy import OrderedDict
+from fle_utils.internet.webcache import invalidate_web_cache
 
 from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
 from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
@@ -145,10 +143,11 @@ def get_id2oklang_map(video_id, force=False):
     if ID2OKLANG_MAP is None or force:
         ID2OKLANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
-            for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                cur_video_id = get_video_id(english_youtube_id)
-                ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
-                ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
+            if lang_code and dic:
+                for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                    cur_video_id = get_video_id(english_youtube_id)
+                    ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
+                    ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
     if video_id:
         # Not all IDs made it into the spreadsheet, so by default, use the video_id as the youtube_id
         return ID2OKLANG_MAP.get(video_id, {"en": get_youtube_id(video_id, None)})
@@ -370,7 +369,7 @@ def update_jsi18n_file(code="en"):
     request.path = output_file
     request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
-    response = javascript_catalog(request, packages=('ka-lite.locale',))
+    response = javascript_catalog(request, packages=('ka-lite.locale',), domain="django")
     icu_js = ""
     for path in settings.LOCALE_PATHS:
         try:

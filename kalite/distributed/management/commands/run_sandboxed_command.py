@@ -2,15 +2,9 @@
 """
 import os
 import sys
-import subprocess
-from optparse import make_option
 
 from django.conf import settings
-from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
-
-from fle_utils.django_utils import call_outside_command_with_output
-from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

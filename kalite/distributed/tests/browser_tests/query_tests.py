@@ -8,7 +8,9 @@ from django.conf import settings
 from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import FacilityMixins, CreateAdminMixin, BrowserActionMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 from kalite.testing.utils import FuzzyInt

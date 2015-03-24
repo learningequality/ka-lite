@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import imp
-import os, sys, time, signal, errno
+import os, time, signal, errno
 import urlparse
 
 import cherrypy

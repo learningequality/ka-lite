@@ -6,7 +6,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
-from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException, WebDriverException
+from selenium.common.exceptions import TimeoutException, ElementNotVisibleException, WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
@@ -15,11 +15,12 @@ from django.utils import unittest
 from django.test.utils import override_settings
 from django.utils.translation import ugettext as _
 
-from fle_utils.general import isnumeric
-from kalite.facility.models import FacilityUser, Facility
+from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins, CreateFacilityMixin
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateFacilityMixin
 from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
