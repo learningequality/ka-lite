@@ -139,8 +139,14 @@ input[type="submit"] {
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
 }
-.navbar ul li.dropdown {
+.navbar ul li.dropdown,
+.navbar ul li.dropdown.open {
     padding-right: 0;
+    min-width: 130px;
+    text-align: center;
+}
+#points {
+    text-align: left;
 }
 .navbar ul li.dropdown.open a {
     color: #5AA685;
