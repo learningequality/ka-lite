@@ -38,11 +38,11 @@ function show_api_messages(messages) {
 function force_sync() {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
-    doRequest(FORCE_SYNC_URL)
+    doRequest(window.sessionModel.get("FORCE_SYNC_URL"))
         .success(function() {
             var msg = gettext("Successfully launched data syncing job.") + " ";
             msg += sprintf(gettext("After syncing completes, visit the <a href='%(devman_url)s'>device management page</a> to view results."), {
-                devman_url: LOCAL_DEVICE_MANAGEMENT_URL
+                devman_url: window.sessionModel.get("LOCAL_DEVICE_MANAGEMENT_URL")
             });
             show_message("success", msg);
         });
@@ -59,16 +59,17 @@ var StatusModel = Backbone.Model.extend({
         client_server_time_diff: 0
     },
 
-    url: USER_URL + "status/",
+    url: function() {
+        return window.sessionModel.get("USER_URL")
+    },
 
     initialize: function() {
 
         _.bindAll(this);
 
-        this.load_status();
     },
 
-    load_status: function() {
+    fetch_data: function() {
         // save the deferred object from the fetch, so we can run stuff after this model has loaded
         this.loaded = this.fetch();
 
@@ -181,7 +182,9 @@ var StatusModel = Backbone.Model.extend({
 });
 
 // create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call
-window.statusModel = new StatusModel();
+
+window.statusModel = new window.StatusModel();
+
 
 function sanitize_string(input_string) {
     return $('<div/>').text(input_string).html();
@@ -214,7 +217,7 @@ $(function() {
     // load progress data for all videos linked on page, and render progress circles
     var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id"); });
     if (video_ids.length > 0) {
-        doRequest(GET_VIDEO_LOGS_URL, video_ids)
+        doRequest(window.sessionModel.get("GET_VIDEO_LOGS_URL"), video_ids)
             .success(function(data) {
                 $.each(data, function(ind, video) {
                     var newClass = video.complete ? "complete" : "partial";
@@ -226,7 +229,7 @@ $(function() {
     // load progress data for all exercises linked on page, and render progress circles
     var exercise_ids = $.map($(".progress-circle[data-exercise-id]"), function(el) { return $(el).data("exercise-id"); });
     if (exercise_ids.length > 0) {
-        doRequest(GET_EXERCISE_LOGS_URL, exercise_ids)
+        doRequest(window.sessionModel.get("GET_EXERCISE_LOGS_URL"), exercise_ids)
             .success(function(data) {
                 $.each(data, function(ind, exercise) {
                     var newClass = exercise.complete ? "complete" : "partial";
@@ -244,7 +247,7 @@ $(function() {
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();
         if (lang_code != "") {
-            doRequest(SET_DEFAULT_LANGUAGE_URL,
+            doRequest(window.sessionModel.get("SET_DEFAULT_LANGUAGE_URL"),
                       {lang: lang_code}
                      ).success(function() {
                          window.location.reload();
@@ -271,7 +274,7 @@ function get_server_status(options, fields, callback) {
         protocol: "http",
         hostname: "",
         port: 8008,
-        path: SERVER_INFO_PATH
+        path: window.sessionModel.get("SERVER_INFO_PATH")
     };
 
     var args = $.extend(defaults, options);
@@ -315,9 +318,9 @@ function check_now_whether_server_is_online(callback) {
  * @return {boolean} The callback function will be passed true if the client is online, and false otherwise.
  */
 function check_now_whether_client_is_online(callback) {
-    var hostname = CENTRAL_SERVER_HOST.split(":")[0];
-    var port = CENTRAL_SERVER_HOST.split(":")[1] || null;
-    get_server_status({protocol: SECURESYNC_PROTOCOL, hostname: hostname, port: port}, [], function(data) {
+    var hostname = window.sessionModel.get("CENTRAL_SERVER_HOST").split(":")[0];
+    var port = window.sessionModel.get("CENTRAL_SERVER_HOST").split(":")[1] || null;
+    get_server_status({protocol: window.sessionModel.get("SECURESYNC_PROTOCOL"), hostname: hostname, port: port}, [], function(data) {
         callback(data["status"] === "OK");
     });
 }

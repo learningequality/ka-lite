@@ -279,7 +279,7 @@ window.ExerciseView = Backbone.View.extend({
 
 
                 if (Khan.loaded === undefined) {
-                    require([KHAN_EXERCISES_SCRIPT_URL], self.load_exercises_when_ready);
+                    require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], self.load_exercises_when_ready);
                 } else {
                     self.load_exercises_when_ready();
                 }
@@ -345,7 +345,7 @@ window.ExerciseView = Backbone.View.extend({
     },
 
     render_perseus_exercise: function(item) {
-        require([KHAN_EXERCISES_SCRIPT_URL], function() {
+        require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], function() {
             Exercises.PerseusBridge.load().then(function() {
                 Exercises.PerseusBridge.render_item(item.get_item_data());
                 $(Exercises).trigger("newProblem", {

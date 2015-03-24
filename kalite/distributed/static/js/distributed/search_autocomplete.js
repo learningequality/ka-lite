@@ -5,7 +5,7 @@ var _timeout_length = 1000 * 20; // 20 seconds
 var _version = "7"; // increment this when you're invalidating old storage
 
 function fetchTopicTree(lang, force_reparse) {
-    doRequest(SEARCH_TOPICS_URL, null, {  // already has language information embedded in it
+    doRequest(window.sessionModel.get("SEARCH_TOPICS_URL"), null, {  // already has language information embedded in it
         cache: true,
         dataType: "json",
         timeout: _timeout_length,
@@ -54,7 +54,7 @@ function flattenNodes() {
 
 function fetchLocalOrRemote() {
     $("#search").focus(null);  // disable re-fetching
-    fetchTopicTree(CURRENT_LANGUAGE, _nodes === null); // only parse the json if _nodes == null (or if something changed)
+    fetchTopicTree(window.sessionModel.get("CURRENT_LANGUAGE"), _nodes === null); // only parse the json if _nodes == null (or if something changed)
 }
 
 
