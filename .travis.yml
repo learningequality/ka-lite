@@ -20,7 +20,7 @@ script:
 - bin/kalite manage syncdb --migrate --noinput --traceback
 # This one is commented out because the coverage command below does everything
 # - bin/kalite test --traceback -v 2
-- coverage run --source=kalite manage.py test --traceback -v 2
+- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" manage.py test --traceback -v 2
 - grunt jshint
 notifications:
   email:
