@@ -1,27 +1,26 @@
 from behave import *
-from socket import timeout
-from mock import patch
+from django.conf import settings
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from tastypie.exceptions import NotFound
 
-from kalite.main.api_resources import Content
+TIMEOUT = 3
 
 @given("I open an exercise")
 def step_impl(context):
     context.browser.get(context.browser_url("/"))
 
-#@patch.object('kalite.main.api_resources.ContentResource', 'obj_get', side_effect = NotFound())
 @given("the exercise is available")
 def step_impl(context):
+    # NOTE(MCGallaspy): We really need a way to interact meaningfully with the learn page...
+    # It's hard for me and makes me sad. :(
     #context.browser.get(context.browser_url("learn/some/random/exercise"))
     pass
 
-#@patch.object('kalite.main.api_resources.ContentResource', 'obj_get', return_value = Content())
 @given("the exercise is not available")
 def step_impl(context):
-    #context.browser.get(context.browser_url("learn/some/random/exercise"))
+    # See above. This is hard for me to implement. :(
     pass
 
 @then("I should see an alert")
@@ -33,12 +32,13 @@ def step_impl(context):
     pass
 
 
-def alert_in_page(browser, msg=""):
+def alert_in_page(browser):
+    # How do I safely reason about single-page JS apps...
+    # Is this an appropriate timeout value or not?
+    # Can we listen for events in our JS apps to improve testability?
     try:
-        # It's still hard to reason about single-page JS apps...
-        # Is this an appropriate timeout value or not?
-        WebDriverWait(browser, 1).until(
-            EC.presence_of_element_located((By.CLASS, "alert"))
+        elem = WebDriverWait(browser, TIMEOUT).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "alert"))
         )
         return True
     except TimeoutException:
