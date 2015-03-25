@@ -1,5 +1,9 @@
 """
-environment.py specific to the this app
+environment.py defines setup and teardown behaviors for behave tests.
+The behavior in this file is appropriate for integration tests, and
+could be used to bootstrap other integration tests in our project.
+It sets up a test server and test database by using the LiveServerTestCase
+machinery.
 """
 from behave import *
 from httplib import CannotSendRequest
@@ -12,8 +16,6 @@ def before_all(context):
 
     # So we get a free test server and test database, with appropriate
     # setup and teardown methods
-    # If we really want to test the learn page, we would probably need
-    # to judiciously stub out a bunch of methods from topic_tools here
     hijacked_test_case = context.hijacked_test_case = HijackTestCase()
     hijacked_test_case.setUpClass()
      
