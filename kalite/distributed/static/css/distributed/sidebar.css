@@ -24,7 +24,7 @@ Nav Panel
 
 .sidebar-panel {
     -webkit-transform: translateZ(0);
-    background: #335c49;
+    background: #5AA685;
     z-index: 9999;
     position: fixed;
     height: 100%;
@@ -65,7 +65,7 @@ div.fade {
 
 .missing {
     opacity: 0.4;
-    background: #43735e;
+    background: #93BFAC;
 }
 
 .sidebar-panel a:link,
@@ -90,7 +90,7 @@ div.fade {
     position: fixed;
     left: 0;
     top: 40%;
-    background: #335c49;
+    background: #5AA685;
     color: #fff;
     font-weight: bold;
     font-size: 1.9em;
