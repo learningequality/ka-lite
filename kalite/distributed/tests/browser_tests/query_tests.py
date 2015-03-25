@@ -61,7 +61,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
     def test_query_status_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(FuzzyInt(3, 9)):
+        with self.assertNumQueries(FuzzyInt(3, 12)):
             self.browse_to(self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'status/')
 
     def test_query_status_teacher(self):
@@ -79,7 +79,7 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
     def test_query_logout_admin(self):
         """"""
         self.test_query_login_admin()
-        with self.assertNumQueries(FuzzyInt(6, 8) + 0*UserLog.is_enabled()):
+        with self.assertNumQueries(FuzzyInt(6, 9) + 0*UserLog.is_enabled()):
             self.browser_logout_user()
 
     def test_query_logout_teacher(self):
