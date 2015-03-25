@@ -25,7 +25,7 @@ class Command(NoArgsCommand):
         def handle_post_compress(sender, **kwargs):
             manifest[kwargs.get("context").get("compressed").get("name")] = kwargs.get("context").get("compressed").get("url")
 
-        call_command("compress")
+        call_command("compress", force=True)
 
         with open("file_map.json", "w") as f:
             json.dump(manifest, f)
