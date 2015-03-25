@@ -38,7 +38,7 @@ function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
     if ($.url(url).param("lang") === undefined && data !== null && data !== undefined) {
         if (!data.hasOwnProperty('lang')) {
-            url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+            url = setGetParam(url, "lang", window.sessionModel.get("CURRENT_LANGUAGE"));
         }
     }
 
