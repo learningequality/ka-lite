@@ -54,7 +54,11 @@ TopicChannelRouter = Backbone.Router.extend({
             splat += "/";
             this.navigate(Backbone.history.getFragment() + "/");
         }
-        this.control_view.navigate_paths(splat.split("/").slice(0,-1));
+        this.control_view.navigate_paths(splat.split("/").slice(0,-1), this.set_page_title);
+    },
+
+    set_page_title: function(title) {
+        document.title = document.title.replace(/(Learn)( |:+[^|]*)/, sprintf("$1: %s ", title));
     },
 
     trigger_navigation_callback: function() {
