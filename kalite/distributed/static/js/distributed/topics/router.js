@@ -54,7 +54,7 @@ TopicChannelRouter = Backbone.Router.extend({
             splat += "/";
             this.navigate(Backbone.history.getFragment() + "/");
         }
-        this.control_view.navigate_paths(splat.split("/"));
+        this.control_view.navigate_paths(splat.split("/").slice(0,-1));
     },
 
     trigger_navigation_callback: function() {
