@@ -1,6 +1,8 @@
 ChannelRouter = Backbone.Router.extend({
     initialize: function(options) {
+        _.bindAll(this);
         this.default_channel = options.default_channel;
+        $("#nav_learn").click(this.intercept_learn_nav);
     },
 
     routes: {
@@ -14,6 +16,12 @@ ChannelRouter = Backbone.Router.extend({
 
     navigate_default_channel: function() {
         this.navigate(this.default_channel + "/", {trigger: true, replace: true});
+    },
+
+    intercept_learn_nav: function(event){
+        event.preventDefault();
+        this.navigate_default_channel();
+        return false;
     },
 
     navigate_channel: function(channel, splat) {
