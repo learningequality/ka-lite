@@ -549,6 +549,8 @@ Restarting Your Server: Mac
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. You may do this by navigating to the magnifying glass |magglass| at the top right corner of your screen, and typing in "Terminal", then hitting "Enter" on your keyboard.
 
+.. |magglass| image:: magglass.png
+
 .. image:: search.png
     :align: center
     :width: 700

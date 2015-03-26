@@ -117,7 +117,7 @@ KA Lite is an independent, open-source project maintained by a distributed team 
 How can local curriculum be generated?
 --------------------------------------
 
-Local content creation is something that KA Lite intends to pursue in the future. This feature is not available at this time, but steps are being taken, as you can read about `here <https://learningequality.org/blog/2013/bringing-ka-lite-gitwe/>`_. If you would like to be notified when it is available, subscribe for updates on our `home page`_, or if you would like to fund this project, please click `here <https://learningequality.org/give/>`_.
+Local content creation is something that KA Lite intends to pursue in the future. This feature is not available at this time, but steps are being taken, as you can `read about here <https://learningequality.org/blog/2013/bringing-ka-lite-gitwe/>`_. If you would like to be notified when it is available, subscribe for updates on our `home page`_, or if you would like to fund this project, please `click here <https://learningequality.org/give/>`_.
 
 .. _home page: http://kalite.learningequality.org/
 
