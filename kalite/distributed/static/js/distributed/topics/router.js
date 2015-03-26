@@ -1,4 +1,4 @@
-ChannelRouter = Backbone.Router.extend({
+TopicChannelRouter = Backbone.Router.extend({
     initialize: function(options) {
         _.bindAll(this);
         this.default_channel = options.default_channel;
@@ -33,12 +33,7 @@ ChannelRouter = Backbone.Router.extend({
             });
             this.channel = channel;
         }
-        splat = splat || "/";
-        if (splat.indexOf("/", splat.length - 1)==-1) {
-            splat += "/";
-            this.navigate(Backbone.history.getFragment() + "/", {replace: true});
-        }
-        this.control_view.navigate_paths(splat.split("/"));
+        this.navigate_splat(splat);
     },
 
     add_slug: function(slug) {
@@ -67,16 +62,3 @@ ChannelRouter = Backbone.Router.extend({
     }
 });
 
-TopicChannelRouter = ChannelRouter.extend({
-    navigate_channel: function(channel, splat) {
-        if (this.channel!==channel) {
-            this.control_view = new SidebarView({
-                channel: channel,
-                entity_key: "children",
-                entity_collection: TopicCollection
-            });
-            this.channel = channel;
-        }
-        this.navigate_splat(splat);
-    }
-});
