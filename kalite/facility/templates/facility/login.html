@@ -18,14 +18,8 @@
 {% endblock headcss %}
 
 {% block content %}
-    <form method="post" class="basic-form">
-        {% csrf_token %}
-        <h2>{% trans "Log in" %}</h2>
-
-        {{ form.as_p }}
-
-        <input type="submit" value="{% trans 'Log in' %}" class="submit" />
-    </form>
+    <div id="login-container">
+    </div>
     <div id="info_block">
     {% if not restricted %}
         {% blocktrans %}If you don't have a login, please <a href="{{ sign_up_url }}">sign up</a>.{% endblocktrans %}
@@ -33,4 +27,11 @@
         {% blocktrans %}If you don't have a login, please contact your administrator.{% endblocktrans %}
     {% endif %}
     </div>
+    <script>
+        $(function(){
+            window.statusModel.loaded.then(function(){
+                window.loginView = new LoginView({model: window.statusModel, el: "#login-container"});
+            });
+        });
+    </script>
 {% endblock content %}

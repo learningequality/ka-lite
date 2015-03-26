@@ -640,3 +640,20 @@ div#fade {
 }
 
 /* END styles for modal dialog */
+
+/* Styling for simplified login toggle button */
+.password-btn {
+    float: right;
+}
+
+.login .ui-menu .ui-menu-item a{
+    font-size: 1.5em;
+}
+
+.login {
+    font-size: 1.5em;
+}
+
+.has-error input {
+    border: 2px solid red;
+}

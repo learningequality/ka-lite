@@ -1,6 +1,7 @@
 import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -253,7 +254,7 @@ class BrowserActionMixins(object):
         # Expected results vary based on whether a user is logged in or not.
         if not stay_logged_in:
             self.browser_logout_user()
-
+        
         register_url = self.reverse("facility_user_signup")
         self.browse_to(register_url)  # Load page
 
@@ -277,23 +278,27 @@ class BrowserActionMixins(object):
 
         login_url = self.reverse("login")
         self.browse_to(login_url, browser=browser)  # Load page
+        WebDriverWait(browser, 10).until(EC.visibility_of_element_located((By.ID, "id_username")))
 
         # Focus should be on username, password and submit
         #   should be accessible through keyboard only.
-        if facility_name and browser.find_element_by_id("id_facility").is_displayed():
-            self.browser_activate_element(id="id_facility")
-            self.browser_send_keys(facility_name)
+        try:
+            if facility_name and browser.find_element_by_id("id_facility"):
+                self.browser_activate_element(id="id_facility")
+                self.browser_send_keys(facility_name)
+        except NoSuchElementException:
+            pass
 
         username_field = browser.find_element_by_id("id_username")
         username_field.clear()  # clear any data
         username_field.click()  # explicitly set the focus, to start
         self.browser_form_fill(username, browser=browser)
         self.browser_form_fill(password, browser=browser)
-        username_field.submit()
+        browser.find_element_by_class_name("login-btn").click()
         # self.browser_send_keys(Keys.RETURN)
 
         # wait for 5 seconds for the page to refresh
-        WebDriverWait(browser, 5).until(EC.staleness_of(username_field))
+        WebDriverWait(browser, 5).until(EC.invisibility_of_element_located((By.ID,"id_username")))
 
     def browser_login_admin(self, username=None, password=None, browser=None):
         self.browser_login_user(username=username, password=password, browser=browser)
