@@ -19,7 +19,6 @@ TopicChannelRouter = Backbone.Router.extend({
     },
 
     intercept_learn_nav: function(event){
-        event.preventDefault();
         this.navigate(this.default_channel + "/", {trigger: true});
         return false;
     },
