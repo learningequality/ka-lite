@@ -81,8 +81,18 @@ var StatusModel = Backbone.Model.extend({
     },
 
     login: function(username, password, facility, callback) {
-        // Add a callback to allow functions calling this method to do things depending on the result of
-        // the login - failure, success, and particular errors that can be noted on the UI (such as incorrect username)
+        /**
+        * login method for StatusModel
+        *
+        * @method login
+        * @param {String} username Username to login with
+        * @param {String} password Password with with to login
+        * @param {String} facility The id of the facility object to which the facility user belongs
+        * @param {Function} callback A callback function
+        * Add a callback to allow functions calling this method to
+        * the login - failure, success, and particular errors that can be noted on the UI (such as incorrect username)
+        */
+
         var self = this;
 
         data = {
@@ -97,26 +107,9 @@ var StatusModel = Backbone.Model.extend({
             dataType: 'json',
             type: 'POST',
             data: JSON.stringify(data),
-            success: function(data, status, response) {
-                if (data.redirect) {
-                    window.location = data.redirect;
-                } else {
-                    // TODO (rtibbles) Reinstate the code below once
-                    // the front end app responds better to statusModel changes
-                    window.location.reload();
-                    // self.load_status();
-                    // if (callback) {
-                    //     callback(response);
-                    // }
-                }
-            },
-            error: function(response) {
-                if (callback) {
-                    callback(response);
-                } else {
-                    handleFailedAPI(response);
-                }
-            }
+            // Use partial to pass the callback argument to the success and fail functions.
+            success: _.partial(self.handle_login_logout_success, _, _, _, callback),
+            fail: _.partial(self.handle_login_logout_error, _, callback)
         });
     },
 
@@ -128,25 +121,32 @@ var StatusModel = Backbone.Model.extend({
             contentType: 'application/json',
             dataType: 'json',
             type: 'GET',
-            success: function(data, status, response) {
-                if (data.success) {
-                    if (data.redirect) {
-                        window.location = data.redirect;
-                    } else {
-                        self.load_status();
-                        if (callback) {
-                            callback(response);
-                        }
-                    }
-                }
-            },
-            error: function(response) {
-                handleFailedAPI(response);
-                if (callback) {
-                    callback(response);
-                }
-            }
+            // Use partial to pass the callback argument to the success and fail functions.
+            success: _.partial(self.handle_login_logout_success, _, _, _, callback),
+            fail: _.partial(self.handle_login_logout_error, _, callback)
         });
+    },
+
+    handle_login_logout_success: function(data, status, response, callback) {
+        if (data.redirect) {
+            window.location = data.redirect;
+        } else {
+            // TODO (rtibbles) Reinstate the code below once
+            // the front end app responds better to statusModel changes
+            window.location.reload();
+            // self.load_status();
+            // if (callback) {
+            //     callback(response);
+            // }
+        }
+    },
+
+    handle_login_logout_error: function(response, callback) {
+        if (callback) {
+            callback(response);
+        } else {
+            handleFailedAPI(response);
+        }
     },
 
     after_loading: function() {
