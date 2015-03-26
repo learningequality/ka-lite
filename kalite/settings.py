@@ -117,6 +117,7 @@ else:
     INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = (
+    "django.middleware.gzip.GZipMiddleware", # gzip has to be placed at the top, before others
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
     "django_snippets.session_timeout_middleware.SessionIdleTimeout",
 ) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
