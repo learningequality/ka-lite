@@ -111,9 +111,10 @@ var StatusModel = Backbone.Model.extend({
                 }
             },
             error: function(response) {
-                handleFailedAPI(response);
                 if (callback) {
                     callback(response);
+                } else {
+                    handleFailedAPI(response);
                 }
             }
         });
