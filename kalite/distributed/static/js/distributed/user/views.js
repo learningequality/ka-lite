@@ -61,11 +61,11 @@ window.LoginView = Backbone.View.extend({
         this.$el.html(this.template(this.render_data));
     },
 
-    login: function() {
+    login: function(username, password, facility) {
         this.$("input").parent().removeClass("has-error");
-        username = this.$("#id_username").val();
-        password = this.$("#id_password").val();
-        facility = this.facility || this.$("#id_facility").val();
+        username = username || this.$("#id_username").val();
+        password = password || this.$("#id_password").val();
+        facility = facility || this.facility || this.$("#id_facility").val();
         if (!username) {
             this.$("#id_username").parent().addClass("has-error");
         } else if (!password && (!this.model.get("simplified_login") || this.admin)) {
@@ -96,6 +96,7 @@ window.LoginView = Backbone.View.extend({
             this.$("#id_username").autocomplete("enable");
             this.$("#id_password-container").hide();
         }
+        this.set_login_button_state();
     },
 
     facility_change: function(event) {
@@ -142,18 +143,26 @@ window.LoginView = Backbone.View.extend({
                     return username.search(request.term) === 0;
                 });
                 return response(names.slice(0,10));
+            },
+            select: function(event, ui) {
+                self.$("#id_username").val(ui.item.value);
+                self.login(ui.item.value);
             }
         });
         // Cannot disable autocomplete before it has been enabled
         // So start this button off disabled and enable it when autocomplete
         // has finished loading.
+        this.set_login_button_state();
         this.$(".password-btn").removeAttr("disabled");
+        this.$("#id_username").on( "autocompletesearch", this.set_login_button_state);
     },
 
     key_user: function(event) {
         if (event.which == 13) {
             if (this.model.get("simplified_login") && !this.admin) {
-                this.login();
+                if (this.check_user_in_list()) {
+                    this.login();
+                }
             } else {
                 this.$("#id_password").focus();
             }
@@ -163,6 +172,18 @@ window.LoginView = Backbone.View.extend({
     key_pass: function(event) {
         if (event.which == 13) {
             this.login();
+        }
+    },
+
+    check_user_in_list: function() {
+        return this.student_usernames.indexOf(this.$("#id_username").val()) > -1;
+    },
+
+    set_login_button_state: function() {
+        if (this.admin || this.check_user_in_list()) {
+            this.$(".login-btn").removeAttr("disabled");
+        } else {
+            this.$(".login-btn").attr("disabled", "disabled");
         }
     }
 });
