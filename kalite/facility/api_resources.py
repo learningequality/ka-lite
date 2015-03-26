@@ -86,10 +86,6 @@ class FacilityUserResource(ModelResource):
         # Find all matching users
         users = FacilityUser.objects.filter(username=username, facility=facility)
 
-        # If no exact matches were found, try a case-insensitive search
-        if users.count() == 0:
-            users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
-
         if users.count() == 0:
             if Facility.objects.count() > 1:
                 error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")

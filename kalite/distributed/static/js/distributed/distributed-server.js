@@ -81,6 +81,8 @@ var StatusModel = Backbone.Model.extend({
     },
 
     login: function(username, password, facility, callback) {
+        // Add a callback to allow functions calling this method to do things depending on the result of
+        // the login - failure, success, and particular errors that can be noted on the UI (such as incorrect username)
         var self = this;
 
         data = {

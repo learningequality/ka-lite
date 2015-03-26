@@ -541,7 +541,7 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
     def test_logout_link_visible_small_browser_size(self):
         # Check if browser size is too small and menu is collapsed, for mobile.
         self.browser.set_window_size(640, 480)
-        # import pdb; pdb.set_trace()
+
         expand_menus_button = self.browser.find_element_by_css_selector("button.navbar-toggle")
         WebDriverWait(self.browser, 3).until(
             expected_conditions.visibility_of(expand_menus_button)

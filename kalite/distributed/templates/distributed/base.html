@@ -249,8 +249,8 @@
 
                             <!-- For logged out users  -->
                             {# Login #}
-                            <li class="dropdown {% block login_active %}{% endblock login_active %}">
-                              <a href="#" class="dropdown-toggle not-logged-in-only" data-toggle="modal" data-target="#loginModal" title="{% trans 'Login' %}" id="nav_login">
+                            <li class="{% block login_active %}{% endblock login_active %}">
+                              <a href="#" class="not-logged-in-only" data-toggle="modal" data-target="#loginModal" title="{% trans 'Login' %}" id="nav_login">
                                 {% trans "Login" %}
                               </a>
                             </li>

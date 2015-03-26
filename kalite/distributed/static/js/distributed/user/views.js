@@ -113,6 +113,7 @@ window.LoginView = BaseView.extend({
     },
 
     set_autocomplete: function() {
+        // this initializes self.student_usernames for start_autocomplete
         var self = this;
         var data = {
             facility: this.facility,
