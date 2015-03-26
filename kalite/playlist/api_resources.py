@@ -9,8 +9,6 @@ from kalite.shared.contextmanagers.db import inside_transaction
 from kalite.topic_tools import video_dict_by_video_id, get_slug2id_map
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization, tastypie_require_admin
 from kalite.facility.api_resources import FacilityUserResource
-from kalite.ab_testing.data.groups import get_grade_by_facility
-
 
 class PlaylistResource(Resource):
 
@@ -51,7 +49,7 @@ class PlaylistResource(Resource):
             if 'facility_user' in request.session:
                 facility_id = request.session['facility_user'].facility.id
                 facility = request.session['facility_user'].facility
-                playlists = [pl for pl in playlists if (int((pl.tag).split()[-1]) == get_grade_by_facility(facility))]
+                playlists = [pl for pl in playlists]
 
         elif request.is_logged_in and not request.is_admin:  # user is a student
             playlists = Playlist.all()

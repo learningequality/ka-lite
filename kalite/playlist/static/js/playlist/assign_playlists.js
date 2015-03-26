@@ -152,15 +152,18 @@ var AppView = Backbone.View.extend({
     addNewPlaylist: function(playlist) {
         var view = new PlaylistView({model: playlist});
         var title = playlist.get('title');
+        var grade = playlist.get('tag').slice(-1);
         if (title.indexOf("Core") > -1){
-            $("#core-playlists").append(view.render().el);
+            $("#grade-" + grade + "-core-playlists").append(view.render().el);
         } else if (title.indexOf("Prerequisite") > -1){
-            $("#pre-playlists").append(view.render().el);
+            $("#grade-" + grade + "-pre-playlists").append(view.render().el);
         } else if (title.indexOf("Advanced") > -1){
-            $("#advanced-playlists").append(view.render().el);
+            $("#grade-" + grade + "-advanced-playlists").append(view.render().el);
         } else if (title.indexOf("Exam Prep") > -1){
-            $("#exam-prep-playlists").append(view.render().el);
+            $("#grade-" + grade + "-exam-prep-playlists").append(view.render().el);
         }
+
+
     },
 
     addAllPlaylists: function() {
@@ -175,5 +178,18 @@ $(function() {
     statusModel.loaded.then(function() {
         var app = new AppView;
     });
+
+});
+
+$(function() {
+
+    $('.header').click(function(){
+        $(this).toggleClass('expand').nextUntil('tr.header').slideToggle(100);
+    });
+
+    $('.grade').click(function(){
+        $(this).toggleClass('expand').nextUntil('tbody.grade').slideToggle(100);
+    });
+
 
 });
