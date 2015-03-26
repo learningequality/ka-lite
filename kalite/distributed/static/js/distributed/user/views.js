@@ -73,14 +73,14 @@ window.LoginView = BaseView.extend({
     },
 
     login: function(username, password, facility) {
-        this.$("input").parent().removeClass("has-error");
+        this.$(".form-group").parent().removeClass("has-error");
         username = username || this.$("#id_username").val();
         password = password || this.$("#id_password").val();
         facility = facility || this.facility || this.$("#id_facility").val();
         if (!username) {
-            this.$("#id_username").parent().addClass("has-error");
+            this.$("#id_username-container").addClass("has-error");
         } else if (!password && (!this.model.get("simplified_login") || this.admin)) {
-            this.$("#id_password").parent().addClass("has-error");
+            this.$("#id_password-container").addClass("has-error");
         } else {
             this.model.login(username, password, facility, this.handle_login);
         }
@@ -91,7 +91,14 @@ window.LoginView = BaseView.extend({
             this.trigger("login_success");
         } else {
             var error_data = JSON.parse(response.responseText);
-            this.$("#id_" + error_data.error_highlight).parent().addClass("has-error");
+            var message = error_data.messages.error;
+            this.$("#id_" + error_data.error_highlight + "-container").addClass("has-error");
+            this.$("#id_" + error_data.error_highlight).popover({
+                content: message,
+                placement: "auto bottom",
+                template: '<div class="popover alert alert-danger" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+            });
+            this.$("#id_" + error_data.error_highlight).popover("show");
             if (error_data.error_highlight == "password") {
                 this.$("#id_" + error_data.error_highlight).val("");
             }
