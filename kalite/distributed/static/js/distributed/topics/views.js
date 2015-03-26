@@ -567,13 +567,15 @@ window.TopicContainerOuterView = BaseView.extend({
 
     remove_topic_views: function(number) {
         for (var i=0; i < number; i++) {
-            this.inner_views[0].model.set("active", false);
-            if (_.isFunction(this.inner_views[0].close)) {
-                this.inner_views[0].close();
-            } else {
-                this.inner_views[0].remove();
+            if (this.inner_views[0]) {
+                this.inner_views[0].model.set("active", false);
+                if (_.isFunction(this.inner_views[0].close)) {
+                    this.inner_views[0].close();
+                } else {
+                    this.inner_views[0].remove();
+                }
+                this.inner_views.shift();
             }
-            this.inner_views.shift();
         }
         if (this.state_model.get("content_displayed")) {
             number--;
