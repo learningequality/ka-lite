@@ -39,7 +39,7 @@ window.LoginModalView = BaseView.extend({
 window.LoginView = BaseView.extend({
 
     events: {
-        "click .login-btn": "login",
+        "click .login-btn": "login_click",
         "click .password-btn": "toggle_password",
         "change #id_facility": "facility_change",
         "keypress #id_username": "key_user",
@@ -66,6 +66,10 @@ window.LoginView = BaseView.extend({
             this.render_data["facilities"] = this.model.get("facilities");
         }
         this.$el.html(this.template(this.render_data));
+    },
+
+    login_click: function() {
+        this.login()
     },
 
     login: function(username, password, facility) {
