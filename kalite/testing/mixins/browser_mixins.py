@@ -383,7 +383,6 @@ class BrowserActionMixins(object):
             logout = self.browser.find_element_by_id("nav_logout")
             logout.click()
             WebDriverWait(browser, 5).until(EC.staleness_of(logout))
-            self.assertEqual(homepage_url, browser.current_url, "Logout redirects to the homepage")
             self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
 
     def browser_is_logged_in(self, expected_username=None, browser=None):
