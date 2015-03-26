@@ -57,7 +57,7 @@ TopicChannelRouter = Backbone.Router.extend({
     },
 
     set_page_title: function(title) {
-        document.title = document.title.replace(/(Learn)( |:+[^|]*)/, sprintf("$1: %s ", title));
+        document.title = document.title.replace(/(\w+)( |:[^|]*)(\|)/, sprintf("$1: %s $3", title));
     },
 
     trigger_navigation_callback: function() {
