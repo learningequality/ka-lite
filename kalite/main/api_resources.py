@@ -2,15 +2,14 @@ import json
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
-from django.utils.translation import ugettext as _
 from django.conf.urls import url
 from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 
 from kalite.distributed.api_views import get_messages_for_api_calls
-from kalite.topic_tools import get_exercise_data, get_assessment_item_cache, get_content_data
-from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
+from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
 
@@ -72,6 +71,7 @@ class ContentLogResource(ModelResource):
         }
         authorization = UserObjectsOnlyAuthorization()
 
+
 class VideoLogResource(ModelResource):
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
@@ -84,6 +84,7 @@ class VideoLogResource(ModelResource):
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
+
 
 class Exercise():
 
@@ -204,12 +205,12 @@ class AssessmentItemResource(Resource):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
 
     def obj_get(self, bundle, **kwargs):
-        id = kwargs.get("id", None)
-        assessment_item = get_assessment_item_cache().get(id, None)
+        assessment_item_id = kwargs.get("id", None)
+        assessment_item = get_assessment_item_data(bundle.request, assessment_item_id)
         if assessment_item:
             return AssessmentItem(**assessment_item)
         else:
-            raise NotFound('AssessmentItem with id %s not found' % id)
+            raise NotFound('AssessmentItem with id %s not found' % assessment_item_id)
 
     def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
@@ -253,8 +254,11 @@ class Content:
 
         # the computed values
         self.extra_fields = json.dumps(extra_fields)
-        # TODO-BLOCKER (MCGallaspy) this is inappropriate if multiple channels are active at once
-        self.source = settings.CHANNEL
+        # TODO(MCGallaspy) This is inappropriate if multiple channels are active at once,
+        # TODO(MCGallaspy) but given that there's only one active channel for 0.13 initially (khan)
+        # TODO(MCGallaspy) I guess it's okay. In a multiple available channel situation then we should
+        # TODO(MCGallaspy) probably get the source attribute from the content data itself.
+        self.source = kwargs.pop("source", settings.CHANNEL)
 
 
 class ContentResource(Resource):

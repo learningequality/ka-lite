@@ -1,5 +1,5 @@
 .sidebar-icon {
-    font-size: 10pt;
+    font-size: 0.7em;
     padding-right: 10px;
     background-color: rgba(219, 219, 219, 0.19);
     border-radius: 3px;
@@ -26,16 +26,15 @@ Nav Panel
     -webkit-transform: translateZ(0);
     background: #5AA685;
     z-index: 9999;
-    position: fixed;
-    height: 130%;
+    position: absolute;
+    height: 100%;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     top: 0;
     bottom: 0;
-    left: 0;
-    width: 220px;
+    font-size: 100%;
 }
 
-div.fade {
+div.sidebar-fade {
     position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
     left: 0%; /* makes the div span all the way across the viewing area */
     top: 0%; /* makes the div span all the way across the viewing area */
@@ -76,10 +75,6 @@ div.fade {
     margin: 3px 3px 3px 0;
 }
 
-/*.sidebar-panel a.sidebar-entry-link:hover, .back-to-parent:hover {
-    background: #8dc63f;
-}
-*/
 .sidebar-panel .active-entry {
     background-color: rgba(0, 0, 0, 0.3);
 }
@@ -98,7 +93,7 @@ div.fade {
     background: #5AA685;
     color: #fff;
     font-weight: bold;
-    font-size: 30px;
+    font-size: 1.9em;
     padding: 30px 10px;
     padding-left: 14px;
     border-color: rgba(0, 0, 0, 0.5);
@@ -108,18 +103,11 @@ div.fade {
     border-bottom-right-radius: 5px;
     cursor: pointer;
     box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
-    -webkit-transition: all 115ms ease-out;
-    -moz-transition: all 115ms ease-out;
-    -o-transition: all 115ms ease-out;
-    transition: all 115ms ease-out;
+
 }
 
 .sidebar-tab:hover {
     padding-left: 20px;
-    -webkit-transition: all 115ms ease-out;
-    -moz-transition: all 115ms ease-out;
-    -o-transition: all 115ms ease-out;
-    transition: all 115ms ease-out;
 }
 
 .sidebar-tab a {
@@ -135,19 +123,30 @@ div.fade {
     padding-top: 20px;
     padding-bottom: 20px;
     border-left: 2px solid #587448;
-    font-size: 18px;
+    font-size: 2em;
     font-weight: bold;
     color: #CCC;
 }
 
-.back-to-parent {
-    margin: 0;
-    float: left;
-    height: 60px;
-    position: relative;
-    padding-left: 20px;
-    padding-top: 21px;
-    padding-right: 14px;
+.sidebar-back {
+    height: 100%;
+    width: 2em;
+    padding-top: 100px;
+    text-align: center;
+    color: #fff;
+    background-color: #467471;
+    font-size: 1.5em;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    position: absolute;
+    z-index: 10000;
+}
+
+.sidebar-back button {
+    height: 3em;
+}
+
+.sidebar-back-hover {
+    background-color: #3D6663 !important;
 }
 
 /* Sidebar panel & entry styling */
@@ -155,10 +154,7 @@ div.fade {
     float: left;
     width: 200px;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
-    -webkit-transition: all 115ms ease-out;
-    -moz-transition: all 115ms ease-out;
-    -o-transition: all 115ms ease-out;
-    transition: all 115ms ease-out;
+
 }
 .topic-container-inner:last-child {
     width: 400px;
@@ -265,10 +261,45 @@ div.fade {
     padding-bottom: 0px;
 }
 
-
 .topic-container-inner:last-child .sidebar-entry-header > .sidebar-icon {
     height: 100%;
     margin-top: 2px;
     display:table-cell;
     vertical-align:middle;
+}
+
+@media only screen and (max-width: 720px) {
+    .sidebar-panel { 
+        font-size: 85%;
+    }
+    .topic-container-inner:last-child {
+        width: 300px;
+    }
+}
+
+@media only screen and (min-width: 720px) {
+    .sidebar-panel { 
+        font-size: 90%;
+    }
+    .topic-container-inner:last-child {
+        width: 300px;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .sidebar-panel { 
+        font-size: 100%;
+    }
+    .topic-container-inner:last-child {
+        width: 400px;
+    }
+}
+
+@media only screen and (min-width: 1300px) {
+    .sidebar-panel { 
+        font-size: 105%;
+    }
+    .topic-container-inner:last-child {
+        width: 400px;
+    }
 }

@@ -5,6 +5,8 @@ It does things like:
 * Links to documentation on how to use KA Lite
 * Prevents certain sensitive resources from being accessed (like the admin interface)
 """
+import re
+
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
@@ -14,7 +16,23 @@ from django.utils.translation import ugettext as _
 
 
 def is_static_file(path):
-    return path.startswith(settings.STATIC_URL) or path.startswith(settings.MEDIA_URL)
+
+    url_exceptions = [
+        "^/admin/*",
+        "^/api/*",
+        "^{url}/*".format(url=settings.STATIC_URL),
+        "^/data/*",
+        "^{url}/*".format(url=settings.MEDIA_URL),
+        "^/handlebars/*",
+        "^.*/_generated/*"
+    ]
+
+    for item in url_exceptions:
+        p = re.compile(item)
+        if p.match(path):
+            return True
+
+    return False
 
 class LinkUserManual:
     """Shows a message with a link to the user's manual, from the homepage."""
@@ -34,9 +52,8 @@ class ShowAdminLogin:
         if is_static_file(request.path):
             return
         if not request.is_logged_in:
-            messages.info(request, mark_safe(_("<a href='%(sign_up_url)s'>Sign up as a learner</a>, or <a href='%(log_in_url)s'>log in</a> as the site-wide admin (username=%(user_name)s, password=%(passwd)s)" % {
+            messages.info(request, mark_safe(_("<a href='%(sign_up_url)s'>Sign up as a learner</a>, or log in as the site-wide admin (username=%(user_name)s, password=%(passwd)s)" % {
                 "sign_up_url": reverse("facility_user_signup"),
-                "log_in_url": reverse("login"),
                 "user_name": settings.DEMO_ADMIN_USERNAME,
                 "passwd": settings.DEMO_ADMIN_PASSWORD,
             })))

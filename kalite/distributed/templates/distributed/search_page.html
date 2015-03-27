@@ -10,6 +10,8 @@
     </style>
 {% endblock headcss %}
 
+{% block title %}{{ title }}{% endblock title %}
+
 {% block content %}
     {% if query_error %}
         <h2 class="errorlist">{{ query_error }}</h2>

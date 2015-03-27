@@ -3,8 +3,9 @@
 {% load i18n %}
 {% load kalite_staticfiles %}
 
-{% block home_active %}active{% endblock home_active %}
-
+{% block i18n_do_not_translate %}
+    {% block home_active %}active{% endblock home_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}">
@@ -65,16 +66,16 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-6 col-sm-push-3 col-xs-8 col-xs-push-2 vertical-shadow suggested-action">
+            <div class="col-sm-4 col-sm-push-4 col-xs-8 col-xs-push-2 vertical-shadow suggested-action">
                 <a href="{% url 'learn' %}">
-                    <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
-                    <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/learning-image.png">
+                     <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
+                     <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/logo_10_enlarged_2.png">
                 </a>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12" id="homepage-p-div">
-                <p class="homepage-p">{{ channel_data.tag_line }}</p>
+            <div class="col-xs-6 col-xs-push-3" id="homepage-p-div">
+                <p class="homepage-p"><strong>{{ channel_data.tag_line }}</strong></p>
             </div>
         </div>
     </div>

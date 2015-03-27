@@ -78,7 +78,7 @@ window.StoreWrapperView = Backbone.View.extend({
         this.purchased_items.add(purchased_model);
 
         // decrement the visible number of remaining points
-        statusModel.set("newpoints", statusModel.get("newpoints") - cost);
+        statusModel.update_total_points(-cost);
 
     }
 

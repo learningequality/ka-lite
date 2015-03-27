@@ -4,7 +4,10 @@
 {% load kalite_staticfiles %}
 {% load my_filters %}
 
-{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block i18n_do_not_translate %}
+    {% block coachreports_active %}active{% endblock coachreports_active %}
+{% endblock i18n_do_not_translate %}
+
 {% block title %}{{ test_obj.title }} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}

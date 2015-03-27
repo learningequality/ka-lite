@@ -1,18 +1,7 @@
 """
 """
-import string
-
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
-from django.test import TestCase
-
 from .base import FacilityTestCase
-from ..forms import FacilityUserForm
-from ..models import Facility, FacilityUser, FacilityGroup
-from kalite.testing import KALiteTestCase
-from securesync.models import Zone, Device, DeviceMetadata, SyncedModel
+from ..models import FacilityUser
 
 class UserDeletionTestCase(FacilityTestCase):
 

@@ -6,7 +6,7 @@ import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
-from selenium.common.exceptions import TimeoutException, NoSuchElementException, ElementNotVisibleException, WebDriverException
+from selenium.common.exceptions import TimeoutException, ElementNotVisibleException, WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 
 from django.conf import settings
@@ -15,11 +15,12 @@ from django.utils import unittest
 from django.test.utils import override_settings
 from django.utils.translation import ugettext as _
 
-from fle_utils.general import isnumeric
-from kalite.facility.models import FacilityUser, Facility
+from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins, CreateFacilityMixin
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateFacilityMixin
 from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
@@ -70,11 +71,8 @@ class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase):
 
         # First, get the homepage without any automated information.
         self.browse_to(home_url) # Load page
-        self.browser_check_django_message(message_type="warning", contains="complete the setup.")
+        self.browser_check_django_message(message_type="warning", contains=["No administrator account detected", "complete the setup."], num_messages=2)
         self.assertFalse(self.browser_is_logged_in(), "Not (yet) logged in")
-
-        # Now, log in as admin
-        self.browser_login_admin()
 
 
 @unittest.skipIf(settings.DISABLE_SELF_ADMIN, "Registration not allowed when DISABLE_SELF_ADMIN set.")
@@ -95,15 +93,6 @@ class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase, Creat
 
         # Login in the same case
         self.browser_login_student(username=self.username.lower(), password=self.password)
-        self.browser_logout_user()
-
-    def test_login_mixed(self):
-        """Tests that a user can login with the uppercased version of the email address that was registered"""
-        # Register user in one case
-        self.browser_register_user(username=self.username.lower(), password=self.password)
-
-        # Login in the same case
-        self.browser_login_student(username=self.username.upper(), password=self.password)
         self.browser_logout_user()
 
     @unittest.skipIf(True, "Waiting for Dylan's fix for the Sign Up redirect")
@@ -304,7 +293,7 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
         self.assertEqual(elog.attempts_before_completion, self.nanswers, "Student should have %s attempts for completion." % self.nanswers)
 
 
-class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase):
+class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase, CreateFacilityMixin):
     """
     Submit forms with no values, make sure there are no errors.
 
@@ -314,11 +303,10 @@ class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteB
     def setUp(self):
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
+        self.facility = self.create_facility()
 
         super(MainEmptyFormSubmitCaseTest, self).setUp()
-
-    def test_login_form(self):
-        self.empty_form_test(url=self.reverse("login"), submission_element_id="id_username")
+        self.browser_login_admin(**self.admin_data)
 
     def test_add_student_form(self):
         self.empty_form_test(url=self.reverse("add_facility_student"), submission_element_id="id_username")
@@ -327,7 +315,6 @@ class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteB
         self.empty_form_test(url=self.reverse("add_facility_teacher"), submission_element_id="id_username")
 
     def test_add_group_form(self):
-        self.browser_login_admin(**self.admin_data)
         self.empty_form_test(url=self.reverse("add_group"), submission_element_id="id_name")
 
 
@@ -345,10 +332,8 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         self.student = self.create_student(username=student_username, password=student_password)
         self.browser_login_student(student_username, student_password)
         time.sleep(3)
-        self.browse_to(self.reverse("exercise_dashboard"))
+        self.browse_to(self.reverse("learn"))
         self.browser_check_django_message(message_type="error", contains="Your session has been timed out")
-        # Check if user redirects to login page after session timeout.
-        self.assertEquals(self.browser.current_url, self.reverse("login") )
 
     def test_admin_no_logout_after_interval(self):
         """Admin should not be auto-logged out"""
@@ -432,7 +417,7 @@ class PointsDisplayUpdatesCorrectlyTest(KALiteBrowserTestCase, BrowserActionMixi
         self.browse_to_random_video()
         updated_points = self.browser_get_points()
         self.assertNotEqual(updated_points, points, "Points were not updated after a backbone navigation event.")
-    
+
     @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally, fails in Travis - MCGallaspy.")
     def test_points_update_after_non_backbone_navigation(self):
         """
@@ -462,14 +447,17 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
         self.create_facility()
         self.create_teacher(username="teacher1", password="password")
         self.browser_login_user(username="teacher1", password="password")
-    
+
     def test_correct_tabs_are_displayed(self):
         """Tabs with the class admin-only should not be displayed, and tabs
         with the class teacher-only should be displayed
         """
-        admin_only_elements = WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "admin-only"))
-        )
+        try:
+            admin_only_elements = WebDriverWait(self.browser, 10).until(
+                expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "admin-only"))
+            )
+        except TimeoutException:
+            admin_only_elements = []
         teacher_only_elements = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "teacher-only"))
         )
@@ -484,7 +472,7 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
         except ElementNotVisibleException:
             # browser_activate_element could throw this, meaning nav bar is already visible
             pass
-           
+
         for el in admin_only_elements:
             self.assertFalse(el.is_displayed(), "Elements with `admin-only` class should not be displayed!")
         for el in teacher_only_elements:
@@ -506,16 +494,7 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
             ))
         except TimeoutException:
             self.fail("No alert present on page after login.")
-        try:
-            # The function called by navigation event in the single-page JS app.
-            self.browser.execute_script("channel_router.control_view.topic_node_view.content_view.show_view()")
-        except WebDriverException as e:
-            if e.msg == "view is undefined":
-                # Since we're circumventing the normal control flow of the single-page JS app, we expect
-                # this JS error, which gets passed along as a WebDriverException
-                pass 
-            else:
-                raise
+        self.browse_to(self.reverse("learn"))
         try:
             self.assertTrue(WebDriverWait(self.browser, 3).until(
                 expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
@@ -523,10 +502,11 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
         except TimeoutException:
             self.fail("Alert present on page after navigation event. Expected no alerts.")
 
+
 class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):
     """
     A regression test for issue 3000. Note the judicious use of waits and expected conditions to account for
-    various browser sizes and potential server hiccups. 
+    various browser sizes and potential server hiccups.
     """
 
     def setUp(self):
@@ -535,22 +515,28 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
         self.create_facility()
         self.create_teacher(username="teacher1", password="password")
         self.browser_login_user(username="teacher1", password="password")
+        self.browse_to(self.reverse("homepage"))
 
     def test_logout_link_visible(self):
-        self.browse_to(self.reverse("homepage"))
         nav_logout = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
         )
-        dropdown_menu = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[2]/ul/li[10]")
-        try:
-            self.browser_activate_element(elem=dropdown_menu)
-        except ElementNotVisibleException:
-            # Possible if the browser window is too small and the dropdown menu is collapsed.
-            expand_menus_button = self.browser.find_element_by_xpath("//*[@id=\"wrapper\"]/div[1]/div/div/div[1]/button")
-            self.browser_activate_element(elem=expand_menus_button)
-            # Wait for the animation to finish
-            WebDriverWait(self.browser, 3).until(
-                expected_conditions.visibility_of(dropdown_menu)
-            )
-            self.browser_activate_element(elem=dropdown_menu)
+        self.assertFalse(nav_logout.is_displayed(), "The dropdown menu logout item must not be displayed yet!")
+        # Activate the dropdown menu and see if the logout link is visible.
+        dropdown_menu = self.browser.find_element_by_id("username")
+        WebDriverWait(self.browser, 3).until(
+            expected_conditions.visibility_of(dropdown_menu)
+        )
+        self.browser_activate_element(elem=dropdown_menu)
         self.assertTrue(nav_logout.is_displayed(), "The dropdown menu logout item is not displayed!")
+
+    def test_logout_link_visible_small_browser_size(self):
+        # Check if browser size is too small and menu is collapsed, for mobile.
+        self.browser.set_window_size(640, 480)
+
+        expand_menus_button = self.browser.find_element_by_css_selector("button.navbar-toggle")
+        WebDriverWait(self.browser, 3).until(
+            expected_conditions.visibility_of(expand_menus_button)
+        )
+        self.browser_activate_element(elem=expand_menus_button)
+        self.test_logout_link_visible()

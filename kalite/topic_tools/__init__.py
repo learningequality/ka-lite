@@ -18,14 +18,12 @@ import os
 import re
 import json
 import copy
-from functools import partial
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
-from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from fle_utils.general import softload_json
+from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
 
 TOPICS_FILEPATHS = {
@@ -36,6 +34,7 @@ ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessment
 CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
+
 
 if not os.path.exists(settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
@@ -138,16 +137,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
         for exercise in EXERCISES[language].values():
             exercise_file = exercise["name"] + ".html"
             exercise_template = exercise_file
-
-            # Get the language codes for exercise templates that exist
-            available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
-
-            # Return the best available exercise template
-            exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
-            if exercise_lang == "en":
-                exercise_template = exercise_file
-            else:
-                exercise_template = os.path.join(exercise_lang, exercise_file)
+            exercise_lang = "en"
 
             if exercise.get("uses_assessment_items", False):
                 available = False
@@ -160,6 +150,18 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 exercise["all_assessment_items"] = items
             else:
                 available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
+
+                # Get the language codes for exercise templates that exist
+                available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
+
+                # Return the best available exercise template
+                exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
+
+            if exercise_lang == "en":
+                exercise_template = exercise_file
+            else:
+                exercise_template = os.path.join(exercise_lang, exercise_file)
+
 
             with i18n.translate_block(exercise_lang):
                 exercise["available"] = available
@@ -237,7 +239,7 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
     if CONTENT.get(language) is None:
         CONTENT[language] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
         annotate = True
-    
+
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             content = softload_json(CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
@@ -491,9 +493,40 @@ def get_assessment_item_data(request, assessment_item_id=None):
     if not assessment_item:
         return None
 
-    # TODO (rtibbles): Enable internationalization for the assessment_items.
+    # Enable internationalization for the assessment_items.
+    try:
+
+        item_data = json.loads(assessment_item['item_data'], object_hook=json_ascii_decoder)
+        item_data = smart_translate_item_data(item_data)
+        assessment_item['item_data'] = json.dumps(item_data)
+
+    except KeyError as e:
+        logging.error("Assessment item did not have the expected key %s. Assessment item: \n %s" % (e, assessment_item))
 
     return assessment_item
+
+
+def smart_translate_item_data(item_data):
+    """Auto translate the content fields of a given assessment item data.
+
+    An assessment item doesn't have the same fields; they change
+    depending on the question. Instead of manually specifying the
+    fields to translate, this function loops over all fields of
+    item_data and translates only the content field.
+
+    """
+    if 'content' in item_data:
+        item_data['content'] = _(item_data['content']) if item_data['content'] else ""
+
+    for field, field_data in item_data.iteritems():
+        if isinstance(field_data, dict):
+            item_data[field] = smart_translate_item_data(field_data)
+        elif isinstance(field_data, list):
+            item_data[field] = map(smart_translate_item_data, field_data)
+
+    return item_data
+
+
 
 def get_content_data(request, content_id=None):
 
@@ -515,7 +548,6 @@ def get_content_data(request, content_id=None):
     return content
 
 
-
 def video_dict_by_video_id(flat_topic_tree=None):
     # TODO (aron): Add i18n by varying the language of the topic tree here
     topictree = flat_topic_tree if flat_topic_tree else get_flat_topic_tree()
@@ -532,6 +564,7 @@ def video_dict_by_video_id(flat_topic_tree=None):
             video_title_dict[video_key] = video_node
 
     return video_title_dict
+
 
 def convert_leaf_url_to_id(leaf_url):
     """Strip off the /e/ or /v/ and trailing slash from a leaf url and leave only the ID"""

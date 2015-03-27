@@ -1,2 +1,2 @@
-from fle_utils.importing import import_all_child_modules
-import_all_child_modules()
+from api_tests import *
+from coachreport_tests import *

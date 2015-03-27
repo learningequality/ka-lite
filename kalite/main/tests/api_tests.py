@@ -3,7 +3,8 @@
 from ..models import VideoLog
 from kalite import i18n
 from kalite.facility.models import Facility, FacilityUser
-from kalite.testing import KALiteClient, KALiteTestCase
+from kalite.testing.base import KALiteTestCase
+from kalite.testing.client import KALiteClient
 
 
 class TestSaveVideoLog(KALiteTestCase):

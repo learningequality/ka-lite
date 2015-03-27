@@ -4,15 +4,15 @@ import os
 
 from django.conf import settings
 from django.core.management import call_command
-from django.db import DatabaseError
 from django.utils import unittest
 
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 
 
 class FixtureTestCases(KALiteTestCase):
     """ """
 
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, 'usually times out on travis')
     def test_loaddata(self):
         cur_dir = os.path.split(__file__)[0]
 

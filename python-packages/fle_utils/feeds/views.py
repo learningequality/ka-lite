@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import Subscription
-from fle_utils.django_utils import get_request_ip
+from fle_utils.django_utils.functions import get_request_ip
 
 
 @csrf_exempt # because we want the front page to cache properly

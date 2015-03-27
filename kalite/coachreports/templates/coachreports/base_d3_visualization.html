@@ -22,8 +22,10 @@
 {% load my_filters %}
 {% load staticfiles %}
 
-{% block teacher_active %}active{% endblock teacher_active %}
-{% block admin_active %}active{% endblock admin_active %}
+{% block i18n_do_not_translate %}
+    {% block teacher_active %}active{% endblock teacher_active %}
+    {% block admin_active %}active{% endblock admin_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %} {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}" />
@@ -39,9 +41,6 @@
         .google-chart {
             width: 900px;
             height: 450px;
-        }
-        .subtitle {
-            float: left;
         }
         #summary {
             border: 1px black solid;

@@ -5,14 +5,18 @@ logging = settings.LOG
 
 from datetime import datetime, timedelta
 from django.utils import unittest
-from selenium.webdriver.common.by import By 
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from kalite.main.models import AttemptLog
 from kalite.testing.base import KALiteBrowserTestCase, KALiteTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, CreatePlaylistProgressMixin, CreateZoneMixin, \
-    FacilityMixins, StudentProgressMixin, StoreMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.playlist_mixins import CreatePlaylistProgressMixin
+from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 
 
 class APIDropdownTests(FacilityMixins,
@@ -164,7 +168,7 @@ class CoachNavigationTest(FacilityMixins,
         #Student-Testing is only the feature of Nalanda.
         #So tests related coachreports would be available with nalanda only.
         #Reverse of test_view with argument won't be available unless Nalanda.
-        if "Nalanda" in settings.CONFIG_PACKAGE:
+        if "nalanda" in settings.CONFIG_PACKAGE:
             self.urls.append(self.reverse('test_view'))
 
         self.browser_login_admin(**self.admin_data)
@@ -272,7 +276,7 @@ class CoachNavigationTest(FacilityMixins,
         self.assertEqual(expected, result)
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class TestReportTests(FacilityMixins,
                       StudentProgressMixin,
                       BrowserActionMixins,
@@ -367,7 +371,7 @@ class TestReportTests(FacilityMixins,
         self.assertEqual(overall[0:4], '100%')
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistProgressTest(FacilityMixins,
                            CreateAdminMixin,
                            CreatePlaylistProgressMixin,
@@ -399,9 +403,9 @@ class PlaylistProgressTest(FacilityMixins,
         self.assertTrue(playlist_details, "Didn't load details")
 
 
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class SpendingReportTests(FacilityMixins,
                           CreateAdminMixin,
-                          StoreMixins,
                           BrowserActionMixins,
                           KALiteBrowserTestCase):
 

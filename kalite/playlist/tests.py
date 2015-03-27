@@ -1,15 +1,16 @@
 import json
-from tastypie.exceptions import NotFound, Unauthorized
 from django.utils import unittest
 from django.conf import settings
 
 from django.core.urlresolvers import reverse
 
 from .models import Playlist
-from kalite.testing.mixins import CreateAdminMixin, CreateTeacherMixin, CreateStudentMixin, FacilityMixins
-from kalite.testing.base import KALiteTestCase, KALiteClientTestCase, KALiteClient
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateTeacherMixin, CreateStudentMixin
+from kalite.testing.base import KALiteTestCase
+from kalite.testing.client import KALiteClient
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BaseTest(FacilityMixins, KALiteTestCase):
 
     def setUp(self):
@@ -25,7 +26,7 @@ class BaseTest(FacilityMixins, KALiteTestCase):
 
         self.client = KALiteClient()
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistTests(FacilityMixins, KALiteTestCase):
     # fixtures = ['single_student_testdata.json']
 
@@ -67,7 +68,7 @@ class PlaylistTests(FacilityMixins, KALiteTestCase):
         self.assertEqual(entries[2].reload().sort_order, 3)
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistAPITests(CreateAdminMixin, BaseTest):
 
     test_playlist_id = 'g4_u401_p1'

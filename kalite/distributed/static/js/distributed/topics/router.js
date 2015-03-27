@@ -13,7 +13,13 @@ ChannelRouter = Backbone.Router.extend({
     },
 
     navigate_default_channel: function() {
-        this.navigate(this.default_channel + "/", {trigger: true, replace: true});
+        var addParam;
+        if (window.location.toString().split("?").length > 1) {
+            addParam = "?" + window.location.toString().split("?")[1];
+        } else {
+            addParam = "";
+        }
+        this.navigate(this.default_channel + "/" + addParam, {trigger: true, replace: true});
     },
 
     navigate_channel: function(channel, splat) {
@@ -41,7 +47,7 @@ ChannelRouter = Backbone.Router.extend({
         var current_url = Backbone.history.getFragment();
         var fragments = current_url.split("/").slice(0,-1);
         if (fragments.length > 0) {
-            this.navigate(fragments.slice(0,-1).join("/") + "/");
+            this.navigate(fragments.slice(0,-1).join("/") + "/", {trigger: true});
         }
     },
 

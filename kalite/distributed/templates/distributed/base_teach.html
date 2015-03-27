@@ -1,11 +1,13 @@
-{% extends base_template %}
+{% extends "distributed/base.html" %}
 
 {% load staticfiles %}
 {% load i18n %}
 {% load my_filters %}
 
-{% block teach_active_teachers %}{% trans "active" %}{% endblock teach_active_teachers %}
-{% block teach_active_admins %}{% trans "active" %}{% endblock teach_active_admins %}
+{% block i18n_do_not_translate %}
+    {% block teach_active_teachers %}active{% endblock teach_active_teachers %}
+    {% block teach_active_admins %}active{% endblock teach_active_admins %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{block.super}}{% endblock headcss %}
 
@@ -13,18 +15,34 @@
 
 <!-- Prevents nav bar from showing up for students/guests on learn tab -->
 {% if request.is_admin %}
-	<div class="teach-nav">
-        <ul>
-            <li class="reports {% block reports_active %}{% endblock reports_active %}"><a href="{% url 'tabular_view' %}" title="{% trans 'Track the progress of your learners' %}"><div class=""><span class="icon icon-uniE605"></span><br/>{% trans "Reports" %}</div></a></li>
-            {% if is_config_package_nalanda %}
-                <li class="playlist {% block playlist_active %}{% endblock playlist_active %}"><a class="link-width" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to learner groups' %}"><div><span class="icon icon-uniE604"></span><br/>{% trans "Playlists" %}</div></a></li>
-                <li class="exams {% block exams-active %}{% endblock exams-active %}"><a href="{% url 'test_list' %}" title="{% trans 'See list of available tests.' %}"><div><span class="icon icon-uniE602"></span><br/>{% trans "Tests" %}</div></a></li>
-                <li class="teacher-only units {% block current_unit_active %}{% endblock current_unit_active %}"><a href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div>{% trans "Units" %}</div></a></li>
-            {% endif %}
-            <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}"><a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}"><div><span class="icon icon-uniE601"></span><br/>{% trans "Learn" %}</div></a></li>
-        </ul>
-    </div>
+{% if is_config_package_nalanda %}
+<div class="teach-nav">
+    <ul>
+        <div class="mobile-nav">
+            <li class="reports {% block reports_active %}{% endblock reports_active %}">
+                <a href="{% url 'tabular_view' %}" title="{% trans 'Track the progress of your learners' %}"><div class=""><span class="icon icon-uniE605"></span><br/>{% trans "Reports" %}</div></a>
+            </li>
+            <li class="playlist {% block playlist_active %}{% endblock playlist_active %}">
+                <a class="link-width" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to learner groups' %}"><div><span class="icon icon-uniE604"></span><br/>{% trans "Playlists" %}</div></a>
+            </li>
+        </div>
+        <div class="mobile-nav">
+            <li class="exams {% block exams-active %}{% endblock exams-active %}">
+                <a href="{% url 'test_list' %}" title="{% trans 'See list of available tests.' %}"><div><span class="icon icon-uniE602"></span><br/>{% trans "Tests" %}</div></a>
+            </li>
+            <li class="teacher-only units {% block current_unit_active %}{% endblock current_unit_active %}">
+                <a href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div style="position: relative; top: 56px;">{% trans "Units" %}</div></a>
+            </li>
+        </div>  
+        <!-- Jessica: Commenting out for now to put learn back in 1st level navbar
+        <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}">
+            <a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}"><div><span class="icon icon-uniE601"></span><br/>{% trans "Learn" %}</div></a>
+        </li> -->
+    </ul>
+</div>
 {% endif %}
+{% endif %}
+
 {% endblock subnavbar %}
 
 

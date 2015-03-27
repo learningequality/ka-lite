@@ -1,11 +1,13 @@
-{% extends "distributed/base_teach.html" %}
+{% extends "distributed/base.html" %}
 {% load my_filters i18n i18n_filters staticfiles %}
 
 {% block title %}{% trans "Learn" %}{% endblock title %}
 
-{% block learn_active %}active{% endblock learn_active %}
-{% block learn_subnav_active %}learn-active active-tab active-nav{% endblock learn_subnav_active %}
-
+{% block i18n_do_not_translate %}
+    {% block learn_active %}active{% endblock learn_active %}
+    {% block learn_subnav_active %}active{% endblock learn_subnav_active %}
+    {% block teach_active_teachers %}{% endblock teach_active_teachers %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
 
@@ -135,8 +137,8 @@
 
 {% block content %}
     {{ block.super }}
-    <div id="sidebar-container">
-    </div>
     <div id="content-area">
+    </div>
+    <div id="sidebar-container">
     </div>
 {% endblock content %}

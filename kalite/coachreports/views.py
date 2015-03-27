@@ -1,4 +1,3 @@
-import re
 from annoying.decorators import render_to
 from ast import literal_eval
 from collections_local_copy import OrderedDict
@@ -6,7 +5,7 @@ from math import sqrt
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
-from django.contrib.messages import ERROR
+from django.contrib.messages import WARNING
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -16,13 +15,15 @@ from django.utils.translation import ungettext, ugettext_lazy, ugettext as _
 from .api_views import get_data_form, stats_dict
 from django.shortcuts import get_object_or_404
 
+from kalite.facility import get_accessible_objects_from_logged_in_user
+from kalite.control_panel import api_resources as control_panel_api_resources
 from kalite.distributed.api_views import compute_total_points
 from kalite.facility.decorators import facility_required
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.i18n import lcode_to_django_lang
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.playlist.models import VanillaPlaylist as Playlist
-from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from kalite.shared.decorators.auth import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
@@ -30,55 +31,6 @@ from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowle
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
-
-
-def get_accessible_objects_from_logged_in_user(request, facility):
-    """Given a request, get all the facility/group/user objects relevant to the request,
-    subject to the permissions of the user type.
-
-    Make sure the returned `facilities` object is always a Facility queryset or an empty list.
-    """
-
-    # Options to select.  Note that this depends on the user.
-    facilities = []
-    if request.user.is_superuser:
-        facilities = Facility.objects.all()
-        # Groups is now a list of objects with a key for facility id, and a key
-        # for the list of groups at that facility.
-        # TODO: Make this more efficient.
-        groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
-
-    elif "facility_user" in request.session:
-        user = request.session["facility_user"]
-        if user.is_teacher:
-            facilities = Facility.objects.all()
-            groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
-        else:
-            # Students can only access their group
-            if facility and isinstance(facility, Facility):
-                facilities = Facility.objects.filter(id=facility.id)
-            if not user.group:
-                groups = []
-            else:
-                groups = [{"facility": user.facility.id,
-                           "groups": FacilityGroup.objects.filter(id=request.session["facility_user"].group)}]
-    elif facility:
-        facilities = Facility.objects.filter(id=facility.id)
-        groups = [{"facility": facility.id, "groups": FacilityGroup.objects.filter(facility=facility)}]
-    else:
-        # defaults to all facilities and groups
-        facilities = Facility.objects.all()
-        groups = [{"facility": f.id, "groups": FacilityGroup.objects.filter(facility=f)} for f in facilities]
-
-    ungrouped_available = False
-    for f in facilities:
-        # Check if there is at least one facility with ungrouped students.
-        ungrouped_available = f.has_ungrouped_students
-        if ungrouped_available:
-            break
-
-    return (groups, facilities, ungrouped_available)
-
 
 def plotting_metadata_context(request, facility=None, topic_path=[], *args, **kwargs):
     """Basic context for any plot: get the data form, a dictionary of stat definitions,
@@ -225,17 +177,16 @@ def tabular_view(request, report_type="exercise"):
     # Exactly one of topic_id or playlist_id should be present
     if not ((topic_id or playlist_id) and not (topic_id and playlist_id)):
         if playlists:
-            messages.add_message(request, ERROR, _("Please select a playlist."))
+            messages.add_message(request, WARNING, _("Please select a playlist."))
         elif topics:
-            messages.add_message(request, ERROR, _("Please select a topic."))
+            messages.add_message(request, WARNING, _("Please select a topic."))
         return context
 
     playlist = (filter(lambda p: p.id == playlist_id, Playlist.all()) or [None])[0]
 
     if group_id:
         # Narrow by group
-        from control_panel.api_resources import UNGROUPED_KEY
-        if group_id == UNGROUPED_KEY:
+        if group_id == control_panel_api_resources.UNGROUPED_KEY:
             users = FacilityUser.objects.filter(group__isnull=True, is_teacher=False)
             if facility:
                 # filter only those ungrouped students for the facility
@@ -344,22 +295,22 @@ def tabular_view(request, report_type="exercise"):
         # 1. check group facility groups
         if len(groups) > 0 and not groups[0]['groups']:
             # 1. No groups available (for facility) and "no students" returned.
-            messages.add_message(request, ERROR,
+            messages.add_message(request, WARNING,
                                  _("No learner accounts have been created for selected facility/group."))
         elif topic_id and playlist_id:
             # 2. Both topic and playlist are selected.
-            messages.add_message(request, ERROR, _("Please select either a topic or a playlist above, but not both."))
+            messages.add_message(request, WARNING, _("Please select either a topic or a playlist above, but not both."))
         elif not topic_id and not playlist_id:
             # 3. Group was selected, but data not queried because a topic or playlist was not selected.
             if playlists:
                 # 4. No playlist was selected.
-                messages.add_message(request, ERROR, _("Please select a playlist."))
+                messages.add_message(request, WARNING, _("Please select a playlist."))
             elif topics:
                 # 5. No topic was selected.
-                messages.add_message(request, ERROR, _("Please select a topic."))
+                messages.add_message(request, WARNING, _("Please select a topic."))
         else:
             # 6. Everything specified, but no users fit the query.
-            messages.add_message(request, ERROR, _("No learner accounts in this group have been created."))
+            messages.add_message(request, WARNING, _("No learner accounts in this group have been created."))
     # End: Validate results by showing user messages.
 
     log_coach_report_view(request)
@@ -378,11 +329,10 @@ def test_view(request):
     # Get the TestLog objects generated by this group of students
     # TODO(cpauya): what about queryset for ungrouped students?
     test_logs = None
-    from control_panel.api_resources import UNGROUPED_KEY
     if group_id:
         test_logs = TestLog.objects.filter(user__group=group_id)
         # Narrow all by ungroup facility user
-        if group_id == UNGROUPED_KEY:
+        if group_id == control_panel_api_resources.UNGROUPED_KEY:
             test_logs = TestLog.objects.filter(user__group__isnull=True)
             if facility:
                 TestLog.objects.filter(user__facility=facility, user__group__isnull=True)
@@ -501,11 +451,10 @@ def test_detail_view(request, test_id):
 
     # get all of the test logs for this specific test object and generated by these specific users
     if group_id:
-        from control_panel.api_resources import UNGROUPED_KEY
         test_logs = TestLog.objects.filter(user__group=group_id, test=test_id)
 
         # Narrow all by ungroup facility user
-        if group_id == UNGROUPED_KEY:
+        if group_id == control_panel_api_resources.UNGROUPED_KEY:
             if facility:
                 test_logs = TestLog.objects.filter(user__group__isnull=True)
             else:
@@ -600,16 +549,15 @@ def test_detail_view(request, test_id):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/spending_report_view.html")
-def spending_report_view(request, facility):
+def spending_report_view(request):
     """View total points remaining for students"""
-    group_id = request.GET.get("group", "")
+    facility, group_id, context = coach_nav_context(request, "spending")
     users = get_user_queryset(request, facility, group_id)
     user_points = {}
     for user in users:
         user_points[user] = compute_total_points(user)
-    context = plotting_metadata_context(request, facility=facility)
+    context.update(plotting_metadata_context(request, facility=facility))
     context.update({
         "user_points": user_points,
     })
@@ -645,13 +593,12 @@ def get_user_queryset(request, facility, group_id):
     """Return set of users appropriate to the facility and group"""
     student_ordering = ["last_name", "first_name", "username"]
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
-    from control_panel.api_resources import UNGROUPED_KEY
     if group_id:
         # Narrow by group
         users = FacilityUser.objects.filter(
             group=group_id, is_teacher=False).order_by(*student_ordering)
         # Narrow all by ungroup user
-        if group_id == UNGROUPED_KEY:
+        if group_id == control_panel_api_resources.UNGROUPED_KEY:
             users = FacilityUser.objects.filter(group__isnull=True, is_teacher=False).order_by(*student_ordering)
             if facility:
                 users = FacilityUser.objects.filter(facility=facility, group__isnull=True,

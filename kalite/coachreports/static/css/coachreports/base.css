@@ -1,20 +1,40 @@
-#coachreport-navigation-container {
-    padding-bottom: 30px;
-    margin-bottom: 15px;
-}
-
 .container-margin-bottom {
     margin-bottom: 50px;
 }
 
 .coach-reports-row {
     border-bottom: 3px solid #5AA685;
-    margin-bottom: 20px;
+    padding: 20px 0;
+    margin-bottom: 3%;
 }
 
-select.reports-select {
-    width: 300px !important;
-}
 #display-topic-report {
     margin-top: 22px;
+}
+
+#display-coach-report {
+    margin-top: 20px;
+    margin-left: 16px;
+}
+
+#display-topic-report {
+    margin-top: 35px;
+    margin-left: 16px;
+}
+
+@media (min-width: 768px) {
+    #display-coach-report {
+        margin-top: 35px;
+        margin-left: 10px;
+    }
+
+    #display-topic-report {
+        margin-top: 35px;
+        margin-left: 0px;
+    }
+}
+
+.subtitle {
+    font-size: 1.15em;
+    font-weight: bold;
 }

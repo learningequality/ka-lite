@@ -1,3 +1,4 @@
+import json
 import time
 import re
 
@@ -7,16 +8,15 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from django.utils.translation import ugettext as _
-
 from ..browser import browse_to, setup_browser, wait_for_page_change
-
-from kalite.facility.models import Facility
+from kalite.facility.models import Facility, FacilityUser
 from kalite.topic_tools import get_content_cache
 
 from django.contrib.auth.models import User
 
 from random import choice
+
+FIND_ELEMENT_TIMEOUT = 3
 
 class BrowserActionMixins(object):
 
@@ -67,7 +67,7 @@ class BrowserActionMixins(object):
             max_retries = int(self.max_wait_time/float(wait_time))
         return wait_for_page_change(self.browser, source_url, wait_time=wait_time, max_retries=max_retries)
 
-    def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None, browser=None):
+    def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None, browser=None, css_class=None):
         """
         Given the identifier to a page element, make it active.
         Currently done by clicking TODO(bcipolli): this won't work for buttons,
@@ -76,11 +76,13 @@ class BrowserActionMixins(object):
         browser = browser or self.browser
         if not elem:
             if id:
-                elem = browser.find_element_by_id(id)
+                elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(EC.presence_of_element_located((By.ID, id)))
             elif name:
-                elem = browser.find_element_by_name(name)
+                elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(EC.presence_of_element_located((By.NAME, name)))
             elif tag_name:
-                elem = browser.find_element_by_tag_name(tag_name)
+                elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(EC.presence_of_element_located((By.TAG_NAME, tag_name)))
+            elif css_class:
+                elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(EC.presence_of_element_located((By.CLASS_NAME, css_class)))
         elem.click()
 
     def browser_send_keys(self, keys, browser=None):
@@ -95,6 +97,7 @@ class BrowserActionMixins(object):
         WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
 
         # Get messages (and limit by type)
+        WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
         messages = self.browser.find_elements_by_class_name("alert")
 
         # Check that we got as many as expected
@@ -103,11 +106,19 @@ class BrowserActionMixins(object):
                   (num_messages, message_type if message_type else "(any)")
             self.assertEqual(num_messages, len(messages), msg)
 
-        for message in messages:
-            if contains is not None:
-                self.assertIn(contains, message.text, "Make sure message contains '%s'" % contains)
-            if exact is not None:
-                self.assertEqual(exact, message.text, "Make sure message = '%s'" % exact)
+        for i, message in enumerate(messages):
+            if type(contains) == list:
+                contain = contains[i]
+            else:
+                contain = contains
+            if type(exact) == list:
+                exac = exact[i]
+            else:
+                exac = exact
+            if contain is not None:
+                self.assertIn(contain, message.text, "Make sure message contains '%s'" % contain)
+            if exac is not None:
+                self.assertEqual(exac, message.text, "Make sure message = '%s'" % exac)
 
     def browser_wait_for_ajax_calls_to_finish(self):
             num_ajax_calls = 1 # to ensure at least one loop
@@ -182,7 +193,7 @@ class BrowserActionMixins(object):
                 pass
             except:
                 break
-    
+
     def browser_wait_for_js_condition(self, condition, max_wait_time=4, step_time=0.25):
         """
         Waits for the script in condition to return True.
@@ -203,7 +214,7 @@ class BrowserActionMixins(object):
                 # possible if the object you want to exist is an attribute of an object
                 # that doesn't yet exist, e.g. does_not_exist_yet.i_want_to_test_this_one
                 pass
-    
+
     def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=4, step_time=0.25):
         exists_condition = "typeof(%s) != 'undefined'" % obj_name
         self.browser_wait_for_js_condition(exists_condition, max_wait_time, step_time)
@@ -308,30 +319,19 @@ class BrowserActionMixins(object):
         self.browser.find_element_by_id("id_username").submit()
 
     def browser_login_user(self, username, password, facility_name=None, browser=None):
-        """
-        Tests that an existing admin user can log in.
-        """
-        browser = browser or self.browser
+        try:
+            facility = Facility.objects.get(name=facility_name)
+        except Facility.DoesNotExist:
+            facility = Facility.objects.all()[0]
+        data = json.dumps({
+            "username": username,
+            "password": password,
+            "facility": facility.id,
+        })
+        url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
+        self.browser.execute_script('window.FLAG=false;$.ajax({type: "POST", url: "%s", data: \'%s\', contentType: "application/json", success: function(){window.FLAG=true}})' % (url, data))
+        self.browser_wait_for_js_condition("window.FLAG")
 
-        login_url = self.reverse("login")
-        self.browse_to(login_url, browser=browser)  # Load page
-
-        # Focus should be on username, password and submit
-        #   should be accessible through keyboard only.
-        if facility_name and browser.find_element_by_id("id_facility").is_displayed():
-            self.browser_activate_element(id="id_facility")
-            self.browser_send_keys(facility_name)
-
-        username_field = browser.find_element_by_id("id_username")
-        username_field.clear()  # clear any data
-        username_field.click()  # explicitly set the focus, to start
-        self.browser_form_fill(username, browser=browser)
-        self.browser_form_fill(password, browser=browser)
-        username_field.submit()
-        # self.browser_send_keys(Keys.RETURN)
-
-        # wait for 5 seconds for the page to refresh
-        WebDriverWait(browser, 5).until(EC.staleness_of(username_field))
 
     def browser_login_admin(self, username=None, password=None, browser=None):
         self.browser_login_user(username=username, password=password, browser=browser)
@@ -356,48 +356,21 @@ class BrowserActionMixins(object):
         )
 
     def browser_logout_user(self, browser=None):
-        browser = browser or self.browser
-        if self.browser_is_logged_in(browser=browser):
-            # Since logout redirects to the homepage, browse_to will fail (with no good way to avoid).
-            #   so be smarter in that case.
-            homepage_url = self.reverse("homepage")
-            logout_url = self.reverse("logout")
-            if homepage_url == browser.current_url:
-                browser.get(logout_url)
-            else:
-                self.browse_to(logout_url, browser=browser)
-            self.assertEqual(homepage_url, browser.current_url, "Logout redirects to the homepage")
-            self.assertFalse(self.browser_is_logged_in(), "Make sure that user is no longer logged in.")
+        url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
+        self.browser.execute_script('window.FLAG=false;$.ajax({type: "GET", url: "%s", success: function(){window.FLAG=true}})' % url)
+        self.browser_wait_for_js_condition("window.FLAG")
+
 
     def browser_is_logged_in(self, expected_username=None, browser=None):
-        # Two ways to be logged in:
-        # 1. Student: #logged-in-name is username
-        # 2. Admin: #logout contains username
         browser = browser or self.browser
-        try:
-            logged_in_name = browser.find_element_by_css_selector("#username").text.strip()
-        except NoSuchElementException:
-            # We're on an unrecognized webpage
-            return False
-
-        # Just checking to see if ANYBODY is logged in
-        if not expected_username:
-            return logged_in_name != ""
-        # Checking to see if Django user, or user with missing names is logged in
-        #   (then username displays)
-        elif logged_in_name.lower() == expected_username.lower():
-            return True
-        # Checking to see if a FacilityUser with a filled-in-name is logged in
-        else:
-            user_obj = FacilityUser.objects.filter(username=expected_username)
-            if user_obj.count() != 0:  # couldn't find the user, they can't be logged in
-                return logged_in_name.lower() == user_obj[0].get_name().lower()
-
-            user_obj = FacilityUser.objects.filter(username__iexact=expected_username)
-            if user_obj.count() != 0:  # couldn't find the user, they can't be logged in
-                return logged_in_name.lower() == user_obj[0].get_name().lower()
-            else:
-                assert logged_in_name == "", "Impossible for anybody to be logged in."
+        # Ensure that we're on the site, mainly so that "$" is imported
+        browser.get(self.reverse("homepage"))
+        url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
+        request_script = "window.FLAG=false;$.ajax({url:'%s', type:'GET', success: function(data){window.FLAG=true; window.DATA=data;}})" % url
+        browser.execute_script(request_script)
+        self.browser_wait_for_js_condition("window.FLAG")
+        data = browser.execute_script("return window.DATA")
+        return data["is_logged_in"]
 
 
     def fill_form(self, input_id_dict):
@@ -414,7 +387,7 @@ class BrowserActionMixins(object):
     @classmethod
     def _admin_exists(cls):
         return User.objects.filter(is_superuser=True).exists()
-    
+
     @classmethod
     def _facility_exists(cls):
         return Facility.objects.all().exists()
@@ -428,12 +401,12 @@ class BrowserActionMixins(object):
             # available = (len(video['languages']) > 0)
             available = True
         video_url = video['path']
-        self.browse_to(self.reverse("learn") + video_url) 
+        self.browse_to(self.reverse("learn") + video_url)
 
     def browser_get_points(self):
         # The following commented line of code returns an element with blank text,
         # possibly due to a race condition, hence querying the element with js which "just works"
-        #points_elem = self.browser.find_element_by_id("points")    
+        #points_elem = self.browser.find_element_by_id("points")
         # Ensure the element has been populated by triggering an event
         self.browser_wait_for_js_object_exists("window.statusModel");
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")

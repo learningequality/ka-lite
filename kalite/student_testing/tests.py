@@ -10,22 +10,23 @@ from kalite.playlist import UNITS
 from kalite.student_testing.models import TestLog
 from kalite.testing.client import KALiteClient
 from kalite.testing.base import KALiteClientTestCase, KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateTeacherMixin, CreateStudentMixin
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateTeacherMixin, CreateStudentMixin
 
 from .utils import get_exam_mode_on, set_exam_mode_on, \
     get_current_unit_settings_value, set_current_unit_settings_value
 
 logging = settings.LOG
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BaseTest(FacilityMixins, KALiteClientTestCase):
 
     client_class = KALiteClient
     exam_id = 'g4_u401_t1'  # needs to be the first exam in the test list UI
-    login_url = reverse('login')
-    logout_url = reverse('logout')
-    test_list_url = reverse('test_list') if "Nalanda" in settings.CONFIG_PACKAGE else  ""
-    exam_page_url = reverse('test', args=[exam_id]) if "Nalanda" in settings.CONFIG_PACKAGE else  ""
+    login_url = reverse('homepage')
+    logout_url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'logout/'
+    test_list_url = reverse('test_list') if "nalanda" in settings.CONFIG_PACKAGE else  ""
+    exam_page_url = reverse('test', args=[exam_id]) if "nalanda" in settings.CONFIG_PACKAGE else  ""
     put_url = '/test/api/test/%s/' % exam_id
 
     def setUp(self):
@@ -73,7 +74,7 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
         return response
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class CoreTests(BaseTest):
 
     def setUp(self):
@@ -111,7 +112,7 @@ class CoreTests(BaseTest):
         self.get_page_redirects_to_login_url(self.test_list_url)
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
 
     CSS_TEST_ROW_BUTTON = '.test-row-button'
@@ -262,15 +263,15 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         self.assertEqual(get_exam_mode_on(), self.exam_id)
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
 
     def setUp(self):
 
         super(CurrentUnitTests, self).setUp()
 
-        self.login_url = reverse('login')
-        self.logout_url = reverse('logout')
+        self.login_url = reverse('homepage')
+        self.logout_url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'logout/'
         self.current_unit_url = reverse('current_unit')
 
         self.facility = self.create_facility()
@@ -330,7 +331,7 @@ class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
         self._check_url(response, self.login_url)
 
 
-@unittest.skipUnless("Nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
+@unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrowserTestCase):
 
     CSS_CURRENT_UNIT_NEXT_BUTTON = '.current-unit-button.next'
@@ -346,8 +347,8 @@ class CurrentUnitBrowserTests(CurrentUnitTests, BrowserActionMixins, KALiteBrows
 
         # We're a browser test now, so make sure we have the full path by reversing using the
         # KALiteBrowserTestCase.reverse method
-        self.login_url = self.reverse('login')
-        self.logout_url = self.reverse('logout')
+        self.login_url = self.reverse('homepage')
+        self.logout_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'logout/'
         self.current_unit_url = self.reverse('current_unit')
         set_current_unit_settings_value(self.facility.id, 101)
 

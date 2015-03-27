@@ -3,11 +3,11 @@ current_dir=`dirname "${BASH_SOURCE[0]}"`
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )/scripts"
 pyexec=`"$SCRIPT_DIR"/python.sh`
 
-"$pyexec" "$current_dir/kalite/manage.py" setup
+"$pyexec" "$current_dir/bin/kalite" manage setup
 
-# TODO: make a check to see if we're running the rpi
-we_are_rpi="False"
-if [[ $we_are_rpi = "True" ]]; then
+# Raspberry Pi
+# Check if we are on a Linux running on armv6l/armv7l
+if uname | grep -q Linux && uname -m | grep -q armv ; then
     while true
     do
         echo

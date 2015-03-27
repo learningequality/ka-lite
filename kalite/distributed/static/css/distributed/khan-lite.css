@@ -42,6 +42,14 @@ a:hover {
     color: #2F92A5;
 }*/
 
+/*hide points display in the navbar*/
+@media (max-width: 768px) {
+    #points-xs {
+        display: none !important;
+    }
+}
+
+
 #top-header {
     height: 60px;
     position: relative;
@@ -118,6 +126,16 @@ a:hover {
     cursor: default;
 }
 
+.language-select select {
+    padding: 5px 5px;
+    max-width: 120px;
+    position: relative;
+    top: 30px;
+}
+.language-select {
+    height: 0;
+}
+
 /********** End of Top Navigation bar ***********/
 
 /********** "Teacher" Sub-Navigation bar ***********/
@@ -137,7 +155,7 @@ a:hover {
     border-top: 3px solid #5AA685;
     border-right: 3px solid #5AA685;
     border-left: 3px solid #5AA685;
-    width: 110px;
+    width: 130px;
     text-align: center;
     font-weight: bold;
     display: inline-block;
@@ -146,13 +164,13 @@ a:hover {
     -moz-transition: all 115ms ease-out;
     -o-transition: all 115ms ease-out;
     transition: all 115ms ease-out;
-
 }
 .teach-nav li div {
     position: relative;
-    width: 110px;
-    height: 88px;
+    width: 130px;
+    height: 95px;
     margin: -18px 0px -47px -3px;
+    padding-top: 5px;
 }
 .teach-nav li div:hover {
     color: #5AA685;
@@ -191,56 +209,28 @@ a:hover {
     border-top-right-radius: 16px;
     font-weight: bold;
 }
-.active-tab {
-    height: 89px;
-    width: 110px;
-}
 .active-tab div {
     color: #5AA685 !important;
 }
-.reports {
+.reports, .reports:hover, .reports-active,
+.playlist, .playlist:hover, .playlists-active,
+.exams, .exams:hover, .exams-active, 
+.learn, .learn:hover, .learn-active {
     background-position: center 7px;
-    height: 87px;
+    height: 95px;
 }
-.reports:hover, .reports-active {
-    background-position: center 7px;
-    height: 87px;
-    color: #5AA685 !important;
-}
-.playlist {
-    background-position: center 7px;
-    height: 87px;
-}
-.playlist:hover, .playlists-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.exams {
-    background-position: center 7px;
-    height: 87px;
-}
-.exams:hover, .exams-active {
-    background-position: center 7px;
-    height: 87px;
-}
+
 .units {
     background: url("../../images/distributed/units-icon.png") no-repeat;
     background-position: center 7px;
-    height: 87px;
+    height: 95px;
 }
 .units:hover, .units-active {
     background: url("../../images/distributed/units-active-icon.png") no-repeat;
     background-position: center 7px;
-    height: 87px;
+    height: 95px;
 }
-.learn {
-    background-position: center 7px;
-    height: 87px;
-}
-.learn:hover, .learn-active {
-    background-position: center 7px;
-    height: 87px;
-}
+
 /********* End Sub-Navigation bar **********/
 
 
@@ -253,8 +243,6 @@ a:hover {
 }
 .manage-nav ul {
     padding-left: 1%;
-    margin-bottom: -4px;
-    height: 87px;
 }
 .manage-nav li {
     background-color: #5AA685;
@@ -263,7 +251,8 @@ a:hover {
     border-top: 3px solid #5AA685;
     border-right: 3px solid #5AA685;
     border-left: 3px solid #5AA685;
-    width: 110px;
+    width: 130px;
+    padding: 8px 0px;
     text-align: center;
     font-weight: bold;
     display: inline-block !important;
@@ -286,20 +275,10 @@ a:hover {
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
 }
-.manage-nav li div {
-    position: relative;
-    width: 110px;
-    height: 85px;
-    /*line-height: 9.5;*/
-    margin-left: -3px;
-    margin-top: 5px;
-}
 .manage-nav li div:hover {
     color: #5AA685;
 }
 .manage-nav li a:hover {
-    border-top-left-radius: 5px !important;
-    border-top-right-radius: 16px !important;
     color: #5AA685;
     font-weight: bold;
     text-decoration: none;
@@ -307,44 +286,13 @@ a:hover {
 .manage-nav span.icon {
     font-size: 40pt;
 }
+
 .active-nav {
     color: #405D32 !important;
     background-color: white !important;
-    border-top-left-radius: 5px !important;
-    border-top-right-radius: 16px !important;
     font-weight: bold;
 }
-.users {
-    background-position: center 7px;
-    height: 87px;
-}
-.users:hover, .users-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.video {
-    background-position: center 7px;
-    height: 87px;
-}
-.video:hover, .video-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.languages {
-    background-position: center 7px;
-    height: 87px;
-}
-.languages:hover, .languages-active {
-    background-position: center 7px;
-    height: 87px;
-}
-.facility {
-    background-position: center 7px;
-    height: 87px;
-}
-.facility:hover, .facility-active {
-    background-position: center 7px;
-    height: 87px;
+
 }
 /********* End "Admin" Sub-Navigation bar **********/
 
@@ -356,7 +304,7 @@ a:hover {
 .sub-active {
     border: 0;
     margin: 0;
-    background-color: #5AA685;
+    background: white;
     color: white;
     padding: 0;
 }
@@ -460,6 +408,13 @@ div.exercises-card {
     background-color: #5BDB44;
 }
 
+#selected-input {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+}
+
 .exercise-title-prefix {
     opacity: 0.3;
 }
@@ -470,6 +425,14 @@ div.exercises-card {
     width: 100%;
 }
 
+.attempts .incorrect {
+    color: red;
+}
+
+.attempts .correct {
+    color: green;
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
 .progress-points {
     width: 90%;
     text-align: center;
@@ -477,11 +440,12 @@ div.exercises-card {
     white-space: nowrap;
     font-size: 1.1em;
     padding: 4px 8px;
+    color: #414141                                                                                                                                                                                                                                                                                                                                                                        ;
 }
 
 .practice-exercise-description {
     opacity: 0.5;
-    font-size: 0.7em;
+    font-size: 0.7em;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 }
 
 .current-card #problemarea {
@@ -755,34 +719,6 @@ a.disabled {
     background-color: #C0C0C0;
 }
 
-/* BEGIN styles for software-keyboard */
-
-
-#software-keyboard {
-    border: 2px solid #cfcfcf;
-    background: #c3c3c3;
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border-radius: 8px;
-    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 1);
-    text-align: center;
-    padding: 0px;
-    margin-top: 10px;
-}
-
-#software-keyboard div {
-    display: inline-block;
-    min-width: 33%;
-    padding: 3px;
-}
-
-#software-keyboard div .key {
-    width: 100%;
-    text-align: center;
-    line-height: 30px;
-    font-size: 26px;
-}
-
 #search-box input {
     width: 150px;
     border-top-left-radius: 6px;
@@ -799,6 +735,9 @@ a.disabled {
     border-bottom-right-radius: 6px;
 }
 
+/* BEGIN styles for software-keyboard */
+
+
 #software-keyboard {
     border: 2px solid #cfcfcf;
     background: #c3c3c3;
@@ -811,50 +750,24 @@ a.disabled {
     margin-top: 10px;
 }
 
-#software-keyboard div {
-    display: inline-block;
-    /*min-width: 33%;*/
-    padding: 3px;
+#software-keyboard .row {
+    min-width: 100%;
+    padding: 1px;
 }
 
-#software-keyboard div .key {
-    width: 100%;
+#software-keyboard .row .key {
+    width: 28%;
+    padding: 3px;
     text-align: center;
     line-height: 30px;
     font-size: 26px;
 }
 
-/* TODO-BLOCKER (rtibbles): 0.13 - Remove extraneous css added here to make styling work without Bootstrap */
-
-#software-keyboard-container {
-    width: 100%;
-    position: relative;
-    display: inline-block;
-}
-
 button#show-keyboard {
-    /*height: 30px;*/
     width: 100%;
     font-size: 14px;
     padding: 0;
-    /*float: right;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    background-color: #816fba;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #ffffff;
-    border: 0px;*/
 }
-
-/*Why mess with Bootstrap sizing?*/
-/*div .row {
-    width: 100%;
-}
-div .col-xs-4 {
-    width: 100%;
-    height: 60px;
-}*/
 
 /* END styles for software-keyboard */
 
@@ -911,36 +824,6 @@ to items you want to have the icon appear with.
 .icon-Document:before {
     content: "\e614";
 }
-/* BEGIN styles for modal dialog */
-
-div#modal {
-    position: absolute; /* makes the div go into a position that’s absolute to the browser viewing area */
-    margin: auto;
-    height: 50px;
-    width: 400px;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 1100; /* makes the div the top layer, so it’ll lay on top of the other content */
-    font-weight: bold;
-}
-
-
-div#fade {
-    position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
-    left: 0%; /* makes the div span all the way across the viewing area */
-    top: 0%; /* makes the div span all the way across the viewing area */
-    background-color: black;
-    -moz-opacity: 0.7; /* makes the div transparent, so you have a cool overlay effect */
-    opacity: .70;
-    filter: alpha(opacity=70);
-    width: 100%;
-    height: 100%;
-    z-index: 1010; /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */
-}
-
-/* END styles for modal dialog */
 
 .pdf-frame {
     height: 1000px;
@@ -999,4 +882,26 @@ div#fade {
   box-shadow: 0 0 5px rgba(81, 203, 238, 1);
   border-color: rgba(81, 203, 238, 1);
   border-style: solid;
+}
+
+#workarea {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#workarea .perseus-widget-container.widget-highlight {
+    box-shadow: -4px 0 9px 5px #ffa500;
+}
+
+/* Styling for simplified login toggle button */
+.password-btn {
+    float: right;
+}
+
+.login .ui-menu .ui-menu-item a{
+    font-size: 1.5em;
 }
