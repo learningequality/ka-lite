@@ -328,6 +328,9 @@ class BrowserActionMixins(object):
             "password": password,
             "facility": facility.id,
         })
+        # Ensure that we're on the site, mainly so that "$" is imported
+        browser.get(self.reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$");
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
         self.browser.execute_script('window.FLAG=false;$.ajax({type: "POST", url: "%s", data: \'%s\', contentType: "application/json", success: function(){window.FLAG=true}})' % (url, data))
         self.browser_wait_for_js_condition("window.FLAG")
@@ -356,6 +359,9 @@ class BrowserActionMixins(object):
         )
 
     def browser_logout_user(self, browser=None):
+        # Ensure that we're on the site, mainly so that "$" is imported
+        browser.get(self.reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$");
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
         self.browser.execute_script('window.FLAG=false;$.ajax({type: "GET", url: "%s", success: function(){window.FLAG=true}})' % url)
         self.browser_wait_for_js_condition("window.FLAG")
@@ -365,6 +371,7 @@ class BrowserActionMixins(object):
         browser = browser or self.browser
         # Ensure that we're on the site, mainly so that "$" is imported
         browser.get(self.reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$");
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
         request_script = "window.FLAG=false;$.ajax({url:'%s', type:'GET', success: function(data){window.FLAG=true; window.DATA=data;}})" % url
         browser.execute_script(request_script)
