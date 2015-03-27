@@ -26,6 +26,9 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' True %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.qtip.min.css' True %}">
 
+        <!-- INTROJS.CSS testing -->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/introjs.css' True %}">
+
         <!-- CSS for dynamic settings -->
         <link rel="stylesheet" type="text/css" href="{% url 'dynamic_css' %}">
 
@@ -130,6 +133,7 @@
         <script src="{% static "js/handlebars/handlebars-v1.3.0.js" %}"></script>
         <script src="{% static "js/handlebars/handlebars-helpers.js" %}"></script>
         <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
+
 
         {# Trigger tooltips for help icons #}
         <script>
@@ -319,5 +323,13 @@
         </div> {# End wrapper #}
         {# Footer #}
         {% include "distributed/partials/_footer.html" %}
+        <!--<script type="text/javascript" src="{% static 'js/intro-injector.js' %}"></script> -->
     </body>
+
+
+
+    <!-- IntroJS stuff
+    <script type="text/javascript" src="{% static 'js/intro.js' %}"></script> -->
+    <script type="text/javascript" src="{% static 'js/distributed/intro.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/intro-injector.js' %}"></script>
 </html>

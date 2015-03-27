@@ -10,6 +10,7 @@
 {% endblock i18n_do_not_translate %}
 
 {% block subnavbar %}
+<a class="btn btn-large btn-success" href="javascript:void(0);" onclick="javascript:startTour();">Show me how</a>
 
     <div class="manage-nav logged-in-only admin-only">
         <ul class="nav nav-tabs">
@@ -26,3 +27,12 @@
         </ul>
     </div>
 {% endblock subnavbar %}
+    <script>
+        function startTour() {
+            var tour = introJs()
+            tour.setOption('tooltipPosition', 'auto');
+            tour.setOption('positionPrecedence', ['left', 'right', 'bottom', 'top'])
+            tour.start()
+        }
+    
+    </script>
