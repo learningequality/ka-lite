@@ -11,6 +11,11 @@ def refresh_session_facility_info(request, facility_count):
     request.session["facility_count"] = facility_count
     request.session["facility_exists"] = request.session["facility_count"] > 0
 
+    # To enable simplified login, also list the id and names of all facilities in the session object.
+    # This keeps it cached so that the status api call can return this to the client side
+    # without significantly increasing DB load on every status call.
+    request.session["facilities"] = [{"id": id, "name": name} for id, name in Facility.objects.values_list("id", "name")]
+
 
 class AuthFlags:
     def process_request(self, request):
