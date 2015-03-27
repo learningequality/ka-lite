@@ -112,11 +112,4 @@ function attachAttributes(jsonResponse) {
     });
   }); 
 
-
-/**
-  var selectorKey = "a#manage.admin-only";
-  var key = "data-step";
-  var value = 1;
-  $(selectorKey).attr(key, value); **/
-
 }
