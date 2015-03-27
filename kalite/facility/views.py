@@ -20,7 +20,7 @@ from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet.functions import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.i18n import get_default_language
-from kalite.shared.decorators import require_authorized_admin
+from kalite.shared.decorators.auth import require_authorized_admin
 
 
 @require_authorized_admin
