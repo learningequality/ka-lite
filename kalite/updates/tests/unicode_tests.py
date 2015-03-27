@@ -5,21 +5,13 @@ from django.conf import settings; logging = settings.LOG
 from django.utils import unittest
 
 from ..models import *
-from fle_utils.testing.unicode import UnicodeModelsTest
 from kalite.testing.base import KALiteTestCase
 
 
-class UpdatesUnicodeModelsTest(KALiteTestCase, UnicodeModelsTest):
-
-    @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
-    def test_unicode_class_coverage(self):
-        # Make sure we're testing all classes
-        self.check_unicode_class_coverage(
-            models_module="updates.models",
-            known_classes = [UpdateProgressLog, VideoFile],
-        )
-
-
+class UpdatesUnicodeModelsTest(KALiteTestCase):
+    
+    korean_string = unichr(54392)
+    
     def test_unicode_string(self):
         logging.warn("No unicode test for UpdateProgressLog; write one soon!")
 
