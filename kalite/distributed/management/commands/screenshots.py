@@ -1,3 +1,4 @@
+#TODO-BLOCKER(MCGallaspy): Better Exception handling in this file.
 import errno
 import glob
 import json
@@ -208,7 +209,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.loginfo("==> Setting-up browser ...")
         super(Screenshot, self).setUp()
         self.browser.set_window_size(1024, 768)
-        self.browser.implicitly_wait(15)
+        self.browser.implicitly_wait(3)
 
         self.loginfo("==> Browser %s successfully setup with live_server_url %s." %
                  (self.browser.name, self.live_server_url,))
