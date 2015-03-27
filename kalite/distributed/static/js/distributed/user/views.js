@@ -69,7 +69,7 @@ window.LoginView = BaseView.extend({
     },
 
     login_click: function() {
-        this.login()
+        this.login();
     },
 
     login: function(username, password, facility) {

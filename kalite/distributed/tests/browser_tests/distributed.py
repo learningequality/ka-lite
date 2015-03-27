@@ -94,15 +94,6 @@ class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase, Creat
         self.browser_login_student(username=self.username.lower(), password=self.password)
         self.browser_logout_user()
 
-    def test_login_mixed(self):
-        """Tests that a user can login with the uppercased version of the email address that was registered"""
-        # Register user in one case
-        self.browser_register_user(username=self.username.lower(), password=self.password)
-
-        # Login in the same case
-        self.browser_login_student(username=self.username.upper(), password=self.password)
-        self.browser_logout_user()
-
     @unittest.skipIf(True, "Waiting for Dylan's fix for the Sign Up redirect")
     def test_register_mixed(self):
         """Tests that a user cannot re-register with the uppercased version of an email address that was registered"""

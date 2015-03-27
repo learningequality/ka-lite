@@ -61,7 +61,7 @@ function doRequest(url, data, opts) {
                 break;
         }
     }
-
+    // TODO-BLOCKER (rtibbles): Make setting of the success and fail callbacks more flexible.
     return $.ajax(request_options)
         .success(function(resp) {
             handleSuccessAPI(resp);
