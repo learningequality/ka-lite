@@ -334,6 +334,7 @@ class BrowserActionMixins(object):
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
         self.browser.execute_script('window.FLAG=false;$.ajax({type: "POST", url: "%s", data: \'%s\', contentType: "application/json", success: function(){window.FLAG=true}})' % (url, data))
         self.browser_wait_for_js_condition("window.FLAG")
+        self.browser.refresh()
 
 
     def browser_login_admin(self, username=None, password=None, browser=None):
@@ -365,6 +366,7 @@ class BrowserActionMixins(object):
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
         self.browser.execute_script('window.FLAG=false;$.ajax({type: "GET", url: "%s", success: function(){window.FLAG=true}})' % url)
         self.browser_wait_for_js_condition("window.FLAG")
+        self.browser.refresh()
 
 
     def browser_is_logged_in(self, expected_username=None, browser=None):
