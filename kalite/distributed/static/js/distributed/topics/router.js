@@ -1,6 +1,8 @@
-ChannelRouter = Backbone.Router.extend({
+TopicChannelRouter = Backbone.Router.extend({
     initialize: function(options) {
+        _.bindAll(this);
         this.default_channel = options.default_channel;
+        $("#nav_learn").click(this.intercept_learn_nav);
     },
 
     routes: {
@@ -16,6 +18,11 @@ ChannelRouter = Backbone.Router.extend({
         this.navigate(this.default_channel + "/", {trigger: true, replace: true});
     },
 
+    intercept_learn_nav: function(event){
+        this.navigate(this.default_channel + "/", {trigger: true});
+        return false;
+    },
+
     navigate_channel: function(channel, splat) {
         if (this.channel!==channel) {
             this.control_view = new SidebarView({
@@ -25,12 +32,7 @@ ChannelRouter = Backbone.Router.extend({
             });
             this.channel = channel;
         }
-        splat = splat || "/";
-        if (splat.indexOf("/", splat.length - 1)==-1) {
-            splat += "/";
-            this.navigate(Backbone.history.getFragment() + "/", {replace: true});
-        }
-        this.control_view.navigate_paths(splat.split("/"));
+        this.navigate_splat(splat);
     },
 
     add_slug: function(slug) {
@@ -51,7 +53,11 @@ ChannelRouter = Backbone.Router.extend({
             splat += "/";
             this.navigate(Backbone.history.getFragment() + "/");
         }
-        this.control_view.navigate_paths(splat.split("/"));
+        this.control_view.navigate_paths(splat.split("/").slice(0,-1), this.set_page_title);
+    },
+
+    set_page_title: function(title) {
+        document.title = document.title.replace(/(\w+)( |:[^|]*)(\|)/, sprintf("$1: %s $3", title));
     },
 
     trigger_navigation_callback: function() {
@@ -59,16 +65,3 @@ ChannelRouter = Backbone.Router.extend({
     }
 });
 
-TopicChannelRouter = ChannelRouter.extend({
-    navigate_channel: function(channel, splat) {
-        if (this.channel!==channel) {
-            this.control_view = new SidebarView({
-                channel: channel,
-                entity_key: "children",
-                entity_collection: TopicCollection
-            });
-            this.channel = channel;
-        }
-        this.navigate_splat(splat);
-    }
-});
