@@ -322,15 +322,19 @@ class BrowserActionMixins(object):
         try:
             facility = Facility.objects.get(name=facility_name)
         except Facility.DoesNotExist:
-            facility = Facility.objects.all()[0]
+            facility = Facility.objects.all()[0] if Facility.objects.all() else None
         data = json.dumps({
             "username": username,
             "password": password,
-            "facility": facility.id,
+            "facility": facility.id if facility else "",
         })
+        # Ensure that we're on the site, mainly so that "$" is imported
+        self.browser.get(self.reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$");
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
         self.browser.execute_script('window.FLAG=false;$.ajax({type: "POST", url: "%s", data: \'%s\', contentType: "application/json", success: function(){window.FLAG=true}})' % (url, data))
         self.browser_wait_for_js_condition("window.FLAG")
+        self.browser.refresh()
 
 
     def browser_login_admin(self, username=None, password=None, browser=None):
@@ -356,15 +360,20 @@ class BrowserActionMixins(object):
         )
 
     def browser_logout_user(self, browser=None):
+        # Ensure that we're on the site, mainly so that "$" is imported
+        self.browser.get(self.reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$");
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
         self.browser.execute_script('window.FLAG=false;$.ajax({type: "GET", url: "%s", success: function(){window.FLAG=true}})' % url)
         self.browser_wait_for_js_condition("window.FLAG")
+        self.browser.refresh()
 
 
     def browser_is_logged_in(self, expected_username=None, browser=None):
         browser = browser or self.browser
         # Ensure that we're on the site, mainly so that "$" is imported
-        browser.get(self.reverse("homepage"))
+        self.browser.get(self.reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$");
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
         request_script = "window.FLAG=false;$.ajax({url:'%s', type:'GET', success: function(data){window.FLAG=true; window.DATA=data;}})" % url
         browser.execute_script(request_script)
