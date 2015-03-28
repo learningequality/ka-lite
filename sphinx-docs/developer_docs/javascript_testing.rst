@@ -12,8 +12,8 @@ Setting up your Test Environment
 ================================
 
 #. Install requirements:
-    * `install node<http://nodejs.org/download/>`_ if you don't have it already.
-    * `install pip<https://pypi.python.org/pypi/pip>`_ if you don't have it already.
+    * `install node <http://nodejs.org/download/>`_ if you don't have it already.
+    * `install pip <https://pypi.python.org/pypi/pip>`_ if you don't have it already.
 
 #. Install the dependencies listed in requirements.txt: ``pip install -r requirements.txt``
 
@@ -54,6 +54,7 @@ In order to make this happen, use compression tags around blocks of Javascript s
 Let's examine the important details of ``{% compress js file learnjs %}`` - the ``compress`` tag name is followed by the kind of file being compressed (``js``), then two optional parameters. The first tells django-compress to compress the assets to a separate file (rather than rendering the concatenated Javascript inline in the HTML), the second gives a name to the code block. This should be a unique name across the entire code base. At current there is no way to know what names have already been used, except by examining karma.conf.js in the root of the project.
 
 The name of the block is important for making it available for Javascript testing - it needs to be manually added to the karma.conf.js here::
+
     // list of files / patterns to load in the browser
     files: [
       file_map['basejs'].slice(1),
@@ -71,19 +72,23 @@ So if you had created a new compression block called 'exparrotshop' then you wou
 Writing a Test
 ==============
 
-You are now ready to write a test. All Javascript unit tests live inside the appropriate app. For example, if you were writing a unit test for Javascript code for the coachreport app, you would put your test file in kalite/coachreports/tests/javascript_unit_tests/. Call your file the name of the Model, View, or Router you are testing, or use an existing test file if you are extending an already tested Model or View. For example, the Session Model test file is called::
+You are now ready to write a test. All Javascript unit tests live inside the appropriate app. For example, if you were writing a unit test for Javascript code for the coachreport app, you would put your test file in kalite/coachreports/tests/javascript_unit_tests/. Call your file the name of the Model, View, or Router you are testing, or use an existing test file if you are extending an already tested Model or View.
+For example, the Session Model test file is called::
+
     session_model_test.js
 
 Each test file should start with a definition statement::
+
     module("Session Model Tests", {
       setup: function() {
         return this.sessionModel = new SessionModel();
       }
     });
 
-The text gives the name of the suite of tests you will be writing in this file. The ``setup`` method defines something that happens prior to every single test being run. ``this`` gets returned to every subsequent test as ``this`` also, so anything set as an attribute of ``this`` will be avaible inside each test.
+The text gives the name of the suite of tests you will be writing in this file. The ``setup`` method defines something that happens prior to every single test being run. ``this`` gets returned to every subsequent test as ``this`` also, so anything set as an attribute of ``this`` will be available inside each test.
 
 After the module definition, you can define any number of tests. Here is a simple example::
+
     test("Default values", function() {
       expect(2);
 
@@ -97,7 +102,11 @@ Running Tests
 =============
 
 When you have written your tests, before you can run them, we need to bundle the Javascript for testing. In order to do this, from the root of the project run::
+
     bin/kalite manage bundleassets
+
 This will bundle all the django-compress tags and make concatenated files. It will also update the file_map that our Karma config uses to find these files. When this is complete, simply run::
+
     karma start
+
 This will run through all the Javascript tests and report on failures. N.B. Karma is often, and most helpfully, run in continuous integration mode - our code base does not currently suppor that, but hopefully will in the future.
