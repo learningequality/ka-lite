@@ -167,6 +167,7 @@ def convert_urls(item_data):
     This function is used by ka-lite-central/centralserver/i18n/management/commands/update_language_packs.py"""
     item_data = localize_image_urls(item_data)
     item_data = localize_content_links(item_data)
+    item_data = localize_graphie_urls(item_data)
     return item_data
 
 
