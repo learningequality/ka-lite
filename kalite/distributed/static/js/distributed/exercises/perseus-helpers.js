@@ -11,7 +11,8 @@ var Khan = window.Khan || {
         clear: function() {},
         resize: function() {}
     },
-    cleanupProblem: function() {}
+    cleanupProblem: function() {},
+    warnTimeout: function() {}
 };
 
 window.Exercises = _.extend({

@@ -5,13 +5,12 @@ module("Session Model Tests", {
 });
 
 test("Default values", function() {
-  expect(19);
+  expect(18);
 
   equal(this.sessionModel.get("SEARCH_TOPICS_URL"), "");
-  equal(this.sessionModel.get("STATUS_URL"), "");
+  equal(this.sessionModel.get("USER_URL"), "");
   equal(this.sessionModel.get("FORCE_SYNC_URL"), "");
   equal(this.sessionModel.get("LOCAL_DEVICE_MANAGEMENT_URL"), "");
-  equal(this.sessionModel.get("USER_LOGIN_URL"), "");
 
   equal(this.sessionModel.get("SET_DEFAULT_LANGUAGE_URL"), "");
   equal(this.sessionModel.get("DELETE_USERS_URL"), "");

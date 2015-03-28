@@ -60,11 +60,11 @@ var StatusModel = Backbone.Model.extend({
     },
 
     urlRoot: function() {
-        return window.sessionModel.get("USER_URL")
+        return window.sessionModel.get("USER_URL");
     },
 
     url: function () {
-        this.urlRoot() + "status/"
+        return this.urlRoot() + "status/";
     },
 
     initialize: function() {
@@ -196,8 +196,6 @@ function sanitize_string(input_string) {
 
 // Related to showing elements on screen
 $(function(){
-
-    window.userView = new UserView({model: statusModel, el: "#user-name"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
