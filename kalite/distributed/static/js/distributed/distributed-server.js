@@ -107,9 +107,9 @@ var StatusModel = Backbone.Model.extend({
             dataType: 'json',
             type: 'POST',
             data: JSON.stringify(data),
-            // Use partial to pass the callback argument to the success and fail functions.
-            success: _.partial(self.handle_login_logout_success, _, _, _, callback),
-            fail: _.partial(self.handle_login_logout_error, _, callback)
+            // Pass callback to wrapper function to pass the callback argument to the success and fail functions.
+            success: self.handle_login_logout_success_with_callback(callback),
+            error: self.handle_login_logout_error_with_callback(callback)
         });
     },
 
@@ -121,10 +121,17 @@ var StatusModel = Backbone.Model.extend({
             contentType: 'application/json',
             dataType: 'json',
             type: 'GET',
-            // Use partial to pass the callback argument to the success and fail functions.
-            success: _.partial(self.handle_login_logout_success, _, _, _, callback),
-            fail: _.partial(self.handle_login_logout_error, _, callback)
+            // Pass callback to wrapper function to pass the callback argument to the success and fail functions.
+            success: self.handle_login_logout_success_with_callback(callback),
+            error: self.handle_login_logout_error_with_callback(callback)
         });
+    },
+
+    handle_login_logout_success_with_callback: function(callback) {
+        var self = this;
+        return function(data, status, response) {
+            self.handle_login_logout_success(data, status, response, callback);
+        };
     },
 
     handle_login_logout_success: function(data, status, response, callback) {
@@ -141,7 +148,14 @@ var StatusModel = Backbone.Model.extend({
         }
     },
 
-    handle_login_logout_error: function(response, callback) {
+    handle_login_logout_error_with_callback: function(callback) {
+        var self = this;
+        return function(response, status, error) {
+            self.handle_login_logout_error(response, status, error, callback);
+        };
+    },
+
+    handle_login_logout_error: function(response, status, error, callback) {
         if (callback) {
             callback(response);
         } else {
