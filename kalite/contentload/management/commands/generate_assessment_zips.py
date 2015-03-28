@@ -77,11 +77,11 @@ def download_urls_to_zip(zf, urls):
     urls = set(urls)
 
     pool = ThreadPool(10)
-    download_to_zip_func = lambda url: _download_url_to_zip(zf, url)
+    download_to_zip_func = lambda url: download_url_to_zip(zf, url)
     pool.map(download_to_zip_func, urls)
 
 
-def _download_url_to_zip(zf, url):
+def download_url_to_zip(zf, url):
     url = url.replace("https://ka-", "http://ka-")
     filename = os.path.basename(url)
     try:
