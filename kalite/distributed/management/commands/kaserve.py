@@ -131,13 +131,7 @@ class Command(BaseCommand):
         # them to be started up again as needed.
         Job.objects.update(is_running=False)
 
-
         call_command("collectstatic", interactive=False)
-
-        # set the BUILD_HASH to the current time, so assets get refreshed to their newest versions
-        build_hash = str(time.mktime(time.gmtime()))
-        logging.debug("Writing %s as BUILD_HASH" % build_hash)
-        Settings.set('BUILD_HASH', build_hash)
 
         if options['startuplock']:
             os.unlink(options['startuplock'])

@@ -323,7 +323,7 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
     """
     Test webpage for timing out user sessions
     """
-
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "A non deterministic test offender - rtibbles.")
     def test_facility_user_logout_after_interval(self):
         """Students should be auto-logged out"""
         student_username = 'test_student'

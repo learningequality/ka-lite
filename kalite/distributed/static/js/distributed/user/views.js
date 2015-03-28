@@ -131,7 +131,7 @@ window.LoginView = BaseView.extend({
             facility: this.facility,
             is_teacher: false
         };
-        var url = setGetParamDict(USER_URL, data);
+        var url = setGetParamDict(window.sessionModel.get("USER_URL"), data);
         doRequest(url, null, {
             cache: true,
             dataType: "json",
