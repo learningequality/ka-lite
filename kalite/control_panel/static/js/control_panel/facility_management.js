@@ -69,7 +69,7 @@ $(function() {
         } else if(!confirm(gettext("You are about to move selected users to another group."))) {
             return;
         } else {
-            doRequest(MOVE_TO_GROUP_URL, {users: users, group: group})
+            doRequest(window.sessionModel.get("MOVE_TO_GROUP_URL"), {users: users, group: group})
                 .success(function() {
                     location.reload();
                 });
@@ -108,7 +108,7 @@ $(function() {
         } else if (!confirm(gettext("You are about to delete selected users, they will be permanently deleted."))) {
             return;
         } else {
-            doRequest(DELETE_USERS_URL, {users: users})
+            doRequest(window.sessionModel.get("DELETE_USERS_URL"), {users: users})
                 .success(function() {
                     location.reload();
                 });
@@ -124,7 +124,7 @@ $(function() {
         } else if (!confirm(gettext("You are about to permanently delete the selected group(s). Note that any learners currently in this group will now be characterized as 'Ungrouped' but their profiles will not be deleted."))) {
             return;
         } else {
-            doRequest(DELETE_GROUPS_URL, {groups: groups})
+            doRequest(window.sessionModel.get("DELETE_GROUPS_URL"), {groups: groups})
                 .success(function() {
                     location.reload();
                 });

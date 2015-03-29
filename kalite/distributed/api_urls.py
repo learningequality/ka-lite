@@ -19,9 +19,6 @@ import kalite.updates.api_urls
 import kalite.store.api_urls
 
 urlpatterns = patterns(__package__ + '.api_views',
-    # For manipulating the static webpage to show data based on user state
-    url(r'^status$', 'status', {}, 'status'),
-
     # Setting server time (RPi)
     url(r'^time_set/$', 'time_set', {}, 'time_set'),
 )

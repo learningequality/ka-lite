@@ -24,7 +24,7 @@
 
 
 {% block content %}
-    {{% block manage_nav %}{{  block.super }}{% endblock manage_nav %}}
+    {% block manage_nav %}{% endblock manage_nav %}
     {% block facility_active %}active{% endblock facility_active %}
     {{ path_template }}
     <div id="facility_list_container">

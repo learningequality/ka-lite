@@ -70,3 +70,4 @@ ghostdriver.log
 sphinx-docs/_build
 sphinx-docs/images/*
 /data/khan/assessmentitems.json.version
+file_map.json
