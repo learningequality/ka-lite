@@ -105,6 +105,14 @@ var StudentProgressContainerView = Backbone.View.extend({
         this.render();
 
         this.collection.fetch();
+        this.collection.fetch({
+            success: function(collection) {
+                // Display a message, when there is no progress
+                if(!collection.length) {
+                    this.$("#playlists-container").append("Your learning progress will be reported here, once you have started by clicking on LEARN.");
+                }
+            }
+       });
     },
 
     render: function() {
