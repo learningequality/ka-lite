@@ -49,6 +49,9 @@ if USE_DEBUG_TOOLBAR:
         'HIDE_DJANGO_SQL': False,
         'ENABLE_STACKTRACES' : True,
     }
+    # Debug toolbar must be set in conjunction with CACHE_TIME=0
+    CACHE_TIME = 0
+
 
 if getattr(local_settings, "DEBUG", False):
     INSTALLED_APPS += (
