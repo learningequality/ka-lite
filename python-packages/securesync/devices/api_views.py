@@ -71,7 +71,7 @@ def register_device(request):
             # But still, good to keep track of!
             UnregisteredDevicePing.record_ping(id=client_device.id, ip=get_request_ip(request))
 
-            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code=EC.CHAIN_OF_TRUST_INVALID, status=401)
+            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code=EC.CHAIN_OF_TRUST_INVALID, status=500)
 
     if not zone: # old code-path
         try:
@@ -87,9 +87,9 @@ def register_device(request):
                 # A redirect loop here is also possible, if a Device exists in the central server database 
                 # corresponding to the client_device, but no corresponding RegisteredDevicePublicKey exists
                 device = Device.objects.get(public_key=client_device.public_key)
-                return JsonResponseMessageError("This device has already been registered", code=EC.DEVICE_ALREADY_REGISTERED, status=400)
+                return JsonResponseMessageError("This device has already been registered", code=EC.DEVICE_ALREADY_REGISTERED, status=409)
             except Device.DoesNotExist:
-                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code=EC.PUBLIC_KEY_UNREGISTERED, status=400)
+                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code=EC.PUBLIC_KEY_UNREGISTERED, status=404)
 
     client_device.save(imported=True)
 
