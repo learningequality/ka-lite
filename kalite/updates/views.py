@@ -2,7 +2,7 @@ import git
 import os
 from annoying.decorators import render_to
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _, ugettext_lazy
 from django.contrib import messages
 
 from .models import VideoFile
@@ -26,7 +26,7 @@ def update_context(request):
 
 
 @require_admin
-@require_registration(_("video downloads"))
+@require_registration(ugettext_lazy("video downloads"))
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
     context = update_context(request)
@@ -38,7 +38,7 @@ def update_videos(request, max_to_show=4):
 
 
 @require_admin
-@require_registration(_("language packs"))
+@require_registration(ugettext_lazy("language packs"))
 @render_to("updates/update_languages.html")
 def update_languages(request):
     # also refresh language choices here if ever updates js framework fails, but the language was downloaded anyway
