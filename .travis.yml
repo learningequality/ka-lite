@@ -16,8 +16,8 @@ script:
 - bin/kalite status
 - bin/kalite stop --traceback -v 2
 - python python-packages/fle_utils/tests.py
-- bin/kalite manage syncdb --migrate --noinput --traceback
-- bin/kalite test --traceback -v 2
+# Run tests and measure with Coverage
+- coverage run --source=kalite bin/kalite test --traceback -v 2
 - grunt jshint
 - bin/kalite manage bundleassets
 - ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS
