@@ -35,11 +35,11 @@ def require_sync_session(handler):
                 return JsonResponseMessageError("Client nonce must be specified.", status=400)
             session = SyncSession.objects.get(client_nonce=data["client_nonce"])
             if not session.verified:
-                return JsonResponseMessageError("Session has not yet been verified.")
+                return JsonResponseMessageError("Session has not yet been verified.", status=401)
             if session.closed:
-                return JsonResponseMessageError("Session is already closed.")
+                return JsonResponseMessageError("Session is already closed.", status=401)
         except SyncSession.DoesNotExist:
-            return JsonResponseMessageError("Session with specified client nonce could not be found.")
+            return JsonResponseMessageError("Session with specified client nonce could not be found.", status=403)
         response = handler(data, session)
         session.save()
         return response
@@ -53,12 +53,12 @@ def create_session(request):
     if "client_nonce" not in data:
         return JsonResponseMessageError("Client nonce must be specified.", status=400)
     if len(data["client_nonce"]) != 32 or re.match("[^0-9a-fA-F]", data["client_nonce"]):
-        return JsonResponseMessageError("Client nonce is malformed (must be 32-digit hex).")
+        return JsonResponseMessageError("Client nonce is malformed (must be 32-digit hex).", status=400)
     if "client_device" not in data:
-        return JsonResponseMessageError("Client device must be specified.")
+        return JsonResponseMessageError("Client device must be specified.", status=400)
     if "server_nonce" not in data:
         if SyncSession.objects.filter(client_nonce=data["client_nonce"]).count():
-            return JsonResponseMessageError("Session already exists; include server nonce and signature.")
+            return JsonResponseMessageError("Session already exists; include server nonce and signature.", status=401)
         session = SyncSession()
         session.client_nonce = data["client_nonce"]
         session.client_os = data.get("client_os", "")
@@ -72,28 +72,28 @@ def create_session(request):
             #   This would only get hit, however, if they manually run syncmodels.
             # But still, good to keep track of!
             UnregisteredDevicePing.record_ping(id=data["client_device"], ip=session.ip)
-            return JsonResponseMessageError("Client device matching id could not be found. (id=%s)" % data["client_device"])
+            return JsonResponseMessageError("Client device matching id could not be found. (id=%s)" % data["client_device"], status=400)
 
         session.server_nonce = uuid.uuid4().hex
         session.server_device = Device.get_own_device()
         if session.client_device.pk == session.server_device.pk:
-            return JsonResponseMessageError("I know myself when I see myself, and you're not me.")
+            return JsonResponseMessageError("I know myself when I see myself, and you're not me.", status=401)
         session.save()
     else:
         try:
             session = SyncSession.objects.get(client_nonce=data["client_nonce"])
         except SyncSession.DoesNotExist:
-            return JsonResponseMessageError("Session with specified client nonce could not be found.")
+            return JsonResponseMessageError("Session with specified client nonce could not be found.", status=401)
         if session.server_nonce != data["server_nonce"]:
-            return JsonResponseMessageError("Server nonce did not match saved value.")
+            return JsonResponseMessageError("Server nonce did not match saved value.", status=401)
         if not data.get("signature", ""):
-            return JsonResponseMessageError("Must include signature.")
+            return JsonResponseMessageError("Must include signature.", status=400)
         if not session.verify_client_signature(data["signature"]):
-            return JsonResponseMessageError("Signature did not match.")
+            return JsonResponseMessageError("Signature did not match.", status=401)
         session.verified = True
         session.save()
 
-    # Return the serializd session, in the version intended for the other device
+    # Return the serialized session, in the version intended for the other device
     return JsonResponse({
         "session": serialize([session], dest_version=session.client_version, ensure_ascii=False, sign=False, increment_counters=False ),
         "signature": session.sign(),
@@ -163,7 +163,7 @@ def model_upload(data, session):
     """This device is getting data-related objects from another device."""
 
     if "models" not in data:
-        return JsonResponseMessageError("Must provide models.", data={"saved_model_count": 0})
+        return JsonResponseMessageError("Must provide models.", data={"saved_model_count": 0}, status=400)
     try:
         # Unserialize, knowing that the models were serialized by a client of its given version.
         #   dest_version assumed to be this device's version
@@ -185,7 +185,7 @@ def model_download(data, session):
     """This device is having its own data downloaded"""
 
     if "device_counters" not in data:
-        return JsonResponseMessageError("Must provide device counters.", data={"count": 0})
+        return JsonResponseMessageError("Must provide device counters.", data={"count": 0}, status=400)
     try:
         # Return the objects serialized to the version of the other device.
         result = get_serialized_models(data["device_counters"], zone=session.client_device.get_zone(), include_count=True, dest_version=session.client_version)
