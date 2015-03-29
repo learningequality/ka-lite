@@ -49,7 +49,7 @@ def process_log_from_request(handler):
         if request.GET.get("process_id", None):
             # Get by ID--direct!
             if not isnumeric(request.GET["process_id"]):
-                return JsonResponseMessageError(_("process_id is not numeric."))
+                return JsonResponseMessageError(_("process_id is not numeric."), status=400)
             else:
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
@@ -74,9 +74,9 @@ def process_log_from_request(handler):
             except Exception as e:
                 # The process finished before we started checking, or it's been deleted.
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
-                return JsonResponseMessageError(unicode(e))
+                return JsonResponseMessageError(unicode(e), status=500)
         else:
-            return JsonResponseMessageError(_("Must specify process_id or process_name"))
+            return JsonResponseMessageError(_("Must specify process_id or process_name"), status=400)
 
         return handler(request, process_log, *args, **kwargs)
     return wrapper_fn_pfr
