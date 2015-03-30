@@ -51,7 +51,7 @@ class TestUrlConversion(TestCase):
         old_item_data = self.assessment_items.values()[0]["item_data"]
         new_item_data = new_items.values()[0]["item_data"]
         self.assertEqual(old_item_data.replace("https://ka-perseus-graphie.s3.amazonaws.com/", "/content/khan/"), new_item_data)
-        self.assertNotIn("amazonaws.com", new_item_data)
+        self.assertNotIn("https://ka-perseus", new_item_data)
 
     def test_localize_all_content_links(self):
         new_items = mod.localize_all_content_links(self.assessment_items)
@@ -61,6 +61,15 @@ class TestUrlConversion(TestCase):
             "https://www.khanacademy.org/math/early-math/cc-early-math-add-sub-topic/basic-addition-subtraction/v/addition-introduction",
             "/learn/khan/math/early-math/cc-early-math-add-sub-topic/basic-addition-subtraction/addition-introduction/"), new_item_data)
         self.assertNotIn("khanacademy.org", new_item_data)
+
+    def test_localize_all_graphie_urls(self):
+        new_items = mod.localize_all_graphie_urls(self.assessment_items)
+        old_item_data = self.assessment_items.values()[0]["item_data"]
+        new_item_data = new_items.values()[0]["item_data"]
+        self.assertEqual(old_item_data.replace(
+            "web+graphie://ka-perseus-graphie.s3.amazonaws.com/",
+            "web+graphie:/content/khan/"), new_item_data)
+        self.assertNotIn("web+graphie://ka-perseus", new_item_data)
 
 
 class TestUrlConversion(TestCase):
@@ -97,7 +106,8 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
         with open(ASSESSMENT_ITEMS_SAMPLE_PATH) as f:
             assessment_items_content = f.read()
 
-        image_requests = len(set(mod.all_image_urls(json.loads(assessment_items_content))))
+        image_requests = len(set(list(mod.find_all_image_urls(json.loads(assessment_items_content)))
+                               + list(mod.find_all_graphie_urls(json.loads(assessment_items_content)))))
 
         get_method.return_value = MagicMock(content=assessment_items_content)
 
@@ -117,6 +127,10 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
                 elif filename.lower().endswith(".jpeg"):
                     continue
                 elif filename.lower().endswith(".png"):
+                    continue
+                elif filename.lower().endswith(".svg"):
+                    continue
+                elif filename.lower().endswith("-data.json"):
                     continue
                 elif filename in ["assessmentitems.json", "assessmentitems.json.version"]:
                     continue
@@ -174,7 +188,7 @@ class UtilityFunctionTests(KALiteTestCase):
 
     def test_gets_images_urls_inside_item_data(self):
 
-        result = list(mod.all_image_urls(self.assessment_sample))
+        result = list(mod.find_all_image_urls(self.assessment_sample))
         self.assertIn(
             self.imgurl,
             result,
@@ -184,7 +198,7 @@ class UtilityFunctionTests(KALiteTestCase):
     def test_localize_all_image_urls_replaces_with_local_urls(self):
         new_assessment_items = mod.localize_all_image_urls(self.assessment_sample)
 
-        all_images = list(mod.all_image_urls(new_assessment_items))
+        all_images = list(mod.find_all_image_urls(new_assessment_items))
         self.assertNotIn(self.imgurl, all_images)
 
     @patch.object(requests, "get")
@@ -207,7 +221,7 @@ class UtilityFunctionTests(KALiteTestCase):
         urls = ["http://test1.com", "http://test2.com"]
         with open(mod.ZIP_FILE_PATH, "w") as f:
             zf = zipfile.ZipFile(f, "w")
-            mod.download_urls(zf, urls)
+            mod.download_urls_to_zip(zf, urls)
             zf.close()
 
         self.assertEqual(download_method.call_count, len(urls))

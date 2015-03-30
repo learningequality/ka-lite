@@ -53,6 +53,7 @@ def download_language_pack(lang):
     url = get_language_pack_url(lang)
 
     try:
+        logging.debug("Downloading from {url}.".format(url=url))
         resp = requests.get(url)
         resp.raise_for_status()
     except requests.ConnectionError as e:

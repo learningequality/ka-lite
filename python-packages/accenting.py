@@ -68,7 +68,8 @@ class Converter(object):
         (%\([\w]+\)\w)      |       # %(tag)s
         (&\w+;)             |       # &entity;
         (&\#\d+;)           |       # &#1234;
-        (&\#x[0-9a-f]+;)            # &#xABCD;
+        (&\#x[0-9a-f]+;)    |       # &#xABCD;
+        (\[\[.*\]\])                # [[snowman radio]];
         ''',
         re.IGNORECASE | re.VERBOSE
     )
