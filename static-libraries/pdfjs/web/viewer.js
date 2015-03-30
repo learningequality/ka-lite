@@ -17,7 +17,7 @@
 /* globals PDFJS, PDFBug, FirefoxCom, Stats, Cache, PDFFindBar, CustomStyle,
            PDFFindController, ProgressBar, TextLayerBuilder, DownloadManager,
            getFileName, scrollIntoView, getPDFFileNameFromURL, PDFHistory,
-           Preferences, SidebarView, ViewHistory, PageView, ThumbnailView, URL,
+           Preferences, PDFSidebarView, ViewHistory, PageView, ThumbnailView, URL,
            noContextMenuHandler, SecondaryToolbar, PasswordPrompt,
            PresentationMode, HandTool, Promise, DocumentProperties,
            DocumentOutlineView, DocumentAttachmentsView, OverlayManager */
@@ -321,7 +321,7 @@ var DEFAULT_PREFERENCES = {
 };
 
 
-var SidebarView = {
+var PDFSidebarView = {
   NONE: 0,
   THUMBS: 1,
   OUTLINE: 2,
@@ -3521,7 +3521,7 @@ var PDFView = {
         document.getElementById('viewOutline').disabled = !outline;
 
         if (outline &&
-            self.preferenceSidebarViewOnLoad === SidebarView.OUTLINE) {
+            self.preferenceSidebarViewOnLoad === PDFSidebarView.OUTLINE) {
           self.switchSidebarView('outline', true);
         }
       });
@@ -3530,13 +3530,13 @@ var PDFView = {
         document.getElementById('viewAttachments').disabled = !attachments;
 
         if (attachments &&
-            self.preferenceSidebarViewOnLoad === SidebarView.ATTACHMENTS) {
+            self.preferenceSidebarViewOnLoad === PDFSidebarView.ATTACHMENTS) {
           self.switchSidebarView('attachments', true);
         }
       });
     });
 
-    if (self.preferenceSidebarViewOnLoad === SidebarView.THUMBS) {
+    if (self.preferenceSidebarViewOnLoad === PDFSidebarView.THUMBS) {
       Promise.all([firstPagePromise, onePageRendered]).then(function () {
         self.switchSidebarView('thumbs', true);
       });

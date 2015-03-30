@@ -80,7 +80,9 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         "views"
     ],
 
-    urlRoot: GET_CONTENT_LOGS_URL,
+    urlRoot: function() {
+        return window.sessionModel.get("GET_CONTENT_LOGS_URL");
+    },
 
     save: _.throttle(function(){this.saveNow();}, 30000),
 

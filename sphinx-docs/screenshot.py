@@ -255,15 +255,16 @@ class Screenshot(Image):
     def _login_handler(self, username, password, submit):
         from_str_arg = { "users": ["guest"], # This will fail if not guest, because of a redirect
                          "slug": "",
-                         "start_url": "/securesync/login",
-                         "inputs": [{"#id_username": username},
+                         "start_url": "/",
+                         "inputs": [{"#nav_login": ""},
+                                    {"#id_username": username},
                                     {"#id_password": password},
                                    ],
                          "pages": [],
                          "notes": "",
                        }
         if submit:
-            from_str_arg["inputs"].append({"<submit>":""})
+            from_str_arg["inputs"].append({".login-btn":""})
         from_str_arg = self._common_arg_prep(from_str_arg)
         self.env.screenshot_all_screenshots.append({
             'docname':  self.env.docname,
