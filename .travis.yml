@@ -11,13 +11,14 @@ install:
 -  npm install
 -  npm install -g grunt-cli
 -  pip install -r requirements.txt
+-  pip install coveralls
 script:
 - bin/kalite start --traceback -v 2
 - bin/kalite status
 - bin/kalite stop --traceback -v 2
 - python python-packages/fle_utils/tests.py
 - bin/kalite manage syncdb --migrate --noinput --traceback
-- bin/kalite test --traceback -v 2
+- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" manage.py test --traceback -v 2
 - grunt jshint
 - bin/kalite manage bundleassets
 - ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS
@@ -27,3 +28,6 @@ notifications:
   hipchat:
     rooms:
       secure: A4OlCFaETlLB20ATXrPmA+8F35AsjZZ9nO8dPUG9m5pAr1pD4CDiVrn/tmHbbk2rQaQLm3B8CifdNuQL6fLuEv2pJpfIdSESVqsqJcQPPpgogjvHRabOXgAmC5AWpQupe3DARIMDjOPhHaeRFN/GYjEnK8N+nqu/SQ2mPmAzOFQ=
+after_success:
+- coverage report
+- coveralls
