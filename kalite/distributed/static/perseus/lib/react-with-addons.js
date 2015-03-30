@@ -527,7 +527,7 @@
 	      // hopefully people will notice the second alert if they fix the first
 	      // one and reload.
 	      if (lastAlertTime + 2000 < Date.now()) {
-	        alert('Dev-only warning: ' + message);
+	        // alert('Dev-only warning: ' + message);
 	        lastAlertTime = Date.now();
 	      }
 	    }
