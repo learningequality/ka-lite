@@ -517,14 +517,16 @@ def smart_translate_item_data(item_data):
     item_data and translates only the content field.
 
     """
-    if 'content' in item_data:
-        item_data['content'] = _(item_data['content']) if item_data['content'] else ""
+    if isinstance(item_data, dict):
+        if 'content' in item_data:
+            item_data['content'] = _(item_data['content']) if item_data['content'] else ""
 
-    for field, field_data in item_data.iteritems():
-        if isinstance(field_data, dict):
-            item_data[field] = smart_translate_item_data(field_data)
-        elif isinstance(field_data, list):
-            item_data[field] = map(smart_translate_item_data, field_data)
+        for field, field_data in item_data.iteritems():
+            if isinstance(field_data, dict):
+                item_data[field] = smart_translate_item_data(field_data)
+            elif isinstance(field_data, list):
+                item_data[field] = map(smart_translate_item_data, field_data)
+
 
     return item_data
 
