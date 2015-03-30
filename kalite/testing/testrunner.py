@@ -8,29 +8,86 @@ import sys
 
 from django.conf import settings; logging = settings.LOG
 from django.core import management
+from django.db.models import get_app
 from django.test.simple import DjangoTestSuiteRunner
 from django.test.utils import override_settings
 
+from behave.configuration import options
 
-def auto_pdb(*exceptions):
-    """
-    From http://stackoverflow.com/questions/4398967/python-unit-testing-automatically-running-the-debugger-when-a-test-fails
-    """
-    if not exceptions:
-        exceptions = (AssertionError, )
-    def decorator(f):
-        @functools.wraps(f)
-        def wrapper(*args, **kwargs):
-            try:
-                return f(*args, **kwargs)
-            except:
-                pdb.post_mortem(sys.exc_info()[2])
-        return wrapper
-    return decorator
+from optparse import make_option
+
+from kalite.testing.base import KALiteBrowserTestCase, DjangoBehaveTestCase
+
+
+def get_app_dir(app_module):
+    app_dir = os.path.dirname(app_module.__file__)
+    if os.path.basename(app_dir) == 'models':
+        app_dir = os.path.abspath(os.path.join(app_dir, '..'))
+    return app_dir
+
+
+def get_features(app_module):
+    """ Used to find feature directories for behave tests. """
+    app_dir = get_app_dir(app_module)
+    features_dir = os.path.abspath(os.path.join(app_dir, 'features'))
+    if os.path.isdir(features_dir):
+        return features_dir
+    else:
+        return None
+
+
+def get_options():
+    option_list = (
+        make_option("--behave_browser",
+            action="store",
+            dest="browser",
+            help="Specify the browser to use for testing",
+        ),
+    )
+
+    option_info = {"--behave_browser": True}
+
+    for fixed, keywords in options:
+        # Look for the long version of this option
+        long_option = None
+        for option in fixed:
+            if option.startswith("--"):
+                long_option = option
+                break
+
+        # Only deal with those options that have a long version
+        if long_option:
+            # remove function types, as they are not compatible with optparse
+            if hasattr(keywords.get('type'), '__call__'):
+                del keywords['type']
+
+            # Remove 'config_help' as that's not a valid optparse keyword
+            if "config_help" in keywords:
+                keywords.pop("config_help")
+
+            name = "--behave_" + long_option[2:]
+
+            option_list = option_list + \
+                (make_option(name, **keywords),)
+
+            # Need to store a little info about the Behave option so that we
+            # can deal with it later.  'has_arg' refers to if the option has
+            # an argument.  A boolean option, for example, would NOT have an
+            # argument.
+            action = keywords.get("action", "store")
+            if action == "store" or action == "append":
+                has_arg = True
+            else:
+                has_arg = False
+
+            option_info.update({name: has_arg})
+
+    return (option_list, option_info)
 
 
 class KALiteTestRunner(DjangoTestSuiteRunner):
     """Forces us to start in liveserver mode, and only includes relevant apps to test"""
+    (option_list, option_info) = get_options()
 
     def __init__(self, *args, **kwargs):
         """
@@ -69,15 +126,29 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
         return run_tests_wrapper_fn()
 
-    def build_suite(self, *args, **kwargs):
-        """
-        Wrap each test function such that it automatically calls PDB on a failure.
-        """
-        test_suite = super(KALiteTestRunner, self).build_suite(*args, **kwargs)
+    def make_bdd_test_suite(self, features_dir):
+        return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
 
-        # If failfast, drop into the debugger
-        # if self.failfast:
-        #     for test in test_suite._tests:
-        #         testfun = getattr(test, test._testMethodName)
-        #         setattr(test, test._testMethodName, auto_pdb()(testfun))
-        return test_suite
+    def build_suite(self, test_labels, extra_tests, **kwargs):
+        """Run tests normally, but also run BDD tests.
+        """
+        extra_tests = extra_tests or []
+        test_labels = test_labels or None
+        
+
+        # Add BDD tests to the extra_tests
+        # always get all features for given apps (for convenience)
+        for label in test_labels:
+            if '.' in label:
+                print("Ignoring label with dot in: %s" % label)
+                continue
+            app = get_app(label)
+
+            # Check to see if a separate 'features' module exists,
+            # parallel to the models module
+            features_dir = get_features(app)
+            if features_dir is not None:
+                # build a test suite for this directory
+                extra_tests.append(self.make_bdd_test_suite(features_dir))
+
+        return super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
