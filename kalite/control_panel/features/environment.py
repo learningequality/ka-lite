@@ -13,12 +13,8 @@ from urlparse import urljoin
 from django.test.testcases import LiveServerTestCase
 
 from kalite.testing.behave_helpers import login_as_admin, logout
+from kalite.testing.base_environment import before_all, after_all
 
-def before_all(context):
-    pass
-
-def after_all(context):
-    pass
 
 def before_feature(context, feature):
     context.logged_in = False
@@ -30,14 +26,3 @@ def before_feature(context, feature):
 def after_feature(context, feature):
     if context.logged_in:
         logout(context)
-
-
-def before_scenario(context, scenario):
-    browser = context.browser = webdriver.Firefox()
-
-
-def after_scenario(context, scenario):
-    try:
-        context.browser.quit()
-    except CannotSendRequest:
-        pass
