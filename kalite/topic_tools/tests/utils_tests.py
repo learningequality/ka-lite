@@ -37,7 +37,6 @@ class SmartTranslateItemDataTests(KALiteTestCase):
         self.assertEqual(result, expected_data)
 
     def test_content_inside_radio_field(self):
-        pass
         test_data = {'radio 1': {'widgets': {'content': TRANS_STRING}}}
         expected_data = {'radio 1': {'widgets': {'content': DUMMY_STRING}}}
 
