@@ -11,11 +11,3 @@ Feature: The facilities tab
         When I create a facility
         Given I go to the facilities tab
         Then I should see it in the table
-
-    Scenario: I click the button
-        Given There are no facilities
-        And I go to the facilities tab
-        When I click the add new facility button
-        Then I am at the new facility form
-        When I submit the form
-        Then I see my new facility
