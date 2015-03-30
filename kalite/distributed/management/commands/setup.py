@@ -284,7 +284,7 @@ class Command(BaseCommand):
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
-        if options['force-assessment-item-dl']  and not settings.RUNNING_IN_TRAVIS and not settings.CENTRAL_SERVER::
+        if options['force-assessment-item-dl']  and not settings.RUNNING_IN_TRAVIS and not settings.CENTRAL_SERVER:
             call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
         elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
             print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
