@@ -25,11 +25,11 @@ else:
 USER_ROLES = ["guest", "coach", "admin", "learner"]
 SS_DUMP_DIR = ".screenshot_dump"
 OUTPUT_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), SS_DUMP_DIR))
-MANAGE_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","kalite","manage.py"))
+KALITE_BIN_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "bin", "kalite"))
 # Formatted from subprocess.Popen
 # Trying to import call_command to execute a Django mgmt command gets you
 # into a weird import hell, probably because of import_all_child_modules...
-SCREENSHOT_COMMAND = [sys.executable, MANAGE_PATH, "screenshots"]
+SCREENSHOT_COMMAND = [KALITE_BIN_PATH, "manage", "screenshots"]
 SCREENSHOT_COMMAND_OPTS = ["-v", "0", "--output-dir", OUTPUT_PATH]
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",

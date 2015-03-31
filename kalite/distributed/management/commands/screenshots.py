@@ -18,7 +18,8 @@ from securesync.models import Device, DeviceZone, Zone
 
 from fle_utils.general import ensure_dir
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.distributed.management.commands.katest import unregister_distributed_server
 
 USER_TYPE_ADMIN = "admin"
