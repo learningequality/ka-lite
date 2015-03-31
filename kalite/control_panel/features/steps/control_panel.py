@@ -36,7 +36,9 @@ def step_impl(context):
 
 @then("I should see a facility in the table")
 def step_impl(context):
-    assert False, "Not yet implemented"
+    table = find_id_with_wait("facilities-table")
+    table_row = table.find_element_by_tag_name("tr")
+    assert table_row is not None
 
 
 def go_to_facilities_page(context):
@@ -50,20 +52,7 @@ def submit_facility_form(context):
     name_field = facility_form.find_element_by_id("id_name")
     name_field.send_keys("The Fortress of Solitude")
     facility_form.submit()
-
-
-def get_facilities_table(browser):
-    """ Returns a Selenium WebElement if it exists, otherwise None
-    browser: An instance of Selenium WebDriver
-    """
-    try:
-        # This isn't a single page JS app, so we don't need to use
-        # a timeout... it's either going to be there or not
-        elem = browser.find_element_by_id("facilities-table")
-        return elem
-    except NoSuchElementException:
-        return None
-        
+ 
 
 def get_empty_facilities_msg(browser):
     """ Returns a Selenium WebElement if it exists, otherwise None
