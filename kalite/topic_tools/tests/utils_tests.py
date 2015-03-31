@@ -17,6 +17,15 @@ class SmartTranslateItemDataTests(KALiteTestCase):
     def tearDown(self):
         ugettext_dummy.reset_mock()
 
+    def test_list_of_lists(self):
+        test_data = [[TRANS_STRING]]
+        expected_data = [[DUMMY_STRING]]
+
+        result = mod.smart_translate_item_data(test_data)
+        ugettext_dummy.assert_called_once_with(TRANS_STRING)
+
+        self.assertEqual(result, expected_data)
+
     def test_simple_content_dict(self):
         # ugettext_method.return_value = DUMMY_STRING
         test_data = {'content': TRANS_STRING}
