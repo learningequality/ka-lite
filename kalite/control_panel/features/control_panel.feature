@@ -8,6 +8,7 @@ Feature: The facilities tab
         Then I should see an empty facilities message
 
     Scenario: Wherein I add a facility
+        Given There are no facilities
         When I create a facility
         Given I go to the facilities tab
-        Then I should see it in the table
+        Then I should see a facility in the table
