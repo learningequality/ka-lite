@@ -36,7 +36,7 @@ def step_impl(context):
 
 @then("I should see a facility in the table")
 def step_impl(context):
-    table = find_id_with_wait("facilities-table")
+    table = find_id_with_wait(context, "facilities-table")
     table_row = table.find_element_by_tag_name("tr")
     assert table_row is not None
 
