@@ -7,33 +7,39 @@ that context in order to function (instead of just silently failing).
 import httplib
 import json
 
+from urlparse import urljoin
+
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
-def check_test_server_url(f):
-    """ A decorator to ensure we have minimal capabilites -- i.e. a live_server_url to use.
-    """
-    def new_f(context, *args, **kwargs):
-        assert hasattr(context, "hijacked_test_case"), "The context needs a hijacked_test_case for this helper."
-        assert hasattr(context.hijacked_test_case, "live_server_url"), "context.hijacked_test_case needs attribute live_server_url for this helper"
-        f(context, *args, **kwargs)
+# Use these for now, so that we don't DROurselves, but eventually
+# we'll want to move away from mixins.
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
 
-    return new_f
+
+def build_url(context, url):
+    return urljoin(context.config.server_url, url)
 
 
 def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
     # Create the user if it doesn't exist
     if not User.objects.filter(username=admin_name):
-        u = User(username=admin_name, password=admin_pass)
-        u.save()
+      # TODO(MCGallaspy): Get rid of old integration tests and refactor the mixin methods
+      # as functions here.
+      class ContextWithMixin(CreateAdminMixin):
+          def __init__(self):
+              self.browser = context.browser
+      context_wm = ContextWithMixin()
+      context_wm.create_admin(username=admin_name, password=admin_pass)
     data = json.dumps({"username": admin_name, "password": admin_pass})
-    # TODO(MCGallaspy): Once there's a RESTful way to login put it here
-    # post(context, "/securesync/login", data)
+    url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
+    post(context, url, data)
 
 
 def logout(context):
-    # TODO(MCGallaspy): Once there's a RESTful way to logout put it here
-    # get(context, "/securesync/logout")
-    pass
+    url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
+    get(context, url)
 
 
 def post(context, url, data=""):
@@ -60,22 +66,31 @@ def get(context, url, data=""):
     return request(context, url, method="GET", data=data)
 
 
-
-@check_test_server_url
 def request(context, url, method="GET", data=""):
     """ Make a request to the testing server associated with context
 
     context: A `behave` context
     url: A relative url, i.e. "/zone/management/None" or "/securesync/logout"
     method: The HTTP method to use, i.e. GET, POST
-    data: A string containing the body of the request
+    data: A string containing the serialized JSON body of the request
 
     Returns the response.
     """
-    # cut off the "http://" part
-    lsurl = context.hijacked_test_case.live_server_url[7:]
-    conn = httplib.HTTPConnection(lsurl)
-    conn.request(method, url, data)
-    resp = conn.getresponse()
-    conn.close()
+
+    # A way to gain access to mixins, so that essential code is not duplicated
+    # Be careful how you use this!
+    # TODO(MCGallaspy): Get rid of old integration tests and refactor the mixin methods
+    # as functions here.
+    class ContextWithMixin(BrowserActionMixins):
+        def __init__(self):
+            self.browser = context.browser
+    
+    context_wm = ContextWithMixin()
+  
+    context.browser.get(build_url(context, reverse("homepage")))
+    context_wm.browser_wait_for_js_object_exists("$") 
+    context.browser.execute_script('window.FLAG=false; $.ajax({type: "%s", url: "%s", data: \'%s\', contentType: "application/json", success: function(data){window.FLAG=true; window.DATA=data}})' % (method, url, data))
+    context_wm.browser_wait_for_js_condition("window.FLAG")
+    resp = context.browser.execute_script("return window.DATA")
+
     return resp
