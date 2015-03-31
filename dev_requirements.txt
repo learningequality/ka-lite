@@ -1,1 +1,2 @@
 behave==1.2.4
+django-compressor==1.4
