@@ -37,6 +37,17 @@ def find_css_class_with_wait(context, css_class, **kwargs):
     return _find_elem_with_wait(context, (By.CLASS_NAME, css_class), **kwargs)
 
 
+def find_id_with_wait(context, id_str, **kwargs):
+    """ Tries to find an element with given id with an explicit timeout.
+    context: a behave context
+    id_str: A string with the id (no leading #)
+    kwargs: can optionally pass "wait_time", which will be the max wait time in
+        seconds. Default is defined by behave_helpers.py
+    Returns the element if found or None
+    """
+    return _find_elem_with_wait(context, (By.ID, id_str), **kwargs)
+
+
 def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
     "Private" function to hide Selenium details.
