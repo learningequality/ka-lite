@@ -7,6 +7,10 @@ that context in order to function (instead of just silently failing).
 import httplib
 import json
 
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from urlparse import urljoin
 
 from django.contrib.auth.models import User
@@ -16,6 +20,37 @@ from django.core.urlresolvers import reverse
 # we'll want to move away from mixins.
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
+
+
+# Maximum time to wait when trying to find elements
+MAX_WAIT_TIME = 1
+
+
+def find_css_class_with_wait(context, css_class, **kwargs):
+    """ Tries to find an element with given css class with an explicit timeout.
+    context: a behave context
+    css_class: A string with the css class (no leading .)
+    kwargs: can optionally pass "wait_time", which will be the max wait time in
+        seconds. Default is defined by behave_helpers.py
+    Returns the element if found or None
+    """
+    return _find_elem_with_wait(context, (By.CLASS_NAME, css_class), **kwargs)
+
+
+def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
+    """ Tries to find an element with an explicit timeout.
+    "Private" function to hide Selenium details.
+    context: a behave context
+    by: A tuple selector used by Selenium
+    wait_time: The max time to wait in seconds
+    Returns the element if found or None
+    """
+    try:
+        return WebDriverWait(context.browser, wait_time).until(
+            EC.presence_of_element_located(by)
+        )
+    except TimeoutException:
+        return None
 
 
 def build_url(context, url):
