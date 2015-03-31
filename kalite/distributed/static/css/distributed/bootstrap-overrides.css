@@ -255,10 +255,14 @@ form .input-group {
 }
 /* Navbar collapse styles for hamburger */
 .navbar-toggle {
-    background-color: #5AA685 !important;
+    background-color: #5AA685;
 }
 .navbar-toggle:hover {
     opacity: 0.7;
+}
+.navbar-toggle:active {
+    opacity: 1;
+    background-color: #40775F;
 }
 .navbar-toggle .icon-bar {
     background-color: #fff;
