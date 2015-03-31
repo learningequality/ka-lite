@@ -133,8 +133,6 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         """Run tests normally, but also run BDD tests.
         """
         extra_tests = extra_tests or []
-        test_labels = test_labels or None
-        
 
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
