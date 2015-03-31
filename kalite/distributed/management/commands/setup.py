@@ -284,27 +284,28 @@ class Command(BaseCommand):
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
-        if options['force-assessment-item-dl']  and not settings.RUNNING_IN_TRAVIS and not settings.CENTRAL_SERVER:
-            call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
-        elif not settings.RUNNING_IN_TRAVIS and options['interactive'] and not settings.CENTRAL_SERVER:
-            print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
-            print("If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
-            print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
-            print("Otherwise, we will download it from {url}.".format(url=settings.ASSESSMENT_ITEMS_ZIP_URL))
+        if not settings.CENTRAL_SERVER:
+            if options['force-assessment-item-dl']  and not settings.RUNNING_IN_TRAVIS:
+                call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
+            elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
+                print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
+                print("If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
+                print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
+                print("Otherwise, we will download it from {url}.".format(url=settings.ASSESSMENT_ITEMS_ZIP_URL))
 
-            if raw_input_yn("Do you wish to download the assessment items package now?"):
-                ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
-            elif raw_input_yn("Have you already downloaded the assessment items package?"):
-                ass_item_filename = get_assessment_items_filename()
+                if raw_input_yn("Do you wish to download the assessment items package now?"):
+                    ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
+                elif raw_input_yn("Have you already downloaded the assessment items package?"):
+                    ass_item_filename = get_assessment_items_filename()
+                else:
+                    ass_item_filename = None
+
+                if not ass_item_filename:
+                    logging.warning("No assessment items package file given. You will need to download and unpack it later.")
+                else:
+                    call_command("unpack_assessment_zip", ass_item_filename)
             else:
-                ass_item_filename = None
-
-            if not ass_item_filename:
                 logging.warning("No assessment items package file given. You will need to download and unpack it later.")
-            else:
-                call_command("unpack_assessment_zip", ass_item_filename)
-        else:
-            logging.warning("No assessment items package file given. You will need to download and unpack it later.")
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
