@@ -51,6 +51,8 @@
                 window.js_errors = window.js_errors || [];
                 window.js_errors.push(msg);
             }
+
+            
         </script>
 
         {% if request.in_context_localized %}
@@ -85,6 +87,22 @@
         $(function() {
             FastClick.attach(document.body);
         });
+
+        $(function() {
+              if ( $(window).width() <= 767 ) {
+                document.getElementById("user-name-a").removeAttribute("data-toggle");
+                document.getElementById("user-name").classList.add("open");
+              }
+            });
+
+        $(function() {
+            var logout = document.getElementById("logout");
+            var topnav = document.getElementById("topnav");
+            if ( $(window).width() <= 767 ) {
+              //$(logout).parent().prepend($(topnav));
+            }
+          });
+
         </script>
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/backbone/backbone.js' %}"></script>
@@ -167,6 +185,7 @@
               <div class="container">
                   <div class="row">
                       <div class="navbar-header">
+                          {# collapse entire menu #}
                           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" aria-hidden="true">
                               <span class="icon-bar"></span>
                               <span class="icon-bar"></span>
@@ -178,12 +197,7 @@
                               </a>
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
                           </div>
-                      </div>
-                      <div class="collapse navbar-collapse top-nav">
-                          <ul class="nav navbar-nav navbar-right nav-tabs " role="tablist">
-
-                            <!-- For all users -->
-                              {# Search box for responsive nav #}
+                          {# Search box for responsive nav #}
                               <div class="visible-xs">
                                   <li id="search_input">
                                       <form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
@@ -193,7 +207,13 @@
                                       </form>
                                   </li>
                               </div>
+                      </div>
 
+                      {# implement dropdown here? #}
+                      <div class="collapse navbar-collapse top-nav">
+                          <ul class="nav navbar-nav navbar-right nav-tabs " id="topnav"role="tablist">
+
+                            <!-- For all users -->
                             {# Search box for normal nav #}
                             <li class="hidden-xs">
                               <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
@@ -277,12 +297,12 @@
                             {% endif %}
                             
                             <!-- Farthest right nav is logged in user dropdown -->
-                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}" id="user-name">
-                              <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown">
+                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %} " id="user-name">
+                              <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown" id="user-name-a">
                                   <span id="username">
                                     <!-- Username injected here w/ js -->
                                   </span>
-                                <span class="caret"></span>
+                                <span class="caret hidden-xs"></span>
                               </a>
 
                               <ul class="dropdown-menu" data-no-collapse="true" role="menu">
@@ -305,7 +325,7 @@
                                 </li> -->
                                 <li role="presentation" class="divider student-only"></li>
                                 <!-- Logout goes at the bottom! -->
-                                <li role="presentation">
+                                <li role="presentation" id="logout">
                                   <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}" href="#">
                                     {% trans "Logout" %}
                                   </a>
