@@ -4,26 +4,24 @@ var downloading = false;
 
 /**
 window.sessionModel.set({
-    start_languagepackdownload_url: "{% url 'start_languagepack_download' %}",
+    START_LANGUAGEPACKDOWNLOAD_URL: "{% url 'start_languagepack_download' %}",
     INSTALLED_LANGUAGES_URL: "{% url 'installed_language_packs' %}",
     AVAILABLE_LANGUAGEPACK_URL: "http://" + window.sessionModel.get("CENTRAL_SERVER_HOST") +  "/api/i18n/language_packs/available/{{ SHORTVERSION }}",
     DELETE_LANGUAGEPACK_URL: "{% url 'delete_language_pack' %}",
-    defaultLanguage: "{{ default_language }}",
-    BETA_BUTTON_URL: "{% static 'images/updates/beta-button.png' %}"
+    DEFAULT_LANGUAGE: "{{ default_language }}",
 });
 **/
-
+/*
 window.sessionModel.set({
-    start_languagepackdownload_url: "",
+    START_LANGUAGEPACKDOWNLOAD_URL: "",
     INSTALLED_LANGUAGES_URL: "",
     AVAILABLE_LANGUAGEPACK_URL: "",
     DELETE_LANGUAGEPACK_URL: "",
-    defaultLanguage: "",
-    BETA_BUTTON_URL: ""
+    DEFAULT_LANGUAGE: "",
 });
-
+*/
 function get_available_languages() {
-    return doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
+    return doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
@@ -36,7 +34,7 @@ function get_available_languages() {
 }
 
 function get_installed_languages() {
-    return doRequest(INSTALLED_LANGUAGES_URL, null, {
+    return doRequest(window.sessionModel.get("INSTALLED_LANGUAGES_URL"), null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
@@ -62,7 +60,7 @@ function display_languages() {
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
-            if (lang['code'] !== defaultLanguage) {
+            if (lang['code'] !== window.sessionModel.get("DEFAULT_LANGUAGE")) {
                 link_text = sprintf("<span><a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'><button type='button' class='btn btn-default btn-sm'>%(link_text)s</button></a></span>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
@@ -124,7 +122,7 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
-    doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
+    doRequest(window.sessionModel.get("DELETE_LANGUAGEPACK_URL"), {lang: lang_code})
         .success(function(resp) {
             get_installed_languages();
             display_languages(installables);
@@ -219,7 +217,7 @@ function start_languagepack_download(lang_code) {
     downloading = true;
     // tell server to start languagepackdownload job
     doRequest(
-        start_languagepackdownload_url,
+        window.sessionModel.get("START_LANGUAGEPACKDOWNLOAD_URL"),
         { lang: lang_code }
     ).success(function(progress, status, req) {
         updatesStart(

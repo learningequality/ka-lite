@@ -30,3 +30,16 @@ test("Default values", function() {
   return equal(this.sessionModel.get("CURRENT_LANGUAGE"), "");
 });
 
+/*
+The updates app defines some variables we should have set.
+This is a regression test for issue 3460.
+*/
+test("Default values for updates app", function() {
+  expect(5);
+
+  equal(this.sessionModel.get("START_LANGUAGEPACKDOWNLOAD_URL"), "");
+  equal(this.sessionModel.get("INSTALLED_LANGUAGES_URL"), "");
+  equal(this.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), "");
+  equal(this.sessionModel.get("DELETE_LANGUAGEPACK_URL"), "");
+  return equal(this.sessionModel.get("DEFAULT_LANGUAGE"), "");
+});
