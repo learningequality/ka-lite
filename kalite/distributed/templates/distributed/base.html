@@ -84,22 +84,16 @@
 
         <script type="text/javascript" src="{% static 'js/fastclick.js' %}"></script>
         <script>
+
         $(function() {
             FastClick.attach(document.body);
         });
 
+         /* Jessica TODO: Backbonify this function... when the time comes.*/
         $(function() {
-              if ( $(window).width() <= 767 ) {
-                document.getElementById("user-name-a").removeAttribute("data-toggle");
-                document.getElementById("user-name").classList.add("open");
-              }
-            });
-
-        $(function() {
-            var logout = document.getElementById("logout");
-            var topnav = document.getElementById("topnav");
             if ( $(window).width() <= 767 ) {
-              //$(logout).parent().prepend($(topnav));
+              document.getElementById("user-name-a").removeAttribute("data-toggle");
+              document.getElementById("user-name").classList.add("open");
             }
           });
 
@@ -209,7 +203,6 @@
                               </div>
                       </div>
 
-                      {# implement dropdown here? #}
                       <div class="collapse navbar-collapse top-nav">
                           <ul class="nav navbar-nav navbar-right nav-tabs " id="topnav"role="tablist">
 
@@ -296,6 +289,11 @@
                               </li>
                             {% endif %}
                             
+                            <hr class="nav-divider student-only">
+                            {% if request.is_admin or request.session.facility_user.facility %}
+                            <hr class="nav-divider admin-only">
+                            {% endif %}
+
                             <!-- Farthest right nav is logged in user dropdown -->
                             <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %} " id="user-name">
                               <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown" id="user-name-a">
