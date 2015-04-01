@@ -2,6 +2,26 @@ var installable_languages = [];
 var installed_languages = [];
 var downloading = false;
 
+/**
+window.sessionModel.set({
+    start_languagepackdownload_url: "{% url 'start_languagepack_download' %}",
+    INSTALLED_LANGUAGES_URL: "{% url 'installed_language_packs' %}",
+    AVAILABLE_LANGUAGEPACK_URL: "http://" + window.sessionModel.get("CENTRAL_SERVER_HOST") +  "/api/i18n/language_packs/available/{{ SHORTVERSION }}",
+    DELETE_LANGUAGEPACK_URL: "{% url 'delete_language_pack' %}",
+    defaultLanguage: "{{ default_language }}",
+    BETA_BUTTON_URL: "{% static 'images/updates/beta-button.png' %}"
+});
+**/
+
+window.sessionModel.set({
+    start_languagepackdownload_url: "",
+    INSTALLED_LANGUAGES_URL: "",
+    AVAILABLE_LANGUAGEPACK_URL: "",
+    DELETE_LANGUAGEPACK_URL: "",
+    defaultLanguage: "",
+    BETA_BUTTON_URL: ""
+});
+
 function get_available_languages() {
     return doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
         cache: false,
