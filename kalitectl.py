@@ -55,7 +55,6 @@ from __future__ import print_function
 import sys
 import os
 
-import pdb; pdb.set_trace()
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
     sys.path = [
