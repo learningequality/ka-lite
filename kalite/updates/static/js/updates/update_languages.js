@@ -2,24 +2,6 @@ var installable_languages = [];
 var installed_languages = [];
 var downloading = false;
 
-/**
-window.sessionModel.set({
-    START_LANGUAGEPACKDOWNLOAD_URL: "{% url 'start_languagepack_download' %}",
-    INSTALLED_LANGUAGES_URL: "{% url 'installed_language_packs' %}",
-    AVAILABLE_LANGUAGEPACK_URL: "http://" + window.sessionModel.get("CENTRAL_SERVER_HOST") +  "/api/i18n/language_packs/available/{{ SHORTVERSION }}",
-    DELETE_LANGUAGEPACK_URL: "{% url 'delete_language_pack' %}",
-    DEFAULT_LANGUAGE: "{{ default_language }}",
-});
-**/
-/*
-window.sessionModel.set({
-    START_LANGUAGEPACKDOWNLOAD_URL: "",
-    INSTALLED_LANGUAGES_URL: "",
-    AVAILABLE_LANGUAGEPACK_URL: "",
-    DELETE_LANGUAGEPACK_URL: "",
-    DEFAULT_LANGUAGE: "",
-});
-*/
 function get_available_languages() {
     return doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
         cache: false,
