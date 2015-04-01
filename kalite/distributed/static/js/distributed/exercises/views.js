@@ -397,7 +397,7 @@ window.ExerciseView = Backbone.View.extend({
     },
 
     update_title: function() {
-        this.$(".exercise-title").text(this.data_model.get("title"));
+        this.$(".exercise-title").text(gettext(this.data_model.get("title")));
     },
 
     hint_used: function() {
