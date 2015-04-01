@@ -104,6 +104,7 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
+    "compressor",
     "kalite.distributed",
 )
 
