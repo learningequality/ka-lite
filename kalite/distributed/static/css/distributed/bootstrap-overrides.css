@@ -506,6 +506,9 @@ footer {
     .manage-nav ul li {
         width: 100px;
     }
+    .manage-nav ul li {
+        width: 100px;
+    }
 }
 @media screen and (max-width: 480px) {
     .manage-nav ul li {
@@ -516,6 +519,7 @@ footer {
 /* END SMALL MOBILE SCREENS */
 
 @media screen and (max-width: 767px) {
+
     /*** RESTYLING OF FIRST LEVEL DROPDOWN NAV ***/
     .nav-tabs li a {
         margin-bottom: 0px;
