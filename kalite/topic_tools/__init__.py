@@ -534,8 +534,7 @@ def smart_translate_item_data(item_data):
             elif isinstance(field_data, list):
                 item_data[field] = map(smart_translate_item_data, field_data)
 
-
-            return item_data
+        return item_data
 
 
 
