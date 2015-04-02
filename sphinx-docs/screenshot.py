@@ -54,7 +54,12 @@ def process_screenshots(app, env):
         return
 
     all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
-    subprocess = Popen(SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str", json.dumps(all_args)])
+    # If building in a different language, start the server in a different language
+    command = SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str", json.dumps(all_args)]
+    language = env.config.language
+    if language:
+        command += ["--lang", language]
+    subprocess = Popen(command)
     subprocess.wait()
     if display:
         display.stop()
@@ -219,7 +224,6 @@ class Screenshot(Image):
         Build language can be accessed from the BuildEnvironment.
         """
         self.env = self.state.document.settings.env
-        language = self.env.config.language
         return_nodes = []
         if not hasattr(self.env, 'screenshot_all_screenshots'):
             self.env.screenshot_all_screenshots = []

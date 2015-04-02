@@ -1,3 +1,4 @@
 sphinx
+sphinx-intl
 # Required by screenshots.py to take screenshots in headless manner
 pyvirtualdisplay
