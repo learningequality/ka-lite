@@ -1,3 +1,4 @@
+@as_coach
 Feature: Inline help
     Gives context to elements on the page using modal dialogs and highlighting elements.
 
