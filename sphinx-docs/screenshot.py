@@ -52,7 +52,10 @@ def purge_screenshots(app, env, docname):
 def process_screenshots(app, env):
     if not hasattr(env, 'screenshot_all_screenshots'):
         return
-
+    # Don't bother building screenshots if we're just collecting messages.
+    # Just checks if we invoked the build command with "gettext" in there somewhere
+    if "gettext" in sys.argv:
+        return
     all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
     # If building in a different language, start the server in a different language
     command = SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str", json.dumps(all_args)]
