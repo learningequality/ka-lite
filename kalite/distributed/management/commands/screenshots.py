@@ -231,14 +231,13 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         """
         if not lang_code:
             return
-        
-        self.browser.get(reverse("homepage"))
-        self.browser.wait_for_js_object_exists("$")
+        self.browser.get(self.live_server_url + reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$")
         data = json.dumps({"lang": lang_code})
-        self.browser.execute_script("window.SUCCESS=false; $.ajax({type: \"POST\", url: \"%s\", data: \"%s\", contentType: \"application/json\", success: function(){window.SUCCESS=true}})" % (reverse("set_default_language"), data))
-        self.browser.wait_for_js_condition("window.SUCCESS")    
+        self.browser.execute_script("window.SUCCESS=false; $.ajax({type: \"POST\", url: \"%s\", data: '%s', contentType: \"application/json\", success: function(){window.SUCCESS=true}})" % (reverse("set_default_language"), data))
+        self.browser_wait_for_js_condition("window.SUCCESS")    
         # Ensure the changes are loaded 
-        self.browser.get(reverse("homepage"))
+        self.browser.get(self.live_server_url + reverse("homepage"))
         
 
     def validate_json_keys(self, shot):
