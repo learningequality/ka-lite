@@ -48,7 +48,8 @@ class RegisteredDevicePublicKeyForm(forms.ModelForm):
         return zone
 
     def clean_public_key(self):
-        public_key = self.cleaned_data["public_key"]
+        # Some browsers (unclear which) are converting plus signs to spaces during decodeURIComponent
+        public_key = self.cleaned_data["public_key"].replace(" ", "+")
         if RegisteredDevicePublicKey.objects.filter(public_key=public_key).count() > 0:
             raise forms.ValidationError(_("This public key has already been registered!"))
         return public_key
