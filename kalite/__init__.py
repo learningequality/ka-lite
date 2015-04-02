@@ -1,4 +1,5 @@
 import os
+import requests
 
 from django.conf import settings
 
@@ -27,3 +28,8 @@ def is_installed():
         # except:
         #     return False
         return True
+
+
+# Modify Request's default user agent to include the KA Lite version number
+base_headers = requests.defaults.defaults["base_headers"]
+base_headers["User-Agent"] = ("ka-lite/%s " % VERSION) + base_headers["User-Agent"]
