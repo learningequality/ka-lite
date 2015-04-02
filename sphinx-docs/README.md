@@ -21,9 +21,19 @@ Then, install following python packages:
     pip install sphinx
 ```
 
-## Builiding Documentation
+## Building Documentation
 Change your current working directory to `sphinx-docs` directory under `ka-lite` root and execute following command:
 ```
     make html
 ```
 If the above command executes successfully, docs should be found under `sphinx-docs/_build` directory inside `ka-lite`.
+
+## Building translated docs
+1. Make sure you have the sphinx-intl dependency (run the command `pip install -r requirements` in this directory).
+2. Extract the translatable messages into pot files using the command `make gettext`. The pot files are then found in `_build/locale directory`.
+3. Setup po files for your target language with the command `sphinx-intl update -p _build/locale -l xx`, where xx is the language code of your target language (i.e. "de" or "eo"). TODO: Setup process on the central server to create po files and include them. (Look at update_pot on central server.)
+4. Translate the po files in `locale/xx/LC_MESSAGES`. TODO: Automate this.
+5. Build the mo files with `sphinx-intl build`
+6. Make the docs in the target language with the command `make -e SPHINXOPTS="-Dlanguage='xx'" html`
+7. Party time!
+
