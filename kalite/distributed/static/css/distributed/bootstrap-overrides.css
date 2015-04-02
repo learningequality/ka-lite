@@ -460,22 +460,6 @@ footer {
     h3.suggested-action-title { font-size: 18px; }
 
 }
-<<<<<<< HEAD
-=======
-@media only screen and (max-width: 767px) {
-    .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
-    form#search-box { margin-bottom: 10px; }
-    h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
-    .suggested-action .topic-list a { font-size: 1.25em; }
-    .language-select { text-align: center; margin: 10px 0px; height: 20px !important; }
-    .language-select select { top: 0 !important; }
-    .teacher-only.language-select { height: 20px !important; }
-    .navbar-nav .open .dropdown-menu { background: white; }
-    #search_box { width: 30%; margin-left: 15px; }
-    .navbar-nav { margin: 0px 0px; }
-    
-}
->>>>>>> script that disables the dropdown menu within collapse on smaller screen
 @media only screen and (max-width: 469px) {
     h3.suggested-action-title { font-size: 18px; padding-top: 0; }
     #suggested-action-p { font-size: 14px; }
