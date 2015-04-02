@@ -89,13 +89,18 @@
             FastClick.attach(document.body);
         });
 
-         /* Jessica TODO: Backbonify this function... when the time comes.*/
-        $(function() {
-            if ( $(window).width() <= 767 ) {
-              document.getElementById("user-name-a").removeAttribute("data-toggle");
-              document.getElementById("user-name").classList.add("open");
-            }
-          });
+         /* Jessica TODO: Backbonify this function and this page... when the time comes.
+            This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
+          window.addEventListener("resize", function (e) {
+              if ( $('body').innerWidth() <= 750 ) {
+                document.getElementById("user-name-a").removeAttribute("data-toggle");
+                document.getElementById("user-name").classList.add("open");
+              }
+              if ( $('body').innerWidth() >= 751 ) {
+                document.getElementById("user-name-a").setAttribute("data-toggle", "dropdown");
+                document.getElementById("user-name").classList.remove("open");
+              }
+            });
 
         </script>
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>

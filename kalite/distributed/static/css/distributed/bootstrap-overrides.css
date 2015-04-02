@@ -134,12 +134,12 @@ input[type="submit"] {
 .top-nav li a:hover,
 .top-nav li a,
 .top-nav li.active a,
-.top-nav li a:active {
+.top-nav li a:active,
+a#user-name-a.dropdown-toggle {
     border-left: 2px solid #5AA685;
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
 }
-
 .navbar ul li.dropdown,
 .navbar ul li.dropdown.open {
     padding-right: 0;
@@ -553,13 +553,17 @@ footer {
         background: #76afd5 !important;
         border-radius: 0 0 0 0;
     }
-    .nav-tabs li.active a:hover,
-    .nav-tabs li a:hover,
-    .navbar ul li.dropdown.open a, 
-    .top-nav li.active a,
+    .navbar ul li.dropdown.open a,
     #points {
+        color: #32739E !important;
+        font-weight: normal !important;
+    }
+    .navbar ul li.dropdown.open a:hover,
+    .top-nav li.active a,
+    .top-nav li.active a:hover,
+    .nav-tabs li a:hover {
         color: white !important;
-        font-weight: bold;
+        font-weight: bold !important;
     }
     .nav-tabs li a:active,
     .navbar ul li.dropdown.open a,
@@ -579,12 +583,10 @@ footer {
     .nav-divider {
         background: #a3ceea;
     }
-    .navbar ul li.dropdown.open ul.dropdown-menu li a,
-    #points {
+    #username {
         text-transform: uppercase !important;
-    }
-    .navbar ul li.dropdown.open ul.dropdown-menu li {
-        padding-left: 20px;
+        font-weight: bold;
+        color: #32839E;
     }
     /*** END RESTYLE OF FIRST LEVEL DROPDOWN NAV ***/
 
