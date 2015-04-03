@@ -1,5 +1,5 @@
 Front End Code
-==============
+--------------
 
 All of our front end code is written in Javascript, with much of it using `Backbone.js <http://backbonejs.org>`_ (and its dependencies `jQuery <https://jquery.com/>`_ and `Underscore.js <http://underscorejs.org>`_).
 
@@ -10,7 +10,7 @@ Inline Javascript (i.e. Javascript directly in the Django templates inside `<scr
 For templating on the front end, we use `Handlebars.js <http://handlebarsjs.com/>`_ to render templates with a restricted set of statements and access to all variables passed into the template context.
 
 Implementing with Backbone
-==========================
+--------------------------
 
 Most of our front end code uses only three kinds of objects, Backbone Models, Collections, and Views.
 
@@ -67,7 +67,7 @@ The content to be rendered into the DOM in this instance is so simple that a Han
 The part of the page that the view is scoped to can be refered to by `this.$el` - this is a jQuery object for the subsection of the DOM of the view, so any whole view operations (such as `this.$el.html(message);` or `this.$el.show();`) will change the entire subsection of the DOM for that view (but will normally only be a subset of the DOM of the entire page). `this.$el.html(message);` sets the entire HTML content of the view DOM subsection to the content of the `message` variable, and `this.$el.show();` makes the DOM subsection visible.
 
 Creating Your Own Backbone View
-===============================
+-------------------------------
 
 To create a new Backbone View, you will either add to an existing Javascript file in the project, or create a new file. For example if you were to add a new View to the coachreports app you could create a file under `kalite/coachreports/static/js/coachreports/hexagon_report.js`. Some boilerplate to start off with might look something like this::
 
