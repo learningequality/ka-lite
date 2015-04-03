@@ -1,5 +1,6 @@
 """
 """
+import requests
 import urllib
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -92,8 +93,8 @@ def central_server_down_or_error(error_msg):
     error_msg: a string
     """
     if error_msg:
-        if urllib.urlopen(settings.CENTRAL_SERVER_URL).getcode() != 200:
-            return {"error_msg": "Central Server is not reachable, Please try after sometime."}
+        if requests.get(settings.CENTRAL_SERVER_URL).status_code != 200:
+            return {"error_msg": "Central Server is not reachable; please try after some time."}
         else:
             return {"error_msg": error_msg}
 
