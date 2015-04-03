@@ -290,6 +290,11 @@ form .input-group {
     background-color: #40775F !important;
 }
 
+.login-btn, btn-block {
+    display: block;
+    width: 100%;
+}
+
 /* ===================================
     Home & Coach Pages
 =================================== */
@@ -453,6 +458,18 @@ footer {
 #creative-commons-icon {
     height: 15px;
     width: 82px;
+}
+
+/* ===================================
+    Modal Dialog Login
+=================================== */
+
+.modal-dialog {
+    width: 400px;
+}
+
+div.panel-body form.form-horizontal .form-group {
+    margin: 0px;
 }
 
 
