@@ -91,7 +91,8 @@
 
          /* TODO(jtamiace): Backbonify this function and this page... when the time comes.
             This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
-          var collapsedNav = $(function () {
+          
+          function collapsedNav(e) {
             if ( $('body').innerWidth() <= 750 ) {
                 document.getElementById("user-name-a").removeAttribute("data-toggle");
                 document.getElementById("user-name").classList.add("open");
@@ -100,21 +101,9 @@
                 document.getElementById("user-name-a").setAttribute("data-toggle", "dropdown");
                 document.getElementById("user-name").classList.remove("open");
               }
-            });
-          window.addEventListener("resize", collapsedNav);
-          //window.addEventListener("onload", collapsedNav);
-          
-
-
-          /*window.addEventListener("resize", function (e) {
-              if ( $('body').innerWidth() <= 750 ) {
-                document.getElementById("user-name-a").removeAttribute("data-toggle");
-                document.getElementById("user-name").classList.add("open");
-              } else {
-                document.getElementById("user-name-a").setAttribute("data-toggle", "dropdown");
-                document.getElementById("user-name").classList.remove("open");
-              }
-            });*/
+            };
+          window.addEventListener("resize", collapsedNav, false);
+          window.addEventListener("pageshow", collapsedNav, true);
 
         </script>
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
