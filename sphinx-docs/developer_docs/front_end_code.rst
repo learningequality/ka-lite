@@ -52,24 +52,24 @@ Here is an example of a Backbone View in KA Lite that does just that::
 
     });
 
-The `initialize` method is called whenever a new instance of `TotalPointView` is instantiated (by calling e.g. `my_total_point_view = new TotalPointView({model: model})`). There are several arguments that will automatically get set on the view if passed in to the constructor, model is one of them. See the `Backbone.js <http://backbone.js>`_ for more details.
+The ``initialize`` method is called whenever a new instance of ``TotalPointView`` is instantiated (by calling e.g. ``my_total_point_view = new TotalPointView({model: model})``). There are several arguments that will automatically get set on the view if passed in to the constructor, model is one of them. See the `Backbone.js <http://backbone.js>`_ for more details.
 
-`_.bindAll(this);` is included in many `initialize` methods we use, this helps to ensure that whenever a View method is called, then the `this` variable inside each method always refers to the view itself - without this, especially when methods are called due to being bound to events, the 'this' variable can refer to something completely different.
+``_.bindAll(this);`` is included in many ``initialize`` methods we use, this helps to ensure that whenever a View method is called, then the ``this`` variable inside each method always refers to the view itself - without this, especially when methods are called due to being bound to events, the ``this`` variable can refer to something completely different.
 
-`this.listenTo(this.model, "change:points", this.render);` is an example of such an event binding. Here, the view is being told that whenever its model fires the event "change:points", then it should call its own render method (`this.render`). Backbone models fire "change" events whenever one of their attributes changes, and also a specific event like "change:points", which would only fire when the 'points' attribute of the model changes.
+``this.listenTo(this.model, "change:points", this.render);`` is an example of such an event binding. Here, the view is being told that whenever its model fires the event "change:points", then it should call its own render method (``this.render``). Backbone models fire "change" events whenever one of their attributes changes, and also a specific event like "change:points", which would only fire when the 'points' attribute of the model changes.
 
-Finally `this.render();` calls the render method of the view. This method is generally reserved for creating and modifying DOM elements that we will insert into the page.
+Finally ``this.render();`` calls the render method of the view. This method is generally reserved for creating and modifying DOM elements that we will insert into the page.
 
-Inside the render function `var points = this.model.get("points");` locally defines the points - as you can see from this example, to access the attributes of a Backbone Model, the `get("<attribute>")` method is used.
+Inside the render function ``var points = this.model.get("points");`` locally defines the points - as you can see from this example, to access the attributes of a Backbone Model, the ``get("<attribute>")`` method is used.
 
-The content to be rendered into the DOM in this instance is so simple that a Handlebars template is not used. Rather `message = sprintf(gettext("Points: %(points)d "), { points : points });` simply fills in the `%(points)d` with the 'points' attribute of the second argument of `sprintf`. See the `sprintf docs <https://www.npmjs.com/package/sprintf-js>`_ for more information.
+The content to be rendered into the DOM in this instance is so simple that a Handlebars template is not used. Rather ``message = sprintf(gettext("Points: %(points)d "), { points : points });`` simply fills in the ``%(points)d`` with the 'points' attribute of the second argument of ``sprintf``. See the `sprintf docs <https://www.npmjs.com/package/sprintf-js>`_ for more information.
 
-The part of the page that the view is scoped to can be refered to by `this.$el` - this is a jQuery object for the subsection of the DOM of the view, so any whole view operations (such as `this.$el.html(message);` or `this.$el.show();`) will change the entire subsection of the DOM for that view (but will normally only be a subset of the DOM of the entire page). `this.$el.html(message);` sets the entire HTML content of the view DOM subsection to the content of the `message` variable, and `this.$el.show();` makes the DOM subsection visible.
+The part of the page that the view is scoped to can be refered to by ``this.$el`` - this is a jQuery object for the subsection of the DOM of the view, so any whole view operations (such as ``this.$el.html(message);`` or ``this.$el.show();``) will change the entire subsection of the DOM for that view (but will normally only be a subset of the DOM of the entire page). ``this.$el.html(message);`` sets the entire HTML content of the view DOM subsection to the content of the ``message`` variable, and ``this.$el.show();`` makes the DOM subsection visible.
 
 Creating Your Own Backbone View
 -------------------------------
 
-To create a new Backbone View, you will either add to an existing Javascript file in the project, or create a new file. For example if you were to add a new View to the coachreports app you could create a file under `kalite/coachreports/static/js/coachreports/hexagon_report.js`. Some boilerplate to start off with might look something like this::
+To create a new Backbone View, you will either add to an existing Javascript file in the project, or create a new file. For example if you were to add a new View to the coachreports app you could create a file under ``kalite/coachreports/static/js/coachreports/hexagon_report.js``. Some boilerplate to start off with might look something like this::
 
     var HexagonReportView = BaseView.extend({
 
@@ -87,16 +87,16 @@ To create a new Backbone View, you will either add to an existing Javascript fil
 
     });
 
-`this.$el.html(this.template(this.model.attributes));` this line will insert all the attributes of the model into the template for rendering, and then set the HTML of the subsection of the DOM for the view to the resulting HTML.
+``this.$el.html(this.template(this.model.attributes));`` this line will insert all the attributes of the model into the template for rendering, and then set the HTML of the subsection of the DOM for the view to the resulting HTML.
 
-For this to work, there must be a file `kalite/coachreports/hbtemplates/reports/hexagon-counting.handlebars` that contains the Handlebars.js template for this view. For a simple report, the template might look something like this::
+For this to work, there must be a file ``kalite/coachreports/hbtemplates/reports/hexagon-counting.handlebars`` that contains the Handlebars.js template for this view. For a simple report, the template might look something like this::
 
     <div class="hexagon-report">
         <h3>{{_ "Hexagon Report" }}</h3>
         <p>{{_ "Current number of hexagons:" }}{{number_of_hexagons}}</p>
     </div>
 
-To have this render in a particular Django template, both of the above files would need to be imported through `<script>` tags in the Django template. The relevant tags to add in this case would be::
+To have this render in a particular Django template, both of the above files would need to be imported through ``<script>`` tags in the Django template. The relevant tags to add in this case would be::
 
     <script src="{% url 'handlebars_templates' module_name='reports' %}"></script>
     <script type="text/javascript" src="{% static 'js/coachreports/hexagon_report.js' %}"></script>
@@ -117,9 +117,9 @@ Finally, to actually have this render on the page, we would need to have a Backb
         });
     </script>
 
-Line by line this means - `$(function(){<code here>});` wait for the browser to finish rendering the HTML before executing the code inside this function.
-`window.hexagonReportModel = new window.HexagonReportModel();` make a new instance of the HexagonReportModel.
-`hexagonReportModel.fetch().then(function(){<code here>});` get the data for this particular model from the server, and when that has finished, then execute the code inside the function.
+Line by line this means - ``$(function(){<code here>});`` wait for the browser to finish rendering the HTML before executing the code inside this function.
+``window.hexagonReportModel = new window.HexagonReportModel();`` make a new instance of the HexagonReportModel.
+``hexagonReportModel.fetch().then(function(){<code here>});`` get the data for this particular model from the server, and when that has finished, then execute the code inside the function.
 
 ::
 
@@ -128,4 +128,4 @@ Line by line this means - `$(function(){<code here>});` wait for the browser to 
         model: hexagonReportModel
     });
 
-make a new instance of the HexagonReportView. This will automatically call initialize and so the view will render. In addition, `el: $("#student-report-container"),` tells the view that it should set its subsection of the DOM to be the DOM element selected by `$("#student-report-container")` (i.e. the element with the id 'student-report-container'), and `model: hexagonReportModel` tells it to set its 'model' attribute to the hexagonReportModel we instantiated and fetch before.
+make a new instance of the HexagonReportView. This will automatically call initialize and so the view will render. In addition, ``el: $("#student-report-container"),`` tells the view that it should set its subsection of the DOM to be the DOM element selected by ``$("#student-report-container")`` (i.e. the element with the id 'student-report-container'), and ``model: hexagonReportModel`` tells it to set its 'model' attribute to the hexagonReportModel we instantiated and fetch before.
