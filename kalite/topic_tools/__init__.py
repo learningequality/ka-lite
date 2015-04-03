@@ -165,7 +165,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 exercise_template = os.path.join(exercise_lang, exercise_file)
 
 
-            with i18n.translate_block(exercise_lang):
+            with i18n.translate_block(language):
                 exercise["available"] = available
                 exercise["lang"] = exercise_lang
                 exercise["template"] = exercise_template
@@ -517,7 +517,14 @@ def smart_translate_item_data(item_data):
     item_data and translates only the content field.
 
     """
-    if isinstance(item_data, dict):
+    # just translate strings immediately
+    if isinstance(item_data, basestring):
+        return _(item_data)
+
+    elif isinstance(item_data, list):
+        return map(smart_translate_item_data, item_data)
+
+    elif isinstance(item_data, dict):
         if 'content' in item_data:
             item_data['content'] = _(item_data['content']) if item_data['content'] else ""
 
@@ -527,8 +534,7 @@ def smart_translate_item_data(item_data):
             elif isinstance(field_data, list):
                 item_data[field] = map(smart_translate_item_data, field_data)
 
-
-    return item_data
+        return item_data
 
 
 
