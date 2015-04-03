@@ -94,7 +94,7 @@ def central_server_down_or_error(error_msg):
     """
     if error_msg:
         if requests.get(settings.CENTRAL_SERVER_URL).status_code != 200:
-            return {"error_msg": "Central Server is not reachable; please try after some time."}
+            return {"error_msg": _("Central Server is not reachable; please try again after some time.")}
         else:
             return {"error_msg": error_msg}
 
