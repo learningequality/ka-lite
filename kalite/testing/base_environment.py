@@ -10,7 +10,7 @@ from httplib import CannotSendRequest
 from selenium import webdriver
 from urlparse import urljoin
 
-from kalite.testing.behave_helpers import login_as_admin, logout
+from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout
 
 def before_all(context):
     browser = context.browser = webdriver.Firefox()
@@ -26,6 +26,9 @@ def before_feature(context, feature):
     if "as_admin" in feature.tags:
         context.logged_in = True
         login_as_admin(context)
+    elif "as_coach" in feature.tags:
+        context.logged_in = True
+        login_as_coach(context)
 
 def after_feature(context, feature):
     if context.logged_in:
