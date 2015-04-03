@@ -89,18 +89,32 @@
             FastClick.attach(document.body);
         });
 
-         /* Jessica TODO: Backbonify this function and this page... when the time comes.
+         /* TODO(jtamiace): Backbonify this function and this page... when the time comes.
             This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
-          window.addEventListener("resize", function (e) {
-              if ( $('body').innerWidth() <= 750 ) {
+          var collapsedNav = $(function () {
+            if ( $('body').innerWidth() <= 750 ) {
                 document.getElementById("user-name-a").removeAttribute("data-toggle");
                 document.getElementById("user-name").classList.add("open");
-              }
-              if ( $('body').innerWidth() >= 751 ) {
+              } 
+            if ( $('body').innerWidth() >= 751 ) {
                 document.getElementById("user-name-a").setAttribute("data-toggle", "dropdown");
                 document.getElementById("user-name").classList.remove("open");
               }
             });
+          window.addEventListener("resize", collapsedNav);
+          //window.addEventListener("onload", collapsedNav);
+          
+
+
+          /*window.addEventListener("resize", function (e) {
+              if ( $('body').innerWidth() <= 750 ) {
+                document.getElementById("user-name-a").removeAttribute("data-toggle");
+                document.getElementById("user-name").classList.add("open");
+              } else {
+                document.getElementById("user-name-a").setAttribute("data-toggle", "dropdown");
+                document.getElementById("user-name").classList.remove("open");
+              }
+            });*/
 
         </script>
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
@@ -195,25 +209,14 @@
                                   <img src="/data/{{ channel }}/images/horizontal-logo-small.png" alt="{{ channel_data.channel_name }} {% trans 'logo' %}">
                               </a>
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
-                          </div>
-                          {# Search box for responsive nav #}
-                              <div class="visible-xs">
-                                  <li id="search_input">
-                                      <form class="navbar-form " action="{% url 'search' %}" method="get"  role="search">
-                                          {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
-                                          <input type="text" name="query" id="search_box" class="form-control pull-left" placeholder="{% trans 'Topic, video, exercise...' %}" aria-label="{% trans 'Search for' %}" />
-                                          <button class="btn btn-default" id="search_btn" type="submit" aria-label="{% trans 'Submit' %}"><i class="glyphicon glyphicon-search" aria-hidden="true"></i></button>
-                                      </form>
-                                  </li>
-                              </div>
+                          </div>                             
                       </div>
 
                       <div class="collapse navbar-collapse top-nav">
                           <ul class="nav navbar-nav navbar-right nav-tabs " id="topnav"role="tablist">
-
                             <!-- For all users -->
-                            {# Search box for normal nav #}
-                            <li class="hidden-xs">
+                            {# Search box #}
+                            <li>
                               <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
                                 {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
                                 <div class="input-group">

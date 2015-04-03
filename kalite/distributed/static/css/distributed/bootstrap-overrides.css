@@ -206,15 +206,12 @@ a#user-name-a.dropdown-toggle {
         left: 0;
     }
 }
-
 .glyphicon-search:hover, .glyphicon-search:focus {
     cursor: pointer;
 }
 form#search-box {
     margin-right: 25px;
     margin-top: 14px;
-    position: relative;
-    right: 30px;
 }
 input #search.ui-autocomplete-input {
     font-size: 12px;
@@ -228,9 +225,6 @@ form .input-group {
 #search-button {
     color: #fff !important;
     background: #5AA685 !important;
-    position: relative;
-    left: 188px;
-    top: -2px;
     border-radius: 3px;
 }
 .source {
@@ -466,19 +460,6 @@ footer {
     h3.suggested-action-title { font-size: 18px; }
 
 }
-@media only screen and (max-width: 767px) {
-    .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
-    form#search-box { margin-bottom: 10px; }
-    h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
-    .suggested-action .topic-list a { font-size: 1.25em; }
-    .language-select { text-align: center; margin: 10px 0px; height: 20px !important; }
-    .language-select select { top: 0 !important; }
-    .teacher-only.language-select { height: 20px !important; }
-    .navbar-nav .open .dropdown-menu { background: white; }
-    #search_box { width: 30%; margin-left: 15px; }
-    .navbar-nav { margin: 0px 0px; }
-    
-}
 @media only screen and (max-width: 469px) {
     h3.suggested-action-title { font-size: 18px; padding-top: 0; }
     #suggested-action-p { font-size: 14px; }
@@ -499,20 +480,12 @@ footer {
     }
 }
 @media screen and (max-width: 454px) {
-    #search_box {
-        width: 70%;
-        margin-left: 8%;;
-    }
     .navbar-nav {
         margin: 0px 0px;
     }
     .navbar-collapse.in {
         overflow-y: hidden;
         overflow-x: hidden;
-    }
-    #search_btn {
-        float: right;
-        margin-right: 9%;
     }
     .manage-nav ul li {
         width: 100px;
@@ -524,8 +497,9 @@ footer {
         margin: 0 2px -10px -4px;
     }
 }
-@media screen and (max-width: 767px) {
+/* END SMALL MOBILE SCREENS */
 
+@media screen and (max-width: 767px) {
     /*** RESTYLING OF FIRST LEVEL DROPDOWN NAV ***/
     .nav-tabs li a {
         margin-bottom: 0px;
@@ -590,25 +564,24 @@ footer {
     }
     /*** END RESTYLE OF FIRST LEVEL DROPDOWN NAV ***/
 
-    .navbar-form {
-        padding: 0px 0px;
-    }
-    form#search-box{
-        margin-left: 5px;
-    }
-    form#search-box, #language_selector {
-        margin-bottom: 0px;
-    }
-    .navbar-collapse{
-        margin-left: 10px;
-    }
+    .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
+    h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
+    .suggested-action .topic-list a { font-size: 1.25em; }
+    .language-select { text-align: center; margin: 10px 0px; height: 20px !important; }
+    .language-select select { top: 0 !important; }
+    .teacher-only.language-select { height: 20px !important; }
+    .navbar-nav .open .dropdown-menu { background: white; }
+    .navbar-nav { margin: 0px 0px; }
+    .navbar-form { padding: 0px 0px; }
+    .input-group { width: 100%; }
+    #search-box { margin: auto !important; }
+    #search-box input { width: 85% !important; float: none !important; }
+    form#search-box { margin-bottom: 10px; width: 100%; margin-right: 0 !important;}
+    form#search-box, #language_selector { margin-bottom: 0px; }
+    .navbar-collapse { margin-left: 10px; }
     #search_input{
         margin-bottom: 10px;
         list-style-type: none;
-    }
-    #search_btn {
-        color: #fff !important;
-        background: #5AA685 !important;
     }
     .navbar-collapse.in {
         overflow-y: hidden;
