@@ -503,7 +503,6 @@ footer {
 /* END SMALL MOBILE SCREENS */
 
 @media screen and (max-width: 767px) {
-
     /*** RESTYLING OF FIRST LEVEL DROPDOWN NAV ***/
     .nav-tabs li a {
         margin-bottom: 0px;
