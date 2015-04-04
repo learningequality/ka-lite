@@ -80,6 +80,10 @@ $(document).ready(function() {
         minLength: 3,
         appendTo: ".navbar-collapse",
         html: true,  // extension allows html-based labels
+        focus: function(event, ui) {
+            // display label text in the search box on focus
+            ui.item.value = $(ui.item.label).text();
+        },
         source: function(request, response) {
             clear_messages();
 
