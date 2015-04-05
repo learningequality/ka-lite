@@ -461,19 +461,6 @@ footer {
 }
 
 /* ===================================
-    Modal Dialog Login
-=================================== */
-
-.modal-dialog {
-    width: 400px;
-}
-
-div.panel-body form.form-horizontal .form-group {
-    margin: 0px;
-}
-
-
-/* ===================================
     Media Queries
 =================================== */
 @media only screen and (max-width: 1199px) {
