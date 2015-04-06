@@ -1,13 +1,10 @@
 {% extends base_template %}
 {% load i18n %}
 {% load my_filters %}
+{% load staticfiles %}
 
 {% block headcss %}{{ block.super }}
-    <style>
-        h3 {
-            margin:20px 0px 5px 0px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/distributed/search.css' %}">
 {% endblock headcss %}
 
 {% block title %}{{ title }}{% endblock title %}
@@ -22,7 +19,11 @@
             <div class="row">
             {% for category, subresults in results.iteritems %}
                 <div class="col-sm-4 category-col">    
-                    <h3>{{ category }}{% if hit_max|get_item:category %}&nbsp;<br class="visible-sm"/><small>({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %})</small>{% endif %}</h3>
+                    <h3>{{ category }}
+                    {% if hit_max|get_item:category %}
+                        <br class="visible-sm"/>
+                        <small>({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %})</small>
+                    {% endif %}</h3>
                     <ul class="subresults-list">
                     {% for node in subresults %}
                         <li class="subresults-item">
