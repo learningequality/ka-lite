@@ -18,19 +18,30 @@
 
     {% else %}
         <h2>{{ title }}</h2>
-
-        {% for category, subresults in results.iteritems %}
-            <h3>{{ category }}{% if hit_max|get_item:category %} ({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %}){% endif %}</h3>
-            <ul>
-            {% for node in subresults %}
-                <li>
-                    <a href="{% url 'learn' %}{{ node.path }}" class="{{ node.kind }}-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
-                </li>
+        <table class="table table-bordered">
+            <tr>    
+            {% for category in results.iteritems %}
+                <th>
+                    {{ category }}{% if hit_max|get_item:category %} ({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %}){% endif %}
+                </th>
             {% endfor %}
-            {% if hit_max|get_item:category %}
-                <li>...</li>
-            {% endif %}
-            </ul>
-        {% endfor %}
+            </tr>
+            <tr>
+            {% for category, subresults in results.iteritems %}
+                <td>    
+                    <ul>
+                    {% for node in subresults %}
+                        <li>
+                            <a href="{% url 'learn' %}{{ node.path }}" class="{{ node.kind }}-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
+                        </li>
+                    {% endfor %}
+                    {% if hit_max|get_item:category %}
+                        <li>...</li>
+                    {% endif %}
+                    </ul>
+                </td>
+            {% endfor %}
+            </tr>
+        </table>
     {% endif %}
 {% endblock %}
