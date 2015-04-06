@@ -18,20 +18,14 @@
 
     {% else %}
         <h2>{{ title }}</h2>
-        <div class="container container-fluid">
+        <div class="container container-fluid search-results">
             <div class="row">
             {% for category, subresults in results.iteritems %}
-                <div class="col-md-4">
-                    {{ category }}{% if hit_max|get_item:category %} ({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %}){% endif %}
-                </div>
-            {% endfor %}
-            </div>
-            <div class="row">
-            {% for category, subresults in results.iteritems %}
-                <div class="col-md-4">    
-                    <ul>
+                <div class="col-sm-4 category-col">    
+                    <h3>{{ category }}{% if hit_max|get_item:category %}&nbsp;<br class="visible-sm"/><small>({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %})</small>{% endif %}</h3>
+                    <ul class="subresults-list">
                     {% for node in subresults %}
-                        <li>
+                        <li class="subresults-item">
                             <a href="{% url 'learn' %}{{ node.path }}" class="{{ node.kind }}-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
                         </li>
                     {% endfor %}
