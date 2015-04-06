@@ -22,7 +22,14 @@ SessionModel = Backbone.Model.extend({
         SERVER_INFO_PATH            : "",
         CENTRAL_SERVER_HOST         : "",
         SECURESYNC_PROTOCOL         : "",
-        CURRENT_LANGUAGE            : ""
+        CURRENT_LANGUAGE            : "",
+
+        // Used by updates app
+        START_LANGUAGEPACKDOWNLOAD_URL  : "",
+        INSTALLED_LANGUAGES_URL         : "",
+        AVAILABLE_LANGUAGEPACK_URL      : "",
+        DELETE_LANGUAGEPACK_URL         : "",
+        DEFAULT_LANGUAGE                : ""
     }
 });
 
