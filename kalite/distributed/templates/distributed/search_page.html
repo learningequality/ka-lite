@@ -18,17 +18,17 @@
 
     {% else %}
         <h2>{{ title }}</h2>
-        <table class="table table-bordered">
-            <tr>    
-            {% for category in results.iteritems %}
-                <th>
-                    {{ category }}{% if hit_max|get_item:category %} ({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %}){% endif %}
-                </th>
-            {% endfor %}
-            </tr>
-            <tr>
+        <div class="container container-fluid">
+            <div class="row">
             {% for category, subresults in results.iteritems %}
-                <td>    
+                <div class="col-md-4">
+                    {{ category }}{% if hit_max|get_item:category %} ({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %}){% endif %}
+                </div>
+            {% endfor %}
+            </div>
+            <div class="row">
+            {% for category, subresults in results.iteritems %}
+                <div class="col-md-4">    
                     <ul>
                     {% for node in subresults %}
                         <li>
@@ -36,12 +36,12 @@
                         </li>
                     {% endfor %}
                     {% if hit_max|get_item:category %}
-                        <li>...</li>
+                        <div>...</div>
                     {% endif %}
                     </ul>
-                </td>
+                </div>
             {% endfor %}
-            </tr>
-        </table>
+            </div>
+        </div>
     {% endif %}
 {% endblock %}
