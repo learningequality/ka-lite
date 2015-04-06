@@ -43,7 +43,7 @@
     padding-right: 0;
 }
 
-.ui-menu .ui-menu-item .dropdown-icon {
+.navbar-collapse .ui-menu .ui-menu-item .dropdown-icon {
     font-weight: 300;
     font-size: 1em;
     padding-right: 16px;
