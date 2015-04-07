@@ -15,7 +15,7 @@ class BaseClient(object):
 
     def __init__(self, host=None, require_trusted=True, verbose=True):
         self.url = host or settings.CENTRAL_SERVER_URL
-        self.parsed_url = urllib2.urlparse.urlparse(host)
+        self.parsed_url = urllib2.urlparse.urlparse(self.url)
         self.require_trusted = require_trusted
         self.verbose = verbose
 
