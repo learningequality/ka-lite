@@ -170,7 +170,7 @@ def call_outside_command_with_output(command, *args, **kwargs):
     # kalitectl.py wil look for centralserver.settings instead of
     # kalite.settings.
     new_env = os.environ.copy()
-    new_env["DJANGO_SETTINGS_MODULE"] = "kalite.settings"
+    new_env["DJANGO_SETTINGS_MODULE"] = kwargs.get("settings") or "kalite.settings"
 
     p = subprocess.Popen(
         cmd,
