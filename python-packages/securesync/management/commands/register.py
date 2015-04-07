@@ -61,7 +61,7 @@ class Command(BaseCommand):
         csrftoken = s.cookies['csrftoken_central']
         login_data = dict(username=options["username"], password=options["password"], csrfmiddlewaretoken=csrftoken, next='/')
         r = s.post(login_url, data=login_data, headers={"Referer": login_url})
-        assert r.status_code == 200, "Error logging into central server: " + r.content
+        assert r.status_code == 200 and "Incorrect user" not in r.content, "Error logging into central server: " + r.content
 
         # register on the central server
         reg_url = client.get_registration_url()
@@ -80,5 +80,3 @@ class Command(BaseCommand):
         own_device = Device.get_own_device()
         assert own_device.is_registered(), "Device was not registered successfully..."
         sys.stdout.write("Device '%s' has been successfully registered to zone '%s'!\n" % (own_device.id, own_device.get_zone().id))
-
-
