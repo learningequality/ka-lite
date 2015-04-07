@@ -1,6 +1,7 @@
 from behave import *
 
 from django.core.urlresolvers import reverse
+from selenium.webdriver.common.action_chains import ActionChains
 
 from kalite.testing.behave_helpers import build_url, find_css_class_with_wait, find_id_with_wait, elem_is_invisible_with_wait
 
@@ -71,6 +72,36 @@ def step_impl(context):
 @then("the modal disappears")
 def step_impl(context):
     assert elem_is_invisible_with_wait(context, context.modal), "The modal should not be visible."
+
+
+@then("the back button is disabled")
+def step_impl(context):
+    assert not modal.back_button.is_enabled(), "The back button should be disabled!"
+
+
+@given("I'm on a page with no intro")
+def step_impl(context):
+    assert False, "Not yet implemented"
+
+
+@then("I should not see the starting point")
+def step_impl(context):
+    try:
+        context.browser.find_element_by_id(STARTING_POINT_ID)
+        assert False, "There should not be a starting point element for the intro!"
+    except NoSuchElementException:
+        pass
+
+
+@when("I click outside the modal")
+def step_impl(context):
+    elem = find_css_class_with_wait(STEP_NUMBER_CLASS)
+    actions = ActionChains(context.browser)
+    # Move the mouse postion to the top left of the element, and
+    # then offset the position. Should lay outside of the element.
+    actions.move_to_element_with_offset(elem, -50, -50)
+    actions.click()
+    actions.peform()
 
 
 def get_modal_step_number(context):
