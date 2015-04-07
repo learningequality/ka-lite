@@ -63,7 +63,8 @@ if 'KALITE_DIR' in os.environ:
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
 else:
-    sys.path = ['python-packages', 'kalite'] + sys.path
+    filedir = os.path.dirname(__file__)
+    sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
 
 
 from django.core.management import ManagementUtility, get_commands
