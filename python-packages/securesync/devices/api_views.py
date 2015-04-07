@@ -58,7 +58,9 @@ def register_device(request):
     try:
         if not client_device.verify():
             # We've been getting this verification error a lot, even when we shouldn't. Send more details to us by email so we can diagnose.
-            msg = "\n\n".join([request.body, client_device._hashable_representation(), str(client_device.validate()), client_device.signed_by_id, client_device.id, str(request)])
+            import inspect
+            d = client_device
+            msg = "\n\n".join([str(msg) for msg in [request.body, d._hashable_representation(), d.__dict__, d.__class__, inspect.getfile(d.__class__), local_version, d.description, d.signed_by_id, d.id, request]])
             send_mail("Client device did not verify", msg, "kalite@learningequality.org", ["errors@learningequality.org"])
             return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key!", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
     except Exception as e:
@@ -66,7 +68,7 @@ def register_device(request):
         # that what should be proper exception namespacing in code being called isn't correctly catching this exception
         msg = "\n\n".join([request.body, client_device._hashable_representation(), "Exception: %s" % e, str(type(e)), client_device.signed_by_id, client_device.id, str(request)])
         send_mail("Exception while verifying client device", msg, "kalite@learningequality.org", ["errors@learningequality.org"])
-        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key!", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
+        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key.", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
 
     try:
         zone = register_self_registered_device(client_device, models, data)
