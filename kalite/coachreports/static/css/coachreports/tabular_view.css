@@ -97,7 +97,6 @@ th.headrowuser {
     height: 20px;
     overflow: hidden;
     text-align: center;
-    width: 120px;
     padding-right: 10px;
 }
 
@@ -105,6 +104,10 @@ th.headrowuser {
     float: left;
     width: 35px;
     height: 21px;
+}
+
+.legend span {
+    padding-left: 10px;
 }
 
 .selection {
