@@ -201,8 +201,8 @@
         {% endfor %}
         {% for field in form.visible_fields %}
           <p>
-            {{ field.errors }}
             {{ field.label_tag }} {{ field }}
+              {{ field.errors }}
             <span class="helptext">{{ field.help_text }}</span>
           </p>
         {% endfor %}
