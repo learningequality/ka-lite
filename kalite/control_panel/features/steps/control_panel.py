@@ -49,7 +49,7 @@ def go_to_facilities_page(context):
 def submit_facility_form(context):
     """ Just do the minimum to submit the facility form. """
     facility_form = find_id_with_wait(context, "facility_form")
-    name_field = facility_form.find_element_by_id("id_name")
+    name_field = find_id_with_wait(context, "id_name")
     name_field.send_keys("The Fortress of Solitude")
     facility_form.submit()
  

@@ -1,13 +1,31 @@
 """
 These methods will probably be used again and again in behave tests.
-We'll make a few assumptions: every function here takes a behave context
-as the first positional argument, and should assert what it expects from 
-that context in order to function (instead of just silently failing).
+We'll make an assumption: every function here takes a behave context
+as the first positional argument. 
+
+Useful functions you should know about and use include:
+
+For finding and interacting with elements safely:
+* elem_is_invisible_with_wait
+* find_css_class_with_wait
+* find_id_with_wait
+
+For navigating the site:
+* build_url
+
+For logging in and out:
+* login_as_coach
+* login_as_admin
+* logout
+
+For interacting with the API:
+* post
+* get
+* request
 """
-import httplib
 import json
 
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,14 +34,35 @@ from urlparse import urljoin
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+from kalite.facility.models import FacilityUser
+
 # Use these for now, so that we don't DROurselves, but eventually
 # we'll want to move away from mixins.
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 # Maximum time to wait when trying to find elements
 MAX_WAIT_TIME = 1
+
+
+def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
+    """ Waits for the element to become invisible
+    context: a behave context
+    elem: a WebDriver element
+    wait_time: sets the max wait time. Optional, but has a default value.
+    Returns True if the element is invisible or stale, otherwise waits and returns False
+    """
+    try:
+        WebDriverWait(context.browser, wait_time).until_not(
+            lambda: elem.is_displayed()
+        )
+        return True
+    except StaleElementReferenceException:
+        return True
+    except TimeoutException:
+        return False
 
 
 def find_css_class_with_wait(context, css_class, **kwargs):
@@ -68,19 +107,47 @@ def build_url(context, url):
     return urljoin(context.config.server_url, url)
 
 
-def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
-    # Create the user if it doesn't exist
-    if not User.objects.filter(username=admin_name):
-      # TODO(MCGallaspy): Get rid of old integration tests and refactor the mixin methods
-      # as functions here.
-      class ContextWithMixin(CreateAdminMixin):
-          def __init__(self):
-              self.browser = context.browser
-      context_wm = ContextWithMixin()
-      context_wm.create_admin(username=admin_name, password=admin_pass)
-    data = json.dumps({"username": admin_name, "password": admin_pass})
+def _login_user(context, username, password):
+    """ Logs a user in (either User of FacilityUser) with an api endpoint.
+    "Private" function to hide details, use login_as_* functions instead.
+    """
+    data = json.dumps({"username": username, "password": password})
     url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
     post(context, url, data)
+
+
+def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
+    """ Log in as a coach specified by the optional arguments, or create
+    such a user and log in if it doesn't exist.
+    :context: a behave context, used for its browser
+    :coach_name: optional. username of the coach.
+    :coach_pass: optional. password of the coach.
+    """
+    if not FacilityUser.objects.filter(username=coach_name):
+        class ContextWithMixin(FacilityMixins):
+            def __init__(self):
+                self.browser = context.browser
+        context_wm = ContextWithMixin()
+        context_wm.create_teacher(username=coach_name, password=coach_pass)
+    _login_user(context, coach_name, coach_pass)
+
+
+def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
+    """ Log in as an admin specified by the optional arguments, or create
+    such a user and log in if it doesn't exist.
+    :context: a behave context, used for its browser
+    :admin_name: optional. username of the admin.
+    :admin_pass: optional. password of the admin.
+    """
+    if not User.objects.filter(username=admin_name):
+        # TODO(MCGallaspy): Get rid of old integration tests and refactor the mixin methods
+        # as functions here.
+        class ContextWithMixin(CreateAdminMixin):
+            def __init__(self):
+                self.browser = context.browser
+        context_wm = ContextWithMixin()
+        context_wm.create_admin(username=admin_name, password=admin_pass)
+    _login_user(context, admin_name, admin_pass)
 
 
 def logout(context):
