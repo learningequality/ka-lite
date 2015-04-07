@@ -13,9 +13,9 @@ logging = settings.LOG
 
 class BaseClient(object):
 
-    def __init__(self, host="%s://%s/" % (settings.SECURESYNC_PROTOCOL,settings.CENTRAL_SERVER_HOST), require_trusted=True, verbose=True):
+    def __init__(self, host=None, require_trusted=True, verbose=True):
+        self.url = host or settings.CENTRAL_SERVER_URL
         self.parsed_url = urllib2.urlparse.urlparse(host)
-        self.url = "%s://%s" % (self.parsed_url.scheme, self.parsed_url.netloc)
         self.require_trusted = require_trusted
         self.verbose = verbose
 
