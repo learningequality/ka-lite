@@ -724,8 +724,7 @@ a.disabled {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
     position: relative;
-    top: -2px;
-    float: right;
+    top: -1px;
     padding: 2px 5px;
     font-size: 12px;
 }
