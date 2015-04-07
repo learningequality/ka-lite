@@ -15,13 +15,13 @@ Feature: Inline help
         Given I've started the intro
         When I click the "skip" button
         Then the modal disappears
-        When I start the intro again
+        Given I've started the intro
         Then I see a modal with step number 1
 
     Scenario: I give the "back" button a test drive
         Given I've started the intro
         Then I see a modal with step number 1
-        And The back button is disabled
+        And the back button is disabled
         When I click the "next" button
         Then I see a modal with step number 2
         When I click the "back" button
