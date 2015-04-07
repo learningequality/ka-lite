@@ -1,6 +1,6 @@
 """
 These methods will probably be used again and again in behave tests.
-We'll make an assumptions: every function here takes a behave context
+We'll make an assumption: every function here takes a behave context
 as the first positional argument. 
 
 Useful functions you should know about and use include:
