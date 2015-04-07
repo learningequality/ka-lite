@@ -1,0 +1,21 @@
+{
+  "id": "g6_u605_t1",
+  "title": "Grade 6: Unit 105 End of Year Exam",
+  "seed": 953,
+  "playlist_ids": ["g6_u601_p1", "g6_u602_p1", "g6_u603_p1", "g6_u604_p1"],
+  "repeats": "1",
+  "ids": ["ordering_negative_numbers", "adding_and_subtracting_negative_numbers",
+          "number_line_2", "writing_expressions_1", "evaluating_expressions_1",
+          "combining_like_terms_1", "one_step_equations", "comparing_decimals_2",
+          "adding_decimals_2", "subtracting_decimals", "dividing_decimals_1",
+          "converting_fractions_to_decimals", "converting_decimals_to_fractions_1",
+          "converting_percents_to_decimals", "recognizing_rays_lines_and_line_segments",
+          "angle_types", "complementary_and_supplementary_angles", "vertical_angles",
+          "congruent_angles", "parallel_lines_1", "angles_1", "triangle_types",
+          "triangle_angles_1", "expressing_ratios_as_fractions", "proportions_2"
+  ],
+  "is_practice": false,
+    "unit": 105,
+    "grade": 6,
+    "show": true
+}
