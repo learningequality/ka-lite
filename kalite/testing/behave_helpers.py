@@ -1,13 +1,31 @@
 """
 These methods will probably be used again and again in behave tests.
-We'll make a few assumptions: every function here takes a behave context
-as the first positional argument, and should assert what it expects from 
-that context in order to function (instead of just silently failing).
+We'll make an assumptions: every function here takes a behave context
+as the first positional argument. 
+
+Useful functions you should know about and use include:
+
+For finding and interacting with elements safely:
+* elem_is_invisible_with_wait
+* find_css_class_with_wait
+* find_id_with_wait
+
+For navigating the site:
+* build_url
+
+For logging in and out:
+* login_as_coach
+* login_as_admin
+* logout
+
+For interacting with the API:
+* post
+* get
+* request
 """
-import httplib
 import json
 
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -27,6 +45,24 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 # Maximum time to wait when trying to find elements
 MAX_WAIT_TIME = 1
+
+
+def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
+    """ Waits for the element to become invisible
+    context: a behave context
+    elem: a WebDriver element
+    wait_time: sets the max wait time. Optional, but has a default value.
+    Returns True if the element is invisible or stale, otherwise waits and returns False
+    """
+    try:
+        WebDriverWait(context.browser, wait_time).until_not(
+            lambda: elem.is_displayed()
+        )
+        return True
+    except StaleElementReferenceException:
+        return True
+    except TimeoutException:
+        return False
 
 
 def find_css_class_with_wait(context, css_class, **kwargs):
