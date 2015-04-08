@@ -10909,7 +10909,7 @@
     "title": "Playlist -- Dummy to display unit 105 for switching",
     "id": "g3_u305_p1",
     "tag": "Grade 3",
-    "show": false,
+    "show": true,
     "unit": 105,
     "entries": []
   }

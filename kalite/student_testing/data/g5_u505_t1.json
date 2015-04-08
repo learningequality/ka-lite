@@ -21,7 +21,7 @@
           "angle_types", "triangle_types", "perimeter_1",
           "perimeter_of_squares_and_rectangles"
   ],
-  "is_practice": false,
+  "is_practice": true,
     "unit": 105,
     "grade": 5,
     "show": true

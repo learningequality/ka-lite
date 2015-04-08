@@ -12,7 +12,7 @@
           "arithmetic_word_problems_2", "measuring_angles", "angle_types",
           "triangle_types", "axis_of_symmetry", "perimeter_1"
   ],
-  "is_practice": false,
+  "is_practice": true,
     "unit": 105,
     "grade": 4,
     "show": true
