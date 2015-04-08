@@ -215,7 +215,7 @@ var TotalPointView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this);
-        this.model.bind("change:points", this.render);
+        this.listenTo(this.model, "change:points", this.render);
         this.render();
     },
 
