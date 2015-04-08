@@ -10,7 +10,7 @@ Interacting with the system through ``kalite/manage.py`` has now been deprecated
 
 If you are pulling the source from git, you will need to run the setup command to complete the upgrade. From the base directory run::
 
-    /path/to/python/interpreter bin/kalite manage setup
+    bin/kalite manage setup
 
 On Windows, use the ``bin\windows\kalite.bat`` in the cmd.exe prompt::
 
