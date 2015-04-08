@@ -724,8 +724,7 @@ a.disabled {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
     position: relative;
-    top: -2px;
-    float: right;
+    top: -1px;
     padding: 2px 5px;
     font-size: 12px;
 }
@@ -806,22 +805,22 @@ Now add class definitions below for your new icon, and add that
 to items you want to have the icon appear with.
 */
 
-.icon-Exercise:before {
+.icon-Exercise .dropdown-icon:before {
     content: "\e60f";
 }
-.icon-Video:before {
+.icon-Video .dropdown-icon:before {
     content: "\e610";
 }
-.icon-Quiz:before {
+.icon-Quiz .dropdown-icon:before {
     content: "\e611";
 }
-.icon-Topic:before {
+.icon-Topic .dropdown-icon:before {
     content: "\e612";
 }
-.icon-Audio:before {
+.icon-Audio .dropdown-icon:before {
     content: "\e613";
 }
-.icon-Document:before {
+.icon-Document .dropdown-icon:before {
     content: "\e614";
 }
 

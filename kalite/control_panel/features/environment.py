@@ -5,17 +5,4 @@ could be used to bootstrap other integration tests in our project.
 It sets up a test server and test database by using the LiveServerTestCase
 machinery.
 """
-from kalite.testing.behave_helpers import login_as_admin, logout
-from kalite.testing.base_environment import before_all, after_all
-
-
-def before_feature(context, feature):
-    context.logged_in = False
-    if "as_admin" in feature.tags:
-        context.logged_in = True
-        login_as_admin(context)
-
-
-def after_feature(context, feature):
-    if context.logged_in:
-        logout(context)
+from kalite.testing.base_environment import before_all, after_all, before_feature, after_feature

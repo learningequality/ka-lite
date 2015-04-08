@@ -134,10 +134,10 @@
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <ul id="legend">
-                <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
-                <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>
+                <li class="legend"><div class="partial"></div><span>{% trans "In Progress" %}</span></li>
+                <li class="legend"><div class="complete"></div><span>{% trans "Completed" %}</span></li>
                 {% if request_report_type != "video" %}
-                <li class="legend"><div class="struggle"></div>{% trans "Struggling" %}</li>
+                <li class="legend"><div class="struggle"></div><span>{% trans "Struggling" %}</span></li>
                 {% endif %}
             </ul>
         </div>
