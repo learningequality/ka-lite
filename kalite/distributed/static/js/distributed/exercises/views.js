@@ -1,4 +1,4 @@
-window.ExerciseHintView = Backbone.View.extend({
+window.ExerciseHintView = BaseView.extend({
 
     template: HB.template("exercise/exercise-hint"),
 
@@ -17,7 +17,7 @@ window.ExerciseHintView = Backbone.View.extend({
 });
 
 
-window.ExerciseProgressView = Backbone.View.extend({
+window.ExerciseProgressView = BaseView.extend({
 
     template: HB.template("exercise/exercise-progress"),
 
@@ -62,7 +62,7 @@ window.ExerciseProgressView = Backbone.View.extend({
 });
 
 
-window.ExerciseRelatedVideoView = Backbone.View.extend({
+window.ExerciseRelatedVideoView = BaseView.extend({
 
     template: HB.template("exercise/exercise-related-videos"),
 
@@ -94,7 +94,7 @@ window.ExerciseRelatedVideoView = Backbone.View.extend({
 });
 
 
-window.ExerciseView = Backbone.View.extend({
+window.ExerciseView = BaseView.extend({
 
     template: HB.template("exercise/exercise"),
 
@@ -449,8 +449,7 @@ window.ExerciseView = Backbone.View.extend({
 
 });
 
-
-window.ExercisePracticeView = Backbone.View.extend({
+window.ExerciseWrapperBaseView = BaseView.extend({
 
     initialize: function() {
 
@@ -946,7 +945,7 @@ window.ExerciseTestView = Backbone.View.extend({
 });
 
 
-window.ExerciseQuizView = Backbone.View.extend({
+window.ExerciseQuizView = BaseView.extend({
 
     stop_template: HB.template("exercise/quiz-stop"),
 
@@ -1128,101 +1127,6 @@ window.ExerciseQuizView = Backbone.View.extend({
 
 });
 
-
-window.ExerciseHintView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-hint"),
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.render();
-
-    },
-
-    render: function() {
-            this.$el.html(this.template());
-    }
-
-});
-
-
-window.ExerciseProgressView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-progress"),
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.render();
-
-        this.listenTo(this.model, "change", this.update_streak_bar);
-        this.listenTo(this.collection, "add", this.update_attempt_display);
-
-    },
-
-    render: function() {
-            // this.$el.html(this.template(this.data_model.attributes));
-        this.$el.html(this.template());
-        this.update_streak_bar();
-        this.update_attempt_display();
-
-    },
-
-    update_streak_bar: function() {
-            // update the streak bar UI
-        this.$(".progress-bar")
-            .css("width", this.model.get("streak_progress") + "%")
-            .toggleClass("completed", this.model.get("complete"));
-        this.$(".progress-points").html(this.model.get("points") > 0 ? "(" + this.model.get("points") + " " + gettext("points") + ")" : "");
-    },
-
-    update_attempt_display: function() {
-
-        var attempt_text = "";
-
-        this.collection.forEach(function(model) {
-                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
-        });
-
-        this.$(".attempts").html(attempt_text);
-        this.$(".attempts span:last").css("font-size", "1.1em");
-    }
-});
-
-
-window.ExerciseRelatedVideoView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-related-videos"),
-
-    render: function(data) {
-
-        var self = this;
-
-        this.$el.html(this.template(data));
-
-        // the following is adapted from khan-exercises/related-videos.js to recreate thumbnail hover effect
-        // TODO(jamalex): this can all probably be replaced by a simple CSS3 rule
-        var captionHeight = 45;
-        var marginTop = 23;
-        var options = {duration: 150, queue: false};
-        this.$(".related-video-box")
-            .delegate(".thumbnail", "mouseenter mouseleave", function(e) {
-                    var isMouseEnter = e.type === "mouseenter";
-                self.$(e.currentTarget).find(".thumbnail_label").animate(
-                        {marginTop: marginTop + (isMouseEnter ? 0 : captionHeight)},
-                        options)
-                    .end()
-                    .find(".thumbnail_teaser").animate(
-                        {height: (isMouseEnter ? captionHeight : 0)},
-                        options);
-            });
-
-    }
-
-});
 
 function seeded_shuffle(source_array, random) {
     var array = source_array.slice(0);
