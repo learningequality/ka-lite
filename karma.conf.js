@@ -21,6 +21,7 @@ module.exports = function(config) {
       file_map['perseusjs_2'].slice(1),
       file_map['learnjs'].slice(1),
       file_map['pdfjs'].slice(1),
+      file_map['update_languagesjs'].slice(1),
       '**/tests/javascript_unit_tests/*.js',
       'testing/testrunner.js'
     ],

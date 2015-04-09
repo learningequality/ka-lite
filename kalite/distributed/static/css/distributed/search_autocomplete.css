@@ -35,12 +35,22 @@
     padding-bottom: 0;
     border-radius: 6px;
     border: 0px;
+    padding-left: 16px;
 }
 .navbar-collapse .ui-menu .ui-menu-item span {
     font-weight: 300;
-    font-size: 1em;
+    font-size: 0.95em;
     padding-right: 0;
 }
+
+.navbar-collapse .ui-menu .ui-menu-item .dropdown-icon {
+    font-weight: 300;
+    font-size: 1em;
+    padding-right: 16px;
+    float: left;
+    height: 30px;
+}
+
 .navbar-collapse .available {
     color: #000;
 }

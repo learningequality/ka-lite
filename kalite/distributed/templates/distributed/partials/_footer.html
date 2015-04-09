@@ -13,7 +13,7 @@
                   <div class="not-admin-only language-select">
                 {% endif %}
                 {% if num_language_choices > 1 %}
-                  <select id="language_selector">
+                  <select id="language_selector" aria-label="{% trans 'Select language' %}">
                   {% for lang_code, lang_meta in language_choices.iteritems %}
                     <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
                         {{ lang_code|get_language_name }}
@@ -34,7 +34,7 @@
                         {{ channel_data.footer_text }}
                     </p>
                     <p class="footer-text">
-                        <img id="creative-commons-icon" src="{% static 'images/distributed/' True %}{{ channel_data.channel_license }}.png">
+                        <img id="creative-commons-icon" src="{% static 'images/distributed/' True %}{{ channel_data.channel_license }}.png" alt="{% trans 'Creative Commons Attribution-NonCommercial-ShareAlike 3.0 United States License' %}">
                     </p>
                 {% endif %}
             </div>

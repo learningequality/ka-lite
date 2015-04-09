@@ -8,6 +8,7 @@ import sys
 
 from django.conf import settings; logging = settings.LOG
 from django.core import management
+from django.core.exceptions import ImproperlyConfigured
 from django.db.models import get_app
 from django.test.simple import DjangoTestSuiteRunner
 from django.test.utils import override_settings
@@ -131,16 +132,31 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
 
     def build_suite(self, test_labels, extra_tests, **kwargs):
         """Run tests normally, but also run BDD tests.
+        :test_labels: a tuple of test labels specified from the command line, i.e. distributed
         """
         extra_tests = extra_tests or []
 
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
-        for label in test_labels:
+        bdd_labels = test_labels
+        if not bdd_labels: # if e.g. we want to run ALL the tests and so didn't specify any labels
+            bdd_labels = reduce(lambda l, x: l + [x] if 'kalite' in x else l, settings.INSTALLED_APPS, [])
+            # Get rid of the leading "kalite." characters
+            bdd_labels = map(lambda s: s[7:], bdd_labels)
+            bdd_labels = tuple(bdd_labels)
+                    
+        for label in bdd_labels:
             if '.' in label:
                 print("Ignoring label with dot in: %s" % label)
                 continue
-            app = get_app(label)
+            try:
+                app = get_app(label)
+            except ImproperlyConfigured as e:
+                # Thrown when the app doesn't have any models
+                # TODO(MCGallaspy): decide if that's reasonable behavior.
+                # It means you can't put behave tests in apps with no models.
+                logging.warn(e)
+                continue
 
             # Check to see if a separate 'features' module exists,
             # parallel to the models module
