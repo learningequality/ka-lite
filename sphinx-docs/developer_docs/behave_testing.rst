@@ -12,14 +12,14 @@ We're using `behave 1.2.4 <http://pythonhosted.org/behave/>`_ to run our integra
 Behavior driven tests are specified using the Gherkin specification language, and then behave builds a test suite from step implementations that are directly mapped to clauses from the Gherkin specification.
 
 Running the integration tests
-=============================
+-----------------------------
 
 To get the dependencies run ```pip install -r dev_requirements.txt```. This should install the correct version of behave. Selenium is also required but is currently included in our python-packages directory.
 
 To run the tests simply run ```python kalitectl.py manage test``` just like you used to. This will automatically search out tests using both the unit test framework and the behave framework. You can specify apps, but right now there's no way to just run integration tests.
 
 Anatomy of the integration tests
-================================
+--------------------------------
 
 The test command will look inside each app for a ```features``` directory. Inside that directory should be one or more ```[name].feature``` files written in the Gherkin specification language. See `the behave docs <http://pythonhosted.org/behave/tutorial.html#feature-files>`_ for more details on Gherkin, or look in the ```control_panel``` app, where your humble author has attempted to provide some examples.
 
@@ -30,7 +30,7 @@ You can also set up the test environment at key stages in the testing process by
 Finally, in ```testing/behave_helpers.py``` you'll find various functions that should be generally useful for all integration tests. If you find yourself wishing you had a nice useful function, add it here. In order to avoid reproducing functionality while we phase out the old integration tests, if some functionality already exists in the form of a mixin, you should import it into that file and wrap it in a new function. Be very reticent about importing mixin code! A good rule of thumb is to glance at how something is implemented in the mixins first, and only import it if it's not trivial to reproduce. Only re-write if there's *no* chance of the new code producing an error! The main goal is to avoid maintaining two sets of code.
 
 Suggested workflow for writing new features
-===========================================
+-------------------------------------------
 
 Ideally you should:
 
@@ -41,7 +41,7 @@ Ideally you should:
 In practice, at least try to specify the tests first. Then you can seek out assistance implementing the steps.
 
 Selenium gotchas (aka race conditions)
-======================================
+--------------------------------------
 
 Finding elements on the page can be subject to race conditions if the page is not yet completely loaded, or if the DOM changes in response to AJAX stuff. Selenium pprovides methods for finding elements with and without explicit waits. When in doubt, use a wait. If your app is AJAX-y, write testable code by putting in events or flags that Selenium can explicitly wait for. The Selenium ```get``` method of browsing will wait for the page to fully load. *Do not assume* that following links using e.g. the ```click``` method will wait for the page to load -- *it does not*. To summarize:
 
