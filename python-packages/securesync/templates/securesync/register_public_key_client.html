@@ -7,10 +7,6 @@
 
 {% block headcss %}{{ block.super }}
     <style>
-        .title-info {
-            margin-bottom: 15px;
-            color: green;
-        }
         #one-click-register {
             margin-top:15px;
         }
@@ -18,6 +14,7 @@
         #online-register {
             margin-top:15px;
         }
+
     </style>
 {% endblock headcss %}
 
@@ -76,7 +73,7 @@
     {% if unregistered %}
     <div class="row">
         <h2 class="col-md-12">{% trans "What is device registration?" %}</h2>
-        <p class="col-md-10" style="margin-left:40px">
+        <p class="col-md-10" id="reg-dev-installation-info">
             {% trans "Once you register your installation with us, your data can be synced to our online repository when KA Lite has access to the Internet. This is a good thing! Here's why:" %}
         </p>
         <ul class="col-md-9 col-md-push-1 col-xs-push-1">
@@ -86,11 +83,11 @@
         </ul>
     </div>
 
-    <div class="row" style="margin-top:30px">
+    <div class="row" id="register-online-row">
         <h2 class="col-md-12">{% trans "Ready to register? You have two options:" %}</h2>
 
-            <div class="col-md-5" style="margin-left:40px">
-                <h4 class="title-info">{% trans "One-click registration (no online access to data)" %}</h4>
+            <div class="col-md-5" id="reg-dev-register-div">
+                <h4 class="reg-dev-title-info">{% trans "One-click registration (no online access to data)" %}</h4>
                 <p>
                     <strong>{% trans "The perfect option for individual users who just want to get KA Lite up and running fast and don't need online access to data." %}</strong>
                 </p>
@@ -103,7 +100,7 @@
             </div>
 
             <div class="col-md-6">
-                <h4 class="title-info">{% trans "Register with online access to data!" %}</h4>
+                <h4 class="reg-dev-title-info">{% trans "Register with online access to data!" %}</h4>
                 <p>
                     <strong>{% trans "The perfect option for adminstrators of larger projects!" %}</strong>
                 </p>
