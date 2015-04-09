@@ -257,13 +257,14 @@ class TestZoneFallbackSettingOnCentralSave(SecuresyncTestCase):
 class TestHashableFieldsAndSerialization(unittest.TestCase):
 
     def test_description_exclusion_regression_bug_2470(self):
+        """FacilityGroup.__init__ used to append "description" to _unhashable_fields, which affected other classes as well.
+        This test ensures that the description is not being excluded from Device._hashable_representation, even after
+        instantiating a FacilityGroup."""
 
         d = Device(name="Test", description="Test")
-
-        good_serialization = d._hashable_representation()
+        possibly_bad_serialization = d._hashable_representation()
+        self.assertIn("description=Test", possibly_bad_serialization, "Hashable representation of Device did not include description")
 
         g = FacilityGroup()
-
-        possibly_bad_serialization = d._hashable_representation()
-
-        self.assertEqual(good_serialization, possibly_bad_serialization, "Instatiating a FacilityGroup changed hashable representation of Device")
+        possibly_worse_serialization = d._hashable_representation()
+        self.assertIn("description=Test", possibly_worse_serialization, "Instantiating a FacilityGroup changed hashable representation of Device")
