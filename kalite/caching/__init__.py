@@ -17,11 +17,8 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.test.client import Client
 
-from fle_utils.internet import generate_all_paths
 from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
-from kalite.distributed.templatetags import kalite_staticfiles
-
 
 # Signals
 
@@ -79,7 +76,7 @@ def invalidate_inmemory_caches():
     """
     # TODO: loop through all modules and see if a module variable exists, using getattr,
     #   rather than hard-coding.
-    for module in (i18n, kalite_staticfiles, topic_tools):
+    for module in (i18n, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)

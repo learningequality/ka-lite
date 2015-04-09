@@ -3,22 +3,23 @@ var KhanUtil = window.KhanUtil || {};
 var Khan = window.Khan || {
     error: function() {},
     query: {debug: ""},
-    imageBase: STATIC_URL + "perseus/ke/images/",
-    urlBase: STATIC_URL + "perseus/ke/",
+    imageBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/images/",
+    urlBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/",
     scratchpad: {
         disable: function() {},
         enable: function() {},
         clear: function() {},
         resize: function() {}
     },
-    cleanupProblem: function() {}
+    cleanupProblem: function() {},
+    warnTimeout: function() {}
 };
 
 window.Exercises = _.extend({
     localMode: true,
     embeddedMode: true,
     useKatex: true,
-    khanExercisesUrlBase: STATIC_URL + "perseus/ke/",
+    khanExercisesUrlBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/",
     _current_framework: "khan-exercises",
     getCurrentFramework: function() {
         return Exercises._current_framework;
@@ -95,10 +96,10 @@ Exercises.PerseusBridge = {
 
         // Load khan-exercises modules, then perseus
         require([
-                STATIC_URL + "perseus/ke-deps.js"
+                window.sessionModel.get("STATIC_URL") + "perseus/ke-deps.js"
                 // STATIC_URL + "perseus/ke/main.js",
             ], function() {
-                require([STATIC_URL + "perseus/build/perseus-2.js"], Exercises.PerseusBridge._initialize);
+                require([window.sessionModel.get("STATIC_URL") + "perseus/build/perseus-2.js"], Exercises.PerseusBridge._initialize);
             }
         );
 

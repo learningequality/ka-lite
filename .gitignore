@@ -1,5 +1,12 @@
+# Ignore this
+# File created by Coverage
+.coverage
+
+# Eclipse
 .project
 .pydevproject
+
+# Undocumented ignores
 .DS_Store
 *.db
 *.sqlite*
@@ -43,6 +50,7 @@ writeup/
 /kalite/kalite-*.zip
 /kalite/local_settings.py
 /kalite/media
+/kalite/temp
 /data/*
 !/data/khan/
 /data/khan/assessmentitems.json
@@ -62,3 +70,4 @@ ghostdriver.log
 sphinx-docs/_build
 sphinx-docs/images/*
 /data/khan/assessmentitems.json.version
+file_map.json

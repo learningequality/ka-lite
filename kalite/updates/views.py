@@ -1,33 +1,14 @@
-import copy
-import datetime
 import git
-import json
 import os
-import re
-import sys
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
 
-from django.conf import settings
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.urlresolvers import reverse
-from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseServerError
-from django.template import RequestContext
-from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _, ugettext_lazy
-from django.views.decorators.cache import cache_control
-from django.views.decorators.cache import cache_page
 from django.contrib import messages
 
 from .models import VideoFile
-from fle_utils.chronograph import force_job
-from fle_utils.internet import am_i_online, JsonResponse
-from kalite import topic_tools
 from kalite.control_panel.views import local_install_context
-from kalite.i18n import get_installed_language_packs, get_language_name
-from kalite.shared.decorators import require_admin
+from kalite.i18n import get_installed_language_packs
+from kalite.shared.decorators.auth import require_admin
 from securesync.models import Device
 from securesync.devices import require_registration
 
@@ -49,7 +30,7 @@ def update_context(request):
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
     context = update_context(request)
-    messages.warning(request, 'For low-powered devices like the Raspberry Pi, please download videos one at a time.')
+    messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download videos one at a time.'))
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
     })
@@ -91,4 +72,3 @@ def update_software(request):
     })
 
     return context
-

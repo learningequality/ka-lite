@@ -62,7 +62,8 @@ if 'KALITE_DIR' in os.environ:
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
 else:
-    sys.path = ['python-packages', 'kalite'] + sys.path
+    filedir = os.path.dirname(__file__)
+    sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
 
 
 from django.core.management import ManagementUtility, get_commands
@@ -72,6 +73,9 @@ import httplib
 from urllib2 import URLError
 from socket import timeout
 from kalite.version import VERSION
+
+if os.name == "nt":
+    from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
 
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
@@ -219,7 +223,7 @@ def get_pid():
     listen_port = getattr(settings, "CHERRYPY_PORT", LISTEN_PORT)
 
     # Timeout is 1 second, we don't want the status command to be slow
-    conn = httplib.HTTPConnection(LISTEN_ADDRESS, listen_port, timeout=3)
+    conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
     try:
         conn.request("GET", PING_URL)
         response = conn.getresponse()
@@ -290,8 +294,12 @@ def manage(command, args=[], in_background=False):
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        thread = ManageThread(command, args=args)
-        thread.start()
+        if os.name != "nt":
+            thread = ManageThread(command, args=args, name=" ".join([command]+args))
+            thread.start()
+        else:
+            # TODO (aron): for versions > 0.13, see if we can just have everyone spawn another process (Popen vs. ManageThread)
+            Popen([sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args, creationflags=CREATE_NEW_PROCESS_GROUP)
 
 
 def start(debug=False, args=[], skip_job_scheduler=False):
@@ -341,16 +349,17 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=[
-                '--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)]
+            args=['--daemon',
+                  '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)
+                  ]
         )
-    args = "--host={host:s} --daemonize{production:s} --pidfile={pid:s} --startup-lock-file={startup:s}".format(
-        host=LISTEN_ADDRESS,
-        pid=PID_FILE,
-        production=" --production" if not debug else "",
-        startup=STARTUP_LOCK,
-    )
-    manage('kaserve', args=args.split(" "))
+    args = ["--host=%s" % LISTEN_ADDRESS,
+            "--daemonize",
+            "--pidfile=%s" % PID_FILE,
+            "--startup-lock-file=%s" % STARTUP_LOCK,
+            ]
+    args += ["--production"] if not debug else []
+    manage('kaserve', args)
 
 
 def stop(args=[], sys_exit=True):

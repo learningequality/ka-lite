@@ -8,9 +8,10 @@ from fle_utils.general import ensure_dir
 from mock import patch, MagicMock
 
 from django.core.management import call_command
+from django.test import TestCase
 
 import kalite.version as version
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 from kalite.contentload.management.commands import generate_assessment_zips as mod
 
 
@@ -18,6 +19,48 @@ TEST_FIXTURES_DIR = os.path.join(os.path.dirname(__file__),
                                         "fixtures")
 ASSESSMENT_ITEMS_SAMPLE_PATH = os.path.join(TEST_FIXTURES_DIR,
                                             "assessment_items_sample.json")
+
+class TestUrlConversion(TestCase):
+
+    def setUp(self):
+        with open(ASSESSMENT_ITEMS_SAMPLE_PATH) as f:
+            self.assessment_items = json.load(f)
+    
+    def test_image_url_converted(self):
+        url_string = "A string with http://example.com/cat_pics.gif"
+        expected_string = "A string with /content/khan/cat_pics.gif"
+        self.assertEqual(expected_string, mod.convert_urls(url_string))
+    
+    def test_multiple_image_urls_in_one_string_converted(self):
+        url_string = "A string with http://example.com/cat_pics.JPEG http://example.com/cat_pics2.gif"
+        expected_string = "A string with /content/khan/cat_pics.JPEG /content/khan/cat_pics2.gif"
+        self.assertEqual(expected_string, mod.convert_urls(url_string))
+
+    def test_content_link_converted(self):
+        link_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](https://www.khanacademy.org/humanities/history/ancient-medieval/Ancient/v/standard-of-ur-c-2600-2400-b-c-e)"
+        expected_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](/learn/khan/test-prep/ap-art-history/ancient-mediterranean-ap/ancient-near-east-ap/standard-of-ur-c-2600-2400-b-c-e/)"
+        self.assertEqual(expected_string, mod.convert_urls(link_string))
+
+    def test_bad_content_link_removed(self):
+        link_string = "Wrong!\n\n**[Watch video to review](https://www.khanacademy.org/humanities/art-history/v/the-penguin-king-has-risen)**\n\nThat's a wrap!"
+        expected_string = "Wrong!\n\n\n\nThat's a wrap!"
+        self.assertEqual(expected_string, mod.convert_urls(link_string))
+
+    def test_localize_all_image_urls(self):
+        new_items = mod.localize_all_image_urls(self.assessment_items)
+        old_item_data = self.assessment_items.values()[0]["item_data"]
+        new_item_data = new_items.values()[0]["item_data"]
+        self.assertEqual(old_item_data.replace("https://ka-perseus-graphie.s3.amazonaws.com/", "/content/khan/"), new_item_data)
+        self.assertNotIn("amazonaws.com", new_item_data)
+
+    def test_localize_all_content_links(self):
+        new_items = mod.localize_all_content_links(self.assessment_items)
+        old_item_data = self.assessment_items.values()[0]["item_data"]
+        new_item_data = new_items.values()[0]["item_data"]
+        self.assertEqual(old_item_data.replace(
+            "https://www.khanacademy.org/math/early-math/cc-early-math-add-sub-topic/basic-addition-subtraction/v/addition-introduction",
+            "/learn/khan/math/early-math/cc-early-math-add-sub-topic/basic-addition-subtraction/addition-introduction/"), new_item_data)
+        self.assertNotIn("khanacademy.org", new_item_data)
 
 
 class GenerateAssessmentItemsCommandTests(KALiteTestCase):
@@ -49,19 +92,20 @@ class GenerateAssessmentItemsCommandTests(KALiteTestCase):
 
         self.assertEqual(get_method.call_count, image_requests, "requests.get not called the correct # of times!")
 
-
         with open(mod.ZIP_FILE_PATH) as f:
             zf = zipfile.ZipFile(mod.ZIP_FILE_PATH)
             self.assertIn("assessmentitems.json", zf.namelist())  # make sure assessment items is written
 
             for filename in zf.namelist():
-                if ".gif" in filename:
+                if filename.lower().endswith(".gif"):
                     continue
-                elif ".jpg" in filename:
+                elif filename.lower().endswith(".jpg"):
                     continue
-                elif ".png" in filename:
+                elif filename.lower().endswith(".jpeg"):
                     continue
-                elif "assessmentitems.json" in filename:
+                elif filename.lower().endswith(".png"):
+                    continue
+                elif filename in ["assessmentitems.json", "assessmentitems.json.version"]:
                     continue
                 else:
                     self.assertTrue(False, "Invalid file %s got in the assessment zip!" % filename)
@@ -115,8 +159,6 @@ class UtilityFunctionTests(KALiteTestCase):
         mod.fetch_file_from_url_or_cache(self.imgurl)
         self.assertEqual(get_method.call_count, 0, "requests.get called! File wasn't cached!")
 
-
-
     def test_gets_images_urls_inside_item_data(self):
 
         result = list(mod.all_image_urls(self.assessment_sample))
@@ -126,8 +168,8 @@ class UtilityFunctionTests(KALiteTestCase):
             "%s not found!" % self.imgurl
         )
 
-    def test_localhosted_image_urls_replaces_with_local_urls(self):
-        new_assessment_items = mod.localhosted_image_urls(self.assessment_sample)
+    def test_localize_all_image_urls_replaces_with_local_urls(self):
+        new_assessment_items = mod.localize_all_image_urls(self.assessment_sample)
 
         all_images = list(mod.all_image_urls(new_assessment_items))
         self.assertNotIn(self.imgurl, all_images)

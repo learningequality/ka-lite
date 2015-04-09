@@ -7,11 +7,6 @@ import shutil
 import operator
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.management import call_command
-from django.core.management.base import CommandError
-from django.core.urlresolvers import reverse
-from django.utils import unittest
 
 from kalite.main.tests.base import MainTestCase
 from kalite.contentload.management.commands.channels import import_channel, base

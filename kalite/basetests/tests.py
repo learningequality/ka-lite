@@ -226,7 +226,7 @@ class PackagesTests(DependenciesTests):
         "pytz": "2012d",
         "requests": "0.14.2",
         "rsa": "3.1.1",
-        "securesync": "0.13.0",
+        "securesync": "1.0",
         "smmap": "0.8.2",
         "south": "0.8.4",
         "tastypie": "0.11.0",
@@ -312,7 +312,7 @@ class PathsTests(DependenciesTests):
     Check that we have access to all paths and files we need read or write access to.
     """
 
-    JSON_FILES = ("assessmentitems.json", "channel_data.json", "contents.json", "exercises.json",
+    JSON_FILES = ("channel_data.json", "contents.json", "exercises.json",
                   "topic_hierarchy.json", "topics.json",)
 
     def test_content_path(self):

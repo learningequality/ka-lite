@@ -9,11 +9,18 @@ from mock import patch, MagicMock, mock_open
 from django.conf import settings
 from django.core.management import call_command
 
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 from kalite.contentload.management.commands import unpack_assessment_zip as mod
 from kalite import version
 
+TEMP_KHAN_DATA_PATH = tempfile.mkdtemp()[1]
+TEMP_ASSESSMENT_ITEMS_PATH = os.path.join(TEMP_KHAN_DATA_PATH, "assessmentitems.json")
+TEMP_ASSESSMENT_ITEMS_VERSION_PATH = os.path.join(TEMP_KHAN_DATA_PATH, "assessmentitems.json.version")
+TEMP_ASSESSMENT_ITEMS_RESOURCES_DIR = tempfile.mkdtemp()[1]
 
+@patch.object(mod, "KHAN_DATA_PATH", TEMP_KHAN_DATA_PATH)
+@patch.object(mod, "ASSESSMENT_ITEMS_PATH", TEMP_ASSESSMENT_ITEMS_PATH)
+@patch.object(mod, "ASSESSMENT_ITEMS_VERSION_PATH", TEMP_ASSESSMENT_ITEMS_VERSION_PATH)
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
     def setUp(self):
@@ -54,7 +61,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
         with open(self.zipfile_path) as f:
             zip_raw_data = f.read()
             zf = zipfile.ZipFile(StringIO.StringIO(zip_raw_data))
-            get_method.return_value = MagicMock(content=zip_raw_data)
+            get_method.return_value.iter_content = MagicMock(return_value=zip_raw_data)
 
             call_command(
                 "unpack_assessment_zip",
@@ -62,11 +69,10 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
                 force_download=True  # always force the download, so we can be sure the get method gets called
             )
 
-            get_method.assert_called_once_with(url)
+            get_method.assert_called_once_with(url, prefetch=False)
 
             # verify that the assessment json just extracted is written to the khan data dir
-            self.assertEqual(zf.open("assessmentitems.json").read(),
-                             open(mod.ASSESSMENT_ITEMS_PATH).read())
+            self.assertTrue(zf.open("assessmentitems.json").read() == open(mod.ASSESSMENT_ITEMS_PATH).read())
 
             # TODO(aron): write test for verifying that assessment items are combined
             # once the splitting code on the generate_assessment_zips side is written
@@ -84,6 +90,9 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
         pass
 
 
+@patch.object(mod, "KHAN_DATA_PATH", TEMP_KHAN_DATA_PATH)
+@patch.object(mod, "ASSESSMENT_ITEMS_PATH", TEMP_ASSESSMENT_ITEMS_PATH)
+@patch.object(mod, "ASSESSMENT_ITEMS_VERSION_PATH", TEMP_ASSESSMENT_ITEMS_VERSION_PATH)
 class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
     def setUp(self):
@@ -101,6 +110,7 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
     def tearDown(self):
         os.unlink(self.zipfile_path)
 
+    @patch.object(settings, "ASSESSMENT_ITEMS_RESOURCES_DIR", TEMP_ASSESSMENT_ITEMS_RESOURCES_DIR)
     def test_unpack_zipfile_to_khan_content_extracts_to_content_dir(self):
         zipfile_instance = MagicMock()
 
@@ -151,7 +161,6 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
             )
             # we should've also opened the file atleast
             mopen.assert_called_once_with(mod.ASSESSMENT_ITEMS_VERSION_PATH)
-
 
     def test_extract_assessment_items_to_data_dir(self):
         with open(mod.ASSESSMENT_ITEMS_PATH) as f:

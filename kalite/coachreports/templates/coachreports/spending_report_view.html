@@ -1,7 +1,7 @@
 {% extends "coachreports/base.html" %}
 
 {% load i18n %}
-{% load kalite_staticfiles %}
+{% load staticfiles %}
 {% load my_filters %}
 
 {% block coachreports_active %}active{% endblock coachreports_active %}
@@ -37,7 +37,7 @@
 {% endblock headjs %}
 
 {% block report_content %}
-    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+    {% block navbar_title %}{% endblock navbar_title %}
     <div id="content">
         {% if not user_points %}
             <p>

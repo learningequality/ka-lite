@@ -1,7 +1,9 @@
+var ds = window.ds || {};
+
 window.ExerciseParams = {
-    STREAK_CORRECT_NEEDED: ds.distributed.streak_correct_needed || 8,
+    STREAK_CORRECT_NEEDED: (ds.distributed || {}).streak_correct_needed || 8,
     STREAK_WINDOW: 10,
-    FIXED_BLOCK_EXERCISES: ds.distributed.fixed_block_exercises || 0
+    FIXED_BLOCK_EXERCISES: (ds.distributed || {}).fixed_block_exercises || 0
 };
 
 
@@ -73,7 +75,9 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
 window.AssessmentItemModel = Backbone.Model.extend({
 
-    urlRoot: ALL_ASSESSMENT_ITEMS_URL,
+    urlRoot: function() {
+        return window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL");
+    },
 
     get_item_data: function() {
         return JSON.parse(this.get("item_data"));
@@ -427,7 +431,7 @@ window.TestLogCollection = Backbone.Collection.extend({
 var QuizDataModel = Backbone.Model.extend({
 
     defaults: {
-        repeats: ds.distributed.quiz_repeats || 3
+        repeats: (ds.distributed || {}).quiz_repeats || 3
     },
 
     initialize: function() {

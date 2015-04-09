@@ -10,14 +10,14 @@
             </small>
         </h2>
         {% if not facilities %}
-            <p>
+            <p id="no-facilities-message">
                 {% trans "You currently have no facilities that sync data with the central server." %}
             </p>
         {% else %}
-            <div class="table-responsive">
+            <div class="table-responsive" id="facilities-table">
                 <table class="table table-hover table-bordered">
                     <thead>
-                        <tr class="success">
+                        <tr class="header-footer-bg">
                             <th>{% trans "Facility Name" %}</th>
                             <th>{% trans "# Users" %}</th>
                             <th>{% trans "# Groups" %}</th>

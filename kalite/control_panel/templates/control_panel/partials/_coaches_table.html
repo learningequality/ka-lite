@@ -35,7 +35,7 @@
                 <div class="table-responsive">
                     <table class="table selectable-table">
                         <thead>
-                            <tr class="success">
+                            <tr class="header-footer-bg">
                                 <th><input class="select-all" type="checkbox" value="#coaches"></th>
                                 <th>{% trans "Coach" %}</th>
                                 <th>{% trans "Edit" %}</th>
@@ -58,7 +58,7 @@
                                     </a>
                                 </td>
                                 <td>{{ coach.total_logins }}</td>
-                                <td>{{ coach.total_hours|floatformat }}</td>
+                                <td>{{ coach.total_hours|floatformat }} {% trans "hour(s)" %}</td>
                                 <td>{{ coach.total_report_views }}</td>
                             </tr>
                             {% endfor %}

@@ -38,7 +38,7 @@ function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
     if ($.url(url).param("lang") === undefined && data !== null && data !== undefined) {
         if (!data.hasOwnProperty('lang')) {
-            url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+            url = setGetParam(url, "lang", window.sessionModel.get("CURRENT_LANGUAGE"));
         }
     }
 
@@ -61,7 +61,7 @@ function doRequest(url, data, opts) {
                 break;
         }
     }
-
+    // TODO-BLOCKER (rtibbles): Make setting of the success and fail callbacks more flexible.
     return $.ajax(request_options)
         .success(function(resp) {
             handleSuccessAPI(resp);
@@ -137,18 +137,22 @@ function handleFailedAPI(resp, error_prefix) {
         case 0:
             messages = {error: gettext("Could not connect to the server.") + " " + gettext("Please try again later.")};
             break;
+        
+        case 401:
 
-        case 200:  // return JSON messages
+        case 403:
+            messages = {error: gettext("You are not authorized to complete the request.  Please login as an authorized user, then retry the request.")};
+            if (window.statusModel) {
+                window.statusModel.fetch().success(function() {
+                    window.userView.login_start_open = true;
+                })
+            }
+            break;
 
-        case 201:  // return JSON messages
-
-        case 500:  // also currently return JSON messages
-
-            // handle empty responses gracefully
-            resp.responseText = resp.responseText || "{}";
+        default:
 
             try {
-                messages = $.parseJSON(resp.responseText || "{}");
+                messages = $.parseJSON(resp.responseText || "{}").messages || $.parseJSON(resp.responseText || "{}");
             } catch (e) {
                 var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
@@ -156,16 +160,6 @@ function handleFailedAPI(resp, error_prefix) {
                 console.log(e);
             }
             break;
-        case 403:
-            messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
-                login_url: USER_LOGIN_URL
-            })};
-            break;
-
-        default:
-            console.log(resp);
-            var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
-            messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
     }
 
     clear_messages();  // Clear all messages before showing the new (error) message.

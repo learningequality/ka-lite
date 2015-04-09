@@ -181,7 +181,7 @@ window.ContentBaseView = BaseView.extend({
     },
 
     close: function() {
-        if (window.statusModel.get("is_logged_in")) {
+        if (window.statusModel.get("is_logged_in") && !window.statusModel.get("is_admin") ) {
             this.log_model.saveNow();
         }
         this.remove();
@@ -199,7 +199,7 @@ window.ContentPointsView = BaseView.extend({
 
     render: function() {
         this.$el.html(this.template(this.model.attributes));
-        statusModel.set("newpoints", this.model.get("points") - this.starting_points);
+        statusModel.update_total_points(this.model.get("points") - this.starting_points);
         this.starting_points = this.model.get("points");
     }
 });

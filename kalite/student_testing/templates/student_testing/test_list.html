@@ -1,11 +1,13 @@
 {% extends "distributed/base_teach.html" %}
 
 {% load i18n %}
-{% load kalite_staticfiles %}
+{% load staticfiles %}
 
-{% block exams-active %}exams-active active-tab active-nav{% endblock exams-active %}
-{% block teacher_active %}active{% endblock teacher_active %}
-{% block admin_active %}active{% endblock admin_active %}
+{% block i18n_do_not_translate %}
+    {% block exams-active %}exams-active active-tab active-nav{% endblock exams-active %}
+    {% block teacher_active %}active{% endblock teacher_active %}
+    {% block admin_active %}active{% endblock admin_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block title %}{% trans "Tests" %}{{ block.super }}{% endblock %}
 

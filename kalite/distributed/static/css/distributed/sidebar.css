@@ -1,5 +1,5 @@
 .sidebar-icon {
-    font-size: 10pt;
+    font-size: 0.7em;
     padding-right: 10px;
     background-color: rgba(219, 219, 219, 0.19);
     border-radius: 3px;
@@ -31,9 +31,10 @@ Nav Panel
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     top: 0;
     bottom: 0;
+    font-size: 100%;
 }
 
-div.fade {
+div.sidebar-fade {
     position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
     left: 0%; /* makes the div span all the way across the viewing area */
     top: 0%; /* makes the div span all the way across the viewing area */
@@ -92,17 +93,14 @@ div.fade {
     background: #5AA685;
     color: #fff;
     font-weight: bold;
-    font-size: 30px;
+    font-size: 1.9em;
     padding: 30px 10px;
     padding-left: 14px;
-    border-color: rgba(0, 0, 0, 0.5);
-    border-style: solid;
     border-width: 1px 1px 1px 0;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     cursor: pointer;
     box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
-
 }
 
 .sidebar-tab:hover {
@@ -122,29 +120,38 @@ div.fade {
     padding-top: 20px;
     padding-bottom: 20px;
     border-left: 2px solid #587448;
-    font-size: 18px;
+    font-size: 2em;
     font-weight: bold;
     color: #CCC;
 }
 
 .sidebar-back {
     height: 100%;
-    width: 45px;
+    width: 2em;
     padding-top: 100px;
     text-align: center;
     color: #fff;
     background-color: #467471;
-    font-size: 24px;
+    font-size: 1.5em;
     border-right: 1px solid rgba(0, 0, 0, 0.3);
     position: absolute;
     z-index: 10000;
+}
+
+.sidebar-back button {
+    height: 3em;
+    padding: 0;
+    width: 1.8em;
+}
+
+.sidebar-back-hover {
+    background-color: #3D6663 !important;
 }
 
 /* Sidebar panel & entry styling */
 .topic-container-inner {
     float: left;
     width: 200px;
-    /*max-width: 25%;*/
     border-right: 1px solid rgba(0, 0, 0, 0.3);
 
 }
@@ -258,4 +265,40 @@ div.fade {
     margin-top: 2px;
     display:table-cell;
     vertical-align:middle;
+}
+
+@media only screen and (max-width: 720px) {
+    .sidebar-panel { 
+        font-size: 85%;
+    }
+    .topic-container-inner:last-child {
+        width: 300px;
+    }
+}
+
+@media only screen and (min-width: 720px) {
+    .sidebar-panel { 
+        font-size: 90%;
+    }
+    .topic-container-inner:last-child {
+        width: 300px;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .sidebar-panel { 
+        font-size: 100%;
+    }
+    .topic-container-inner:last-child {
+        width: 400px;
+    }
+}
+
+@media only screen and (min-width: 1300px) {
+    .sidebar-panel { 
+        font-size: 105%;
+    }
+    .topic-container-inner:last-child {
+        width: 400px;
+    }
 }

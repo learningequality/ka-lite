@@ -1,14 +1,16 @@
 {% extends "coachreports/base.html" %}
 
 {% load i18n %}
-{% load kalite_staticfiles %}
+{% load staticfiles %}
 {% load my_filters %}
 
-{% block teacher_active %}active{% endblock teacher_active %}
-{% block admin_active %}active{% endblock admin_active %}
-{% block title %}{% trans "Progress by topic" %} | {{ block.super }}{% endblock title %}
-{% block coachnav %}progress-tab-active{% endblock coachnav %}
-{% block progress_active %}sub-active{% endblock progress_active %}
+{% block i18n_do_not_translate %}
+    {% block teacher_active %}active{% endblock teacher_active %}
+    {% block admin_active %}active{% endblock admin_active %}
+    {% block title %}{% trans "Progress by topic" %} | {{ block.super }}{% endblock title %}
+    {% block coachnav %}progress-tab-active{% endblock coachnav %}
+    {% block progress_active %}sub-active{% endblock progress_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
@@ -125,17 +127,17 @@
             {% endif %}
         {% endif %}
         <div class="selection pull-left">
-            <button class="btn btn-primary reports-go-btn" id="display-topic-report">Go</button>
+            <button class="btn btn-primary reports-go-btn" id="display-topic-report">{% trans "Go" %}</button>
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-6 col-xs-12">
             <ul id="legend">
-                <li class="legend"><div class="partial"></div>{% trans "In Progress" %}</li>
-                <li class="legend"><div class="complete"></div>{% trans "Completed" %}</li>
+                <li class="legend"><div class="partial"></div><span>{% trans "In Progress" %}</span></li>
+                <li class="legend"><div class="complete"></div><span>{% trans "Completed" %}</span></li>
                 {% if request_report_type != "video" %}
-                <li class="legend"><div class="struggle"></div>{% trans "Struggling" %}</li>
+                <li class="legend"><div class="struggle"></div><span>{% trans "Struggling" %}</span></li>
                 {% endif %}
             </ul>
         </div>

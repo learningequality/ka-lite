@@ -8,7 +8,9 @@ from django.conf import settings
 from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import FacilityMixins, CreateAdminMixin, BrowserActionMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.facility.models import FacilityUser
 from kalite.main.models import UserLog
 from kalite.testing.utils import FuzzyInt
@@ -63,19 +65,19 @@ class QueryTest(CreateAdminMixin, BrowserActionMixins, FacilityMixins, KALiteBro
         """"""
         self.test_query_login_admin()
         with self.assertNumQueries(FuzzyInt(3, 9)):
-            self.browse_to(self.reverse("status"))
+            self.browse_to(self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'status/')
 
     def test_query_status_teacher(self):
         """"""
         self.test_query_login_teacher()
         with self.assertNumQueries(FuzzyInt(2, 8)):
-            self.browse_to(self.reverse("status"))
+            self.browse_to(self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'status/')
 
     def test_query_status_student(self):
         """"""
         self.test_query_login_student()
         with self.assertNumQueries(FuzzyInt(0, 7)):
-            self.browse_to(self.reverse("status"))
+            self.browse_to(self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'status/')
 
     def test_query_logout_admin(self):
         """"""

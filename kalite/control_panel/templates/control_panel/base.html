@@ -2,7 +2,9 @@
 {% load staticfiles %}
 {% load i18n %}
 
-{% block control_panel_active %}active{% endblock control_panel_active %}
+{% block i18n_do_not_translate %}
+    {% block control_panel_active %}active{% endblock control_panel_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/base.css' %}" />
@@ -15,7 +17,7 @@
             margin: 0px;
         }
         ul.pagination > .active > a {
-            color: gray;
+            color: #ffffff;
         }
     </style>
 {% endblock headcss %}

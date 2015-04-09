@@ -104,8 +104,8 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
+    "compressor",
     "kalite.distributed",
-    "kalite.store",
 )
 
 if not BUILT:
@@ -118,12 +118,19 @@ else:
     INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = (
+    "django.middleware.gzip.GZipMiddleware", # gzip has to be placed at the top, before others
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
     "django_snippets.session_timeout_middleware.SessionIdleTimeout",
 ) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",  # needed for django admin
 ) + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', tuple())
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",
+]
 
 TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
 STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static-libraries'),)  # libraries common to all apps
@@ -145,7 +152,7 @@ CACHES = {
 SESSION_ENGINE = getattr(local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.cache' + (''))
 
 # Use our custom message storage to avoid adding duplicate messages
-MESSAGE_STORAGE = 'fle_utils.django_utils.NoDuplicateMessagesSessionStorage'
+MESSAGE_STORAGE = 'fle_utils.django_utils.classes.NoDuplicateMessagesSessionStorage'
 
 # disable migration framework on tests
 SOUTH_TESTS_MIGRATE = False
@@ -207,6 +214,8 @@ if package_selected("RPi"):
 
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
+    DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
+
 
 if package_selected("nalanda"):
     LOG.info("Nalanda package selected")
@@ -218,7 +227,7 @@ UNIT_POINTS = 2000
 
 # for extracting assessment item resources
 ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(PROJECT_PATH, "..", "content", "khan")
-
+ASSESSMENT_ITEMS_ZIP_URL = "http://eslgenie.com/media/assessment_item_resources.zip"
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
@@ -235,9 +244,11 @@ if package_selected("Demo"):
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
-    MIDDLEWARE_CLASSES += ('distributed.demo_middleware.StopAdminAccess','distributed.demo_middleware.LinkUserManual','distributed.demo_middleware.ShowAdminLogin',)
+    MIDDLEWARE_CLASSES += ('kalite.distributed.demo_middleware.StopAdminAccess','kalite.distributed.demo_middleware.LinkUserManual','kalite.distributed.demo_middleware.ShowAdminLogin',)
 
 if DEBUG:
     """Show DeprecationWarning messages when in debug"""
     import warnings
     warnings.simplefilter('always', DeprecationWarning)
+
+CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)

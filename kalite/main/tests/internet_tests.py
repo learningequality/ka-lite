@@ -4,7 +4,7 @@ Testing of the main-used internet utility functions
 
 from django.test import LiveServerTestCase
 
-from fle_utils.internet import am_i_online
+from fle_utils.internet.functions import am_i_online
 
 
 class OnlineTests(LiveServerTestCase):

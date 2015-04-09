@@ -1,10 +1,13 @@
 {% extends "coachreports/base.html" %}
 
 {% load i18n %}
-{% load kalite_staticfiles %}
+{% load staticfiles %}
 {% load my_filters %}
 
-{% block coachreports_active %}active{% endblock coachreports_active %}
+{% block i18n_do_not_translate %}
+    {% block coachreports_active %}active{% endblock coachreports_active %}
+{% endblock i18n_do_not_translate %}
+
 {% block title %}{{ test_obj.title }} {{ block.super }}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
@@ -35,7 +38,7 @@
 {% endblock report_title %}
 
 {% block report_content %}
-    {% block navbar_title %}{{ block.super }}{% endblock navbar_title %}
+    {% block navbar_title %}{% endblock navbar_title %}
     <p class="unpadded-p">
         <a class="changeable-link" href="{% url 'test_view' %}">&#x2190; {% trans "Back" %}</a>
     </p>

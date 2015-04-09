@@ -2,21 +2,21 @@
 i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
-import json
 import os
 import re
 import requests
 import shutil
-from collections_local_copy import OrderedDict, defaultdict
-from fle_utils.internet import invalidate_web_cache
+from collections_local_copy import OrderedDict
+from fle_utils.internet.webcache import invalidate_web_cache
 
 from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
 from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
 
 from contextlib import contextmanager
+
+from kalite.version import SHORTVERSION
 
 ################################################
 ###                                          ###
@@ -143,10 +143,11 @@ def get_id2oklang_map(video_id, force=False):
     if ID2OKLANG_MAP is None or force:
         ID2OKLANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
-            for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                cur_video_id = get_video_id(english_youtube_id)
-                ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
-                ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
+            if lang_code and dic:
+                for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                    cur_video_id = get_video_id(english_youtube_id)
+                    ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
+                    ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
     if video_id:
         # Not all IDs made it into the spreadsheet, so by default, use the video_id as the youtube_id
         return ID2OKLANG_MAP.get(video_id, {"en": get_youtube_id(video_id, None)})
@@ -368,7 +369,7 @@ def update_jsi18n_file(code="en"):
     request.path = output_file
     request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
-    response = javascript_catalog(request, packages=('ka-lite.locale',))
+    response = javascript_catalog(request, packages=('ka-lite.locale',), domain="django")
     icu_js = ""
     for path in settings.LOCALE_PATHS:
         try:
@@ -378,6 +379,10 @@ def update_jsi18n_file(code="en"):
     output_js = response.content + "\n" + icu_js
     with open(output_file, "w") as fp:
         fp.write(output_js)
+
+
+# Cache for language selections
+__select_best_available_language = {}
 
 
 def select_best_available_language(target_code, available_codes=None):
@@ -392,8 +397,21 @@ def select_best_available_language(target_code, available_codes=None):
 
     # Scrub the input
     target_code = lcode_to_django_lang(target_code)
+    
+    store_cache = False
+    
+    # Only use cache when available_codes is trivial, i.e. not a set of
+    # language codes
     if available_codes is None:
-        available_codes = get_installed_language_packs().keys()
+        if target_code in __select_best_available_language:
+            return __select_best_available_language[target_code]
+        else:
+            store_cache = True
+            available_codes = get_installed_language_packs().keys()
+
+    # logging.debug("choosing best language among %s" % (available_codes))
+    
+    # Make it a tuple so we can hash it
     available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
@@ -408,10 +426,15 @@ def select_best_available_language(target_code, available_codes=None):
     elif available_codes:
         actual_code = available_codes[0]
     else:
-        actual_code = None
+        raise RuntimeError("No languages found")
 
-    if actual_code != target_code:
-        logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    # if actual_code != target_code:
+    #    logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    
+    # Store in cache when available_codes are not set
+    if store_cache:
+        __select_best_available_language[target_code] = actual_code
+    
     return actual_code
 
 
@@ -451,3 +474,12 @@ def translate_block(language):
     translation.activate(language)
     yield
     translation.deactivate()
+
+
+def get_language_pack_url(lang_code, version=SHORTVERSION):
+    """As published"""
+    return "http://%(host)s/media/language_packs/%(version)s/%(lang_code)s.zip" % {
+        "host": settings.CENTRAL_SERVER_HOST,
+        "lang_code": lang_code,
+        "version": version,
+    }

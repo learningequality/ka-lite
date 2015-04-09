@@ -3,7 +3,7 @@ var installed_languages = [];
 var downloading = false;
 
 function get_available_languages() {
-    return doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
+    return doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
@@ -16,7 +16,7 @@ function get_available_languages() {
 }
 
 function get_installed_languages() {
-    return doRequest(INSTALLED_LANGUAGES_URL, null, {
+    return doRequest(window.sessionModel.get("INSTALLED_LANGUAGES_URL"), null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
@@ -42,7 +42,7 @@ function display_languages() {
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
-            if (lang['code'] !== defaultLanguage) {
+            if (lang['code'] !== window.sessionModel.get("DEFAULT_LANGUAGE")) {
                 link_text = sprintf("<span><a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'><button type='button' class='btn btn-default btn-sm'>%(link_text)s</button></a></span>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
@@ -104,7 +104,7 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
-    doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
+    doRequest(window.sessionModel.get("DELETE_LANGUAGEPACK_URL"), {lang: lang_code})
         .success(function(resp) {
             get_installed_languages();
             display_languages(installables);
@@ -199,7 +199,7 @@ function start_languagepack_download(lang_code) {
     downloading = true;
     // tell server to start languagepackdownload job
     doRequest(
-        start_languagepackdownload_url,
+        window.sessionModel.get("START_LANGUAGEPACKDOWNLOAD_URL"),
         { lang: lang_code }
     ).success(function(progress, status, req) {
         updatesStart(
@@ -254,7 +254,7 @@ function languagepack_reset_callback(progress, resp) {
 }
 
 function set_server_language(lang) {
-    doRequest(SET_DEFAULT_LANGUAGE_URL,
+    doRequest(window.sessionModel.get("SET_DEFAULT_LANGUAGE_URL"),
               {lang: lang}
              ).success(function() {
                  window.location.reload();

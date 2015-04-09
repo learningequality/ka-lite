@@ -183,10 +183,14 @@ window.ExerciseView = Backbone.View.extend({
         this.listenTo(Exercises, "newProblem", function (ev, data) {
             var answerType = data.answerType;
             if (typeof answerType === "undefined") {
-                answerType = ((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])[0] || [""])[0];
+                answerType = (_.flatten((Exercises.PerseusBridge.itemRenderer.getInputPaths() || [[""]])) || [""]).join();
             }
 
-            var checkVal = /number|decimal|rational|improper|mixed/gi;
+            if (answerType == "multiple") {
+                answerType = $("span.sol").map(function(index, item){return $(item).attr("data-forms");}).get().join();
+            }
+
+            var checkVal = /number|decimal|rational|proper|improper|mixed|radical|integer|cuberoot/gi;
 
             if (checkVal.test(answerType)){
                 if (typeof self.software_keyboard_view === "undefined") {
@@ -196,6 +200,10 @@ window.ExerciseView = Backbone.View.extend({
                 }
                 if (Exercises.getCurrentFramework()==="khan-exercises"){
                     self.software_keyboard_view.set_input("#solutionarea :input");
+                    self.software_keyboard_view.inputs.click(function(event){
+                        self.software_keyboard_view.inputs.removeAttr("id");
+                        $(event.target).attr("id", "selected-input");
+                    });
                 } else {
                     self.software_keyboard_view.set_input(".perseus-input:input");
                 }
@@ -271,7 +279,7 @@ window.ExerciseView = Backbone.View.extend({
 
 
                 if (Khan.loaded === undefined) {
-                    require([KHAN_EXERCISES_SCRIPT_URL], self.load_exercises_when_ready);
+                    require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], self.load_exercises_when_ready);
                 } else {
                     self.load_exercises_when_ready();
                 }
@@ -337,7 +345,7 @@ window.ExerciseView = Backbone.View.extend({
     },
 
     render_perseus_exercise: function(item) {
-        require([KHAN_EXERCISES_SCRIPT_URL], function() {
+        require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], function() {
             Exercises.PerseusBridge.load().then(function() {
                 Exercises.PerseusBridge.render_item(item.get_item_data());
                 $(Exercises).trigger("newProblem", {
@@ -422,6 +430,7 @@ window.ExerciseView = Backbone.View.extend({
         if (this.related_video_view) {
             this.related_video_view.remove();
         }
+        this.$("input").qtip("destroy", /* immediate */ true);
         this.remove();
     }
 
@@ -530,7 +539,7 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         // store the number of points that are currently in the ExerciseLog, so we can calculate the difference
         // once it changes, for updating the "total points" in the nav bar display
-        this.starting_points = this.log_model.get("points");
+        this.status_points = this.log_model.get("points");
 
         this.progress_view = new ExerciseProgressView({
             el: this.$(".exercise-progress-wrapper"),
@@ -651,7 +660,8 @@ window.ExercisePracticeView = Backbone.View.extend({
             this.log_model.save()
                 .then(function(data) {
                     // update the top-right point display, now that we've saved the points successfully
-                    window.statusModel.set("newpoints", self.log_model.get("points") - self.starting_points);
+                    window.statusModel.update_total_points(self.log_model.get("points") - self.status_points);
+                    self.status_points = self.log_model.get("points");
                 });
 
             this.$(".hint-reminder").hide(); // hide message about hints
@@ -971,7 +981,7 @@ window.ExerciseQuizView = Backbone.View.extend({
                 });
                 purchased_model.save();
 
-                statusModel.set("newpoints", statusModel.get("newpoints") + this.points);
+                statusModel.update_total_points(statusModel.get("newpoints") + this.points);
             }
         }
 
@@ -1161,7 +1171,7 @@ window.ExerciseProgressView = Backbone.View.extend({
         var attempt_text = "";
 
         this.collection.forEach(function(model) {
-                attempt_text = (model.get("correct") ? "<span><b>&#10003;</b></span> " : "<span>&#10007;</span> ") + attempt_text;
+                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
         });
 
         this.$(".attempts").html(attempt_text);
