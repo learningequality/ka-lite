@@ -90,7 +90,7 @@ class FacilityGroup(DeferredCountSyncedModel):
 
     def __init__(self, *args, **kwargs):
         super(FacilityGroup, self).__init__(*args, **kwargs)
-        self._unhashable_fields.append("description") # since it's being stripped out by minversion, we can't include it in the signature
+        self._unhashable_fields += ("description",) # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
