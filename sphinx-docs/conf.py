@@ -217,9 +217,6 @@ latex_elements = {
 
 # Additional stuff for the LaTeX preamble.
 #'preamble': '',
-
-# Figures (images) are inserted strictly where they appear, instead of floating
-'figure_align': 'H',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
