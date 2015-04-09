@@ -744,30 +744,23 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
 });
 
 
-window.ExerciseTestView = BaseView.extend({
+window.ExerciseTestView = ExerciseWrapperBaseView.extend({
 
     start_template: HB.template("exercise/test-start"),
 
     stop_template: HB.template("exercise/test-stop"),
 
-    initialize: function() {
+    load_user_data: function() {
 
-        _.bindAll(this);
+        // load the data about this particular test
+        this.test_model = new TestDataModel({test_id: this.options.test_id});
+        var test_model_deferred = this.test_model.fetch();
 
-        if (window.statusModel.get("is_logged_in")) {
+        // load the data about the user's overall progress on the test
+        this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
+        var log_collection_deferred = this.log_collection.fetch();
 
-            // load the data about this particular test
-            this.test_model = new TestDataModel({test_id: this.options.test_id});
-            var test_model_deferred = this.test_model.fetch();
-
-            // load the data about the user's overall progress on the test
-            this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
-            var log_collection_deferred = this.log_collection.fetch();
-
-            this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
-
-        }
-
+        this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
     },
 
     finish_test: function() {
@@ -796,7 +789,9 @@ window.ExerciseTestView = BaseView.extend({
         } else {
 
             if(this.log_model.get("complete")){
+
                 this.finish_test();
+
             } else {
 
                 this.listenTo(this.log_model, "complete", this.finish_test);
@@ -835,17 +830,7 @@ window.ExerciseTestView = BaseView.extend({
 
         this.exercise_view.suppress_button_feedback();
 
-        // increment the response count
-        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
-
-        this.current_attempt_log.add_response_log_event({
-            type: "answer",
-            answer: data.guess,
-            correct: data.correct
-        });
-
-        // update and save the exercise and attempt logs
-        this.update_and_save_log_models("answer_given", data);
+        return ExerciseWrapperBaseView.prototype.check_answer.call(this, data);
     },
 
     update_and_save_log_models: function(event_type, data) {
@@ -878,57 +863,24 @@ window.ExerciseTestView = BaseView.extend({
 
         this.ready_for_next_question();
 
-    },
-
-    ready_for_next_question: function() {
-
-        var self = this;
-
-        this.user_data_loaded_deferred.then(function() {
-
-            self.exercise_view.load_question(self.log_model.get_item_data());
-            self.initialize_new_attempt_log(self.log_model.get_item_data());
-            $("#next-question-button").remove();
-
-        });
-
-    },
-
-    close: function() {
-        this.exercise_view.close();
-        this.remove();
     }
 
 });
 
 
-window.ExerciseQuizView = BaseView.extend({
+window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
 
     stop_template: HB.template("exercise/quiz-stop"),
 
-    initialize: function(options) {
+    load_user_data: function() {
+        
+        this.quiz_model = options.quiz_model;
 
-        _.bindAll(this);
+        // load the data about the user's overall progress on the test
+        this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
+        var log_collection_deferred = this.log_collection.fetch();
 
-        this.points = 0;
-
-        if (window.statusModel.get("is_logged_in")) {
-
-            this.quiz_model = options.quiz_model;
-
-            // load the data about the user's overall progress on the test
-            this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
-            var log_collection_deferred = this.log_collection.fetch();
-
-            this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
-
-        } else {
-
-            // TODO(jamalex): why can't poor account-less users quiz themselves? :(
-            this.$el.html("<h3>" + gettext("Sorry, you must be logged in to do a quiz.") + "</h3><br/><br/><br/>");
-
-        }
-
+        this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
     },
 
     finish_quiz: function() {
