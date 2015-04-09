@@ -1,10 +1,8 @@
-import errno
+#TODO-BLOCKER(MCGallaspy): Better Exception handling in this file.
 import glob
 import json
 import os
-import re
 from optparse import make_option
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 from django.conf import settings
@@ -18,7 +16,8 @@ from securesync.models import Device, DeviceZone, Zone
 
 from fle_utils.general import ensure_dir
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.distributed.management.commands.katest import unregister_distributed_server
 
 USER_TYPE_ADMIN = "admin"
@@ -56,6 +55,11 @@ class Command(BaseCommand):
             dest='no_del',
             default=None,
             help='Don\'t delete existing screenshots.'),
+        make_option('--lang',
+            action='store',
+            dest='language',
+            default=None,
+            help='Specify the language of the session, set by the "set_default_language" api endpoint.'),
         )
 
     def handle(self, *args, **options):
@@ -208,11 +212,33 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.loginfo("==> Setting-up browser ...")
         super(Screenshot, self).setUp()
         self.browser.set_window_size(1024, 768)
-        self.browser.implicitly_wait(15)
+        self.browser.implicitly_wait(3)
+
+        # After initializing the server (with setUp) and a browser, set the language
+        self.set_session_language(kwargs['language'])
 
         self.loginfo("==> Browser %s successfully setup with live_server_url %s." %
                  (self.browser.name, self.live_server_url,))
         self.loginfo("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
+
+
+    def set_session_language(self, lang_code):
+        """ Uses the "set_default_language" api endpoint to set the language for the session.
+        The language pack should already be downloaded, or the behavior is undefined.
+        TODO: Handle the case when the language pack is not downloaded.
+
+        :param lang_code: A string with the language code or None. Value None is a no-op 
+        """
+        if not lang_code:
+            return
+        self.browser.get(self.live_server_url + reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$")
+        data = json.dumps({"lang": lang_code})
+        self.browser.execute_script("window.SUCCESS=false; $.ajax({type: \"POST\", url: \"%s\", data: '%s', contentType: \"application/json\", success: function(){window.SUCCESS=true}})" % (reverse("set_default_language"), data))
+        self.browser_wait_for_js_condition("window.SUCCESS")    
+        # Ensure the changes are loaded 
+        self.browser.get(self.live_server_url + reverse("homepage"))
+        
 
     def validate_json_keys(self, shot):
         """

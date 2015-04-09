@@ -34,7 +34,7 @@ Nav Panel
     font-size: 100%;
 }
 
-div.fade {
+div.sidebar-fade {
     position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
     left: 0%; /* makes the div span all the way across the viewing area */
     top: 0%; /* makes the div span all the way across the viewing area */
@@ -96,14 +96,11 @@ div.fade {
     font-size: 1.9em;
     padding: 30px 10px;
     padding-left: 14px;
-    border-color: rgba(0, 0, 0, 0.5);
-    border-style: solid;
     border-width: 1px 1px 1px 0;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
     cursor: pointer;
     box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
-
 }
 
 .sidebar-tab:hover {
@@ -143,6 +140,8 @@ div.fade {
 
 .sidebar-back button {
     height: 3em;
+    padding: 0;
+    width: 1.8em;
 }
 
 .sidebar-back-hover {

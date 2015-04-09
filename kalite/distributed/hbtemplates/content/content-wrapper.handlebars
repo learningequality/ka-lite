@@ -12,17 +12,17 @@
                         <div class="clear"></div>
                     </div>
 
+                    {{#if dubs_available }}
                     <h3>
-                        {{#if dubs_available }}
-                            <select class="content-language-selector">
-                                {{#each availability }}
-                                <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
-                                    {{ language_name }}
-                                </option>
-                                {{/each}}
-                            </select>
-                        {{/if}}
+                        <select class="content-language-selector">
+                            {{#each availability }}
+                            <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                                {{ language_name }}
+                            </option>
+                            {{/each}}
+                        </select>
                     </h3>
+                    {{/if}}
 
                     <span class="title">{{ title }}</span>
                     {{#if organization}}

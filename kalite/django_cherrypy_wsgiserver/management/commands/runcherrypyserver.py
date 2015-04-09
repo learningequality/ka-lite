@@ -6,10 +6,8 @@ import signal
 import socket
 import sys
 import time
-from socket import gethostname
 from urllib import urlopen
 
-import django.contrib.admin
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse

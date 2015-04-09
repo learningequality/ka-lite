@@ -21,7 +21,8 @@ from .. import crypto
 from ..engine.models import SyncSession
 from fle_utils.chronograph import force_job
 from fle_utils.config.models import Settings
-from fle_utils.internet import JsonResponse, allow_jsonp
+from fle_utils.internet.classes import JsonResponse
+from fle_utils.internet.decorators import allow_jsonp
 
 
 def register_public_key(request):

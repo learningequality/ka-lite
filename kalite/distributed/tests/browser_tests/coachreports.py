@@ -8,7 +8,9 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 class TestTabularViewErrors(BrowserActionMixins, CreateAdminMixin, FacilityMixins, KALiteBrowserTestCase):

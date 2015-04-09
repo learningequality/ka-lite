@@ -8,7 +8,6 @@ www.learningequality.org
 Usage:
   kalite start [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
-  kalite setting SETTING_NAME
   kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite status [job-scheduler] [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
@@ -63,7 +62,8 @@ if 'KALITE_DIR' in os.environ:
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
 else:
-    sys.path = ['python-packages', 'kalite'] + sys.path
+    filedir = os.path.dirname(__file__)
+    sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
 
 
 from django.core.management import ManagementUtility, get_commands
@@ -362,10 +362,6 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     manage('kaserve', args)
 
 
-def setting(setting_name):
-    import kalite.settings
-    print(kalite.settings.package_selected(setting_name))
-
 def stop(args=[], sys_exit=True):
     """
     Stops the kalite server, either from PID or through a management command
@@ -514,9 +510,6 @@ if __name__ == "__main__":
             skip_job_scheduler=arguments['--skip-job-scheduler'],
             args=arguments['DJANGO_OPTIONS']
         )
-
-    elif arguments['setting']:
-        setting(setting_name=arguments['SETTING_NAME'])
 
     elif arguments['status']:
         if arguments['job-scheduler']:

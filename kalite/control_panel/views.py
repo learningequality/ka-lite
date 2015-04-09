@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
-from fle_utils.internet import render_to_csv
+from fle_utils.internet.decorators import render_to_csv
 from securesync.models import Device, Zone, SyncSession
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context
@@ -30,7 +30,7 @@ from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
 from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 
@@ -392,7 +392,7 @@ def account_management(request):
 
     # Only log 'coachreport' activity for students,
     #   (otherwise it's hard to compare teachers)
-    if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):
+    if "facility_user" in request.session and not request.session["facility_user"].is_teacher:
         try:
             # Log a "begin" and end here
             user = request.session["facility_user"]

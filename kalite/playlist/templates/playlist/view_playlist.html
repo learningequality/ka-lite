@@ -1,7 +1,7 @@
 {% extends base_template %}
 
 {% load i18n %}
-{% load kalite_staticfiles %}
+{% load staticfiles %}
 
 {% block headcss %}{{ block.super }}
     <!-- exercise-related files -->
@@ -99,9 +99,9 @@
 
 {% block content %}
 
-    <div id="sidebar-container"></div>
-
     <div id="content-area">
+    </div>
+    <div id="sidebar-container">
     </div>
 
 {% endblock content %}

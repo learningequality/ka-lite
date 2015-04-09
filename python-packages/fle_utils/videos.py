@@ -6,7 +6,7 @@ import socket
 from django.conf import settings; logging = settings.LOG
 
 from .general import ensure_dir
-from .internet import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
+from .internet.download import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
 
 
 OUTSIDE_DOWNLOAD_BASE_URL = "http://s3.amazonaws.com/KA-youtube-converted/"  # needed for redirects

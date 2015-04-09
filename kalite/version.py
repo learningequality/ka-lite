@@ -1,12 +1,35 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 MAJOR_VERSION = "0"
-MINOR_VERSION = "13"
-PATCH_VERSION = "0"
+MINOR_VERSION = "14"
+PATCH_VERSION = "dev"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
 VERSION_INFO = {
-
+    
+    VERSION: {
+        "release_date": None,
+        "git_commit": "",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+    },
+    
     "0.13.0": {
         "release_date": "2014/11/06",
         "git_commit": "19b1a64",

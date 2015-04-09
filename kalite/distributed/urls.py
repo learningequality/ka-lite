@@ -22,7 +22,7 @@ import kalite.student_testing.urls
 import kalite.store.urls
 import securesync.urls
 
-import fle_utils.handlebars
+import fle_utils.handlebars.urls
 
 
 admin.autodiscover()

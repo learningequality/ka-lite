@@ -18,11 +18,9 @@ import os
 import re
 import json
 import copy
-from functools import partial
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
-from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from fle_utils.general import softload_json, json_ascii_decoder
@@ -518,7 +516,7 @@ def smart_translate_item_data(item_data):
 
     """
     if 'content' in item_data:
-        item_data['content'] = _(item_data['content'])
+        item_data['content'] = _(item_data['content']) if item_data['content'] else ""
 
     for field, field_data in item_data.iteritems():
         if isinstance(field_data, dict):
@@ -541,7 +539,7 @@ def get_content_data(request, content_id=None):
     if not content.get("content_urls", None):
         if request.is_admin:
             # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
-            messages.warning(request, _("This content was not found! You can download it by going to the Update page."))
+            messages.warning(request, _("This content was not found! You can download it by going to the Manage > Videos page."))
         elif request.is_logged_in:
             messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
         elif not request.is_logged_in:

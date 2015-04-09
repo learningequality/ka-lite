@@ -11,7 +11,7 @@ from django.core.management import call_command
 from django.test import TestCase
 
 import kalite.version as version
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 from kalite.contentload.management.commands import generate_assessment_zips as mod
 
 

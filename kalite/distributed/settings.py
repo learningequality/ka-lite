@@ -6,6 +6,7 @@ import tempfile
 import time
 import uuid
 import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
+from django.http import HttpRequest
 
 try:
     import local_settings
@@ -78,6 +79,19 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",  # expose request object within templates
     __package__ + ".custom_context_processors.custom",  #
 )
+
+COMPRESS_CONTEXT_REQUEST = HttpRequest()
+COMPRESS_CONTEXT_REQUEST.is_admin = False
+COMPRESS_CONTEXT_REQUEST.is_teacher = False
+COMPRESS_CONTEXT_REQUEST.is_student = False
+COMPRESS_CONTEXT_REQUEST.is_logged_in = False
+COMPRESS_CONTEXT_REQUEST.is_django_user = False
+COMPRESS_CONTEXT_REQUEST.language = "en"
+
+COMPRESS_OFFLINE_CONTEXT = {
+    "base_template": "distributed/base.html",
+    "request": COMPRESS_CONTEXT_REQUEST,
+}
 
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 
