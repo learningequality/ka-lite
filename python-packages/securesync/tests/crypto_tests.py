@@ -253,3 +253,17 @@ class TestZoneFallbackSettingOnCentralSave(SecuresyncTestCase):
             group.save()
             assert group.zone_fallback is not None, "Centrally created FacilityGroup was not assigned a zone."
 
+
+class TestHashableFieldsAndSerialization(unittest.TestCase):
+
+    def test_description_exclusion_regression_bug_2470(self):
+
+        d = Device(name="Test", description="Test")
+
+        good_serialization = d._hashable_representation()
+
+        g = FacilityGroup()
+
+        possibly_bad_serialization = d._hashable_representation()
+
+        self.assertEqual(good_serialization, possibly_bad_serialization, "Instatiating a FacilityGroup changed hashable representation of Device")
