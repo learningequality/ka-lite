@@ -177,7 +177,6 @@ KA Lite assumes that you are going to be using the software primarily in one pla
     :navigation-steps: #id_name click | #id_name send_keys Your School | NEXT send_keys An optional description of your school...
     :focus: input.submit | Click here to create a new facility after filling in the form above.
     :class: screenshot
-    :align: left
 
 7. Once the information has been saved, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully saved your new facility.
 
