@@ -651,14 +651,11 @@ window.ExerciseWrapperBaseView = BaseView.extend({
             // update and save the exercise and attempt logs
             this.update_and_save_log_models("answer_given", data);
 
-            if (data.correct) {
-                this.display_message();
-            }
         }
 
     }
 
-})
+});
 
 
 window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
@@ -756,15 +753,16 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
         this.update_and_save_log_models("hint_used", {correct: false, guess: ""});
     },
 
-    get_points_per_question: function() {
-        return this.attempt_collection.calculate_points_per_question(this.exercise_view.data_model.get("basepoints"));
-    },
-
-
     log_model_complete_data: function() {
         return {
             streak_progress: this.attempt_collection.get_streak_progress_percent(),
             points: this.attempt_collection.get_streak_points()
+        };
+    },
+
+    log_model_update_data: function() {
+        return {
+            attempts: this.log_model.get("attempts") + 1
         };
     }
 
@@ -782,6 +780,8 @@ window.ExerciseTestView = ExerciseWrapperBaseView.extend({
         // load the data about this particular test
         this.test_model = new TestDataModel({test_id: this.options.test_id});
         var test_model_deferred = this.test_model.fetch();
+
+        this.attempt_collection = new AttemptLogCollection();
 
         // load the data about the user's overall progress on the test
         this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
@@ -864,34 +864,25 @@ window.ExerciseTestView = ExerciseWrapperBaseView.extend({
 
     update_and_save_log_models: function(event_type, data) {
 
-        // if current attempt log has not been saved, then this is the user's first response to the question
-        if (this.current_attempt_log.isNew()) {
-
-            this.current_attempt_log.set({
-                correct: data.correct,
-                answer_given: data.guess,
-                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp")),
-                complete: true
-            });
-
-            this.log_model.set({
-                index: this.log_model.get("index") + 1
-            });
-
-            if(data.correct) {
-                this.log_model.set({
-                    total_correct: this.log_model.get("total_correct") + 1
-                });
-            }
-
-            this.log_model.save();
-
-        }
-
-        this.current_attempt_log.save();
+        ExerciseWrapperBaseView.prototype.update_and_save_log_models.call(this, event_type, data);
 
         this.ready_for_next_question();
+    },
 
+    new_question_data: function() {
+        return this.log_model.get_item_data();
+    },
+
+    log_model_update_data: function() {
+        return {
+            index: this.log_model.get("index") + 1
+        };
+    },
+
+    correct_updates: function() {
+        this.log_model.set({
+            total_correct: this.log_model.get("total_correct") + 1
+        });
     }
 
 });
@@ -902,7 +893,7 @@ window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
     stop_template: HB.template("exercise/quiz-stop"),
 
     load_user_data: function() {
-        
+
         this.quiz_model = options.quiz_model;
 
         this.attempt_collection = new AttemptLogCollection();
