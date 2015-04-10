@@ -905,6 +905,8 @@ window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
         
         this.quiz_model = options.quiz_model;
 
+        this.attempt_collection = new AttemptLogCollection();
+
         // load the data about the user's overall progress on the test
         this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
         var log_collection_deferred = this.log_collection.fetch();
@@ -954,19 +956,20 @@ window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
 
     },
 
-    check_answer: function(data) {
-
-        this.exercise_view.suppress_button_feedback();
-
-        return ExerciseWrapperBaseView.prototype.check_answer.call(this, data);
-    },
-
     new_question_data: function() {
         return this.log_model.get_item_data();
     },
 
-    log_model_complete_data: function() {
-        return {points: this.log_model.get("points") + this.get_points_per_question()};
+    correct_updates: function() {
+        this.log_model.set({
+            points: this.log_model.get("points") + this.get_points_per_question()
+        });
+    },
+
+    log_model_update_data: function() {
+        return {
+            index: this.log_model.get("index") + 1
+        };
     }
 
 });
