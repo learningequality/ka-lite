@@ -129,3 +129,14 @@ Line by line this means - ``$(function(){<code here>});`` wait for the browser t
     });
 
 make a new instance of the HexagonReportView. This will automatically call initialize and so the view will render. In addition, ``el: $("#student-report-container"),`` tells the view that it should set its subsection of the DOM to be the DOM element selected by ``$("#student-report-container")`` (i.e. the element with the id 'student-report-container'), and ``model: hexagonReportModel`` tells it to set its 'model' attribute to the hexagonReportModel we instantiated and fetch before.
+
+TL;DR (or 7 quick steps to creating a Backbone View in KA Lite)
+---------------------------------------------------------------
+
+#. Find the appropriate app folder inside KA Lite - inside <folder>/static/js/<folder>/ either create a folder for your Backbone files, or find an existing one with a name that fits.
+#. Inside this folder either create or open views.js.
+#. To start creating a view, type: ``var MyViewNameView = BaseView.extend({});``
+#. Define at least an ``initialize`` method, and a ``render`` method.
+#. If you want a Handlebars template for your View, look inside <folder>/hbtemplates/ and either create a folder for your Handlebars templates, or find an existing one with a name that fits.
+#. Inside this folder create a new file for your handlebars template ``mytemplatename.handlebars``.
+#. Add this to your View definition code (inside the curly braces and don't forget commas to separate key/value pairs!): ``template: HB.template("<templatefolder>/mytemplatename")``.
