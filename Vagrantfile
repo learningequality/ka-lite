@@ -7,8 +7,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "trusty32"
-  config.vm.box_url = "https://vagrantcloud.com/ubuntu/boxes/trusty32/versions/14.04/providers/virtualbox.box"
+  config.vm.box = "ubuntu/trusty32"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
