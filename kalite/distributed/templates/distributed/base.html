@@ -127,7 +127,9 @@
         <script type="text/javascript" src="{% static 'js/distributed/session/models.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' %}"></script>
+
+        <script src="{% url 'handlebars_templates' module_name='search' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/search/views.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.qtip.min.js' %}"></script>
 
         {% endcompress %}
@@ -147,6 +149,7 @@
         <script>
         window.sessionModel.set({
           SEARCH_TOPICS_URL           : "{% url 'flat_topic_tree' lang_code=current_language %}",
+          SEARCH_URL                  : "{% url 'search' %}",
           USER_URL                    : "{% url 'api_dispatch_list' resource_name='user' %}",
           FORCE_SYNC_URL              : "{% url 'api_force_sync' %}",
 
@@ -203,18 +206,6 @@
 
                       <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
                           <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist">
-                            <!-- For all users -->
-                            {# Search box #}
-                            <li>
-                              <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
-                                {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
-                                <div class="input-group">
-                                  <input type="text" name="query" id="search" class="form-control" placeholder="{% trans 'Topic, video, exercise...' %}" aria-label="{% trans 'Search for' %}" />
-                                  <button id="search-button" class="btn btn-default" type="submit" aria-label="{% trans 'Submit' %}"><i class="glyphicon glyphicon-search" aria-hidden="true"></i></button>
-                                </div>
-                              </form>
-                            </li>
-                            <!-- End for all users -->
 
                             <!-- For logged in admins -->
                             {% if request.is_admin and is_config_package_nalanda and not request.session.facility_user.facility %}

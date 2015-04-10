@@ -1,6 +1,7 @@
 SessionModel = Backbone.Model.extend({
     defaults: {
         SEARCH_TOPICS_URL           : "",
+        SEARCH_URL                  : "",
         USER_URL                    : "",
         FORCE_SYNC_URL              : "",
 
