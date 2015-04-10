@@ -5,6 +5,9 @@ as the first positional argument.
 
 Useful functions you should know about and use include:
 
+For clicking elements that cause a page load (`click` is not safe!):
+* click_and_wait_for_page_load
+
 For finding and interacting with elements safely:
 * elem_is_invisible_with_wait
 * find_css_class_with_wait
@@ -45,6 +48,26 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 # Maximum time to wait when trying to find elements
 MAX_WAIT_TIME = 1
+# Maximum time to wait for a page to load.
+MAX_PAGE_LOAD_TIME = 3
+
+
+def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+    """ Click an element and then wait for the page to load. Does this by
+    first getting an element on the page, clicking, and then waiting for the
+    reference to become stale. If the element doesn't become stale then it throws
+    a TimeoutException. (So if you pass an element to click that doesn't cause a 
+    page load, then you'll probably get a TimeoutException.)
+    context: a behave context
+    elem: a WebElement to click.
+    wait_time: Optional. Max wait time for the page to load. Has a default value.
+    """
+    # The body element should always be on the page.
+    wait_elem = context.browser.find_element_by_tag_name("body")
+    elem.click()
+    WebDriverWait(context.browser, wait_time).until(
+        EC.staleness_of(wait_elem)
+    )
 
 
 def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
