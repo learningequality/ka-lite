@@ -582,12 +582,7 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 
             this.log_model.set(this.log_model_update_data());
 
-            this.log_model.save()
-                .then(function(data) {
-                    // update the top-right point display, now that we've saved the points successfully
-                    window.statusModel.update_total_points(self.log_model.get("points") - self.status_points);
-                    self.status_points = self.log_model.get("points");
-                });
+            this.log_model.save();
 
             this.$(".hint-reminder").hide(); // hide message about hints
 
@@ -606,6 +601,19 @@ window.ExerciseWrapperBaseView = BaseView.extend({
         this.current_attempt_log.save();
 
     },
+
+    update_total_points: function(data) {
+        // update the top-right point display, now that we've saved the points successfully
+        if (this.log_model.has("points")) {
+            window.statusModel.update_total_points(this.log_model.get("points") - this.status_points);
+            this.status_points = this.log_model.get("points");
+        }
+    },
+
+    get_points_per_question: function() {
+        return this.attempt_collection.calculate_points_per_question(this.exercise_view.data_model.get("basepoints"));
+    },
+
 
     display_message: function() {
         var msg;
@@ -696,6 +704,8 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
 
         // get the exercise log model from the queried collection
         this.log_model = this.log_collection.get_first_log_or_new_log();
+
+        this.listenTo(this.log_model, "sync", this.update_total_points);
 
         // add some dummy attempt logs if needed, to match it up with the exercise log
         // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
@@ -797,6 +807,8 @@ window.ExerciseTestView = ExerciseWrapperBaseView.extend({
         if(!this.log_model){
             this.log_model = this.log_collection.get_first_log_or_new_log();
         }
+
+        this.listenTo(this.log_model, "sync", this.update_total_points);
 
         if(!this.log_model.get("started")){
             this.$el.html(this.start_template());
@@ -924,6 +936,8 @@ window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
         if(!this.log_model){
             this.log_model = this.log_collection.get_first_log_or_new_log();
         }
+
+        this.listenTo(this.log_model, "sync", this.update_total_points);
 
         this.listenTo(this.log_model, "complete", this.finish_quiz);
 
