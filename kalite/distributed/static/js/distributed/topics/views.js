@@ -286,6 +286,15 @@ window.TopicContainerInnerView = BaseView.extend({
             var height = $(window).height();
             self.$(".slimScrollDiv, .sidebar").height(height);
         }, 200));
+
+        // When scrolling, increase the height of the element
+        // until it fills up the sidebar panel
+        $(window).scroll(_.throttle(function() {
+            var sidebarHeight = $(".sidebar-panel").height();
+            var deltaHeight = $(window).scrollTop() + self.$(".slimScrollDiv, .sidebar").height();
+            var height = Math.min(sidebarHeight, deltaHeight);
+            self.$(".slimScrollDiv, .sidebar").height(height);
+        }, 200));
     },
 
     render: function() {
