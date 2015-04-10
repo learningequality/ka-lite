@@ -14,9 +14,12 @@
 {% block headjs %}{{ block.super }}
     <!-- import handlebars templates here -->
     <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
+    <script src="{% url 'handlebars_templates' module_name="contentrec" %}"></script>
+
     <script type="text/javascript" src="{% static 'js/playlist/models.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.dotdotdot.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/contentrec/views.js' %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
@@ -59,7 +62,7 @@
 
 {% block content %}
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-    <div class="container">
+    <div class="container not-logged-in-only">
 
         <div class="row">
             <h2 class="main-headline hidden-xs">{{ channel_data.head_line }}</h2>
@@ -78,6 +81,9 @@
                 <p class="homepage-p"><strong>{{ channel_data.tag_line }}</strong></p>
             </div>
         </div>
+    </div>
+
+    <div class="logged-in-only" id="content-area">
     </div>
 
     <div class="not-admin-only">
