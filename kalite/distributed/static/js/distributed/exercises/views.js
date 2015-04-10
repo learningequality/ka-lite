@@ -459,7 +459,9 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 
         window.statusModel.loaded.then(function() {
 
-            self.initialize_subviews();
+            if (self.initialize_subviews) {
+                self.initialize_subviews();
+            }
 
             if (window.statusModel.get("is_logged_in")) {
 
@@ -471,6 +473,16 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 
     initialize_new_attempt_log: function(data) {
 
+        var seed = "";
+        var assessment_item_id = "";
+
+        if (this.exercise_view) {
+            if (this.exercise_view.data_model) {
+                seed = this.exercise_view.data_model.seed || seed;
+                assessment_item_id = this.exercise_view.data_model.assessment_item_id || assessment_item_id;
+            }
+        }
+
         var defaults = {
             exercise_id: this.options.exercise_id,
             user: window.statusModel.get("user_uri"),
@@ -478,13 +490,15 @@ window.ExerciseWrapperBaseView = BaseView.extend({
             context_id: this.options.context_id || "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version"),
-            seed: this.exercise_view.data_model.seed,
-            assessment_item_id: this.exercise_view.data_model.assessment_item_id
+            seed: seed,
+            assessment_item_id: assessment_item_id
         };
 
         data = $.extend(defaults, data);
 
         this.current_attempt_log = new AttemptLogModel(data);
+
+        this.attempt_collection.add(this.current_attempt_log);
 
         return this.current_attempt_log;
 
@@ -561,12 +575,12 @@ window.ExerciseWrapperBaseView = BaseView.extend({
             // only change the streak progress and points if we're not already complete
             if (!this.log_model.get("complete")) {
                 this.attempt_collection.add_new(this.current_attempt_log);
-                this.log_model.set(this.log_model_complete_data());
+                if (this.log_model_complete_data) {
+                    this.log_model.set(this.log_model_complete_data());
+                }
             }
 
-            this.log_model.set({
-                attempts: this.log_model.get("attempts") + 1
-            });
+            this.log_model.set(this.log_model_update_data());
 
             this.log_model.save()
                 .then(function(data) {
@@ -584,6 +598,9 @@ window.ExerciseWrapperBaseView = BaseView.extend({
             this.current_attempt_log.set({
                 complete: true
             });
+            if (this.correct_updates) {
+                this.correct_updates();
+            }
         }
 
         this.current_attempt_log.save();
