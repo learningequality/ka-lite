@@ -896,26 +896,31 @@ to items you want to have the icon appear with.
     box-shadow: -4px 0 9px 5px #ffa500;
 }
 
-
-/* Styling for modal dialog login elements */
-
-#log-box .has-error .form-control {
-    box-shadow: 0 0 8px 5px rgba(171,0,0,0.75) inset;
-}
-
-.login-btn {
-    width: 100%;
-    margin: 0 0 15px;
-}
-
-.log-input {
-    margin: 0 15px;
-}
-
+/* Styling for simplified login toggle button */
 .password-btn {
-    margin: 0 auto;
+    float: right;
 }
 
 .login .ui-menu .ui-menu-item a{
     font-size: 1.5em;
 }
+
+/* reg-dev prefix is use in register_public_key_client.html */
+.reg-dev-title-info {
+    margin-bottom: 15px;
+    color: green;
+}
+#reg-dev-installation-info {
+    margin-left:40px
+}
+
+#reg-dev-register-div {
+    margin-left:40px
+}
+
+#register-online-row {
+    margin-top:30px
+}
+
+
+
