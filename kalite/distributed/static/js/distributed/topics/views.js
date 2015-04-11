@@ -282,20 +282,24 @@ window.TopicContainerInnerView = BaseView.extend({
         this.state_model.set("current_level", options.level);
 
         // resize the scrollable part of sidebar to the page height
-        $(window).resize(_.throttle(function() {
-            var height = $(window).height();
-            self.$(".slimScrollDiv, .sidebar").height(height);
-        }, 200));
+        $(window).resize(self.window_resize_callback);
 
         // When scrolling, increase the height of the element
         // until it fills up the sidebar panel
-        $(window).scroll(_.throttle(function() {
-            var sidebarHeight = $(".sidebar-panel").height();
-            var deltaHeight = $(window).scrollTop() + self.$(".slimScrollDiv, .sidebar").height();
-            var height = Math.min(sidebarHeight, deltaHeight);
-            self.$(".slimScrollDiv, .sidebar").height(height);
-        }, 200));
+        $(window).scroll(self.window_scroll_callback);
     },
+
+    window_scroll_callback: _.throttle(function() {
+        var sidebarHeight = $(".sidebar-panel").height();
+        var deltaHeight = $(window).scrollTop() + self.$(".slimScrollDiv, .sidebar").height();
+        var height = Math.min(sidebarHeight, deltaHeight);
+        self.$(".slimScrollDiv, .sidebar").height(height);
+    }, 200),
+
+    window_resize_callback: _.throttle(function() {
+        var height = $(window).height();
+        self.$(".slimScrollDiv, .sidebar").height(height);
+    }, 200),
 
     render: function() {
         var self = this;
