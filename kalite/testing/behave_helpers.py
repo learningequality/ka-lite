@@ -70,6 +70,18 @@ def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     )
 
 
+def click_and_wait_for_id_to_appear(context, elem_click, elem_wait, wait_time=MAX_WAIT_TIME):
+    """ Click an element and then wait for another element to appear.
+    context: a behave context
+    elem_click: a WebElement to click.
+    elem_wait: an ID selector to wait for.
+    wait_time: Optional. Has a default value.
+    """
+    elem_click.click()
+    find_id_with_wait(context, elem_wait, wait_time=wait_time)
+
+
+
 def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     """ Waits for the element to become invisible
     context: a behave context
