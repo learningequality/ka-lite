@@ -9,7 +9,7 @@ from kalite.facility.models import Facility
 
 @given("There are no facilities")
 def step_impl(context):
-    if Facility.objects.count != 0:
+    if Facility.objects.count() != 0:
         for f in Facility.objects.all():
             f.soft_delete()
 
