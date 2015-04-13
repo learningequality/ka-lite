@@ -94,11 +94,11 @@ class BrowserActionMixins(object):
         """Both central and distributed servers use the Django messaging system.
         This code will verify that a message with the given type contains the specified text."""
 
-        WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
-
         # Get messages (and limit by type)
-        WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.CLASS_NAME, "alert")))
-        messages = self.browser.find_elements_by_class_name("alert")
+        if num_messages > 0:
+            messages = WebDriverWait(self.browser, 5).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "alert")))
+        else:
+            messages = []
 
         # Check that we got as many as expected
         if num_messages is not None:
