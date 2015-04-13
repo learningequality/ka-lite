@@ -8,6 +8,9 @@ module("TopicContainerInnerView tests", {
         level: sinon.stub(),
         has_parent: sinon.stub()
     };
+    options.model.get = sinon.stub();
+    options.model.set = sinon.stub();
+    options.state_model.set = sinon.stub();
     return this.theView = new TopicContainerInnerView(options);
   }
 });
