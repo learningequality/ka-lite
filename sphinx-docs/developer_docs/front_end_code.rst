@@ -101,7 +101,7 @@ To have this render in a particular Django template, both of the above files wou
     <script src="{% url 'handlebars_templates' module_name='reports' %}"></script>
     <script type="text/javascript" src="{% static 'js/coachreports/hexagon_report.js' %}"></script>
 
-Note that for the Handlebars importing, only the folder name is necessary to be imported, not each individual template.
+Note that for the Handlebars importing, only the folder name is necessary to be imported, not each individual template. It is also important that you do not place this script tag inside a Django-Compressor compress block.
 
 Finally, to actually have this render on the page, we would need to have a Backbone Model that is able to fetch the data from an API endpoint on the server, and when the fetch is successfully completed, prompt the view to be created. Assuming we have a HexagonReportModel already defined, we could insert the following code into the template to initialize this report::
 
