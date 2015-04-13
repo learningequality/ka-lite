@@ -6,8 +6,8 @@ module("TopicContainerInnerView tests", {
 
 test("Resizes when the window is resized or scrolled", function() {
   expect(2);
-  sinon.spy(this.theView, "window_scroll_callback")
-  sinon.spy(this.theView, "window_resize_callback")
+  sinon.spy(this.theView, "window_scroll_callback");
+  sinon.spy(this.theView, "window_resize_callback");
 
   $(window).resize();
   $(window).scroll();
