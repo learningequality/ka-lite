@@ -1,1 +1,2 @@
 behave==1.2.4
+selenium==2.45.0
