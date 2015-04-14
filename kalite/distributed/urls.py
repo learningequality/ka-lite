@@ -38,6 +38,10 @@ urlpatterns += patterns('',
     url(r'^securesync/', include(securesync.urls)),
 )
 
+
+# TODO: This should only be in DEBUG settings and the HTTP server should be
+# serving it otherwise. But the cherrypy service does not currently serve
+# media by itself, it uses the django application handlers below.
 urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,

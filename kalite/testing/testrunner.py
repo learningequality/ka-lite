@@ -109,18 +109,23 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
     def run_tests(self, test_labels=None, extra_tests=None, **kwargs):
         """By default, only run relevant app tests.  If you specify... you're on your own!"""
 
+        # benjaoming: Commented out clean_pyc, this hits the wrong directories currently
+        # and should not be necessary.
+        # If we have problems with pyc files, we're doing something else wrong.
+        # See https://github.com/learningequality/ka-lite/issues/3487
+
         # Purge all .pyc files using the clean_pyc django extension.
         # This prevents issues when py's have been renamed or moved but
         #   the orphan pyc's are discovered and run during testing
         # pyc's are not tracked by git, so orphans can happen when an
         #   older branch has been checked out
-        logging.info("Purging pyc files")
-        import logging as orig_logging
-        orig_logging.getLogger('django.request').setLevel('CRITICAL')
-        orig_logging.getLogger('kalite').setLevel('INFO')
-        management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
+        # logging.info("Purging pyc files")
+        # import logging as orig_logging
+        # orig_logging.getLogger('django.request').setLevel('CRITICAL')
+        # orig_logging.getLogger('kalite').setLevel('INFO')
+        # management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
 
-        orig_logging.disable(orig_logging.CRITICAL)
+        # orig_logging.disable(orig_logging.CRITICAL)
 
         @override_settings(DEBUG=settings.DEBUG or self.failfast)
         def run_tests_wrapper_fn():
