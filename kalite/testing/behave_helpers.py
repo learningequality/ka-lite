@@ -10,6 +10,7 @@ For clicking elements that cause a page load (`click` is not safe!):
 
 For finding and interacting with elements safely:
 * elem_is_invisible_with_wait
+* elem_is_visible_with_wait
 * find_css_class_with_wait
 * find_id_with_wait
 
@@ -85,6 +86,22 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     except StaleElementReferenceException:
         return True
     except TimeoutException:
+        return False
+
+
+def elem_is_visible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
+    """ Waits for the element to become visible
+    context: a behave context
+    elem: a WebDriver element
+    wait_time: sets the max wait time. Optional, but has a default value.
+    Returns True if the element is visible, otherwise waits and returns False
+    """
+    try:
+        WebDriverWait(context.browser, wait_time).until(
+            EC.visibility_of(elem)
+        )
+        return True
+    except (TimeoutException, StaleElementReferenceException):
         return False
 
 
