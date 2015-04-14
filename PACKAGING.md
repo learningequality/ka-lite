@@ -1,7 +1,7 @@
 How we package ka-lite
 ======================
 
-*March 20th 2015*
+*April 15, 2015*
 
 Introduction
 ------------
@@ -12,9 +12,18 @@ in the process of making it possible to distribute through traditional
 and conventional methods.
 
 Currently, the whole `kalite` package is built for being run on its own and
-integrates badly with outside Django environments, thus we also package it as
-a stand-alone web server with its own set of python packages, which are added
-as data files rather than system-wide libraries.
+integrates badly with outside Django environments. The reason for the
+stand-alone architecture is the primary intended offline audience, where
+external are supposed to be easy to handle. Thus we also package for instance
+a stand-alone web server with its own set of python packages. Such external
+libraries are added as data files rather than system-wide libraries to avoid
+conflicts on the host system imposed by (possibly outdated) KA Lite bundles.
+
+In the future, these bundled dependencies will be cleaned up and integrated
+with the upstream such that `kalite` will be available as a conventional
+python package with dynamic dependencies and a `standalone` version with
+all dependencies statically bundled.
+
 
 Setuptools vs distutils
 -----------------------
