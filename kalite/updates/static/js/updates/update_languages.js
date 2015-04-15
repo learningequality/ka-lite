@@ -269,7 +269,7 @@ function update_server_status() {
             updatesStart("languagepackdownload", 1000, languagepack_callbacks);
         } else {
             clear_messages();
-            show_message("error", gettext("The server does not have internet access; language packs cannot be downloaded at this time."));
+            show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));
         }
     });
 }
