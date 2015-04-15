@@ -33,7 +33,7 @@ def step_impl(context):
 def step_impl(context):
     logout_link = find_id_with_wait(context, LOGOUT_LINK_ID)
     assert logout_link is not None, "Couldn't find the logout link in the DOM!"
-    assert logout_link.is_displayed(), "Logout link is not visible!"
+    assert elem_is_visible_with_wait(context, logout_link), "Logout link is not visible!"
 
 
 def go_to_homepage(context):
