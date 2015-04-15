@@ -8,8 +8,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'AttemptLog.response_count'
-        db.delete_column(u'main_attemptlog', 'response_count')
 
         # Adding field 'AttemptLog.assessment_item_id'
         db.add_column(u'main_attemptlog', 'assessment_item_id',
@@ -18,10 +16,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Adding field 'AttemptLog.response_count'
-        db.add_column(u'main_attemptlog', 'response_count',
-                      self.gf('django.db.models.fields.IntegerField')(default=0),
-                      keep_default=False)
 
         # Deleting field 'AttemptLog.assessment_item_id'
         db.delete_column(u'main_attemptlog', 'assessment_item_id')
@@ -42,6 +36,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'blank': 'True'}),
             'points': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'response_count': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'response_log': ('django.db.models.fields.TextField', [], {'default': "'[]'"}),
             'seed': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'signature': ('django.db.models.fields.CharField', [], {'max_length': '360', 'null': 'True', 'blank': 'True'}),

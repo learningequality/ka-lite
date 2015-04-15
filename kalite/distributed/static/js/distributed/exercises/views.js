@@ -337,22 +337,34 @@ window.ExerciseView = Backbone.View.extend({
 
         clear_messages();
 
-        item.fetch({
-            success: self.render_perseus_exercise,
-            error: function() {
-                self.get_assessment_item(attempts+1);
-            }});
+
+        // Do this in this way, so that if the view is closed prior to the fetch completing
+        // successfully, the listens will have been unbound, and the callbacks will not get
+        // called.
+        this.listenToOnce(item, "sync", self.render_perseus_exercise);
+        this.listenToOnce(item, "error", function() {
+            self.get_assessment_item(attempts+1);
+        });
+
+        item.fetch();
     },
 
     render_perseus_exercise: function(item) {
+        var self = this;
         require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], function() {
-            Exercises.PerseusBridge.load().then(function() {
-                Exercises.PerseusBridge.render_item(item.get_item_data());
-                $(Exercises).trigger("newProblem", {
-                    userExercise: null,
-                    numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
+            // The exercise view can get closed before these loads finish happening, so check
+            // that it is still open before proceeding - otherwise, errors can ensue.
+            if (!self.closed) {
+                Exercises.PerseusBridge.load().then(function() {
+                    if (!self.closed) {
+                        Exercises.PerseusBridge.render_item(item.get_item_data());
+                        $(Exercises).trigger("newProblem", {
+                            userExercise: null,
+                            numHints: Exercises.PerseusBridge.itemRenderer.getNumHints()
+                        });
+                    }
                 });
-            });
+            }
         });
     },
 
@@ -431,6 +443,7 @@ window.ExerciseView = Backbone.View.extend({
             this.related_video_view.remove();
         }
         this.$("input").qtip("destroy", /* immediate */ true);
+        this.closed = true;
         this.remove();
     }
 
