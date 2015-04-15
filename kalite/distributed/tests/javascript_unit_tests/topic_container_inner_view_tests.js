@@ -24,5 +24,5 @@ test("Resizes when the window is resized or scrolled", function() {
   $(window).scroll();
 
   ok(this.theView.window_resize_callback.calledOnce);
-  ok(this.theView.window_scroll_callback.calledOnce);
+  return ok(this.theView.window_scroll_callback.calledOnce);
 });
