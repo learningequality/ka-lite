@@ -40,8 +40,8 @@ urlpatterns += patterns('',
 
 
 # TODO: This should only be in DEBUG settings and the HTTP server should be
-# serving it otherwise. But the cherrypy service does not currently serve
-# media by itself, it uses the django application handlers below.
+# serving it otherwise. Cherrypy is currently serving it through modifications
+# in kalite/django_cherrypy_wsgiserver/cherrypyserver.py
 urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
