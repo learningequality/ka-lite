@@ -104,7 +104,7 @@
             str = str.messages[0];
         }
 
-        return interpolateStringToArray(str, options).join("");
+        return interpolateStringToArray(gettext(str), options).join("");
     };
 
     /**
