@@ -64,9 +64,9 @@ class Command(BaseCommand):
                     f.flush()
             f.seek(0)
         else:                   # file; just open it normally
-            f = open(ziplocation, "r")
+            f = open(ziplocation, "rb")
 
-        zf = zipfile.ZipFile(f, "rb")
+        zf = zipfile.ZipFile(f, "r")
         extract_assessment_items_to_data_dir(zf)
         unpack_zipfile_to_khan_content(zf)
 
