@@ -66,7 +66,7 @@ class Command(BaseCommand):
         else:                   # file; just open it normally
             f = open(ziplocation, "r")
 
-        zf = zipfile.ZipFile(f, "r")
+        zf = zipfile.ZipFile(f, "rb")
         extract_assessment_items_to_data_dir(zf)
         unpack_zipfile_to_khan_content(zf)
 
