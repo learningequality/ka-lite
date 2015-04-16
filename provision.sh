@@ -7,5 +7,4 @@ curl -sL https://deb.nodesource.com/setup_0.12 | bash -
 apt-get install -y nodejs
 pip install -r /home/vagrant/ka-lite/requirements_dev.txt
 cd /home/vagrant/ka-lite
-# --no-bin-links option is for linux guests on windows hosts
-npm install --no-bin-links
+npm install -g
