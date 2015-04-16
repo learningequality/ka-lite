@@ -1,5 +1,5 @@
 module("TopicContainerInnerView tests", {
-  setup: function() {
+  beforeEach: function() {
     options = {
         state_model: new Backbone.Model(),
         entity_key: "blah",
@@ -16,12 +16,12 @@ module("TopicContainerInnerView tests", {
 
 test("Resizes when the window is resized or scrolled", function() {
   expect(2);
-  sinon.spy(this.theView, "window_scroll_callback");
-  sinon.spy(this.theView, "window_resize_callback");
+  var scroll_spy = sinon.spy(this.theView.window_scroll_callback);
+  var resize_spy = sinon.spy(this.theView.window_resize_callback);
 
   $(window).resize();
   $(window).scroll();
 
-  ok(this.theView.window_resize_callback.called);
-  return ok(this.theView.window_scroll_callback.called);
+  ok(scroll_spy.called);
+  ok(resize_spy.called);
 });
