@@ -5,7 +5,8 @@
 {% load my_filters %}
 {% load compress %}
 
-<html>
+{% get_current_language as lang_code %}
+<html lang="{{ lang_code }}">
     <head>
         <!--[if lt IE 9]>
               <script src="{% static "js/html5shiv.js" %}"></script>
