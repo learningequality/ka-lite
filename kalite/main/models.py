@@ -492,7 +492,7 @@ class AttemptLog(DeferredCountSyncedModel):
     time_taken = models.IntegerField(blank=True, null=True) # time spent on exercise before initial response (in ms)
     version = models.CharField(blank=True, max_length=100) # the version of KA Lite at the time the answer was given
     response_log = models.TextField(default="[]")
-    response_count = models.IntegerField(default=0),
+    response_count = models.IntegerField(default=0)
     assessment_item_id = models.CharField(max_length=100, blank=True, default="")
 
     class Meta:

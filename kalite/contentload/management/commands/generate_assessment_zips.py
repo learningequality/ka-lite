@@ -22,6 +22,9 @@ ASSESSMENT_ITEMS_PATH = os.path.join(settings.PROJECT_PATH, "..", "data", "khan"
 
 IMAGE_URL_REGEX = re.compile('https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-]+\.(png|gif|jpg|jpeg))', flags=re.IGNORECASE)
 
+WEB_GRAPHIE_URL_REGEX = re.compile('web\+graphie://ka\-perseus\-graphie\.s3\.amazonaws\.com\/(?P<filename>\w+)', flags=re.IGNORECASE)
+
+
 # this ugly regex looks for links to content on the KA site, also including the markdown link text and surrounding bold markers (*), e.g.
 # **[Read this essay to review](https://www.khanacademy.org/humanities/art-history/art-history-400-1300-medieval---byzantine-eras/anglo-saxon-england/a/the-lindisfarne-gospels)**
 # TODO(jamalex): answer any questions people might have when this breaks!
@@ -38,11 +41,13 @@ class Command(NoArgsCommand):
         # load the assessmentitems
         assessment_items = json.load(open(ASSESSMENT_ITEMS_PATH))
 
-        image_urls = all_image_urls(assessment_items)
+        image_urls = find_all_image_urls(assessment_items)
+        graphie_urls = find_all_graphie_urls(assessment_items)
 
-        logging.info("rewriting image urls")
+        logging.info("rewriting urls")
         new_assessment_items = localize_all_image_urls(assessment_items)
         new_assessment_items = localize_all_content_links(new_assessment_items)
+        new_assessment_items = localize_all_graphie_urls(new_assessment_items)
 
         # TODO(jamalex): We should migrate this away from direct-to-zip so that we can re-run it
         # without redownloading all files. Not possible currently because ZipFile has no `delete`.
@@ -50,11 +55,12 @@ class Command(NoArgsCommand):
         with open(ZIP_FILE_PATH, "w") as f:
             zf = zipfile.ZipFile(f, "w")  # zipfile.ZipFile isn't a context manager yet for python 2.6
             write_assessment_to_zip(zf, new_assessment_items)
-            zip_file_path = download_urls(zf, image_urls)
+            download_urls_to_zip(zf, image_urls)
+            download_urls_to_zip(zf, graphie_urls)
             write_assessment_item_version_to_zip(zf)
             zf.close()
 
-        logging.info("Zip File with images placed in %s" % zip_file_path)
+        logging.info("Zip File with images placed in %s" % ZIP_FILE_PATH)
 
 
 def write_assessment_item_version_to_zip(zf, versionnumber=version.SHORTVERSION):
@@ -66,15 +72,13 @@ def write_assessment_to_zip(zf, assessment_items):
     zf.writestr("assessmentitems.json", assessment_json_string)
 
 
-def download_urls(zf, urls):
+def download_urls_to_zip(zf, urls):
 
     urls = set(urls)
 
     pool = ThreadPool(10)
     download_to_zip_func = lambda url: download_url_to_zip(zf, url)
     pool.map(download_to_zip_func, urls)
-
-    return ZIP_FILE_PATH
 
 
 def download_url_to_zip(zf, url):
@@ -112,7 +116,7 @@ def fetch_file_from_url_or_cache(url):
     return out
 
 
-def all_image_urls(items):
+def find_all_image_urls(items):
 
     for v in items.itervalues():
         for match in re.finditer(IMAGE_URL_REGEX, v["item_data"]):
@@ -134,12 +138,41 @@ def localize_image_urls(item_data):
     return re.sub(IMAGE_URL_REGEX, _old_image_url_to_content_url, item_data)
 
 
+def find_all_graphie_urls(items):
+
+    for v in items.itervalues():
+        for match in re.finditer(WEB_GRAPHIE_URL_REGEX, v["item_data"]):
+            base_filename = str(match.group(0)).replace("web+graphie:", "https:") # match.group(0) means get the entire string
+            yield base_filename + ".svg"
+            yield base_filename + "-data.json"
+
+
+def localize_all_graphie_urls(items):
+    # we copy so we make sure we don't modify the items passed in to this function
+    newitems = copy.deepcopy(items)
+
+    for item in newitems.itervalues():
+        item['item_data'] = localize_graphie_urls(item['item_data'])
+
+    return newitems
+
+
+def localize_graphie_urls(item_data):
+
+    return re.sub(WEB_GRAPHIE_URL_REGEX, _old_graphie_url_to_content_url, item_data)
+
+
 def convert_urls(item_data):
     """Convert urls in i18n strings into localhost urls.
     This function is used by ka-lite-central/centralserver/i18n/management/commands/update_language_packs.py"""
     item_data = localize_image_urls(item_data)
     item_data = localize_content_links(item_data)
+    item_data = localize_graphie_urls(item_data)
     return item_data
+
+
+def _old_graphie_url_to_content_url(matchobj):
+    return "web+graphie:/content/khan/%s" % matchobj.group("filename")
 
 
 def _old_image_url_to_content_url(matchobj):
