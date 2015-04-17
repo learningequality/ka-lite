@@ -30,12 +30,4 @@ Rather than running the executable directly, you can also:
 Have a look in the `windows/` directory, there's some stuff for you. Also,
 change your operating system :P
 
-To have the new command `kalite` registered, double-click or execute
-`windows/setup.bat`.
-
-To run directly (assuming you're in the root folder), use `python.exe bin/kalite`.
-
-### Distributing for Windows
-
-Make sure that during the installation, the `bin/windows/setup.bat` command
-is run.
+From the root folder you can `bin\windows\kalite.bat` in place of `bin\kalite`.
