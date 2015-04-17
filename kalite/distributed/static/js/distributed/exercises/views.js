@@ -451,6 +451,34 @@ window.ExerciseView = BaseView.extend({
 
 window.ExerciseWrapperBaseView = BaseView.extend({
 
+    /**
+    * This base class is intended to be extended by all wrappers for the ExerciseView defined above.
+    * Methods required on a class extended from this:
+    *
+    * load_user_data - this method should define the logic for loading any existing user data from the server,
+    * ordinarily this data should include both a log_model for the view, and an attempt_collection which records
+    * the history of attempts on this activity.
+    *
+    * user_data_loaded - once the user data is loaded, this should determine how any missing data should be
+    * accounted for
+    *
+    * new_question_data - this should determine the logic for selecting the next question to be displayed, in
+    * some cases this may simply mean incrementing a seed or assessment_item_id, in others, it may involve
+    * changing the exercise being used.
+    *
+    * log_model_complete_data - determines what kind of information should be set on the log model for the
+    * view if the log model is not already completed.
+    *
+    * log_model_update_data - determines what kind of information should be set on the log model, regardless
+    * of its current 'complete' state.
+    *
+    * Optional Methods:
+    *
+    * initialize_subviews - if any views can be initialized straight away, these should be defined in here
+    *
+    * correct_updates - any updates to make if the question is answered correctly.
+    */
+
     initialize: function() {
 
         var self = this;
@@ -614,27 +642,6 @@ window.ExerciseWrapperBaseView = BaseView.extend({
         return this.attempt_collection.calculate_points_per_question(this.exercise_view.data_model.get("basepoints"));
     },
 
-
-    display_message: function() {
-        var msg;
-
-        var context = {
-            numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
-            denominator: ExerciseParams.STREAK_WINDOW
-        };
-
-        if (!this.log_model.get("complete")) {
-            if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
-                msg = "";
-            } else {
-                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
-            }
-        } else {
-            msg = gettext("You have finished this exercise!");
-        }
-        show_message("info", sprintf(msg, context));
-    },
-
     check_answer: function(data) {
 
         if (window.statusModel.get("is_logged_in")) {
@@ -764,6 +771,26 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
         return {
             attempts: this.log_model.get("attempts") + 1
         };
+    },
+
+    display_message: function() {
+        var msg;
+
+        var context = {
+            numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
+            denominator: ExerciseParams.STREAK_WINDOW
+        };
+
+        if (!this.log_model.get("complete")) {
+            if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
+                msg = "";
+            } else {
+                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+            }
+        } else {
+            msg = gettext("You have finished this exercise!");
+        }
+        show_message("info", sprintf(msg, context));
     }
 
 });
