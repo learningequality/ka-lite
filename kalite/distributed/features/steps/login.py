@@ -92,6 +92,12 @@ def impl(context):
 def impl(context):
     assert check_single_popover(context, "password")
 
+@then('the page should reload')
+def impl(context):
+    wait_elem = context.browser.find_element_by_tag_name("body")
+    assert WebDriverWait(context.browser, TIMEOUT).until(
+        EC.staleness_of(wait_elem)
+    )
 
 def fill_field(context, text, field_id):
     field = find_id_with_wait(context, field_id)
