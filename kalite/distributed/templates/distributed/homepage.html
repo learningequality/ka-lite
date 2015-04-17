@@ -57,7 +57,7 @@
 {% endblock headjs %}
 
 {% block content %}
-    <div class="front-page" id="homepage">
+    <div class="front-page not-logged-in-only" id="homepage">
 
         <h2 class="main-headline">{% trans "A free world-class education for anyone anywhere." %}</h2>
 
@@ -86,7 +86,7 @@
         <div class="clear"></div>
     </div>
 
-    <p>{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
+    <p class="not-logged-in-only">{% trans "KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection." %}</p>
 
     <div class="not-admin-only">
         <div class="logged-in-only">
