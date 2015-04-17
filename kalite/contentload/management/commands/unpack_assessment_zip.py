@@ -54,15 +54,16 @@ class Command(BaseCommand):
             logging.warn("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
             # this way we can download stuff larger than the device's RAM
             r = requests.get(ziplocation, prefetch=False)
+            r.raise_for_status()
             f = tempfile.TemporaryFile("r+")
 
-            for chunk in r.iter_content(chunk_size=1024): 
+            for chunk in r.iter_content(chunk_size=1024):
                 if chunk: # filter out keep-alive new chunks
                     f.write(chunk)
                     f.flush()
             f.seek(0)
         else:                   # file; just open it normally
-            f = open(ziplocation, "r")
+            f = open(ziplocation, "rb")
 
         zf = zipfile.ZipFile(f, "r")
         extract_assessment_items_to_data_dir(zf)

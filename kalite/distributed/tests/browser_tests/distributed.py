@@ -529,7 +529,6 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
         nav_logout = WebDriverWait(self.browser, 10).until(
             expected_conditions.presence_of_element_located((By.ID, "nav_logout"))
         )
-        self.assertFalse(nav_logout.is_displayed(), "The dropdown menu logout item must not be displayed yet!")
         # Activate the dropdown menu and see if the logout link is visible.
         dropdown_menu = self.browser.find_element_by_id("username")
         WebDriverWait(self.browser, 3).until(
@@ -547,4 +546,3 @@ class CoachHasLogoutLinkTest(BrowserActionMixins, CreateAdminMixin, FacilityMixi
             expected_conditions.visibility_of(expand_menus_button)
         )
         self.browser_activate_element(elem=expand_menus_button)
-        self.test_logout_link_visible()

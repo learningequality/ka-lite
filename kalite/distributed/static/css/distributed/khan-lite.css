@@ -658,7 +658,7 @@ li .progress-circle {
 
 #scratchpad > div {
     margin-top: 0; /* Controls whether scratchpad comes out of boundary - GH #1859 */
-    max-width: 514px;
+    max-width: 537px;
 }
 
 .current-card-contents #workarea {

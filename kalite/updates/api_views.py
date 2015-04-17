@@ -26,7 +26,7 @@ from fle_utils.general import isnumeric, break_into_chunks
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language
+from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools import get_topic_tree
 from kalite.caching import initialize_content_caches
@@ -219,7 +219,7 @@ def start_languagepack_download(request):
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
 
-    return JsonResponseMessageSuccess(_("Started language pack download for language %(lang_code)s successfully.") % {"lang_code": lang_code})
+    return JsonResponseMessageSuccess(_("Successfully started language pack download for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
 
 
 @require_admin
@@ -232,7 +232,7 @@ def delete_language_pack(request):
     lang_code = simplejson.loads(request.body or "{}").get("lang")
     delete_language(lang_code)
 
-    return JsonResponse({"success": _("Deleted language pack for language %(lang_code)s successfully.") % {"lang_code": lang_code}})
+    return JsonResponse({"success": _("Successfully deleted language pack for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)}})
 
 
 def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):

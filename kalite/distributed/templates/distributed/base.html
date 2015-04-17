@@ -5,7 +5,8 @@
 {% load my_filters %}
 {% load compress %}
 
-<html>
+{% get_current_language as lang_code %}
+<html lang="{{ lang_code }}">
     <head>
         <!--[if lt IE 9]>
               <script src="{% static "js/html5shiv.js" %}"></script>
@@ -182,7 +183,7 @@
         <div id="wrapper">
 
             {# Header & Navbar #}
-            <div class="navbar kalite-navbar header-footer-bg">
+            <div class="navbar kalite-navbar header-footer-bg" role="banner">
               <div class="container">
                   <div class="row">
                       <div class="navbar-header">
@@ -200,8 +201,8 @@
                           </div>                             
                       </div>
 
-                      <div class="collapse navbar-collapse top-nav">
-                          <ul class="nav navbar-nav navbar-right nav-tabs " id="topnav"role="tablist">
+                      <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
+                          <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist">
                             <!-- For all users -->
                             {# Search box #}
                             <li>
@@ -335,7 +336,7 @@
           {# End Header / Navbar #}
 
             {# Body #}
-            <div id="content-container" class="container">
+            <div id="content-container" class="container" role="main">
                 {% block outer_content %}
                     {% block precontent %}
                         {% include "distributed/partials/_messages.html" %}
