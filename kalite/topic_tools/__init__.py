@@ -573,17 +573,18 @@ def convert_leaf_url_to_id(leaf_url):
     return leaf_id[0]
 
 
+
+### BEGIN content recommendation ###
+
+
 ###
 # Returns a dictionary with each subtopic and their related
 # topics.
 #
 ###
-import time
 def generate_recommendation_data():
 
     #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values
-    data = {};
-    
     data_hardcoded = {
         "early-math": {"related_subtopics": ["early-math", "arithmetic", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
         "arithmetic": {"related_subtopics": ["arithmetic", "pre-algebra", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
@@ -639,14 +640,15 @@ def generate_recommendation_data():
     }
 
 
-    '''t0 = time.clock()'''
-
-
     ### populate data exploiting structure of topic tree ###
-    tree = get_topic_tree() #Is there a better way of getting the tree without calling get_topic_tree() again and again?
+    if not TOPICS:
+        tree = get_topic_tree() 
+    else:
+        tree = TOPICS[settings.CHANNEL][settings.LANGUAGE_CODE] #else grab the cached topic tree
 
-    '''print 'time taken to create topic_tree: ' + str(time.clock() - t0)
-    t1 = time.clock() #running time of actual alg'''
+    ######## DYNAMIC ALG #########
+
+    data = {};
 
     ##
     # ITERATION 1 - grabs all immediate neighbors of each subtopic
@@ -661,17 +663,16 @@ def generate_recommendation_data():
 
         subtopic_index = 0
 
-        #for each subtopic add the neighbors at distance 1 (2 for each)
+        #for each subtopic add the neighbors at distance 0 and 1 (at dist one has 2 for each)
         for subtopic in topic['children']:
 
             neighbors_dist_1 = get_neighbors_at_dist_1(topic_index, subtopic_index, tree)
 
             #add to data - distance 0 (itself) + distance 1
-            data[ subtopic['id'] ] = { 'related_subtopics' : ([subtopic['id']] + neighbors_dist_1) }
+            data[ subtopic['id'] ] = { 'related_subtopics' : ([subtopic['id'] + ' 0'] + neighbors_dist_1) }
             subtopic_index+=1
             
         topic_index+=1
-
 
     ##
     # ITERATION 2 - grabs all subsequent neighbors of each subtopic via 
@@ -681,19 +682,43 @@ def generate_recommendation_data():
     #loop through all subtopics currently in data dict
     for subtopic in data:
         related = data[subtopic]['related_subtopics'] # list of related subtopics (right now only 2)
-        other_neighbors = get_subsequent_neighbors(related, data)
-        data[subtopic]['related_subtopics'] += other_neighbors
+        other_neighbors = get_subsequent_neighbors(related, data, subtopic)
+        data[subtopic]['related_subtopics'] += other_neighbors ##append new neighbors
 
-    '''print 'time taken for actual algorithm exlcuding topic_tree: ' + str(time.clock() - t1)'''
 
-    #0 is for hardcoded data ###### DELETE AFTER TESTS ########
+    ##
+    # ITERATION 2.5 - Sort all results by increasing distance and to strip the final
+    # result of all distance values in data (note that there are only 3 possible: 0,1,4).
+    ##
 
+    #for each item in data
+    for subtopic in data:
+        at_dist_4 = []          #array to hold the subtopic ids of recs at distance 4
+        at_dist_lt_4 = []       #array to hold subtopic ids of recs at distance 0 or 1
+
+        #for this item, loop through all recommendations
+        for recc in data[subtopic]['related_subtopics']:
+            if recc.split(" ")[1] == '4':   #if at dist 4, add to the array
+                at_dist_4.append(recc.split(" ")[0]) 
+            else:
+                at_dist_lt_4.append(recc.split(" ")[0])
+
+       
+        sorted_related = at_dist_lt_4 + at_dist_4 #append later items at end of earlier
+        data[subtopic]['related_subtopics'] = sorted_related
+
+
+    ##
+    # ITERATION 3 - Take into consideration user data in exercise log to filter data one last time
+    ##    
+
+    '''TODO LATER'''
     return data
 
 
 
 ### 
-# Returns a lookup table that contains a list of related
+# Returns a lookup table (a tree) that contains a list of related
 # EXERCISES for each subtopic.
 #
 # @param data: a dicitonary with each subtopic and its related subtopics
@@ -709,10 +734,13 @@ def get_recommendation_tree(data):
 
         #loop through all of the related subtopics
         for rel_subtopic in related_subtopics:
-            exercises = get_topic_exercises(rel_subtopic)
+            
+            #make sure related is not an empty string (shouldn't happen but to be safe)
+            if len(rel_subtopic) > 0:
+                exercises = get_topic_exercises(rel_subtopic)
 
-            for ex in exercises:
-                recommendation_tree[str(subtopic)].append(ex['id'])
+                for ex in exercises:
+                    recommendation_tree[str(subtopic)].append(ex['id'])
 
     return recommendation_tree
       
@@ -720,7 +748,8 @@ def get_recommendation_tree(data):
 
 ###
 # Returns a list of recommended exercise ids given a
-# subtopic id.
+# subtopic id. This will be the function called via the api
+# endpoint.
 #
 # @param subtopic_id: the subtopic id (e.g. 'early-math')
 ###
@@ -754,25 +783,26 @@ def get_neighbors_at_dist_1(topic, subtopic, tree):
 
     #if there is a previous topic (neighbor to left)
     if(prev > -1 ):
-        neighbors.append(topic['children'][prev]['id']) # neighbor on the left side
+        neighbors.append(topic['children'][prev]['id'] + ' 1') # neighbor on the left side
 
     #else check if there is a neighboring topic (left)    
     else:
         if (topic_index-1) > -1:
             neighbor_length = len(tree['children'][(topic_index-1)]['children'])
-            neighbors.append(tree['children'][(topic_index-1)]['children'][(neighbor_length-1)]['id'])
+            neighbors.append(tree['children'][(topic_index-1)]['children'][(neighbor_length-1)]['id'] + ' 4')
 
         else:
             neighbors.append(' ') # no neighbor to the left
 
     #if there is a neighbor to the right
     if(next < len(topic['children'])):
-        neighbors.append(topic['children'][next]['id']) # neighbor on the right side
+        neighbors.append(topic['children'][next]['id'] + ' 1') # neighbor on the right side
 
     #else check if there is a neighboring topic (right)
     else:
         if (topic_index + 1) < len(tree['children']):
-            neighbors.append(tree['children'][(topic_index+1)]['children'][0]['id'])
+            #the 4 denotes the # of nodes in path to this other node, will always be 4
+            neighbors.append(tree['children'][(topic_index+1)]['children'][0]['id'] + ' 4') 
 
         else:
             neighbors.append(' ') # no neighbor on right side
@@ -786,34 +816,100 @@ def get_neighbors_at_dist_1(topic, subtopic, tree):
 # Performs Breadth-first search given recommendation data.
 # Returns neighbors of a node in order of increasing distance.
 # 
-# @param nearest_neighbors: array holding the current left and right neighbors (always 2)
+# @param nearest_neighbors: array holding the current left and right neighbors at dist 1 (always 2)
 # @param data: dictionary of subtopics and their neighbors at distance 1
+# @param curr: the current subtopic
 ###
 
-def get_subsequent_neighbors(nearest_neighbors, data):
-    left = nearest_neighbors[1]  # subtopic id string of left neighbor
-    right = nearest_neighbors[2]
+def get_subsequent_neighbors(nearest_neighbors, data, curr):
+    left_neigh = nearest_neighbors[1].split(' ')  # subtopic id and distance string of left neighbor
+    right_neigh = nearest_neighbors[2].split(' ') # same but for right
+
+    left = left_neigh[0]    #subtopic id of left
+    right = right_neigh[0]  #subtopic id of right
+
+    left_dist = -1          #dummy value
+    right_dist = -1
+
+    at_four_left = False    #boolean flag to denote that all other nodes to the left are at dist 4
+    at_four_right = False   #same as above but for right nodes
+
+    #checks, only applies to when left or right is ' ' (no neighbor)
+    if  len(left_neigh) > 1:
+        left_dist = left_neigh[1]           #distance of left neighbor
+    else:
+        left = ' '
+
+    if len(right_neigh) > 1:
+        right_dist = right_neigh[1]         #distance of right neighbor
+    else:
+        right = ' '
 
     other_neighbors = []
 
     # Loop while there are still neighbors
     while left != ' ' or right != ' ':
 
+        if left == '':
+            left= ' '
+
         # If there is a left neighbor, append its left neighbor
         if left != ' ':
             if data[left]['related_subtopics'][1] != ' ':
-                other_neighbors.append(data[left]['related_subtopics'][1])
-            left = data[left]['related_subtopics'][1]
+
+                #series of checks for each case
+                #if all other nodes are at dist 4 (the first dist 4 was found)
+                if(at_four_left):
+                    new_dist = 4
+                    at_four_left = True
+
+                else:
+                    #if immediate left node is 4
+                    if data[ curr ]['related_subtopics'][1].split(' ')[1] == '4': 
+                        at_four_left = True
+                        new_dist = 4
+                    elif data[left]['related_subtopics'][1].split(' ')[1] == '4': #if the next left neighbor is at dist 4
+                        at_four_left = True
+                        new_dist = 4
+                    else: #this means that the next left node is at dist 1
+                        new_dist = 1
+
+                other_neighbors.append(data[left]['related_subtopics'][1].split(' ')[0] + ' ' + str(new_dist))
+            left = data[left]['related_subtopics'][1].split(' ')[0]
+        
+        if right == '':
+            right = ' '
 
         # Repeat for right neighbor
         if right != ' ':
             if data[right]['related_subtopics'][2] != ' ':
-                other_neighbors.append(data[right]['related_subtopics'][2])
-            right = data[right]['related_subtopics'][2]
+
+                #series of checks for each case
+                #if all other nodes are at dist 4 (the first dist 4 was found)
+                if(at_four_right):
+                    new_dist = 4
+                    at_four_right = True
+
+                else:
+                    #if immediate right node is 4
+                    if data[ curr ]['related_subtopics'][2].split(' ')[1] == '4':           
+                        new_dist = 4
+                    elif data[right]['related_subtopics'][2].split(' ')[1] == '4': #if the next right neighbor is at dist 4
+                        new_dist = 4
+                    else: #this means that the next right node is at dist 1
+                        new_dist = 1
+
+                if new_dist == 4:
+                    at_four_right = True
+
+                other_neighbors.append(data[right]['related_subtopics'][2].split(' ')[0] + ' ' + str(new_dist))
+            right = data[right]['related_subtopics'][2].split(' ')[0]
 
     return other_neighbors
 
+### END content recommendation ###
 
+'''
 ###
 # Tester that will compare the similarity and accuracy of both 
 # content recommendation algorithms (hardcoded and dynamic) 
@@ -860,28 +956,8 @@ def recommendation_alg_tester():
     results['percentageOfMatching'] = str((round((float(numTotalMatches)/numTotalRecs)*100.0, 2))) + '%'
 
 
-    '''temporary writing to csv file 
-    headers = ['Subtopic', 'HC', 'DYN']
-    test_file = open('alg_comparisons_first_5.csv', 'wb')
-    csvwriter = csv.DictWriter(test_file, delimiter=',', fieldnames = headers)
-    csvwriter.writerow({'Subtopic': 'Subtopic', 'HC': 'HC', 'DYN': 'DYN'})
-    for subtopic in results:
-        print subtopic
-        if(subtopic =='percentageOfMatching'):
-            continue
-        #grab recommendations
-        recs = results[subtopic]['recommendations']
-
-        i = 0
-        while i < len(recs['hc']):
-            row = {'Subtopic': subtopic, 'HC': recs['hc'][i], 'DYN': recs['dyn'][i]} #row to write
-            csvwriter.writerow(row)
-            i+=1 
-    '''
-
-
     return results
-
+'''
 
 
 ##
@@ -889,7 +965,7 @@ def recommendation_alg_tester():
 # Given specified prerequisites, this function will return related
 # and/or suggested other prereqs, solely by looking at the topic tree.
 # As of now, the method will also compute and compare these to the
-# ones in get_exercise_cache().
+# ones in get_exercise_cache(). NOT WORKING ON THIS AT THE MOMENT
 #
 # @param prereq_list: a list of specified prequisite courses (by the user).
 ##
