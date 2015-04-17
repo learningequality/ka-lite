@@ -26,14 +26,13 @@ def step_impl(context):
 
 @then("I should see a list of options")
 def step_impl(context):
-    auto_complete_list = find_css_class_with_wait(context, "ui-autocomplete")
+    auto_complete_list = find_css_class_with_wait(context, "ui-menu-item")
     assert auto_complete_list
 
 @then("I should navigate to Basic Addition")
 def step_impl(context):
-    url = context.browser.getUrl()
-    assertEqual(url, "/learn/khan/math/arithmetic/addition-subtraction/basic_addition/basic-addition/")
+    assert context.browser.current_url == build_url(context, "/learn/khan/math/arithmetic/addition-subtraction/basic_addition/basic-addition/")
 
-def search_for(text, context):
+def search_for(context, text):
     search_field = find_id_with_wait(context, "search")
     search_field.send_keys(text)

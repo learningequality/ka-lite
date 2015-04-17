@@ -47,7 +47,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 # Maximum time to wait when trying to find elements
-MAX_WAIT_TIME = 1
+MAX_WAIT_TIME = 5
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 3
 
@@ -184,6 +184,10 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
 
 def build_url(context, url):
     return urljoin(context.config.server_url, url)
+
+def go_to_homepage(context):
+    url = reverse("homepage")
+    context.browser.get(build_url(context, url))
 
 
 def _login_user(context, username, password):
