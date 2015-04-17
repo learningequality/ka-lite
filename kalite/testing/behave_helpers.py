@@ -80,7 +80,7 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     """
     try:
         WebDriverWait(context.browser, wait_time).until_not(
-            lambda: elem.is_displayed()
+            lambda browser: elem.is_displayed()
         )
         return True
     except StaleElementReferenceException:
@@ -90,15 +90,21 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
 
 
 def elem_is_visible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
-    """ Waits for the element to become visible
+    """ Waits for the element to become visible. Will try to scroll the element
+    into view.
     context: a behave context
     elem: a WebDriver element
     wait_time: sets the max wait time. Optional, but has a default value.
     Returns True if the element is visible, otherwise waits and returns False
     """
+    def _visiblity_of():
+        # elem.location returns a dict: {"x": 42, "y": 42}
+        context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
+        return elem.is_displayed()
+
     try:
         WebDriverWait(context.browser, wait_time).until(
-            EC.visibility_of(elem)
+            lambda browser: _visiblity_of()
         )
         return True
     except (TimeoutException, StaleElementReferenceException):
