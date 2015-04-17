@@ -3,28 +3,32 @@ Feature: Logging into KA Lite
 
     Scenario: There is one facility
         Given there is one facility
-        and that I am on the homepage
+        and I am on the homepage
         when I click log in
         then there should be no facility drop down
 
     Scenario: There is more than one facility
         Given there is more than one facility
-        and that I am on the homepage
+        and I am on the homepage
         when I click log in
         then there should be a facility drop down
 
     Scenario: Logging in with the incorrect password
-        Given that I have an account
-        and that I am on the homepage
-        when I enter my username
+        Given I have an account
+        and I am on the homepage
+        when I click log in
+        and I enter my username correctly
         and I enter my password incorrectly
+        and I click the login button
         then the password should be highlighted
         and a tooltip should appear on the password box only
 
     Scenario: Logging in with the wrong username
-        Given that I have an account
-        and that I am on the homepage
-        when I enter my username wrong
+        Given I have an account
+        and I am on the homepage
+        when I click log in
+        and I enter my username incorrectly
         and I enter my password correctly
+        and I click the login button
         then the username should be highlighted
         and a tooltip should appear on the username box only

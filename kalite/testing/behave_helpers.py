@@ -78,7 +78,7 @@ def click_and_wait_for_id_to_appear(context, elem_click, elem_wait, wait_time=MA
     wait_time: Optional. Has a default value.
     """
     elem_click.click()
-    find_id_with_wait(context, elem_wait, wait_time=wait_time)
+    id_shown_with_wait(context, elem_wait, wait_time=wait_time)
 
 
 
@@ -121,6 +121,26 @@ def find_id_with_wait(context, id_str, **kwargs):
     """
     return _find_elem_with_wait(context, (By.ID, id_str), **kwargs)
 
+def id_shown_with_wait(context, id_str, **kwargs):
+    """ Tries to find an element with given id with an explicit timeout.
+    context: a behave context
+    id_str: A string with the id (no leading #)
+    kwargs: can optionally pass "wait_time", which will be the max wait time in
+        seconds. Default is defined by behave_helpers.py
+    Returns the element if found or None
+    """
+    return _shown_elem_with_wait(context, (By.ID, id_str), **kwargs)
+
+
+def find_xpath_with_wait(context, id_str, **kwargs):
+    """ Tries to find an element with given XPATH with an explicit timeout.
+    context: a behave context
+    id_str: A string with the XPATH (no leading #)
+    kwargs: can optionally pass "wait_time", which will be the max wait time in
+        seconds. Default is defined by behave_helpers.py
+    Returns the element if found or None
+    """
+    return _find_elem_with_wait(context, (By.XPATH, id_str), **kwargs)
 
 def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
@@ -133,6 +153,21 @@ def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     try:
         return WebDriverWait(context.browser, wait_time).until(
             EC.presence_of_element_located(by)
+        )
+    except TimeoutException:
+        return None
+
+def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
+    """ Tries to find an element with an explicit timeout.
+    "Private" function to hide Selenium details.
+    context: a behave context
+    by: A tuple selector used by Selenium
+    wait_time: The max time to wait in seconds
+    Returns the element if found or None
+    """
+    try:
+        return WebDriverWait(context.browser, wait_time).until(
+            EC.visibility_of_element_located(by)
         )
     except TimeoutException:
         return None

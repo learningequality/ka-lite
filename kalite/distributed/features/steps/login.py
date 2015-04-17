@@ -7,7 +7,7 @@ from kalite.testing.behave_helpers import *
 
 from kalite.facility.models import Facility
 
-from kalite.testing.mixins.facility_mixins import CreateFacilityMixin
+from kalite.testing.mixins.facility_mixins import CreateFacilityMixin, CreateStudentMixin
 
 TIMEOUT = 3
 
@@ -25,7 +25,7 @@ def step_impl(context):
         context.facility = CreateFacilityMixin.create_facility(name=str(name))
         name += 1
 
-@given("that I am on the homepage")
+@given("I am on the homepage")
 def step_impl(context):
     go_to_homepage(context)
 
@@ -50,38 +50,63 @@ def step_impl(context):
 def step_impl(context):
     assert find_id_with_wait(context, "id_facility-container")
 
-@given(u'that I have an account')
+@given('I have an account')
 def impl(context):
-    assert False
+    context.user = CreateStudentMixin.create_student()
+    context.password = CreateStudentMixin.DEFAULTS["password"]
 
-@when(u'I enter my password incorrectly')
+@when('I enter my password incorrectly')
 def impl(context):
-    assert False
+    fill_password(context, "notarealpasswordIpromise")
 
-@then(u'the password should be highlighted')
+@when('I enter my password correctly')
 def impl(context):
-    assert False
+    fill_password(context, context.password)
 
-@then(u'the username should be highlighted')
+@when('I enter my username incorrectly')
 def impl(context):
-    assert False
+    fill_username(context, "notarealusernameIswear")
 
-@then(u'a tooltip should appear on the password box only')
+@when('I enter my username correctly')
 def impl(context):
-    assert False
+    fill_username(context, context.user.username)
 
-@when(u'I enter my password correctly')
+@when('I click the login button')
 def impl(context):
-    assert False
+    login_button = find_css_class_with_wait(context, "login-btn")
+    login_button.click()
 
-@when(u'I enter my username wrong')
+@then('a tooltip should appear on the username box only')
 def impl(context):
-    assert False
+    assert check_single_popover(context, "username")
 
-@when(u'I enter my username')
+@then('the password should be highlighted')
 def impl(context):
-    assert False
+    assert check_highlight(context, "password")
 
-@then(u'a tooltip should appear on the username box only')
+@then('the username should be highlighted')
 def impl(context):
-    assert False
+    assert check_highlight(context, "username")
+
+@then('a tooltip should appear on the password box only')
+def impl(context):
+    assert check_single_popover(context, "password")
+
+
+def fill_field(context, text, field_id):
+    field = find_id_with_wait(context, field_id)
+    field.send_keys(text)
+
+def fill_username(context, text):
+    fill_field(context, text, "id_username")
+
+def fill_password(context, text):
+    fill_field(context, text, "id_password")
+
+def check_highlight(context, item):
+    highlight = find_css_class_with_wait(context, "has-error")
+    return "id_{item}-container".format(item=item) == highlight.get_attribute("id")
+
+def check_single_popover(context, item):
+    popover = find_xpath_with_wait(context, "//*[@id='id_{item}-container']/div/div".format(item=item))
+    return (len(context.browser.find_elements_by_class_name("popover")) == 1) and "popover" in popover.get_attribute("class")
