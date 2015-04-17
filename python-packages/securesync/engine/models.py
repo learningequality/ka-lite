@@ -231,7 +231,7 @@ class SyncedModel(ExtendedModel):
         """
         exclude = exclude or []
         if imported:
-            exclude = list(set(exclude + self._import_excluded_validation_fields))
+            exclude = list(set(tuple(exclude) + self._import_excluded_validation_fields))
         if self.deleted:
             exclude = exclude + [f.name for f in self._meta.fields if isinstance(f, models.ForeignKey) ]
         return super(SyncedModel, self).full_clean(exclude=exclude)
