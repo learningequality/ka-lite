@@ -262,6 +262,9 @@ form .input-group {
 .navbar-toggle .icon-bar {
     background-color: #fff;
 }
+.display-none {
+    display: none !important;
+}
 /* ======= Logged in student only ======== */
 .relative-block{
     position: relative;

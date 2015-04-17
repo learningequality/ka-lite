@@ -315,3 +315,57 @@ window.UserView = BaseView.extend({
         this.model.logout();
     }
 });
+
+/* Check the type of user
+- guest: 'guest-user'
+- teacher: 'teacher-nav'
+- admin: 'admin-nav'
+- student: 'student-user'
+assign the api call to the appropriate css class
+if not current user, insert display-none css class */
+
+/* This view uses API to toggle which navbar items are displayed to the user */ 
+window.ToggleNavbarView = BaseView.extend ({
+
+    template: HB.template("user/navigation"),
+
+    initialize: function() {
+        _.bindAll(this);
+        this.listenTo(this.model, "change", this.render);
+        $("body").append(this.el);
+    },
+
+    render: function() {
+        var self = this;
+
+        this.$el.html(this.template());
+
+        /*if ( window.statusModel.get("is_logged_in")) {
+            //identifies a teacher user
+            if ( window.statusModel.get("is_admin") && !window.statusModel.get("is_django_user") ) {
+                console.log("working so far");
+                var element = 
+                self.getElementsByClassName("teacher-nav").classList.remove("display-none");
+
+            }
+            //identifies a super user
+            else if ( window.statusModel.get("is_django_user")) {
+
+            }
+            //identifies a general admin user
+            else if ( window.statusModel.get("is_admin") ) {
+
+            }
+            //identifies a student user 
+            else if ( !window.statusModel.get("is_admin") && !window.statusModel.get("is_django_user") ) {
+
+            }
+        } 
+        // shows tabs for guest user
+        else {
+
+        }*/
+        return this;  
+    }
+});
+var toggleNavbarView = new ToggleNavbarView({model: statusModel, el: "#top-nav"});

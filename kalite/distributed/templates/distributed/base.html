@@ -96,22 +96,6 @@
         $(function() {
             FastClick.attach(document.body);
         });
-
-         /* TODO(jtamiace): Backbonify this function and this page... when the time comes.
-            This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
-          function collapsedNav(e) {
-            if ( $('body').innerWidth() <= 750 ) {
-                document.getElementById("user-name-a").removeAttribute("data-toggle");
-                document.getElementById("user-name").classList.add("open");
-              } 
-            if ( $('body').innerWidth() >= 751 ) {
-                document.getElementById("user-name-a").setAttribute("data-toggle", "dropdown");
-                document.getElementById("user-name").classList.remove("open");
-              }
-            };
-          window.addEventListener("resize", collapsedNav, false);
-          window.addEventListener("pageshow", collapsedNav, true);
-
         </script>
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/backbone/backbone.js' %}"></script>
@@ -135,7 +119,6 @@
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.qtip.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/navigation/views.js' %}"></script>
 
         {% endcompress %}
 
@@ -205,25 +188,29 @@
                                   <img src="/data/{{ channel }}/images/horizontal-logo-small.png" alt="{{ channel_data.channel_name }} {% trans 'logo' %}">
                               </a>
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
-                          </div>                             
+                          </div>    
+                                                   
                       </div>
+                      
 
                       <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
                           <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist">
-
+                            <!-- For all users -->
+                            {# Search box #}
+                            <li>
+                              <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
+                                {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
+                                <div class="input-group">
+                                  <input type="text" name="query" id="search" class="form-control" placeholder="{% trans 'Topic, video, exercise...' %}" aria-label="{% trans 'Search for' %}" />
+                                  <button id="search-button" class="btn btn-default" type="submit" aria-label="{% trans 'Submit' %}"><i class="glyphicon glyphicon-search" aria-hidden="true"></i></button>
+                                </div>
+                              </form>
+                            </li>
                             <!-- For logged in admins -->
-                            {% if request.is_admin and is_config_package_nalanda and not request.session.facility_user.facility %}
-                              {# Teach for admins => assigning playlists for Nalanda #}
-                              <li class="{% block teach_active_admins-nalanda %}{% endblock teach_active_admins-nalanda %}">
-                                <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
-                                  {% trans "Teach" %}
-                                </a>
-                              </li>
-                            {% endif %}
-                            {% if request.is_admin and not request.session.facility_user.facility and not is_config_package_nalanda %}
+                            {% if request.is_admin and not request.session.facility_user.facility %}
                               {# Teach for admins => coachreports #}
-                              <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
-                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
+                              <li class="admin-nav {% block teach_active_admins %}{% endblock teach_active_admins %}">
+                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
                                   {% trans "Teach" %}
                                 </a>
                               </li>
@@ -231,8 +218,8 @@
 
                             {# Manage for admins => zone control panel #}
                             {% if request.is_django_user %}
-                            <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">
-                              <a href="{% url 'zone_redirect' %}" id="manage" class="admin-only">
+                            <li class="admin-nav {% block manage_active_admins %}{% endblock manage_active_admins %}">
+                              <a href="{% url 'zone_redirect' %}" id="manage" class="">
                                 {% trans "Manage" %}
                               </a>
                             </li>
@@ -241,7 +228,7 @@
 
                             <!-- For logged in teachers -->
                             {# Teach for teachers => coachreports #}
-                            <li class="{% block teach_active_teachers %}{% endblock teach_active_teachers %}">
+                            <li class="teacher-nav display-none {% block teach_active_teachers %}{% endblock teach_active_teachers %}">
                               <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
                                 {% trans "Teach" %}
                               </a>
@@ -249,8 +236,8 @@
 
                             {# Manage for teachers => facility management #}
                             {% if request.session.facility_user.facility %}
-                              <li class="{% block manage_active_teachers %}{% endblock manage_active_teachers %}">
-                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" id="manage" class="teacher-only">
+                              <li class="teacher-nav display-none {% block manage_active_teachers %}{% endblock manage_active_teachers %}">
+                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" id="manage" class="">
                                   {% trans "Manage" %}
                                 </a>
                               </li>
@@ -267,27 +254,27 @@
 
                             <!-- For logged out users  -->
                             {# Login #}
-                            <li class="{% block login_active %}{% endblock login_active %}">
+                            <li class="guest-nav {% block login_active %}{% endblock login_active %}">
                               <a href="#" class="not-logged-in-only" data-toggle="modal" data-target="#loginModal" title="{% trans 'Login' %}" id="nav_login">
                                 {% trans "Login" %}
                               </a>
                             </li>
 
                             {% if not restricted %}
-                              <li class="{% block signup_active %}{% endblock signup_active %}">
+                              <li class="guest-nav {% block signup_active %}{% endblock signup_active %}">
                                 <a href="{% url 'facility_user_signup' %}" id="nav_signup" class="not-logged-in-only" title="{% trans 'Register to start tracking your progress' %}">
                                   {% trans "Sign Up" %}
                                 </a>
                               </li>
                             {% endif %}
                             
-                            <hr class="nav-divider student-only">
+                            <hr class="nav-divider student-nav student-only">
                             {% if request.is_admin or request.session.facility_user.facility %}
                             <hr class="nav-divider admin-only">
                             {% endif %}
 
                             <!-- Farthest right nav is logged in user dropdown -->
-                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %} " id="user-name">
+                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}" id="user-name">
                               <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown" id="user-name-a">
                                   <span id="username">
                                     <!-- Username injected here w/ js -->
@@ -296,14 +283,14 @@
                               </a>
 
                               <ul class="dropdown-menu" data-no-collapse="true" role="menu">
-                                <li class="student-only" role="presentation">
-                                  <span class="student-only" id="points">
+                                <li class="student-only student-nav" role="presentation">
+                                  <span class="student-only student-nav" id="points">
                                     <!-- Points injected here w/ js -->
                                   </span>
                                 </li>
-                                <li role="presentation" class="divider student-only"></li>
+                                <li role="presentation" class="divider student-only student-nav"></li>
                                 {# Student account management #}
-                                <li role="presentation" class="motivational-feature student-only">
+                                <li role="presentation" class="motivational-feature student-only student-nav">
                                   <a role="menuitem" tabindex="-1" href="{% url 'account_management' %}" id="nav_progress" title="{% trans 'My Progress'%}" class="student-only">
                                     {% trans "My Progress" %}
                                   </a>
@@ -313,7 +300,7 @@
                                 <li role="presentation">
                                   <a role="menuitem" tabindex="-1" href="{% url 'help' %}" id="nav_help">{% trans "Help" %}</a>
                                 </li> -->
-                                <li role="presentation" class="divider student-only"></li>
+                                <li role="presentation" class="divider student-only student-nav"></li>
                                 <!-- Logout goes at the bottom! -->
                                 <li role="presentation" id="logout">
                                   <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}" href="#">

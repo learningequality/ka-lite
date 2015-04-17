@@ -1,0 +1,59 @@
+
+{{!-- For logged in admins --}}
+  <li class="admin-nav ">
+    <a href="" id="nav_coachreports" class="teacher-only">Teach</a>
+  </li>
+  <li class="admin-nav ">
+    <a href="" id="manage" class="">Manage</a>
+  </li>
+  {{!-- For logged in teachers --}}
+  <li class="teacher-nav">
+    <a href="" id="nav_coachreports" >Teach</a>
+  </li>
+  <li class="teacher-nav display-none ">
+    <a href="" id="manage" class="">Manage</a>
+  </li>
+  {{!-- Learn for all --}}
+  <li id="nav-handlebars" class="">
+    <a href="" id="nav_learn" class="home-navlink">Learn</a>
+  </li>
+  {{!-- Login --}}
+  <li class="guest-nav">
+    <a href="#" class="not-logged-in-only" data-toggle="modal" data-target="#loginModal" title="" id="nav_login">Login</a>
+  </li>
+  <li class="guest-nav ">
+    <a href="" id="nav_signup" class="not-logged-in-only" title="">Sign Up</a>
+  </li>
+
+  <hr class="nav-divider student-nav student-only">
+  <hr class="nav-divider admin-only">
+
+  {{!-- Farthest right nav is logged in user dropdown --}}
+  <li class="dropdown " id="user-name">
+    <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown" id="user-name-a">
+        <span id="username">{{!-- Username injected here w/ js --}}</span>
+      <span class="caret hidden-xs"></span>
+    </a>
+
+    <ul class="dropdown-menu" data-no-collapse="true" role="menu">
+      <li class="student-only student-nav" role="presentation">
+        <span class="student-only student-nav" id="points">
+          {{!-- Points injected here w/ js --}}
+        </span>
+      </li>
+      <li role="presentation" class="divider student-only student-nav"></li>
+      {{!-- Student account management --}}
+      <li role="presentation" class="motivational-feature student-only student-nav">
+        <a role="menuitem" tabindex="-1" href="" id="nav_progress" title="" class="student-only">
+          My Progress
+        </a>
+      </li>
+      <li role="presentation" class="divider student-only student-nav"></li>
+      {{!-- Logout goes at the bottom! --}}
+      <li role="presentation" id="logout">
+        <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in-only" title="" href="#">
+          Logout
+        </a>
+      </li>
+    </ul>
+  </li>

@@ -5,7 +5,7 @@
 
 // Functions related to loading the page
 
-function toggle_state(state, status){
+function toggle_state(state, status) {
     $("." + (status ? "not-" : "") + state + "-only").hide();
     $("." + (!status ? "not-" : "") + state + "-only").show();
     // Use display block setting instead of inline to prevent misalignment of navbar items.
@@ -188,7 +188,6 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
             $('.navbar-right').show();
         });
-
     },
 
     update_total_points: function(points) {
@@ -425,3 +424,19 @@ $(function() {
     });
 
 });
+
+
+/*This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
+function collapsedNav() {
+    var data_toggle = document.getElementById("user-name-a");
+    var menu = document.getElementById("user-name");
+        if ( $('body').innerWidth() <= 750 ) {
+            data_toggle.removeAttribute("data-toggle");
+            menu.classList.add("open");
+      } else {
+            data_toggle.setAttribute("data-toggle", "dropdown");
+            menu.classList.remove("open");
+      }
+};
+window.addEventListener("resize", collapsedNav);
+window.addEventListener("pageshow", collapsedNav);
