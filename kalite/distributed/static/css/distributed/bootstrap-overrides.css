@@ -350,6 +350,69 @@ form .input-group {
     margin: 0 auto;
 }
 
+/* ===================================
+    Content Recommendation
+=================================== */
+.inline {
+    display: inline-block;
+}
+.no-margin {
+    margin: 0;
+}
+#content-resume h5,
+#content-explore h5 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+#content-resume,
+#content-explore {
+    width: 25%;
+    border: solid;
+    display: inline-block;
+    margin: 3%;
+}
+#content-explore-lesson {
+    border-bottom: solid 1px;
+}
+#content-explore {
+    vertical-align: top;
+}
+#content-explore h2, 
+#content-explore p {
+    margin-bottom: 4px;
+}
+#content-explore a {
+    display: block;
+}
+.card-top {
+    border-bottom: solid 1px;
+}
+.card-title {
+    display: inline-block;
+    margin-left: 13%;
+}
+.glyphicon-play-circle {
+    font-size: 3em;
+    padding-left: 20px;
+}
+#card-bottom h2 {
+    padding-top: 10px;
+}
+#card-bottom h2,
+#card-bottom h3,
+#card-bottom img {
+    width: 90%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ===================================
+    Landing Page
+=================================== */
+table td.title {
+    font-size: 36px;
+} 
 
 /* ===================================
     Coach Page

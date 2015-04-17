@@ -16,10 +16,12 @@
     <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
     <script src="{% url 'handlebars_templates' module_name="contentrec" %}"></script>
 
+    <script type="text/javascript" src="{% static 'js/backbone/backbone-helpers.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/playlist/models.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery.dotdotdot.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/distributed/contentrec/views.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/contentrec/models.js' %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
