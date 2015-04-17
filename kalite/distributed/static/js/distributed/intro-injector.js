@@ -1,6 +1,5 @@
 //on page load
 $(function() {
-  console.log( "ready!" );
 
   //Use relative URL to request correct YAML file for intro
   var relative_url = window.location.pathname;

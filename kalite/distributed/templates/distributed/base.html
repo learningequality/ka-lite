@@ -328,8 +328,9 @@
 
 
 
-    <!-- IntroJS stuff
-    <script type="text/javascript" src="{% static 'js/intro.js' %}"></script> -->
+    <!-- IntroJS stuff, inline stuff, idk where to put for now -->
     <script type="text/javascript" src="{% static 'js/distributed/intro.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/distributed/intro-injector.js' %}"></script>
+
+    <script src="{% url 'handlebars_templates' module_name='inline' %}"></script>
 </html>
