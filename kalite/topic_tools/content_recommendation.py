@@ -1,5 +1,9 @@
-from kalite.topic_tools import * #import all functionality from __init__ , can change to only the ones we need if it is 2 much
-from kalite.main.models import ExerciseLog #for getting exercise info
+'''
+All logic for generating and retriving content recommendations.
+'''
+
+from kalite.topic_tools import * 
+from kalite.main.models import ExerciseLog 
 
 
 ###
@@ -11,47 +15,42 @@ from kalite.main.models import ExerciseLog #for getting exercise info
 #                          will act as a starting point for some of the algorithms (nearest neighbor, etc.)
 #
 # @return: Still deciding on this, but I assume that it will be a dictionary in the 
-#          form: { 'next_steps':{ ... }, 'explore':{ ... }, etc. } 
+#          form: { 'next_steps':[ ... ], 'explore':[ ... ], etc. } 
 ###
 def get_recommendations(user=None, current_subtopic=None):
 
     #the recommendations to return
     result = {
-        "resume":{}, 
-        "next_steps":{}, 
-        "explore":{}
+        "resume":{},        #not yet completed exercises, but have been started
+        "next_steps":{},    #things user is struggling on, next relevant items
+        "explore":{}        #less relevant exercises, for exploration
     }
 
+    #preliminary user check
     if not user:
         #return 'Whoa there buddy, you did not specify a user!'
         user = 'Yamira Jones (Facility: Wilson Elementary (#1829))'
 
     #get user exercise log
-    print ExerciseLog.objects.filter(user='Yamira Jones')
+    #print ExerciseLog.objects.filter(user='Yamira Jones')
 
 
     ############### RESUME #############################
-    result['resume'] = get_resume_recommendations()
+    result['resume'] = get_resume_recommendations(user)
 
 
     ############### NEXT STEPS #########################
-
+    result['next_steps'] = get_next_recommendations(user)
 
 
     ############### EXPLORE ############################
-
-    #get 
+    #check if current subtopic exists
     if not current_subtopic:
-        current_subtopic = 'early-math'
+        current_subtopic = 'early-math' #need to change to find latest subtopic 
 
-    get_recommended_exercises(current_subtopic)
+    result['explore'] = get_explore_recommendations(current_subtopic)[:20] #for now, return first 20
 
-    return 
-
-
-
-
-
+    return result
 
 
 
@@ -61,11 +60,11 @@ def get_recommendations(user=None, current_subtopic=None):
 # Returns a list of all started but NOT completed exercises
 #
 # @param user: the user identifier of current user
-# @return: an unordered list (dictionary) of exercises that are not completed but have been started.
+# @return: a list of exercise id's that are not completed but have been started.
 ###
 def get_resume_recommendations(user):
     return ExerciseLog.objects.filter(user=user) 
-    ''' TODO '''
+    ''' IGNORE FOR NOW '''
 
 
 
@@ -74,14 +73,39 @@ def get_resume_recommendations(user):
 ####################################### 'NEXT STEPS' LOGIC ################################################
 
 ###
-# 
+# Returns a list of exercises to go to next. Influenced by other user patterns in the same group as well
+# as the user's struggling pattern shown in the exercise log.
 #
+# @param user: user identifier
+# @return: a list of exercise id's of where the user should consider going next.
 ###
 def get_next_recommendations(user):
-    return 'Hello World!'
+    return ['Hello World!']
 
 
 ########################################## 'EXPLORE' LOGIC ################################################
+
+###
+# Returns a list of exercises that the user has not explored yet.
+#
+# @param: subtopic_id: the subtopic id of the most recent subtopic that the user has engaged in (possibly 
+#         averaged).
+# @return: a list of exercise id's of the 'middle to farthest neighbors,' or less immediately relevant
+#           exercises based on topic tree structure.
+###
+def get_explore_recommendations(subtopic_id):
+    return get_recommended_exercises(subtopic_id)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -100,7 +124,7 @@ def get_next_recommendations(user):
 ###
 def generate_recommendation_data():
 
-    #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values
+    #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values. Not currently in use.
     data_hardcoded = {
         "early-math": {"related_subtopics": ["early-math", "arithmetic", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
         "arithmetic": {"related_subtopics": ["arithmetic", "pre-algebra", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
