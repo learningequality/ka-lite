@@ -1,0 +1,21 @@
+machine:
+  python:
+    version:
+      - 2.6.8
+      - pypy-2.4.0
+
+dependencies:
+  override:
+    - pip install -r requirements_dev.txt
+    - npm install
+    - npm install -g grunt-cli
+
+test:
+  override:
+    - bin/kalite start --traceback -v 2
+    - bin/kalite status
+    - bin/kalite stop --traceback -v 2
+    - python python-packages/fle_utils/tests.py
+    - grunt jshint
+    - bin/kalite manage bundleassets
+    - ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS
