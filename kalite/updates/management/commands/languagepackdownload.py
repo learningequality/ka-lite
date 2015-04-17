@@ -26,7 +26,7 @@ from fle_utils.general import ensure_dir
 from fle_utils.internet.download import callback_percent_proxy, download_file
 from kalite import caching
 from kalite.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
-from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath, get_language_pack_url
+from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath, get_language_pack_url, get_language_name
 from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.version import SHORTVERSION
 
@@ -70,8 +70,9 @@ class Command(UpdatesStaticCommand, CronCommand):
             raise CommandError("This must only be run on distributed servers server.")
 
         lang_code = lcode_to_ietf(options["lang_code"])
+        lang_name = get_language_name(lang_code)
         software_version = options["software_version"]
-        logging.info("Downloading language pack for lang_code=%s, software_version=%s" % (lang_code, software_version))
+        logging.info("Downloading language pack for lang_name=%s, software_version=%s" % (lang_name, software_version))
 
         # Download the language pack
         try:
@@ -103,7 +104,7 @@ class Command(UpdatesStaticCommand, CronCommand):
             self.next_stage(_("Invalidate caches"))
             caching.invalidate_all_caches()
 
-            self.complete(_("Finished processing language pack %(lang_code)s") % {"lang_code": lang_code})
+            self.complete(_("Finished processing language pack %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": unicode(e)})
             raise
@@ -143,7 +144,7 @@ def move_dubbed_video_map(lang_code):
         ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
         shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
 
-        logging.debug("Removing emtpy directory")
+        logging.debug("Removing empty directory")
         try:
             shutil.rmtree(dubbed_video_dir)
         except Exception as e:
