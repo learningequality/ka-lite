@@ -177,6 +177,8 @@
         $(function() {
           window.statusModel.fetch_data();
           window.userView = new UserView({model: statusModel, el: "#user-name"});
+          window.autoCompleteView = new AutoCompleteView();
+          $("#topnav").prepend(window.autoCompleteView.$el);
         });
         </script>
 

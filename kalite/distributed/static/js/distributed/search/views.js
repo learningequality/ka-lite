@@ -167,7 +167,3 @@ window.AutoCompleteView = BaseView.extend({
     }
 });
 
-$(function(){
-    window.autoCompleteView = new AutoCompleteView();
-    $("#topnav").prepend(window.autoCompleteView.$el);
-});
