@@ -284,6 +284,21 @@ window.TopicContainerInnerView = BaseView.extend({
         this.add_all_entries();
 
         this.state_model.set("current_level", options.level);
+
+        // resize the scrollable part of sidebar to the page height
+        $(window).resize(_.throttle(function() {
+            var height = $(window).height();
+            self.$(".slimScrollDiv, .sidebar").height(height);
+        }, 200));
+
+        // When scrolling, increase the height of the element
+        // until it fills up the sidebar panel
+        $(window).scroll(_.throttle(function() {
+            var sidebarHeight = $(".sidebar-panel").height();
+            var deltaHeight = $(window).scrollTop() + self.$(".slimScrollDiv, .sidebar").height();
+            var height = Math.min(sidebarHeight, deltaHeight);
+            self.$(".slimScrollDiv, .sidebar").height(height);
+        }, 200));
     },
 
     render: function() {
@@ -299,11 +314,6 @@ window.TopicContainerInnerView = BaseView.extend({
             alwaysVisible: true
         });
 
-        // resize the scrollable part of sidebar to the page height
-        $(window).resize(_.throttle(function() {
-            var height = $(window).height();
-            self.$(".slimScrollDiv, .sidebar").height(height);
-        }, 200));
         $(window).resize();
 
         return this;
