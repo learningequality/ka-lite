@@ -21,8 +21,8 @@ def step_impl(context):
 
 @when("I click on the first option")
 def step_impl(context):
-    create_facility_link = find_css_class_with_wait(context, "ui-menu-item")
-    click_and_wait_for_page_load(context, create_facility_link)
+    menu_item = find_css_class_with_wait(context, "ui-menu-item")
+    click_and_wait_for_page_load(context, menu_item)
 
 @then("I should see a list of options")
 def step_impl(context):
