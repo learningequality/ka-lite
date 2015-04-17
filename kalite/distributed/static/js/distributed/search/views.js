@@ -72,6 +72,8 @@ window.AutoCompleteView = BaseView.extend({
         this._nodes = _nodes;
         this._keywords = _keywords;
         this._titles = _titles;
+
+        this.$("#search").autocomplete("search");
     },
 
     render: function() {
