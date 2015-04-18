@@ -9,7 +9,7 @@ from kalite.facility.models import Facility
 
 from kalite.testing.mixins.facility_mixins import CreateFacilityMixin, CreateStudentMixin
 
-TIMEOUT = 3
+TIMEOUT = 10
 
 @given("there is one facility")
 def step_impl(context):
