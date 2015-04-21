@@ -274,6 +274,12 @@ div.sidebar-fade {
     .topic-container-inner:last-child {
         width: 300px;
     }
+
+    .sidebar-tab {
+        top: 55px;
+        height: 2em;
+        padding: 9px;
+    }
 }
 
 @media only screen and (min-width: 720px) {

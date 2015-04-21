@@ -68,6 +68,12 @@ window.SidebarView = BaseView.extend({
             }
         });
 
+        $(".navbar-collapse").on("show.bs.collapse", function() {
+            self.hide_sidebar_tab();
+        }).on("hide.bs.collapse", function() {
+            self.show_sidebar_tab();
+        });
+
         this.entity_key = options.entity_key;
         this.entity_collection = options.entity_collection;
 
@@ -247,6 +253,14 @@ window.SidebarView = BaseView.extend({
 
     hide_sidebar: function() {
         this.state_model.set("open", false);
+    },
+
+    show_sidebar_tab: function() {
+        this.sidebarTab.fadeIn(115);
+    },
+
+    hide_sidebar_tab: function() {
+        this.sidebarTab.fadeOut(115);
     },
 
     navigate_paths: function(paths, callback) {
