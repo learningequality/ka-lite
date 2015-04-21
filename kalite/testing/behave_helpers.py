@@ -78,12 +78,16 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     wait_time: sets the max wait time. Optional, but has a default value.
     Returns True if the element is invisible or stale, otherwise waits and returns False
     """
+    if elem.get_attribute("id"):
+        by = (By.ID, elem.get_attribute("id"))
+    elif elem.get_attribute("class"):
+        by = (By.CLASS_NAME, elem.get_attribute("class"))
+    else:
+        assert False, "No way to select element."
     try:
-        WebDriverWait(context.browser, wait_time).until_not(
-            lambda browser: elem.is_displayed()
+        WebDriverWait(context.browser, wait_time).until(
+            EC.invisibility_of_element_located(by)
         )
-        return True
-    except StaleElementReferenceException:
         return True
     except TimeoutException:
         return False
@@ -153,13 +157,17 @@ def build_url(context, url):
     return urljoin(context.config.server_url, url)
 
 
-def _login_user(context, username, password):
+def _login_user(context, username, password, facility=None):
     """ Logs a user in (either User of FacilityUser) with an api endpoint.
     "Private" function to hide details, use login_as_* functions instead.
     """
-    data = json.dumps({"username": username, "password": password})
+    data = {"username": username, "password": password}
+    if facility:
+        data['facility'] = facility
+    data = json.dumps(data)
     url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
-    post(context, url, data)
+    resp = post(context, url, data)
+    assert resp, "Login failed. url: %s\ndata: %s" % (url, data)
 
 
 def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
@@ -175,7 +183,8 @@ def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
                 self.browser = context.browser
         context_wm = ContextWithMixin()
         context_wm.create_teacher(username=coach_name, password=coach_pass)
-    _login_user(context, coach_name, coach_pass)
+    facility = FacilityUser.objects.get(username=coach_name).facility.id
+    _login_user(context, coach_name, coach_pass, facility=facility)
 
 
 def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
