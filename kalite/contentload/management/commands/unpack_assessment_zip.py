@@ -59,6 +59,7 @@ class Command(BaseCommand):
             sys.stdout.write("Downloading file...")
             sys.stdout.flush()
             f = tempfile.TemporaryFile("r+")
+            r.raise_for_status()
             for cnt, chunk in enumerate(r.iter_content(chunk_size=1024)):
                 if chunk: # filter out keep-alive new chunks
                     f.write(chunk)
@@ -69,8 +70,8 @@ class Command(BaseCommand):
             f.seek(0)
             sys.stdout.write("\n")
         else:                   # file; just open it normally
-            f = open(ziplocation, "r")
-        
+            f = open(ziplocation, "rb")
+
         print "Unpacking..."
         zf = zipfile.ZipFile(f, "r")
         extract_assessment_items_to_data_dir(zf)

@@ -278,10 +278,13 @@ else:
     INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = (
+    # gzip has to be placed at the top, before others
+    "django.middleware.gzip.GZipMiddleware",
     # needed for django admin
     "django.contrib.messages.middleware.MessageMiddleware",
     "django_snippets.session_timeout_middleware.SessionIdleTimeout",
 ) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
+
 TEMPLATE_CONTEXT_PROCESSORS = (
     # needed for django admin
     "django.contrib.messages.context_processors.messages",

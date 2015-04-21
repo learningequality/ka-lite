@@ -3,6 +3,7 @@ import os
 import sys
 import platform
 from fle_utils.settingshelper import import_installed_app_settings
+from kalite import version
 
 
 ##############################
@@ -80,7 +81,7 @@ UNIT_POINTS = 2000
 
 # for extracting assessment item resources
 ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(USER_DATA_ROOT, "content", "khan")
-ASSESSMENT_ITEMS_ZIP_URL = "http://eslgenie.com/media/assessment_item_resources.zip"
+ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/%s/content/assessment.zip" % version.SHORTVERSION
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
@@ -151,3 +152,4 @@ if 'screenshots' in sys.argv:
             },
         }
     }
+
