@@ -3,9 +3,9 @@ from django.core.urlresolvers import reverse
 
 from kalite.testing.behave_helpers import *
 
-DROPDOWN_MENU_ID = "user-name"
-NAVBAR_TOGGLE_ID = "navbar-toggle"
-LOGOUT_LINK_ID = "nav-logout"
+DROPDOWN_MENU_ID = "username"
+NAVBAR_TOGGLE_ID = "navbar_toggle"
+LOGOUT_LINK_ID = "nav_logout"
 
 
 @given("I'm logged in as a coach")
