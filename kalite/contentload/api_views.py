@@ -84,7 +84,7 @@ def update_all_distributed_callback(request):
             logging.error("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
             error_message = _("Unexpected error importing videos: %(err_msg)s") % {"err_msg": e}
-            return JsonResponseMessageError(error_message)
+            return JsonResponseMessageError(error_message, status=500)
 
     # Save exercises
     n_exercises_uploaded = 0
@@ -105,7 +105,7 @@ def update_all_distributed_callback(request):
             logging.error("Could not save exercise log for data with missing values: %s" % exercise)
         except Exception as e:
             error_message = _("Unexpected error importing exercises: %(err_msg)s") % {"err_msg": e}
-            return JsonResponseMessageError(error_message)
+            return JsonResponseMessageError(error_message, status=500)
 
     return JsonResponseMessageSuccess(_("Uploaded %(num_exercises)d exercises and %(num_videos)d videos") % {
         "num_exercises": n_exercises_uploaded,

@@ -381,6 +381,10 @@ def update_jsi18n_file(code="en"):
         fp.write(output_js)
 
 
+# Cache for language selections
+__select_best_available_language = {}
+
+
 def select_best_available_language(target_code, available_codes=None):
     """
     Critical function for choosing the best available language for a resource,
@@ -393,9 +397,21 @@ def select_best_available_language(target_code, available_codes=None):
 
     # Scrub the input
     target_code = lcode_to_django_lang(target_code)
+    
+    store_cache = False
+    
+    # Only use cache when available_codes is trivial, i.e. not a set of
+    # language codes
     if available_codes is None:
-        available_codes = get_installed_language_packs().keys()
-    logging.debug("choosing best language among %s" % available_codes)
+        if target_code in __select_best_available_language:
+            return __select_best_available_language[target_code]
+        else:
+            store_cache = True
+            available_codes = get_installed_language_packs().keys()
+
+    # logging.debug("choosing best language among %s" % (available_codes))
+    
+    # Make it a tuple so we can hash it
     available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
@@ -410,10 +426,15 @@ def select_best_available_language(target_code, available_codes=None):
     elif available_codes:
         actual_code = available_codes[0]
     else:
-        actual_code = None
+        raise RuntimeError("No languages found")
 
-    if actual_code != target_code:
-        logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    # if actual_code != target_code:
+    #    logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    
+    # Store in cache when available_codes are not set
+    if store_cache:
+        __select_best_available_language[target_code] = actual_code
+    
     return actual_code
 
 

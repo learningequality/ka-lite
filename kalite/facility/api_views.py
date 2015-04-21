@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet.decorators import api_response_causes_reload
-from fle_utils.internet.classes import JsonResponseMessageSuccess
+from fle_utils.internet.classes import JsonResponseMessageSuccess, JsonResponseMessageError
 from kalite.shared.decorators.auth import require_authorized_admin
 
 
@@ -55,7 +55,7 @@ def facility_delete(request, facility_id=None):
         raise PermissionDenied("Teachers cannot delete facilities.")
 
     if request.method != 'POST':
-        return JsonResponseMessageError(_("Method is not allowed."))
+        return JsonResponseMessageError(_("Method is not allowed."), status=405)
 
     facility_id = facility_id or simplejson.loads(request.body or "{}").get("facility_id")
     fac = get_object_or_404(Facility, id=facility_id)

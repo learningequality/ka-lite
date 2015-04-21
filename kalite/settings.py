@@ -1,6 +1,7 @@
 import logging
 import os
 import platform
+import version
 from fle_utils.settingshelper import import_installed_app_settings
 
 
@@ -104,6 +105,7 @@ INSTALLED_APPS = (
     "django.contrib.messages",
     "django.contrib.sessions",
     "django_extensions", # needed for clean_pyc (testing)
+    "compressor",
     "kalite.distributed",
 )
 
@@ -117,12 +119,19 @@ else:
     INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = (
+    "django.middleware.gzip.GZipMiddleware", # gzip has to be placed at the top, before others
     "django.contrib.messages.middleware.MessageMiddleware",  # needed for django admin
     "django_snippets.session_timeout_middleware.SessionIdleTimeout",
 ) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.messages.context_processors.messages",  # needed for django admin
 ) + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', tuple())
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",
+]
 
 TEMPLATE_DIRS  = tuple()  # will be filled recursively via INSTALLED_APPS
 STATICFILES_DIRS = (os.path.join(PROJECT_PATH, '..', 'static-libraries'),)  # libraries common to all apps
@@ -219,7 +228,7 @@ UNIT_POINTS = 2000
 
 # for extracting assessment item resources
 ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(PROJECT_PATH, "..", "content", "khan")
-ASSESSMENT_ITEMS_ZIP_URL = "http://eslgenie.com/media/assessment_item_resources.zip"
+ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/%s/content/assessment.zip" % version.SHORTVERSION
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")

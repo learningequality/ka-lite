@@ -5,7 +5,7 @@ var _timeout_length = 1000 * 20; // 20 seconds
 var _version = "7"; // increment this when you're invalidating old storage
 
 function fetchTopicTree(lang, force_reparse) {
-    doRequest(SEARCH_TOPICS_URL, null, {  // already has language information embedded in it
+    doRequest(window.sessionModel.get("SEARCH_TOPICS_URL"), null, {  // already has language information embedded in it
         cache: true,
         dataType: "json",
         timeout: _timeout_length,
@@ -54,7 +54,7 @@ function flattenNodes() {
 
 function fetchLocalOrRemote() {
     $("#search").focus(null);  // disable re-fetching
-    fetchTopicTree(CURRENT_LANGUAGE, _nodes === null); // only parse the json if _nodes == null (or if something changed)
+    fetchTopicTree(window.sessionModel.get("CURRENT_LANGUAGE"), _nodes === null); // only parse the json if _nodes == null (or if something changed)
 }
 
 
@@ -78,6 +78,7 @@ $(document).ready(function() {
     $("#search").autocomplete({
         autoFocus: true,
         minLength: 3,
+        appendTo: ".navbar-collapse",
         html: true,  // extension allows html-based labels
         source: function(request, response) {
             clear_messages();
@@ -115,7 +116,7 @@ $(document).ready(function() {
                     continue;
                 }
 
-                var label = "<span class='autocomplete icon-" + node.kind + " " + (node.available ? "" : "un") + "available'>" + " " + gettext(node.title) + "</span>&nbsp;";
+                var label = "<span class='autocomplete icon-" + node.kind + " " + (node.available ? "" : "un") + "available'>" + "<span class = 'dropdown-icon'>" + " " + "</span><span>" + gettext(node.title) + "</span></span>&nbsp;";
                 results.push({
                     label: label,
                     value: ids_filtered[i]

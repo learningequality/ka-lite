@@ -50,7 +50,7 @@ window.SidebarView = BaseView.extend({
 
     events: {
         "click .sidebar-tab": "toggle_sidebar",
-        "click .fade": "check_external_click",
+        "click .sidebar-fade": "check_external_click",
         "click .sidebar-back": "sidebar_back_one_level"
     },
 
@@ -202,13 +202,11 @@ window.SidebarView = BaseView.extend({
             this.sidebar.css({left: 0});
             this.resize_sidebar();
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
-            this.$(".fade").show();
-        }
-
-        else {
+            this.$(".sidebar-fade").show();
+        } else {
             this.sidebar.css({left: - this.width});
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
-            this.$(".fade").hide();
+            this.$(".sidebar-fade").hide();
         }
 
         this.set_sidebar_back();
@@ -251,8 +249,10 @@ window.SidebarView = BaseView.extend({
         this.state_model.set("open", false);
     },
 
-    navigate_paths: function(paths) {
-        this.topic_node_view.defer_navigate_paths(paths);
+    navigate_paths: function(paths, callback) {
+        // Allow callback here to let the 'title' of the node be returned to the router
+        // This will allow the title of the page to be updated during navigation events
+        this.topic_node_view.defer_navigate_paths(paths, callback);
     }
 
 });
@@ -517,16 +517,16 @@ window.TopicContainerOuterView = BaseView.extend({
         return new_topic;
     },
 
-    defer_navigate_paths: function(paths) {
+    defer_navigate_paths: function(paths, callback) {
         if (this.inner_views.length === 0){
             var self = this;
-            this.listenToOnce(this, "render_complete", function() {self.navigate_paths(paths);});
+            this.listenToOnce(this, "render_complete", function() {self.navigate_paths(paths, callback);});
         } else {
-            this.navigate_paths(paths);
+            this.navigate_paths(paths, callback);
         }
     },
 
-    navigate_paths: function(paths) {
+    navigate_paths: function(paths, callback) {
         var check_views = [];
         for (var i = this.inner_views.length - 2; i >=0; i--) {
             check_views.push(this.inner_views[i]);
@@ -563,17 +563,22 @@ window.TopicContainerOuterView = BaseView.extend({
                 }
             }
         }
+        if (callback) {
+            callback(this.inner_views[0].model.get("title"));
+        }
     },
 
     remove_topic_views: function(number) {
         for (var i=0; i < number; i++) {
-            this.inner_views[0].model.set("active", false);
-            if (_.isFunction(this.inner_views[0].close)) {
-                this.inner_views[0].close();
-            } else {
-                this.inner_views[0].remove();
+            if (this.inner_views[0]) {
+                this.inner_views[0].model.set("active", false);
+                if (_.isFunction(this.inner_views[0].close)) {
+                    this.inner_views[0].close();
+                } else {
+                    this.inner_views[0].remove();
+                }
+                this.inner_views.shift();
             }
-            this.inner_views.shift();
         }
         if (this.state_model.get("content_displayed")) {
             number--;

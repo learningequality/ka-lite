@@ -9,6 +9,7 @@ from annoying.functions import get_object_or_None
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages.api import get_messages
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models as db_models
 from django.http import HttpResponse
@@ -50,13 +51,24 @@ def register_device(request):
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
     except Exception as e:
-        return JsonResponseMessageError("Could not decode the client device model: %s" % e, code=EC.CLIENT_DEVICE_CORRUPTED)
+        return JsonResponseMessageError("Could not decode the client device model: %s" % e, code=EC.CLIENT_DEVICE_CORRUPTED, status=400)
 
     # Validate the loaded data
     if not isinstance(client_device, Device):
         return JsonResponseMessageError("Client device must be an instance of the 'Device' model.", code=EC.CLIENT_DEVICE_NOT_DEVICE)
-    if not client_device.verify():
-        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key.", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
+
+    try:
+        if not client_device.verify():
+            # We've been getting this verification error a lot, even when we shouldn't. Send more details to us by email so we can diagnose.
+            msg = "\n\n".join([request.body, client_device._hashable_representation(), str(client_device.validate()), client_device.signed_by_id, client_device.id, str(request)])
+            send_mail("Client device did not verify", msg, "kalite@learningequality.org", ["errors@learningequality.org"])
+            return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key!", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
+    except Exception as e:
+        # Can't properly namespace to a particular Exception here, since the only reason we would be getting here is
+        # that what should be proper exception namespacing in code being called isn't correctly catching this exception
+        msg = "\n\n".join([request.body, client_device._hashable_representation(), "Exception: %s" % e, str(type(e)), client_device.signed_by_id, client_device.id, str(request)])
+        send_mail("Exception while verifying client device", msg, "kalite@learningequality.org", ["errors@learningequality.org"])
+        return JsonResponseMessageError("Client device must be self-signed with a signature matching its own public key!", code=EC.CLIENT_DEVICE_INVALID_SIGNATURE)
 
     try:
         zone = register_self_registered_device(client_device, models, data)
@@ -71,7 +83,7 @@ def register_device(request):
             # But still, good to keep track of!
             UnregisteredDevicePing.record_ping(id=client_device.id, ip=get_request_ip(request))
 
-            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code=EC.CHAIN_OF_TRUST_INVALID)
+            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code=EC.CHAIN_OF_TRUST_INVALID, status=500)
 
     if not zone: # old code-path
         try:
@@ -87,9 +99,9 @@ def register_device(request):
                 # A redirect loop here is also possible, if a Device exists in the central server database 
                 # corresponding to the client_device, but no corresponding RegisteredDevicePublicKey exists
                 device = Device.objects.get(public_key=client_device.public_key)
-                return JsonResponseMessageError("This device has already been registered", code=EC.DEVICE_ALREADY_REGISTERED)
+                return JsonResponseMessageError("This device has already been registered", code=EC.DEVICE_ALREADY_REGISTERED, status=409)
             except Device.DoesNotExist:
-                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code=EC.PUBLIC_KEY_UNREGISTERED)
+                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code=EC.PUBLIC_KEY_UNREGISTERED, status=404)
 
     client_device.save(imported=True)
 

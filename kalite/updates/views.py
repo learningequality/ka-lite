@@ -2,7 +2,7 @@ import git
 import os
 from annoying.decorators import render_to
 
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext as _, ugettext_lazy
 from django.contrib import messages
 
 from .models import VideoFile

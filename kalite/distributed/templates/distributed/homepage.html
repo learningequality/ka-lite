@@ -1,7 +1,7 @@
 {% extends "distributed/base_teach.html" %}
 
 {% load i18n %}
-{% load kalite_staticfiles %}
+{% load staticfiles %}
 
 {% block i18n_do_not_translate %}
     {% block home_active %}active{% endblock home_active %}
@@ -15,8 +15,6 @@
     <!-- import handlebars templates here -->
     <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
     <script type="text/javascript" src="{% static 'js/playlist/models.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/jquery.dotdotdot.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/distributed/homepage_playlists.js' %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
@@ -66,15 +64,15 @@
         </div>
 
         <div class="row">
-            <div class="col-sm-4 col-sm-push-4 col-xs-8 col-xs-push-2 vertical-shadow suggested-action">
+            <div class="col-sm-4 col-sm-push-4 col-xs-10 col-xs-push-1 vertical-shadow suggested-action">
                 <a href="{% url 'learn' %}">
                      <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
-                     <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/logo_10_enlarged_2.png">
+                     <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/logo_10_enlarged_2.png" alt="{% trans 'Learn with Khan Academy videos and exercises!' %}">
                 </a>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-6 col-xs-push-3" id="homepage-p-div">
+            <div class="col-xs-12" id="homepage-p-div">
                 <p class="homepage-p"><strong>{{ channel_data.tag_line }}</strong></p>
             </div>
         </div>
@@ -83,7 +81,7 @@
     <div class="not-admin-only">
         <div class="logged-in-only">
 
-            <img src="/static/images/loading.gif" class="float-center loading"/>
+            <img src="/static/images/loading.gif" class="float-center loading" alt="" />
 
             <!--<div id="playlist-table-container">
 

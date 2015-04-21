@@ -163,7 +163,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 exercise_template = os.path.join(exercise_lang, exercise_file)
 
 
-            with i18n.translate_block(exercise_lang):
+            with i18n.translate_block(language):
                 exercise["available"] = available
                 exercise["lang"] = exercise_lang
                 exercise["template"] = exercise_template
@@ -515,16 +515,24 @@ def smart_translate_item_data(item_data):
     item_data and translates only the content field.
 
     """
-    if 'content' in item_data:
-        item_data['content'] = _(item_data['content'])
+    # just translate strings immediately
+    if isinstance(item_data, basestring):
+        return _(item_data)
 
-    for field, field_data in item_data.iteritems():
-        if isinstance(field_data, dict):
-            item_data[field] = smart_translate_item_data(field_data)
-        elif isinstance(field_data, list):
-            item_data[field] = map(smart_translate_item_data, field_data)
+    elif isinstance(item_data, list):
+        return map(smart_translate_item_data, item_data)
 
-    return item_data
+    elif isinstance(item_data, dict):
+        if 'content' in item_data:
+            item_data['content'] = _(item_data['content']) if item_data['content'] else ""
+
+        for field, field_data in item_data.iteritems():
+            if isinstance(field_data, dict):
+                item_data[field] = smart_translate_item_data(field_data)
+            elif isinstance(field_data, list):
+                item_data[field] = map(smart_translate_item_data, field_data)
+
+        return item_data
 
 
 
@@ -539,7 +547,7 @@ def get_content_data(request, content_id=None):
     if not content.get("content_urls", None):
         if request.is_admin:
             # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
-            messages.warning(request, _("This content was not found! You can download it by going to the Update page."))
+            messages.warning(request, _("This content was not found! You can download it by going to the Manage > Videos page."))
         elif request.is_logged_in:
             messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
         elif not request.is_logged_in:
