@@ -74,7 +74,7 @@ setup(
     version=kalite.VERSION,
     author="Foundation for Learning Equality",
     author_email="info@learningequality.org",
-    url="http://www.learningequality.org",
+    url="https://www.learningequality.org",
     description=(
         """KA Lite is a light-weight web server for viewing and interacting """
         """with core Khan Academy content (videos and exercises) without """
