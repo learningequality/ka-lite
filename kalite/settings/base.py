@@ -58,10 +58,10 @@ logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 # ka-lite can be run from a source directory, such
 # that all data files and user data are stored in
 # one static structure.
-default_source_path = os.path.split(os.path.dirname(os.path.realpath(__file__)))[:-2]
-if default_source_path:
-    default_source_path = os.path.join(*default_source_path)
-else:
+default_source_path = os.path.split(
+    os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
+)[0]
+if not default_source_path:
     default_source_path = '.'
 
 IS_SOURCE = (
