@@ -127,8 +127,6 @@
         <script src="{% static "js/handlebars/handlebars-helpers.js" %}"></script>
         <script src="{% static "js/handlebars/handlebars-wrapper.js" %}"></script>
 
-<<<<<<< HEAD
-=======
         <script type="text/javascript" src="{% static 'js/distributed/session/models.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' %}"></script>
@@ -139,7 +137,7 @@
 
         <script src="{% url 'handlebars_templates' module_name='user' %}"></script>
         <script src="{% static 'js/distributed/user/views.js' %}"></script>
->>>>>>> b434405aa9d2781d1d57922c5d177d63841094ae
+
 
         {# Trigger tooltips for help icons #}
         <script>
@@ -183,6 +181,12 @@
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
+
+        <!-- inline help, introjs -->
+        <script src="{% url 'handlebars_templates' module_name='inline' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/intro.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/inline/models.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/inline/views.js' %}"></script>
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}">
@@ -355,14 +359,6 @@
         </div> {# End wrapper #}
         {# Footer #}
         {% include "distributed/partials/_footer.html" %}
-        <!--<script type="text/javascript" src="{% static 'js/intro-injector.js' %}"></script> -->
     </body>
 
-
-
-    <!-- IntroJS stuff, inline stuff, idk where to put for now -->
-    <script type="text/javascript" src="{% static 'js/distributed/intro.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/distributed/intro-injector.js' %}"></script>
-
-    <script src="{% url 'handlebars_templates' module_name='inline' %}"></script>
 </html>

@@ -1,11 +1,12 @@
 window.ButtonView = Backbone.View.extend({
-    el: '#inline-btn',
+    //el: '#inline-btn',
 
     template: HB.template("inline/inline"),
 
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this);  
         console.log("backbone view for inline button initializedddd");
+        this.render();
     },
 
     events: {
@@ -13,21 +14,24 @@ window.ButtonView = Backbone.View.extend({
     },
 
     clickCallback: function() {
-        model.fetch({ 
+        var self = this;
+        this.model.fetch({ 
             success: function(model, response, options) {
-
-                //Use relative URL to request narrative file for intro
-                var response = getIntro(window.location.pathname);
-                //this is the same thing as backbone.sync... to get something from server
-
                 //how do i get the object that sync returns????
+                // MCG -- by using self.model, and self.model.get("whatever attribute, like intro")
 
+                //var url = window.location.pathname;
+
+                //obtain narrative object
+                var narr = self.model.get("intro");
+
+                //translate narrative object into specific, intro ramework-based object (introjs)
                 var response = this.parseNarrative(narr);
 
-                //build options with this 'model'
+                //build options with this narrative object, for intro injection
                 var options = this.buildOptions(response);
 
-                //set the options
+                //set the options on introjs object
                 var intro = introJs();
                 intro.setOption('tooltipPosition', 'auto');
                 intro.setOption('positionPrecedence', ['left', 'right', 'bottom', 'top']);
@@ -137,22 +141,20 @@ window.ButtonView = Backbone.View.extend({
     },
 
     render: function() {
-      this.template();
-      alert("HAH idk brb");
+      this.$el.html(this.template());
+
+      console.log("HAH idk brb");
+
+      $("body").append(this.el);
     }
 });
 
 
 // On page load
-$(
+$(function() {
     var narrative = new NarrativeModel();
     var buttonView = new ButtonView( {model: narrative} );
-);
-
-
-function getIntro(relative_url) {
-  return {"management/zone/None/": [{"a#manage.admin-only": [{"step": 1}, {"text": "Welcome! This is the landing page for admins. If at any point you would like to navigate back to this page, click on this tab!"}]}, {"li.facility": [{"step": 2}, {"text": "Clicking on this tab will show you a quick overview of all facilities and devices"}]}, {"a.create-facility": [{"step": 3}, {"text": "To add new facilities, click here..."}]}, {"div.row:nth-child(3)": [{"step": 4}, {"text": "Information on your device status will be shown here"}]}, {"#not-registered": [{"step": 5}, {"text": "If you decide to register your device to our central club, click here!"}]}, {"unattached": [{"step": 6}, {"text": "Questions about anything on the page? Be sure to consult the user manual or FAQ for more detailed walk throughs!"}]}]};
-}
+});
 
 //Given JSON form of YAML file for this page, parse and return JSON object
 //that can be used for intro framework. 
