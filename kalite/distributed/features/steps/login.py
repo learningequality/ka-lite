@@ -41,10 +41,7 @@ def step_impl(context):
 
 @then("there should be no facility drop down")
 def step_impl(context):
-    try:
-        assert not find_id_with_wait(context, "id_facility-container")
-    except NoSuchElementException:
-        assert True
+    assert not find_id_with_wait(context, "id_facility-container")
 
 @then("there should be a facility drop down")
 def step_impl(context):
