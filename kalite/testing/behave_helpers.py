@@ -28,7 +28,7 @@ For interacting with the API:
 """
 import json
 
-from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -159,15 +159,24 @@ def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
 
 def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
+    Tries to scroll to an element and uses WebElement.is_displayed()
     "Private" function to hide Selenium details.
     context: a behave context
     by: A tuple selector used by Selenium
     wait_time: The max time to wait in seconds
     Returns the element if found or None
     """
+    def _visibility():
+        # Try to scroll to the element and determine visibility
+        try:
+            elem = context.browser.find_element(by[0], by[1])
+            context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
+            return elem.is_displayed()
+        except NoSuchElementException:
+            return False
     try:
         return WebDriverWait(context.browser, wait_time).until(
-            EC.visibility_of_element_located(by)
+            lambda browser: _visibility()
         )
     except TimeoutException:
         return None
