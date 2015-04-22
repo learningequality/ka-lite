@@ -15,7 +15,7 @@ def step_impl(context):
 def step_impl(context):
     search_for(context, "Math")
 
-@when("I search for Basic Addition")
+@when("I search for something")
 def step_impl(context):
     search_for(context, "Basic Addition")
 
@@ -30,10 +30,9 @@ def step_impl(context):
     auto_complete_list = find_css_class_with_wait(context, "ui-menu-item")
     assert auto_complete_list, "Auto complete list not found on page."
 
-@then("I should navigate to Basic Addition")
+@then("I should navigate to a content page")
 def step_impl(context):
-    expected_url = build_url(context, "/learn/khan/math/arithmetic/addition-subtraction/basic_addition/basic-addition/")
-    assert context.browser.current_url == expected_url, "Assertion failed. context.browser.current_url: %s\nbuild_url: %s" % (context.browser.current_url, expected_url)
+    assert "/learn/" in context.browser.current_url, "Assertion failed. '/learn/' not in %s" % context.browser.current_url
 
 def search_for(context, text):
     search_field = find_id_with_wait(context, "search")

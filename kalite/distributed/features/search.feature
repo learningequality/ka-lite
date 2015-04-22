@@ -5,10 +5,10 @@ Feature: Search Autocomplete on Homepage
         When I search for 'Math'
         Then I should see a list of options
 
-    Scenario: Search for Basic Addition and Navigate
+    Scenario: Search for Some Content and Navigate
         Given I am on the homepage
-        When I search for Basic Addition
+        When I search for something
         Then I should see a list of options
         When I click on the first option
-        Then I should navigate to Basic Addition
+        Then I should navigate to a content page
 
