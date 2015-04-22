@@ -168,7 +168,8 @@ header nav {
 #logged-in-name {
     display: inline-block;
     min-width: 10px;
-    max-width: 100px;
+    max-width: 200px;
+    font-size: 20px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
