@@ -12,10 +12,8 @@ import shutil
 import sys
 import tempfile
 import unittest
-from mock import patch, Mock
 from unittest import TestCase
 
-import fle_utils.videos as videos
 from general import datediff, version_diff, ensure_dir
 
 
@@ -147,36 +145,6 @@ class EnsureDirTestCase(TestCase):
         with self.assertRaisesRegexp(OSError, 'Not a directory'):
             ensure_dir(newdir)
         self.assertNotExists(newdir)
-
-
-class DownloadFileTests(TestCase):
-
-    @patch("videos.delete_downloaded_files", Mock)
-    @patch.object(videos, "delete_downloaded_files", Mock)
-    @patch.object(videos, "download_file")
-    def test_downloading_in_right_location(self, download_file_method):
-
-        download_file_method.side_effect = [
-            # During the download_file for videos
-            (
-                None,  # doesn't matter for this test.
-                Mock(type="video"),  # so download_video will succeed.
-            ),
-            # For downloading images
-            (
-                None,
-                Mock(type="image"),  # so download_video will succeed.
-            )
-        ]
-
-        content_dir = "/tmp"
-        content_file = "something.mp3"
-        expected_path = os.path.join(content_dir, content_file)
-
-        videos.download_video("something", content_dir, format="mp3")
-
-        url, filepath, func = download_file_method.call_args_list[0][0]
-        self.assertEqual(filepath, expected_path)
 
 if __name__ == '__main__':
     sys.exit(unittest.main())
