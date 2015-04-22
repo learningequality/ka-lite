@@ -114,5 +114,5 @@ def check_highlight(context, item):
     return "id_{item}-container".format(item=item) == highlight.get_attribute("id")
 
 def check_single_popover(context, item):
-    popover = find_xpath_with_wait(context, "//*[@id='id_{item}-container']/div/div".format(item=item))
+    popover = find_id_with_wait(context, "id_{item}-popover".format(item=item))
     return (len(context.browser.find_elements_by_class_name("popover")) == 1) and "popover" in popover.get_attribute("class")
