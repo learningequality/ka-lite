@@ -9,7 +9,7 @@ from kalite.facility.models import Facility
 
 from kalite.testing.mixins.facility_mixins import CreateFacilityMixin, CreateStudentMixin
 
-TIMEOUT = 10
+PAGE_RELOAD_TIMEOUT = 10
 
 @given("there is one facility")
 def step_impl(context):
@@ -71,6 +71,8 @@ def impl(context):
 @when('I click the login button')
 def impl(context):
     login_button = find_css_class_with_wait(context, "login-btn")
+    # Grab an element reference from the current page. Used to test a page reload later.
+    context.wait_elem = context.browser.find_element_by_tag_name("body")
     login_button.click()
 
 @then('a tooltip should appear on the username box only')
@@ -91,9 +93,8 @@ def impl(context):
 
 @then('the page should reload')
 def impl(context):
-    wait_elem = context.browser.find_element_by_tag_name("body")
-    assert WebDriverWait(context.browser, TIMEOUT).until(
-        EC.staleness_of(wait_elem)
+    assert WebDriverWait(context.browser, PAGE_RELOAD_TIMEOUT).until(
+        EC.staleness_of(context.wait_elem)
     )
 
 def fill_field(context, text, field_id):
