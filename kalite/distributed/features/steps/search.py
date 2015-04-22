@@ -22,16 +22,18 @@ def step_impl(context):
 @when("I click on the first option")
 def step_impl(context):
     menu_item = find_css_class_with_wait(context, "ui-menu-item")
+    assert menu_item, "No menu item on page."
     click_and_wait_for_page_load(context, menu_item)
 
 @then("I should see a list of options")
 def step_impl(context):
     auto_complete_list = find_css_class_with_wait(context, "ui-menu-item")
-    assert auto_complete_list
+    assert auto_complete_list, "Auto complete list not found on page."
 
 @then("I should navigate to Basic Addition")
 def step_impl(context):
-    assert context.browser.current_url == build_url(context, "/learn/khan/math/arithmetic/addition-subtraction/basic_addition/basic-addition/")
+    expected_url = build_url(context, "/learn/khan/math/arithmetic/addition-subtraction/basic_addition/basic-addition/")
+    assert context.browser.current_url == expected_url, "Assertion failed. context.browser.current_url: %s\nbuild_url: %s" % (context.browser.current_url, expected_url)
 
 def search_for(context, text):
     search_field = find_id_with_wait(context, "search")
