@@ -28,7 +28,7 @@ For interacting with the API:
 """
 import json
 
-from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
+from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -70,6 +70,18 @@ def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     )
 
 
+def click_and_wait_for_id_to_appear(context, elem_click, elem_wait, wait_time=MAX_WAIT_TIME):
+    """ Click an element and then wait for another element to appear.
+    context: a behave context
+    elem_click: a WebElement to click.
+    elem_wait: an ID selector to wait for.
+    wait_time: Optional. Has a default value.
+    """
+    elem_click.click()
+    id_shown_with_wait(context, elem_wait, wait_time=wait_time)
+
+
+
 def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     """ Waits for the element to become invisible
     context: a behave context
@@ -109,6 +121,26 @@ def find_id_with_wait(context, id_str, **kwargs):
     """
     return _find_elem_with_wait(context, (By.ID, id_str), **kwargs)
 
+def id_shown_with_wait(context, id_str, **kwargs):
+    """ Tries to find an element with given id with an explicit timeout.
+    context: a behave context
+    id_str: A string with the id (no leading #)
+    kwargs: can optionally pass "wait_time", which will be the max wait time in
+        seconds. Default is defined by behave_helpers.py
+    Returns the element if found or None
+    """
+    return _shown_elem_with_wait(context, (By.ID, id_str), **kwargs)
+
+
+def find_xpath_with_wait(context, id_str, **kwargs):
+    """ Tries to find an element with given XPATH with an explicit timeout.
+    context: a behave context
+    id_str: A string with the XPATH (no leading #)
+    kwargs: can optionally pass "wait_time", which will be the max wait time in
+        seconds. Default is defined by behave_helpers.py
+    Returns the element if found or None
+    """
+    return _find_elem_with_wait(context, (By.XPATH, id_str), **kwargs)
 
 def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
@@ -121,6 +153,30 @@ def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     try:
         return WebDriverWait(context.browser, wait_time).until(
             EC.presence_of_element_located(by)
+        )
+    except TimeoutException:
+        return None
+
+def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
+    """ Tries to find an element with an explicit timeout.
+    Tries to scroll to an element and uses WebElement.is_displayed()
+    "Private" function to hide Selenium details.
+    context: a behave context
+    by: A tuple selector used by Selenium
+    wait_time: The max time to wait in seconds
+    Returns the element if found or None
+    """
+    def _visibility():
+        # Try to scroll to the element and determine visibility
+        try:
+            elem = context.browser.find_element(by[0], by[1])
+            context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
+            return elem.is_displayed()
+        except NoSuchElementException:
+            return False
+    try:
+        return WebDriverWait(context.browser, wait_time).until(
+            lambda browser: _visibility()
         )
     except TimeoutException:
         return None
