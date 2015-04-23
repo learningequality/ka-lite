@@ -46,18 +46,20 @@
         <div class="table-responsive">
             <table class="table selectable-table">
                  <thead>
-                    <tr class="header-footer-bg">
-                        <th><input class="select-all" type="checkbox" value="#students" autocomplete="off"/></th>
-                        <th>{% trans "Learner Name" %}</th>
-                        <th>{% trans "Edit" %}</th>
-                        <th>{% trans "Coach" %}</th>
-                        <th>{% trans "Group" %}</th>
-                        <th>{% trans "Logins" %}</th>
-                        <th>{% trans "Login Time" %}</th>
-                        <th>{% trans "Videos Viewed" %}</th>
-                        <th>{% trans "Exercises Completed" %}</th>
-                        <th>{% trans "Mastery" %}</th>
-                    </tr>
+                    {% if student_pages %}
+                        <tr class="header-footer-bg">
+                            <th><input class="select-all" type="checkbox" value="#students" autocomplete="off"/></th>
+                            <th>{% trans "Learner Name" %}</th>
+                            <th>{% trans "Edit" %}</th>
+                            <th>{% trans "Coach" %}</th>
+                            <th>{% trans "Group" %}</th>
+                            <th>{% trans "Logins" %}</th>
+                            <th>{% trans "Login Time" %}</th>
+                            <th>{% trans "Videos Viewed" %}</th>
+                            <th>{% trans "Exercises Completed" %}</th>
+                            <th>{% trans "Mastery" %}</th>
+                        </tr>
+                    {% endif %}
                 </thead>
                 <tbody>
                     {% for student in student_pages %}
