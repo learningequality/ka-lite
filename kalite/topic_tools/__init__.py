@@ -587,7 +587,9 @@ def convert_leaf_url_to_id(leaf_url):
     return leaf_id[0]
 
 
+
 def is_content_on_disk(content_id, format="mp4", content_path=None):
     content_path = content_path or settings.CONTENT_ROOT
     content_file = os.path.join(content_path, content_id + ".%s" % format)
     return os.path.isfile(content_file)
+
