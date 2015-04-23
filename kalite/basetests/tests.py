@@ -208,7 +208,6 @@ class PackagesTests(DependenciesTests):
         "dateutil": "1.5",
         "debug_toolbar": "unknown",
         "django": DependenciesTests.DJANGO_VERSION_STR,
-        "django_extensions": "1.0.1",
         "django_snippets": "1.0.1",
         "fle_utils": NO_VERSION,
         "git": "0.3.2 RC1",

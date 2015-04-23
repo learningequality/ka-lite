@@ -587,7 +587,7 @@ def local_install_context(request):
     return {
         "software_version": current_version,
         "software_release_date": VERSION_INFO[current_version]["release_date"],
-        "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
+        "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }

@@ -1,0 +1,5 @@
+This file is indicating the presence of a source directory as it will NEVER be distributed.
+
+When it is detected in kalite.settings (or some other future settings module), data such as
+the SQLite database file, media files, and video contents will be set to point directly at
+the path of the source directory, rather than user ~/.kalite dir.

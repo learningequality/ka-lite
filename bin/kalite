@@ -58,6 +58,10 @@ else:
     if kalite_path and not os.path.exists(os.path.join(kalite_path, 'kalite', '__init__.py')):
         kalite_path = None
 
+    installed_path = os.path.join(sys.prefix, 'share', 'kalite')
+    if not kalite_path and os.path.exists(installed_path):
+        kalite_path = installed_path
+
 if not kalite_path:
     raise RuntimeError("Could not determine where KA Lite is installed. Please set the KALITE_DIR environment variable.")
 
@@ -87,7 +91,7 @@ else:
     if not python_executable:
         python_executable = sys.executable
         warnings.warn("Could not determine Python in your path, defaulting to {0:s}".format(python_executable), RuntimeWarning)
-
+    
 # Path for manage.py
 manage_py = os.path.join(kalite_path, 'kalitectl.py')
 

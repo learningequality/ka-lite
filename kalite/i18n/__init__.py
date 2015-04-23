@@ -1,4 +1,10 @@
 """
+
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other i18n.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that i18n.settings has been copied over to kalite.settings
+
 i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
@@ -9,7 +15,6 @@ import shutil
 from collections_local_copy import OrderedDict
 from fle_utils.internet.webcache import invalidate_web_cache
 
-from django.conf import settings; logging = settings.LOG
 from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
@@ -30,6 +35,9 @@ from fle_utils.general import ensure_dir, softload_json
 from kalite.version import VERSION
 
 CACHE_VARS = []
+
+
+from django.conf import settings; logging = settings.LOG
 
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.I18N_DATA_PATH, "dubbed_video_mappings.json")
 LOCALE_ROOT = settings.LOCALE_PATHS[0]

@@ -1,23 +1,15 @@
 """
 
+benjaoming:
+
+This file replaces i18n.settings temporarily until i18n.__init__.py has been
+cleaned up to not contain references to django post-load modules.
 
 
+DO NOT MODIFY THIS FILE UNLESS ABSOLUTELY NECESSARY
 
 
-DO NOT MODIFY THIS FILE OR LOAD THIS MODULE.
-
-
-Because of i18n.__init__.py, we cannot load this module independently of its
-own child module's preconditions.
-
-I.e. i18n.__init__.py expects the django.conf.settings to have loaded, but
-i18n.settings is a precondition for loading the project's settings module
-kalite.settings
-
-Nasty stuff.
-
-Will be cleaned up in 0.14.
-
+This will be cleaned up in KA Lite 0.14
 
 
 """
@@ -68,7 +60,7 @@ MIDDLEWARE_CLASSES = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.i18n",
-    __package__ + ".custom_context_processors.languages",
+    "kalite.i18n.custom_context_processors.languages",
 )
 
 
@@ -77,7 +69,17 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ########################
 
 # JSON file of all languages and their names
-I18N_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
+
+
+# This is the standard method... but doesn't work because we cannot load
+# kalite.i18n while loading settings because of its __init__.py
+# from pkgutil import get_data
+# I18N_DATA_PATH = get_data("kalite.i18n", "data")
+
+# Use resource_filename instead of get_data because it does not try to open
+# a file and does not complain that its a directory
+from pkg_resources import resource_filename
+I18N_DATA_PATH = resource_filename("kalite", "i18n/data")
 LANG_LOOKUP_FILEPATH = os.path.join(I18N_DATA_PATH, "languagelookup.json")
 
 # Whether to turn on crowdin's in-context localization feature

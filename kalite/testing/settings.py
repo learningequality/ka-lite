@@ -1,7 +1,7 @@
 import os
 
 try:
-    import local_settings
+    from kalite import local_settings
 except ImportError:
     local_settings = object()
 
@@ -49,6 +49,9 @@ if USE_DEBUG_TOOLBAR:
         'HIDE_DJANGO_SQL': False,
         'ENABLE_STACKTRACES' : True,
     }
+    # Debug toolbar must be set in conjunction with CACHE_TIME=0
+    CACHE_TIME = 0
+
 
 if getattr(local_settings, "DEBUG", False):
     INSTALLED_APPS += (
