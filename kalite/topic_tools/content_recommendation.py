@@ -31,6 +31,10 @@ def get_recommendations(user=None, current_subtopic=None):
         #return 'Whoa there buddy, you did not specify a user!'
         user = 'Yamira Jones (Facility: Wilson Elementary (#1829))'
 
+
+    #some initial data used in multiple areas
+    current_subtopic = get_most_recent_subtopics(user)[0]
+
     #get user exercise log
     #print ExerciseLog.objects.filter(user='Yamira Jones')
 
@@ -39,16 +43,12 @@ def get_recommendations(user=None, current_subtopic=None):
     result['resume'] = get_resume_recommendations(user)
 
 
-    ############### NEXT STEPS #########################
-    result['next_steps'] = get_next_recommendations(user)
+    ############### NEXT STEPS ######################### Use current ordering of get_recommended_exercises()
+    result['next_steps'] = get_next_recommendations(user, current_subtopic)
 
 
-    ############### EXPLORE ############################
-    #check if current subtopic exists
-    if not current_subtopic:
-        current_subtopic = 'early-math' #need to change to find latest subtopic 
-
-    result['explore'] = get_explore_recommendations(current_subtopic)[:20] #for now, return first 20
+    ############### EXPLORE ############################ Use middle->end get_recommended_exercises();
+    result['explore'] = get_explore_recommendations(current_subtopic)
 
     return result
 
@@ -71,16 +71,20 @@ def get_resume_recommendations(user):
 
 
 ####################################### 'NEXT STEPS' LOGIC ################################################
-
+''' TODO '''
 ###
 # Returns a list of exercises to go to next. Influenced by other user patterns in the same group as well
 # as the user's struggling pattern shown in the exercise log.
 #
 # @param user: user identifier
+#        current_subtopic: subtopic id of most recently accessed exercise
 # @return: a list of exercise id's of where the user should consider going next.
 ###
-def get_next_recommendations(user):
-    return ['Hello World!']
+def get_next_recommendations(user, current_subtopic):
+    
+    data = get_recommended_exercises(current_subtopic)
+   
+    return data[:5]
 
 
 ########################################## 'EXPLORE' LOGIC ################################################
@@ -94,7 +98,12 @@ def get_next_recommendations(user):
 #           exercises based on topic tree structure.
 ###
 def get_explore_recommendations(subtopic_id):
-    return get_recommended_exercises(subtopic_id)
+    data = generate_recommendation_data()[subtopic_id]['related_subtopics']
+    
+    data = data[(len(data)/2):]                     #only look at middle to furthest neighbors
+    #print get_exercises_from_topic([subtopic_id])
+
+    return get_exercises_from_topics(data)
 
 
 
@@ -104,11 +113,23 @@ def get_explore_recommendations(subtopic_id):
 
 
 
+########################################### HELPER FUNCTIONS ##############################################
+
+# Returns up to the 5 most recent SUBTOPIC IDs that the given user has started and/or completed, in 
+# ascending order (most recent first).
+def get_most_recent_subtopics(user):
+    return ['early-math'] #dummy return 
 
 
+#Given a list of subtopic/topic ids, returns an ordered list of the first 5 exercise ids under those ids
+def get_exercises_from_topics(topicId_list):
+    exs = []
+    for topic in topicId_list:
+        exercises = get_topic_exercises(topic)[:5] #can change this line to allow for more to be recommended
+        for e in exercises:
+            exs += [e['id']] #only add the id to the list
 
-
-
+    return exs
 
 
 
