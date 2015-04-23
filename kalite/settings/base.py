@@ -68,7 +68,7 @@ IS_SOURCE = (
     os.path.exists(os.path.join(default_source_path, '.KALITE_SOURCE_DIR')) and
     (
         'kalitectl.py' not in sys.argv[0] or
-        sys.argv[0] == os.path.realpath(os.path.join(default_source_path, 'kalitectl.py'))
+        os.path.realpath(sys.argv[0]) == os.path.realpath(os.path.join(default_source_path, 'kalitectl.py'))
     )
 )
 SOURCE_DIR = None
