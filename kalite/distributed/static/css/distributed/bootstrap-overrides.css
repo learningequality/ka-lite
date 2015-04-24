@@ -355,20 +355,40 @@ form .input-group {
     margin: 0;
 }
 #content-resume h5,
+#content-nextsteps h5,
 #content-explore h5 {
     margin-top: 5px;
     margin-bottom: 5px;
 }
 #content-resume,
+#content-nextsteps,
 #content-explore {
     width: 25%;
     border: solid;
     display: inline-block;
     margin: 3%;
 }
-#content-explore-lesson {
+#content-nextsteps span#first-col {
+    width: 20%;
+}
+#content-nextsteps span#second-col {
+    width: 58%;
+}
+#content-nextsteps span#third-col {
+    vertical-align: middle;
+    width: 19%;
+}
+#content-nextsteps img {
+    width: 100%;
+}
+#content-nextsteps p {
+    margin: 0;
+}
+#content-nextsteps-lesson,
+#content-explore-topic {
     border-bottom: solid 1px;
 }
+#content-nextsteps,
 #content-explore {
     vertical-align: top;
 }
@@ -386,9 +406,19 @@ form .input-group {
     display: inline-block;
     margin-left: 13%;
 }
+#content-nextsteps div.card-top h1.card-title {
+    margin-left: 8%;
+}
 .glyphicon-play-circle {
     font-size: 3em;
     padding-left: 20px;
+}
+.glyphicon-arrow-right {
+    font-size: 2.5em;
+}
+.glyphicon-ok {
+    font-size: 3em;
+    padding-left: 10px;
 }
 #card-bottom h2 {
     padding-top: 10px;
