@@ -304,8 +304,6 @@ window.TopicContainerInnerView = BaseView.extend({
         }, 200));
         $(window).resize();
 
-        this.trigger("render_complete");
-
         return this;
     },
 
@@ -316,6 +314,8 @@ window.TopicContainerInnerView = BaseView.extend({
         this._entry_views.push(view);
         if (!no_append) {
             this.$(".sidebar").append(view.render().$el);
+        } else {
+            view.render();
         }
         if (window.statusModel.get("is_logged_in")) {
             this.load_entry_progress();
@@ -486,11 +486,9 @@ window.TopicContainerOuterView = BaseView.extend({
 
     show_new_topic: function(node) {
 
-        var self = this;
-
         var new_topic = this.add_new_topic_view(node);
 
-        this.listenToOnce(new_topic, "render_complete", function() {return self.$el.append(new_topic.el);});
+        this.$el.append(new_topic.el);
 
         // Listeners
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
