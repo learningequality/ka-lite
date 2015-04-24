@@ -25,14 +25,6 @@ def step_impl(context):
         context.facility = CreateFacilityMixin.create_facility(name=str(name))
         name += 1
 
-@given("I am on the homepage")
-def step_impl(context):
-    go_to_homepage(context)
-
-def go_to_homepage(context):
-    url = reverse("homepage")
-    context.browser.get(build_url(context, url))
-
 @when("I click log in")
 def step_impl(context):
     nav_login = find_id_with_wait(context, "nav_login")
