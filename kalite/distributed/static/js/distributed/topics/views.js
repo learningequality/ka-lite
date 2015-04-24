@@ -324,7 +324,10 @@ window.TopicContainerInnerView = BaseView.extend({
 
     add_all_entries: function() {
         this.render();
-        this.model.get(this.entity_key).forEach(function(value) {return this.add_new_entry(value, true)}, this);
+        this.model.get(this.entity_key).forEach(
+            function(value) {
+                return this.add_new_entry(value, true);
+            }, this);
         this.append_views(this._entry_views, ".sidebar");
     },
 
@@ -497,7 +500,7 @@ window.TopicContainerOuterView = BaseView.extend({
         this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
         this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
 
-        return new_topic
+        return new_topic;
     },
 
     add_new_topic_view: function(node) {
