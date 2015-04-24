@@ -61,6 +61,14 @@ window.BaseView = Backbone.View.extend({
         return subview;
     },
 
+    append_views: function(view_list, identifier) {
+      var docfrag = document.createDocumentFragment();
+      for (i = 0; i < view_list.length; i++) {
+        docfrag.appendChild(view_list[i].el);
+      }
+      return this.$(identifier).append(docfrag);
+    },
+
     listenToDOM: function(DOMElement, event_name, callback) {
         if (typeof DOMElement.get === "function") {
             DOMElement = DOMElement.get(0);
