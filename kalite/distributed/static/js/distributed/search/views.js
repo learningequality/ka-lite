@@ -28,7 +28,7 @@ window.AutoCompleteView = BaseView.extend({
     fetch_topic_tree: function () {
         var self = this;
         if (this._nodes===undefined) {
-            doRequest(window.sessionModel.get("SEARCH_TOPICS_URL"), null, {
+            doRequest(window.Urls.topic_tree(window.sessionModel.get("channel")), null, {
                 cache: true,
                 dataType: "json",
                 ifModified: true
@@ -76,7 +76,7 @@ window.AutoCompleteView = BaseView.extend({
 
     render: function() {
 
-        this.$el.html(this.template({search_url: window.sessionModel.get("SEARCH_URL")}));
+        this.$el.html(this.template({search_url: window.Urls.search());
 
         this.$("#search").autocomplete({
             autoFocus: true,

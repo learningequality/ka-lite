@@ -31,7 +31,7 @@ function get_available_languages() {
 }
 
 function get_installed_languages() {
-    return doRequest(window.sessionModel.get("INSTALLED_LANGUAGES_URL"), null, {
+    return doRequest(window.Urls.installed_language_packs(), null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
@@ -122,7 +122,7 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
-    doRequest(window.sessionModel.get("DELETE_LANGUAGEPACK_URL"), {lang: lang_code})
+    doRequest(window.Urls.delete_language_pack(), {lang: lang_code})
         .success(function(resp) {
             get_installed_languages();
             display_languages(installables);
