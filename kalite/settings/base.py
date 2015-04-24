@@ -289,6 +289,7 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "kalite.distributed",
     "compressor",
+    "django_js_reverse",
 )
 
 if not BUILT:

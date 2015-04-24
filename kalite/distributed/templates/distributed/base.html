@@ -65,6 +65,13 @@
         {% endif %}
 
         {% compress js file basejs %}
+        
+        {% if debug %}
+        <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
+        {% else %}
+        <script src="{% static 'django_js_reverse/js/reverse.js' %}"></script>
+        {% endif %}
+        
         <!-- JS translation file statically included as a back-up, so that if the saved file below isn't available, we don't choke. -->
         <script type="text/javascript" src="{% static 'js/i18n/en.js' %}"></script>
 
