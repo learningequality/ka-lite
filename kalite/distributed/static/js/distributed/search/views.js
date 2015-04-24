@@ -76,7 +76,7 @@ window.AutoCompleteView = BaseView.extend({
 
     render: function() {
 
-        this.$el.html(this.template({search_url: window.Urls.search());
+        this.$el.html(this.template({search_url: window.Urls.search()}));
 
         this.$("#search").autocomplete({
             autoFocus: true,
