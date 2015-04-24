@@ -484,16 +484,20 @@ window.TopicContainerOuterView = BaseView.extend({
         this.trigger("render_complete");
     },
 
-    show_new_topic: function(node) {
+    show_new_topic: function(node, no_append) {
 
         var new_topic = this.add_new_topic_view(node);
 
-        this.$el.append(new_topic.el);
+        if (!no_append) {
+            this.$el.append(new_topic.el);
+        }
 
         // Listeners
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
         this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
         this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
+
+        return new_topic
     },
 
     add_new_topic_view: function(node) {
@@ -532,6 +536,7 @@ window.TopicContainerOuterView = BaseView.extend({
     },
 
     navigate_paths: function(paths, callback) {
+        var added_views = [];
         var check_views = [];
         for (var i = this.inner_views.length - 2; i >=0; i--) {
             check_views.push(this.inner_views[i]);
@@ -555,7 +560,8 @@ window.TopicContainerOuterView = BaseView.extend({
                 var node = this.inner_views[0].node_by_slug(paths[i]);
                 if (node!==undefined) {
                     if (node.get("kind")==="Topic") {
-                        this.show_new_topic(node);
+                        // Defer appending of the views until we have finished looking through all the paths.
+                        added_views.push(this.show_new_topic(node, true));
                     } else {
                         this.entry_requested(node);
                     }
@@ -568,6 +574,9 @@ window.TopicContainerOuterView = BaseView.extend({
                 }
             }
         }
+        // Append all added views.
+        this.append_views(added_views);
+
         if (callback) {
             callback(this.inner_views[0].model.get("title"));
         }
