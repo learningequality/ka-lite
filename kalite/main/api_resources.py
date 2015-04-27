@@ -240,7 +240,6 @@ class Content:
             "kind",
             "content_urls",
             "selected_language",
-            "subtitle_urls",
             "available",
         ]
 
