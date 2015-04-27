@@ -2,6 +2,10 @@
 Tests of utility functions.  Though they aren't part of the "main" app,
 there's no other app to include them with!
 """
+import os
+import sys
+sys.path += [os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))]
+
 import datetime
 import os
 import shutil

@@ -6,7 +6,6 @@ import uuid
 
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.messages.api import get_messages
 from django.db import models as db_models
 from django.http import HttpResponse
@@ -21,7 +20,7 @@ from ..devices.models import *  # inter-dependence
 from fle_utils.chronograph import force_job
 from fle_utils.django_utils import get_request_ip
 from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError
-
+from kalite.shared.decorators.auth import require_admin
 
 def require_sync_session(handler):
     @api_handle_error_with_json
@@ -198,7 +197,7 @@ def model_download(data, session):
     return JsonResponse(result)
 
 
-@login_required
+@require_admin
 @api_handle_error_with_json
 def force_sync(request):
     """

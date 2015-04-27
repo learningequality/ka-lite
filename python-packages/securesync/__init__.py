@@ -13,3 +13,13 @@ except:
 
 from .devices.__init__ import *
 from .engine.__init__ import *
+
+# JsonResponseMessageError codes
+class ERROR_CODES:
+    CLIENT_DEVICE_CORRUPTED = "client_device_corrupted"
+    CLIENT_DEVICE_NOT_DEVICE = "client_device_not_device"
+    CLIENT_DEVICE_INVALID_SIGNATURE = "client_device_invalid_signature"
+    CHAIN_OF_TRUST_INVALID = "chain_of_trust_invalid"
+    DEVICE_ALREADY_REGISTERED = "device_already_registered"
+    PUBLIC_KEY_UNREGISTERED = "public_key_unregistered"
+

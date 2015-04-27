@@ -19,6 +19,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _, ugettext_lazy
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
+from django.contrib import messages
 
 from .models import VideoFile
 from fle_utils.chronograph import force_job
@@ -48,6 +49,7 @@ def update_context(request):
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
     context = update_context(request)
+    messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download videos one at a time.'))
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
     })
@@ -89,4 +91,3 @@ def update_software(request):
     })
 
     return context
-

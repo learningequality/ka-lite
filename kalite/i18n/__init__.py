@@ -16,6 +16,10 @@ from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
 
+from contextlib import contextmanager
+
+from kalite.version import SHORTVERSION
+
 ################################################
 ###                                          ###
 ###   NOTE TO US:                            ###
@@ -38,7 +42,7 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(os.path.dirname(__file__), 'static', 'khan-exercises', "exercises", ka_lang_code)
+    return os.path.join(os.path.dirname(__file__), settings.KHAN_EXERCISES_RELPATH, "exercises", ka_lang_code)
 
 
 def get_locale_path(lang_code=None):
@@ -141,10 +145,11 @@ def get_id2oklang_map(video_id, force=False):
     if ID2OKLANG_MAP is None or force:
         ID2OKLANG_MAP = {}
         for lang_code, dic in get_dubbed_video_map().iteritems():
-            for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                cur_video_id = get_video_id(english_youtube_id)
-                ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
-                ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
+            if lang_code and dic:
+                for english_youtube_id, dubbed_youtube_id in dic.iteritems():
+                    cur_video_id = get_video_id(english_youtube_id)
+                    ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
+                    ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
     if video_id:
         # Not all IDs made it into the spreadsheet, so by default, use the video_id as the youtube_id
         return ID2OKLANG_MAP.get(video_id, {"en": get_youtube_id(video_id, None)})
@@ -351,21 +356,6 @@ def set_default_language(lang_code):
     Settings.set("default_language", lcode_to_ietf(lang_code))
 
 
-def get_langs_with_subtitle(youtube_id):
-    """
-    Returns a list of all language codes that contain subtitles for this video.
-
-    Central and distributed servers store in different places, so loop differently
-    """
-
-    subtitles_path = get_srt_path()
-    if os.path.exists(subtitles_path):
-        installed_subtitles = [lc for lc in os.listdir(subtitles_path) if os.path.exists(get_srt_path(lc, youtube_id))]
-    else:
-        installed_subtitles = []
-    return sorted(installed_subtitles)
-
-
 def update_jsi18n_file(code="en"):
     """
     For efficieny's sake, we want to cache Django's
@@ -381,9 +371,16 @@ def update_jsi18n_file(code="en"):
     request.path = output_file
     request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
-    response = javascript_catalog(request, packages=('ka-lite.locale',))
+    response = javascript_catalog(request, packages=('ka-lite.locale',), domain="django")
+    icu_js = ""
+    for path in settings.LOCALE_PATHS:
+        try:
+            icu_js = open(os.path.join(path, code, "%s_icu.js" % code), "r").read()
+        except IOError:
+            logging.warn("No {code}_icu.js file found in locale_path {path}".format(code=code, path=path))
+    output_js = response.content + "\n" + icu_js
     with open(output_file, "w") as fp:
-        fp.write(response.content)
+        fp.write(output_js)
 
 
 def select_best_available_language(target_code, available_codes=None):
@@ -400,7 +397,8 @@ def select_best_available_language(target_code, available_codes=None):
     target_code = lcode_to_django_lang(target_code)
     if available_codes is None:
         available_codes = get_installed_language_packs().keys()
-    available_codes = [lcode_to_django_lang(lc) for lc in available_codes]
+    logging.debug("choosing best language among %s" % available_codes)
+    available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
     if target_code in available_codes:
@@ -450,3 +448,19 @@ def set_request_language(request, lang_code):
 
     request.language = lcode_to_ietf(lang_code)
     translation.activate(request.language)
+
+@contextmanager
+def translate_block(language):
+    language = lcode_to_django_lang(language)
+    translation.activate(language)
+    yield
+    translation.deactivate()
+
+
+def get_language_pack_url(lang_code, version=SHORTVERSION):
+    """As published"""
+    return "http://%(host)s/media/language_packs/%(version)s/%(lang_code)s.zip" % {
+        "host": settings.CENTRAL_SERVER_HOST,
+        "lang_code": lang_code,
+        "version": version,
+    }

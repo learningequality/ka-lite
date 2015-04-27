@@ -3,11 +3,14 @@ Like the old south.modelsparser, but using introspection where possible
 rather than direct inspection of models.py.
 """
 
+from __future__ import print_function
+
 import datetime
 import re
 import decimal
 
 from south.utils import get_attribute, auto_through
+from south.utils.py3 import text_type
 
 from django.db import models
 from django.db.models.base import ModelBase, Model
@@ -39,7 +42,7 @@ def convert_on_delete_handler(value):
             func_name = getattr(value, '__name__', None)
             if func_name == 'set_on_delete':
                 # we must inspect the function closure to see what parameters were passed in
-                closure_contents = value.func_closure[0].cell_contents
+                closure_contents = value.__closure__[0].cell_contents
                 if closure_contents is None:
                     return "%s.SET_NULL" % (django_db_models_module)
                 # simple function we can perhaps cope with:
@@ -161,6 +164,7 @@ allowed_fields = [
     "^django\.db",
     "^django\.contrib\.contenttypes\.generic",
     "^django\.contrib\.localflavor",
+    "^django_localflavor_\w\w",
 ]
 
 # Regexes of ignored fields (custom fields which look like fields, but have no column behind them)
@@ -174,12 +178,10 @@ meta_details = {
     "db_table": ["db_table", {"default_attr_concat": ["%s_%s", "app_label", "module_name"]}],
     "db_tablespace": ["db_tablespace", {"default": settings.DEFAULT_TABLESPACE}],
     "unique_together": ["unique_together", {"default": []}],
+    "index_together": ["index_together", {"default": [], "ignore_missing": True}],
     "ordering": ["ordering", {"default": []}],
     "proxy": ["proxy", {"default": False, "ignore_missing": True}],
 }
-
-# 2.4 compatability
-any = lambda x: reduce(lambda y, z: y or z, x, False)
 
 
 def add_introspection_rules(rules=[], patterns=[]):
@@ -263,7 +265,7 @@ def get_value(field, descriptor):
             
     # Lazy-eval functions get eval'd.
     if isinstance(value, Promise):
-        value = unicode(value)
+        value = text_type(value)
     # If the value is the same as the default, omit it for clarity
     if "default" in options and value == options['default']:
         raise IsDefault
@@ -294,7 +296,7 @@ def value_clean(value, options={}):
     "Takes a value and cleans it up (so e.g. it has timezone working right)"
     # Lazy-eval functions get eval'd.
     if isinstance(value, Promise):
-        value = unicode(value)
+        value = text_type(value)
     # Callables get called.
     if not options.get('is_django_function', False) and callable(value) and not isinstance(value, ModelBase):
         # Datetime.datetime.now is special, as we can access it from the eval
@@ -401,7 +403,7 @@ def get_model_fields(model, m2m=False):
         # Does it define a south_field_triple method?
         if hasattr(field, "south_field_triple"):
             if NOISY:
-                print " ( Nativing field: %s" % field.name
+                print(" ( Nativing field: %s" % field.name)
             field_defs[field.name] = field.south_field_triple()
         # Can we introspect it?
         elif can_introspect(field):
@@ -417,7 +419,7 @@ def get_model_fields(model, m2m=False):
         # Shucks, no definition!
         else:
             if NOISY:
-                print " ( Nodefing field: %s" % field.name
+                print(" ( Nodefing field: %s" % field.name)
             field_defs[field.name] = None
     
     # If they've used the horrific hack that is order_with_respect_to, deal with

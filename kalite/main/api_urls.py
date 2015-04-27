@@ -6,20 +6,25 @@ they're imported into the project's urls.py file.
 """
 from django.conf.urls import include, patterns, url
 
+from .api_resources import VideoLogResource, ExerciseLogResource, AttemptLogResource, ContentLogResource, ExerciseResource, AssessmentItemResource, ContentResource
+
 
 urlpatterns = patterns(__package__ + '.api_views',
 
-    # For video / exercise pages
-    url(r'^save_video_log$', 'save_video_log', {}, 'save_video_log'),
-    url(r'^save_exercise_log$', 'save_exercise_log', {}, 'save_exercise_log'),
-
-    # For returning video / exercise progress for a given level within the topic tree
-    url(r'^get_video_logs$', 'get_video_logs', {}, 'get_video_logs'),
-    url(r'^get_exercise_logs$', 'get_exercise_logs', {}, 'get_exercise_logs'),
+    url(r'^', include(VideoLogResource().urls)),
+    url(r'^', include(ExerciseLogResource().urls)),
+    url(r'^', include(AttemptLogResource().urls)),
+    url(r'^', include(ContentLogResource().urls)),
+    # Retrieve exercise data to render a front-end exercise
+    url(r'^', include(ExerciseResource().urls)),
+    # Retrieve assessment item data to render front-end Perseus Exercises
+    url(r'^', include(AssessmentItemResource().urls)),
+    url(r'^', include(ContentResource().urls)),
 
     # Data used by the client (browser) for doing search
     url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),
 
     # For building a graphical knowledge map
-    url(r'^knowledge_map/(?P<topic_id>.*)/?$', 'knowledge_map_json', {}, 'knowledge_map_json'),
+    url(r'^topic_tree/(?P<channel>.*)/?$', 'topic_tree', {}, 'topic_tree'),
+
 )

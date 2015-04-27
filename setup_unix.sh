@@ -3,11 +3,12 @@ current_dir=`dirname "${BASH_SOURCE[0]}"`
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )/scripts"
 pyexec=`"$SCRIPT_DIR"/python.sh`
 
-"$pyexec" "$current_dir/kalite/manage.py" setup
+"$pyexec" "$current_dir/bin/kalite" manage setup
 
 # TODO: make a check to see if we're running the rpi
-we_are_rpi=""
-if [[ $we_are_rpi = "True" ]]; then
+we_are_rpi=`"$current_dir/bin/kalite" setting RPi`
+
+if [[ "$we_are_rpi" = "True" ]]; then
     while true
     do
         echo

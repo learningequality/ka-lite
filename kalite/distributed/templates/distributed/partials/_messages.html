@@ -1,0 +1,18 @@
+{% load my_filters %}
+
+<div id="message_container">
+    <!--Ajax messages from central server get inserted here-->
+    {% if messages %}
+        <!--Normal messages loaded from the view get inserted here-->
+        {% for message in messages %}
+            {% get_twitter_bootstrap_alert_msg_css_name message.tags as alert_tag %}
+            <div class="alert alert-{{alert_tag}} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

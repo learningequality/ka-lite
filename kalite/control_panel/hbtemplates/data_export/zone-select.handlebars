@@ -1,0 +1,11 @@
+<div class="form-group">
+    <label for="zone-name" class="col-xs-2">{{_ "Zone" }}</label>
+    <div class="col-xs-8">
+        <select class="form-control" id="zone-name">
+            <option value="">{{_ "All" }}</option>{{!-- Default to all --}}
+            {{#each zones}}
+                <option value="{{id}}" {{#ifcond ../selection "===" id }}selected{{/ifcond}}>{{ name }}</option>
+            {{/each}}
+        </select>
+    </div>
+</div>

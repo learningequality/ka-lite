@@ -17,7 +17,7 @@ from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from . import REMOTE_VIDEO_SIZE_FILEPATH, delete_downloaded_files, get_local_video_size, get_remote_video_size
+from . import delete_downloaded_files, get_local_video_size, get_remote_video_size
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from fle_utils.chronograph import force_job
@@ -28,6 +28,7 @@ from fle_utils.orderedset import OrderedSet
 from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language
 from kalite.shared.decorators import require_admin
 from kalite.topic_tools import get_topic_tree
+from kalite.caching import initialize_content_caches
 
 
 def divide_videos_by_language(youtube_ids):
@@ -181,6 +182,8 @@ def delete_videos(request):
         num_deleted += found_videos.count()
         found_videos.delete()
 
+    initialize_content_caches(force=True)
+
     return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 
 
@@ -278,7 +281,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
         }
 
     elif node["kind"] == "Video":
-        video_id = node["youtube_id"]
+        video_id = node.get("youtube_id", node.get("id"))
         youtube_id = get_youtube_id(video_id, lang_code=lang_code)
 
         if not youtube_id:
@@ -319,7 +322,7 @@ def get_annotated_topic_tree(request, lang_code=None):
     lang_code = lang_code or request.language      # Get annotations for the current language.
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
 
-    return JsonResponse(annotate_topic_tree(get_topic_tree(), statusdict=statusdict, lang_code=lang_code))
+    return JsonResponse(annotate_topic_tree(get_topic_tree(language=lang_code), statusdict=statusdict, lang_code=lang_code))
 
 
 """
@@ -334,6 +337,10 @@ def start_update_kalite(request):
         mechanism = data['mechanism']
     except KeyError:
         raise KeyError(_("You did not select a valid choice for an update mechanism."))
+
+    # Clear any preexisting logs
+    if UpdateProgressLog.objects.count():
+        UpdateProgressLog.objects.all().delete()
 
     call_command_async('update', mechanism, old_server_pid=os.getpid(), in_proc=True)
 

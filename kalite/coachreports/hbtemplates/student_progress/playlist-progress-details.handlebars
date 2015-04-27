@@ -1,0 +1,30 @@
+{{#each data}}
+<div class="col-xs-1 progress-block">
+    <a href="/learn/{{attributes.path}}">
+    <div 
+        class="progress-indicator progress-indicator-sm {{attributes.status}}"
+        data-toggle="popover" data-placement="top" 
+        
+        {{!-- Video --}}
+        {{#ifcond attributes.kind "===" "Video"}}
+            title="{{attributes.title}}"
+            data-content="% Complete: {{attributes.score}}"
+        {{/ifcond}}
+
+        {{!-- Exercise --}}
+        {{#ifcond attributes.kind "===" "Exercise"}}
+            title="{{attributes.title}}"
+            data-content="Streak: {{attributes.score}}%"
+        {{/ifcond}}
+
+        {{!-- Quiz --}}
+        {{#ifcond attributes.kind "===" "Quiz"}}
+            title="Quiz for {{attributes.title}}"
+            data-content="Score: {{attributes.score}}%"
+        {{/ifcond}}
+    > {{!-- Close starting div --}}
+        <div class="sidebar-icon icon-{{ attributes.kind }} icon-label icon-label-sm"></div>
+    </div>
+    <span class="progress-item-title">{{attributes.title}}</span></a>
+</div>
+{{/each}}

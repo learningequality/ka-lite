@@ -1,7 +1,29 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
-# this is actually 0.12.5, but we need to update language pack version fallbacks before changing here
-VERSION = "0.12.0"
+MAJOR_VERSION = "0"
+MINOR_VERSION = "13"
+PATCH_VERSION = "0"
+VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
+SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
+
 VERSION_INFO = {
+
+    "0.13.0": {
+        "release_date": "2015/04/27",
+        "git_commit": "92c7e5a",
+        "new_features": {
+            "all": ["New mobile-friendly interface.", "New user manual."],
+            "students": ["Latest content from Khan Academy.", "New content navigation scheme.", "New exercise master system."],
+            "coaches": [],
+            "admins": ["bin/kalite executable."],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+
+    },
 
     "0.12.11": {
         "release_date": "2014/12/20",
@@ -103,7 +125,7 @@ VERSION_INFO = {
             "admins": [],
         },
         "bugs_fixed": {
-            "all": ["Hotfix to allow Mac users to connect to the central server", "Mark old chronograph jobs as no longer runningwhen server starts"],
+            "all": ["Hotfix to allow Mac users to connect to the central server", "Mark old chronograph jobs as no longer running when server starts"],
             "students": [],
             "coaches": [],
             "admins": ["Critical fix: ensure models created elsewhere sync after being modified"],

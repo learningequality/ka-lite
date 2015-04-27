@@ -23,7 +23,7 @@ from securesync.engine.models import DeferredCountSyncedModel
 
 
 class Facility(DeferredCountSyncedModel):
-    name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that students/teachers will see when choosing their facility; it can be in the local language.)"), max_length=100)
+    name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that learners/coaches will see when choosing their facility; it can be in the local language.)"), max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))
     address = models.CharField(verbose_name=_("Address"), help_text=_("(Please provide as detailed an address as possible.)"), max_length=400, blank=True)
     address_normalized = models.CharField(max_length=400, blank=True)
@@ -75,10 +75,22 @@ class Facility(DeferredCountSyncedModel):
             # Use an existing facility as the default, if one of them isn't the default already.
             Settings.set("default_facility", facilities[0].id)
 
+    @property
+    def has_ungrouped_students(self):
+        """
+        Checks if this facility has ungrouped students or not.
+        """
+        return len(FacilityUser.objects.filter(facility=self, is_teacher=False, group__isnull=True)) > 0
+
 
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
+    description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.13.0"
+
+    def __init__(self, *args, **kwargs):
+        super(FacilityGroup, self).__init__(*args, **kwargs)
+        self._unhashable_fields += ("description",) # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
@@ -115,6 +127,12 @@ class FacilityGroup(DeferredCountSyncedModel):
 
         return zone
 
+    @property
+    def title(self):
+        if self.description:
+            return "%s - %s" % (self.name, self.description,)
+        return self.name
+
 
 class FacilityUser(DeferredCountSyncedModel):
     # Translators: This is a label in a form.
@@ -128,7 +146,7 @@ class FacilityUser(DeferredCountSyncedModel):
     # Translators: This is a label in a form.
     last_name = models.CharField(max_length=60, verbose_name=_("Last Name"), blank=True)
     # Translators: This is a label in a form.
-    is_teacher = models.BooleanField(default=False, help_text=_("(whether this user should have teacher permissions)"))
+    is_teacher = models.BooleanField(default=False, help_text=_("(whether this user should have coach permissions)"))
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128)
     default_language = models.CharField(max_length=8, blank=True, null=True); default_language.minversion="0.11.1"

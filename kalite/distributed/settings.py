@@ -1,6 +1,5 @@
 import getpass
 import hashlib
-import json
 import os
 import sys
 import tempfile
@@ -42,20 +41,28 @@ INSTALLED_APPS = (
     "fle_utils.config",
     "fle_utils.chronograph",
     "fle_utils.django_utils",  # templatetags
+    "fle_utils.handlebars",
+    "fle_utils.backbone",
     "fle_utils.build",
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
+    "kalite.knowledgemap",
     "kalite.django_cherrypy_wsgiserver",  # API endpoint for PID
     "kalite.i18n",  #
-    "kalite.khanload",  # khan academy interactions
+    "kalite.contentload",  # content loading interactions
     "kalite.topic_tools",  # Querying topic tree
     "kalite.main", # in order for securesync to work, this needs to be here.
+    "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
+    "kalite.student_testing",
     "kalite.caching",
+    "kalite.store",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
+    "kalite.ab_testing",
+    "kalite.dynamic_assets",
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,6 +71,7 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     __package__ + ".middleware.LockdownCheck",
+    "kalite.student_testing.middleware.ExamModeCheck",
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -87,11 +95,21 @@ ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print
 
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
 SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "https" if not DEBUG else "http")
-CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("adhoc.%s:7007" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
+CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("staging.%s" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
 CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
 
-KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), "static", "khan-exercises")
+PDFJS = getattr(local_settings, "PDFJS", True)
 
+########################
+# Exercise AB-testing
+########################
+FIXED_BLOCK_EXERCISES = getattr(local_settings, 'FIXED_BLOCK_EXERCISES', 0)
+STREAK_CORRECT_NEEDED = getattr(local_settings, 'STREAK_CORRECT_NEEDED', 8)
+
+########################
+# Video AB-testing
+########################
+POINTS_PER_VIDEO = getattr(local_settings, 'POINTS_PER_VIDEO', 750)
 
 ########################
 # Ports & Accessibility
@@ -183,3 +201,34 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
+
+########################
+# Screenshots
+########################
+
+from django.conf import settings
+PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", settings.PROJECT_PATH)) + "/"
+
+SCREENSHOTS_OUTPUT_PATH = os.path.join(os.path.realpath(PROJECT_PATH), "..", "data", "screenshots")
+SCREENSHOTS_EXTENSION = ".png"
+
+SCREENSHOTS_DATABASE_NAME = "screenshot-data.sqlite"
+SCREENSHOTS_DATABASE_PATH = os.path.join(SCREENSHOTS_OUTPUT_PATH, SCREENSHOTS_DATABASE_NAME)
+
+SCREENSHOTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "data")
+SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_JSON_PATH, 'screenshots.json')
+SCREENSHOTS_ROUTER = 'default'
+SQLITE3_ENGINE = 'django.db.backends.sqlite3'
+
+if 'screenshots' in sys.argv:
+    # use another sqlite3 database for the screenshots
+    DATABASES = {
+        SCREENSHOTS_ROUTER: {
+            "ENGINE": getattr(local_settings, "DATABASE_TYPE", SQLITE3_ENGINE),
+            "NAME": SCREENSHOTS_DATABASE_PATH,
+            "OPTIONS": {
+                "timeout": 60,
+            },
+        }
+    }

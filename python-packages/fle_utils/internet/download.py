@@ -89,7 +89,7 @@ def make_request(headers, url, max_retries=5):
         except Exception as e:
             if response is None:
                 response = "unexpected-error"
-            cur_error = unicode(e.message)
+            cur_error = unicode(e.args[0])
             if not last_error or last_error != cur_error:
                 logging.warn(u"Unexpected Error downloading %s: %s" % (url, cur_error))
             last_error = cur_error

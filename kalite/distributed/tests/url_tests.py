@@ -33,7 +33,7 @@ class UrlTestCases(KALiteTestCase):
         self.validate_url('/exercisedashboard/')
         self.validate_url(reverse('login'))
         self.validate_url(reverse('facility_user_signup'), status_code=302)
-        self.validate_url('/math/')
+        self.validate_url('/learn/')
         self.validate_url('/content/', status_code=404)
         self.validate_url('/accounts/login/', status_code=404)
         self.validate_url('/accounts/register/', status_code=404)

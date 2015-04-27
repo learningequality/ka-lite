@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-polygon interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Inscribed angles 1</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <script>
+        /**
+         * Computes arc start and end angles that will guarantee an
+         * "inner arc" so that the arc is always less than 180 degrees.
+         */
+        function innerArc( start, end ) {
+            var delta = ( end - start + 360 ) % 360;
+            if ( delta >= 180 ) {
+                return {
+                    start: end,
+                    end: start
+                };
+            }
+            return {
+                start: start,
+                end: end
+            };
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="RADIUS">4</var>
+            <var id="START">randRange(0, 360)</var>
+            <var id="CENTRAL">randRange(20, 70) * 2</var>
+            <var id="CENTRAL_LABEL">"\\blue{\\angle ABC}"</var>
+            <var id="ANGLE_B_LABEL">"\\green{\\angle CBD}"</var>
+            <var id="ANGLE_C_LABEL">"\\pink{\\angle BCD}"</var>
+            <var id="ANGLE_D_LABEL">"\\orange{\\angle ADC}"</var>
+        </div>
+
+    <div class="problems">
+        <div id="find-angle-1">
+            <div class="vars">
+                <var id="SUBTENDED_POINT">(START + 180) % 360</var>
+                <var id="GIVEN">CENTRAL</var>
+                <var id="GIVEN_LABEL">CENTRAL_LABEL</var>
+                <var id="ASKED_LABEL">ANGLE_D_LABEL</var>
+            </div>
+            <p class="question">
+                If <code><var>GIVEN_LABEL</var></code> angle measures <code><var>GIVEN</var>^\circ</code>,
+                what does <code><var>ASKED_LABEL</var></code> angle measure?
+            </p>
+            <div class="render-answer-area-here"></div>
+            <div class="graphie" id="circle">
+                init({
+                    range: [ [ -RADIUS - 1, RADIUS + 1 ], [ -RADIUS - 1, RADIUS + 1 ] ]
+                });
+                addMouseLayer();
+                graph.circle = new Circle( RADIUS );
+
+                style({ stroke: BLUE, fill: BLUE });
+                graph.circle.drawCenter("B", START + CENTRAL / 2 + 180);
+                graph.circle.drawPoint(START, "A");
+                graph.circle.drawPoint(START + CENTRAL, "C");
+                graph.circle.drawCentralAngle(START, START + CENTRAL);
+
+                style({ stroke: INTERACTIVE, fill: INTERACTIVE, color: INTERACTIVE });
+                graph.circle.drawInscribedAngle(SUBTENDED_POINT, START, START + CENTRAL, 0.5, "D");
+                graph.circle.drawMovablePoint(SUBTENDED_POINT, START + CENTRAL, START, "D");
+            </div>
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer, decimal"><var>CENTRAL / 2</var></span> <code>^\circ</code>
+            </div>
+            <div class="hints">
+                <div>
+                    <p><code><var>CENTRAL_LABEL</var></code> and <code><var>ANGLE_B_LABEL</var></code> are supplementary.</p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: GREEN }, function() {
+                            graph.circle.drawCentralArc(START + CENTRAL, SUBTENDED_POINT);
+                        })
+                    </div>
+                </div>
+                <p><code>
+                    \begin{eqnarray}
+                    <var>CENTRAL_LABEL</var> + <var>ANGLE_B_LABEL</var> &amp;=&amp; 180^\circ \\
+                    <var>ANGLE_B_LABEL</var> &amp;=&amp; 180^\circ - <var>CENTRAL_LABEL</var> \\
+                    <var>ANGLE_B_LABEL</var> &amp;=&amp; 180^\circ - \blue{<var>CENTRAL</var>^\circ} \\
+                    <var>ANGLE_B_LABEL</var> &amp;=&amp; \green{<var>180 - CENTRAL</var>^\circ}
+                    \end{eqnarray}
+                </code></p>
+                <div>
+                    <p>The angles in a triangle sum to <code>180^\circ</code>.</p>
+                    <p><code><var>ANGLE_B_LABEL</var> + <var>ANGLE_C_LABEL</var> + <var>ANGLE_D_LABEL</var> = 180^\circ</code></p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawInscribedArc( START + CENTRAL, SUBTENDED_POINT, START + CENTRAL + 180 );
+                        });
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        The pink sides of triangle <code>CBD</code> are radii, so they must be equal.
+                        This means triangle <code>CBD</code> is isosceles and that the base angles,
+                        <code><var>ANGLE_C_LABEL</var></code> and <code><var>ANGLE_D_LABEL</var></code> angles, are equal.
+                    </p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawRadius( START + CENTRAL );
+                            graph.circle.drawRadius( SUBTENDED_POINT );
+                        });
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawInscribedArc( START + CENTRAL, SUBTENDED_POINT, START + CENTRAL + 180 );
+                        });
+                    </div>
+                </div>
+                <p><code>
+                    \begin{eqnarray}
+                    <var>ANGLE_B_LABEL</var> + 2 \cdot <var>ANGLE_D_LABEL</var> &amp;=&amp; 180^\circ \\
+                    2 \cdot <var>ANGLE_D_LABEL</var> &amp;=&amp; 180^\circ - \green{<var>180 - CENTRAL</var>^\circ} \\
+                    2 \cdot <var>ANGLE_D_LABEL</var> &amp;=&amp; <var>CENTRAL</var>^\circ
+                    \end{eqnarray}
+                </code></p>
+                <p>
+                    <code><var>ANGLE_D_LABEL</var> = \orange{<var>CENTRAL / 2</var>^\circ}</code>,
+                    (half <code><var>CENTRAL_LABEL</var></code>).
+                </p>
+            </div>
+        </div>
+        <div id="find-central-on-1" data-type="find-angle-1">
+            <div class="vars">
+                <var id="GIVEN">CENTRAL / 2</var>
+                <var id="GIVEN_LABEL">ANGLE_D_LABEL</var>
+                <var id="ASKED_LABEL">CENTRAL_LABEL</var>
+            </div>
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer, decimal"><var>CENTRAL</var></span> <code>^\circ</code>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <p>
+                        The pink sides of triangle <code>CBD</code> are radii, so they must be equal.
+                        This means triangle <code>CBD</code> is isosceles and that the base angles,
+                        <code><var>ANGLE_C_LABEL</var></code> and <code><var>ANGLE_D_LABEL</var></code> angles, are equal.
+                    </p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawRadius( START + CENTRAL );
+                            graph.circle.drawRadius( SUBTENDED_POINT );
+                        });
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawInscribedArc( START + CENTRAL, SUBTENDED_POINT, START + CENTRAL + 180 );
+                        });
+                    </div>
+                </div>
+                <div>
+                    <p>The angles in a triangle sum to <code>180^\circ</code>.</p>
+                    <p><code><var>ANGLE_B_LABEL</var> + <var>ANGLE_C_LABEL</var> + <var>ANGLE_D_LABEL</var> = 180^\circ</code></p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: GREEN }, function() {
+                            graph.circle.drawCentralArc( START + CENTRAL, SUBTENDED_POINT );
+                        })
+                    </div>
+                </div>
+                <p><code>
+                    \begin{eqnarray}
+                    <var>ANGLE_B_LABEL</var> + 2 \cdot <var>ANGLE_D_LABEL</var> &amp;=&amp; 180^\circ \\
+                    <var>ANGLE_B_LABEL</var> &amp;=&amp; 180^\circ - 2 \cdot \orange{<var>GIVEN</var>^\circ} \\
+                    <var>ANGLE_B_LABEL</var> &amp;=&amp; \green{<var>180 - CENTRAL</var>^\circ}
+                    \end{eqnarray}
+                </code></p>
+                <div>
+                    <p><code><var>CENTRAL_LABEL</var></code> and <code><var>ANGLE_B_LABEL</var></code> are supplementary.</p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: GREEN }, function() {
+                            graph.circle.drawCentralArc( START + CENTRAL, SUBTENDED_POINT );
+                        })
+                    </div>
+                </div>
+                <p><code>
+                    \begin{eqnarray}
+                    <var>CENTRAL_LABEL</var> + <var>ANGLE_B_LABEL</var> &amp;=&amp; 180^\circ \\
+                    <var>CENTRAL_LABEL</var> &amp;=&amp; 180^\circ - <var>ANGLE_B_LABEL</var> \\
+                    <var>CENTRAL_LABEL</var> &amp;=&amp; 180^\circ - \green{<var>180 - CENTRAL</var>^\circ}
+                    \end{eqnarray}
+                </code></p>
+                <p>
+                    <code><var>CENTRAL_LABEL</var> = \blue{<var>CENTRAL</var>^\circ}</code>,
+                    (twice <code><var>GIVEN_LABEL</var></code>).
+                </p>
+            </div>
+        </div>
+        <div id="find-angle-2" data-type="find-angle-1">
+            <div class="vars">
+                <var id="SUBTENDED_POINT">randRange(START + 180 + 20, START + CENTRAL + 180 - 20) % 360</var>
+                <var id="SUBANGLE_1">"\\blue{\\angle CBE}"</var>
+                <var id="SUBANGLE_2">"\\blue{\\angle ABE}"</var>
+                <var id="SUBANGLE_3">"\\orange{\\angle CDE}"</var>
+                <var id="SUBANGLE_4">"\\orange{\\angle ADE}"</var>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <p>First divide the angles into two.</p>
+                    <p>
+                        <code><var>CENTRAL_LABEL</var> = <var>SUBANGLE_1</var> + <var>SUBANGLE_2</var></code><br>
+                        <code><var>ANGLE_D_LABEL</var> = <var>SUBANGLE_3</var> + <var>SUBANGLE_4</var></code>
+                    </p>
+                    <div class="graphie" data-update="circle">
+                        style({stroke: GRAY, "stroke-dasharray": "-"}, function() {
+                            graph.circle.drawChord(SUBTENDED_POINT, SUBTENDED_POINT + 180);
+                        });
+                        style({ fill: GRAY, stroke: GRAY });
+                        graph.circle.drawPoint(SUBTENDED_POINT + 180, "E");
+                    </div>
+                </div>
+                <div>
+                    <p><code><var>SUBANGLE_1</var></code> and <code><var>ANGLE_B_LABEL</var></code> are supplementary.</p>
+                    <p>So, <code><var>ANGLE_B_LABEL</var> = 180^\circ - <var>SUBANGLE_1</var></code></p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: GREEN }, function() {
+                            graph.circle.drawCentralArc(START + CENTRAL, SUBTENDED_POINT);
+                        })
+                    </div>
+                </div>
+                <div>
+                    <p>The angles in a triangle sum to <code>180^\circ</code>.</p>
+                    <p><code><var>ANGLE_B_LABEL</var> + <var>ANGLE_C_LABEL</var> + <var>SUBANGLE_2</var> = 180^\circ</code></p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawInscribedArc( START + CENTRAL, SUBTENDED_POINT, START + CENTRAL + 180 );
+                        });
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        The pink sides of triangle <code>CBD</code> are radii, so they must be equal.
+                        This means triangle <code>CBD</code> is isosceles and that the base angles,
+                        <code><var>ANGLE_C_LABEL</var></code> and <code><var>SUBANGLE_3</var></code> angles, are equal.
+                    </p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawRadius( START + CENTRAL );
+                            graph.circle.drawRadius( SUBTENDED_POINT );
+                        });
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawInscribedArc( START + CENTRAL, SUBTENDED_POINT, START + CENTRAL + 180 );
+                        });
+                    </div>
+                </div>
+                <p><code>
+                    \begin{eqnarray}
+                    <var>ANGLE_B_LABEL</var> + 2 \cdot <var>SUBANGLE_3</var> &amp;=&amp; 180^\circ \\
+                    2 \cdot <var>SUBANGLE_3</var> &amp;=&amp; 180^\circ - <var>ANGLE_B_LABEL</var> \\
+                    2 \cdot <var>SUBANGLE_3</var> &amp;=&amp; 180^\circ - (180^\circ - <var>SUBANGLE_1</var>) \\
+                    2 \cdot <var>SUBANGLE_3</var> &amp;=&amp; <var>SUBANGLE_1</var> \\
+                    <var>SUBANGLE_3</var> &amp;=&amp; \frac{1}{2}<var>SUBANGLE_1</var>
+                    \end{eqnarray}
+                </code></p>
+                <p>By the same logic, <code><var>SUBANGLE_4</var> = \frac{1}{2}<var>SUBANGLE_2</var></code>.</p>
+                <p>So, <code><var>ASKED_LABEL</var> = \frac{1}{2}<var>GIVEN_LABEL</var></code>.</p>
+                <p><code><var>ASKED_LABEL</var> = \frac{1}{2} \cdot \blue{<var>CENTRAL</var>}^\circ = \orange{<var>CENTRAL / 2</var>^\circ}</code></p>
+            </div>
+        </div>
+        <div id="find-central-on-2" data-type="find-angle-2">
+            <div class="vars">
+                <var id="GIVEN">CENTRAL / 2</var>
+                <var id="GIVEN_LABEL">ANGLE_D_LABEL</var>
+                <var id="ASKED_LABEL">CENTRAL_LABEL</var>
+            </div>
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer, decimal"><var>CENTRAL</var></span> <code>^\circ</code>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <p>First divide the angles into two.</p>
+                    <p>
+                        <code><var>CENTRAL_LABEL</var> = <var>SUBANGLE_1</var> + <var>SUBANGLE_2</var></code><br>
+                        <code><var>ANGLE_D_LABEL</var> = <var>SUBANGLE_3</var> + <var>SUBANGLE_4</var></code>
+                    </p>
+                    <div class="graphie" data-update="circle">
+                        style({stroke: GRAY, "stroke-dasharray": "-"}, function() {
+                            graph.circle.drawChord(SUBTENDED_POINT, SUBTENDED_POINT + 180);
+                        });
+                        style({ fill: GRAY, stroke: GRAY });
+                        graph.circle.drawPoint(SUBTENDED_POINT + 180, "E");
+                    </div>
+                </div>
+                <div>
+                    <p>The angles in a triangle sum to <code>180^\circ</code>.</p>
+                    <p><code><var>ANGLE_B_LABEL</var> + <var>ANGLE_C_LABEL</var> + <var>SUBANGLE_2</var> = 180^\circ</code></p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: GREEN }, function() {
+                            graph.circle.drawCentralArc(START + CENTRAL, SUBTENDED_POINT);
+                        })
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawInscribedArc( START + CENTRAL, SUBTENDED_POINT, START + CENTRAL + 180 );
+                        });
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        The pink sides of triangle <code>CBD</code> are radii, so they must be equal.
+                        This means triangle <code>CBD</code> is isosceles and that the base angles,
+                        <code><var>ANGLE_C_LABEL</var></code> and <code><var>SUBANGLE_3</var></code> angles, are equal.
+                    </p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawRadius( START + CENTRAL );
+                            graph.circle.drawRadius( SUBTENDED_POINT );
+                        });
+                        style({ stroke: PINK }, function() {
+                            graph.circle.drawInscribedArc( START + CENTRAL, SUBTENDED_POINT, START + CENTRAL + 180 );
+                        });
+                    </div>
+                </div>
+                <p><code>
+                    \begin{eqnarray}
+                    <var>ANGLE_B_LABEL</var> + 2 \cdot <var>SUBANGLE_3</var> &amp;=&amp; 180^\circ \\
+                    <var>ANGLE_B_LABEL</var> &amp;=&amp; 180^\circ - 2 \cdot <var>SUBANGLE_3</var>
+                    \end{eqnarray}
+                </code></p>
+                <p><code><var>SUBANGLE_1</var></code> and <code><var>ANGLE_B_LABEL</var></code> are supplementary.</p>
+                <p><code>
+                    \begin{eqnarray}
+                    <var>SUBANGLE_1</var> + <var>ANGLE_B_LABEL</var> &amp;=&amp; 180^\circ \\
+                    <var>SUBANGLE_1</var> &amp;=&amp; 180^\circ - <var>ANGLE_B_LABEL</var> \\
+                    <var>SUBANGLE_1</var> &amp;=&amp; 180^\circ - (180^\circ - 2 \cdot <var>SUBANGLE_3</var>) \\
+                    <var>SUBANGLE_1</var> &amp;=&amp; 2 \cdot <var>SUBANGLE_3</var>
+                    \end{eqnarray}
+                </code></p>
+                <p>By the same logic, <code><var>SUBANGLE_2</var> = 2 \cdot <var>SUBANGLE_4</var></code>.</p>
+                <p>So, <code><var>ASKED_LABEL</var> = 2 \cdot <var>GIVEN_LABEL</var></code>.</p>
+                <p><code><var>ASKED_LABEL</var> = 2 \cdot \orange{<var>CENTRAL / 2</var>}^\circ = \blue{<var>CENTRAL</var>^\circ}</code></p>
+            </div>
+        </div>
+        <div id="find-inscribed-outside-3" data-type="find-angle-1">
+            <div class="vars">
+                <var id="SUBTENDED_POINT">
+                    randFromArray([
+                        randRange(START + CENTRAL + 30, START + 180 - 30),
+                        randRange(START + CENTRAL + 180 + 30, START + 360 - 30)
+                    ]) % 360
+                </var>
+                <var id="ORDER">(function() {
+                    var arc_AD = innerArc(START, SUBTENDED_POINT);
+                    var arc_CD = innerArc((START + CENTRAL) % 360, SUBTENDED_POINT);
+                    return abs(arc_AD.end - arc_AD.start) &lt; abs(arc_CD.end - arc_CD.start);
+                })()
+                </var>
+            </div>
+            <div class="hints">
+                <div>
+                    <p>First add a diameter.</p>
+                    <div class="graphie" data-update="circle">
+                        style({stroke: GRAY, "stroke-dasharray": "-"}, function() {
+                            graph.circle.drawChord(SUBTENDED_POINT, SUBTENDED_POINT + 180);
+                            style({ fill: GRAY, stroke: GRAY });
+                            graph.circle.drawPoint(SUBTENDED_POINT + 180, "E");
+                        });
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        The triangle <code>\pink{ABD}</code> is isosceles as
+                        <code>\pink{AB}</code> and <code>\pink{BD}</code> are radii, so must be equal.
+                    </p>
+                    <div class="graphie" data-update="circle">
+                        graph.triangle = path([[0, 0], polar(RADIUS, START), polar(RADIUS, SUBTENDED_POINT), [0, 0]], { stroke: PINK, fill: "none" });
+                    </div>
+                </div>
+                <div>
+                    <p>Therefore, <code>\pink{\angle{BAD}}</code> and <code>\orange{\angle{ADB}}</code> are equal.</p>
+                    <div class="graphie" data-update="circle">
+                        var arc = innerArc(START, (SUBTENDED_POINT + 180) % 360);
+                        var arc2 = innerArc(SUBTENDED_POINT, (START + 180) % 360);
+                        style({ stroke: ORANGE });
+                        graph.orangeAngle2 = graph.circle.drawInscribedArc(SUBTENDED_POINT, arc.start, arc.end, 0.7);
+                        style({ stroke: PINK });
+                        graph.pinkAngle = graph.circle.drawInscribedArc(START, arc2.start, arc2.end, 0.7);
+                    </div>
+                </div>
+                <div>
+                    <p>Since, the angles in a triangle sum to <code>180^\circ</code></p>
+                    <p><code>
+                        \begin{eqnarray}
+                        \green{\angle{ABD}} + \pink{\angle{BAD}} + \orange{\angle{ADB}} &amp;=&amp; 180^\circ \\
+                        \green{\angle{ABD}} + 2 \cdot \orange{\angle{ADB}} &amp;=&amp; 180^\circ \\
+                        \green{\angle{ABD}} &amp;=&amp; 180^\circ - 2 \cdot \orange{\angle{ADB}}
+                        \end{eqnarray}
+                    </code></p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: GREEN });
+                        var arc = innerArc(START, SUBTENDED_POINT);
+                        graph.greenAngle = graph.circle.drawCentralArc(arc.start, arc.end, 0.7);
+                    </div>
+                </div>
+                <div>
+                    <p><code>\green{\angle{ABD}}</code> and <code>\blue{\angle{ABE}}</code> are supplementary.</p>
+                    <p><code>
+                        \begin{eqnarray}
+                        \green{\angle{ABD}} + \blue{\angle{ABE}} &amp;=&amp; 180^\circ \\
+                        \blue{\angle{ABE}} &amp;=&amp; 180^\circ - \green{\angle{ABD}} \\
+                        \blue{\angle{ABE}} &amp;=&amp; 180^\circ - (180^\circ - 2 \cdot \orange{\angle{ADB}})
+                        \end{eqnarray}
+                    </code></p>
+                    <div class="graphie" data-update="circle">
+                        style({ stroke: BLUE });
+                        var arc = innerArc(START, (SUBTENDED_POINT + 180) % 360);
+                        graph.blueAngle2 = graph.circle.drawCentralArc(arc.start, arc.end, 0.7);
+                    </div>
+                </div>
+                <div>
+                    <p>So, <code>\blue{\angle{ABE}} = 2 \cdot \orange{\angle{ADB}}</code>.</p>
+                    <div class="graphie" data-update="circle">
+                        graph.pinkAngle.remove();
+                        graph.greenAngle.remove();
+                        graph.blueAngle2.animate({ opacity: 0.4 });
+                        graph.orangeAngle2.animate({ opacity: 0.4 });
+                        graph.triangle.remove();
+                    </div>
+                </div>
+                <div>
+                    <p>We can also created an isosceles triangle, <code>\pink{BCD}</code>.</p>
+                    <div class="graphie" data-update="circle">
+                        graph.triangle = path([[0, 0], polar(RADIUS, START + CENTRAL), polar(RADIUS, SUBTENDED_POINT), [0, 0]], { stroke: PINK, fill: "none" });
+                    </div>
+                </div>
+                <div>
+                    <p>Using the same argument we can find that, <code>\blue{\angle{CBE}} = 2 \cdot \orange{\angle{CBD}}</code>.</p>
+                    <div class="graphie" data-update="circle">
+                        graph.triangle.remove();
+                        var arc = innerArc((START + CENTRAL) % 360, (SUBTENDED_POINT + 180) % 360);
+                        style({ stroke: BLUE, opacity: 0.4 });
+                        graph.circle.drawCentralArc(arc.start, arc.end, 0.9);
+                        style({ stroke: ORANGE, opacity: 0.4 });
+                        graph.circle.drawInscribedArc(SUBTENDED_POINT, arc.start, arc.end, 0.9);
+                    </div>
+                </div>
+                <p data-if="ORDER">
+                    <code>\blue{\angle{ABC}} = \blue{\angle{ABE}} - \blue{\angle{CBE}}</code><br>
+                    <code>\orange{\angle{ADC}} = \orange{\angle{ADE}} - \orange{\angle{CDE}}</code>
+                </p><p data-else="">
+                    <code>\blue{\angle{ABC}} = \blue{\angle{CBE}} - \blue{\angle{ABE}}</code><br>
+                    <code>\orange{\angle{ADC}} = \orange{\angle{CDE}} - \orange{\angle{ADE}}</code>
+                </p>
+                <p>
+                    Since <code>\blue{\angle{ABE}} = 2 \cdot \orange{\angle{ADE}}</code> and
+                    <code>\blue{\angle{CBE}} = 2 \cdot \orange{\angle{CDE}}</code>,
+                    <code>\blue{\angle{ABC}} = 2 \cdot \orange{\angle{ADC}}</code>
+                </p>
+                <p data-if="GIVEN === CENTRAL">
+                    So, <code>\orange{\angle{ADC}} = \frac{1}{2} \cdot \blue{<var>GIVEN</var>^\circ} = <var>GIVEN / 2</var>^\circ</code>.
+                </p><p data-else="">
+                    <!-- This hint only used in the following exercise -->
+                    So, <code>\blue{\angle{ABC}} = 2 \cdot \orange{<var>GIVEN</var>^\circ} = <var>GIVEN * 2</var>^\circ</code>.
+                </p>
+            </div>
+        </div>
+        <div id="find-central-3" data-type="find-inscribed-outside-3">
+            <div class="vars">
+                <var id="GIVEN">CENTRAL / 2</var>
+                <var id="GIVEN_LABEL">ANGLE_D_LABEL</var>
+                <var id="ASKED_LABEL">CENTRAL_LABEL</var>
+            </div>
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-forms="integer, decimal"><var>CENTRAL</var></span> <code>^\circ</code>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

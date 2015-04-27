@@ -1,0 +1,23 @@
+{
+    "x0035afac234d8dda": {
+        "ancestor_ids": [],
+        "author_names": [
+            "allytobias"
+        ],
+        "id": "x0035afac234d8dda",
+        "item_data": "{\"question\":{\"content\":\"Matthew drew a rectangle on top of a square and colored both. \\n\\n**What is the total area that Matthew colored?**\\n\\nThe total area is [[\u2603 input-number 1]] $\\\\text{units}^2.$\\n\\n\\n\\n![](https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png)\",\"images\":{\"https://ka-perseus-graphie.s3.amazonaws.com/8ea5af1fa5a5e8b8e727c3211083111897d23f5d.png\":{\"width\":400,\"height\":366}},\"widgets\":{\"input-number 1\":{\"type\":\"input-number\",\"graded\":true,\"options\":{\"value\":40,\"simplify\":\"required\",\"size\":\"normal\",\"inexact\":false,\"maxError\":0.1,\"answerType\":\"number\"}}}},\"answerArea\":{\"type\":\"multiple\",\"options\":{\"content\":\"Fill in the blank.\",\"images\":{},\"widgets\":{}},\"calculator\":false},\"hints\":[{\"content\":\"Let's find the areas of the rectangle and square. Then let's add the areas together. \\n\\nThe area  of the rectangle on the top is  the product of the height and the  width.  We see that the width is $\\\\green 5$ and the height is $\\\\purple 3$.  Therefore\\n\\n$\\\\begin{align} {\\\\qquad}{\\\\text{area of rectangle}} &=\\\\purple3\\\\cdot\\\\green 5 \\\\\\\\\\\\\\\\\\n &= \\\\purple{15}.\\\\\\\\\\\\\\\\\\n\\\\end{align}$\",\"images\":{},\"widgets\":{}},{\"content\":\"The area of a square is the length of its side squared. Matthew's square has a side of length $\\\\blue5$, so we can calculate the area:\\n\\n$\\\\begin{align} {\\\\qquad}\\\\text{area of square} &= \\\\blue5^2 \\\\\\\\\\n &= \\\\green{25}.\\\\end{align}$ \",\"images\":{},\"widgets\":{}},{\"content\":\"Let's add the areas of the triangle and square together to get the total area: \\n\\n$\\\\begin{align} {\\\\qquad}A &= \\\\purple{15}+\\\\green{25} \\\\\\\\\\n &= 40\\\\text{ units}^2.\\\\end{align}$ \\n\\nYou could also compute the area by noticing that the large rectangle has height $\\\\purple 3+\\\\green 5=8$ and width $\\\\green 5$, so the area is $8\\\\times\\\\green 5=40$!\",\"images\":{},\"widgets\":{}},{\"content\":\"Matthew colored in $40\\\\text{ units}^2$.\",\"images\":{},\"widgets\":{}}]}",
+        "kind": "AssessmentItem",
+        "name": "",
+        "parent_id": null,
+        "path": "x0035afac234d8dda/",
+        "sha": "a957ecdc5d102cc1f9d64af36f958bcea2d69997",
+        "slug": "x0035afac234d8dda",
+        "tags": [
+            "ag5zfmtoYW4tYWNhZGVteXIxCxIRQXNzZXNzbWVudEl0ZW1UYWciATAMCxIRQXNzZXNzbWVudEl0ZW1UYWcY2ZULDA",
+            "ag5zfmtoYW4tYWNhZGVteXIxCxIRQXNzZXNzbWVudEl0ZW1UYWciATAMCxIRQXNzZXNzbWVudEl0ZW1UYWcYqaULDA",
+            "ag5zfmtoYW4tYWNhZGVteXIxCxIRQXNzZXNzbWVudEl0ZW1UYWciATAMCxIRQXNzZXNzbWVudEl0ZW1UYWcY8f4PDA",
+            "ag5zfmtoYW4tYWNhZGVteXIxCxIRQXNzZXNzbWVudEl0ZW1UYWciATAMCxIRQXNzZXNzbWVudEl0ZW1UYWcYoYYyDA"
+        ],
+        "title": ""
+    }
+}

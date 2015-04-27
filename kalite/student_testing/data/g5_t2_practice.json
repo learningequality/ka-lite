@@ -1,0 +1,17 @@
+{
+  "id": "g5_t2_practice",
+  "title": "Grade V - Unit Test 2 - Practice",
+  "seed": 1222,
+  "playlist_ids": [ "g5_p5", "g5_p6", "g5_p7", "g5_p8", "g5_p9" ],
+  "repeats": "2",
+  "ids": [
+    "arithmetic_word_problems", "arithmetic_word_problems_2",
+    "composite_numbers", "congruent_segments", "divisibility_0.5",
+    "divisibility_tests", "measuring_segments", "multiplication_1",
+    "multiplication_1.5", "multiplication_2", "multiplication_3",
+    "multiplication_4", "prime_numbers", "reading_pictographs_1",
+    "reading_pictographs_2", "reading_stem_and_leaf_plots",
+    "reading_tables_1", "reading_tables_2"
+  ],
+  "is_practice": true
+}

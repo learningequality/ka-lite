@@ -1,5 +1,6 @@
 """
 """
+import requests
 import urllib
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -41,6 +42,9 @@ def initialize_registration():
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
 
+    # Delete the registration state from the session to ensure it is refreshed next pageload
+    del request.session["registered"]
+
     own_device = Device.get_own_device()
     if own_device.is_registered():
         initialize_registration()
@@ -81,8 +85,21 @@ def register_public_key_client(request):
 
     error_msg = reg_response.get("error", "")
     if error_msg:
-        return {"error_msg": error_msg}
+        return central_server_down_or_error(error_msg)
+
     return HttpResponse(_("Registration status: ") + reg_status)
+
+
+def central_server_down_or_error(error_msg):
+    """ If the central server is down, return a context that says so.
+    Otherwise, pass along the actual error returned by the central server.
+    error_msg: a string
+    """
+    if error_msg:
+        if requests.get(settings.CENTRAL_SERVER_URL).status_code != 200:
+            return {"error_msg": _("Central Server is not reachable; please try again after some time.")}
+        else:
+            return {"error_msg": error_msg}
 
 
 #@central_server_only
@@ -163,5 +180,3 @@ def register_public_key_server_auto(request):
 
     # Report success
     return JsonResponse({})
-
-

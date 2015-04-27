@@ -65,7 +65,6 @@ class Command(CronCommand):
                     lang_video_files = [VideoFile(youtube_id=id, percent_complete=100, download_in_progress=False, language=lang_code) for id in youtube_ids]
                     VideoFile.objects.bulk_create(lang_video_files)
                     new_video_files += lang_video_files
-                    caching.invalidate_all_caches()  # Do this within the loop, to update users ASAP
                 self.stdout.write("Created %d VideoFile models (and marked them as complete, since the files exist)\n" % len(new_video_files))
 
             return [i18n.get_video_id(video_file.youtube_id) for video_file in new_video_files]
@@ -82,7 +81,6 @@ class Command(CronCommand):
                 updated_video_ids += [i18n.get_video_id(video_file.youtube_id) for video_file in video_files_needing_model_update]
 
             if updated_video_ids:
-                caching.invalidate_all_caches()
                 self.stdout.write("Updated %d VideoFile models (to mark them as complete, since the files exist)\n" % len(updated_video_ids))
             return updated_video_ids
         touched_video_ids += update_objects_to_be_complete(youtube_ids_in_filesystem)
@@ -101,5 +99,5 @@ class Command(CronCommand):
             return deleted_video_ids
         touched_video_ids += delete_objects_for_missing_videos(youtube_ids_in_filesystem, videos_marked_at_all)
 
-        if options["auto_cache"] and caching_enabled and touched_video_ids:
-            caching.regenerate_all_pages_related_to_videos(video_ids=list(set(touched_video_ids)))
+        if options["auto_cache"] and touched_video_ids:
+            caching.invalidate_all_caches()

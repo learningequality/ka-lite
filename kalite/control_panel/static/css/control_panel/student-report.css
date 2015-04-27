@@ -1,0 +1,88 @@
+/* Styles for student playlists */
+
+.playlist-progress-details {
+    display: none;
+}
+.progress-indicator {
+    border-radius: 50%/50%;
+    border: 1px transparent solid;
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+.progress-indicator-lg {
+    width:60px;
+    height:60px;
+}
+.progress-indicator-sm {
+    width:30px;
+    height:30px;
+}
+
+.progress-indicator-sm:hover {
+    cursor: pointer;
+    border: 1px solid #2C2C2C;
+}
+
+.progress-item-title {
+    font-size: 0.8em;
+    word-wrap: break-word;
+}
+
+.icon-label {
+    color: rgb(43, 43, 43);
+    opacity: 0.9;
+}
+.icon-label-lg {
+    font-size: 25px;
+    margin-top: 17px;
+    margin-left: 17px;
+}
+.icon-label-sm {
+    font-size: 15px;
+    margin-top: 7px;
+    margin-left: 7px;
+}
+.content-counter {
+    position: relative;
+    top: 10px;
+    font-size: 14px;
+    background-color: rgb(97, 140, 204);
+    color: white;
+    padding: 4px;
+}
+.playlist-progress-bar {
+    margin-top: 20px;
+}
+.playlist-progress-bar > .progress-bar {
+    /* Override KA progress bar to retain bootstrap style */
+    border: none;
+}
+.progress-block {
+    padding-bottom: 10px;
+}
+.expand-collapse {
+    position: relative;
+    top: 3px;
+}
+.complete, .pass {
+    background-color:#5cb85c;
+}
+.inprogress, .borderline {
+    background-color:#ADDFAD;
+}
+.notstarted {
+    background-color:#D5D5D5;
+}
+.struggling, .fail {
+    background-color:#E69999;
+}
+/* Bootstrap popover overrides */
+.progress-block > .popover > .popover-content {
+    font-size: 12px;
+    text-align: center;
+} 
+
+/* Khan site css override */
+h3.playlist-title {
+    font-size: 24px !important;
+}

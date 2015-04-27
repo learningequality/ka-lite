@@ -155,6 +155,8 @@ class BaseCommand(object):
             help='A directory to add to the Python path, e.g. "/home/djangoprojects/myproject".'),
         make_option('--traceback', action='store_true',
             help='Print traceback on exception'),
+        make_option('--auto-pdb', action='store_true',  # KA-LITE-MOD
+            help='Break into PDB on an uncaught exception'),
     )
     help = ''
     args = ''
@@ -227,7 +229,13 @@ class BaseCommand(object):
                 stderr.write(traceback.format_exc())
             else:
                 stderr.write('%s: %s' % (e.__class__.__name__, e))
-            sys.exit(1)
+
+            # KA-LITE-MOD
+            if options.auto_pdb and not isinstance(e, KeyboardInterrupt):
+                import pdb
+                pdb.post_mortem(sys.exc_info()[2])
+            else:
+                sys.exit(1)
 
     def execute(self, *args, **options):
         """

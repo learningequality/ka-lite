@@ -3,19 +3,16 @@
 import urlparse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
+from securesync.devices.models import Zone
+from securesync.devices.views import *  # ARGH! TODO(aron): figure out what things are imported here, and import them specifically
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.urlresolvers import reverse
-from django.db import models
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
-from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 
 from .decorators import facility_required, facility_from_request
@@ -23,18 +20,21 @@ from .forms import FacilityUserForm, LoginForm, FacilityForm, FacilityGroupForm
 from .middleware import refresh_session_facility_info
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet import set_query_params
-from kalite.i18n import get_default_language
+from kalite.dynamic_assets.decorators import dynamic_settings
+from kalite.i18n import get_default_language, lcode_to_django_lang
 from kalite.main.models import UserLog
-
 from kalite.shared.decorators import require_authorized_admin
-from securesync.devices.models import Zone
-from securesync.devices.views import *
-
+from kalite.student_testing.utils import set_exam_mode_off
 
 
 @require_authorized_admin
 @render_to("facility/facility.html")
-def facility_edit(request, id=None, zone_id=None):
+@dynamic_settings
+def facility_edit(request, ds, id=None, zone_id=None):
+
+    if request.is_teacher and not ds["facility"].teacher_can_edit_facilities:
+        return HttpResponseForbidden()
+
     facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
     if facil:
         zone = facil.get_zone()
@@ -69,18 +69,22 @@ def add_facility_teacher(request):
     If central, must be an org admin
     If distributed, must be superuser or a coach
     """
-    title = _("Add a new teacher")
+    title = _("Add a new coach")
     return _facility_user(request, new_user=True, is_teacher=True, title=title)
 
 
 @require_authorized_admin
-def add_facility_student(request):
+@dynamic_settings
+def add_facility_student(request, ds):
     """
     Admins and coaches can add students
     If central, must be an org admin
     If distributed, must be superuser or a coach
     """
-    title = _("Add a new student")
+    if request.is_teacher and not ds["facility"].teacher_can_create_students:
+        return HttpResponseForbidden()
+
+    title = _("Add a new learner")
     return _facility_user(request, new_user=True, title=title)
 
 
@@ -88,9 +92,12 @@ def facility_user_signup(request):
     """
     Anyone can sign up, unless we have set the restricted flag
     """
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse("homepage"))
+
     if settings.DISABLE_SELF_ADMIN:
         # Users cannot create/edit their own data when UserRestricted
-        raise PermissionDenied(_("Please contact a teacher or administrator to receive login information to this installation."))
+        raise PermissionDenied(_("Please contact a coach or administrator to receive login information to this installation."))
     if settings.CENTRAL_SERVER:
         raise Http404(_("You may not sign up as a facility user on the central server."))
 
@@ -99,7 +106,8 @@ def facility_user_signup(request):
 
 
 @require_authorized_admin
-def edit_facility_user(request, facility_user_id):
+@dynamic_settings
+def edit_facility_user(request, ds, facility_user_id):
     """
     If users have permission to add a user, they also can edit the user. Additionally,
     a user may edit his/her own information, like in the case of a student.
@@ -151,7 +159,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
                     return HttpResponseRedirect(next)
 
             # New user created by admin
-            elif request.is_admin:
+            elif request.is_admin or request.is_django_user:
                 messages.success(request, _("You successfully created user '%(username)s'") % {"username": form.instance.get_name()})
                 return HttpResponseRedirect(next)
 
@@ -215,12 +223,15 @@ def group_edit(request, facility, group_id):
 @facility_from_request
 @render_to("facility/login.html")
 def login(request, facility):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse("homepage"))
+
     facility_id = (facility and facility.id) or None
     facilities = list(Facility.objects.all())
 
     #Fix for #2047: prompt user to create an admin account if none exists
     if not User.objects.exists():
-        messages.warning(request, _("No administrator account detected. Please run 'python manage.py createsuperuser' from the terminal to create one."))
+        messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
 
     # Fix for #1211: refresh cached facility info when it's free and relevant
     refresh_session_facility_info(request, facility_count=len(facilities))
@@ -228,7 +239,7 @@ def login(request, facility):
     if request.method != 'POST':  # render the unbound login form
         referer = urlparse.urlparse(request.META["HTTP_REFERER"]).path if request.META.get("HTTP_REFERER") else None
         # never use the homepage as the referer
-        if referer in [reverse("homepage"), reverse("add_facility_student")]:
+        if referer in [reverse("homepage"), reverse("add_facility_student"), reverse("add_facility_teacher"), reverse("facility_user_signup")]:
             referer = None
         form = LoginForm(initial={"facility": facility_id, "callback_url": referer})
 
@@ -258,7 +269,7 @@ def login(request, facility):
             user = form.get_user()
 
             try:
-                UserLog.begin_user_activity(user, activity_type="login", language=request.language)  # Success! Log the event (ignoring validation failures)
+                UserLog.begin_user_activity(user, activity_type="login", language=lcode_to_django_lang(request.language))  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
                 logging.error("Failed to begin_user_activity upon login: %s" % e)
 
@@ -266,23 +277,28 @@ def login(request, facility):
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ") +
                                         _("-- be sure to log out when you finish."))
 
-            # Send them back from whence they came
-            landing_page = form.cleaned_data["callback_url"]
-            if not landing_page:
+            # Send them back from whence they came (unless it's the sign up page)
+            landing_page = form.cleaned_data["callback_url"] if form.cleaned_data["callback_url"] != reverse("facility_user_signup") else None
+            if not landing_page or landing_page == reverse("login"):
                 # Just going back to the homepage?  We can do better than that.
-                landing_page = reverse("coach_reports") if form.get_user().is_teacher else None
-                landing_page = landing_page or (reverse("account_management") if False else reverse("homepage"))  # TODO: pass the redirect as a parameter.
+                if form.get_user().is_teacher:
+                    landing_page = reverse("tabular_view")
+                else:
+                    landing_page = reverse("learn")
 
-            return HttpResponseRedirect(form.non_field_errors() or request.next or landing_page)
+            return HttpResponseRedirect(request.next or landing_page)
 
     return {
         "form": form,
         "facilities": facilities,
-        "sign_up_url": reverse("add_facility_student"),
     }
 
 
 def logout(request):
+    # TODO(dylanjbarth) this is Nalanda specific
+    if request.is_teacher:
+        set_exam_mode_off()
+
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))
     if next[0] != "/":

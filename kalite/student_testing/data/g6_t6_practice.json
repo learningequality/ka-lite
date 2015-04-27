@@ -1,0 +1,20 @@
+{
+  "id": "g6_t6_practice",
+  "title": "Grade VI - Unit Test 6 - Practice",
+  "seed": 3332,
+  "playlist_ids": [ "g6_p19", "g6_p20", "g6_p21", "g6_p22" ],
+  "repeats": "2",
+  "ids": [
+    "angle_addition_postulate", "complementary_and_supplementary_angles",
+    "congruent_angles", "converting_decimals_to_percents",
+    "converting_fractions_to_decimals_0.5",
+    "converting_percents_to_decimals", "discount_tax_and_tip_word_problems",
+    "estimation_with_decimals", "finding_percents",
+    "markup_and_commission_word_problems", "parallel_lines_1",
+    "parallel_lines_2", "points_lines_and_planes",
+    "recognizing_rays_lines_and_line_segments", "rounding_numbers",
+    "understanding_moving_the_decimal", "vertical_angles",
+    "vertical_angles_2"
+  ],
+  "is_practice": true
+}

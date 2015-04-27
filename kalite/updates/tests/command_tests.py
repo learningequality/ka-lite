@@ -23,7 +23,7 @@ class VideoScanTests(MainTestCase):
         super(VideoScanTests, self).setUp(*args, **kwargs)
 
         # Choose, and create, a video
-        self.fake_video_file, self.video_id, self.youtube_id = self.create_random_video_file()
+        self.fake_video_file, self.video_id, self.youtube_id = self.create_random_content_file()
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are no VideoFile objects, to start.")
 
     def tearDown(self, *args, **kwargs):
@@ -54,9 +54,6 @@ class VideoScanTests(MainTestCase):
         self.assertEqual(VideoFile.objects.all().count(), 1, "Make sure there is now one VideoFile object.")
         self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.youtube_id, "Make sure the video is the one we created.")
         self.assertTrue(self.get_num_cache_entries() > 0, "Check that cache is not empty.")
-        cached_paths = topic_tools.get_video_page_paths(video_id=self.video_id)
-        for path in cached_paths:
-            self.assertTrue(caching.has_cache_key(path), "Check that cache has path %s" % path)
 
 
     def test_video_deleted_no_cache(self):
@@ -83,9 +80,6 @@ class VideoScanTests(MainTestCase):
         Run videoscan to create cache items, then re-run to verify that the cache is cleared.
         """
         out = call_command("videoscan", auto_cache=True)
-        cached_paths = topic_tools.get_video_page_paths(video_id=self.video_id)
-        for path in cached_paths:
-            self.assertTrue(caching.has_cache_key(path), "Check that cache has path %s" % path)
         self.assertTrue(os.path.exists(self.fake_video_file), "Check that video file exists.")
 
         # Remove the video
@@ -95,7 +89,5 @@ class VideoScanTests(MainTestCase):
         # Call videoscan, and validate.
         out = call_command("videoscan")
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are now no VideoFile objects.")
-        for path in cached_paths:
-            self.assertFalse(caching.has_cache_key(path), "Check that cache does NOT have path %s" % path)
 
 

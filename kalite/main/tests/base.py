@@ -1,24 +1,21 @@
 """
 """
-import glob
 import os
-import random
 import shutil
 import tempfile
+import random
 
-from django import conf
 from django.conf import settings
 from django.core import cache
 from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools import get_exercise_cache, get_content_cache
 from securesync.models import Device
 
 
 class MainTestCase(KALiteTestCase):
-
 
     def __init__(self, *args, **kwargs):
         self.content_root = tempfile.mkdtemp() + "/"
@@ -29,7 +26,6 @@ class MainTestCase(KALiteTestCase):
     def setUp(self, *args, **kwargs):
         self.setUp_fake_contentroot()
         self.setUp_fake_cache()
-        self.setUp_fake_device()
         return super(KALiteTestCase, self).setUp(*args, **kwargs)
 
     def setUp_fake_contentroot(self):
@@ -81,15 +77,14 @@ class MainTestCase(KALiteTestCase):
         else:
             assert False, "Only currently support FileBasedCache and LocMemCache"
 
-    def create_random_video_file(self):
+    def create_random_content_file(self):
         """
-        Helper function for testing video files.
+        Helper function for testing content files.
         """
-        video_id = get_node_cache("Video").keys()[0]
-        youtube_id = get_node_cache("Video")[video_id][0]["youtube_id"]
-        fake_video_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
-        with open(fake_video_file, "w") as fh:
+        content_id = random.choice(get_content_cache().keys())
+        youtube_id = get_content_cache()[content_id]["youtube_id"]
+        fake_content_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
+        with open(fake_content_file, "w") as fh:
             fh.write("")
-        self.assertTrue(os.path.exists(fake_video_file), "Make sure the video file was created, youtube_id='%s'." % youtube_id)
-        return (fake_video_file, video_id, youtube_id)
-
+        self.assertTrue(os.path.exists(fake_content_file), "Make sure the content file was created, youtube_id='%s'." % youtube_id)
+        return (fake_content_file, content_id, youtube_id)

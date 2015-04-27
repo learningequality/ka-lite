@@ -25,6 +25,6 @@ def require_registration(resource_name):
                 messages.warning(request, _("In order to access %(resource_name)s, you must register your device first." % {"resource_name": unicode(resource_name)}))
                 return HttpResponseRedirect(
                     set_query_params(reverse('register_public_key'), {'next': request.path})
-                );
+                )
         return real_decorator_wrapper_fn
     return real_decorator_wrapper

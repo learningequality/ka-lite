@@ -2,12 +2,15 @@
 Hacks for the Django 1.0/1.0.2 releases.
 """
 
+import django
 from django.conf import settings
 from django.db.backends.creation import BaseDatabaseCreation
 from django.db.models.loading import cache
 from django.core import management
 from django.core.management.commands.flush import Command as FlushCommand
 from django.utils.datastructures import SortedDict
+
+from south.utils.py3 import string_types
 
 class SkipFlushCommand(FlushCommand):
     def handle_noargs(self, **options):
@@ -26,7 +29,7 @@ class Hacks:
         
         # Make sure it contains strings
         if apps:
-            assert isinstance(apps[0], basestring), "The argument to set_installed_apps must be a list of strings."
+            assert isinstance(apps[0], string_types), "The argument to set_installed_apps must be a list of strings."
         
         # Monkeypatch in!
         settings.INSTALLED_APPS, settings.OLD_INSTALLED_APPS = (
@@ -49,7 +52,7 @@ class Hacks:
         Used to repopulate AppCache after fiddling with INSTALLED_APPS.
         """
         cache.loaded = False
-        cache.handled = {}
+        cache.handled = set() if django.VERSION >= (1, 6) else {}
         cache.postponed = []
         cache.app_store = SortedDict()
         cache.app_models = SortedDict()
@@ -97,7 +100,7 @@ class Hacks:
                 try:
                     management._commands['flush'] = SkipFlushCommand()
                     # run create_test_db
-                    f(*args, **kwargs)
+                    return f(*args, **kwargs)
                 finally:
                     # unpatch flush back to the original
                     management._commands['flush'] = original_flush_command

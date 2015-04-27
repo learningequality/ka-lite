@@ -15,4 +15,5 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/management/group/(?P<group_id>\w+)/$', 'facility_management', {}, 'group_management'),
 
     url(r'account/$', 'account_management', {}, 'account_management'),
+    url(r'export/$', 'data_export', {}, 'data_export'),    
 )

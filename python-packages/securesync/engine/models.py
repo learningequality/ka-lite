@@ -190,10 +190,9 @@ class SyncedModel(ExtendedModel):
     objects = SyncedModelManager()
     all_objects = SyncedModelManager(show_deleted=True)
 
-    _unhashable_fields = ["signature", "signed_by"] # fields of this class to avoid serializing
-    _always_hash_fields = ["signed_version", "id"]  # fields of this class to always serialize (see note above for signed_version)
-    _import_excluded_validation_fields = []  # fields that should not be validated upon import
-
+    _unhashable_fields = ("signature", "signed_by") # fields of this class to avoid serializing
+    _always_hash_fields = ("signed_version", "id")  # fields of this class to always serialize (see note above for signed_version)
+    _import_excluded_validation_fields = tuple()  # fields that should not be validated upon import
 
     __metaclass__ = SyncedModelMetaclass
 
@@ -231,7 +230,7 @@ class SyncedModel(ExtendedModel):
         """
         exclude = exclude or []
         if imported:
-            exclude = list(set(exclude + self._import_excluded_validation_fields))
+            exclude = list(set(tuple(exclude) + self._import_excluded_validation_fields))
         if self.deleted:
             exclude = exclude + [f.name for f in self._meta.fields if isinstance(f, models.ForeignKey) ]
         return super(SyncedModel, self).full_clean(exclude=exclude)

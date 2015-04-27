@@ -15,6 +15,8 @@ urlpatterns = patterns(__package__ + '.views',
 
     url(r'^group/$', 'group_edit', {'group_id': 'new'}, 'add_group'),
     url(r'^group/(?P<group_id>\w+)/edit/$', 'group_edit', {'facility': None}, 'group_edit'),
+
+   
 )
 
 if not settings.CENTRAL_SERVER:

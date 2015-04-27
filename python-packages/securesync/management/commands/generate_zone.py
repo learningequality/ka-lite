@@ -13,8 +13,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if settings.CENTRAL_SERVER:
             raise CommandError("You shouldn't be trying to put the central server on a sharing network!")
-        else:
-            raise CommandError("Not yet supported (wait for version 0.12")
 
         own_device = Device.get_own_device()
         if DeviceZone.objects.filter(device=own_device).count() > 0:
