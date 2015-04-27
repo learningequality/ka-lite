@@ -1,11 +1,15 @@
 '''
 All logic for generating and retriving content recommendations.
+Three main functions:
+    - get_resume_recommendations()
+    - get_next_recommendations()
+    - get_explore_recommendations()
 '''
 
 from kalite.topic_tools import * 
 from kalite.main.models import ExerciseLog 
 
-
+''' No longer used
 ###
 # The KING function for content recommendation. Call this single function for all 
 # of your content recommendation needs (i.e. in the API call).
@@ -51,7 +55,7 @@ def get_recommendations(user=None, current_subtopic=None):
     result['explore'] = get_explore_recommendations(current_subtopic)
 
     return result
-
+'''
 
 
 ########################################## 'RESUME' LOGIC #################################################
