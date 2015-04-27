@@ -8,25 +8,19 @@ SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 VERSION_INFO = {
 
     "0.13.0": {
-        "release_date": "2014/11/06",
-        "git_commit": "19b1a64",
+        "release_date": "2015/04/27",
+        "git_commit": "92c7e5a",
         "new_features": {
-            "all": [],
-            "students": [],
+            "all": ["New mobile-friendly interface.", "New user manual."],
+            "students": ["Latest content from Khan Academy.", "New content navigation scheme.", "New exercise master system."],
             "coaches": [],
-            "admins": [],
+            "admins": ["bin/kalite executable."],
         },
         "bugs_fixed": {
             "all": [],
             "students": [],
             "coaches": [],
             "admins": [],
-        },
-        "bugs_fixed": {
-            "all": ["Mark registration process result immediately", ],
-            "students": [],
-            "coaches": [],
-            "admins": ["Fix Export CSV", "Validate username during installation for Windows"],
         },
 
     },
