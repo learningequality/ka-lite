@@ -8,13 +8,13 @@ Three main functions:
 
 from kalite.topic_tools import * 
 from kalite.main.models import ExerciseLog 
-
-''' No longer used
+from kalite.facility.models import FacilityUser
+'''
 ###
 # The KING function for content recommendation. Call this single function for all 
 # of your content recommendation needs (i.e. in the API call).
 #
-# @param user: the unique user value of the current user (id/name I believe?)
+# @param user: the unique facility user model of the current user
 # @param current_subtopic: optional latest subtopic id that the user has worked on/completed. This
 #                          will act as a starting point for some of the algorithms (nearest neighbor, etc.)
 #
@@ -57,13 +57,12 @@ def get_recommendations(user=None, current_subtopic=None):
     return result
 '''
 
-
 ########################################## 'RESUME' LOGIC #################################################
 
 ###
 # Returns a list of all started but NOT completed exercises
 #
-# @param user: the user identifier of current user
+# @param user: facility user model
 # @return: a list of exercise id's that are not completed but have been started.
 ###
 def get_resume_recommendations(user):
@@ -71,24 +70,33 @@ def get_resume_recommendations(user):
     ''' IGNORE FOR NOW '''
 
 
-
-
-
 ####################################### 'NEXT STEPS' LOGIC ################################################
-''' TODO '''
+''' TODO working on this: 
+    - need to convert data[] list to exercise id form (right now it is subtopic)
+    - need to work on logic for struggling
+    - need to work on logic to apply the group patterns (basically cache a list of MAX LIKELIHOOD ESTIMATION)
+'''
 ###
 # Returns a list of exercises to go to next. Influenced by other user patterns in the same group as well
 # as the user's struggling pattern shown in the exercise log.
 #
-# @param user: user identifier
-#        current_subtopic: subtopic id of most recently accessed exercise
+# Full List:
+# - Incomplete exercises (where user left off)
+# - Struggling
+# - User patterns based on group analysis (maximum likelihood estimation and empirical count)
+#
+# @param user: facility user model
+#        current_subtopics: subtopic ids of the 5 most recently accessed exercise
 # @return: a list of exercise id's of where the user should consider going next.
 ###
-def get_next_recommendations(user, current_subtopic):
-    
-    data = get_recommended_exercises(current_subtopic)
+def get_next_recommendations(user):
+    recommendations = []                                    #the recommendations (final)
+    current_exercises = get_5_most_recent_exercises(user)   #5 most recent exercises (in-progress ones)
+
+    current_subtopic = get_most_recent_subtopics(user)      #the most recent subtopic id accessed by user
+    topic_tree_based_data = get_recommended_exercises(current_subtopic)
    
-    return data[:5]
+    return current_exercises + topic_tree_based_data[:5]
 
 
 ########################################## 'EXPLORE' LOGIC ################################################
@@ -105,7 +113,8 @@ def get_explore_recommendations(subtopic_id):
     data = generate_recommendation_data()[subtopic_id]['related_subtopics']
     
     data = data[(len(data)/2):]                     #only look at middle to furthest neighbors
-    #print get_exercises_from_topic([subtopic_id])
+   
+    ''' Need to add some more analysis to ensure that the user has not done these exercises yet'''
 
     return get_exercises_from_topics(data)
 
@@ -119,10 +128,10 @@ def get_explore_recommendations(subtopic_id):
 
 ########################################### HELPER FUNCTIONS ##############################################
 
-# Returns up to the 5 most recent SUBTOPIC IDs that the given user has started and/or completed, in 
-# ascending order (most recent first).
+''' TODO '''
+# Returns the most recent subtopic id that the given user has started and/or completed.
 def get_most_recent_subtopics(user):
-    return ['early-math'] #dummy return 
+    return 'early-math' #dummy return
 
 
 #Given a list of subtopic/topic ids, returns an ordered list of the first 5 exercise ids under those ids
@@ -135,6 +144,31 @@ def get_exercises_from_topics(topicId_list):
 
     return exs
 
+'''#given a facility user model, return the facility user model??
+def get_facility_user_model(user):
+    h = FacilityUser.objects.filter(id__lte=2)[0]
+    print h
+    return ExerciseLog.objects.filter(user=h)
+    return FacilityUser.objects.filter(id=user_id)'''
+
+#given a facility user model, return the most recent 5 exercise ids 
+def get_5_most_recent_exercises(user):
+    exercises_by_user = ExerciseLog.objects.filter(user=user)
+    exercises_by_user = ExerciseLog.objects.filter(id__lte=1)
+    
+    #sorted by completion time in descending order (most recent first)
+    sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
+
+    exercise_list = []
+
+    for exercise in sorted_exercises:
+        if exercise.complete == False:                  #only look for incomplete
+            exercise_list.append(exercise.exercise_id)  #append to list
+
+        if len(exercise_list) == 5:                     #stop at 5 for now
+            break
+
+    return exercise_list                                #5 most recent + incomplete
 
 
 ###################################### BEGIN NEAREST NEIGHBORS ############################################
@@ -473,38 +507,3 @@ def get_subsequent_neighbors(nearest_neighbors, data, curr):
     return other_neighbors
 
 ### END content recommendation ###
-
-
-
-''' DELETES LATER '''
-##
-# Attempt to generate recommendations using only the topic tree structure.
-# Given specified prerequisites, this function will return related
-# and/or suggested other prereqs, solely by looking at the topic tree.
-# As of now, the method will also compute and compare these to the
-# ones in get_exercise_cache(). NOT WORKING ON THIS AT THE MOMENT
-#
-# @param prereq_list: a list of specified prequisite courses (by the user).
-##
-def get_prerequisite_recommendations(prereq_list):
-    cached_exercises = get_exercise_cache()
-
-    prereqs = {}  #will be in the form { exercise_id: {from_cache:[...], from_topic_tree:[...]} }
-
-    for exercise in cached_exercises:
-
-        prereqs[exercise] = {}  #create a key - value pair for the current exercise
-
-
-        ''' this block of code adds the prereqs defined in the cached exercises object'''
-        from_cache = cached_exercises[exercise]['prerequisites'] # array of cached prereqs
-        prereqs[exercise]['from_cache'] = from_cache
-
-        ''' this block of code adds the prereqs dynamically generated with the topic tree '''
-        print get_topic_by_path(cached_exercises[exercise]['path'], None)
-
-
-    #TODO LATER : return prereqs pertaining to those in the prereq_list, with priority given
-    # to those that appear in all (shared by all)
-
-    #print prereqs
