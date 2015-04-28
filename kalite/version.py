@@ -1,18 +1,36 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 MAJOR_VERSION = "0"
 MINOR_VERSION = "13"
-PATCH_VERSION = "0"
+PATCH_VERSION = "1"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
 VERSION_INFO = {
+
+    "0.13.1": {
+        "release_date": "2015/04/27",
+        "git_commit": "6b29949",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": ["Language packs will now update properly across KA Lite versions."],
+        },
+
+    },
 
     "0.13.0": {
         "release_date": "2015/04/27",
         "git_commit": "92c7e5a",
         "new_features": {
             "all": ["New mobile-friendly interface.", "New user manual."],
-            "students": ["Latest content from Khan Academy.", "New content navigation scheme.", "New exercise master system."],
+            "students": ["Latest content from Khan Academy.", "New content navigation scheme.", "New exercise mastery system."],
             "coaches": [],
             "admins": ["bin/kalite executable."],
         },
@@ -38,7 +56,7 @@ VERSION_INFO = {
             "all": ["Get the keypad working for IE8."],
             "students": [],
             "coaches": [],
-            "admins": ["handle metadata check when Device is imported."],
+            "admins": ["Handle metadata check when Device is imported."],
         },
 
     },
