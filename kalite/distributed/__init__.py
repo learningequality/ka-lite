@@ -14,10 +14,6 @@ The following apps are imported and used by the distributed app:
 * updates - for dynamic updating of content, resources, and the server software.
 """
 import mimetypes
-import sys
-
-from django.conf import settings
-
 
 ########################
 # Font setup
@@ -25,12 +21,3 @@ from django.conf import settings
 
 # Add additional mimetypes to avoid errors/warnings
 mimetypes.add_type("font/opentype", ".otf", True)
-
-
-# set the default encoding
-# OK, so why do we reload sys? Because apparently sys.setdefaultencoding
-# is deleted somewhere at startup. Reloading brings it back.
-# see: http://blog.ianbicking.org/illusive-setdefaultencoding.html
-if getattr(settings, "DEFAULT_ENCODING", None):
-    reload(sys)
-    sys.setdefaultencoding(settings.DEFAULT_ENCODING)

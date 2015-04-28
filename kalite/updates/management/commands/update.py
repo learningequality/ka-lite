@@ -104,6 +104,10 @@ class Command(UpdatesStaticCommand):
         """
         Full update via git
         """
+        
+        # This should only be done from the source directories
+        assert settings.IS_SOURCE, "This is not a source installation, cannot update from git"
+        
         self.stages = [
             "clean_pyc",
             "gitpull",
@@ -112,9 +116,12 @@ class Command(UpdatesStaticCommand):
             "stop_server",
             "start_server",
         ]
-
+        
         remote_name = settings.GIT_UPDATE_REMOTE_NAME
-        remote_branch = settings.GIT_UPDATE_BRANCH
+        if 'branch' in kwargs:
+            remote_branch = kwargs['branch']
+        else:
+            remote_branch = settings.GIT_UPDATE_BRANCH
         remote_url = settings.GIT_UPDATE_REPO_URL
 
 
@@ -125,8 +132,14 @@ class Command(UpdatesStaticCommand):
             raise CommandError(_("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'"))
 
         # step 1: clean_pyc (has to be first)
-        call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
-        self.start(notes="Clean up pyc files")
+        
+        # benjaoming: Commented out, this hits the wrong directories currently
+        # and should not be necessary.
+        # If we have problems with pyc files, we're doing something else wrong.
+        # See https://github.com/learningequality/ka-lite/issues/3487
+
+        # call_command("clean_pyc")
+        # self.start(notes="Clean up pyc files")
 
         # Step 2: update via git
         self.next_stage(notes="Updating via git branch %s in remote %s" % (remote_branch, remote_name))
@@ -160,11 +173,18 @@ class Command(UpdatesStaticCommand):
         #  NOTE: this MUST be done via an external process,
         #  to guarantee all the new code is begin used.
         self.next_stage("Update the database [please wait; no interactive output]")
+        
+        # This is called because call_command from current source dir will
+        # not import fresh copies of what's already imported.
         # should be interactive=False, but this method is a total hack
-        (out, err, rc, p) = call_outside_command_with_output("setup", noinput=True, manage_py_dir=settings.PROJECT_PATH)
+        (out, err, rc, __) = call_outside_command_with_output("setup", noinput=True, kalite_dir=settings.SOURCE_DIR)
         sys.stderr.write(out)
         if rc:
             sys.stderr.write(err)
+        
+        # Please note that this calls the setup command *after* updating with
+        # new sources loaded
+        call_command("setup", noinput=True)
 
         # step 5: stop the server
         self.stop_server()
@@ -446,7 +466,9 @@ class Command(UpdatesStaticCommand):
         # Run the syncdb
         sys.stdout.write("* Syncing database...")
         sys.stdout.flush()
-        call_outside_command_with_output("setup", interactive=False, manage_py_dir=os.path.join(self.working_dir, "kalite"))
+        # Please note that this calls the setup command *after* updating with
+        # new sources loaded
+        call_command("setup", noinput=True)
         sys.stdout.write("\n")
 
 
@@ -515,7 +537,7 @@ class Command(UpdatesStaticCommand):
     def test_server_weak(self):
         sys.stdout.write("* Testing the new server (simple)\n")
 
-        out = call_outside_command_with_output("update", "test", manage_py_dir=os.path.join(self.working_dir, "kalite"))
+        out = call_outside_command_with_output("update", "test", kalite_dir=os.path.join(self.working_dir, "kalite"))
         if "Success!" not in out[0]:
             raise CommandError(out[1] if out[1] else out[0])
 
@@ -671,16 +693,15 @@ class Command(UpdatesStaticCommand):
         self._print_message("Starting the server")
 
         # Start the server to validate
-        target_dir = getattr(self, "dest_dir", os.path.join(settings.PROJECT_PATH, '..'))
-        manage_py_dir = os.path.join(target_dir, 'kalite')
+        target_dir = getattr(self, "dest_dir", settings.SOURCE_DIR)
         # shift to an existing directory first to remove the reference to a deleted directory
         os.chdir(tempfile.gettempdir())
         # now go back to the working directory
-        os.chdir(manage_py_dir)
+        os.chdir(target_dir)
         stdout, stderr, exit_code, proc = call_outside_command_with_output(
             'kaserve',
             wait=False,
-            manage_py_dir=manage_py_dir,
+            kalite_dir=settings.SOURCE_DIR,
             output_to_stdout=True,
             production=True,
         )

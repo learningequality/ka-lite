@@ -1,9 +1,9 @@
-import StringIO
 import requests
 import os
 import urlparse
 import zipfile
 import tempfile
+import sys
 from distutils.version import StrictVersion
 from fle_utils.general import ensure_dir
 from optparse import make_option
@@ -51,20 +51,28 @@ class Command(BaseCommand):
             return
 
         if is_valid_url(ziplocation):  # url; download the zip
-            logging.warn("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
+            print "Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time..."
             # this way we can download stuff larger than the device's RAM
             r = requests.get(ziplocation, prefetch=False)
-            r.raise_for_status()
+            content_length = r.headers.get("Content-Length")
+            print "Downloaded size: ", str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown"
+            sys.stdout.write("Downloading file...")
+            sys.stdout.flush()
             f = tempfile.TemporaryFile("r+")
-
-            for chunk in r.iter_content(chunk_size=1024):
+            r.raise_for_status()
+            for cnt, chunk in enumerate(r.iter_content(chunk_size=1024)):
                 if chunk: # filter out keep-alive new chunks
                     f.write(chunk)
+                    if cnt % 1000 == 0:
+                        sys.stdout.write(".")
+                        sys.stdout.flush()
                     f.flush()
             f.seek(0)
+            sys.stdout.write("\n")
         else:                   # file; just open it normally
             f = open(ziplocation, "rb")
 
+        print "Unpacking..."
         zf = zipfile.ZipFile(f, "r")
         extract_assessment_items_to_data_dir(zf)
         unpack_zipfile_to_khan_content(zf)
@@ -90,9 +98,9 @@ def extract_assessment_items_to_data_dir(zf):
 
 
 def unpack_zipfile_to_khan_content(zf):
-    dir = settings.ASSESSMENT_ITEMS_RESOURCES_DIR
-    ensure_dir(dir)
-    zf.extractall(dir)
+    folder = settings.ASSESSMENT_ITEMS_RESOURCES_DIR
+    ensure_dir(folder)
+    zf.extractall(folder)
 
 
 def is_valid_url(url):

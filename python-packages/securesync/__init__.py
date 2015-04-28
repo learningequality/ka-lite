@@ -1,15 +1,23 @@
 import os
 
-from django.conf import settings
-assert hasattr(settings, "ROOT_UUID_NAMESPACE"), "ROOT_UUID_NAMESPACE setting must be defined to use the securesync module."
+# This assertion should not be made here, make it where it's in use.
+# from django.conf import settings
+# assert hasattr(settings, "ROOT_UUID_NAMESPACE"), "ROOT_UUID_NAMESPACE setting must be defined to use the securesync module."
 
 ID_MAX_LENGTH=32
 IP_MAX_LENGTH=50
 
-try:
-    from version import VERSION
-except:
-    VERSION = "1.0"
+
+# TODO(benjaoming): So the version of securesync dynamic !? Not understanding
+# this.. plus it adds problems in dependency testing... but that should be
+# deleted anyways... for now just hard coding it at 1.0 and below will be
+# left commented out.
+# try:
+#     from kalite.version import VERSION
+# except:
+#     VERSION = "1.0"
+
+VERSION = "1.0"
 
 from .devices.__init__ import *
 from .engine.__init__ import *

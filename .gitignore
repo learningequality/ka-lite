@@ -7,18 +7,40 @@
 .pydevproject
 
 # Undocumented ignores
+
+# setup.py
+dist/
+build/
+*.egg-info/
+
+# MAC stuff
 .DS_Store
+
+# SQLite files (should probably specify the path)
 *.db
 *.sqlite*
+
+# Not sure
 *.patch
 *.pid
 *.prof
+
+# Python compiling
 *.pyc
 *.pyo
 *~
 *.sublime-*
 *.zip
-/build/
+
+# Documentation
+sphinx-docs/_build
+sphinx-docs/images/*
+
+# oh-my-zsh convention for automatically
+# switching on a venv
+.venv
+
+# Lacks documentation
 locale/
 node_modules/
 tmp/
@@ -67,7 +89,5 @@ writeup/
 ghostdriver.log
 /kalite/_built.touch
 *.swp
-sphinx-docs/_build
-sphinx-docs/images/*
 /data/khan/assessmentitems.json.version
 file_map.json
