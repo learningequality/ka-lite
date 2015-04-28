@@ -192,10 +192,6 @@ window.AttemptLogModel = Backbone.Model.extend({
         response_log: "[]"
     },
 
-    initialize: function(options) {
-
-    },
-
     add_response_log_event: function(ev) {
 
         // inflate the stored JSON if needed
