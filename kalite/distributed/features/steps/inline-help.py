@@ -7,7 +7,7 @@ from kalite.testing.behave_helpers import build_url, find_css_class_with_wait, f
 
 
 # Id for the clickable element that starts an intro
-STARTING_POINT_ID = "changeme"
+STARTING_POINT_ID = "inline-btn"
 # Classes for the introjs modal and associated elements
 MODAL_CLASS = "introjs-tooltip"
 STEP_NUMBER_CLASS = "introjs-helperNumberLayer"
