@@ -10,6 +10,7 @@ For clicking elements that cause a page load (`click` is not safe!):
 
 For finding and interacting with elements safely:
 * elem_is_invisible_with_wait
+* elem_is_visible_with_wait
 * find_css_class_with_wait
 * find_id_with_wait
 
@@ -89,14 +90,40 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     wait_time: sets the max wait time. Optional, but has a default value.
     Returns True if the element is invisible or stale, otherwise waits and returns False
     """
+    if elem.get_attribute("id"):
+        by = (By.ID, elem.get_attribute("id"))
+    elif elem.get_attribute("class"):
+        by = (By.CLASS_NAME, elem.get_attribute("class"))
+    else:
+        assert False, "No way to select element."
     try:
-        WebDriverWait(context.browser, wait_time).until_not(
-            lambda: elem.is_displayed()
+        WebDriverWait(context.browser, wait_time).until(
+            EC.invisibility_of_element_located(by)
         )
         return True
-    except StaleElementReferenceException:
-        return True
     except TimeoutException:
+        return False
+
+
+def elem_is_visible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
+    """ Waits for the element to become visible. Will try to scroll the element
+    into view.
+    context: a behave context
+    elem: a WebDriver element
+    wait_time: sets the max wait time. Optional, but has a default value.
+    Returns True if the element is visible, otherwise waits and returns False
+    """
+    def _visiblity_of():
+        # elem.location returns a dict: {"x": 42, "y": 42}
+        context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
+        return elem.is_displayed()
+
+    try:
+        WebDriverWait(context.browser, wait_time).until(
+            lambda browser: _visiblity_of()
+        )
+        return True
+    except (TimeoutException, StaleElementReferenceException):
         return False
 
 
@@ -190,13 +217,17 @@ def go_to_homepage(context):
     context.browser.get(build_url(context, url))
 
 
-def _login_user(context, username, password):
+def _login_user(context, username, password, facility=None):
     """ Logs a user in (either User of FacilityUser) with an api endpoint.
     "Private" function to hide details, use login_as_* functions instead.
     """
-    data = json.dumps({"username": username, "password": password})
+    data = {"username": username, "password": password}
+    if facility:
+        data['facility'] = facility
+    data = json.dumps(data)
     url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
-    post(context, url, data)
+    resp = post(context, url, data)
+    assert resp, "Login failed. url: %s\ndata: %s" % (url, data)
 
 
 def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
@@ -212,7 +243,8 @@ def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
                 self.browser = context.browser
         context_wm = ContextWithMixin()
         context_wm.create_teacher(username=coach_name, password=coach_pass)
-    _login_user(context, coach_name, coach_pass)
+    facility = FacilityUser.objects.get(username=coach_name).facility.id
+    _login_user(context, coach_name, coach_pass, facility=facility)
 
 
 def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
