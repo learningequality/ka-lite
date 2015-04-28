@@ -17,6 +17,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       file_map['basejs'].slice(1),
+      file_map['baseviews'].slice(1),
       file_map['perseusjs_1'].slice(1),
       file_map['perseusjs_2'].slice(1),
       file_map['learnjs'].slice(1),

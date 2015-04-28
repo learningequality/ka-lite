@@ -208,7 +208,10 @@ function show_message(msg_class, msg_text, msg_id) {
     //    or to display purely client-side messages.
     // msg_class includes error, warning, and success
     if (msg_id === undefined) {
-        msg_id = msg_text.hashCode();
+        // Only do this if msg_text and its hashCode are both defined
+        if ((typeof msg_text !== "undefined" ? msg_text.hashCode : void 0)) {
+            msg_id = msg_text.hashCode();
+        }
     }
 
     // Avoid duplicating the same message by removing any existing message with the same id

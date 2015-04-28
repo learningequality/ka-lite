@@ -12,7 +12,7 @@
 {% block title %}{% trans "Tests" %}{{ block.super }}{% endblock %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static_with_build 'css/student_testing/test_list.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/student_testing/test_list.css' %}">
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}

@@ -30,4 +30,6 @@ The KA Lite sourcecode itself is open-source [MIT licensed](http://opensource.or
 
 #### Badges
 
+[![Build Status](https://travis-ci.org/learningequality/ka-lite.png?branch=master)](https://travis-ci.org/learningequality/ka-lite)
 [![Coverage Status](https://coveralls.io/repos/learningequality/ka-lite/badge.svg)](https://coveralls.io/r/learningequality/ka-lite)
+
