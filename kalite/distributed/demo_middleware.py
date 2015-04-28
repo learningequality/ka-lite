@@ -42,8 +42,8 @@ class LinkUserManual:
         if request.path == reverse("homepage"):
             messages.info(request, mark_safe(_("Welcome to our demo server!"
                 "  Please visit our <a href='%(um_url)s'>user's manual</a> or <a href='%(home_url)s'>homepage</a> for more information.") % {
-                    "um_url": "http://kalitewiki.learningequality.org/user-s-manual/using-ka-lite",
-                    "home_url": "http://kalite.learningequality.org/",
+                    "um_url": "https://learningequality.org/docs/usermanual/userman_main.html",
+                    "home_url": "https://learningequality.org/ka-lite/",
             }))
 
 class ShowAdminLogin:
