@@ -71,7 +71,17 @@
         <form method="post" class="basic-form">
             {% csrf_token %}
 
-            {{ form.as_p }}
+            {% for field in form.hidden_fields %}
+                {{ field }}
+            {% endfor %}
+            {% for field in form.visible_fields %}
+                <p>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                    <span class="helptext">{{ field.help_text }}</span>
+                </p>
+            {% endfor %}
 
             <input type="submit" class="submit btn btn-success btn-md" value="{% if new_user %}{% trans 'Create user' %}{% else %}{% trans 'Update user' %}{% endif %}" />
         </form>

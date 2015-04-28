@@ -14,6 +14,8 @@ from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout
 
 def before_all(context):
     browser = context.browser = webdriver.Firefox()
+    # ensure the window is reasonably sized.
+    browser.set_window_size(1024, 768)
 
 def after_all(context):
     try:

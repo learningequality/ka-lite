@@ -295,7 +295,7 @@ def manage(command, args=[], in_background=False):
         utility.execute()
     else:
         if os.name != "nt":
-            thread = ManageThread(command, args=args, name=" ".join([command]+args))
+            thread = ManageThread(command, args=args, name=" ".join([command] + args))
             thread.start()
         else:
             # TODO (aron): for versions > 0.13, see if we can just have everyone spawn another process (Popen vs. ManageThread)

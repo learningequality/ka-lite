@@ -1,4 +1,10 @@
 """
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other caching.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that caching.settings has been copied over to kalite.settings
+
+
 Caching is a critical part of the KA Lite app, in order to speed up server response times.
 However, if the server state changes, the cache may need to be invalidated.
 

@@ -1,3 +1,5 @@
+FLE_USE_STUPID_IMPORT_MAGIC = True
+
 import getpass
 import hashlib
 import os
@@ -5,11 +7,13 @@ import sys
 import tempfile
 import time
 import uuid
-import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 from django.http import HttpRequest
+from kalite import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
+
+from kalite.settings.base import USER_DATA_ROOT
 
 try:
-    import local_settings
+    from kalite import local_settings
 except ImportError:
     local_settings = object()
 
@@ -162,7 +166,7 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
         CACHES = {}
 
     # File-based cache
-    install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
+    install_location_hash = hashlib.sha1(USER_DATA_ROOT).hexdigest()
     username = getpass.getuser() or "unknown_user"
     cache_dir_name = "kalite_web_cache_%s" % (username)
     CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
@@ -215,34 +219,3 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
-
-
-########################
-# Screenshots
-########################
-
-from django.conf import settings
-PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", settings.PROJECT_PATH)) + "/"
-
-SCREENSHOTS_OUTPUT_PATH = os.path.join(os.path.realpath(PROJECT_PATH), "..", "data", "screenshots")
-SCREENSHOTS_EXTENSION = ".png"
-
-SCREENSHOTS_DATABASE_NAME = "screenshot-data.sqlite"
-SCREENSHOTS_DATABASE_PATH = os.path.join(SCREENSHOTS_OUTPUT_PATH, SCREENSHOTS_DATABASE_NAME)
-
-SCREENSHOTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "data")
-SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_JSON_PATH, 'screenshots.json')
-SCREENSHOTS_ROUTER = 'default'
-SQLITE3_ENGINE = 'django.db.backends.sqlite3'
-
-if 'screenshots' in sys.argv:
-    # use another sqlite3 database for the screenshots
-    DATABASES = {
-        SCREENSHOTS_ROUTER: {
-            "ENGINE": getattr(local_settings, "DATABASE_TYPE", SQLITE3_ENGINE),
-            "NAME": SCREENSHOTS_DATABASE_PATH,
-            "OPTIONS": {
-                "timeout": 60,
-            },
-        }
-    }

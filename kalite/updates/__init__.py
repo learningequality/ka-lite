@@ -1,3 +1,10 @@
+"""
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other updates.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that updates.settings has been copied over to kalite.settings
+
+"""
 import shutil
 
 from django.db.models.signals import post_save, pre_delete
