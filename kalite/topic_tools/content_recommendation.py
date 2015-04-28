@@ -37,7 +37,7 @@ def get_recommendations(user=None, current_subtopic=None):
 
 
     #some initial data used in multiple areas
-    current_subtopic = get_most_recent_subtopics(user)[0]
+    current_subtopic = get_most_recent_subtopic(user)
 
     #get user exercise log
     #print ExerciseLog.objects.filter(user='Yamira Jones')
@@ -48,7 +48,7 @@ def get_recommendations(user=None, current_subtopic=None):
 
 
     ############### NEXT STEPS ######################### Use current ordering of get_recommended_exercises()
-    result['next_steps'] = get_next_recommendations(user, current_subtopic)
+    result['next_steps'] = get_next_recommendations(user)
 
 
     ############### EXPLORE ############################ Use middle->end get_recommended_exercises();
@@ -67,13 +67,13 @@ def get_recommendations(user=None, current_subtopic=None):
 ###
 def get_resume_recommendations(user):
     return ExerciseLog.objects.filter(user=user) 
-    ''' IGNORE FOR NOW '''
+    ''' IGNORE FOR NOW - ACTUALLY IMPLEMENTED ALREADY IN THE get_most_recent_incomplete_exercises() method'''
+
+
 
 
 ####################################### 'NEXT STEPS' LOGIC ################################################
 ''' TODO working on this: 
-    - need to convert data[] list to exercise id form (right now it is subtopic)
-    - need to work on logic for struggling
     - need to work on logic to apply the group patterns (basically cache a list of MAX LIKELIHOOD ESTIMATION)
 '''
 ###
@@ -82,7 +82,7 @@ def get_resume_recommendations(user):
 #
 # Full List:
 # - Incomplete exercises (where user left off)
-# - Struggling
+# - Struggling (pre-reqs for exercises marked as "struggling" for the student)
 # - User patterns based on group analysis (maximum likelihood estimation and empirical count)
 #
 # @param user: facility user model
@@ -90,14 +90,57 @@ def get_resume_recommendations(user):
 # @return: a list of exercise id's of where the user should consider going next.
 ###
 def get_next_recommendations(user):
-    recommendations = []                                    #the recommendations (final)
-    current_exercises = get_5_most_recent_exercises(user)   #5 most recent exercises (in-progress ones)
+    recommendations = []                                                #the recommendations to return (final)
 
-    current_subtopic = get_most_recent_subtopics(user)      #the most recent subtopic id accessed by user
+    #logic for where user left off
+    current_exercises = get_most_recent_incomplete_exercises(user)[:5]    #5 most recent exercises (in-progress ones)
+
+
+    #logic for recommendations based off of the topic tree structure
+    current_subtopic = get_most_recent_subtopic(user)                   #the most recent subtopic id accessed by user
     topic_tree_based_data = get_recommended_exercises(current_subtopic)
    
-    return current_exercises + topic_tree_based_data[:5]
 
+    #logic to generate recommendations based on exercises student is struggling with
+    struggling = get_exercise_prereqs(get_struggling_exercises(user))
+
+
+    #logic to get recommendations based on group patterns, if applicable
+    group = []
+
+    #final recommendations are a combination of current, struggling, group filtering, and topic_tree filtering
+    return current_exercises + struggling + group + topic_tree_based_data[:10]
+
+
+
+# Given a facility user model, return ALL exercises (ids) that the user is struggling on
+# This amounts to returning only those exercises that have their "struggling" attribute set
+# to True. The exercise ids are also in order of most recent first. 
+def get_struggling_exercises(user):
+    exercises_by_user = ExerciseLog.objects.filter(user=user)
+    exercises_by_user = ExerciseLog.objects.filter(id__lte=1)   #temp
+
+    #sort exercises first, in order of most recent first
+    exercises_by_user = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
+
+    struggles = []                                              #TheStruggleIsReal
+    for exercise in exercises_by_user:
+        if exercise.struggling:
+            struggles.append(exercise.exercise_id)
+
+    return struggles
+
+
+
+# Given a list of exercise ids, return a concatenated list of prereqs for each of the exercises
+def get_exercise_prereqs(exercises):
+    ex_cache = get_exercise_cache()
+    prereqs = []
+    for exercise in exercises:
+        prereqs += ex_cache[exercise]['prerequisites']
+
+    return prereqs
+    
 
 ########################################## 'EXPLORE' LOGIC ################################################
 
@@ -126,11 +169,11 @@ def get_explore_recommendations(subtopic_id):
 
 
 
-########################################### HELPER FUNCTIONS ##############################################
+##################################### GENERAL HELPER FUNCTIONS ############################################
 
 ''' TODO '''
 # Returns the most recent subtopic id that the given user has started and/or completed.
-def get_most_recent_subtopics(user):
+def get_most_recent_subtopic(user):
     return 'early-math' #dummy return
 
 
@@ -144,17 +187,10 @@ def get_exercises_from_topics(topicId_list):
 
     return exs
 
-'''#given a facility user model, return the facility user model??
-def get_facility_user_model(user):
-    h = FacilityUser.objects.filter(id__lte=2)[0]
-    print h
-    return ExerciseLog.objects.filter(user=h)
-    return FacilityUser.objects.filter(id=user_id)'''
-
-#given a facility user model, return the most recent 5 exercise ids 
-def get_5_most_recent_exercises(user):
+#given a facility user model, return the most recent exercise ids that are still in-progress
+def get_most_recent_incomplete_exercises(user):
     exercises_by_user = ExerciseLog.objects.filter(user=user)
-    exercises_by_user = ExerciseLog.objects.filter(id__lte=1)
+    exercises_by_user = ExerciseLog.objects.filter(id__lte=1) #temp
     
     #sorted by completion time in descending order (most recent first)
     sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
@@ -165,10 +201,7 @@ def get_5_most_recent_exercises(user):
         if exercise.complete == False:                  #only look for incomplete
             exercise_list.append(exercise.exercise_id)  #append to list
 
-        if len(exercise_list) == 5:                     #stop at 5 for now
-            break
-
-    return exercise_list                                #5 most recent + incomplete
+    return exercise_list                                #most recent + incomplete
 
 
 ###################################### BEGIN NEAREST NEIGHBORS ############################################
