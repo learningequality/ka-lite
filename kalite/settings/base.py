@@ -2,6 +2,8 @@ import logging
 import os
 import json
 import sys
+import warnings
+
 from kalite import ROOT_DATA_PATH
 
 
@@ -13,8 +15,15 @@ try:
     # Not sure if vars from local_settings are accessed ATM. This is one of
     # the big disadvantage of this whole implicit importing chaos... will be
     # fixed later.
-    from kalite.local_settings import *  # @UnusedWildImport
     from kalite import local_settings
+    # This is not a DeprecationWarning by purpose, because those are
+    # ignored during settings module load time
+    warnings.warn(
+        "Using local_settings is deprecated, please write your own settings "
+        "module, import kalite.settings.base, and point your "
+        "DJANGO_SETTINGS_MODULE to your customized settings or run kalite "
+        "COMMAND --settings=my.settings",
+    )
 except ImportError:
     local_settings = object()
 
@@ -326,9 +335,21 @@ API_LIMIT_PER_PAGE = 0
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 
-# NOW OVER WRITE EVERYTHING WITH ANY POSSIBLE LOCAL SETTINGS
+# DEPRECATED BEHAVIOURS
 
+# Copy INSTALLED_APPS to prevent any overwriting
+OLD_INSTALLED_APPS = INSTALLED_APPS[:]
+
+# NOW OVER WRITE EVERYTHING WITH ANY POSSIBLE LOCAL SETTINGS
 try:
     from kalite.local_settings import *  # @UnusedWildImport
+except ImportError:
+    pass
+
+# Ensure that any INSTALLED_APPS mentioned in local_settings is concatenated
+# to previous INSTALLED_APPS because that was expected behaviour in 0.13
+try:
+    from kalite.local_settings import INSTALLED_APPS
+    INSTALLED_APPS = OLD_INSTALLED_APPS + INSTALLED_APPS
 except ImportError:
     pass
