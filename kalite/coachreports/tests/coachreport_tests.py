@@ -60,57 +60,6 @@ class APIDropdownTests(FacilityMixins,
         self.client.logout()
 
 
-class TimelineReportTests(FacilityMixins,
-                          StudentProgressMixin,
-                          BrowserActionMixins,
-                          CreateAdminMixin,
-                          KALiteBrowserTestCase):
-    def setUp(self):
-        super(TimelineReportTests, self).setUp()
-
-        self.admin_data = {"username": "admin", "password": "admin"}
-        self.admin = self.create_admin(**self.admin_data)
-        self.facility = self.create_facility()
-
-    def test_user_interface(self):
-        self.browser_login_admin(**self.admin_data)
-        self.browse_to(self.reverse('timeline_view'))
-        self.student1 = self.create_student(first_name="I", last_name="tested", username="yay", facility=self.facility)
-        self.student2 = self.create_student(first_name="I", last_name="didn't", username="boo", facility=self.facility)
-        self.browser.find_element_by_xpath('//button[@id="display-coach-report"]')
-
-
-class TestScatterReport(FacilityMixins,
-                        StudentProgressMixin,
-                        BrowserActionMixins,
-                        CreateAdminMixin,
-                        KALiteBrowserTestCase):
-    def setUp(self):
-        super(TestScatterReport, self).setUp()
-
-        self.admin_data = {"username": "admin", "password": "admin"}
-        self.admin = self.create_admin(**self.admin_data)
-        self.facility = self.create_facility()
-
-    def test_data_chart(self):
-        self.browser_login_admin(**self.admin_data)
-        self.browse_to(self.reverse('scatter_view'))
-        self.student1 = self.create_student(first_name="I", last_name="tested", username="yay", facility=self.facility)
-        self.student2 = self.create_student(first_name="I", last_name="didn't", username="boo", facility=self.facility)
-        # check if all facility is selected
-        facility_select = self.browser.find_element_by_id("facility-select")
-        facility_options = facility_select.find_elements_by_tag_name('option')
-        facility_option = facility_options[0]
-        self.assertEqual("All", facility_option.text)
-        # check if the xaxis is mastery and yaxis is effort
-        datepicker_start = self.browser.find_element_by_id("datepicker_start")
-        datepicker_end = self.browser.find_element_by_id("datepicker_end")
-
-        now = datetime.now()
-        current_date = datetime.now() - timedelta(days=31)
-        self.assertEqual(current_date.strftime("%Y-%m-%d"), datepicker_start.get_attribute("value"))
-        self.assertEqual(now.strftime("%Y-%m-%d"), datepicker_end.get_attribute("value"))
-
 class CoachNavigationTest(FacilityMixins,
                           StudentProgressMixin,
                           BrowserActionMixins,

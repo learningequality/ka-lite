@@ -1,7 +1,7 @@
 var StateModel = Backbone.Model.extend({
     defaults: {
-        group_id: GROUP_ID,
-        facility_id: FACILITY_ID
+        group_id: window.GROUP_ID || "",
+        facility_id: window.FACILITY_ID || ""
     }
 });
 
@@ -104,7 +104,6 @@ var NavigationContainerView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template({
-            selected: REPORT_ID,
             nalanda: ds.ab_testing.is_config_package_nalanda
         }));
         this.$('#group-select-container').append(this.group_view.$el);

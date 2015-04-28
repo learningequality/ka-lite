@@ -19,19 +19,7 @@
     <script type="text/javascript">
         var FACILITY_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var GROUP_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
-        var TABULAR_REPORT_URL = "{% url 'tabular_view' %}";
-        var SCATTER_REPORT_URL = "{% url 'scatter_view' %}";
-        var TIMELINE_REPORT_URL = "{% url 'timeline_view' %}";
-        var TEST_REPORT_URL = "{% url 'test_view' %}";
-        var SPENDING_URL = "{% url 'spending_report_view' %}";
 
-        var REPORT_ID = "{{ nav_state.report_id }}"
-        var FACILITY_ID = "{{ nav_state.facility_id }}";
-        var GROUP_ID = "{{ nav_state.group_id }}";
-
-        console.log("rptid: " + REPORT_ID);
-        console.log("facid: " + FACILITY_ID);
-        console.log("grpid: " + GROUP_ID);
     </script>
     <script type="text/javascript" src="{% static 'js/coachreports/base.js' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='coach_nav' %}"></script>
