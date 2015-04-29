@@ -1,7 +1,7 @@
 // Views
 
 /**
- * View that wraps the content resume card on the learn page
+ * View that wraps the resume card on the learn page
  */
 window.ContentResumeView = BaseView.extend({
 
@@ -18,7 +18,7 @@ window.ContentResumeView = BaseView.extend({
 });
 
 /**
- * View that wraps a lesson on the content next steps card on the learn page
+ * View that wraps a lesson on the next steps card on the learn page
  */
 window.ContentNextStepsLessonView = BaseView.extend({
 
@@ -29,14 +29,13 @@ window.ContentNextStepsLessonView = BaseView.extend({
 	},
 
 	render: function() {
-
 		this.$el.html(this.template(this.model.attributes));
 	}
 
 });
 
 /**
- * View that wraps the content next steps card on the learn page
+ * View that wraps the next steps card on the learn page
  */
 window.ContentNextStepsView = BaseView.extend({
 
@@ -53,7 +52,6 @@ window.ContentNextStepsView = BaseView.extend({
     },
 
     render: function() {
-    	this.contentNextStepsLessonModel = new ContentNextStepsLessonModel();
 
         this.$el.html(this.template(this.model.attributes));
         var container = document.createDocumentFragment();
@@ -83,7 +81,6 @@ window.ContentExploreTopicView = BaseView.extend({
 	},
 
 	render: function() {
-
 		this.$el.html(this.template(this.model.attributes));
 	}
 
@@ -97,25 +94,29 @@ window.ContentExploreView = BaseView.extend({
 	template: HB.template("contentrec/content-explore"),
 
 	initialize: function() {
-		this.render();
+		if (typeof this.collection === "undefined") {
+    		this.collection = new ContentExploreCollection([
+    			{interest_topic: "Test Topic 1", suggested_topic: "Physics"},
+    			{interest_topic: "Test Topic 2", suggested_topic: "Geometry"}
+    			]);
+    	}
+        this.render();
 	},
 
 	render: function() {
 
-		this.contentExploreTopicModel = new ContentExploreTopicModel();
-
-		this.contentExploreCollection = new ContentExploreCollection();
-
 		this.$el.html(this.template(this.model.attributes));
+        var container = document.createDocumentFragment();
 
-		for(i = 1; i < 5; i++) {
+		for(i = 0; i < this.collection.length; i++) {
 			var name = new String('content_explore_topic_'+i);
-			this.name = this.add_subview(ContentExploreTopicView, {
-				model: this.contentExploreTopicModel
+			this[name] = this.add_subview(ContentExploreTopicView, {
+				model: this.collection.models[i]
 			});
-			this.contentExploreCollection.add(this.name.el.childNodes);
-			this.$("#content-explore-topics").append(this.name.el.childNodes);
+			container.appendChild(this[name].el);
 		}
+
+		this.$("#content-explore-topics").append(container);
 	}
 
 });
@@ -123,7 +124,7 @@ window.ContentExploreView = BaseView.extend({
 
 $(function(){
 	window.contentResumeModel = new window.ContentResumeModel();
-	window.contentNextStepsModel = new window.ContentNextStepsModel();
+	window.contentNextStepsCollection = new window.ContentNextStepsCollection();
 	window.contentExploreCollection = new window.ContentExploreCollection();
 
 	//contentResumeModel.fetch().then(function(){
@@ -132,7 +133,7 @@ $(function(){
 		});
 
 		window.content_nextsteps = new ContentNextStepsView({
-			model: contentNextStepsModel
+			model: contentNextStepsCollection
 		});
 
 		window.content_explore = new ContentExploreView({
