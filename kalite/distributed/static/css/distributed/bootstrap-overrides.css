@@ -374,10 +374,11 @@ form .input-group {
     margin: 3%;
 }
 #content-nextsteps span#first-col {
+    margin-left: 5px;
     width: 20%;
 }
 #content-nextsteps span#second-col {
-    width: 58%;
+    width: 56%;
 }
 #content-nextsteps span#third-col {
     vertical-align: middle;
@@ -388,6 +389,10 @@ form .input-group {
 }
 #content-nextsteps p {
     margin: 0;
+}
+#content-explore span#left-col,
+#content-explore span#left-col {
+    width: 50%;
 }
 #content-nextsteps-lesson,
 #content-explore-topic {
