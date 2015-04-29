@@ -45,7 +45,9 @@ window.ContentNextStepsView = BaseView.extend({
     	if (typeof this.collection === "undefined") {
     		this.collection = new SuggestedContentCollection([
     			{interest_topic: "Test Topic 1", lesson_title: "Test Lesson Title"},
-    			{interest_topic: "Test Topic 2", lesson_title: "Test Lesson Title 2"}
+    			{interest_topic: "Test Topic 2", lesson_title: "Test Lesson Title 2"},
+    			{interest_topic: "Test Topic 3", lesson_title: "Test Lesson Title 3"},
+    			{interest_topic: "Test Topic 4", lesson_title: "Test Lesson Title 4"},
     			]);
     	}
         this.render();
@@ -96,8 +98,10 @@ window.ContentExploreView = BaseView.extend({
 	initialize: function() {
 		if (typeof this.collection === "undefined") {
     		this.collection = new SuggestedContentCollection([
-    			{interest_topic: "Test Topic 1", suggested_topic: "Physics"},
-    			{interest_topic: "Test Topic 2", suggested_topic: "Geometry"}
+    			{interest_topic: "Chemistry", suggested_topic: "Physics"},
+    			{interest_topic: "Physiology", suggested_topic: "Biology"},
+    			{interest_topic: "Algebra", suggested_topic: "Precalculus"},
+    			{interest_topic: "Modern Art", suggested_topic: "Art History"}
     			]);
     	}
         this.render();
@@ -144,4 +148,16 @@ $(function(){
 		$("#content-area").append(window.content_explore.el.childNodes);
 
 	//});
+
+	//resize_to_fit();
 });
+
+function resize_to_fit(){
+	var fontsize = $('span#left-col span').css('font-size');
+	$('span#left-col span').css('fontSize', parseFloat(fontsize) - 1);
+
+	if($('span#left-col span').height() >= $('span#left-col').height()){
+		//console.log("resizing");
+		resize_to_fit();
+	}
+}
