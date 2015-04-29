@@ -29,10 +29,6 @@ window.SuggestedContentModel = Backbone.Model.extend({
 
 //Collections
 
-window.ContentNextStepsCollection = Backbone.Collection.extend({
-	model: SuggestedContentModel
-});
-
-window.ContentExploreCollection = Backbone.Collection.extend({
+window.SuggestedContentCollection = Backbone.Collection.extend({
 	model: SuggestedContentModel
 });
