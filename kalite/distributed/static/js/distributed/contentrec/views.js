@@ -43,7 +43,7 @@ window.ContentNextStepsView = BaseView.extend({
     
     initialize: function() {
     	if (typeof this.collection === "undefined") {
-    		this.collection = new ContentNextStepsCollection([
+    		this.collection = new SuggestedContentCollection([
     			{interest_topic: "Test Topic 1", lesson_title: "Test Lesson Title"},
     			{interest_topic: "Test Topic 2", lesson_title: "Test Lesson Title 2"}
     			]);
@@ -95,7 +95,7 @@ window.ContentExploreView = BaseView.extend({
 
 	initialize: function() {
 		if (typeof this.collection === "undefined") {
-    		this.collection = new ContentExploreCollection([
+    		this.collection = new SuggestedContentCollection([
     			{interest_topic: "Test Topic 1", suggested_topic: "Physics"},
     			{interest_topic: "Test Topic 2", suggested_topic: "Geometry"}
     			]);
@@ -124,8 +124,7 @@ window.ContentExploreView = BaseView.extend({
 
 $(function(){
 	window.contentResumeModel = new window.ContentResumeModel();
-	window.contentNextStepsCollection = new window.ContentNextStepsCollection();
-	window.contentExploreCollection = new window.ContentExploreCollection();
+	window.suggestedContentCollection = new window.SuggestedContentCollection();
 
 	//contentResumeModel.fetch().then(function(){
 		window.content_resume = new ContentResumeView({
@@ -133,11 +132,11 @@ $(function(){
 		});
 
 		window.content_nextsteps = new ContentNextStepsView({
-			model: contentNextStepsCollection
+			model: suggestedContentCollection
 		});
 
 		window.content_explore = new ContentExploreView({
-			model: contentExploreCollection
+			model: suggestedContentCollection
 		});
 
 		$("#content-area").append(window.content_resume.el.childNodes);
