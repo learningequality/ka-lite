@@ -1,22 +1,15 @@
 from tastypie import fields
 from tastypie.exceptions import NotFound, Unauthorized
-from tastypie.resources import ModelResource, Resource
+from tastypie.resources import Resource
 
-from django.db.models import Sum
 from django.utils.translation import ugettext as _
 
 from kalite.shared.decorators.auth import get_user_from_request
 from .models import PlaylistProgress, PlaylistProgressDetail
 
-from kalite.facility.api_resources import FacilityUserResource
-from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
-from kalite.main.models import ExerciseLog
-
-from kalite.topic_tools import get_exercise_cache
-
-class PlaylistParentResource(Resource):
+class CoachReportBaseResource(Resource):
     """
-    A parent resource that houses shared code between the two resources we actually use 
+    A base resource that houses shared code between the resources we actually use 
     in the API
     """
 
@@ -40,8 +33,21 @@ class PlaylistParentResource(Resource):
             else:
                 raise Unauthorized(_("You requested information for a user that you are not authorized to view."))
 
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+        if isinstance(bundle_or_obj, self.object_class):
+            kwargs['pk'] = bundle_or_obj.id
+        else:
+            kwargs['pk'] = bundle_or_obj.obj.id
 
-class PlaylistProgressResource(PlaylistParentResource):
+        return kwargs
+
+    def obj_get_list(self, bundle, **kwargs):
+        self.permission_check(bundle.request)
+        return self.get_object_list(bundle.request)
+
+
+class PlaylistProgressResource(CoachReportBaseResource):
 
     title = fields.CharField(attribute='title')
     id = fields.CharField(attribute='id')
@@ -64,26 +70,12 @@ class PlaylistProgressResource(PlaylistParentResource):
         resource_name = "playlist_progress"
         object_class = PlaylistProgress
 
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if isinstance(bundle_or_obj, PlaylistProgress):
-            kwargs['pk'] = bundle_or_obj.id
-        else:
-            kwargs['pk'] = bundle_or_obj.obj.id
-
-        return kwargs
-
     def get_object_list(self, request):
         user_id = request.GET.get('user_id')
         result = PlaylistProgress.user_progress(user_id=user_id)
         return result
 
-    def obj_get_list(self, bundle, **kwargs):
-        self.permission_check(bundle.request)
-        return self.get_object_list(bundle.request)
-
-
-class PlaylistProgressDetailResource(PlaylistParentResource):
+class PlaylistProgressDetailResource(CoachReportBaseResource):
 
     kind = fields.CharField(attribute='kind')
     status = fields.CharField(attribute='status')
@@ -95,15 +87,6 @@ class PlaylistProgressDetailResource(PlaylistParentResource):
         resource_name = "playlist_progress_detail"
         object_class = PlaylistProgressDetail
 
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if isinstance(bundle_or_obj, PlaylistProgressDetail):
-            kwargs['pk'] = bundle_or_obj.id
-        else:
-            kwargs['pk'] = bundle_or_obj.obj.id
-
-        return kwargs
-
     def get_object_list(self, request):
         user_id = request.GET.get("user_id")
         playlist_id = request.GET.get("playlist_id")
@@ -111,9 +94,4 @@ class PlaylistProgressDetailResource(PlaylistParentResource):
         if not result:
             raise NotFound("User playlist progress details with user ID '%s' and playlist ID '%s' were not found." % (user_id, playlist_id))        
         return result
-
-    def obj_get_list(self, bundle, **kwargs):
-        self.permission_check(bundle.request)
-        return self.get_object_list(bundle.request)
-
 
