@@ -53,7 +53,7 @@ class Command(BaseCommand):
             '--pidfile',
             action='store',
             dest='pidfile',
-            default=os.path.join(settings.PROJECT_PATH, "runcherrypyserver.pid"),
+            default=os.path.join(settings.USER_DATA_ROOT, "runcherrypyserver.pid"),
             help="PID file"
         ),
         make_option(

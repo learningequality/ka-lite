@@ -32,4 +32,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Provision our machine with shell scripts, since the user might not
   # have ansible installed.
   config.vm.provision "shell", path: "provision.sh"
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+  end
 end

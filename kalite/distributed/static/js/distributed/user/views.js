@@ -96,7 +96,7 @@ window.LoginView = BaseView.extend({
             this.$("#id_" + error_data.error_highlight).popover({
                 content: message,
                 placement: "auto bottom",
-                template: '<div class="popover alert alert-danger" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+                template: sprintf('<div id="id_%(popover_id)s-popover" class="popover alert alert-danger" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',{popover_id: error_data.error_highlight})
             });
             this.$("#id_" + error_data.error_highlight).popover("show");
             if (error_data.error_highlight == "password") {

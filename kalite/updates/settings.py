@@ -1,7 +1,30 @@
+"""
+
+
+
+
+
+DO NOT MODIFY THIS FILE OR LOAD THIS MODULE.
+
+
+Because of updates.__init__.py, we cannot load this module independently of its
+own child module's preconditions.
+
+I.e. updates.__init__.py expects the django.conf.settings to have loaded, but
+updates.settings is a precondition for loading the project's settings module
+kalite.settings
+
+Nasty stuff.
+
+Will be cleaned up in 0.14.
+
+
+
+"""
 import os
 
 try:
-    import local_settings
+    from kalite import local_settings
 except ImportError:
     local_settings = object()
 
@@ -13,7 +36,6 @@ except ImportError:
 INSTALLED_APPS = (
     "django.contrib.auth",  # only admins can access api views
     "django.contrib.staticfiles",
-    "django_extensions", # needed for clean_pyc (used by software update)
     "south",
     "fle_utils.chronograph",  # updates uses chronograph for commands
     "fle_utils.django_utils",  # templatetags

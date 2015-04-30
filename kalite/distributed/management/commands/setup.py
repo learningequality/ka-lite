@@ -273,8 +273,13 @@ class Command(BaseCommand):
             print("(Re)moving database file to temp location, starting clean install.  Recovery location: %s" % dest_file)
             shutil.move(database_file, dest_file)
 
+        # benjaoming: Commented out, this hits the wrong directories currently
+        # and should not be necessary.
+        # If we have problems with pyc files, we're doing something else wrong.
+        # See https://github.com/learningequality/ka-lite/issues/3487
+
         # Should clean_pyc for (clean) reinstall purposes
-        call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
+        # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
         # Migrate the database
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
