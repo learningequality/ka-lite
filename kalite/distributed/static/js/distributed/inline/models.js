@@ -1,3 +1,5 @@
+//parse from yaml to json?
+
 var NarrativeModel = Backbone.Model.extend({
     sync: function(method, model, options) {
         if (method === "read") {
