@@ -60,6 +60,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 from kalite.settings.base import USER_DATA_ROOT
 
 CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content')))
+CONTENT_ROOT_KHAN = os.path.realpath(getattr(local_settings, "CONTENT_ROOT_KHAN", os.path.join(CONTENT_ROOT, 'khan')))
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
 # Should be a function that receives a video file (youtube ID), and returns a URL to a video stream
