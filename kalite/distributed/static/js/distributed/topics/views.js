@@ -65,6 +65,10 @@ window.SidebarView = BaseView.extend({
             if (Math.floor(newWindowWidth/100) != Math.floor(windowWidth/100)) {
                 self.resize_sidebar();
                 windowWidth = $(window).width();
+
+                if ($(window).width() > 768 && !this.$(".sidebar-tab").is(":visible")) {
+                    this.$(".sidebar-tab").fadeIn(115);
+                }
             }
         });
 
