@@ -80,7 +80,13 @@ if os.name == "nt":
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
 
-KALITE_HOME = os.path.join(os.path.expanduser("~"), ".kalite")
+from django.conf import settings
+if getattr(settings, "TARGET_OS", None) == "Android":
+    #puting this dir in the current working dir solves the unrooted privilege issue on Android
+    KALITE_HOME = os.path.join(os.getcwd(), ".kalite")
+else:
+    KALITE_HOME = os.path.join(os.path.expanduser("~"), ".kalite")
+
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
@@ -219,7 +225,6 @@ def get_pid():
         raise NotRunning(7)  # Unclean shutdown
 
     # TODO: why is the port in django settings!? :) /benjaoming
-    from django.conf import settings
     listen_port = getattr(settings, "CHERRYPY_PORT", LISTEN_PORT)
 
     # Timeout is 1 second, we don't want the status command to be slow
