@@ -31,6 +31,7 @@ from django.utils.translation import gettext as _
 
 from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
+from kalite.distributed.profiler import profile
 
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
@@ -237,6 +238,7 @@ def create_thumbnail_url(thumbnail):
 
 CONTENT          = None
 CACHE_VARS.append("CONTENT")
+@profile("content_cache_profile.dat")
 def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CODE):
     global CONTENT, CONTENT_FILEPATH
 
@@ -484,6 +486,7 @@ def get_topic_videos(*args, **kwargs):
     return get_topic_leaves(*args, **kwargs)
 
 
+@profile("get_exercise_data_profile.dat")
 def get_exercise_data(request, exercise_id=None):
     exercise = get_exercise_cache(language=request.language).get(exercise_id, None)
 

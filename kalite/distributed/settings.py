@@ -18,6 +18,7 @@ except ImportError:
     local_settings = object()
 
 DEBUG = getattr(local_settings, "DEBUG", False)
+PROFILE = getattr(local_settings, "PROFILE", False)
 
 
 ########################
