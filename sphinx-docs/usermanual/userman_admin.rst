@@ -148,51 +148,52 @@ Create a Facility
 -------------------------
 KA Lite assumes that you are going to be using the software primarily in one place. This could be a school, a home, a community center, etc. We call this place a “facility”, and use it to help differentiate users who are syncing back data with our central data hub. In order to create a facility, follow the steps below.
 
-#. Log in to KA Lite.
-#. Click the "Manage" tab at the top of the page. |manage-highlight|
-#. Make sure that the "Facilities" tab is selected.
-#. Under the Facilities section, click on "Add a new facility..." |add-new-facility-highlight|
-#. Fill in the information for all the fields you find below the map
-#. Click the "Save facility" button when you are finished. |save-facility-highlight|
-#. Once the information has been saved, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully saved your new facility.
+1. Log in to KA Lite.
+2. Click the "Manage" tab at the top of the page.
 
-.. |manage-highlight| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /
     :navigation-steps:
     :focus: ul.nav li a.admin-only[href=\"/management/zone/\"] | Click here!
     :class: screenshot
 
-.. |add-new-facility-highlight| screenshot::
+3. Make sure that the "Facilities" tab is selected.
+4. Under the Facilities section, click on "Add a new facility..."
+
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps:
     :focus: a.create-facility
     :class: screenshot
 
-.. |save-facility-highlight| screenshot::
+5. Fill in the information for all the fields you find below the map
+6. Click the "Save facility" button when you are finished.
+
+.. screenshot::
     :user-role: admin
     :url: /securesync/zone/None/facility/new/
     :navigation-steps: #id_name click | #id_name send_keys Your School | NEXT send_keys An optional description of your school...
     :focus: input.submit | Click here to create a new facility after filling in the form above.
     :class: screenshot
 
+7. Once the information has been saved, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully saved your new facility.
 
 Delete a Facility
 -------------------------
-#. Log in to KA Lite.
-#. Click the "Manage" tab at the top of the page. 
-#. Make sure that the "Facilities" tab is selected. |facilities-tab-highlight|
-#. Find the facility you would like to delete, and click the trash can icon to delete the facility. |trash-icon-highlight|
-#. You will be prompted to type in the name of the facility you wish to delete for confirmation.
-#. If your delete is successful, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully deleted the facility.
+1. Log in to KA Lite.
+2. Click the "Manage" tab at the top of the page. 
+3. Make sure that the "Facilities" tab is selected.
 
-.. |facilities-tab-highlight| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps:
     :focus: li.facility
     :class: screenshot
+
+4. Find the facility you would like to delete, and click the trash can icon to delete the facility.
 
 .. |trash-icon-highlight| screenshot::
     :user-role: admin
@@ -201,186 +202,204 @@ Delete a Facility
     :focus: span.glyphicon-trash
     :class: screenshot
 
+5. You will be prompted to type in the name of the facility you wish to delete for confirmation.
+6. If your delete is successful, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully deleted the facility.
+
 User Management
 -------------------------
 Coaches and learners are the other types of users that KA Lite supports. In order for them to be able to login, you need to create accounts for them.
 
 Adding Learners
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-#. Log in to KA Lite.
-#. Click on the "Manage" tab at the top of the page.
-#. Make sure that the "Facilities" tab is selected.
-#. Select the facility that the learner will belong to. |facility-name-highlight|
-#. Under the "Learners" header, click on "Add a new Learner". |add-new-learner-highlight|
-#. You will be redirected to a page that says "Add a new Learner". Fill in all the information. The facility dropdown defaults to the facility you selected in the previous steps.
-#. Click "Create user". You should be redirected to the "Facilities" page, where you will see a message indicating that you have successfully created a Learner user. |create-user-highlight| 
+1. Log in to KA Lite.
+2. Click on the "Manage" tab at the top of the page.
+3. Make sure that the "Facilities" tab is selected.
+4. Select the facility that the learner will belong to.
 
-.. |facility-name-highlight| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps:
     :focus: a.facility-name | Click the facility's name to select it.
     :class: screenshot
 
-.. |add-new-learner-highlight| screenshot::
+5. Under the "Learners" header, click on "Add a new Learner".
+
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: a.create-student
     :class: screenshot
 
-.. |create-user-highlight| screenshot::
+6. You will be redirected to a page that says "Add a new Learner". Fill in all the information. The facility dropdown defaults to the facility you selected in the previous steps.
+7. Click "Create user". You should be redirected to the "Facilities" page, where you will see a message indicating that you have successfully created a Learner user.
+
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click | .create-student click
     :focus: input.submit
     :class: screenshot
 
+
 Permanently Deleting Learners
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#. Log in to KA Lite.
-#. Click on the "Manage" tab at the top of the page.
-#. Make sure that the "Facilities" tab is selected.
-#. Under the "Facilities" header, select the facility the Learner belongs to.
-#. Under the "Learners" header, mark the box to the left of the Learner account you would like to delete. |checkbox-highlight|
-#. Press the "Delete Learners" button. |delete-button-highlight|
-#. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+1. Log in to KA Lite.
+2. Click on the "Manage" tab at the top of the page.
+3. Make sure that the "Facilities" tab is selected.
+4. Under the "Facilities" header, select the facility the Learner belongs to.
+5. Under the "Learners" header, mark the box to the left of the Learner account you would like to delete.
 
-.. |checkbox-highlight| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #students td input | You can check one or more of these checkboxes.
     :class: screenshot
 
-.. |delete-button-highlight| screenshot::
+6. Press the "Delete Learners" button.
+
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #students .form-inline .form-group:last-child
     :class: screenshot
 
+7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+
 Adding Coaches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-#. Log in to KA Lite.
-#. Click on the "Manage" tab at the top of the page.
-#. Make sure that the "Facilities" tab is selected.
-#. Select the facility that the coach will belong to.
-#. Under the "Coaches" header, click on "Add a new coach". |add-new-coach-highlight|
-#. You will be redirected to a page that says "Add a new coach". Fill in all the information. The facility dropdown defaults to the facility you selected in the previous steps.
-#. Click the "Create User" button. |create-coach-highlight|
-#. If the user was successfully created, the page will reload with a message indicating that you have created the user.
+1. Log in to KA Lite.
+2. Click on the "Manage" tab at the top of the page.
+3. Make sure that the "Facilities" tab is selected.
+4. Select the facility that the coach will belong to.
+5. Under the "Coaches" header, click on "Add a new coach".
 
-.. |add-new-coach-highlight| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #coaches .add-new-table-item a
     :class: screenshot
 
-.. |create-coach-highlight| screenshot::
+6. You will be redirected to a page that says "Add a new coach". Fill in all the information. The facility dropdown defaults to the facility you selected in the previous steps.
+7. Click the "Create User" button.
+
+.. screenshot::
     :user-role: admin
     :url: /securesync/teacher/
     :navigation-steps:
     :focus: input.submit
     :class: screenshot
 
+8. If the user was successfully created, the page will reload with a message indicating that you have created the user.
+
 Permanently Deleting Coaches
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#. Log in to KA Lite.
-#. Click on the "Manage" tab at the top of the page.
-#. Make sure that the "Facilities" tab is selected.
-#. Under the "Facilities" header, select the facility the coach belongs to.
-#. Under the "Coaches" header, mark the box to the left of the coach account you would like to delete. |pdc-step-5|
-#. Press the "Delete Coaches" button. |pdc-step-6|
-#. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+1. Log in to KA Lite.
+2. Click on the "Manage" tab at the top of the page.
+3. Make sure that the "Facilities" tab is selected.
+4. Under the "Facilities" header, select the facility the coach belongs to.
+5. Under the "Coaches" header, mark the box to the left of the coach account you would like to delete.
 
-.. |pdc-step-5| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #coaches td input | Click a checkbox to select a coach.
     :class: screenshot
 
-.. |pdc-step-6| screenshot::
+6. Press the "Delete Coaches" button.
+
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #coaches div.row div.col-md-2 button
     :class: screenshot
 
+7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+
 Adding a Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 You can create groups within a facility. Each group can represent a classroom, a study group, or any other way you would like to group Learners. To create a group, follow the instructions below:
 
-#. Log in to KA Lite.
-#. Click on the "Manage" tab at the top of the page.
-#. Make sure that the "Facilities" tab is selected.
-#. Select the facility that the group will belong to.
-#. Under the "Learner Groups" header, click on "Add a new group". |ag-step-5|
-#. Fill out the name of the group, and provide a description.
-#. Click "create group". |ag-step-7|
-#. You should be redirected back to the page for the facility. If the group was successfully created, you will see it listed under the "Learner Groups" section.
+1. Log in to KA Lite.
+2. Click on the "Manage" tab at the top of the page.
+3. Make sure that the "Facilities" tab is selected.
+4. Select the facility that the group will belong to.
+5. Under the "Learner Groups" header, click on "Add a new group".
 
-.. |ag-step-5| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #groups .add-new-table-item a 
     :class: screenshot
 
-.. |ag-step-7| screenshot::
+6. Fill out the name of the group, and provide a description.
+7. Click "create group".
+
+.. screenshot::
     :user-role: admin
     :url: /securesync/group/
     :navigation-steps:
     :focus: input.submit
     :class: screenshot
 
+8. You should be redirected back to the page for the facility. If the group was successfully created, you will see it listed under the "Learner Groups" section.
+
 Deleting a Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-#. Log in to KA Lite.
-#. Click on the "Manage" tab at the top of the page.
-#. Make sure that the "Facilities" tab is selected.
-#. Select the facility that the group you would like to delete belongs to.
-#. Mark the box to the left of the group you would like to delete.
-#. Press the "Delete Groups" button under the "Learner Groups" header. |del-group-button|
-#. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+1. Log in to KA Lite.
+2. Click on the "Manage" tab at the top of the page.
+3. Make sure that the "Facilities" tab is selected.
+4. Select the facility that the group you would like to delete belongs to.
+5. Mark the box to the left of the group you would like to delete.
+6. Press the "Delete Groups" button under the "Learner Groups" header.
 
-.. |del-group-button| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: .delete-group
     :class: screenshot
 
+7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
+
 Moving a User to a New Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#. Navigate to the page for the facility the user belongs to.
-#. Under the "Learners" header, select the Learner you would like to move by clicking in the checkbox to the left of the Learner name. |learner-checkbox|
-#. In the dropbox, select the group you would like to move the user to. |learner-group-dropbox|
-#. Click the "Change Learner Groups" button. |change-group-button|
-#. The page will refresh, with a message at the top indicating a successful move.
+1. Navigate to the page for the facility the user belongs to.
+2. Under the "Learners" header, select the Learner you would like to move by clicking in the checkbox to the left of the Learner name.
 
-.. |learner-checkbox| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #students td input :first | Click this checkbox.
     :class: screenshot
 
-.. |learner-group-dropbox| screenshot::
+3. In the dropbox, select the group you would like to move the user to.
+
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click | .movegrouplist click
     :focus: .movegrouplist | Select one of these options!
     :class: screenshot
 
-.. |change-group-button| screenshot::
+4. Click the "Change Learner Groups" button.
+
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #students .movegroup
     :class: screenshot
+
+5. The page will refresh, with a message at the top indicating a successful move.
 
 Removing Users from a Group
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -392,16 +411,17 @@ Group Summary Statistics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 For each group, you should be able to view some statistics. 
 
-#. Navigate to the Learner Groups section of the facility you wish to look at. 
-#. Click on the group that you wish to view. |group-name|
-#. The statistics for the group should be displayed at the top of the page.
+1. Navigate to the Learner Groups section of the facility you wish to look at. 
+2. Click on the group that you wish to view.
 
-.. |group-name| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/None/
     :navigation-steps: .facility-name click
     :focus: #groups td a :first | Click here to view group statistics!
     :class: screenshot
+
+3. The statistics for the group should be displayed at the top of the page.
 
 Edit User Information
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
@@ -426,19 +446,20 @@ Now that you've created a facility and user accounts, it's time to add video con
 Downloading Individual Videos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 After registering your device:
-#. Click the "Manage" tab at the top of the page.
-#. Click on the "Videos" tab. |video-tab-highlight|
-#. View subtopics by clicking on the '+' symbol to the left of a subject of your choice. You can close them by clicking on the '-' symbol.
-#. Mark the content you wish to download by clicking the checkbox to the left of the content name. 
-#. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
-#. Once the download is completed, video content will be ready for Learners to watch!
+1. Click the "Manage" tab at the top of the page.
+2. Click on the "Videos" tab.
 
-.. |video-tab-highlight| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/
     :navigation-steps:
     :focus: li.video
     :class: screenshot
+
+3. View subtopics by clicking on the '+' symbol to the left of a subject of your choice. You can close them by clicking on the '-' symbol.
+4. Mark the content you wish to download by clicking the checkbox to the left of the content name. 
+5. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
+6. Once the download is completed, video content will be ready for Learners to watch!
 
 Downloading Videos in Bulk
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -448,7 +469,7 @@ We have made the full set of KA videos (in the format needed by KA Lite) availab
 
 #. Download and install `BitTorrent Sync`_.
 #. Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to type http://127.0.0.1:8888/ into the address bar of your browser to get the interface.
-#. Click the "Enter a key or link" button, and put in **https://link.getsync.com/#f=ka­lite­compressed&sz=25E9&q=­&s=TOQVB3LLGWCKEQ6NOCFBSEVWA74PRA6I&q=­&i=C4M3QMAVXE7RVXR7B3526TBD5V3KYV5V6&q=­&p=CCGAGLIJGFQFP2X2Z4QWQ3MLPJHTVV3A** 
+#. Click the "Enter a key or link" button, and put in **https://link.getsync.com/#f=ka-lite-compressed&sz=25E9&q=-&s=TOQVB3LLGWCKEQ6NOCFBSEVWA74PRA6I&q=-&i=C4M3QMAVXE7RVXR7B3526TBD5V3KYV5V6&q=-&p=CCGAGLIJGFQFP2X2Z4QWQ3MLPJHTVV3A**
 #. Select the "content" folder inside your KA Lite installation as the "location" (unless you want the videos to be located elsewhere).
 #. Allow the videos to sync in there from your peers! It may take a while for now, as we don't yet have many seeders on it. On that note -- please help seed by keeping it running even after you've got all the videos, if you have bandwidth to spare! This will make it easier for others to download the content as well.
 
@@ -478,10 +499,7 @@ Download Language Packs
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 To download language packs: 
 
-#. From the "Manage" page, click on the "Language" tab. |language-tab-highlight| 
-#. Select the language pack you wish to download by selecting from the drop-down menu. |lp-dropdown|
-#. Click the "Get Language Pack" button. |lp-button| 
-#. Once the download finishes, you can see your language pack in the list of installed packs. Learners and coaches will now be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default". 
+1. From the "Manage" page, click on the "Language" tab.
 
 .. |language-tab-highlight| screenshot::
     :user-role: admin
@@ -490,7 +508,9 @@ To download language packs:
     :focus: li.languages
     :class: screenshot
 
-.. |lp-dropdown| screenshot::
+2. Select the language pack you wish to download by selecting from the drop-down menu.
+
+.. screenshot::
     :user-role: admin
     :url: /update/languages/
     :navigation-steps:
@@ -498,7 +518,9 @@ To download language packs:
     :class: screenshot
     :registered: true
 
-.. |lp-button| screenshot::
+3. Click the "Get Language Pack" button.
+
+.. screenshot::
     :user-role: admin
     :url: /update/languages/
     :navigation-steps:
@@ -506,15 +528,17 @@ To download language packs:
     :class: screenshot
     :registered: true
 
+4. Once the download finishes, you can see your language pack in the list of installed packs. Learners and coaches will now be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default". 
+
 Delete Language Packs
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 To delete language packs:
 
 #. Log in as the administrator.
 #. Click the "Languages" link in the navigation bar
-#. In the Installed Languages section, there is a button for deletion of each language. |del-lang-btn|
+#. In the Installed Languages section, there is a button for deletion of each language.
 
-.. |del-lang-btn| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /update/languages/
     :navigation-steps:
@@ -548,6 +572,8 @@ Restarting Your Server: Linux
 Restarting Your Server: Mac 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. You may do this by navigating to the magnifying glass |magglass| at the top right corner of your screen, and typing in "Terminal", then hitting "Enter" on your keyboard.
+
+.. |magglass| image:: magglass.png
 
 .. image:: search.png
     :align: center
