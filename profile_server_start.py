@@ -15,7 +15,7 @@ pr = cProfile.Profile()
 try:
     # Start profiling...
     pr.enable()
-    start()
+    start(debug=True, args=["--traceback"], skip_job_scheduler=True)
 finally:
     # When you get tired or accidentally hit CTRL-C, the profiler will wrap up
     pr.disable()
