@@ -364,6 +364,12 @@ form .input-group {
 #content-explore h5 {
     margin-top: 5px;
     margin-bottom: 5px;
+    color: darkgray;
+}
+#content-resume h1,
+#content-nextsteps h1,
+#content-explore h1 {
+    color: #A0B750;
 }
 #content-resume,
 #content-nextsteps,
@@ -374,10 +380,11 @@ form .input-group {
     margin: 3%;
 }
 #content-nextsteps span#first-col {
+    margin-left: 5px;
     width: 20%;
 }
 #content-nextsteps span#second-col {
-    width: 58%;
+    width: 56%;
 }
 #content-nextsteps span#third-col {
     vertical-align: middle;
@@ -389,6 +396,21 @@ form .input-group {
 #content-nextsteps p {
     margin: 0;
 }
+#content-nextsteps a,
+#content-nextsteps span#third-col {
+    color: gray;
+}
+#content-nextsteps h3,
+#content-explore h3 {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+}
+#content-explore span#left-col {
+    vertical-align: super;
+    margin-left: 5px;
+    width: 49%;
+}
 #content-nextsteps-lesson,
 #content-explore-topic {
     border-bottom: solid 1px;
@@ -397,12 +419,23 @@ form .input-group {
 #content-explore {
     vertical-align: top;
 }
+#content-explore h2 {
+    font-size: 2vw;
+}
 #content-explore h2, 
 #content-explore p {
     margin-bottom: 4px;
 }
+#content-explore h5 {
+    font-size: 1vw;
+    margin-left: 5px;
+}
+#content-explore h4 {
+    font-size: 1.3vw;
+}
 #content-explore a {
     display: block;
+    color: gray;
 }
 .card-top {
     border-bottom: solid 1px;
@@ -417,16 +450,27 @@ form .input-group {
 .glyphicon-play-circle {
     font-size: 3em;
     padding-left: 20px;
+    color: #A0B750;
 }
 .glyphicon-arrow-right {
     font-size: 2.5em;
+    color: #A0B750;
 }
 .glyphicon-ok {
     font-size: 3em;
     padding-left: 10px;
+    color: #A0B750;
+}
+.glyphicon-road {
+    font-size: 2.25em;
+    padding-left: 20px;
+    color: #A0B750;
 }
 #card-bottom h2 {
     padding-top: 10px;
+}
+#card-bottom p {
+    margin-left: 15px;
 }
 #card-bottom h2,
 #card-bottom h3,
