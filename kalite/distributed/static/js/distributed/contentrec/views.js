@@ -139,7 +139,7 @@ $(function(){
 			model: contentExploreCollection
 		});
 
-		$("#content-area").append(window.content_resume.el.childNodes);
+		//$("#content-area").append(window.content_resume.el.childNodes);
 		$("#content-area").append(window.content_nextsteps.el.childNodes);
 		$("#content-area").append(window.content_explore.el.childNodes);
 
