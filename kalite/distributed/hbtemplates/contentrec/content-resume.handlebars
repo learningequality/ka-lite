@@ -1,12 +1,27 @@
-<div id="content-resume">
-    <div class="card-top">
-        <h1 class="card-title">Resume</h1>
-        <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>
+<!--This is where the card title is-->
+<div class="row card-title">
+    <div class="col-xs-9">
+        <h1>Resume</h1>
     </div>
-    <div id="card-bottom">
-        <h2>Algorithms {{ lesson_title }}</h2>
-        <img src="/../static/images/video.png" alt="video" />
-        <h3>Description:</h3>
-        <p>{{ lesson_description }}</p>
+    <div class="col-xs-3">
+        <h1>
+            <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span> 
+        </h1>
     </div>
+</div>
+
+<!--Where the video thumbnail and description go-->
+<div id="content-resume-thumbnail">
+    <h2>Algorithms {{ lesson_title }}</h2>
+        <div class="row">
+            <img src="/../static/images/video.png" alt="video" />
+        </div>
+    
+        <div class="row">
+            <h3>Description:</h3>
+        </div>
+        
+        <div class="row">
+            <p>{{ lesson_description }}</p>        
+        </div>
 </div>

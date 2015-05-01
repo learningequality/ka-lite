@@ -6,16 +6,23 @@ window.HomepageWrapper = BaseView.extend({
     template: HB.template("contentrec/content-rec-wrapper"),
     
     initialize: function() {
-        window.content_resume = new ContentResumeView({
-			model: contentResumeModel
+        
+        var resumeCollection = new window.SuggestedContentCollection(this.collection.where({resume:true}));
+        
+        var nextStepsCollection = new window.SuggestedContentCollection(this.collection.where({nextSteps:true}));
+        
+        var exploreCollection = new window.SuggestedContentCollection(this.collection.where({explore:true}));
+        
+        this.content_resume = new ContentResumeView({
+            collection:resumeCollection;
 		});
 
-		window.content_nextsteps = new ContentNextStepsView({
-			model: suggestedContentCollection
+		this.content_nextsteps = new ContentNextStepsView({
+            collection:nextStepsCollection;
 		});
 
-		window.content_explore = new ContentExploreView({
-			model: suggestedContentCollection
+		this.content_explore = new ContentExploreView({
+            collection:exploreCollection;
 		});
                 
         this.render();
@@ -23,6 +30,9 @@ window.HomepageWrapper = BaseView.extend({
 
     render: function() {
         this.$el.html(this.template(this.model.attributes));
+        this.$("#resume").append(this.content_resume.el);
+        this.$("#nextsteps").append(this.content_nextsteps.el);
+        this.$("#explore").append(this.content_explore.el);
     }
 
 });
@@ -154,22 +164,14 @@ window.ContentExploreView = BaseView.extend({
 
 
 $(function(){    
-    
-    window.contentResumeModel = new window.ContentResumeModel();
         
     window.suggestedContentCollection = new window.SuggestedContentCollection();
     
     window.hpwrapper = new HomepageWrapper({
 		/*this is probably going to have to change. @HELENA, do we need to make a model
         for this?*/
-        model: contentResumeModel
-		});
-
-    
-    $("#content-area").append(window.hpwrapper.el.childNodes);
-    
-    $("#resume").append(window.content_resume.el.childNodes);
-    $("#nextsteps").append(window.content_nextsteps.el.childNodes);
-    $("#explore").append(window.content_explore.el.childNodes);
+        collection:suggestedContentCollection,
+        el:"#content-area"
+		});    
 });
 
