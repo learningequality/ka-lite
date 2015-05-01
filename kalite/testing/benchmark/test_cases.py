@@ -51,7 +51,7 @@ from selenium.webdriver.common.by import By
 from . import base
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools.api import get_node_cache
 
 
 class HelloWorld(base.Common):

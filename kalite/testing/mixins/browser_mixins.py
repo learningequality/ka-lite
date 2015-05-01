@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from ..browser import browse_to, setup_browser, wait_for_page_change
 from kalite.facility.models import Facility, FacilityUser
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.api import get_content_cache
 
 from django.contrib.auth.models import User
 
