@@ -5,7 +5,7 @@ import sys
 from time import strftime
 
 sys.path.insert(0, ".")
-from kalitectl import start
+from kalitectl import manage
 
 try:
     filename = sys.argv[1]
@@ -15,9 +15,11 @@ pr = cProfile.Profile()
 try:
     # Start profiling...
     pr.enable()
-    start(debug=True, args=["--traceback"], skip_job_scheduler=True)
+    manage("runserver", args=["--traceback"])
 finally:
     # When you get tired or accidentally hit CTRL-C, the profiler will wrap up
     pr.disable()
     fn, ext = os.path.splitext(filename)
-    pr.dump_stats(fn + strftime("%Y-%m-%d-%H-%M-%S") + ext)
+    stamped_filename = fn + strftime("%Y-%m-%d-%H-%M-%S") + ext
+    print "Dumping to %s" % stamped_filename
+    pr.dump_stats(stamped_filename)
