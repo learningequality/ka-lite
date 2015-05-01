@@ -11,7 +11,7 @@ from django.utils import unittest
 
 from .. import caching
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.api import get_content_cache
 
 
 class CachingTest(KALiteTestCase):

@@ -13,7 +13,7 @@ from django.core.management.base import NoArgsCommand
 
 import kalite.version as version
 
-from kalite.topic_tools import get_content_cache, get_exercise_cache
+from kalite.topic_tools.api import get_content_cache, get_exercise_cache
 
 logging = settings.LOG
 

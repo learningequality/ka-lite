@@ -14,7 +14,7 @@ from django.conf import settings; logging = settings.LOG
 from django.core.management.base import NoArgsCommand
 from django.utils.text import slugify
 
-from kalite import topic_tools
+from kalite.topic_tools import api as tt_api
 
 from fle_utils.general import ensure_dir
 
@@ -130,12 +130,12 @@ class Command(NoArgsCommand):
         assessment_item_cache = channel_tools.build_full_cache(assessment_items)
         content_cache = channel_tools.build_full_cache(content)
 
-        node_cache = topic_tools.generate_node_cache(topic_tree)
+        node_cache = tt_api.generate_node_cache(topic_tree)
 
         node_cache["Exercise"] = exercise_cache
         node_cache["Content"] = content_cache
         node_cache["AssessmentItem"] = assessment_item_cache
-        slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
+        slug2id_map = tt_api.generate_slug_to_video_id_map(node_cache)
 
         if channel_tools.channel_data["temp_ok_atts"]:
             scrub_topic_tree(node_cache=node_cache, channel_data=channel_tools.channel_data)

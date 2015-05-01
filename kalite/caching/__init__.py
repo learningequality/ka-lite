@@ -24,7 +24,9 @@ from django.dispatch import receiver
 from django.test.client import Client
 
 from fle_utils.internet.webcache import *
-from kalite import i18n, topic_tools
+from kalite import i18n
+from kalite.topic_tools import api as tt_api
+from kalite.distributed.profiler import profile
 
 # Signals
 
@@ -82,7 +84,7 @@ def invalidate_inmemory_caches():
     """
     # TODO: loop through all modules and see if a module variable exists, using getattr,
     #   rather than hard-coding.
-    for module in (i18n, topic_tools):
+    for module in (i18n, tt_api):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)
@@ -99,6 +101,7 @@ def invalidate_all_caches():
         invalidate_web_cache()
     logging.debug("Great success emptying all caches.")
 
+@profile("init_content_cache.dat")
 def initialize_content_caches(force=False):
     """
     Catch all function to regenerate any content caches in memory that need annotation
@@ -106,8 +109,8 @@ def initialize_content_caches(force=False):
     """
     for lang in i18n.get_installed_language_packs(force=True).keys():
         logging.info("Preloading exercise data for language {lang}.".format(lang=lang))
-        topic_tools.get_exercise_cache(force=force, language=lang)
+        tt_api.get_exercise_cache(force=force, language=lang)
         logging.info("Preloading content data for language {lang}.".format(lang=lang))
-        topic_tools.get_content_cache(force=force, annotate=True, language=lang)
+        tt_api.get_content_cache(force=force, annotate=True, language=lang)
         logging.info("Preloading topic tree data for language {lang}.".format(lang=lang))
-        topic_tools.get_topic_tree(force=force, annotate=True, language=lang)
+        tt_api.get_topic_tree(force=force, annotate=True, language=lang)

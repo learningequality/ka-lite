@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 from fle_utils.internet.webcache import invalidate_web_cache
 
 from .... import caching
-from kalite import topic_tools
+from kalite import topic_tools.api as tt_api
 
 
 class Command(BaseCommand):
@@ -43,7 +43,7 @@ class Command(BaseCommand):
     def create_cache(self, force=False):
         for node_type in ['Topic', 'Content', 'Exercise']:
             self.stdout.write("Caching %ss:\n" % node_type)
-            for narr in topic_tools.get_node_cache(node_type).values():
+            for narr in tt_api.get_node_cache(node_type).values():
                 for n in narr:
                     self.create_page_cache(path=n["path"], force=force)
 
@@ -76,7 +76,7 @@ class Command(BaseCommand):
 
         for node_type in ['Topic', 'Content', 'Exercise']:
             self.stdout.write("Cached %ss:\n" % node_type)
-            for narr in topic_tools.get_node_cache(node_type).values():
+            for narr in tt_api.get_node_cache(node_type).values():
                 for n in narr:
                     if caching.has_cache_key(path=n["path"]):
                         self.stdout.write("\t%s\n" % n["path"])
@@ -92,7 +92,7 @@ class Command(BaseCommand):
 
         for node_type in ['Topic', 'Content', 'Exercise']:
             self.stdout.write("Clearing %ss:\n" % node_type)
-            for narr in topic_tools.get_node_cache(node_type).values():
+            for narr in tt_api.get_node_cache(node_type).values():
                 for n in narr:
                     if caching.has_cache_key(path=n["path"]):
                         self.stdout.write("\t%s\n" % n["path"])

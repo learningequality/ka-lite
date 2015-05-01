@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 
 from .base import UpdatesTestCase
-from kalite.topic_tools import get_content_cache, get_node_cache
+from kalite.topic_tools.api import get_content_cache, get_node_cache
 
 class TestTopicAvailability(UpdatesTestCase):
     """

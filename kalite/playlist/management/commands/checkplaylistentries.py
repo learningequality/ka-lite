@@ -4,7 +4,7 @@ import os
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand
 
-from kalite.topic_tools import video_dict_by_video_id, get_flat_topic_tree
+from kalite.topic_tools.api import video_dict_by_video_id, get_flat_topic_tree
 
 
 MALFORMED_IDS = []

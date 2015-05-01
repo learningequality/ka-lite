@@ -27,7 +27,7 @@ from kalite.shared.decorators.auth import require_authorized_access_to_student_d
 from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
-from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_exercise_cache, get_node_cache
+from kalite.topic_tools.api import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_exercise_cache, get_node_cache
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
