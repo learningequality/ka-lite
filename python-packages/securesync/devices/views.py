@@ -43,6 +43,9 @@ def initialize_registration():
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
 
+    # Delete the registration state from the session to ensure it is refreshed next pageload
+    del request.session["registered"]
+
     own_device = Device.get_own_device()
     if own_device.is_registered():
         initialize_registration()
