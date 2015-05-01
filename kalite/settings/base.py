@@ -7,6 +7,10 @@ import warnings
 from kalite import ROOT_DATA_PATH
 
 
+class RemovedInKALite_v015_Warning(Warning):
+    pass
+
+
 # Load local settings first... loading it again later to have the possibility
 # to overwrite default app settings.. very strange method, will be refactored
 # and completely fixed ~0.14 or 0.15. /benjaoming
@@ -19,10 +23,20 @@ try:
     # This is not a DeprecationWarning by purpose, because those are
     # ignored during settings module load time
     warnings.warn(
-        "Using local_settings is deprecated, please write your own settings "
-        "module, import kalite.settings.base, and point your "
-        "DJANGO_SETTINGS_MODULE to your customized settings or run kalite "
-        "COMMAND --settings=my.settings",
+        "We will be deprecating the old way of statically importing custom "
+        "settings, in favor of a more flexible way. The easiest way to update "
+        "your installation is to rename your local_settings.py (keeping it in "
+        "the same directory) and add an import statement in the very first "
+        "line of the new file so it looks like this:\n\n"
+        "    from kalite.settings.base import *\n"
+        "    # Put custom settings here...\n"
+        "    FOO = BAR\n\n"
+        "and then call kalite start with an additional argument pointing to "
+        "your new settings module:\n\n"
+        "    kalite start --settings=kalite.my_settings\n\n"
+        "You can put your settings module in a different location, but make "
+        "sure that this location is in your Python path.",
+        RemovedInKALite_v015_Warning
     )
 except ImportError:
     local_settings = object()
