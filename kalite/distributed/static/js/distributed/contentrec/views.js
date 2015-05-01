@@ -14,22 +14,22 @@ window.HomepageWrapper = BaseView.extend({
         var exploreCollection = new window.SuggestedContentCollection(this.collection.where({explore:true}));
         
         this.content_resume = new ContentResumeView({
-            collection:resumeCollection;
+            collection:resumeCollection
 		});
 
 		this.content_nextsteps = new ContentNextStepsView({
-            collection:nextStepsCollection;
+            collection:nextStepsCollection
 		});
 
 		this.content_explore = new ContentExploreView({
-            collection:exploreCollection;
+            collection:exploreCollection
 		});
                 
         this.render();
     },
 
     render: function() {
-        this.$el.html(this.template(this.model.attributes));
+        this.$el.html(this.template());
         this.$("#resume").append(this.content_resume.el);
         this.$("#nextsteps").append(this.content_nextsteps.el);
         this.$("#explore").append(this.content_explore.el);
@@ -49,7 +49,7 @@ window.ContentResumeView = BaseView.extend({
     },
 
     render: function() {
-        this.$el.html(this.template(this.model.attributes));
+        this.$el.html(this.template());
     }
 
 });
@@ -92,7 +92,7 @@ window.ContentNextStepsView = BaseView.extend({
 
     render: function() {
 
-        this.$el.html(this.template(this.model.attributes));
+        this.$el.html(this.template());
         var container = document.createDocumentFragment();
 
         for(i = 0; i < this.collection.length; i++) {
@@ -146,7 +146,7 @@ window.ContentExploreView = BaseView.extend({
 
 	render: function() {
 
-		this.$el.html(this.template(this.model.attributes));
+		this.$el.html(this.template());
         var container = document.createDocumentFragment();
 
 		for(i = 0; i < this.collection.length; i++) {
