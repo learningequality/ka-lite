@@ -18,7 +18,8 @@ window.SuggestedContentModel = Backbone.Model.extend({
 		lesson_title: "lesson title",
 		lesson_description: "lesson description",
 		suggested_topic_title: "suggested topic",
-		suggested_topic_description: "topic description"
+		suggested_topic_description: "topic description",
+		video_thumbnail: "video thumnail"
 	},
 
 	initialize: function() {

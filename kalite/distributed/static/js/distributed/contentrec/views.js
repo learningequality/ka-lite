@@ -157,7 +157,12 @@ $(function(){
     
     window.contentResumeModel = new window.ContentResumeModel();
         
-    window.suggestedContentCollection = new window.SuggestedContentCollection();
+    window.suggestedContentCollection = new window.SuggestedContentCollection([
+		{interest_topic: "Chemistry", suggested_topic: "Physics", resume: true},
+		{interest_topic: "Physiology", suggested_topic: "Biology", nextSteps: true},
+		{interest_topic: "Algebra", suggested_topic: "Precalculus", explore: true},
+		{interest_topic: "Modern Art", suggested_topic: "Art History"}
+	]);
     
     window.hpwrapper = new HomepageWrapper({
 		/*this is probably going to have to change. @HELENA, do we need to make a model
