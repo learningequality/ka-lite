@@ -1,7 +1,5 @@
 // Views
 
-<<<<<<< HEAD
-=======
 /*The wrapper where everything goes, makes for a dynamic page*/
 window.HomepageWrapper = BaseView.extend({
 
@@ -29,7 +27,6 @@ window.HomepageWrapper = BaseView.extend({
 
 });
 
->>>>>>> 82ecd09c6975552322328c960283866be8916697
 /**
  * View that wraps the resume card on the learn page
  */
@@ -156,32 +153,6 @@ window.ContentExploreView = BaseView.extend({
 });
 
 
-<<<<<<< HEAD
-$(function(){
-	window.contentResumeModel = new window.ContentResumeModel();
-	window.suggestedContentCollection = new window.SuggestedContentCollection();
-
-	//contentResumeModel.fetch().then(function(){
-		window.content_resume = new ContentResumeView({
-			model: contentResumeModel
-		});
-
-		window.content_nextsteps = new ContentNextStepsView({
-			model: suggestedContentCollection
-		});
-
-		window.content_explore = new ContentExploreView({
-			model: suggestedContentCollection
-		});
-
-		$("#content-area").append(window.content_resume.el.childNodes);
-		$("#content-area").append(window.content_nextsteps.el.childNodes);
-		$("#content-area").append(window.content_explore.el.childNodes);
-
-	//});
-
-	//resize_to_fit();
-=======
 $(function(){    
     
     window.contentResumeModel = new window.ContentResumeModel();
@@ -200,15 +171,5 @@ $(function(){
     $("#resume").append(window.content_resume.el.childNodes);
     $("#nextsteps").append(window.content_nextsteps.el.childNodes);
     $("#explore").append(window.content_explore.el.childNodes);
->>>>>>> 82ecd09c6975552322328c960283866be8916697
 });
 
-function resize_to_fit(){
-	var fontsize = $('span#left-col span').css('font-size');
-	$('span#left-col span').css('fontSize', parseFloat(fontsize) - 1);
-
-	if($('span#left-col span').height() >= $('span#left-col').height()){
-		//console.log("resizing");
-		resize_to_fit();
-	}
-}
