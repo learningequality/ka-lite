@@ -348,6 +348,19 @@ form .input-group {
 /* ===================================
     Content Recommendation
 =================================== */
+<<<<<<< HEAD
+=======
+
+#content-rec-wrapper #resume,#nextsteps,#explore{
+    padding-left:5%;
+    padding-right:5%;
+}
+
+/*
+
+SORRY! Want to see what it looks like without all this styling!
+
+>>>>>>> 82ecd09c6975552322328c960283866be8916697
 .inline {
     display: inline-block;
 }
@@ -475,6 +488,10 @@ form .input-group {
     margin-left: auto;
     margin-right: auto;
 }
+<<<<<<< HEAD
+=======
+*/
+>>>>>>> 82ecd09c6975552322328c960283866be8916697
 
 /* ===================================
     Landing Page

@@ -1,5 +1,35 @@
 // Views
 
+<<<<<<< HEAD
+=======
+/*The wrapper where everything goes, makes for a dynamic page*/
+window.HomepageWrapper = BaseView.extend({
+
+    template: HB.template("contentrec/content-rec-wrapper"),
+    
+    initialize: function() {
+        window.content_resume = new ContentResumeView({
+			model: contentResumeModel
+		});
+
+		window.content_nextsteps = new ContentNextStepsView({
+			model: suggestedContentCollection
+		});
+
+		window.content_explore = new ContentExploreView({
+			model: suggestedContentCollection
+		});
+                
+        this.render();
+    },
+
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+    }
+
+});
+
+>>>>>>> 82ecd09c6975552322328c960283866be8916697
 /**
  * View that wraps the resume card on the learn page
  */
@@ -126,6 +156,7 @@ window.ContentExploreView = BaseView.extend({
 });
 
 
+<<<<<<< HEAD
 $(function(){
 	window.contentResumeModel = new window.ContentResumeModel();
 	window.suggestedContentCollection = new window.SuggestedContentCollection();
@@ -150,6 +181,26 @@ $(function(){
 	//});
 
 	//resize_to_fit();
+=======
+$(function(){    
+    
+    window.contentResumeModel = new window.ContentResumeModel();
+        
+    window.suggestedContentCollection = new window.SuggestedContentCollection();
+    
+    window.hpwrapper = new HomepageWrapper({
+		/*this is probably going to have to change. @HELENA, do we need to make a model
+        for this?*/
+        model: contentResumeModel
+		});
+
+    
+    $("#content-area").append(window.hpwrapper.el.childNodes);
+    
+    $("#resume").append(window.content_resume.el.childNodes);
+    $("#nextsteps").append(window.content_nextsteps.el.childNodes);
+    $("#explore").append(window.content_explore.el.childNodes);
+>>>>>>> 82ecd09c6975552322328c960283866be8916697
 });
 
 function resize_to_fit(){
