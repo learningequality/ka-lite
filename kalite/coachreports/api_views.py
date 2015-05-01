@@ -17,7 +17,7 @@ from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.testing.decorators import allow_api_profiling
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import VideoLog, ExerciseLog, UserLog, UserLogSummary
-from kalite.topic_tools import get_topic_by_path, get_node_cache, get_exercise_cache
+from kalite.topic_tools.api import get_topic_by_path, get_node_cache, get_exercise_cache
 from kalite.i18n import lcode_to_django_lang
 
 

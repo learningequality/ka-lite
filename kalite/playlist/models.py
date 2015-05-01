@@ -6,7 +6,7 @@ from django.conf import settings
 from fle_utils.django_utils.classes import ExtendedModel
 
 from kalite.facility.models import FacilityGroup, FacilityUser
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache
+from kalite.topic_tools.api import get_flat_topic_tree, get_node_cache
 
 from securesync.models import DeferredCountSyncedModel
 

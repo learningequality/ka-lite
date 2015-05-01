@@ -32,7 +32,7 @@ from fle_utils.internet.functions import set_query_params
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.shared.decorators.auth import require_login
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools.api import get_node_cache
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
 CENTRAL_UPDATE_ALL_PATH = "/api/contentload/update/central/"

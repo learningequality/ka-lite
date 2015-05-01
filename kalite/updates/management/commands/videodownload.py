@@ -16,7 +16,8 @@ from ...models import VideoFile
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
-from kalite import caching, i18n, topic_tools
+from kalite import caching, i18n
+from kalite.topic_tools import api as tt_api
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
@@ -40,7 +41,7 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
 def get_video_node_by_youtube_id(youtube_id):
     """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
     video_id = i18n.get_video_id(youtube_id=youtube_id)
-    return topic_tools.get_node_cache("Content").get(video_id, [None])
+    return tt_api.get_node_cache("Content").get(video_id, [None])
 
 
 class Command(UpdatesDynamicCommand, CronCommand):

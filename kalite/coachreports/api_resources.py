@@ -12,7 +12,7 @@ from kalite.facility.api_resources import FacilityUserResource
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.main.models import ExerciseLog
 
-from kalite.topic_tools import get_exercise_cache
+from kalite.topic_tools.api import get_exercise_cache
 
 class PlaylistParentResource(Resource):
     """

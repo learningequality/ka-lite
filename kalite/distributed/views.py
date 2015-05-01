@@ -23,7 +23,7 @@ from django.utils.translation import ugettext as _
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
 from fle_utils.internet.webcache import backend_cache_page
-from kalite import topic_tools
+from kalite.topic_tools import api as tt_api
 from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
@@ -107,7 +107,7 @@ def homepage(request):
 
 def watch_home(request):
     """Dummy wrapper function for topic_handler with url=/"""
-    return topic_handler(request, cached_nodes={"topic": topic_tools.get_topic_tree()})
+    return topic_handler(request, cached_nodes={"topic": tt_api.get_topic_tree()})
 
 
 def help(request):
@@ -180,7 +180,7 @@ def search(request):
         query = query.lower()
         # search for topic, video or exercise with matching title
         nodes = []
-        for node_type, node_dict in topic_tools.get_node_cache().iteritems():
+        for node_type, node_dict in tt_api.get_node_cache().iteritems():
             if category and node_type != category:
                 # Skip categories that don't match (if specified)
                 continue
