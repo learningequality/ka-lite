@@ -66,10 +66,12 @@ else:
     sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
 
 
+import httplib
+import re
+
 from django.core.management import ManagementUtility, get_commands
 from threading import Thread
 from docopt import docopt
-import httplib
 from urllib2 import URLError
 from socket import timeout
 from kalite.version import VERSION
@@ -112,7 +114,6 @@ STATUS_UNKNOW = 101
 
 
 class NotRunning(Exception):
-
     """
     Raised when server was expected to run, but didn't. Contains a status
     code explaining why.
@@ -122,6 +123,39 @@ class NotRunning(Exception):
         self.status_code = status_code
         super(NotRunning, self).__init__()
 
+
+def udpate_default_args(defaults, updates):
+    """
+    Takes a list of default arguments and overwrites the defaults with
+    contents of updates.
+    
+    e.g.:
+    
+    udpate_default_args(["--somearg=default"], ["--somearg=overwritten"])
+     => ["--somearg=overwritten"]
+    
+    This is done to avoid defining all known django command line arguments,
+    we just want to proxy things and update with our own default values without
+    looking into django.
+    """
+    # Returns either the default or an updated argument
+    arg_name = re.compile(r"^--?([^\s\=]+)")
+    # Create a dictionary of defined defaults and updates where '-somearg' is
+    # always the key, update the defined defaults dictionary with the updates
+    # dictionary thus overwriting the defaults.
+    defined_defaults = map(
+        lambda arg: (arg_name.search(arg).group(1), arg),
+        defaults
+    )
+    defined_defaults = dict(defined_defaults)
+    defined_updates = map(
+        lambda arg: (arg_name.search(arg).group(1), arg),
+        updates
+    )
+    defined_updates = dict(defined_updates)
+    defined_defaults.update(defined_updates)
+    return defined_defaults.values()
+        
 
 # Utility functions for pinging or killing PIDs
 if os.name == 'posix':
@@ -281,12 +315,18 @@ def manage(command, args=[], in_background=False):
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param in_background: Creates a sub-process for the command
+    :param in_background: Creates a thread for the command
     """
+    
+    # TODO: Why was this necessary? Had to be commented out because get_commands
+    # imports django.conf.settings which should not be imported outside of the
+    # command itself as DJANGO_SETTINGS_MODULE could have been set from command
+    # line options.
+    # Original comment:
     # Ensure that django.core.management's global _command variable is set
     # before call commands, especially the once that run in the background
-    get_commands()
     # Import here so other commands can run faster
+    # get_commands()
     if not in_background:
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
@@ -349,16 +389,20 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=['--daemon',
-                  '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)
-                  ]
+            args=udpate_default_args(
+                ['--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)],
+                args
+            )
         )
-    args = ["--host=%s" % LISTEN_ADDRESS,
+    args = udpate_default_args(
+        [
+            "--host=%s" % LISTEN_ADDRESS,
             "--daemonize",
             "--pidfile=%s" % PID_FILE,
             "--startup-lock-file=%s" % STARTUP_LOCK,
-            ]
-    args += ["--production"] if not debug else []
+        ] + (["--production"] if not debug else []),
+        args
+    )
     manage('kaserve', args)
 
 

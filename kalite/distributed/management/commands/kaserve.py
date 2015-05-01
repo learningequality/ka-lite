@@ -98,8 +98,12 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        # Eliminate irrelevant settings
+        # Store base django settings and remove them from the options list
+        # because we are proxying one type of option list to another format
+        # where --foo=bar becomes foo=bar
+        base_django_settings = {}
         for opt in BaseCommand.option_list:
+            base_django_settings[opt.dest] = options[opt.dest]
             del options[opt.dest]
 
         # Parse the crappy way that runcherrypy takes args,
@@ -144,4 +148,4 @@ class Command(BaseCommand):
             sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
             for addr in get_ip_addresses():
                 sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))
-            call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()])
+            call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()], **base_django_settings)
