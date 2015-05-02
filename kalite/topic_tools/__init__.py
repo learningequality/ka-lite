@@ -418,20 +418,7 @@ def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
     if not topictree:
         topictree = get_topic_tree(language=language)
     node_cache = {}
-    node_cache["Topic"] = {}
-
-
-    def recurse_nodes(node):
-        # Add the node to the node cache
-        kind = node.get("kind", None)
-        if kind == "Topic":
-            if node["id"] not in node_cache[kind]:
-                node_cache[kind][node["id"]] = node
-
-            # Do the recursion
-            for child in node.get("children", []):
-                recurse_nodes(child)
-    recurse_nodes(topictree)
+    node_cache["Topic"] = dict([(node.get("id"), node) for node in topictree if node.get("kind")=="Topic"])
 
     node_cache["Exercise"] = get_exercise_cache(language=language)
     node_cache["Content"] = get_content_cache(language=language)

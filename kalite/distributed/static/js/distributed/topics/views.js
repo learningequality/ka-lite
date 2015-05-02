@@ -377,7 +377,7 @@ window.TopicContainerInnerView = BaseView.extend({
             this.node_by_slug(slug, callback);
         } else {
             var self = this;
-            this.listenToOnce(this.collection, "sync", function() {self.node_by_slug(slug, callback)});
+            this.listenToOnce(this.collection, "sync", function() {self.node_by_slug(slug, callback);});
         }
     },
 
@@ -500,7 +500,7 @@ window.TopicContainerOuterView = BaseView.extend({
         this.entity_key = options.entity_key;
         this.entity_collection = options.entity_collection;
 
-        this.model = new TopicNode({"id": "root", "title": "Khan"})
+        this.model = new TopicNode({"id": "root", "title": "Khan"});
 
         this.inner_views = [];
         this.render();

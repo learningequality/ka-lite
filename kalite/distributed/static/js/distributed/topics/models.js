@@ -21,7 +21,7 @@ window.TopicCollection = Backbone.Collection.extend({
 
         this.channel = options.channel;
 
-        this.listenToOnce(this, "sync", function() {self.loaded = true;})
+        this.listenToOnce(this, "sync", function() {self.loaded = true;});
     },
 
     url: function() {
