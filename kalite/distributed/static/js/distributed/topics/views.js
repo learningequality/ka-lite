@@ -458,7 +458,9 @@ window.SidebarEntryView = BaseView.extend({
 
     initialize: function() {
 
-        this.listenTo(this.model, "change:active", this.toggle_active);
+        _.bindAll(this);
+
+        this.listenTo(this.model, "change", this.render);
 
     },
 
@@ -475,10 +477,6 @@ window.SidebarEntryView = BaseView.extend({
             this.trigger("hideSidebar");
         }
         return false;
-    },
-
-    toggle_active: function() {
-        this.$(".sidebar-entry").toggleClass("active-entry", this.model.get("active"));
     }
 
 });
