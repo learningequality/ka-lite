@@ -81,6 +81,8 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
 
             node["parent"] = parent
 
+            node.pop("child_data", None)
+
             child_availability = []
 
             child_ids = [child.get("id") for child in node.get("children", [])]

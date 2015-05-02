@@ -13,11 +13,6 @@ from kalite.topic_tools import get_flat_topic_tree, get_topic_tree
 
 @api_handle_error_with_json
 @backend_cache_page
-def flat_topic_tree(request, lang_code):
-    return JsonResponse(get_flat_topic_tree(lang_code=lang_code))
-
-@api_handle_error_with_json
-@backend_cache_page
 def topic_tree(request, channel):
     parent = request.GET.get("parent")
     return JsonResponse(get_topic_tree(channel=channel, language=request.language, parent=parent))
