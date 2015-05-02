@@ -16,7 +16,7 @@ window.ContentAreaView = BaseView.extend({
 
     show_view: function(view) {
         // hide any messages being shown for the old view
-        clear_messages();        
+        clear_messages();
 
         this.close();
         // set the new view as the current view
@@ -97,7 +97,8 @@ window.SidebarView = BaseView.extend({
 
         this.state_model = new Backbone.Model({
             open: false,
-            current_level: 0
+            current_level: 0,
+            channel: this.channel
         });
 
         this.render();
@@ -292,6 +293,9 @@ window.TopicContainerInnerView = BaseView.extend({
     template: HB.template("topics/sidebar-content"),
 
     initialize: function(options) {
+
+        _.bindAll(this);
+
         var self = this;
 
         this.state_model = options.state_model;
@@ -301,15 +305,9 @@ window.TopicContainerInnerView = BaseView.extend({
         this._entry_views = [];
         this.has_parent = options.has_parent;
 
-        if (!(this.model.get(this.entity_key) instanceof this.entity_collection)) {
+        this.collection = new this.entity_collection({parent: this.model.get("id"), channel: this.state_model.get("channel")});
 
-            this.model.set(this.entity_key, new this.entity_collection(this.model.get(this.entity_key)));
-        }
-
-        this.listenTo(this.model.get(this.entity_key), 'add', this.add_new_entry);
-        this.listenTo(this.model.get(this.entity_key), 'reset', this.add_all_entries);
-
-        this.add_all_entries();
+        this.collection.fetch().then(this.add_all_entries);
 
         this.state_model.set("current_level", options.level);
     },
@@ -350,7 +348,7 @@ window.TopicContainerInnerView = BaseView.extend({
 
     add_all_entries: function() {
         this.render();
-        this.model.get(this.entity_key).forEach(this.add_new_entry, this);
+        this.collection.forEach(this.add_new_entry, this);
     },
 
     show: function() {
@@ -373,9 +371,18 @@ window.TopicContainerInnerView = BaseView.extend({
         this.trigger('back_button_clicked', this.model);
     },
 
-    node_by_slug: function(slug) {
+    deferred_node_by_slug: function(slug, callback) {
         // Convenience method to return a node by a passed in slug
-        return _.find(this.model.get(this.entity_key).models, function(model) {return model.get("slug")==slug;});
+        if (this.collection.loaded == true) {
+            this.node_by_slug(slug, callback);
+        } else {
+            var self = this;
+            this.listenToOnce(this.collection, "sync", function() {self.node_by_slug(slug, callback)});
+        }
+    },
+
+    node_by_slug: function(slug, callback) {
+        callback(this.collection.findWhere({slug: slug}));
     },
 
     close: function() {
@@ -493,9 +500,10 @@ window.TopicContainerOuterView = BaseView.extend({
         this.entity_key = options.entity_key;
         this.entity_collection = options.entity_collection;
 
+        this.model = new TopicNode({"id": "root", "title": "Khan"})
+
         this.inner_views = [];
-        this.model = this.model || new TopicNode({channel: options.channel});
-        this.model.fetch().then(this.render);
+        this.render();
         this.content_view = new ContentAreaView({
             el: "#content-area"
         });
@@ -512,6 +520,8 @@ window.TopicContainerOuterView = BaseView.extend({
         var new_topic = this.add_new_topic_view(node);
 
         this.$el.append(new_topic.el);
+
+        this.trigger("inner_view_added");
 
         // Listeners
         this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
@@ -534,13 +544,9 @@ window.TopicContainerOuterView = BaseView.extend({
 
         var new_topic = new TopicContainerInnerView(data);
 
-        if (this.inner_views.length === 0){
-            new_topic.model.set("has_parent", false);
-            this.inner_views.unshift(new_topic);
-        } else if (this.inner_views.length >= 1) {
-            // this.inner_views[0].hide();
-            this.inner_views.unshift(new_topic);
-        }
+        this.inner_views.unshift(new_topic);
+
+        this.trigger("length_" + this.inner_views.length);
 
         return new_topic;
     },
@@ -555,6 +561,9 @@ window.TopicContainerOuterView = BaseView.extend({
     },
 
     navigate_paths: function(paths, callback) {
+
+        var self = this;
+
         var check_views = [];
         for (var i = this.inner_views.length - 2; i >=0; i--) {
             check_views.push(this.inner_views[i]);
@@ -575,15 +584,7 @@ window.TopicContainerOuterView = BaseView.extend({
                         }
                     }
                 }
-                var node = this.inner_views[0].node_by_slug(paths[i]);
-                if (node!==undefined) {
-                    if (node.get("kind")==="Topic") {
-                        this.show_new_topic(node);
-                    } else {
-                        this.entry_requested(node);
-                    }
-                    node.set("active", true);
-                }
+                this.defer_add_topic(paths[i], i);
             } else if (!pruned) {
                 if (check_view!==undefined) {
                     check_view.model.set("active", false);
@@ -592,8 +593,36 @@ window.TopicContainerOuterView = BaseView.extend({
             }
         }
         if (callback) {
-            callback(this.inner_views[0].model.get("title"));
+            this.stopListening(this, "inner_view_added");
+
+            this.listenTo(this, "inner_view_added", function() {
+                callback(self.inner_views[0].model.get("title"));
+            });
         }
+    },
+
+    defer_add_topic: function(path, view_length) {
+        var self = this;
+        if (this.inner_views.length==view_length + 1) {
+            this.add_topic_from_inner_view(path);
+        } else {
+            this.listenToOnce(this, "length_" + (view_length + 1), function() {self.add_topic_from_inner_view(path);});
+        }
+    },
+
+    add_topic_from_inner_view: function(path) {
+        var self = this;
+
+        this.inner_views[0].deferred_node_by_slug(path, function(node){
+            if (node!==undefined) {
+                if (node.get("kind")==="Topic") {
+                    self.show_new_topic(node);
+                } else {
+                    self.entry_requested(node);
+                }
+                node.set("active", true);
+            }
+        });
     },
 
     remove_topic_views: function(number) {
