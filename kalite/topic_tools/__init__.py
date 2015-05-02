@@ -51,7 +51,7 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
-def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language=settings.LANGUAGE_CODE):
+def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language=settings.LANGUAGE_CODE, parent=None):
     global TOPICS, TOPICS_FILEPATHS
     if not TOPICS:
         TOPICS = {}
@@ -70,19 +70,28 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
                 TOPICS[channel][language] = topics
                 return TOPICS[channel][language]
 
+        flat_topic_tree = []
+
         # Loop through all the nodes in the topic tree
         # and cross reference with the content_cache to check availability.
         content_cache = get_content_cache(language=language)
         exercise_cache = get_exercise_cache(language=language)
-        
-        def recurse_nodes(node):
+
+        def recurse_nodes(node, parent=""):
+
+            node["parent"] = parent
 
             child_availability = []
 
+            child_ids = [child.get("id") for child in node.get("children", [])]
+
             # Do the recursion
             for child in node.get("children", []):
-                recurse_nodes(child)
+                recurse_nodes(child, node.get("id"))
                 child_availability.append(child.get("available", False))
+
+            if child_ids:
+                node["children"] = child_ids
 
             # If child_availability is empty then node has no children so we can determine availability
             if child_availability:
@@ -100,8 +109,13 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
             with i18n.translate_block(language):
                 node["title"] = _(node.get("title", ""))
                 node["description"] = _(node.get("description", "")) if node.get("description") else ""
-                                    
+
+            flat_topic_tree.append(node)
+
         recurse_nodes(TOPICS[channel][language])
+
+        TOPICS[channel][language] = flat_topic_tree
+
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
                 with open(TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", "w") as f:
@@ -109,7 +123,10 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
             except IOError as e:
                 logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
 
-    return TOPICS[channel][language]
+    if parent:
+        return filter(lambda x: x.get("parent") == parent, TOPICS[channel][language])
+    else:
+        return TOPICS[channel][language]
 
 
 NODE_CACHE = None
