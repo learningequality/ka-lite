@@ -70,6 +70,12 @@ class Command(BaseCommand):
             default=not settings.DEBUG,
             help="Whether to run the production wsgi server (CherryPy). If False, run the development server"
         ),
+        make_option(
+            '--use-inotify',
+            action='store_true',
+            dest='use_inotify',
+            default=(sys.platform == 'linux2'),
+        ),
     )
 
     def setup_server_if_needed(self):
@@ -95,7 +101,6 @@ class Command(BaseCommand):
 
         # Finally, pre-load global data
         initialize_content_caches()
-
 
     def handle(self, *args, **options):
         # Eliminate irrelevant settings
@@ -135,13 +140,66 @@ class Command(BaseCommand):
 
         if options['startuplock']:
             os.unlink(options['startuplock'])
-        
+
         # Now call the proper command
         if not options["production"]:
+
+            if options['use_inotify']:
+                self.inject_inotify_reloader()
+
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
             del options["production"]
+            del options['use_inotify']
             sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
             for addr in get_ip_addresses():
                 sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))
             call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()])
+
+    def inject_inotify_reloader(self):
+        """A function that replaces django.utils.autoreload.reloader_thread's
+        stat based reloading to a function that uses the Linux inotify API.
+
+        This is meant to be a drop-in replacement for reloader_thread,
+        which means that it must conform to its API (as of Django
+        1.5). That means on every detected code change, it must exit
+        with return code 3. The parent thread should then handle the
+        actual reloading of modules.
+
+        """
+
+        from django.utils import autoreload
+        import pyinotify
+
+        class _EventHandler(pyinotify.ProcessEvent):
+
+            def process_IN_MODIFY(self, event):
+                print "modified %s, restarting" % event.pathname
+                sys.exit(3)
+
+        def inotify_reloader_thread():
+            """
+            Watch for file modifications using inotify. If a file modification
+            is detected, exit with ret code 3.
+
+            """
+            autoreload.ensure_echo_on()
+
+            watcher = pyinotify.WatchManager()
+            notifier = pyinotify.Notifier(watcher, _EventHandler())
+
+            filenames = [getattr(m, "__file__", None) for m in sys.modules.values()]
+            for filename in filter(None, filenames):
+                if filename.endswith(".pyc") or filename.endswith(".pyo"):
+                    filename = filename[:-1]
+                if filename.endswith("$py.class"):
+                    filename = filename[:-9] + ".py"
+                if not os.path.exists(filename):
+                    # File might be in an egg, so it can't be reloaded.
+                    continue
+
+                watcher.add_watch(filename, pyinotify.IN_MODIFY)
+
+            notifier.loop()
+
+        autoreload.reloader_thread = inotify_reloader_thread
