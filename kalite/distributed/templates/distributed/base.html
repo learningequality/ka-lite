@@ -150,7 +150,7 @@
 
         <script>
         window.sessionModel.set({
-          SEARCH_TOPICS_URL           : "{% url 'flat_topic_tree' lang_code=current_language %}",
+          SEARCH_TOPICS_URL           : "{% url 'topic_tree' channel=channel %}",
           SEARCH_URL                  : "{% url 'search' %}",
           USER_URL                    : "{% url 'api_dispatch_list' resource_name='user' %}",
           FORCE_SYNC_URL              : "{% url 'api_force_sync' %}",
