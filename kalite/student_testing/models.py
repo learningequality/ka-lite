@@ -11,7 +11,6 @@ from securesync.models import DeferredCountSyncedModel
 from kalite.facility.models import FacilityUser
 
 from .settings import STUDENT_TESTING_DATA_PATH
-from .utils import get_exam_mode_on, set_exam_mode_on
 
 # class Test(ExtendedModel):
 #   # ids is a JSON serialized list of ids that make up the test.
@@ -61,15 +60,6 @@ class Test():
         self.test_id = test_id
         self.test_url = "" if settings.CENTRAL_SERVER else reverse('test', args=[test_id])
         self.total_questions = len(kwargs.get('ids', [])) * int(self.repeats or 0)
-        self.set_exam_mode()
-
-    def set_exam_mode(self):
-        # check if exam mode is active on specific exam
-        is_exam_mode = False
-        exam_mode_setting = get_exam_mode_on()
-        if exam_mode_setting and exam_mode_setting == self.test_id:
-            is_exam_mode = True
-        self.is_exam_mode = is_exam_mode
 
     @classmethod
     def all(cls, force=False, show_all=False):

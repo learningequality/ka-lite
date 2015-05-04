@@ -10077,6 +10077,11 @@
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 5
+      },
+      {
+        "entity_id": "Quiz",
+        "entity_kind": "Quiz",
+        "sort_order": 6
       }
     ],
     "id": "g6_u604_p1",

@@ -81,14 +81,6 @@ window.TestSettingAppView = Backbone.View.extend({
         // check exam_mode state of the selected test
         var is_exam_mode = test.get('is_exam_mode');
 
-        // clear exam mode for all other tests
-        // (no need to save since toggling current test will overwrite Setting)
-        this.tests.each(function(t) {
-            if (t.get("is_exam_mode")) {
-                t.set("is_exam_mode", false);
-            }
-        });
-
         // toggle the exam state of the current test (and save)
         test.set("is_exam_mode", !is_exam_mode);
         test.save();

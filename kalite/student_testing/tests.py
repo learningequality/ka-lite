@@ -11,8 +11,6 @@ from kalite.testing.client import KALiteClient
 from kalite.testing.base import KALiteClientTestCase, KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateTeacherMixin, CreateStudentMixin
 
-from .utils import get_exam_mode_on, set_exam_mode_on
-
 logging = settings.LOG
 
 
@@ -86,21 +84,6 @@ class CoreTests(BaseTest):
         response = self.client.get(self.test_list_url, follow=True)
         self.assertEqual(response.request['PATH_INFO'], self.test_list_url)
 
-    def test_student_cannot_access_test_list_page(self):
-        # make sure we don't have exam mode on
-        set_exam_mode_on('')
-        self.login_student()
-        # any attempt to browse the test list page as student will redirect to login page
-        self.get_page_redirects_to_login_url(self.test_list_url)
-
-    def test_student_cannot_access_exam_page_if_not_exam_mode(self):
-        # make sure we don't have exam mode on
-        set_exam_mode_on('')
-        self.login_student()
-        # any attempt to browse the exam page as student will raise a 404
-        response = self.client.get(self.exam_page_url, follow=True)
-        self.assertEqual(response.status_code, 404)
-
     def test_guest_cannot_access_exam_pages(self):
         self.logout()
         # try to access an exam page as guest
@@ -135,12 +118,12 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
                                    password=self.teacher_data['password'],
                                    facility_name=self.facility.name)
 
-    def login_student_in_browser(self, expect_url=None, exam_mode_on=False, browser=None):
+    def login_student_in_browser(self, expect_url=None, browser=None):
         browser = browser or self.browser
         self.browser_login_student(username=self.student_data['username'],
                                    password=self.student_data['password'],
                                    facility_name=self.facility.name,
-                                   exam_mode_on=exam_mode_on,
+
                                    browser=browser)
 
     def wait_for_element(self, by, elem, browser=None):
@@ -201,56 +184,3 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
         self.login_student_in_browser(browser=self.student_browser)
         self.assertEqual(self.reverse("homepage"), self.student_browser.current_url)
         self.student_browser.quit()
-
-    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally but fails on travis")
-    def test_exam_mode_shut_out(self):
-        set_exam_mode_on(self.exam_id)
-        self.login_student_in_browser(expect_url=self.exam_page_url, exam_mode_on=True)
-
-        # Start the quiz to create a test log
-        self.wait_for_element(By.ID, 'start-test')
-        self.browser.find_element_by_id("start-test").click()
-
-        # Answer one question
-        self.wait_for_element(By.ID, 'check-answer-button')
-
-        # Turn off the exam
-        set_exam_mode_on('')
-        self.browser.find_element_by_css_selector("input").click()
-        self.browser.find_element_by_id("check-answer-button").click()
-
-        try:
-            testlog = TestLog.objects.get(user=self.student, test=self.exam_id)
-        except:
-            pass
-
-        # Check that the Test Log is started, but not advanced.
-        self.assertEqual(testlog.started, True)
-        self.assertEqual(testlog.index, 0)
-
-        # logout the student and login a teacher to check they can access the exam.
-        self.browser_logout_user()
-        self.login_teacher_in_browser()
-        self.browse_to(self.exam_page_url)
-
-        # Start the quiz to create a test log
-        self.wait_for_element(By.ID, 'start-test')
-        self.browser.find_element_by_id("start-test").click()
-        testlog = TestLog.objects.get(user=self.student, test=self.exam_id)
-
-        # Check that the Test Log is started.
-        self.assertEqual(testlog.started, True)
-
-    def exam_off_on_teacher_logout(self):
-        self.login_teacher_in_browser()
-        set_exam_mode_on(self.exam_id)
-        self.assertEqual(get_exam_mode_on(), self.exam_id)
-        self.browser_logout_user()
-        self.assertEqual(get_exam_mode_on(), '')
-
-    def exam_enabled_on_student_logout(self):
-        self.login_student_in_browser()
-        set_exam_mode_on(self.exam_id)
-        self.assertEqual(get_exam_mode_on(), self.exam_id)
-        self.browser_logout_user()
-        self.assertEqual(get_exam_mode_on(), self.exam_id)

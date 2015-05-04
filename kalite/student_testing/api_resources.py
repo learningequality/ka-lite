@@ -19,8 +19,6 @@ from kalite.facility.models import Facility
 from kalite.ab_testing.data.groups import get_grade_by_facility, GRADE_BY_FACILITY as GRADE
 
 from .models import Test, TestLog
-from .settings import SETTINGS_KEY_EXAM_MODE
-from .utils import get_exam_mode_on, set_exam_mode_on
 
 from django.conf import settings
 
@@ -28,34 +26,19 @@ logging = settings.LOG
 
 class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
 
-    def check_test(self, bundle):
-
-        test_id = bundle.obj.test or bundle.request.GET.get("test", "")
-
-        if (not self._user_is_admin(bundle)) and test_id != get_exam_mode_on():
-            raise Unauthorized("Sorry, the test is not currently active.")
-
     def create_list(self, object_list, bundle):
-
-        self.check_test(bundle)
 
         return super(UserTestObjectsOnlyAuthorization, self).create_list(object_list, bundle)
 
     def create_detail(self, object_list, bundle):
 
-        self.check_test(bundle)
-
         return super(UserTestObjectsOnlyAuthorization, self).create_detail(object_list, bundle)
 
     def update_list(self, object_list, bundle):
 
-        self.check_test(bundle)
-
         return super(UserTestObjectsOnlyAuthorization, self).update_list(object_list, bundle)
 
     def update_detail(self, object_list, bundle):
-
-        self.check_test(bundle)
 
         return super(UserTestObjectsOnlyAuthorization, self).update_detail(object_list, bundle)
 
@@ -103,7 +86,6 @@ class TestResource(Resource):
     repeats = fields.IntegerField(attribute='repeats')
     test_id = fields.CharField(attribute='test_id')
     test_url = fields.CharField(attribute='test_url')
-    is_exam_mode = fields.BooleanField(attribute='is_exam_mode')
 
     class Meta:
         resource_name = 'test'
@@ -138,20 +120,12 @@ class TestResource(Resource):
         return kwargs
 
     def get_object_list(self, request, force=False):
-        """
-        Get the list of tests based from a request.
-        """
-        if not request.is_admin:
-            return []
-        else:
-            if 'facility_user' in request.session:
-                facility = request.session['facility_user'].facility
-                return self._read_facility_tests(facility, force=force,)
+        if 'facility_user' in request.session:
+            facility = request.session['facility_user'].facility
+            return self._read_facility_tests(facility, force=force,)
         return self._read_tests(force=force)
 
     def obj_get_list(self, bundle, **kwargs):
-        if not bundle.request.is_admin:
-            raise Unauthorized(_("You are not authorized to view this page."))
         force = bundle.request.GET.get('force', False)
         return self.get_object_list(bundle.request, force=force)
 
@@ -167,18 +141,7 @@ class TestResource(Resource):
         raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_update(self, bundle, **kwargs):
-        """
-        Receives a `test_id` and sets it as the Settings.EXAM_MODE_ON value.
-        If `test_id` is the same on the Settings, means it's a toggle so we disable it.
-        Validates if user is an admin.
-        """
-        if not bundle.request.is_admin:
-            raise Unauthorized(_("You cannot set this test into exam mode."))
-
-        test_id = kwargs['test_id']
-        testscache = Test.all()
-        set_exam_mode_on(testscache[test_id])
-        return bundle
+        raise NotImplemented("Operation not implemented yet for tests.")
 
     def obj_delete_list(self, request):
         raise NotImplemented("Operation not implemented yet for tests.")
