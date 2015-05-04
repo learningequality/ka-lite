@@ -212,11 +212,14 @@ window.PlaylistSidebarView = Backbone.View.extend({
     },
 
     add_new_entry: function(entry) {
-        var view = new PlaylistSidebarEntryView({model: entry});
-        this._entry_views.push(view);
-        this.$(".playlist-sidebar").append(view.render().$el);
-        this.listenTo(view, "clicked", this.item_clicked);
-        this.load_entry_progress();
+        if(entry.get("is_essential"))
+        {
+            var view = new PlaylistSidebarEntryView({model: entry});
+            this._entry_views.push(view);
+            this.$(".playlist-sidebar").append(view.render().$el);
+            this.listenTo(view, "clicked", this.item_clicked);
+            this.load_entry_progress();
+        }
     },
 
     add_all_entries: function() {
