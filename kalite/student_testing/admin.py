@@ -8,6 +8,6 @@ from .models import *
 # admin.site.register(Test, TestAdmin)
 
 
-# class TestLogAdmin(admin.ModelAdmin):
-#     list_display = ("user", "index", "complete",)
-# admin.site.register(TestLog, TestLogAdmin)
+class TestLogAdmin(admin.ModelAdmin):
+    list_display = ("user", "index", "complete",)
+admin.site.register(TestLog, TestLogAdmin)
