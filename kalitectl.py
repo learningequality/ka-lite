@@ -53,7 +53,6 @@ from __future__ import print_function
 # DO NOT IMPORT BEFORE THIS LIKE
 import sys
 import os
-from collections import OrderedDict
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -76,6 +75,7 @@ from docopt import docopt
 from urllib2 import URLError
 from socket import timeout
 from kalite.version import VERSION
+from kalite.shared.compat import OrderedDict
 
 if os.name == "nt":
     from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
