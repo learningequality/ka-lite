@@ -5,10 +5,7 @@ import sys
 import warnings
 
 from kalite import ROOT_DATA_PATH
-
-
-class RemovedInKALite_v015_Warning(Warning):
-    pass
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
 
 
 # Load local settings first... loading it again later to have the possibility
