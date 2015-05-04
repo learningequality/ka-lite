@@ -53,6 +53,7 @@ from __future__ import print_function
 # DO NOT IMPORT BEFORE THIS LIKE
 import sys
 import os
+from collections import OrderedDict
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -69,7 +70,7 @@ else:
 import httplib
 import re
 
-from django.core.management import ManagementUtility, get_commands
+from django.core.management import ManagementUtility
 from threading import Thread
 from docopt import docopt
 from urllib2 import URLError
@@ -139,20 +140,26 @@ def udpate_default_args(defaults, updates):
     looking into django.
     """
     # Returns either the default or an updated argument
-    arg_name = re.compile(r"^--?([^\s\=]+)")
+    arg_name = re.compile(r"^-?-?\s*=?([^\s=-]+)")
     # Create a dictionary of defined defaults and updates where '-somearg' is
     # always the key, update the defined defaults dictionary with the updates
     # dictionary thus overwriting the defaults.
-    defined_defaults = map(
+    defined_defaults_ = map(
         lambda arg: (arg_name.search(arg).group(1), arg),
         defaults
     )
-    defined_defaults = dict(defined_defaults)
-    defined_updates = map(
+    # OrderedDict because order matters when space-split options such as "-v 2"
+    # cause arguments to span over severel elements.
+    defined_defaults = OrderedDict()
+    for elm in defined_defaults_:
+        defined_defaults[elm[0]] = elm[1]
+    defined_updates_ = map(
         lambda arg: (arg_name.search(arg).group(1), arg),
         updates
     )
-    defined_updates = dict(defined_updates)
+    defined_updates = OrderedDict()
+    for elm in defined_updates_:
+        defined_updates[elm[0]] = elm[1]
     defined_defaults.update(defined_updates)
     return defined_defaults.values()
         
