@@ -83,7 +83,11 @@ if os.name == "nt":
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
 
-KALITE_HOME = os.path.join(os.path.expanduser("~"), ".kalite")
+# Where to store user data
+KALITE_HOME = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
+)
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
