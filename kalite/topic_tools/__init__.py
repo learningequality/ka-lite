@@ -209,32 +209,6 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
     return EXERCISES[language]
 
 
-def recurse_topic_tree_to_create_hierarchy(node, level_cache={}, hierarchy=[]):
-    if not level_cache:
-        for hier in hierarchy:
-            level_cache[hier] = []
-    render_type = node.get("render_type", "")
-    if render_type in hierarchy:
-        node_copy = copy.deepcopy(dict(node))
-        for child in node_copy.get("children", []):
-            if "children" in child:
-                del child["children"]
-        level_cache[render_type].append(node_copy)
-    for child in node.get("children", []):
-        recurse_topic_tree_to_create_hierarchy(child, level_cache, hierarchy=hierarchy)
-    return level_cache
-
-KNOWLEDGEMAP_TOPICS = None
-CACHE_VARS.append("KNOWLEDGEMAP_TOPICS")
-def get_knowledgemap_topics(force=False, language=settings.LANGUAGE_CODE):
-    global KNOWLEDGEMAP_TOPICS
-    if KNOWLEDGEMAP_TOPICS is None:
-        KNOWLEDGEMAP_TOPICS = {}
-    if KNOWLEDGEMAP_TOPICS.get(language) is None or force:
-        KNOWLEDGEMAP_TOPICS[language] = recurse_topic_tree_to_create_hierarchy(get_topic_tree(language=language), {}, hierarchy=["Domain", "Subject", "Topic", "Tutorial"])["Topic"]
-    return KNOWLEDGEMAP_TOPICS[language]
-
-
 LEAFED_TOPICS = None
 CACHE_VARS.append("LEAFED_TOPICS")
 def get_leafed_topics(force=False, language=settings.LANGUAGE_CODE):
@@ -348,23 +322,6 @@ def get_id2slug_map(force=False):
     return ID2SLUG_MAP
 
 
-FLAT_TOPIC_TREE = None
-CACHE_VARS.append("FLAT_TOPIC_TREE")
-def get_flat_topic_tree(force=False, lang_code=settings.LANGUAGE_CODE, alldata=False):
-    global FLAT_TOPIC_TREE
-    if FLAT_TOPIC_TREE is None:
-        FLAT_TOPIC_TREE = {
-            # The true and false values are for whether we return
-            # the complete data for nodes, as given
-            # by the alldata parameter
-            True: {},
-            False: {}
-        }
-    if not FLAT_TOPIC_TREE[alldata] or lang_code not in FLAT_TOPIC_TREE[alldata] or force:
-        FLAT_TOPIC_TREE[alldata][lang_code] = generate_flat_topic_tree(get_node_cache(force=force, language=lang_code), lang_code=lang_code, alldata=alldata)
-    return FLAT_TOPIC_TREE[alldata][lang_code]
-
-
 def generate_slug_to_video_id_map(node_cache=None):
     """
     Go through all videos, and make a map of slug to video_id, for fast look-up later
@@ -383,31 +340,6 @@ def generate_slug_to_video_id_map(node_cache=None):
         slug2id_map[c['slug']] = content_id
 
     return slug2id_map
-
-
-def generate_flat_topic_tree(node_cache=None, lang_code=settings.LANGUAGE_CODE, alldata=False):
-    with i18n.translate_block(lang_code):
-
-        categories = node_cache or get_node_cache(language=i18n.lcode_to_django_lang(lang_code))
-        result = dict()
-        # make sure that we only get the slug of child of a topic
-        # to avoid redundancy
-        for category_name, category in categories.iteritems():
-            result[category_name] = {}
-            for node_name, node in category.iteritems():
-                if alldata:
-                    relevant_data = node
-                else:
-                    relevant_data = {
-                        'title': _(node['title']),
-                        'path': node['path'],
-                        'kind': node['kind'],
-                        'available': node.get('available', True),
-                        'keywords': node.get('keywords', []),
-                    }
-                result[category_name][node_name] = relevant_data
-
-    return result
 
 
 def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
@@ -450,7 +382,7 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     If leaf_type is None, returns all child nodes of all types and levels.
     """
     if not topic_node:
-        topic_node = get_topic_tree()
+        topic_node = get_node_cache()["Topic"].get("root")
     leaves = []
     # base case
     if not "children" in topic_node:
@@ -459,7 +391,7 @@ def get_all_leaves(topic_node=None, leaf_type=None):
 
     elif not leaf_type or leaf_type in topic_node["contains"]:
         for child in topic_node["children"]:
-            leaves += get_all_leaves(topic_node=child, leaf_type=leaf_type)
+            leaves += get_all_leaves(topic_node=get_node_cache()["Topic"].get(child), leaf_type=leaf_type)
 
     return leaves
 
