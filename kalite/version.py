@@ -1,5 +1,6 @@
 import sys
 import yaml
+import os
 
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 MAJOR_VERSION = "0"
