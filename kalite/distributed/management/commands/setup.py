@@ -214,7 +214,7 @@ class Command(BaseCommand):
 
         # Check to see if the current user is the owner of the install directory
         if not os.access(BASE_DIR, os.W_OK):
-            raise CommandError("You do not have permission to write to this directory!")
+            raise CommandError("You do not have permission to write to directory {0:s}".format(BASE_DIR))
 
         install_clean = not kalite.is_installed()
         database_kind = settings.DATABASES["default"]["ENGINE"]
