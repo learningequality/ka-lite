@@ -8,7 +8,6 @@ import socket
 from general import ensure_dir
 from internet.download import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
 
-
 OUTSIDE_DOWNLOAD_BASE_URL = "http://s3.amazonaws.com/KA-youtube-converted/"  # needed for redirects
 OUTSIDE_DOWNLOAD_URL = OUTSIDE_DOWNLOAD_BASE_URL + "%s/%s"  # needed for default behavior, below
 

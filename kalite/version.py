@@ -6,10 +6,10 @@ VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
 VERSION_INFO = {
-    
-    VERSION: {
-        "release_date": None,
-        "git_commit": "",
+
+    "0.13.1": {
+        "release_date": "2015/04/27",
+        "git_commit": "6b29949",
         "new_features": {
             "all": [],
             "students": [],
@@ -20,19 +20,32 @@ VERSION_INFO = {
             "all": [],
             "students": [],
             "coaches": [],
-            "admins": [],
+            "admins": ["Language packs will now update properly across KA Lite versions."],
         },
-        "bugs_fixed": {
-            "all": [],
-            "students": [],
-            "coaches": [],
-            "admins": [],
-        },
+
     },
-    
+
     "0.13.0": {
-        "release_date": "2014/11/06",
-        "git_commit": "19b1a64",
+        "release_date": "2015/04/27",
+        "git_commit": "92c7e5a",
+        "new_features": {
+            "all": ["New mobile-friendly interface.", "New user manual."],
+            "students": ["Latest content from Khan Academy.", "New content navigation scheme.", "New exercise mastery system."],
+            "coaches": [],
+            "admins": ["bin/kalite executable."],
+        },
+        "bugs_fixed": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+
+    },
+
+    "0.12.11": {
+        "release_date": "2014/12/20",
+        "git_commit": "b880fe4",
         "new_features": {
             "all": [],
             "students": [],
@@ -40,16 +53,10 @@ VERSION_INFO = {
             "admins": [],
         },
         "bugs_fixed": {
-            "all": [],
+            "all": ["Get the keypad working for IE8."],
             "students": [],
             "coaches": [],
-            "admins": [],
-        },
-        "bugs_fixed": {
-            "all": ["Mark registration process result immediately", ],
-            "students": [],
-            "coaches": [],
-            "admins": ["Fix Export CSV", "Validate username during installation for Windows"],
+            "admins": ["Handle metadata check when Device is imported."],
         },
 
     },
