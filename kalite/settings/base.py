@@ -266,6 +266,7 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "kalite.distributed",
     "compressor",
+    "mptt",
 )
 
 if not BUILT:
