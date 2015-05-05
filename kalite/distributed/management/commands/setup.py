@@ -11,17 +11,6 @@ from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
 
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-BASE_DIR = os.path.realpath(CURRENT_DIR + "/../../../")
-
-# This is necessary for this script to run before KA Lite has ever been installed.
-if not os.environ.get("DJANGO_SETTINGS_MODULE"):
-    sys.path = [
-        os.path.join(BASE_DIR, "python-packages"),
-        os.path.join(BASE_DIR, "kalite")
-    ] + sys.path
-    os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -211,10 +200,6 @@ class Command(BaseCommand):
             if options["interactive"]:
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
-
-        # Check to see if the current user is the owner of the install directory
-        if not os.access(BASE_DIR, os.W_OK):
-            raise CommandError("You do not have permission to write to directory {0:s}".format(BASE_DIR))
 
         install_clean = not kalite.is_installed()
         database_kind = settings.DATABASES["default"]["ENGINE"]
