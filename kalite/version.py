@@ -34,4 +34,4 @@ def load_yaml(file_name, current_version, yaml_file_version_mapping):
         sys.exit(1)
 
 
-VERSION_INFO = load_yaml("version.yaml", VERSION, "VERSION")
+VERSION_INFO = load_yaml(os.path.join(os.path.dirname(__file__), "version.yaml"), VERSION, "VERSION")
