@@ -24,4 +24,4 @@ def load_yaml(file_name):
     return version_object
 
 
-VERSION_INFO = load_yaml(os.path.join(os.path.dirname(__file__), "version.yaml"))
+VERSION_INFO = load_yaml(os.path.join(os.path.dirname(__file__), "../data/version.yml"))
