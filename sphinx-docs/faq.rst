@@ -18,6 +18,19 @@ Please follow the instructions on our `Github Wiki`_ for reporting bugs.
 
 .. _Github Wiki: https://github.com/learningequality/ka-lite/wiki/Report%20Bugs%20by%20Creating%20Issues
 
+How do I change KA Lite's content folder?
+-----------------------------------------
+
+If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), here are the steps you need to do:
+
+#. If it doesn't already exist, create a file named local_settings.py in the ka-lite/kalite folder (the one containing settings.py)
+#. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes.
+    **For example, on Windows:** ``CONTENT_ROOT="C:\\videos_location\\"``
+
+    **For example, on Linux:** ``CONTENT_ROOT="/home/me/videos_location/"``
+#. Restart your server. If you are unsure on how to do this, please see `Restarting Your Server`_ .
+
+
 Is there somewhere I can find Spanish language content organized by topic?
 --------------------------------------------------------------------------
 
