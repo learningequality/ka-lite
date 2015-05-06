@@ -2,7 +2,10 @@ import logging
 import os
 import json
 import sys
+import warnings
+
 from kalite import ROOT_DATA_PATH
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
 
 
 # Load local settings first... loading it again later to have the possibility
@@ -13,8 +16,25 @@ try:
     # Not sure if vars from local_settings are accessed ATM. This is one of
     # the big disadvantage of this whole implicit importing chaos... will be
     # fixed later.
-    from kalite.local_settings import *  # @UnusedWildImport
     from kalite import local_settings
+    # This is not a DeprecationWarning by purpose, because those are
+    # ignored during settings module load time
+    warnings.warn(
+        "We will be deprecating the old way of statically importing custom "
+        "settings, in favor of a more flexible way. The easiest way to update "
+        "your installation is to rename your local_settings.py (keeping it in "
+        "the same directory) and add an import statement in the very first "
+        "line of the new file so it looks like this:\n\n"
+        "    from kalite.settings.base import *\n"
+        "    # Put custom settings here...\n"
+        "    FOO = BAR\n\n"
+        "and then call kalite start with an additional argument pointing to "
+        "your new settings module:\n\n"
+        "    kalite start --settings=kalite.my_settings\n\n"
+        "You can put your settings module in a different location, but make "
+        "sure that this location is in your Python path.",
+        RemovedInKALite_v015_Warning
+    )
 except ImportError:
     local_settings = object()
 
@@ -326,9 +346,21 @@ API_LIMIT_PER_PAGE = 0
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 
-# NOW OVER WRITE EVERYTHING WITH ANY POSSIBLE LOCAL SETTINGS
+# DEPRECATED BEHAVIOURS
 
+# Copy INSTALLED_APPS to prevent any overwriting
+OLD_INSTALLED_APPS = INSTALLED_APPS[:]
+
+# NOW OVER WRITE EVERYTHING WITH ANY POSSIBLE LOCAL SETTINGS
 try:
     from kalite.local_settings import *  # @UnusedWildImport
+except ImportError:
+    pass
+
+# Ensure that any INSTALLED_APPS mentioned in local_settings is concatenated
+# to previous INSTALLED_APPS because that was expected behaviour in 0.13
+try:
+    from kalite.local_settings import INSTALLED_APPS
+    INSTALLED_APPS = OLD_INSTALLED_APPS + INSTALLED_APPS
 except ImportError:
     pass
