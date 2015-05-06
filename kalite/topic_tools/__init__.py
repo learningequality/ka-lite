@@ -505,9 +505,9 @@ def get_content_data(request, content_id=None):
     return content
 
 
-def video_dict_by_video_id(flat_topic_tree=None):
+def video_dict_by_video_id(node_cache=None):
     # TODO (aron): Add i18n by varying the language of the topic tree here
-    topictree = flat_topic_tree if flat_topic_tree else get_flat_topic_tree()
+    topictree = node_cache if node_cache else get_node_cache()
 
     # since videos in the flat topic tree are indexed by youtube
     # number, we have to construct another dict with the id
