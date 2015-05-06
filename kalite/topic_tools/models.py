@@ -21,4 +21,7 @@ class TopicTreeNode(MPTTModel):
     node_subtype = generic.GenericForeignKey('content_type', 'object_id')
 
 class NodeSubtype(models.Model):
+    """
+    Fields which are not common to all nodes should be dealt with here.
+    """
     pass
