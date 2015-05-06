@@ -38,7 +38,7 @@ window.HomepageWrapper = BaseView.extend({
 });
 
 /**
- * View that wraps the resume card on the learn page
+ * View that wraps the resume card on the home page
  */
 window.ContentResumeView = BaseView.extend({
 
@@ -55,7 +55,7 @@ window.ContentResumeView = BaseView.extend({
 });
 
 /**
- * View that wraps a lesson on the next steps card on the learn page
+ * View that wraps a lesson on the next steps card on the home page
  */
 window.ContentNextStepsLessonView = BaseView.extend({
 
@@ -72,7 +72,7 @@ window.ContentNextStepsLessonView = BaseView.extend({
 });
 
 /**
- * View that wraps the next steps card on the learn page
+ * View that wraps the next steps card on the home page
  */
 window.ContentNextStepsView = BaseView.extend({
 
@@ -109,7 +109,7 @@ window.ContentNextStepsView = BaseView.extend({
 });
 
 /**
- * View that wraps a topic on the content explore card on the learn page
+ * View that wraps a topic on the content explore card on the home page
  */
 window.ContentExploreTopicView = BaseView.extend({
 
@@ -126,22 +126,23 @@ window.ContentExploreTopicView = BaseView.extend({
 });
 
 /**
- * View that wraps the content explore card on the learn page
+ * View that wraps the content explore card on the home page
  */
 window.ContentExploreView = BaseView.extend({
 
 	template: HB.template("contentrec/content-explore"),
 
 	initialize: function() {
+		_.bindAll(this);
 		if (typeof this.collection === "undefined") {
-    		this.collection = new SuggestedContentCollection([
-    			{interest_topic: "Chemistry", suggested_topic: "Physics"},
-    			{interest_topic: "Physiology", suggested_topic: "Biology"},
-    			{interest_topic: "Algebra", suggested_topic: "Precalculus"},
-    			{interest_topic: "Modern Art", suggested_topic: "Art History"}
-    			]);
+    		this.collection = new SuggestedContentCollection();
+    		this.collection.fetch({
+    			data: {explore: true},
+    			success: this.render
+    		});
+    	} else {
+        	this.render();
     	}
-        this.render();
 	},
 
 	render: function() {
@@ -168,13 +169,11 @@ $(function(){
     window.suggestedContentCollection = new window.SuggestedContentCollection([
 		{interest_topic: "Chemistry", suggested_topic: "Physics", resume: true},
 		{interest_topic: "Physiology", suggested_topic: "Biology", nextSteps: true},
-		{interest_topic: "Algebra", suggested_topic: "Precalculus", explore: true},
-		{interest_topic: "Modern Art", suggested_topic: "Art History"}
+		{interest_topic: "Algebra", suggested_topic: "Precalculus", explore: true, nextSteps: true},
+		{interest_topic: "Modern Art", suggested_topic: "Art History", explore: true}
 	]);
     
     window.hpwrapper = new HomepageWrapper({
-		/*this is probably going to have to change. @HELENA, do we need to make a model
-        for this?*/
         collection:suggestedContentCollection,
         el:"#content-area"
 		});    

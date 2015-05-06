@@ -1,17 +1,5 @@
 //Models
 
-window.ContentResumeModel = Backbone.Model.extend({
-	defaults: {
-		lesson_title: "",
-		lesson_description: "blahblah"
-	},
-
-	initialize: function() {
-        //this.channel = options.channel;
-        console.log(this.get('lesson_description'));
-    }
-});
-
 window.SuggestedContentModel = Backbone.Model.extend({
 	defaults: {
 		interest_topic: "interest topic",
@@ -31,5 +19,6 @@ window.SuggestedContentModel = Backbone.Model.extend({
 //Collections
 
 window.SuggestedContentCollection = Backbone.Collection.extend({
+	url: '/api/content_recommendation',
 	model: SuggestedContentModel
 });
