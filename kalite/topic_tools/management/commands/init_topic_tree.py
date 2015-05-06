@@ -40,8 +40,8 @@ class Command(BaseCommand):
             """
             # In general title or description could be absent, but it's probably an error
             # if the other fields are.
-            subtype = NodeSubtype()
-            subtype.save()
+            # Just use one object to avoid proliferation, until this field becomes meaningful
+            subtype, found = NodeSubtype.objects.get_or_create(pk=1)
             node = TopicTreeNode(
                 title=_(raw_node.get("title", "")),
                 description=_(raw_node.get("description", "")) if raw_node.get("description") else "",
@@ -52,6 +52,10 @@ class Command(BaseCommand):
                 node_subtype=subtype
             )
             node.save()
+            # Have to reload the parent from the database in order to ensure tree
+            # attributes in memory are properly updated.
+            if parent:
+                parent = TopicTreeNode.objects.get(pk=parent.pk)
             for child in raw_node.get("children", []):
                 recurse_nodes(child, node)
         recurse_nodes(raw_topics)
