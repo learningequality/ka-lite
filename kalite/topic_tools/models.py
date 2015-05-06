@@ -13,6 +13,7 @@ class TopicTreeNode(MPTTModel):
     slug = models.SlugField(max_length=255, primary_key=True, unique=True)
     path = models.URLField(max_length=200, unique=True)
     channel = models.ForeignKey('Channel')
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
 
     # The "kind" of the node
     content_type = models.ForeignKey(ContentType)
