@@ -3,20 +3,28 @@
     <div class="col-xs-9">
         <h1>Resume</h1>
     </div>
+    <div class="col-xs-3">
+        <h1 class="glyphicon glyphicon-road" aria-hidden="true"></h1>
+    </div>
 </div>
 
 <!--Where the video thumbnail and description go-->
 <div id="content-resume-thumbnail">
-    <h2>Algorithms {{ lesson_title }}</h2>
         <div class="row">
-            <img class="img-responsive" src="/static/images/distributed/video.png" alt="video" />
+            <div class col-xs-12><h2>Algorithms {{ lesson_title }}</h2></div>
+            <div class col-xs-12>
+              <img class="img-responsive"src="/static/images/distributed/video.png" alt="video" />
+            </div>
+
         </div>
     
         <div class="row">
-            <h3>Description:</h3>
+          <div class col-xs-12><h3>Description:</h3></div>
         </div>
         
         <div class="row">
+          <div class col-xs-12>
             <p>{{ lesson_description }}</p>        
+          </div>
         </div>
 </div>
