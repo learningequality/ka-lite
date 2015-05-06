@@ -35,7 +35,7 @@ class Command(BaseCommand):
         def recurse_nodes(raw_node, parent=None):
             """
             Recurse through the raw_topics and create TopicTreeNodes
-            :param node: a node from raw_topics
+            :param raw_node: a node from raw_topics
             :param parent: a saved topic_tools.models.TopicTreeNode
             """
             # In general title or description could be absent, but it's probably an error
