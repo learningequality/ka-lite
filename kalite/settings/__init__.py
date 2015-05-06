@@ -100,10 +100,11 @@ if package_selected("Demo"):
 
     MIDDLEWARE_CLASSES += ('kalite.distributed.demo_middleware.StopAdminAccess','kalite.distributed.demo_middleware.LinkUserManual','kalite.distributed.demo_middleware.ShowAdminLogin',)
 
+
+# Force DeprecationWarning to show in DEBUG
 if DEBUG:
-    """Show DeprecationWarning messages when in debug"""
     import warnings
-    warnings.simplefilter('always', DeprecationWarning)
+    warnings.simplefilter('error', DeprecationWarning)
 
 CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
 

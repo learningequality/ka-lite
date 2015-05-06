@@ -159,8 +159,11 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
 
                 # Get the language codes for exercise templates that exist
-                available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
-
+                # Try to minimize the number of os.path.exists calls (since they're a bottleneck) by using the same
+                # precedence rules in i18n.select_best_available_languages
+                available_langs = [lang_code for lang_code in exercise_templates if language in lang_code or lang_code == settings.LANGUAGE_CODE]
+                available_langs = [lang_code for lang_code in available_langs if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))]
+                available_langs = set(["en"] + available_langs)
                 # Return the best available exercise template
                 exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
 
