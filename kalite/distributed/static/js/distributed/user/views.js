@@ -135,7 +135,6 @@ window.LoginView = BaseView.extend({
         doRequest(url, null, {
             cache: true,
             dataType: "json",
-            timeout: _timeout_length,
             ifModified: true
         }).success(function(data, textStatus, xhr) {
             self.student_usernames = [];

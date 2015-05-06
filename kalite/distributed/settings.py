@@ -219,3 +219,14 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
+
+# TODO(benjaoming): Get rid of this
+import mimetypes
+
+########################
+# Font setup
+########################
+
+# Add additional mimetypes to avoid errors/warnings
+mimetypes.add_type("font/opentype", ".otf", True)

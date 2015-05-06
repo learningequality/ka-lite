@@ -73,11 +73,11 @@ def impl(context):
 
 @then('the password should be highlighted')
 def impl(context):
-    assert check_highlight(context, "password")
+    check_highlight(context, "password")
 
 @then('the username should be highlighted')
 def impl(context):
-    assert check_highlight(context, "username")
+    check_highlight(context, "username")
 
 @then('a tooltip should appear on the password box only')
 def impl(context):
@@ -101,7 +101,9 @@ def fill_password(context, text):
 
 def check_highlight(context, item):
     highlight = find_css_class_with_wait(context, "has-error")
-    return "id_{item}-container".format(item=item) == highlight.get_attribute("id")
+    actual = highlight.get_attribute("id")
+    expected = "id_{item}-container".format(item=item)
+    assert expected == actual, "Expected id: {exp}\n Actual id: {act}".format(exp=expected,act=actual)
 
 def check_single_popover(context, item):
     popover = find_id_with_wait(context, "id_{item}-popover".format(item=item))
