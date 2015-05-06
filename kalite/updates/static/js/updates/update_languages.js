@@ -2,6 +2,21 @@ var installable_languages = [];
 var installed_languages = [];
 var downloading = false;
 
+function version_comparison(v1, v2) {
+    // compare two version strings and return 1 if the first is higher than the second,
+    // -1 if the first is lower than the second, and 0 if they are equal
+    var v1parts = v1.split('.'), v2parts = v2.split('.');
+    var maxLen = Math.max(v1parts.length, v2parts.length);
+    var part1, part2;
+    for(var i = 0; i < maxLen; i++) {
+        part1 = parseInt(v1parts[i], 10) || 0;
+        part2 = parseInt(v2parts[i], 10) || 0;
+        if (part1 > part2) return 1;
+        if (part2 > part1) return -1;
+    }
+    return 0;
+}
+
 function get_available_languages() {
     return doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
         cache: false,
@@ -54,10 +69,10 @@ function display_languages() {
             lang["translated"] = gettext("Translated");
             var lang_name_data = sprintf("<b>%(name)s</b><br>%(subtitle_count)d %(subtitles)s <br> %(percent_translated)d%% %(translated)s", lang);
             var lang_code = lang['code'];
-            
+
             var lang_description = sprintf("<tr><td class='lang-name'>%s</td><td class='lang-link'>%s </td>", lang_name_data, link_text);
 
-            
+
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
             // NOTE: N^2 algorithm right here, but meh
@@ -66,7 +81,10 @@ function display_languages() {
                 if (matching_installable.length != 0) {
                     matching_installable = matching_installable[0];
 
-                    var upgradeable = matching_installable.language_pack_version > lang.language_pack_version;
+                    var software_version_comparison = version_comparison(matching_installable.software_version, lang.software_version);
+                    var upgradeable =
+                        (software_version_comparison == 1) || // language pack is for a new KA Lite version
+                        (software_version_comparison == 0 && (matching_installable.language_pack_version > lang.language_pack_version)); // same KA Lite version, new lang pack
                     if (upgradeable) {
                         //add upgrade link here
                         var percent_translated_diff = matching_installable.percent_translated - lang.percent_translated;
@@ -138,7 +156,7 @@ $(function () {
 
     });
 });
-  
+
 function populate_installable_lang_pack_dd(){
     //
     // show list of installable languages in the dropdown box
