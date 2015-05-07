@@ -19,9 +19,7 @@ def load_yaml(file_name):
     Returns:
         A dictionary structure that reflects the yaml structure.
     """
-    file_stream = open(file_name, "r")
-    version_object = yaml.load(file_stream)
-    return version_object
+    return yaml.load(open(file_name, "r"))
 
 
 VERSION_INFO = load_yaml(os.path.join(os.path.dirname(__file__), "../data/version.yml"))
