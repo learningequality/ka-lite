@@ -28,6 +28,16 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         cherrypy.log("Loading and serving the Django application")
         cherrypy.tree.graft(WSGIHandler())
 
+        # Enable serve the khan folder specified in lcoal_settings.py
+        # (for android, user may put the content folder on SD card, it's reasonable to decouple content folder and khan folder(20000+ images in it)).
+        if getattr(settings, "CONTENT_ROOT_KHAN", None):
+            static_handler = cherrypy.tools.staticdir.handler(
+                section="/",
+                dir=os.path.split(settings.CONTENT_ROOT_KHAN)[1],
+                root=os.path.abspath(os.path.split(settings.CONTENT_ROOT_KHAN)[0])
+            )
+            cherrypy.tree.mount(static_handler, settings.CONTENT_URL + 'khan/')
+
         # Serve the content files
         if getattr(settings, "CONTENT_ROOT", None):
             static_handler = cherrypy.tools.staticdir.handler(
