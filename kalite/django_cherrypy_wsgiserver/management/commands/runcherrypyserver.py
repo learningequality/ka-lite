@@ -270,7 +270,7 @@ def runcherrypyserver(argset=[], **kwargs):
     if "stop" in options:
         #we are done, get out
         return True
-
+    
     cherrypyserver.run_cherrypy_server(**options)
 
 

@@ -42,71 +42,71 @@
                     </div>
                 </div>
             </p>
-        {% endif %}
-        <div class="table-responsive">
-            <table class="table selectable-table">
-                 <thead>
-                    <tr class="header-footer-bg">
-                        <th><input class="select-all" type="checkbox" value="#students" autocomplete="off"/></th>
-                        <th>{% trans "Learner Name" %}</th>
-                        <th>{% trans "Edit" %}</th>
-                        <th>{% trans "Coach" %}</th>
-                        <th>{% trans "Group" %}</th>
-                        <th>{% trans "Logins" %}</th>
-                        <th>{% trans "Login Time" %}</th>
-                        <th>{% trans "Videos Viewed" %}</th>
-                        <th>{% trans "Exercises Completed" %}</th>
-                        <th>{% trans "Mastery" %}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in student_pages %}
-                        <tr class="selectable" value="{{ student.id }}" type="students">
-                            <td><input type="checkbox" value="#students" autocomplete="off"/></td>
-                            <td>
-                                {{ student|format_name:"last_first" }}
-                            </td>
-                            <td>
-                                <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit learner {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                </a>
-                            </td>
-
-                            <td>
-                                <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach learner {{ studentname }}{% endblocktrans %}" href="{% url 'student_view' %}?user={{ student.id }}">
-                                <div class="sparklines" sparkType="bar" sparkBarColor="green">
-                                <!--
-                                    {{ student.total_logins }},
-                                    {{ student.total_videos }},
-                                    {{ student.total_exercises }}
-                                -->
-                                </div></a>
-                            </td>
-                            <td>
-                                {% if student.group %}
-                                    {% if group_id %}
-                                    <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'tabular_view' %}?facility={{ facility.id }}&group={{ student.group.id }}">
-                                    {% else %}
-                                    <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
-                                    {% endif %}
-                                    {{ student.group.name }}
-                                    </a>
-                                {% endif %}
-                            </td>
-                            <td>{{ student.total_logins }}</td>
-                            <td>{{ student.total_hours|floatformat }} {% trans "hour(s)" %}</td>
-                            <td>{{ student.total_videos }}</td>
-                            <td>{{ student.total_exercises }}</td>
-                            <td>{{ student.pct_mastery|percent:1  }}</td>
+            <div class="table-responsive">
+                <table class="table selectable-table">
+                     <thead>
+                        <tr class="header-footer-bg">
+                            <th><input class="select-all" type="checkbox" value="#students" autocomplete="off"/></th>
+                            <th>{% trans "Learner Name" %}</th>
+                            <th>{% trans "Edit" %}</th>
+                            <th>{% trans "Coach" %}</th>
+                            <th>{% trans "Group" %}</th>
+                            <th>{% trans "Logins" %}</th>
+                            <th>{% trans "Login Time" %}</th>
+                            <th>{% trans "Videos Viewed" %}</th>
+                            <th>{% trans "Exercises Completed" %}</th>
+                            <th>{% trans "Mastery" %}</th>
                         </tr>
-                    {% endfor %}
-                    {# 10x td for table formatting #}
-                    <tr>
-                        <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {% for student in student_pages %}
+                            <tr class="selectable" value="{{ student.id }}" type="students">
+                                <td><input type="checkbox" value="#students" autocomplete="off"/></td>
+                                <td>
+                                    {{ student|format_name:"last_first" }}
+                                </td>
+                                <td>
+                                    <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit learner {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                </td>
+
+                                <td>
+                                    <a  title="{% blocktrans with studentname=student|format_name:"last_first" %}Coach learner {{ studentname }}{% endblocktrans %}" href="{% url 'student_view' %}?user={{ student.id }}">
+                                    <div class="sparklines" sparkType="bar" sparkBarColor="green">
+                                    <!--
+                                        {{ student.total_logins }},
+                                        {{ student.total_videos }},
+                                        {{ student.total_exercises }}
+                                    -->
+                                    </div></a>
+                                </td>
+                                <td>
+                                    {% if student.group %}
+                                        {% if group_id %}
+                                        <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'tabular_view' %}?facility={{ facility.id }}&group={{ student.group.id }}">
+                                        {% else %}
+                                        <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
+                                        {% endif %}
+                                        {{ student.group.name }}
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td>{{ student.total_logins }}</td>
+                                <td>{{ student.total_hours|floatformat }} {% trans "hour(s)" %}</td>
+                                <td>{{ student.total_videos }}</td>
+                                <td>{{ student.total_exercises }}</td>
+                                <td>{{ student.pct_mastery|percent:1  }}</td>
+                            </tr>
+                        {% endfor %}
+                        {# 10x td for table formatting #}
+                        <tr>
+                            <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
     </div>
 </div>
 <div class="row table-bottom-options">

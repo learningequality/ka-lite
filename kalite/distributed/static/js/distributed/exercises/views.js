@@ -54,7 +54,7 @@ window.ExerciseProgressView = BaseView.extend({
 
         this.collection.forEach(function(model) {
             if (model.has("correct")) {
-                attempt_text = (model.get("correct") ? "<span><b>&#10003;</b></span> " : "<span>&#10007;</span> ") + attempt_text;
+                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
             }
         });
 
