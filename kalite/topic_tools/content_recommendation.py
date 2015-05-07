@@ -8,6 +8,7 @@ Three main functions:
 
 from kalite.topic_tools import * 
 from kalite.main.models import ExerciseLog 
+import kalite.facility
 from kalite.facility.models import FacilityUser
 '''
 ###
@@ -66,35 +67,32 @@ def get_recommendations(user=None, current_subtopic=None):
 # @return: a list of exercise id's that are not completed but have been started.
 ###
 def get_resume_recommendations(user):
-    return ExerciseLog.objects.filter(user=user) 
-    ''' IGNORE FOR NOW - ACTUALLY IMPLEMENTED ALREADY IN THE get_most_recent_incomplete_exercises() method'''
+    #logic for where user left off
+    current_exercises = get_most_recent_incomplete_exercises(user)[:5]    #5 most recent exercises (in-progress ones)
+    return current_exercises
 
 
 
 
 ####################################### 'NEXT STEPS' LOGIC ################################################
 ''' TODO working on this: 
-    - need to work on logic to apply the group patterns (basically cache a list of MAX LIKELIHOOD ESTIMATION)
+    - WORKING ON THE GROUP ESTIMATION PART (get_group_recommendations))
 '''
 ###
 # Returns a list of exercises to go to next. Influenced by other user patterns in the same group as well
 # as the user's struggling pattern shown in the exercise log.
 #
 # Full List:
-# - Incomplete exercises (where user left off)
+# - Incomplete exercises (where user left off - MOVED TO RESUME)
 # - Struggling (pre-reqs for exercises marked as "struggling" for the student)
 # - User patterns based on group analysis (maximum likelihood estimation and empirical count)
+# - Topic tree structure recommendations based on the most recent subtopic accessed
 #
 # @param user: facility user model
 #        current_subtopics: subtopic ids of the 5 most recently accessed exercise
 # @return: a list of exercise id's of where the user should consider going next.
 ###
 def get_next_recommendations(user):
-    recommendations = []                                                #the recommendations to return (final)
-
-    #logic for where user left off
-    current_exercises = get_most_recent_incomplete_exercises(user)[:5]    #5 most recent exercises (in-progress ones)
-
 
     #logic for recommendations based off of the topic tree structure
     current_subtopic = get_most_recent_subtopic(user)                   #the most recent subtopic id accessed by user
@@ -106,19 +104,72 @@ def get_next_recommendations(user):
 
 
     #logic to get recommendations based on group patterns, if applicable
-    group = []
+    group = get_group_recommendations(user)
 
     #final recommendations are a combination of current, struggling, group filtering, and topic_tree filtering
-    return current_exercises + struggling + group + topic_tree_based_data[:10]
+    return group + struggling + topic_tree_based_data[:10]
 
 
 
-# Given a facility user model, return ALL exercises (ids) that the user is struggling on
+
+# Given a facility user model, return a list of ALL exercises (ids) that are immediately tackled by other users
+# in the same user group - also ordered by empirical count (more people moving onto this -> higher in the
+# list). "Immediately" means the very next exercise after the most recent one the given user has accessed.
+#
+# A group is defined as a collection of students within the same facility and group (as defined in models)
+def get_group_recommendations(user):
+    user = ExerciseLog.objects.filter(id__lte=1)[0].user        #random person, can delete after                                  
+    most_recent_exercise = get_most_recent_exercises(user)[0]   #get most recently accessed exercise
+    user_list = get_users_in_group('Student', user.group, user.facility) #may need to debug
+    
+    counts = [{'temp':0}]  #array of dictionaries to keep track of counts of subsequent exercises
+
+    '''     NEEDS DEBUGGING     '''
+    for student in user_list:
+        student_exercises = get_most_recent_exercises(student)
+        
+        #if this student has taken/attempted this exercise
+        if most_recent_exercise in student_exercises and len(student_exercises) > 0:
+            next = student_exercises[0] #start at the most recent one - this will act like a prev pointer
+
+            #loop through all exercises, keeping track of previous 
+            for exercise in student_exercises:
+              
+                #a match, and not the first one (which would imply that there is no next)
+                if(exercise == most_recent_exercise and exercise != next):
+                    
+                    found = False #boolean flag
+                    
+                    for c in counts:
+                        #if a match
+                        if next.exercise_id in c:
+                            c[next.exercise_id] += 1
+                            found = True
+
+                    #if exercise not found, then make a new object with it with count = 1 
+                    if not found:
+                        counts.append({next.exercise_id : 1})
+
+                    #break #stops inner for loop logic
+
+                next = exercise
+
+
+        ''' NOW NEED TO ORDER COUNTS FROM HIGHEST TO LOWEST '''
+        ''' THEN SIMPLY RETURN THE EXERCISE IDS FROM HIGHEST TO LOWEST '''
+        
+    
+    return []
+
+
+
+
+# Given a facility user model, return a list ALL exercises (ids) that the user is struggling on
 # This amounts to returning only those exercises that have their "struggling" attribute set
 # to True. The exercise ids are also in order of most recent first. 
 def get_struggling_exercises(user):
     exercises_by_user = ExerciseLog.objects.filter(user=user)
-    exercises_by_user = ExerciseLog.objects.filter(id__lte=1)   #temp
+    exercises_by_user = ExerciseLog.objects.filter(id__lte=1)   #temp, delete after
 
     #sort exercises first, in order of most recent first
     exercises_by_user = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
@@ -129,6 +180,7 @@ def get_struggling_exercises(user):
             struggles.append(exercise.exercise_id)
 
     return struggles
+
 
 
 
@@ -187,6 +239,7 @@ def get_exercises_from_topics(topicId_list):
 
     return exs
 
+
 #given a facility user model, return the most recent exercise ids that are still in-progress
 def get_most_recent_incomplete_exercises(user):
     exercises_by_user = ExerciseLog.objects.filter(user=user)
@@ -202,6 +255,24 @@ def get_most_recent_incomplete_exercises(user):
             exercise_list.append(exercise.exercise_id)  #append to list
 
     return exercise_list                                #most recent + incomplete
+
+
+
+#given a facility user model, return the most recent exercise ids - incomplete AND complete
+def get_most_recent_exercises(user):
+    exercises_by_user = ExerciseLog.objects.filter(user=user)
+    
+    #sorted by completion time in descending order (most recent first)
+    sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
+
+    return sorted_exercises   
+
+
+
+#given a user type (can be null), group id, and a facility name, return all users in that group
+#calls the already defined function in facility module
+def get_users_in_group(user_type, group_id, facility):
+    return kalite.facility.get_users_from_group(user_type, group_id, facility)
 
 
 ###################################### BEGIN NEAREST NEIGHBORS ############################################
