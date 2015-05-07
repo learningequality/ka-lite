@@ -90,7 +90,7 @@ class VanillaPlaylist:
     """
     playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
 
-    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned', 'unit', 'show']
+    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned', 'show']
 
     def __init__(self, **kwargs):
         self.pk = self.id = kwargs.get('id')
