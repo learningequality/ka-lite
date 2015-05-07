@@ -14,7 +14,7 @@ from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 from selenium.webdriver.common.keys import Keys
 
-PLAYLIST_ID = "g4_u400_ap1"
+PLAYLIST_ID = "g4_p1"
 
 
 class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):

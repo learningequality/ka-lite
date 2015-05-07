@@ -7,7 +7,7 @@ class CreatePlaylistProgressMixin(object):
 
     @classmethod
     def create_playlist_progress(cls, user, quiz=True):
-        default_playlist = "g4_u401_p1"
+        default_playlist = "g4_p1"
         playlist = [pl for pl in Playlist.all() if pl.id == default_playlist]
         assert(playlist[0].id == default_playlist), "Unexpected playlist ID. Update tests to match new playlists.json"
         playlist = playlist[0]
@@ -26,7 +26,7 @@ class CreatePlaylistProgressMixin(object):
 
         ExerciseLog(**{
             "user": user,
-            "exercise_id": "telling_time",
+            "exercise_id": "place_value",
             "streak_progress": 50,
             "attempts": 25,
             "points": 100,

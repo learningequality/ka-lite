@@ -153,17 +153,7 @@ var AppView = Backbone.View.extend({
         var view = new PlaylistView({model: playlist});
         var title = playlist.get('title');
         var grade = playlist.get('tag').slice(-1);
-        if (title.indexOf("Core") > -1){
-            $("#grade-" + grade + "-core-playlists").append(view.render().el);
-        } else if (title.indexOf("Prerequisite") > -1){
-            $("#grade-" + grade + "-pre-playlists").append(view.render().el);
-        } else if (title.indexOf("Advanced") > -1){
-            $("#grade-" + grade + "-advanced-playlists").append(view.render().el);
-        } else if (title.indexOf("Exam Prep") > -1){
-            $("#grade-" + grade + "-exam-prep-playlists").append(view.render().el);
-        }
-
-
+        $("#grade-" + grade).append(view.render().el);
     },
 
     addAllPlaylists: function() {
@@ -186,10 +176,5 @@ $(function() {
     $('.header').click(function(){
         $(this).toggleClass('expand').nextUntil('tr.header').slideToggle(100);
     });
-
-    $('.grade').click(function(){
-        $(this).toggleClass('expand').nextUntil('tbody.grade').slideToggle(100);
-    });
-
 
 });
