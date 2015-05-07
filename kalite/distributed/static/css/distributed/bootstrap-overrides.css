@@ -349,6 +349,37 @@ form .input-group {
     Content Recommendation
 =================================== */
 
+#resume, #nextsteps, #explore{
+  padding-left: 3%;
+  padding-right: 3%;
+}
+
+.card{
+  border-radius: 5px;
+  background-color: lightgray;
+  box-shadow: 0;
+  margin:-15px;
+}
+
+/*Temporary*/
+.ns_thumb{
+  vertical-align: text-top;
+  font-size: 4em;
+  margin: 20px;
+}
+/*Because bootstrap thinks we need a huge margin on top + bottom*/
+.module_divider{
+  margin:0;
+}
+
+.content-nextsteps-lesson h4{
+  margin-top: 20px;
+}
+
+.ns_series_arrow{
+  font-size:3em;
+  text-align: center;
+}
 
 /*===================================
     Landing Page

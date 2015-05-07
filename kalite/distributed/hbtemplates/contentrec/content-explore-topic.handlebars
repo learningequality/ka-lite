@@ -1,10 +1,20 @@
 <div id="content-explore-topic">
-	<h5>Based on your interest in {{ interest_topic }}:</h5>
-	<span class="inline" id="left-col">
-		<h2>{{ suggested_topic }}</h2>
-	</span>
-	<span class="inline" id="right-col">
-		<h4 class="no-margin">Description:</h4>
-		<p>{{ lesson_description }}</p>
-	</span>
+
+  <div class="row">
+    <div class="col-xs-12">
+        <h5 class="small">Based on your interest in {{ interest_topic }}:</h5>
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6">
+        <h3>{{ suggested_topic }}:</h3>
+    </div>
+    <div class="col-xs-6">
+      <p><b>Description:</b><p>
+      <p>{{ lesson_description }}</p>
+    </div>
+    <hr class="module_divider" />
+  </div>
+
 </div>
