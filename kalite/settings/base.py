@@ -130,9 +130,9 @@ else:
     _data_path = os.path.join(ROOT_DATA_PATH,)
     
     # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-    PROJECT_PATH = os.path.join(
-        os.path.expanduser("~"),
-        '.kalite'
+    PROJECT_PATH = os.environ.get(
+        "KALITE_HOME",
+        os.path.join(os.path.expanduser("~"), ".kalite")
     )
 
 
@@ -177,10 +177,11 @@ LOAD_KHAN_RESOURCES = getattr(local_settings, "LOAD_KHAN_RESOURCES", CHANNEL == 
 # the user running kalite and should be in a user-data
 # storage place.
 
-USER_DATA_ROOT = os.path.join(
-    os.path.expanduser("~"),
-    '.kalite'
+USER_DATA_ROOT = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
 )
+
 
 if not os.path.exists(USER_DATA_ROOT):
     os.mkdir(USER_DATA_ROOT)
