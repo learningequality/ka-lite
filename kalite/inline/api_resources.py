@@ -1,4 +1,3 @@
-from tastypie import fields
 from tastypie.resources import Resource
 from tastypie.exceptions import BadRequest
 
@@ -11,17 +10,25 @@ class NarrativeResource(Resource):
     class Meta:
         resource_name = 'narrative'
 
+    # fetches the list of objets available on the resource
     def obj_get_list(self, bundle, **kwargs):
-        print bundle.request
+        print "hello"
 
+        # f = open('managetab.yaml')
+
+        # narrative_json = yaml.safe_load(f)
+        # f.close()
+
+        # return narrative_json
+
+    # fetches an individual object on the resource, based on id
+    # raises a NotFound exception
+    def obj_get(self, bundle, **kwargs):
+        # print bundle.request
         f = open('managetab.yaml')
-
         narrative_json = yaml.safe_load(f)
         f.close()
-
         return narrative_json
 
-    # Determines ther desired response format, and serializes the data
-    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
-        response = super(ParentFacilityUserResource, self).create_response(request, data, response_class=response_class, **response_kwargs)
-        print response
+    def urls(self):
+       return '/inline/management/zone/None';
