@@ -1,3 +1,4 @@
 -r requirements.txt
 behave==1.2.4
 selenium==2.45.0
+pyinotify==0.9.5
