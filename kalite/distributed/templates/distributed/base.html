@@ -8,9 +8,9 @@
 {% get_current_language as lang_code %}
 <html lang="{{ lang_code }}">
     <head>
-        <!--[if lt IE 9]>
+        <!--[if lt IE 9]> 
               <script src="{% static "js/html5shiv.js" %}"></script>
-        <![endif]-->
+        <![endif] -->
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="wot-verification" content="075abe861486e6bb3ab9"/>
@@ -159,7 +159,8 @@
         });
         $(function() {
           window.statusModel.fetch_data();
-          window.userView = new UserView({model: statusModel, el: "#user-name"});
+          //window.userView = new UserView({model: statusModel, el: "#user-name"});
+          window.toggleNavbarView = new ToggleNavbarView({model: statusModel, el: "#topnav"});
           window.autoCompleteView = new AutoCompleteView();
           $("#topnav").prepend(window.autoCompleteView.$el);
         });
@@ -191,12 +192,13 @@
                           </div>    
                                                    
                       </div>
+
+
                       
 
                       <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
+
                           <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist">
-                            <!-- For all users -->
-                            {# Search box #}
                             <li>
                               <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
                                 {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
@@ -206,112 +208,9 @@
                                 </div>
                               </form>
                             </li>
-                            <!-- For logged in admins -->
-                            {% if request.is_admin and not request.session.facility_user.facility %}
-                              {# Teach for admins => coachreports #}
-                              <li class="admin-nav {% block teach_active_admins %}{% endblock teach_active_admins %}">
-                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
-                                  {% trans "Teach" %}
-                                </a>
-                              </li>
-                            {% endif %}
-
-                            {# Manage for admins => zone control panel #}
-                            {% if request.is_django_user %}
-                            <li class="admin-nav {% block manage_active_admins %}{% endblock manage_active_admins %}">
-                              <a href="{% url 'zone_redirect' %}" id="manage" class="">
-                                {% trans "Manage" %}
-                              </a>
-                            </li>
-                            {% endif %}
-                            <!-- End for logged in admins -->
-
-                            <!-- For logged in teachers -->
-                            {# Teach for teachers => coachreports #}
-                            <li class="teacher-nav display-none {% block teach_active_teachers %}{% endblock teach_active_teachers %}">
-                              <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
-                                {% trans "Teach" %}
-                              </a>
-                            </li>
-
-                            {# Manage for teachers => facility management #}
-                            {% if request.session.facility_user.facility %}
-                              <li class="teacher-nav display-none {% block manage_active_teachers %}{% endblock manage_active_teachers %}">
-                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" id="manage" class="">
-                                  {% trans "Manage" %}
-                                </a>
-                              </li>
-                            {% endif %}
-                            <!-- End for logged in teachers -->
-
-                            <!-- Universal Learn tab -->
-                            {# Learn for all #}
-                            <li class="{% block learn_active %}{% endblock learn_active %}">
-                              <a href="{% url 'learn' %}" id="nav_learn" class="home-navlink">
-                                {% trans "Learn" %}
-                              </a>
-                            </li>
-
-                            <!-- For logged out users  -->
-                            {# Login #}
-                            <li class="guest-nav {% block login_active %}{% endblock login_active %}">
-                              <a href="#" class="not-logged-in-only" data-toggle="modal" data-target="#loginModal" title="{% trans 'Login' %}" id="nav_login">
-                                {% trans "Login" %}
-                              </a>
-                            </li>
-
-                            {% if not restricted %}
-                              <li class="guest-nav {% block signup_active %}{% endblock signup_active %}">
-                                <a href="{% url 'facility_user_signup' %}" id="nav_signup" class="not-logged-in-only" title="{% trans 'Register to start tracking your progress' %}">
-                                  {% trans "Sign Up" %}
-                                </a>
-                              </li>
-                            {% endif %}
-                            
-                            <hr class="nav-divider student-nav student-only">
-                            {% if request.is_admin or request.session.facility_user.facility %}
-                            <hr class="nav-divider admin-only">
-                            {% endif %}
-
-                            <!-- Farthest right nav is logged in user dropdown -->
-                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %}" id="user-name">
-                              <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown" id="user-name-a">
-                                  <span id="username">
-                                    <!-- Username injected here w/ js -->
-                                  </span>
-                                <span class="caret hidden-xs"></span>
-                              </a>
-
-                              <ul class="dropdown-menu" data-no-collapse="true" role="menu">
-                                <li class="student-only student-nav" role="presentation">
-                                  <span class="student-only student-nav" id="points">
-                                    <!-- Points injected here w/ js -->
-                                  </span>
-                                </li>
-                                <li role="presentation" class="divider student-only student-nav"></li>
-                                {# Student account management #}
-                                <li role="presentation" class="motivational-feature student-only student-nav">
-                                  <a role="menuitem" tabindex="-1" href="{% url 'account_management' %}" id="nav_progress" title="{% trans 'My Progress'%}" class="student-only">
-                                    {% trans "My Progress" %}
-                                  </a>
-                                </li>
-                                <!-- TODO-BLOCKER(jamalex): re-enable these links once non-playlist "my progress" works, and help link is meaningful again -->
-                                <!--
-                                <li role="presentation">
-                                  <a role="menuitem" tabindex="-1" href="{% url 'help' %}" id="nav_help">{% trans "Help" %}</a>
-                                </li> -->
-                                <li role="presentation" class="divider student-only student-nav"></li>
-                                <!-- Logout goes at the bottom! -->
-                                <li role="presentation" id="logout">
-                                  <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}" href="#">
-                                    {% trans "Logout" %}
-                                  </a>
-                                </li>
-                              </ul>
-                            </li>
-
-                          </ul>
-                        </div>
+                           
+                        </ul>
+                      </div>
                   </div>
               </div>
           </div>

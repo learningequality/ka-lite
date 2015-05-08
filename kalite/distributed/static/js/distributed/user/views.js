@@ -316,56 +316,38 @@ window.UserView = BaseView.extend({
     }
 });
 
-/* Check the type of user
-- guest: 'guest-user'
-- teacher: 'teacher-nav'
-- admin: 'admin-nav'
-- student: 'student-user'
-assign the api call to the appropriate css class
-if not current user, insert display-none css class */
-
-/* This view uses API to toggle which navbar items are displayed to the user */ 
+/* This view toggles which navbar items are displayed to the user */ 
 window.ToggleNavbarView = BaseView.extend ({
 
     template: HB.template("user/navigation"),
 
     initialize: function() {
-        _.bindAll(this);
+
+        _.bindAll(this);        
         this.listenTo(this.model, "change", this.render);
-        $("body").append(this.el);
+        this.$el.html(this.template());
+
     },
 
     render: function() {
-        var self = this;
 
-        this.$el.html(this.template());
+        this.userView = new UserView({ model: this.model, el: "#topnav" });
 
-        /*if ( window.statusModel.get("is_logged_in")) {
-            //identifies a teacher user
-            if ( window.statusModel.get("is_admin") && !window.statusModel.get("is_django_user") ) {
-                console.log("working so far");
-                var element = 
-                self.getElementsByClassName("teacher-nav").classList.remove("display-none");
+        // logged in
+        if ( this.model.get("is_logged_in") ) {
 
+            if ( this.model.get("is_admin") ) { // admin
+                if ( this.model.get("is_django_user") ) { // superuser
+                    this.$(".teacher-manage").hide();
+                } else { // teacher
+                    this.$(".admin-manage").hide();
+                }
+            } else { // student
+                this.$(".admin-toggle").hide();
             }
-            //identifies a super user
-            else if ( window.statusModel.get("is_django_user")) {
+        } else { // guest
+            this.$(".admin-toggle").hide();
+        }       
 
-            }
-            //identifies a general admin user
-            else if ( window.statusModel.get("is_admin") ) {
-
-            }
-            //identifies a student user 
-            else if ( !window.statusModel.get("is_admin") && !window.statusModel.get("is_django_user") ) {
-
-            }
-        } 
-        // shows tabs for guest user
-        else {
-
-        }*/
-        return this;  
     }
 });
-var toggleNavbarView = new ToggleNavbarView({model: statusModel, el: "#top-nav"});

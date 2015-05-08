@@ -427,7 +427,7 @@ $(function() {
 
 
 /*This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
-function collapsedNav() {
+/*function collapsedNav() {
     var data_toggle = document.getElementById("user-name-a");
     var menu = document.getElementById("user-name");
         if ( $('body').innerWidth() <= 750 ) {
@@ -439,4 +439,4 @@ function collapsedNav() {
       }
 };
 window.addEventListener("resize", collapsedNav);
-window.addEventListener("pageshow", collapsedNav);
+window.addEventListener("pageshow", collapsedNav);*/
