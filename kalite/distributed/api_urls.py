@@ -17,8 +17,7 @@ import kalite.contentload.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
 import kalite.store.api_urls
-
-import kalite.inline.api_urls ############################################
+import kalite.inline.api_urls
 
 urlpatterns = patterns(__package__ + '.api_views',
     # Setting server time (RPi)
@@ -26,9 +25,9 @@ urlpatterns = patterns(__package__ + '.api_views',
 )
 
 ############ Inline narratives ############################################
-# urlpatterns += patterns(
-#     url(r'^inline/', include(kalite.inline.api_urls))
-# )
+urlpatterns += patterns('',
+    url(r'^inline/', include(kalite.inline.api_urls))
+)
 
 # Khanload allows users to download data from a Khan Academy account
 urlpatterns += patterns('kalite.khanload.api_views',

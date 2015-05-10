@@ -3,7 +3,6 @@ window.ButtonView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this);  
-        console.log("backbone view for inline button initializedddd");
         this.render();
     },
 
@@ -15,11 +14,12 @@ window.ButtonView = Backbone.View.extend({
         var self = this;
         this.model.fetch({ 
             success: function(model, response, options) {
-                //var url = window.location.pathname;
-
                 //Obtain narrative - array of elements and their attributes
-                var narr = self.model.get("intro");
-                
+                var narr = self.model.url;
+
+                console.log("AFTER RETRIEVING NARR FORM INSIDE VIEWS");
+                console.log(narr);
+
                 //translate narrative into build options for introjs (array->object)
                 var options = self.parseNarrative(narr);
 
@@ -31,7 +31,11 @@ window.ButtonView = Backbone.View.extend({
 
                 //start the intro
                 intro.start();
-            }
+            },
+
+            // error: function(model, response, options) {
+            //     console.log("Error fetching narrative model sorry bye");
+            // }
         });
     },
 
@@ -86,6 +90,13 @@ window.ButtonView = Backbone.View.extend({
 
 //On page load
 $(function() {
-    var narrative = new NarrativeModel();
+    console.log("INSIDE PAGELOAD VIEWS");
+
+    // Strip pathname of first '/'
+    var pathname = window.location.pathname;
+    pathname = pathname.substring(1, pathname.length);
+    console.log("pathname inside pageload views:");
+    console.log(pathname);
+    var narrative = new NarrativeModel({id: pathname});
     var buttonView = new ButtonView( {model: narrative} );
 });

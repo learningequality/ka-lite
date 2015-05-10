@@ -1,4 +1,4 @@
-management/zone/None/:
+intro:
   - 'a#manage.admin-only':
     - step: 1
     - text: 'Welcome! This is the landing page for admins. If at any point you would like to navigate back to this page, click on this tab!'
