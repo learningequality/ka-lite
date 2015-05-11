@@ -66,18 +66,18 @@ window.SidebarView = BaseView.extend({
             if (Math.floor(newWindowWidth/100) != Math.floor(windowWidth/100)) {
                 self.resize_sidebar();
                 windowWidth = $(window).width();
+            }
 
-                if ($(window).width() > 768) {
+            if ($(window).width() > 768) {
+                self.show_sidebar_tab();
+            }
+
+            else {
+                if (navbarCollapsed) {
                     self.show_sidebar_tab();
                 }
-
-                if ($(window).width() < 768) {
-                    if (navbarCollapsed) {
-                        self.show_sidebar_tab();
-                    }
-                    else {
-                        self.hide_sidebar_tab();   
-                    }
+                else {
+                    self.hide_sidebar_tab();   
                 }
             }
         });
