@@ -161,7 +161,7 @@ CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defi
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
+    KEY_PREFIX = version.VERSION_INFO()[version.VERSION]["git_commit"][0:6]  # new cache for every build
     if 'CACHES' not in locals():
         CACHES = {}
 
