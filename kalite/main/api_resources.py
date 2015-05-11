@@ -5,7 +5,7 @@ from tastypie.exceptions import NotFound
 from django.conf.urls import url
 from django.conf import settings
 
-from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
+from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, AssessmentBenchmarkModel
 
 from kalite.distributed.api_views import get_messages_for_api_calls
 from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
@@ -169,6 +169,12 @@ class AssessmentItem():
         self.item_data = kwargs.get('item_data')
         self.author_names = kwargs.get('author_names')
         self.sha = kwargs.get('sha')
+
+
+class AssessmentItemORMResource(ModelResource):
+    class Meta:
+        queryset = AssessmentBenchmarkModel.objects.all()
+        resource_name = 'orm_assessment_item'
 
 
 class AssessmentItemResource(Resource):

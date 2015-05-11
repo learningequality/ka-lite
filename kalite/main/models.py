@@ -25,6 +25,14 @@ from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
 
 
+class AssessmentBenchmarkModel(models.Model):
+    kind = models.CharField(max_length=50)
+    item_data = models.CharField(max_length=50)
+    author_names = models.CharField(max_length=50)
+    sha = models.CharField(max_length=50)
+    id = models.CharField(max_length=50, primary_key=True)
+
+
 class VideoLog(DeferredCountSyncedModel):
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)

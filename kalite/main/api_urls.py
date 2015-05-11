@@ -7,7 +7,7 @@ they're imported into the project's urls.py file.
 from django.conf.urls import include, patterns, url
 
 from .api_resources import VideoLogResource, ExerciseLogResource, AttemptLogResource, ContentLogResource, ExerciseResource, AssessmentItemResource, ContentResource, ContentRecommenderResource
-
+from .api_resources import AssessmentItemORMResource
 
 urlpatterns = patterns(__package__ + '.api_views',
 
@@ -20,6 +20,7 @@ urlpatterns = patterns(__package__ + '.api_views',
     # Retrieve assessment item data to render front-end Perseus Exercises
     url(r'^', include(AssessmentItemResource().urls)),
     url(r'^', include(ContentResource().urls)),
+    url(r'^', include(AssessmentItemORMResource().urls)),
     
     url(r'^', include(ContentRecommenderResource().urls)),
 
