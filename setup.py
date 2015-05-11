@@ -11,9 +11,7 @@ from setuptools import setup, find_packages
 
 # Handle requirements
 
-requirements = [
-    "Python>=2.7",
-]
+requirements = []
 
 # Path of setup.py
 where_am_i = os.path.dirname(os.path.realpath(__file__))
