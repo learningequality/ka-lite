@@ -53,6 +53,8 @@ from __future__ import print_function
 # DO NOT IMPORT BEFORE THIS LIKE
 import sys
 import os
+import atexit
+import signal
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -328,14 +330,6 @@ def manage(command, args=[], in_background=False):
     :param in_background: Creates a thread for the command
     """
     
-    # TODO: Why was this necessary? Had to be commented out because get_commands
-    # imports django.conf.settings which should not be imported outside of the
-    # command itself as DJANGO_SETTINGS_MODULE could have been set from command
-    # line options.
-    # Original comment:
-    # Ensure that django.core.management's global _command variable is set
-    # before call commands, especially the once that run in the background
-    # Import here so other commands can run faster
     if not in_background:
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
@@ -343,11 +337,19 @@ def manage(command, args=[], in_background=False):
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        # Create a new subprocess, it has to be kept alive after we quit
-        subprocess.Popen(
+        # Create a new subprocess, it will die together with the main process
+        # which is fine.
+        proc = subprocess.Popen(
             [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
             # creationflags=CREATE_NEW_PROCESS_GROUP
         )
+        
+        def kill_on_exit():
+            if proc.pid is None:
+                pass
+            else:
+                os.kill(proc.pid, signal.SIGTERM)
+        atexit.register(kill_on_exit)
 
 
 def start(debug=False, args=[], skip_job_scheduler=False):
