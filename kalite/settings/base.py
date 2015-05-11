@@ -31,8 +31,10 @@ try:
         "and then call kalite start with an additional argument pointing to "
         "your new settings module:\n\n"
         "    kalite start --settings=kalite.my_settings\n\n"
-        "You can put your settings module in a different location, but make "
-        "sure that this location is in your Python path.",
+        "In the future, it is recommended not to keep your own settings module "
+        "in the kalite code base but to put the file somewhere else in your "
+        "python path, for instance in the current directory when running "
+        "'kalite --settings=my_module'.",
         RemovedInKALite_v015_Warning
     )
 except ImportError:

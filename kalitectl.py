@@ -53,8 +53,6 @@ from __future__ import print_function
 # DO NOT IMPORT BEFORE THIS LIKE
 import sys
 import os
-import atexit
-import signal
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -70,16 +68,17 @@ else:
 
 import httplib
 import re
+import subprocess
 
-from django.core.management import ManagementUtility
 from threading import Thread
 from docopt import docopt
 from urllib2 import URLError
 from socket import timeout
+
+from django.core.management import ManagementUtility
+
 from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
-
-import subprocess
 
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
@@ -339,17 +338,10 @@ def manage(command, args=[], in_background=False):
     else:
         # Create a new subprocess, it will die together with the main process
         # which is fine.
-        proc = subprocess.Popen(
+        subprocess.Popen(
             [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
             # creationflags=CREATE_NEW_PROCESS_GROUP
         )
-        
-        def kill_on_exit():
-            if proc.pid is None:
-                pass
-            else:
-                os.kill(proc.pid, signal.SIGTERM)
-        atexit.register(kill_on_exit)
 
 
 def start(debug=False, args=[], skip_job_scheduler=False):
@@ -451,7 +443,7 @@ def stop(args=[], sys_exit=True):
             if sys_exit:
                 sys.exit(-1)
             return  # Do not continue because error could not be handled
-
+ 
     # If there's no PID for the job scheduler, just quit
     if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
         pass
