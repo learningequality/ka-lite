@@ -77,8 +77,7 @@ from socket import timeout
 from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
 
-if os.name == "nt":
-    from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
+import subprocess
 
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
@@ -337,7 +336,6 @@ def manage(command, args=[], in_background=False):
     # Ensure that django.core.management's global _command variable is set
     # before call commands, especially the once that run in the background
     # Import here so other commands can run faster
-    # get_commands()
     if not in_background:
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
@@ -345,12 +343,11 @@ def manage(command, args=[], in_background=False):
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        if os.name != "nt":
-            thread = ManageThread(command, args=args, name=" ".join([command] + args))
-            thread.start()
-        else:
-            # TODO (aron): for versions > 0.13, see if we can just have everyone spawn another process (Popen vs. ManageThread)
-            Popen([sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args, creationflags=CREATE_NEW_PROCESS_GROUP)
+        # Create a new subprocess, it has to be kept alive after we quit
+        subprocess.Popen(
+            [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
+            # creationflags=CREATE_NEW_PROCESS_GROUP
+        )
 
 
 def start(debug=False, args=[], skip_job_scheduler=False):
