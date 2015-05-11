@@ -283,7 +283,7 @@
       },
       {
         "entity_id": "/v/multiplying-whole-numbers-and-applications-1/",
-        "entity_kind": "Exercise",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 5
       }
@@ -314,9 +314,209 @@
         "sort_order": 2
       }
     ],
-    "id": "g4_t1",
+    "id": "g4_tp1",
     "show": true,
     "tag": "Grade 4",
+    "title": "Playlist Teacher 1 : Unit 1"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/divisibility-tests-for-2--3--4--5--6--9--10/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/recognizing-divisibility/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/divisibility_tests/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/prime-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/prime_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/recognizing-prime-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/composite_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/prime-factorization/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/prime-factorization-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/prime_factorization/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g6_p1",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 1: Test of divisibility and prime numbers"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/least-common-multiple--lcm/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/least-common-multiple-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/least_common_multiple/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/greatest-common-divisor-factor-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/greatest_common_divisor/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/lcm-and-gcf-greatest-common-factor--word-problems/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/least_common_multiple_and_greatest_common_divisor_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      }
+    ],
+    "id": "g6_p2",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 2: LCM and GCF"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/constructing-numerical-expressions-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/introduction-to-order-of-operations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/order-of-operations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      }
+    ],
+    "id": "g6_p3",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 3: Order of operations"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/the-why-of-the-3-divisibility-rule/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/the-why-of-the-9-divisibility-rule/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/common-divisibility-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/divisibility/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/evaluating-an-expression-with-and-without-parentheses/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/order-of-operations-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/more-complicated-order-of-operations-example",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/order-of-operations-example",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      }
+    ],
+    "id": "g6_tp1",
+    "show": true,
+    "tag": "Grade 6",
     "title": "Playlist Teacher 1 : Unit 1"
   }
 ]
