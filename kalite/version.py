@@ -23,4 +23,21 @@ def load_yaml(file_name):
         return yaml.load(f)
 
 
-VERSION_INFO = load_yaml(os.path.join(os.path.dirname(__file__), "..", "data", "version.yml"))
+def VERSION_INFO():
+    """
+    Load a dictionary of changes between each version. The key of the
+    dictionary is the VERSION (i.e. X.X.X), with the value being another dictionary with
+    the following keys:
+
+    release_date
+    git_commit
+    new_features
+    bugs_fixed
+
+    """
+
+    # we import settings lazily, since the settings modules depends on
+    # this file. Importing it on top will lead to circular imports.
+    from django.conf import settings
+
+    return load_yaml(os.path.join(settings.CONTENT_DATA_PATH, "version.yml"))
