@@ -206,9 +206,11 @@ else:
         os.mkdir(USER_DATA_ROOT)
     
     LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
+    for path in LOCALE_PATHS:
+        if not os.path.exists(path):
+            os.mkdir(path)
     
     DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
-    
     if not os.path.exists(DEFAULT_DATABASE_PATH):
         os.mkdir(DEFAULT_DATABASE_PATH)
     
