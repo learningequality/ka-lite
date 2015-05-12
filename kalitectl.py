@@ -326,7 +326,7 @@ def manage(command, args=[], in_background=False):
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param in_background: Creates a thread for the command
+    :param in_background: Creates a new process for the command
     """
     
     if not in_background:
@@ -336,11 +336,18 @@ def manage(command, args=[], in_background=False):
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        # Create a new subprocess, it will die together with the main process
-        # which is fine.
+        # Create a new subprocess, beware that it won't die with the parent
+        # so you have to kill it in another fashion
+        
+        # If we're on windows, we need to create a new process group, otherwise
+        # the newborn will be murdered when the parent becomes a daemon
+        if os.name == "nt":
+            kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
+        else:
+            kwargs = {}
         subprocess.Popen(
             [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
-            # creationflags=CREATE_NEW_PROCESS_GROUP
+            **kwargs
         )
 
 
