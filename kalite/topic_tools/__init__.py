@@ -157,10 +157,11 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
         EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
         exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
         if os.path.exists(exercise_root):
-            exercise_templates = os.listdir(exercise_root)
+            exercise_path = os.path.join(exercise_root, language) if language != "en" else exercise_root
+            exercise_templates = os.listdir(exercise_path)
         else:
             exercise_templates = []
-        TEMPLATE_FILE_PATH = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s")
+
         for exercise in EXERCISES[language].values():
             exercise_file = exercise["name"] + ".html"
             exercise_template = exercise_file
@@ -176,14 +177,12 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                         available = True
                 exercise["all_assessment_items"] = items
             else:
-                available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
+                available = exercise_template in exercise_templates
 
                 # Get the language codes for exercise templates that exist
                 # Try to minimize the number of os.path.exists calls (since they're a bottleneck) by using the same
                 # precedence rules in i18n.select_best_available_languages
-                available_langs = [lang_code for lang_code in exercise_templates if language in lang_code or lang_code == settings.LANGUAGE_CODE]
-                available_langs = [lang_code for lang_code in available_langs if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))]
-                available_langs = set(["en"] + available_langs)
+                available_langs = set(["en"] + [language]*available)
                 # Return the best available exercise template
                 exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
 
