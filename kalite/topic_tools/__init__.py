@@ -377,21 +377,13 @@ def get_topic_by_path(path, root_node=None):
 
 def get_all_leaves(topic_node=None, leaf_type=None):
     """
-    Recurses the topic tree to return all leaves of type leaf_type, at all levels of the tree.
+    Returns all leaves of type leaf_type, at all levels of the tree.
 
     If leaf_type is None, returns all child nodes of all types and levels.
     """
     if not topic_node:
         topic_node = get_node_cache()["Topic"].get("root")
-    leaves = []
-    # base case
-    if not "children" in topic_node:
-        if leaf_type is None or topic_node['kind'] == leaf_type:
-            leaves.append(topic_node)
-
-    elif not leaf_type or leaf_type in topic_node["contains"]:
-        for child in topic_node["children"]:
-            leaves += get_all_leaves(topic_node=get_node_cache()["Topic"].get(child), leaf_type=leaf_type)
+    leaves = [topic for topic in get_topic_tree() if (not leaf_type or topic.get("kind") == leaf_type) and (topic_node.get("path") in topic.get("path"))]
 
     return leaves
 
