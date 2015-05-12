@@ -1,5 +1,3 @@
-import sys
-import yaml
 import os
 
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
@@ -19,6 +17,11 @@ def load_yaml(file_name):
     Returns:
         A dictionary structure that reflects the yaml structure.
     """
+    
+    # Has to be imported here as version.py is a dependency of setup.py which
+    # may be run before dependencies are installed
+    import yaml
+
     with open(file_name, "r") as f:
         return yaml.load(f)
 
