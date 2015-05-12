@@ -10,7 +10,9 @@ before_install:
 install:
 -  npm install
 -  npm install -g grunt-cli
--  pip install .
+-  pip install -r requirements.txt
+-  python setup.py install
+#-  pip install .
 -  pip install -r requirements_dev.txt
 -  pip install coveralls
 script:
