@@ -96,8 +96,8 @@ class Command(CronCommand):
             pre_delete.disconnect(receiver=updates.invalidate_on_video_delete, sender=VideoFile)
             for chunk in videos_needing_model_deletion_chunked:
                 video_files_needing_model_deletion = VideoFile.objects.filter(youtube_id__in=chunk)
+                deleted_video_ids += [video_file.youtube_id for video_file in video_files_needing_model_deletion]
                 video_files_needing_model_deletion.delete()
-                deleted_video_ids += [video_file.video_id for video_file in video_files_needing_model_deletion]
             if deleted_video_ids:
                 caching.invalidate_all_caches()
                 self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % len(deleted_video_ids))
