@@ -185,13 +185,10 @@ USER_DATA_ROOT = os.environ.get(
 )
 
 
-if not os.path.exists(USER_DATA_ROOT):
-    os.mkdir(USER_DATA_ROOT)
-
 # Most of these data locations are messed up because of legacy
 if IS_SOURCE:
     USER_DATA_ROOT = SOURCE_DIR
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(_data_path, 'locale'),))
+    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
     
     # This is the legacy location kalite/database/data.sqlite
@@ -200,15 +197,16 @@ if IS_SOURCE:
     MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
     STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
 
+
 # Storing data in a user directory
 else:
+    
+    # Ensure that path exists
+    if not os.path.exists(USER_DATA_ROOT):
+        os.mkdir(USER_DATA_ROOT)
+    
     LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
     
-    # Copy in the distributed locales
-    for p in LOCALE_PATHS:
-        if not os.path.exists(p):
-            import shutil
-            shutil.copytree(os.path.join(_data_path, 'locale'), p)
     DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
     
     if not os.path.exists(DEFAULT_DATABASE_PATH):
