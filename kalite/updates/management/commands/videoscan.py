@@ -4,6 +4,7 @@ import glob
 import os
 from optparse import make_option
 
+from django.db.models.signals import pre_delete
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
@@ -12,6 +13,7 @@ from ...models import VideoFile
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import break_into_chunks
 from kalite import caching, i18n
+from kalite import updates
 
 
 class Command(CronCommand):
@@ -90,13 +92,17 @@ class Command(CronCommand):
             deleted_video_ids = []
             videos_flagged_for_download = set([video.youtube_id for video in VideoFile.objects.filter(flagged_for_download=True)])
             videos_needing_model_deletion_chunked = break_into_chunks(videos_marked_at_all - youtube_ids_in_filesystem - videos_flagged_for_download)
+            # Disconnect cache-invalidation listener to prevent it from being called multiple times
+            pre_delete.disconnect(receiver=updates.invalidate_on_video_delete, sender=VideoFile)
             for chunk in videos_needing_model_deletion_chunked:
                 video_files_needing_model_deletion = VideoFile.objects.filter(youtube_id__in=chunk)
                 video_files_needing_model_deletion.delete()
                 deleted_video_ids += [video_file.video_id for video_file in video_files_needing_model_deletion]
             if deleted_video_ids:
+                caching.invalidate_all_caches()
                 self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % len(deleted_video_ids))
             return deleted_video_ids
+            pre_delete.connect(receiver=updates.invalidate_on_video_delete, sender=VideoFile)
         touched_video_ids += delete_objects_for_missing_videos(youtube_ids_in_filesystem, videos_marked_at_all)
 
         if options["auto_cache"] and touched_video_ids:
