@@ -162,11 +162,6 @@ class ExerciseResource(Resource):
 
 
 class AssessmentItemResource(ModelResource):
-
-    item_data = fields.CharField(attribute='item_data')
-    author_names = fields.CharField(attribute='author_names')
-    id = fields.CharField(attribute='id')
-
     class Meta:
         resource_name = 'assessment_item'
         queryset = AssessmentItem.objects.all()
