@@ -71,7 +71,7 @@ kalite_path = os.path.abspath(kalite_path)
 
 env = {}
 env.update(os.environ.copy())
-env['KALITE_DIR'] = kalite_path
+env['KALITE_DIR'] = str(kalite_path)
 
 if 'KALITE_PYTHON' in os.environ:
     python_executable = os.environ['KALITE_PYTHON']
