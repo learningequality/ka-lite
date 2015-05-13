@@ -152,7 +152,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 items = []
                 for item in exercise.get("all_assessment_items","[]"):
                     item = json.loads(item)
-                    if main_models.AssessmentItem.objects.filter(id=item.get("id")).exists():
+                    if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
                         items.append(item)
                         available = True
                 exercise["all_assessment_items"] = items
