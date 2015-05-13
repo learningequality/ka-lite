@@ -354,7 +354,7 @@ def generate_slug_to_video_id_map(node_cache=None):
     return slug2id_map
 
 
-def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
+def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE, all_nodes=False):
     """
     Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Content nodes.
     """
@@ -362,10 +362,17 @@ def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
     if not topictree:
         topictree = get_topic_tree(language=language)
     node_cache = {}
-    node_cache["Topic"] = dict([(node.get("id"), node) for node in topictree])
-
+    
+    node_cache["Topic"] = dict([(node.get("id"), node) for node in topictree if node.get("kind") == "Topic"])
+    
     node_cache["Exercise"] = get_exercise_cache(language=language)
     node_cache["Content"] = get_content_cache(language=language)
+
+    if all_nodes:
+        node_cache["All"] = {}
+        node_cache["All"].update(node_cache["Topic"])
+        node_cache["All"].update(node_cache["Exercise"])
+        node_cache["All"].update(node_cache["Content"])
 
     return node_cache
 

@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 
 from .base import UpdatesTestCase
-from kalite.topic_tools import get_content_cache, get_node_cache
+from kalite.topic_tools import get_content_cache, get_node_cache, generate_node_cache
 
 class TestTopicAvailability(UpdatesTestCase):
     """
@@ -22,5 +22,5 @@ class TestTopicAvailability(UpdatesTestCase):
     def test_topic_availability(self):
         for topic in get_node_cache("Topic").values():
             if topic.get("kind") == "Topic":
-                any_available = bool(sum([get_node_cache("Topic").get(v, {}).get("available", False) for v in topic.get("children", [])]))
+                any_available = bool(sum([generate_node_cache(all_nodes=True)["All"].get(v, {}).get("available", False) for v in topic.get("children", [])]))
                 self.assertEqual(topic["available"], any_available, "Make sure topic availability matches child availability when any children are available.")

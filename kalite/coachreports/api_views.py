@@ -197,7 +197,6 @@ def compute_data(data_types, who, where, language=settings.LANGUAGE_CODE):
     # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
     search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t["id"] for t in filter(sf, get_node_cache('Topic', language=language).values())], sf=search_fun_single_path)
     query_exercises = partial(lambda e, sf: e if e is not None else [ex["id"] for ex in filter(sf, get_exercise_cache(language=language).values())], sf=search_fun_single_path)
     query_videos = partial(lambda v, sf: v if v is not None else [vid["id"] for vid in filter(sf, get_node_cache('Content', language=language).values())], sf=search_fun_single_path)
 

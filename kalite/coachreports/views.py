@@ -154,8 +154,9 @@ def tabular_view(request, report_type="exercise"):
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
 
-    # Get a list of topics (sorted) and groups
-    topics = [topic for (topicname, topic) in get_node_cache("Topic", language=language).iteritems() if (report_type.title() in topic.get("contains", [])) and (topic.get("render_type") == "Topic")]
+    # Get a list of topics that are at the third level down of the topic tree to use as items in the drop down.
+    # TODO (rtibbles) Do this a better way
+    topics = [topic for (topicname, topic) in get_node_cache("Topic", language=language).iteritems() if (report_type.title() in topic.get("contains", [])) and (len(topic.get("path").split("/")) == 4)]
     playlists = Playlist.all()
 
     (groups, facilities, ungrouped_available) = get_accessible_objects_from_logged_in_user(request, facility=facility)
