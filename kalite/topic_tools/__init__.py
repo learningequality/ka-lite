@@ -57,7 +57,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
         TOPICS = {}
     if TOPICS.get(channel) is None:
         TOPICS[channel] = {}
-    if TOPICS.get(channel, {}).get(language) is None:
+    if annotate or TOPICS.get(channel, {}).get(language) is None:
         TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
 
         # Just loaded from disk, so have to restamp.
@@ -362,7 +362,7 @@ def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
     if not topictree:
         topictree = get_topic_tree(language=language)
     node_cache = {}
-    node_cache["Topic"] = dict([(node.get("id"), node) for node in topictree if node.get("kind")=="Topic"])
+    node_cache["Topic"] = dict([(node.get("id"), node) for node in topictree])
 
     node_cache["Exercise"] = get_exercise_cache(language=language)
     node_cache["Content"] = get_content_cache(language=language)
