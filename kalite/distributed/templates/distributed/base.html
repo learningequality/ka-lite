@@ -5,7 +5,8 @@
 {% load my_filters %}
 {% load compress %}
 
-<html>
+{% get_current_language as lang_code %}
+<html lang="{{ lang_code }}">
     <head>
         <!--[if lt IE 9]>
               <script src="{% static "js/html5shiv.js" %}"></script>
@@ -126,13 +127,17 @@
         <script type="text/javascript" src="{% static 'js/distributed/session/models.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/khan-lite.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/distributed-server.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/search_autocomplete.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/jquery.qtip.min.js' %}"></script>
 
         {% endcompress %}
 
+        <script src="{% url 'handlebars_templates' module_name='search' %}"></script>
         <script src="{% url 'handlebars_templates' module_name='user' %}"></script>
+
+        {% compress js file baseviews %}
         <script src="{% static 'js/distributed/user/views.js' %}"></script>
+        <script src="{% static 'js/distributed/search/views.js' %}"></script>
+        {% endcompress %}
 
         {# Trigger tooltips for help icons #}
         <script>
@@ -146,6 +151,7 @@
         <script>
         window.sessionModel.set({
           SEARCH_TOPICS_URL           : "{% url 'flat_topic_tree' lang_code=current_language %}",
+          SEARCH_URL                  : "{% url 'search' %}",
           USER_URL                    : "{% url 'api_dispatch_list' resource_name='user' %}",
           FORCE_SYNC_URL              : "{% url 'api_force_sync' %}",
 
@@ -171,6 +177,8 @@
         $(function() {
           window.statusModel.fetch_data();
           window.userView = new UserView({model: statusModel, el: "#user-name"});
+          window.autoCompleteView = new AutoCompleteView();
+          $("#topnav").prepend(window.autoCompleteView.$el);
         });
         </script>
 
@@ -182,12 +190,12 @@
         <div id="wrapper">
 
             {# Header & Navbar #}
-            <div class="navbar kalite-navbar header-footer-bg">
+            <div class="navbar kalite-navbar header-footer-bg" role="banner">
               <div class="container">
                   <div class="row">
                       <div class="navbar-header">
                           {# collapse entire menu #}
-                          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" aria-hidden="true">
+                          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" aria-hidden="true" id="navbar_toggle">
                               <span class="icon-bar"></span>
                               <span class="icon-bar"></span>
                               <span class="icon-bar"></span>
@@ -200,20 +208,8 @@
                           </div>                             
                       </div>
 
-                      <div class="collapse navbar-collapse top-nav">
-                          <ul class="nav navbar-nav navbar-right nav-tabs " id="topnav"role="tablist">
-                            <!-- For all users -->
-                            {# Search box #}
-                            <li>
-                              <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
-                                {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
-                                <div class="input-group">
-                                  <input type="text" name="query" id="search" class="form-control" placeholder="{% trans 'Topic, video, exercise...' %}" aria-label="{% trans 'Search for' %}" />
-                                  <button id="search-button" class="btn btn-default" type="submit" aria-label="{% trans 'Submit' %}"><i class="glyphicon glyphicon-search" aria-hidden="true"></i></button>
-                                </div>
-                              </form>
-                            </li>
-                            <!-- End for all users -->
+                      <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
+                          <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist">
 
                             <!-- For logged in admins -->
                             {% if request.is_admin and is_config_package_nalanda and not request.session.facility_user.facility %}
@@ -335,7 +331,7 @@
           {# End Header / Navbar #}
 
             {# Body #}
-            <div id="content-container" class="container">
+            <div id="content-container" class="container" role="main">
                 {% block outer_content %}
                     {% block precontent %}
                         {% include "distributed/partials/_messages.html" %}

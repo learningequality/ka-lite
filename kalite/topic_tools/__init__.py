@@ -1,4 +1,10 @@
 """
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other topic_tools.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that topic_tools.settings has been copied over to kalite.settings
+
+
 Important constants and helpful functions for the topic tree and a view on its data, the node cache.
 
 The topic tree is a hierarchical representation of real data (exercises, and videos).
@@ -21,7 +27,7 @@ import copy
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
@@ -66,6 +72,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
         # and cross reference with the content_cache to check availability.
         content_cache = get_content_cache(language=language)
         exercise_cache = get_exercise_cache(language=language)
+        
         def recurse_nodes(node):
 
             child_availability = []
@@ -91,7 +98,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
             with i18n.translate_block(language):
                 node["title"] = _(node.get("title", ""))
                 node["description"] = _(node.get("description", "")) if node.get("description") else ""
-
+                                    
         recurse_nodes(TOPICS[channel][language])
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
@@ -152,8 +159,11 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
                 available = os.path.isfile(TEMPLATE_FILE_PATH % exercise_template)
 
                 # Get the language codes for exercise templates that exist
-                available_langs = set(["en"] + [lang_code for lang_code in exercise_templates if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))])
-
+                # Try to minimize the number of os.path.exists calls (since they're a bottleneck) by using the same
+                # precedence rules in i18n.select_best_available_languages
+                available_langs = [lang_code for lang_code in exercise_templates if language in lang_code or lang_code == settings.LANGUAGE_CODE]
+                available_langs = [lang_code for lang_code in available_langs if os.path.exists(os.path.join(exercise_root, lang_code, exercise_file))]
+                available_langs = set(["en"] + available_langs)
                 # Return the best available exercise template
                 exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
 
@@ -162,8 +172,7 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
             else:
                 exercise_template = os.path.join(exercise_lang, exercise_file)
 
-
-            with i18n.translate_block(language):
+            with i18n.translate_block(exercise_lang):
                 exercise["available"] = available
                 exercise["lang"] = exercise_lang
                 exercise["template"] = exercise_template
@@ -289,7 +298,7 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
             with i18n.translate_block(content_lang):
                 content["selected_language"] = content_lang
                 content["title"] = _(content["title"])
-                content["description"] = _(content.get("description", "")) if content.get("description") else ""
+                content["description"] = _(content.get("description")) if content.get("description") else ""
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:

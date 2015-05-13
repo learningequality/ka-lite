@@ -2,8 +2,12 @@
 """
 from django.conf import settings
 
+from django.db.models import signals
+from django.db.models.signals import post_save
+
 from .models import Facility
 
+FACILITY_CACHE_STALE = False
 
 def refresh_session_facility_info(request, facility_count):
     # Fix for #1211
@@ -16,6 +20,11 @@ def refresh_session_facility_info(request, facility_count):
     # without significantly increasing DB load on every status call.
     request.session["facilities"] = [{"id": id, "name": name} for id, name in Facility.objects.values_list("id", "name")]
 
+def flag_facility_cache(**kwargs):
+    global FACILITY_CACHE_STALE
+    FACILITY_CACHE_STALE = True
+
+post_save.connect(flag_facility_cache, sender=Facility)
 
 class AuthFlags:
     def process_request(self, request):
@@ -50,6 +59,6 @@ class FacilityCheck:
         Cache facility data in the session,
           while making sure anybody who can create facilities sees the real (non-cached) data
         """
-        if not "facility_exists" in request.session or request.is_admin or settings.CENTRAL_SERVER:
+        if not "facility_exists" in request.session or FACILITY_CACHE_STALE:
             # always refresh for admins, or when no facility exists yet.
             refresh_session_facility_info(request, facility_count=Facility.objects.count())

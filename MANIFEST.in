@@ -1,0 +1,21 @@
+include kalitectl.py
+include LICENSE
+include README.md
+include setup.cfg
+include requirements.txt
+
+recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.mo *.po *.otf *.svg *.woff *.eot *.ttf *.zip *.json *.handlebars
+
+recursive-exclude kalite/static *
+
+exclude kalite/local_settings.py
+exclude kalite/settings/local_settings.py
+exclude kalite/private_key.pem
+exclude kalite/secrets.py
+
+# Data files, these are not picked up by sdist unless listed here
+recursive-include python-packages *
+recursive-include static-libraries *
+recursive-include data *
+
+recursive-exclude python-packages *pyc

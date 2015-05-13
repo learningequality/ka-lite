@@ -1,14 +1,12 @@
 import os
+import sys
 
 from version import *
 
 
-# suppress warnings here.
-try:
-    import warnings
-    warnings.simplefilter("ignore") # any other filter was ineffecual or threw an error
-except:
-    pass
+# Where all data is stored in a kalite installation, relative to sys.prefix
+# If running kalite from source dir, you can disregard it.
+ROOT_DATA_PATH = os.path.join(sys.prefix, 'share/kalite')
 
 
 # TODO: Burn down this function, the name is weird, it just checks if a

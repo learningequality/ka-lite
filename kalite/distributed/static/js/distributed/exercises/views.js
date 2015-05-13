@@ -1,4 +1,4 @@
-window.ExerciseHintView = Backbone.View.extend({
+window.ExerciseHintView = BaseView.extend({
 
     template: HB.template("exercise/exercise-hint"),
 
@@ -17,7 +17,7 @@ window.ExerciseHintView = Backbone.View.extend({
 });
 
 
-window.ExerciseProgressView = Backbone.View.extend({
+window.ExerciseProgressView = BaseView.extend({
 
     template: HB.template("exercise/exercise-progress"),
 
@@ -53,7 +53,9 @@ window.ExerciseProgressView = Backbone.View.extend({
         var attempt_text = "";
 
         this.collection.forEach(function(model) {
-            attempt_text = (model.get("correct") ? "<span><b>&#10003;</b></span> " : "<span>&#10007;</span> ") + attempt_text;
+            if (model.has("correct")) {
+                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
+            }
         });
 
         this.$(".attempts").html(attempt_text);
@@ -62,7 +64,7 @@ window.ExerciseProgressView = Backbone.View.extend({
 });
 
 
-window.ExerciseRelatedVideoView = Backbone.View.extend({
+window.ExerciseRelatedVideoView = BaseView.extend({
 
     template: HB.template("exercise/exercise-related-videos"),
 
@@ -94,7 +96,7 @@ window.ExerciseRelatedVideoView = Backbone.View.extend({
 });
 
 
-window.ExerciseView = Backbone.View.extend({
+window.ExerciseView = BaseView.extend({
 
     template: HB.template("exercise/exercise"),
 
@@ -449,8 +451,35 @@ window.ExerciseView = Backbone.View.extend({
 
 });
 
+window.ExerciseWrapperBaseView = BaseView.extend({
 
-window.ExercisePracticeView = Backbone.View.extend({
+    /**
+    * This base class is intended to be extended by all wrappers for the ExerciseView defined above.
+    * Methods required on a class extended from this:
+    *
+    * load_user_data - this method should define the logic for loading any existing user data from the server,
+    * ordinarily this data should include both a log_model for the view, and an attempt_collection which records
+    * the history of attempts on this activity.
+    *
+    * user_data_loaded - once the user data is loaded, this should determine how any missing data should be
+    * accounted for
+    *
+    * new_question_data - this should determine the logic for selecting the next question to be displayed, in
+    * some cases this may simply mean incrementing a seed or assessment_item_id, in others, it may involve
+    * changing the exercise being used.
+    *
+    * log_model_complete_data - determines what kind of information should be set on the log model for the
+    * view if the log model is not already completed.
+    *
+    * log_model_update_data - determines what kind of information should be set on the log model, regardless
+    * of its current 'complete' state.
+    *
+    * Optional Methods:
+    *
+    * initialize_subviews - if any views can be initialized straight away, these should be defined in here
+    *
+    * correct_updates - any updates to make if the question is answered correctly.
+    */
 
     initialize: function() {
 
@@ -460,107 +489,48 @@ window.ExercisePracticeView = Backbone.View.extend({
 
         window.statusModel.loaded.then(function() {
 
-            self.exercise_view = new ExerciseView({
-                el: self.el,
-                exercise_id: self.options.exercise_id
-            });
-
-            self.listenTo(self.exercise_view, "ready_for_next_question", self.ready_for_next_question);
-            self.listenTo(self.exercise_view, "hint_used", self.hint_used);
-            self.listenTo(self.exercise_view, "problem_loaded", self.problem_loaded);
-
-            self.hint_view = new ExerciseHintView({
-                el: self.$(".exercise-hint-wrapper")
-            });
-
-            self.listenTo(self.exercise_view, "check_answer", self.check_answer);
+            if (self.initialize_subviews) {
+                self.initialize_subviews();
+            }
 
             if (window.statusModel.get("is_logged_in")) {
 
-                // load the data about the user's overall progress on the exercise
-                self.log_collection = new ExerciseLogCollection([], {exercise_id: self.options.exercise_id});
-                var log_collection_deferred = self.log_collection.fetch();
-
-                // load the last 10 (or however many) specific attempts the user made on self exercise
-                self.attempt_collection = new AttemptLogCollection([], {exercise_id: self.options.exercise_id, context_type__in: ["playlist", "exercise"]});
-                var attempt_collection_deferred = self.attempt_collection.fetch();
-
-                // wait until both the exercise and attempt logs have been loaded before continuing
-                self.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
-                self.user_data_loaded_deferred.then(self.user_data_loaded);
+                self.load_user_data();
 
             }
         });
     },
 
-    display_message: function() {
-        var msg;
+    initialize_new_attempt_log: function(data) {
 
-        var context = {
-            numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
-            denominator: ExerciseParams.STREAK_WINDOW
+        var seed = "";
+        var assessment_item_id = "";
+
+        if (this.exercise_view) {
+            if (this.exercise_view.data_model) {
+                seed = this.exercise_view.data_model.seed || seed;
+                assessment_item_id = this.exercise_view.data_model.assessment_item_id || assessment_item_id;
+            }
+        }
+
+        var defaults = {
+            exercise_id: this.options.exercise_id,
+            user: window.statusModel.get("user_uri"),
+            context_type: this.options.context_type || "",
+            context_id: this.options.context_id || "",
+            language: "", // TODO(jamalex): get the current exercise language
+            version: window.statusModel.get("version"),
+            seed: seed,
+            assessment_item_id: assessment_item_id
         };
 
-        if (!this.log_model.get("complete")) {
-            if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
-                msg = "";
-            } else {
-                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
-            }
-        } else {
-            context.remaining = this.log_model.fixed_block_questions_remaining();
-            if (!this.current_attempt_log.get("correct") && !this.current_attempt_log.get("complete")) {
-                context.remaining++;
-            }
-            if (context.remaining > 1) {
-                msg = gettext("You have completed your streak.") + " " + gettext("Answer %(remaining)d additional questions to finish this exercise.");
-                if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
-                    show_message("info", sprintf(msg, context));
-                }
-            } else if (context.remaining == 1) {
-                msg = gettext("You have completed your streak.") + " " + gettext("Answer 1 additional question to finish this exercise.");
-                if (context.remaining == ExerciseParams.FIXED_BLOCK_EXERCISES) {
-                    show_message("info", sprintf(msg, context));
-                }
-            } else {
-                msg = gettext("You have finished this exercise!");
-                if (context.remaining === 0) {
-                    show_message("info", sprintf(msg, context));
-                }
-            }
-        }
-    },
+        data = $.extend(defaults, data);
 
-    user_data_loaded: function() {
+        this.current_attempt_log = new AttemptLogModel(data);
 
-        // get the exercise log model from the queried collection
-        this.log_model = this.log_collection.get_first_log_or_new_log();
+        this.attempt_collection.add(this.current_attempt_log);
 
-        // add some dummy attempt logs if needed, to match it up with the exercise log
-        // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
-        if (this.attempt_collection.length < ExerciseParams.STREAK_WINDOW) {
-            var exercise_log_streak_progress = Math.min(this.log_model.get("streak_progress"), 100);
-            while (this.attempt_collection.get_streak_progress_percent() < exercise_log_streak_progress) {
-                this.attempt_collection.add({correct: true, complete: true, points: this.get_points_per_question()});
-            }
-        }
-
-        // if the previous attempt was not yet complete, load it up again as the current attempt log model
-        if (this.attempt_collection.length > 0 && !this.attempt_collection.at(0).get("completed")) {
-            this.current_attempt_log = this.attempt_collection.at(0);
-        }
-
-        // store the number of points that are currently in the ExerciseLog, so we can calculate the difference
-        // once it changes, for updating the "total points" in the nav bar display
-        this.status_points = this.log_model.get("points");
-
-        this.progress_view = new ExerciseProgressView({
-            el: this.$(".exercise-progress-wrapper"),
-            model: this.log_model,
-            collection: this.attempt_collection
-        });
-
-        this.display_message();
+        return this.current_attempt_log;
 
     },
 
@@ -572,123 +542,6 @@ window.ExercisePracticeView = Backbone.View.extend({
         if (this.current_attempt_log.isNew()) {
             this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
         }
-
-    },
-
-    initialize_new_attempt_log: function(data) {
-
-        var defaults = {
-            exercise_id: this.options.exercise_id,
-            user: window.statusModel.get("user_uri"),
-            context_type: this.options.context_type || "",
-            context_id: this.options.context_id || "",
-            language: "", // TODO(jamalex): get the current exercise language
-            version: window.statusModel.get("version")
-        };
-
-        data = $.extend(defaults, data);
-
-        this.current_attempt_log = new AttemptLogModel(data);
-
-        return this.current_attempt_log;
-
-    },
-
-    check_answer: function(data) {
-
-        var check_answer_button = $("#check-answer-button");
-
-        check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct);
-        // If answer is incorrect, button turns orangish-red; if answer is correct, button turns back to green (on next page).
-
-        if (window.statusModel.get("is_logged_in")) {
-
-            // increment the response count
-            this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
-
-            this.current_attempt_log.add_response_log_event({
-                type: "answer",
-                answer: data.guess,
-                correct: data.correct
-            });
-
-            // update and save the exercise and attempt logs
-            this.update_and_save_log_models("answer_given", data);
-
-            if (data.correct) {
-                this.display_message();
-            }
-        }
-
-    },
-
-    hint_used: function() {
-
-        this.current_attempt_log.add_response_log_event({
-            type: "hint"
-        });
-
-        this.update_and_save_log_models("hint_used", {correct: false, guess: ""});
-    },
-
-    get_points_per_question: function() {
-        return this.attempt_collection.calculate_points_per_question(this.exercise_view.data_model.get("basepoints"));
-    },
-
-    update_and_save_log_models: function(event_type, data) {
-
-        var self = this;
-
-        // if current attempt log has not been saved, then this is the user's first response to the question
-        if (this.current_attempt_log.isNew()) {
-
-            this.current_attempt_log.set({
-                correct: data.correct,
-                answer_given: data.guess,
-                points: data.correct ? this.get_points_per_question() : 0,
-                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp"))
-            });
-
-            // only change the streak progress and points if we're not already complete
-            if (!this.log_model.get("complete")) {
-                this.attempt_collection.add_new(this.current_attempt_log);
-                this.log_model.set({
-                    streak_progress: this.attempt_collection.get_streak_progress_percent(),
-                    points: this.attempt_collection.get_streak_points()
-                });
-            // or if we're still in a fixed block
-            } else if (this.log_model.fixed_block_questions_remaining() > 0) {
-                // increment points from where they currently are to account for a new correct answer
-                if (data.correct) {
-                    this.log_model.set({
-                        points: this.log_model.get("points") + this.get_points_per_question()
-                    });
-                }
-            }
-
-            this.log_model.set({
-                attempts: this.log_model.get("attempts") + 1
-            });
-
-            this.log_model.save()
-                .then(function(data) {
-                    // update the top-right point display, now that we've saved the points successfully
-                    window.statusModel.update_total_points(self.log_model.get("points") - self.status_points);
-                    self.status_points = self.log_model.get("points");
-                });
-
-            this.$(".hint-reminder").hide(); // hide message about hints
-
-        }
-
-        // if a correct answer was given, then mark the attempt log as complete
-        if (data.correct) {
-            this.current_attempt_log.set({
-                complete: true
-            });
-        }
-
-        this.current_attempt_log.save();
 
     },
 
@@ -707,22 +560,12 @@ window.ExercisePracticeView = Backbone.View.extend({
                     // or in the case of an assessment item exercise, will use number of attempts
                     // to index into next assessment item.
 
-                    self.exercise_view.load_question({attempts: self.log_model.get("attempts")});
-
-                    // determine the suffix to add to context_type, to indicate what stage we're in
-                    var context_type_suffix = "";
-                    if (self.log_model.get("complete")) {
-                        if (self.log_model.fixed_block_questions_remaining() > 0) {
-                            context_type_suffix = "_fixedblock";
-                        } else {
-                            context_type_suffix = "_completed";
-                        }
-                    }
+                    self.exercise_view.load_question(self.new_question_data());
 
                     self.initialize_new_attempt_log({
                         seed: self.exercise_view.data_model.get("seed"),
                         assessment_item_id: self.exercise_view.data_model.get("assessment_item_id"),
-                        context_type: self.options.context_type + context_type_suffix
+                        context_type: self.options.context_type
                     });
 
                 } else { // use the seed already established for this attempt
@@ -745,44 +588,235 @@ window.ExercisePracticeView = Backbone.View.extend({
 
     },
 
-    close: function() {
-        this.exercise_view.close();
-        if (this.hint_view) {
-            this.hint_view.remove();
+    update_and_save_log_models: function(event_type, data) {
+
+        var self = this;
+
+        // if current attempt log has not been saved, then this is the user's first response to the question
+        if (this.current_attempt_log.isNew()) {
+
+            this.current_attempt_log.set({
+                correct: data.correct,
+                answer_given: data.guess,
+                points: data.correct ? this.get_points_per_question() : 0,
+                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp"))
+            });
+
+            // only change the streak progress and points if we're not already complete
+            if (!this.log_model.get("complete")) {
+                this.attempt_collection.add_new(this.current_attempt_log);
+                if (this.log_model_complete_data) {
+                    this.log_model.set(this.log_model_complete_data());
+                }
+            }
+
+            this.log_model.set(this.log_model_update_data());
+
+            this.log_model.save();
+
+            this.$(".hint-reminder").hide(); // hide message about hints
+
         }
-        if (this.progress_view) {
-            this.progress_view.remove();
+
+        // if a correct answer was given, then mark the attempt log as complete
+        if (data.correct) {
+            this.current_attempt_log.set({
+                complete: true
+            });
+            if (this.correct_updates) {
+                this.correct_updates();
+            }
         }
-        this.remove();
+
+        this.current_attempt_log.save();
+
+    },
+
+    update_total_points: function(data) {
+        // update the top-right point display, now that we've saved the points successfully
+        if (this.log_model.has("points")) {
+            window.statusModel.update_total_points(this.log_model.get("points") - this.status_points);
+            this.status_points = this.log_model.get("points");
+        }
+    },
+
+    get_points_per_question: function() {
+        return this.attempt_collection.calculate_points_per_question(this.exercise_view.data_model.get("basepoints"));
+    },
+
+    check_answer: function(data) {
+
+        if (window.statusModel.get("is_logged_in")) {
+
+            // increment the response count
+            this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
+
+            this.current_attempt_log.add_response_log_event({
+                type: "answer",
+                answer: data.guess,
+                correct: data.correct
+            });
+
+            // update and save the exercise and attempt logs
+            this.update_and_save_log_models("answer_given", data);
+
+        }
+
     }
 
 });
 
 
-window.ExerciseTestView = Backbone.View.extend({
+window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
+
+    initialize_subviews: function() {
+        this.exercise_view = this.add_subview(ExerciseView, {
+            el: this.el,
+            exercise_id: this.options.exercise_id
+        });
+
+        this.listenTo(this.exercise_view, "ready_for_next_question", this.ready_for_next_question);
+        this.listenTo(this.exercise_view, "hint_used", this.hint_used);
+        this.listenTo(this.exercise_view, "problem_loaded", this.problem_loaded);
+
+        this.hint_view = this.add_subview(ExerciseHintView, {
+            el: this.$(".exercise-hint-wrapper")
+        });
+
+        this.listenTo(this.exercise_view, "check_answer", this.check_answer);
+    },
+
+    load_user_data: function() {
+
+        // load the data about the user's overall progress on the exercise
+        this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
+        var log_collection_deferred = this.log_collection.fetch();
+
+        // load the last 10 (or however many) specific attempts the user made on this exercise
+        this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id, context_type__in: ["playlist", "exercise"]});
+        var attempt_collection_deferred = this.attempt_collection.fetch();
+
+        // wait until both the exercise and attempt logs have been loaded before continuing
+        this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
+        this.user_data_loaded_deferred.then(this.user_data_loaded);
+
+    },
+
+    new_question_data: function() {
+        return {attempts: this.log_model.get("attempts")};
+    },
+
+    user_data_loaded: function() {
+
+        // get the exercise log model from the queried collection
+        this.log_model = this.log_collection.get_first_log_or_new_log();
+
+        this.listenTo(this.log_model, "sync", this.update_total_points);
+
+        // add some dummy attempt logs if needed, to match it up with the exercise log
+        // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
+        if (this.attempt_collection.length < ExerciseParams.STREAK_WINDOW) {
+            var exercise_log_streak_progress = Math.min(this.log_model.get("streak_progress"), 100);
+            while (this.attempt_collection.get_streak_progress_percent() < exercise_log_streak_progress) {
+                this.attempt_collection.add({correct: true, complete: true, points: this.get_points_per_question()});
+            }
+        }
+
+        // if the previous attempt was not yet complete, load it up again as the current attempt log model
+        if (this.attempt_collection.length > 0 && !this.attempt_collection.at(0).get("completed")) {
+            this.current_attempt_log = this.attempt_collection.at(0);
+        }
+
+        // store the number of points that are currently in the ExerciseLog, so we can calculate the difference
+        // once it changes, for updating the "total points" in the nav bar display
+        this.status_points = this.log_model.get("points");
+
+        this.progress_view = this.add_subview(ExerciseProgressView, {
+            el: this.$(".exercise-progress-wrapper"),
+            model: this.log_model,
+            collection: this.attempt_collection
+        });
+
+        this.display_message();
+
+    },
+
+
+    check_answer: function(data) {
+
+        var check_answer_button = $("#check-answer-button");
+
+        check_answer_button.toggleClass("orange", !data.correct).toggleClass("green", data.correct);
+        // If answer is incorrect, button turns orangish-red; if answer is correct, button turns back to green (on next page).
+
+        return ExerciseWrapperBaseView.prototype.check_answer.call(this, data);
+
+    },
+
+    hint_used: function() {
+
+        this.current_attempt_log.add_response_log_event({
+            type: "hint"
+        });
+
+        this.update_and_save_log_models("hint_used", {correct: false, guess: ""});
+    },
+
+    log_model_complete_data: function() {
+        return {
+            streak_progress: this.attempt_collection.get_streak_progress_percent(),
+            points: this.attempt_collection.get_streak_points()
+        };
+    },
+
+    log_model_update_data: function() {
+        return {
+            attempts: this.log_model.get("attempts") + 1
+        };
+    },
+
+    display_message: function() {
+        var msg;
+
+        var context = {
+            numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
+            denominator: ExerciseParams.STREAK_WINDOW
+        };
+
+        if (!this.log_model.get("complete")) {
+            if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
+                msg = "";
+            } else {
+                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+            }
+        } else {
+            msg = gettext("You have finished this exercise!");
+        }
+        show_message("info", sprintf(msg, context));
+    }
+
+});
+
+
+window.ExerciseTestView = ExerciseWrapperBaseView.extend({
 
     start_template: HB.template("exercise/test-start"),
 
     stop_template: HB.template("exercise/test-stop"),
 
-    initialize: function() {
+    load_user_data: function() {
 
-        _.bindAll(this);
+        // load the data about this particular test
+        this.test_model = new TestDataModel({test_id: this.options.test_id});
+        var test_model_deferred = this.test_model.fetch();
 
-        if (window.statusModel.get("is_logged_in")) {
+        this.attempt_collection = new AttemptLogCollection();
 
-            // load the data about this particular test
-            this.test_model = new TestDataModel({test_id: this.options.test_id});
-            var test_model_deferred = this.test_model.fetch();
+        // load the data about the user's overall progress on the test
+        this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
+        var log_collection_deferred = this.log_collection.fetch();
 
-            // load the data about the user's overall progress on the test
-            this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
-            var log_collection_deferred = this.log_collection.fetch();
-
-            this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
-
-        }
-
+        this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
     },
 
     finish_test: function() {
@@ -803,6 +837,8 @@ window.ExerciseTestView = Backbone.View.extend({
             this.log_model = this.log_collection.get_first_log_or_new_log();
         }
 
+        this.listenTo(this.log_model, "sync", this.update_total_points);
+
         if(!this.log_model.get("started")){
             this.$el.html(this.start_template());
 
@@ -811,7 +847,9 @@ window.ExerciseTestView = Backbone.View.extend({
         } else {
 
             if(this.log_model.get("complete")){
+
                 this.finish_test();
+
             } else {
 
                 this.listenTo(this.log_model, "complete", this.finish_test);
@@ -845,134 +883,55 @@ window.ExerciseTestView = Backbone.View.extend({
         this.problem_loaded();
     },
 
-    problem_loaded: function(data) {
-        this.current_attempt_log.add_response_log_event({
-            type: "loaded"
-        });
-        // if the question hasn't yet been answered (and hence saved), mark the current time as the question load time
-        if (this.current_attempt_log.isNew()) {
-            this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
-        }
-
-    },
-
-    initialize_new_attempt_log: function(data) {
-
-        var defaults = {
-            exercise_id: this.options.exercise_id,
-            user: window.statusModel.get("user_uri"),
-            context_type: "test",
-            context_id: this.options.test_id || "",
-            language: "", // TODO(jamalex): get the current exercise language
-            version: window.statusModel.get("version")
-        };
-
-        data = $.extend(defaults, data);
-
-        this.current_attempt_log = new AttemptLogModel(data);
-
-        return this.current_attempt_log;
-
-    },
 
     check_answer: function(data) {
 
         this.exercise_view.suppress_button_feedback();
 
-        // increment the response count
-        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
-
-        this.current_attempt_log.add_response_log_event({
-            type: "answer",
-            answer: data.guess,
-            correct: data.correct
-        });
-
-        // update and save the exercise and attempt logs
-        this.update_and_save_log_models("answer_given", data);
+        return ExerciseWrapperBaseView.prototype.check_answer.call(this, data);
     },
 
     update_and_save_log_models: function(event_type, data) {
 
-        // if current attempt log has not been saved, then this is the user's first response to the question
-        if (this.current_attempt_log.isNew()) {
-
-            this.current_attempt_log.set({
-                correct: data.correct,
-                answer_given: data.guess,
-                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp")),
-                complete: true
-            });
-
-            this.log_model.set({
-                index: this.log_model.get("index") + 1
-            });
-
-            if(data.correct) {
-                this.log_model.set({
-                    total_correct: this.log_model.get("total_correct") + 1
-                });
-            }
-
-            this.log_model.save();
-
-        }
-
-        this.current_attempt_log.save();
+        ExerciseWrapperBaseView.prototype.update_and_save_log_models.call(this, event_type, data);
 
         this.ready_for_next_question();
-
     },
 
-    ready_for_next_question: function() {
+    new_question_data: function() {
+        return this.log_model.get_item_data();
+    },
 
-        var self = this;
+    log_model_update_data: function() {
+        return {
+            index: this.log_model.get("index") + 1
+        };
+    },
 
-        this.user_data_loaded_deferred.then(function() {
-
-            self.exercise_view.load_question(self.log_model.get_item_data());
-            self.initialize_new_attempt_log(self.log_model.get_item_data());
-            $("#next-question-button").remove();
-
+    correct_updates: function() {
+        this.log_model.set({
+            total_correct: this.log_model.get("total_correct") + 1
         });
-
-    },
-
-    close: function() {
-        this.exercise_view.close();
-        this.remove();
     }
 
 });
 
 
-window.ExerciseQuizView = Backbone.View.extend({
+window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
 
     stop_template: HB.template("exercise/quiz-stop"),
 
-    initialize: function(options) {
+    load_user_data: function() {
 
-        _.bindAll(this);
+        this.quiz_model = options.quiz_model;
 
-        this.points = 0;
+        this.attempt_collection = new AttemptLogCollection();
 
-        if (window.statusModel.get("is_logged_in")) {
+        // load the data about the user's overall progress on the test
+        this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
+        var log_collection_deferred = this.log_collection.fetch();
 
-            this.quiz_model = options.quiz_model;
-
-            // load the data about the user's overall progress on the test
-            this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
-            var log_collection_deferred = this.log_collection.fetch();
-
-            this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
-
-        } else {
-
-            // TODO(jamalex): why can't poor account-less users quiz themselves? :(
-            this.$el.html("<h3>" + gettext("Sorry, you must be logged in to do a quiz.") + "</h3><br/><br/><br/>");
-
-        }
-
+        this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
     },
 
     finish_quiz: function() {
@@ -983,16 +942,6 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         if(this.log_model.get("attempts")==1){
             if(this.points > 0){
-                var purchased_model = new PurchasedStoreItemModel({
-                    item: "/api/store/storeitem/gift_card/",
-                    purchased_at: window.statusModel.get_server_time(),
-                    reversible: false,
-                    context_id: ds.ab_testing.unit || 0,
-                    context_type: "unit",
-                    user: window.statusModel.get("user_uri"),
-                    value: this.points
-                });
-                purchased_model.save();
 
                 statusModel.update_total_points(statusModel.get("newpoints") + this.points);
             }
@@ -1010,13 +959,15 @@ window.ExerciseQuizView = Backbone.View.extend({
             this.log_model = this.log_collection.get_first_log_or_new_log();
         }
 
+        this.listenTo(this.log_model, "sync", this.update_total_points);
+
         this.listenTo(this.log_model, "complete", this.finish_quiz);
 
         var question_data = this.log_model.get_item_data(this.quiz_model);
 
         var data = $.extend({el: this.el}, question_data);
 
-        this.exercise_view = new ExerciseView(data);
+        this.exercise_view = this.add_subview(ExerciseView, data);
         this.exercise_view.$("#check-answer-button").attr("value", gettext("Submit Answer"));
 
         this.listenTo(this.exercise_view, "check_answer", this.check_answer);
@@ -1025,204 +976,24 @@ window.ExerciseQuizView = Backbone.View.extend({
 
     },
 
-    problem_loaded: function(data) {
-        this.current_attempt_log.add_response_log_event({
-            type: "loaded"
-        });
-        // if the question hasn't yet been answered (and hence saved), mark the current time as the question load time
-        if (this.current_attempt_log.isNew()) {
-            this.current_attempt_log.set("timestamp", window.statusModel.get_server_time());
-        }
-
+    new_question_data: function() {
+        return this.log_model.get_item_data();
     },
 
-    initialize_new_attempt_log: function(data) {
+    correct_updates: function() {
+        this.log_model.set({
+            points: this.log_model.get("points") + this.get_points_per_question()
+        });
+    },
 
-        var defaults = {
-            exercise_id: this.options.exercise_id,
-            user: window.statusModel.get("user_uri"),
-            context_type: "quiz",
-            context_id: this.options.context_id || "",
-            language: "", // TODO(jamalex): get the current exercise language
-            version: window.statusModel.get("version"),
-            seed: this.exercise_view.data_model.seed,
-            assessment_item_id: this.exercise_view.data_model.assessment_item_id
+    log_model_update_data: function() {
+        return {
+            index: this.log_model.get("index") + 1
         };
-
-        data = $.extend(defaults, data);
-
-        this.current_attempt_log = new AttemptLogModel(data);
-
-        return this.current_attempt_log;
-
-    },
-
-    check_answer: function(data) {
-
-        this.exercise_view.suppress_button_feedback();
-
-        // increment the response count
-        this.current_attempt_log.set("response_count", this.current_attempt_log.get("response_count") + 1);
-
-        this.current_attempt_log.add_response_log_event({
-            type: "answer",
-            answer: data.guess,
-            correct: data.correct
-        });
-
-        // update and save the exercise and attempt logs
-        this.update_and_save_log_models("answer_given", data);
-    },
-
-    update_and_save_log_models: function(event_type, data) {
-
-        // if current attempt log has not been saved, then this is the user's first response to the question
-        if (this.current_attempt_log.isNew()) {
-
-            this.current_attempt_log.set({
-                correct: data.correct,
-                answer_given: data.guess,
-                time_taken: new Date(window.statusModel.get_server_time()) - new Date(this.current_attempt_log.get("timestamp")),
-                complete: true
-            });
-
-            this.log_model.set({
-                index: this.log_model.get("index") + 1
-            });
-
-            if((!this.log_model.get("complete")) && data.correct){
-                this.points += this.exercise_view.data_model.get("basepoints");
-            }
-
-            this.log_model.add_response_log_item(data);
-
-            this.log_model.save();
-
-        }
-
-        this.current_attempt_log.save();
-
-        this.ready_for_next_question();
-
-    },
-
-    ready_for_next_question: function() {
-
-        var self = this;
-
-        this.user_data_loaded_deferred.then(function() {
-
-            self.exercise_view.load_question(self.log_model.get_item_data());
-            self.initialize_new_attempt_log(self.log_model.get_item_data());
-
-        });
-
-    },
-
-    close: function() {
-        if (this.exercise_view) {
-            this.exercise_view.close();
-        }
-        this.remove();
     }
 
 });
 
-
-window.ExerciseHintView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-hint"),
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.render();
-
-    },
-
-    render: function() {
-            this.$el.html(this.template());
-    }
-
-});
-
-
-window.ExerciseProgressView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-progress"),
-
-    initialize: function() {
-
-        _.bindAll(this);
-
-        this.render();
-
-        this.listenTo(this.model, "change", this.update_streak_bar);
-        this.listenTo(this.collection, "add", this.update_attempt_display);
-
-    },
-
-    render: function() {
-            // this.$el.html(this.template(this.data_model.attributes));
-        this.$el.html(this.template());
-        this.update_streak_bar();
-        this.update_attempt_display();
-
-    },
-
-    update_streak_bar: function() {
-            // update the streak bar UI
-        this.$(".progress-bar")
-            .css("width", this.model.get("streak_progress") + "%")
-            .toggleClass("completed", this.model.get("complete"));
-        this.$(".progress-points").html(this.model.get("points") > 0 ? "(" + this.model.get("points") + " " + gettext("points") + ")" : "");
-    },
-
-    update_attempt_display: function() {
-
-        var attempt_text = "";
-
-        this.collection.forEach(function(model) {
-                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
-        });
-
-        this.$(".attempts").html(attempt_text);
-        this.$(".attempts span:last").css("font-size", "1.1em");
-    }
-});
-
-
-window.ExerciseRelatedVideoView = Backbone.View.extend({
-
-    template: HB.template("exercise/exercise-related-videos"),
-
-    render: function(data) {
-
-        var self = this;
-
-        this.$el.html(this.template(data));
-
-        // the following is adapted from khan-exercises/related-videos.js to recreate thumbnail hover effect
-        // TODO(jamalex): this can all probably be replaced by a simple CSS3 rule
-        var captionHeight = 45;
-        var marginTop = 23;
-        var options = {duration: 150, queue: false};
-        this.$(".related-video-box")
-            .delegate(".thumbnail", "mouseenter mouseleave", function(e) {
-                    var isMouseEnter = e.type === "mouseenter";
-                self.$(e.currentTarget).find(".thumbnail_label").animate(
-                        {marginTop: marginTop + (isMouseEnter ? 0 : captionHeight)},
-                        options)
-                    .end()
-                    .find(".thumbnail_teaser").animate(
-                        {height: (isMouseEnter ? captionHeight : 0)},
-                        options);
-            });
-
-    }
-
-});
 
 function seeded_shuffle(source_array, random) {
     var array = source_array.slice(0);

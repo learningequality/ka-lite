@@ -1,8 +1,33 @@
+"""
+
+
+
+
+
+DO NOT MODIFY THIS FILE OR LOAD THIS MODULE.
+
+
+Because of i18n.__init__.py, we cannot load this module independently of its
+own child module's preconditions.
+
+I.e. i18n.__init__.py expects the django.conf.settings to have loaded, but
+i18n.settings is a precondition for loading the project's settings module
+kalite.settings
+
+Nasty stuff.
+
+Will be cleaned up in 0.14.
+
+
+
+"""
+
+
 import logging
 import os
 
 try:
-    import local_settings
+    from kalite import local_settings
 except ImportError:
     local_settings = object()
 

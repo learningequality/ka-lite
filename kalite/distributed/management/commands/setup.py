@@ -11,17 +11,6 @@ from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
 
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-BASE_DIR = os.path.realpath(CURRENT_DIR + "/../../../")
-
-# This is necessary for this script to run before KA Lite has ever been installed.
-if not os.environ.get("DJANGO_SETTINGS_MODULE"):
-    sys.path = [
-        os.path.join(BASE_DIR, "python-packages"),
-        os.path.join(BASE_DIR, "kalite")
-    ] + sys.path
-    os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -104,7 +93,7 @@ def get_assessment_items_filename():
             return False
 
     def find_recommended_file():
-        filename_guess = "assessment_item_resources.zip"
+        filename_guess = "assessment.zip"
         curdir = os.path.abspath(os.curdir)
         pardir = os.path.abspath(os.path.join(curdir, os.pardir))
         while curdir != pardir:
@@ -212,10 +201,6 @@ class Command(BaseCommand):
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
 
-        # Check to see if the current user is the owner of the install directory
-        if not os.access(BASE_DIR, os.W_OK):
-            raise CommandError("You do not have permission to write to this directory!")
-
         install_clean = not kalite.is_installed()
         database_kind = settings.DATABASES["default"]["ENGINE"]
         database_file = ("sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
@@ -273,8 +258,13 @@ class Command(BaseCommand):
             print("(Re)moving database file to temp location, starting clean install.  Recovery location: %s" % dest_file)
             shutil.move(database_file, dest_file)
 
+        # benjaoming: Commented out, this hits the wrong directories currently
+        # and should not be necessary.
+        # If we have problems with pyc files, we're doing something else wrong.
+        # See https://github.com/learningequality/ka-lite/issues/3487
+
         # Should clean_pyc for (clean) reinstall purposes
-        call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
+        # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
         # Migrate the database
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
@@ -325,17 +315,8 @@ class Command(BaseCommand):
         # Now deploy the static files
         call_command("collectstatic", interactive=False)
 
+        # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
-            # Move scripts
-            for script_name in ["start", "stop", "run_command"]:
-                script_file = script_name + system_script_extension()
-                dest_dir = os.path.join(settings.PROJECT_PATH, "..")
-                src_dir = os.path.join(dest_dir, "scripts")
-                shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                try:
-                    shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                except OSError:  # even if we have write permission, we might not have permission to change file mode
-                    print("WARNING: Unable to set file permissions on %s! " % script_file)
 
             kalite_executable = 'kalite'
             if not spawn.find_executable('kalite'):

@@ -1,10 +1,9 @@
 """
 """
-import os
 import sys
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.core.management import call_command
 
 
 class Command(BaseCommand):
@@ -34,8 +33,4 @@ class Command(BaseCommand):
             cmd_text = raw_input("Please enter the command text to run: ")
             cmd = cmd_text.split(" ")[0]
 
-        os.system('"%s" "%s" %s' % (
-            sys.executable,
-            os.path.join(settings.PROJECT_PATH, "manage.py"),
-            cmd_text,
-        ))
+        call_command(*cmd)

@@ -805,22 +805,22 @@ Now add class definitions below for your new icon, and add that
 to items you want to have the icon appear with.
 */
 
-.icon-Exercise .dropdown-icon:before {
+.icon-Exercise:before {
     content: "\e60f";
 }
-.icon-Video .dropdown-icon:before {
+.icon-Video:before {
     content: "\e610";
 }
-.icon-Quiz .dropdown-icon:before {
+.icon-Quiz:before {
     content: "\e611";
 }
-.icon-Topic .dropdown-icon:before {
+.icon-Topic:before {
     content: "\e612";
 }
-.icon-Audio .dropdown-icon:before {
+.icon-Audio:before {
     content: "\e613";
 }
-.icon-Document .dropdown-icon:before {
+.icon-Document:before {
     content: "\e614";
 }
 
