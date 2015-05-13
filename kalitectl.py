@@ -42,7 +42,7 @@ Planned features:
   kalite diagnose             Outputs user and copy-paste friendly diagnostics
   kalite query [COMMAND ...]  A query method for external UIs etc. to send
                               commands and obtain data from kalite.
-  
+
   Universal --verbose option and --debug option. Shows INFO level and DEBUG
   level from logging.. depends on proper logging being introduced and
   settings.LOGGERS. Currently, --debug just tells cherrypy to do "debug" mode.
@@ -129,16 +129,16 @@ class NotRunning(Exception):
         super(NotRunning, self).__init__()
 
 
-def udpate_default_args(defaults, updates):
+def update_default_args(defaults, updates):
     """
     Takes a list of default arguments and overwrites the defaults with
     contents of updates.
-    
+
     e.g.:
-    
-    udpate_default_args(["--somearg=default"], ["--somearg=overwritten"])
+
+    update_default_args(["--somearg=default"], ["--somearg=overwritten"])
      => ["--somearg=overwritten"]
-    
+
     This is done to avoid defining all known django command line arguments,
     we just want to proxy things and update with our own default values without
     looking into django.
@@ -166,7 +166,7 @@ def udpate_default_args(defaults, updates):
         defined_updates[elm[0]] = elm[1]
     defined_defaults.update(defined_updates)
     return defined_defaults.values()
-        
+
 
 # Utility functions for pinging or killing PIDs
 if os.name == 'posix':
@@ -328,7 +328,7 @@ def manage(command, args=[], in_background=False):
     :param args: List of options to parse to the django management command
     :param in_background: Creates a new process for the command
     """
-    
+
     if not in_background:
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
@@ -338,7 +338,7 @@ def manage(command, args=[], in_background=False):
     else:
         # Create a new subprocess, beware that it won't die with the parent
         # so you have to kill it in another fashion
-        
+
         # If we're on windows, we need to create a new process group, otherwise
         # the newborn will be murdered when the parent becomes a daemon
         if os.name == "nt":
@@ -398,12 +398,12 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=udpate_default_args(
+            args=update_default_args(
                 ['--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)],
                 args
             )
         )
-    args = udpate_default_args(
+    args = update_default_args(
         [
             "--host=%s" % LISTEN_ADDRESS,
             "--daemonize",
@@ -450,7 +450,7 @@ def stop(args=[], sys_exit=True):
             if sys_exit:
                 sys.exit(-1)
             return  # Do not continue because error could not be handled
- 
+
     # If there's no PID for the job scheduler, just quit
     if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
         pass
