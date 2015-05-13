@@ -18,8 +18,10 @@
 
 {% block headjs %}{{ block.super }}
     <script src="{% url 'handlebars_templates' module_name='tabular_reports' %}"></script>
-    <script type="text/javascript" src="{% static 'js/coachreports/tabular_view.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/coachreports/tabular_report/views.js' %}"></script>
     <script>
+        var students = JSON.parse('{{ students|jsonify }}');
+        var exercises = JSON.parse('{{ exercises|jsonify }}');
         $(function() {
 
             // Note: Unlike other coach reports, the tabular view is generated in server side templates.

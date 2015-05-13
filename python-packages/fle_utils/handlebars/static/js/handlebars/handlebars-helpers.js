@@ -59,3 +59,8 @@ Handlebars.registerHelper ('truncate', function (str, len) {
     }
     return str;
 });
+
+// from http://stackoverflow.com/questions/19646244/handlebars-js-access-object-value-with-a-variable-key
+Handlebars.registerHelper('withItem', function(object, options) {
+    return options.fn(object[options.hash.key]);
+});

@@ -7,34 +7,55 @@
 						<tbody>
 							<tr>
 								<th class="headrowuser">
-									gettext{"text here"}
+									{{_ "Learner"}}
+									<!--for loop from partials report-->
+									{{#each exercises}}
+										 <th class="headrow data">
+                        					<div>
+                        						<a href="{% url 'learn' %}{{ path }}" title='"{{_ display_name }}"{{#if description }} {{_ description }}){{/if }}'>{{_ title }}</a>
+                        					</div>
+                    					</th>
+									{{/each}}
 								</th>
 							</tr>
-							for (var i = 0; i < students.length; i++) {
-								students = students[i];
+							<!-- for loop area -->
+							{{#each students}}
 								<tr>
 									<th class="username">
-										<span title="{{ student.name }} ({{ student.username }})">
+										<span title="{{ name }} ({{ username }})">
 											<div class="student-name">
-												<a href="{% url 'student_view' %}?user={{ student.id }}">{{ student.name }}</a>
+												<a href="{% url 'student_view' %}?user={{ id }}">{{ name }}</a>
 											</div>
 										</span>
-									</th>
+									</th>	
+									<!--second for loop for exercises-->
+									{{#each ../exercises}}
+									 	{{#withItem ../exercise_logs key=this.slug}}
+											{{#unless this}}
+					                            <td class="status data" title="{{_ "Not Attempted" }}">
+
+						                        {{ else }}
+							                        {{#if this.struggling }}
+							                            <td class="status data struggle" title="{{_ "Struggling" }}">
+							                        {{/if}}
+
+							                        {{#if this.complete }}
+							                            <td class="status data complete" title="{{_ "Complete" }}">
+							                        	{{ else }}
+							                            	<td class="status data partial" title="{{_ "Attempted" }}">
+							                        {{/if}}
+							                            </td>
+						                    {{/unless}}
+					                    {{/withItem}}
+									{{/each}} <!-- end inner for loop for exercises -->
 								</tr>
-							} <!-- end for -->
+							{{/each}} <!-- end outer for loop for students-->
 						</tbody>
 					</table>
 					<div style="clear: both;">
 					</div>
 				</div>
 			</div>
-            if (request_report_type == "exercise" && exercises) {
-
-            } <!-- endif -->
-
-            else if (request_report_type == "video" && videos) {
-
-            } <! -- end else if -->
         {{/if}} 
 	</div>
 </div>
