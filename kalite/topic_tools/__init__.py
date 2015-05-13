@@ -244,6 +244,19 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
         # Loop through all content items and put thumbnail urls, content urls,
         # and subtitle urls on the content dictionary, and list all languages
         # that the content is available in.
+        contents_folder = os.listdir(settings.CONTENT_ROOT)
+
+        subtitle_langs = {}
+
+        if os.path.exists(i18n.get_srt_path()):
+            for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
+                lc = dirpath.split("/")[-2]
+                for filename in filenames:
+                    if filename in subtitle_langs:
+                        subtitle_langs[filename].append(lc)
+                    else:
+                        subtitle_langs[filename] = [lc]
+
         for content in CONTENT[language].values():
             default_thumbnail = create_thumbnail_url(content.get("id"))
             dubmap = i18n.get_id2oklang_map(content.get("id"))
@@ -252,7 +265,7 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
                 if content_lang:
                     dubbed_id = dubmap.get(content_lang)
                     format = content.get("format", "")
-                    if is_content_on_disk(dubbed_id, format):
+                    if (dubbed_id + "." + format) in contents_folder:
                         content["available"] = True
                         thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
                         content["content_urls"] = {
@@ -275,14 +288,14 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
                 content["available"] = False
 
             # Get list of subtitle language codes currently available
-            subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+            subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.get("id")), [])
 
             # Generate subtitle URLs for any subtitles that do exist for this content item
             subtitle_urls = [{
                 "code": lc,
                 "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
                 "name": i18n.get_language_name(lc)
-                } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+                } for lc in subtitle_lang_codes]
 
             # Sort all subtitle URLs by language code
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
