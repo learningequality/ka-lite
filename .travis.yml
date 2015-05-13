@@ -10,12 +10,18 @@ before_install:
 install:
 -  npm install
 -  npm install -g grunt-cli
+-  pip install .
 -  pip install -r requirements_dev.txt
 -  pip install coveralls
 script:
+# Test that we can run from source directory
 - bin/kalite start --traceback -v 2
 - bin/kalite status
 - bin/kalite stop --traceback -v 2
+# Test that we can run as the installed script
+- kalite start --traceback -v 2
+- kalite status
+- kalite stop --traceback -v 2
 - python python-packages/fle_utils/tests.py
 - coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" manage.py test --traceback -v 2
 - grunt jshint

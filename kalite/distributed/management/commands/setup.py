@@ -315,17 +315,8 @@ class Command(BaseCommand):
         # Now deploy the static files
         call_command("collectstatic", interactive=False)
 
+        # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
-            # Move scripts
-            for script_name in ["start", "stop", "run_command"]:
-                script_file = script_name + system_script_extension()
-                dest_dir = os.path.join(settings.PROJECT_PATH, "..")
-                src_dir = os.path.join(dest_dir, "scripts")
-                shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                try:
-                    shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                except OSError:  # even if we have write permission, we might not have permission to change file mode
-                    print("WARNING: Unable to set file permissions on %s! " % script_file)
 
             kalite_executable = 'kalite'
             if not spawn.find_executable('kalite'):

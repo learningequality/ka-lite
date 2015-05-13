@@ -11,9 +11,7 @@ from setuptools import setup, find_packages
 
 # Handle requirements
 
-requirements = [
-    "Python>=2.7",
-]
+requirements = []
 
 # Path of setup.py
 where_am_i = os.path.dirname(os.path.realpath(__file__))
@@ -54,11 +52,6 @@ data_files = map(
 data_files += map(
     lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
     gen_data_files('data')
-)
-
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('locale')
 )
 
 data_files += map(

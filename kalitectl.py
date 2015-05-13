@@ -68,17 +68,17 @@ else:
 
 import httplib
 import re
+import subprocess
 
-from django.core.management import ManagementUtility
 from threading import Thread
 from docopt import docopt
 from urllib2 import URLError
 from socket import timeout
+
+from django.core.management import ManagementUtility
+
 from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
-
-if os.name == "nt":
-    from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
 
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
@@ -326,18 +326,9 @@ def manage(command, args=[], in_background=False):
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param in_background: Creates a thread for the command
+    :param in_background: Creates a new process for the command
     """
     
-    # TODO: Why was this necessary? Had to be commented out because get_commands
-    # imports django.conf.settings which should not be imported outside of the
-    # command itself as DJANGO_SETTINGS_MODULE could have been set from command
-    # line options.
-    # Original comment:
-    # Ensure that django.core.management's global _command variable is set
-    # before call commands, especially the once that run in the background
-    # Import here so other commands can run faster
-    # get_commands()
     if not in_background:
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
@@ -345,12 +336,19 @@ def manage(command, args=[], in_background=False):
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        if os.name != "nt":
-            thread = ManageThread(command, args=args, name=" ".join([command] + args))
-            thread.start()
+        # Create a new subprocess, beware that it won't die with the parent
+        # so you have to kill it in another fashion
+        
+        # If we're on windows, we need to create a new process group, otherwise
+        # the newborn will be murdered when the parent becomes a daemon
+        if os.name == "nt":
+            kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
         else:
-            # TODO (aron): for versions > 0.13, see if we can just have everyone spawn another process (Popen vs. ManageThread)
-            Popen([sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args, creationflags=CREATE_NEW_PROCESS_GROUP)
+            kwargs = {}
+        subprocess.Popen(
+            [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
+            **kwargs
+        )
 
 
 def start(debug=False, args=[], skip_job_scheduler=False):
@@ -452,7 +450,7 @@ def stop(args=[], sys_exit=True):
             if sys_exit:
                 sys.exit(-1)
             return  # Do not continue because error could not be handled
-
+ 
     # If there's no PID for the job scheduler, just quit
     if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
         pass
