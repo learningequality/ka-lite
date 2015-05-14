@@ -13,6 +13,7 @@ from kalite import version
 def custom(request):
     return {
         "central_server_host": settings.CENTRAL_SERVER_HOST,
+        "central_server_domain": settings.CENTRAL_SERVER_DOMAIN,
         "securesync_protocol": settings.SECURESYNC_PROTOCOL,
         "base_template": "distributed/base.html",
         "channel_data": settings.CHANNEL_DATA,
