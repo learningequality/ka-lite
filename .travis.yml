@@ -13,24 +13,37 @@ install:
 -  pip install .
 -  pip install -r requirements_dev.txt
 -  pip install coveralls
+
 script:
+
 # Test that we can run from source directory
 - bin/kalite start --traceback -v 2
 - bin/kalite status
 - bin/kalite stop --traceback -v 2
-- if [ ! `ps ax|grep kalite| wc -l` -eq 1 ]; then; echo "Processes remain after stop"; exit 1; fi
+
+# Check that there are no processes remaining containing the string "kalite" after stopping
+- if [ ! `ps ax | grep kalite | wc -l` -eq 1 ]; then; echo "Processes remain after stop"; exit 1; fi
+
 # Test that we can run as the installed script
 - kalite start --traceback -v 2
 - kalite status
 - kalite stop --traceback -v 2
+
+# Check that there are no processes remaining containing the string "kalite" after stopping
 - if [ ! `ps ax|grep kalite| wc -l` -eq 1 ]; then; echo "Processes remain after stop"; exit 1; fi
+
 # Test fle_utils
 - python python-packages/fle_utils/tests.py
+
 # KA Lite tests with coverage
 - coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" manage.py test --traceback -v 2
+
+# JavaScript tests
 - grunt jshint
+
 - bin/kalite manage bundleassets
 - ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS
+
 notifications:
   email:
     - aron@learningequality.org
