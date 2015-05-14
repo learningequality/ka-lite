@@ -597,7 +597,7 @@ def profile_memory():
 
     signal.setitimer(signal.ITIMER_PROF, 1, 1)
 
-    signal.signal(signal.ITIMER_PROF, collect_mem_usage)
+    signal.signal(signal.SIGPROF, collect_mem_usage)
     atexit.register(handle_exit)
 
 if __name__ == "__main__":
