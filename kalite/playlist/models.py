@@ -5,7 +5,7 @@ from django.db import models
 from fle_utils.django_utils import ExtendedModel
 
 from kalite.facility.models import FacilityGroup, FacilityUser
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache, generate_slug_to_video_id_map
 
 from securesync.models import DeferredCountSyncedModel
 
@@ -140,7 +140,11 @@ class VanillaPlaylist:
         unprepared = filter(lambda e: e["entity_kind"]==entry_type, playlist.entries)
         prepared = []
         for entry in unprepared:
-            new_item = get_node_cache()[entry_type].get(entry['entity_id'], [None])[0]
+            if entry_type == "Exercise":
+                new_item = get_node_cache()[entry_type].get(entry['entity_id'], [None])[0]
+            elif entry_type == "Video":
+                video_id = generate_slug_to_video_id_map(get_node_cache())[entry['entity_id']]
+                new_item = get_node_cache()[entry_type].get(video_id, [None])[0]
             if new_item:
                 prepared.append(new_item)
         return prepared
