@@ -491,7 +491,7 @@ def get_exercise_data(request, exercise_id=None):
 
 def get_assessment_item_data(request, assessment_item_id=None):
     try:
-        assessment_item = main_models.AssessmentItem.get(id=assessment_item_id)
+        assessment_item = main_models.AssessmentItem.objects.get(id=assessment_item_id)
     except main_models.AssessmentItem.DoesNotExist:
         return None
 
