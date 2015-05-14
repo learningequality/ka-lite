@@ -94,6 +94,9 @@ PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
 PID_FILE_JOB_SCHEDULER = os.path.join(KALITE_HOME, 'kalite_cronserver.pid')
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
+# if this environment variable is set, we activate the profiling machinery
+PROFILE = os.environ.get("PROFILE")
+
 # TODO: Currently, this address might be hard-coded elsewhere, too
 LISTEN_ADDRESS = "0.0.0.0"
 # TODO: Can be configured in django settings which is really odd because that's
@@ -330,6 +333,9 @@ def manage(command, args=[], in_background=False):
     """
 
     if not in_background:
+        if PROFILE:
+            profile_memory()
+
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
         # 'kalitectl.py' (a part from the top most text in `kalite manage help`
@@ -542,6 +548,46 @@ status_job_scheduler.codes = {
     100: 'Invalid PID file',
 }
 
+
+def profile_memory():
+    print("activating profile infrastructure.")
+
+    import atexit
+    import csv
+    import resource
+    import signal
+    import time
+
+    starttime = time.time()
+
+    mem_usage = []
+
+    def write_profile_results(filename=None):
+        if not filename:
+            filename = os.path.join(os.getcwd(), "memory_profile.log")
+
+        with open(filename, "w") as f:
+            si_es_vi = csv.DictWriter(f, ["timestamp", "mem_usage"])
+            si_es_vi.writeheader()
+            for _, content in enumerate(mem_usage):
+                si_es_vi.writerow(content)
+
+    def handle_exit():
+        write_profile_results()
+
+    def collect_mem_usage(_sig, _frame):
+        """
+        Callback for when we get a SIGPROF from the kernel. When called,
+        we record the time and memory usage.
+        """
+        m = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        curtime = time.time() - starttime
+        mem_usage.append({"timestamp": curtime, "mem_usage": m})
+
+    signal.setitimer(signal.ITIMER_PROF, 1, 1)
+
+    signal.signal(signal.ITIMER_PROF, collect_mem_usage)
+    atexit.register(handle_exit)
 
 if __name__ == "__main__":
     arguments = docopt(__doc__, version=str(VERSION), options_first=True)
