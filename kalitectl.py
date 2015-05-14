@@ -556,6 +556,7 @@ def profile_memory():
     import csv
     import resource
     import signal
+    import sparkline
     import time
 
     starttime = time.time()
@@ -568,7 +569,10 @@ def profile_memory():
         except StopIteration:
             highest_mem_usage = {"pid": os.getpid(), "timestamp": 0, "mem_usage": 0}
 
-        print("PID: {pid} Highest memory usage: {mem_usage}MB".format(**highest_mem_usage))
+        graph = sparkline.sparkify([m['mem_usage'] for m in mem_usage]).encode("utf-8")
+
+        print("PID: {pid} Highest memory usage: {mem_usage}MB. Usage over time: {sparkline}".format(sparkline=graph, **highest_mem_usage))
+
 
     def write_profile_results(filename=None):
 
