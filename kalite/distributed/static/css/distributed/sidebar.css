@@ -267,6 +267,14 @@ div.sidebar-fade {
     vertical-align:middle;
 }
 
+@media only screen and (max-width: 768px) {
+    .sidebar-tab {
+        top: 55px;
+        height: 2em;
+        padding: 9px;
+    }
+}
+
 @media only screen and (max-width: 720px) {
     .sidebar-panel { 
         font-size: 85%;
