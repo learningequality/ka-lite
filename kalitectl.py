@@ -562,7 +562,16 @@ def profile_memory():
 
     mem_usage = []
 
+    def print_results():
+        try:
+            highest_mem_usage = next(s for s in sorted([x['mem_usage'] for x in mem_usage], reverse=True)) / 1024
+        except StopIteration:
+            highest_mem_usage = 0
+
+        print("Highest memory usage: {mem}MB".format(mem=highest_mem_usage))
+
     def write_profile_results(filename=None):
+
         if not filename:
             filename = os.path.join(os.getcwd(), "memory_profile.log")
 
@@ -574,6 +583,7 @@ def profile_memory():
 
     def handle_exit():
         write_profile_results()
+        print_results()
 
     def collect_mem_usage(_sig, _frame):
         """
