@@ -564,11 +564,11 @@ def profile_memory():
 
     def print_results():
         try:
-            highest_mem_usage = next(s for s in sorted([x['mem_usage'] for x in mem_usage], reverse=True)) / 1024
+            highest_mem_usage = next(s for s in sorted(mem_usage, key=lambda x: x['mem_usage'], reverse=True))
         except StopIteration:
-            highest_mem_usage = 0
+            highest_mem_usage = {"pid": os.getpid(), "timestamp": 0, "mem_usage": 0}
 
-        print("Highest memory usage: {mem}MB".format(mem=highest_mem_usage))
+        print("PID: {pid} Highest memory usage: {mem_usage}MB".format(**highest_mem_usage))
 
     def write_profile_results(filename=None):
 
@@ -576,7 +576,7 @@ def profile_memory():
             filename = os.path.join(os.getcwd(), "memory_profile.log")
 
         with open(filename, "w") as f:
-            si_es_vi = csv.DictWriter(f, ["timestamp", "mem_usage"])
+            si_es_vi = csv.DictWriter(f, ["pid", "timestamp", "mem_usage"])
             si_es_vi.writeheader()
             for _, content in enumerate(mem_usage):
                 si_es_vi.writerow(content)
@@ -590,9 +590,10 @@ def profile_memory():
         Callback for when we get a SIGPROF from the kernel. When called,
         we record the time and memory usage.
         """
+        pid = os.getpid()
         m = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         curtime = time.time() - starttime
-        mem_usage.append({"timestamp": curtime, "mem_usage": m})
+        mem_usage.append({"pid": pid, "timestamp": curtime, "mem_usage": m / 1024})
 
     signal.setitimer(signal.ITIMER_PROF, 1, 1)
 
