@@ -2,7 +2,10 @@ import logging
 import os
 import json
 import sys
+import warnings
+
 from kalite import ROOT_DATA_PATH
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
 
 
 # Load local settings first... loading it again later to have the possibility
@@ -13,8 +16,27 @@ try:
     # Not sure if vars from local_settings are accessed ATM. This is one of
     # the big disadvantage of this whole implicit importing chaos... will be
     # fixed later.
-    from kalite.local_settings import *  # @UnusedWildImport
     from kalite import local_settings
+    # This is not a DeprecationWarning by purpose, because those are
+    # ignored during settings module load time
+    warnings.warn(
+        "We will be deprecating the old way of statically importing custom "
+        "settings, in favor of a more flexible way. The easiest way to update "
+        "your installation is to rename your local_settings.py (keeping it in "
+        "the same directory) and add an import statement in the very first "
+        "line of the new file so it looks like this:\n\n"
+        "    from kalite.settings.base import *\n"
+        "    # Put custom settings here...\n"
+        "    FOO = BAR\n\n"
+        "and then call kalite start with an additional argument pointing to "
+        "your new settings module:\n\n"
+        "    kalite start --settings=kalite.my_settings\n\n"
+        "In the future, it is recommended not to keep your own settings module "
+        "in the kalite code base but to put the file somewhere else in your "
+        "python path, for instance in the current directory when running "
+        "'kalite --settings=my_module'.",
+        RemovedInKALite_v015_Warning
+    )
 except ImportError:
     local_settings = object()
 
@@ -110,9 +132,9 @@ else:
     _data_path = os.path.join(ROOT_DATA_PATH,)
     
     # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-    PROJECT_PATH = os.path.join(
-        os.path.expanduser("~"),
-        '.kalite'
+    PROJECT_PATH = os.environ.get(
+        "KALITE_HOME",
+        os.path.join(os.path.expanduser("~"), ".kalite")
     )
 
 
@@ -157,18 +179,16 @@ LOAD_KHAN_RESOURCES = getattr(local_settings, "LOAD_KHAN_RESOURCES", CHANNEL == 
 # the user running kalite and should be in a user-data
 # storage place.
 
-USER_DATA_ROOT = os.path.join(
-    os.path.expanduser("~"),
-    '.kalite'
+USER_DATA_ROOT = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
 )
 
-if not os.path.exists(USER_DATA_ROOT):
-    os.mkdir(USER_DATA_ROOT)
 
 # Most of these data locations are messed up because of legacy
 if IS_SOURCE:
     USER_DATA_ROOT = SOURCE_DIR
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(_data_path, 'locale'),))
+    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
     
     # This is the legacy location kalite/database/data.sqlite
@@ -177,17 +197,20 @@ if IS_SOURCE:
     MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
     STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
 
+
 # Storing data in a user directory
 else:
+    
+    # Ensure that path exists
+    if not os.path.exists(USER_DATA_ROOT):
+        os.mkdir(USER_DATA_ROOT)
+    
     LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
+    for path in LOCALE_PATHS:
+        if not os.path.exists(path):
+            os.mkdir(path)
     
-    # Copy in the distributed locales
-    for p in LOCALE_PATHS:
-        if not os.path.exists(p):
-            import shutil
-            shutil.copytree(os.path.join(_data_path, 'locale'), p)
     DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
-    
     if not os.path.exists(DEFAULT_DATABASE_PATH):
         os.mkdir(DEFAULT_DATABASE_PATH)
     
@@ -326,9 +349,21 @@ API_LIMIT_PER_PAGE = 0
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 
-# NOW OVER WRITE EVERYTHING WITH ANY POSSIBLE LOCAL SETTINGS
+# DEPRECATED BEHAVIOURS
 
+# Copy INSTALLED_APPS to prevent any overwriting
+OLD_INSTALLED_APPS = INSTALLED_APPS[:]
+
+# NOW OVER WRITE EVERYTHING WITH ANY POSSIBLE LOCAL SETTINGS
 try:
     from kalite.local_settings import *  # @UnusedWildImport
+except ImportError:
+    pass
+
+# Ensure that any INSTALLED_APPS mentioned in local_settings is concatenated
+# to previous INSTALLED_APPS because that was expected behaviour in 0.13
+try:
+    from kalite.local_settings import INSTALLED_APPS
+    INSTALLED_APPS = OLD_INSTALLED_APPS + INSTALLED_APPS
 except ImportError:
     pass

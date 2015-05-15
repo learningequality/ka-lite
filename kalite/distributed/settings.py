@@ -19,7 +19,6 @@ except ImportError:
 
 DEBUG = getattr(local_settings, "DEBUG", False)
 
-
 ########################
 # Functions, for support
 ########################
@@ -37,6 +36,7 @@ def USER_FACING_PORT():
 # TODO(bcipolli): change these to "login" and "logout", respectively, if/when
 #  we migrate to a newer version of Django.  Older versions require these
 #  to be set if using the login_required decorator.
+# TODO(benjaoming): Use reverse_lazy for this sort of stuff
 LOGIN_URL = "/securesync/login/"
 LOGOUT_URL = "/securesync/logout/"
 
@@ -161,7 +161,7 @@ CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defi
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
+    KEY_PREFIX = version.VERSION_INFO()[version.VERSION]["git_commit"][0:6]  # new cache for every build
     if 'CACHES' not in locals():
         CACHES = {}
 
@@ -219,3 +219,14 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 ########################
 
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
+
+
+# TODO(benjaoming): Get rid of this
+import mimetypes
+
+########################
+# Font setup
+########################
+
+# Add additional mimetypes to avoid errors/warnings
+mimetypes.add_type("font/opentype", ".otf", True)

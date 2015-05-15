@@ -11,11 +11,12 @@ from setuptools import setup, find_packages
 
 # Handle requirements
 
-requirements = [
-    "Python>=2.7",
-]
+requirements = []
 
-requirements += open('requirements.txt', 'r').read().split("\n"),
+# Path of setup.py
+where_am_i = os.path.dirname(os.path.realpath(__file__))
+
+requirements += open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n"),
 
 
 #############################
@@ -39,7 +40,7 @@ def gen_data_files(*dirs):
 
     for src_dir in dirs:
         for root, dirs, files in os.walk(src_dir):
-            results.append((root, map(lambda f: root + "/" + f, files)))
+            results.append((root, map(lambda f: os.path.join(root, f), files)))
     return results
 
 # Append the ROOT_DATA_PATH to all paths
@@ -55,18 +56,13 @@ data_files += map(
 
 data_files += map(
     lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('locale')
-)
-
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
     gen_data_files('static-libraries')
 )
 
 # For now, just disguise the kalitectl.py script here as it's only to be accessed
 # with the bin/kalite proxy.
 data_files += [(
-    kalite.ROOT_DATA_PATH, ['kalitectl.py']
+    kalite.ROOT_DATA_PATH, [os.path.join(where_am_i, 'kalitectl.py')]
 )]
 
 setup(

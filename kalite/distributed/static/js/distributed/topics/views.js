@@ -56,6 +56,7 @@ window.SidebarView = BaseView.extend({
 
     initialize: function(options) {
         var self = this;
+        var navbarCollapsed = true;
 
         // Fancy algorithm to run a resize sidebar when window width 
         // changes significantly (100px steps) to avoid unnecessary computation
@@ -66,6 +67,27 @@ window.SidebarView = BaseView.extend({
                 self.resize_sidebar();
                 windowWidth = $(window).width();
             }
+
+            if ($(window).width() > 768) {
+                self.show_sidebar_tab();
+            }
+
+            else {
+                if (navbarCollapsed) {
+                    self.show_sidebar_tab();
+                }
+                else {
+                    self.hide_sidebar_tab();   
+                }
+            }
+        });
+
+        $(".navbar-collapse").on("show.bs.collapse", function() {
+            self.hide_sidebar_tab();
+            navbarCollapsed = false;
+        }).on("hide.bs.collapse", function() {
+            self.show_sidebar_tab();
+            navbarCollapsed = true;
         });
 
         this.entity_key = options.entity_key;
@@ -247,6 +269,14 @@ window.SidebarView = BaseView.extend({
 
     hide_sidebar: function() {
         this.state_model.set("open", false);
+    },
+
+    show_sidebar_tab: function() {
+        this.sidebarTab.fadeIn(115);
+    },
+
+    hide_sidebar_tab: function() {
+        this.sidebarTab.fadeOut(115);
     },
 
     navigate_paths: function(paths, callback) {
