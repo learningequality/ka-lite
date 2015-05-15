@@ -23,12 +23,14 @@ window.ExerciseProgressView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        if (!window.statusModel.get("is_django_user")) {
+            _.bindAll(this);
 
-        this.render();
+            this.render();
 
-        this.listenTo(this.model, "change", this.update_streak_bar);
-        this.listenTo(this.collection, "add", this.update_attempt_display);
+            this.listenTo(this.model, "change", this.update_streak_bar);
+            this.listenTo(this.collection, "add", this.update_attempt_display);
+        }
 
     },
 
