@@ -135,7 +135,10 @@ class Command(BaseCommand):
         # them to be started up again as needed.
         Job.objects.update(is_running=False)
 
-        call_command("collectstatic", interactive=False)
+        # Copy static media, one reason for not symlinking: It is not cross-platform and can cause permission issues
+        # with many webservers
+        logging.info("Copying static media")
+        call_command("collectstatic", interactive=False, verbosity=0)
 
         if options['startuplock']:
             os.unlink(options['startuplock'])
