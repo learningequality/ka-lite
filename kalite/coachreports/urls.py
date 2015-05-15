@@ -10,9 +10,6 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'^student/$', 'student_view', {}, 'student_view'),
     url(r'^student/(?P<xaxis>[^/]+)/(?P<yaxis>[^/]+)/$', 'student_view', {}, 'student_view'),
 
-    url(r'^table/$', 'tabular_view', {}, 'tabular_view'),
-    url(r'^table/(?P<report_type>\w+)/$', 'tabular_view', {}, 'tabular_view'),
-
     url(r'^api/', include(api_urls)),
 )
 
