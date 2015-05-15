@@ -22,7 +22,7 @@ script:
 - bin/kalite stop --traceback -v 2
 
 # Check that there are no processes remaining containing the string "kalite" after stopping
-- if [ ! `ps ax | grep kalite | wc -l` -eq 1 ]; then; echo "Processes remain after stop"; exit 1; fi
+- if [ ! `ps ax | grep kalite | wc -l` -eq 1 ]; then echo "Processes remain after stop"; exit 1; fi
 
 # Test that we can run as the installed script
 - kalite start --traceback -v 2
@@ -30,7 +30,7 @@ script:
 - kalite stop --traceback -v 2
 
 # Check that there are no processes remaining containing the string "kalite" after stopping
-- if [ ! `ps ax|grep kalite| wc -l` -eq 1 ]; then; echo "Processes remain after stop"; exit 1; fi
+- if [ ! `ps ax|grep kalite| wc -l` -eq 1 ]; then echo "Processes remain after stop"; exit 1; fi
 
 # Test fle_utils
 - python python-packages/fle_utils/tests.py
