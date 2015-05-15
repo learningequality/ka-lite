@@ -3,7 +3,6 @@ This is a command-line tool to execute functions helpful to testing.
 """
 import os
 import sys
-import time
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
@@ -137,7 +136,7 @@ class Command(BaseCommand):
 
         # Copy static media, one reason for not symlinking: It is not cross-platform and can cause permission issues
         # with many webservers
-        logging.info("Copying static media")
+        logging.info("Copying static media...")
         call_command("collectstatic", interactive=False, verbosity=0)
 
         if options['startuplock']:
