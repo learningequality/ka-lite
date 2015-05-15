@@ -86,7 +86,6 @@ window.ButtonView = Backbone.View.extend({
     }
 });
 
-
 // Only load button and narrative if there is one defined for page
 $(function() {
     if (window.NARRATIVE_ID) { 
