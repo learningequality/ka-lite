@@ -158,7 +158,10 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
         exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
         if os.path.exists(exercise_root):
             exercise_path = os.path.join(exercise_root, language) if language != "en" else exercise_root
-            exercise_templates = os.listdir(exercise_path)
+            try:
+                exercise_templates = os.listdir(exercise_path)
+            except OSError:
+                exercise_templates = []
         else:
             exercise_templates = []
 
@@ -244,7 +247,10 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
         # Loop through all content items and put thumbnail urls, content urls,
         # and subtitle urls on the content dictionary, and list all languages
         # that the content is available in.
-        contents_folder = os.listdir(settings.CONTENT_ROOT)
+        try:
+            contents_folder = os.listdir(settings.CONTENT_ROOT)
+        except OSError:
+            contents_folder = []
 
         subtitle_langs = {}
 
