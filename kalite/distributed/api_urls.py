@@ -26,7 +26,7 @@ urlpatterns = patterns(__package__ + '.api_views',
 
 ############ Inline narratives ############################################
 urlpatterns += patterns('',
-    url(r'^inline/', include(kalite.inline.api_urls))
+    url(r'^inline/narrative/', include(kalite.inline.api_urls))
 )
 
 # Khanload allows users to download data from a Khan Academy account

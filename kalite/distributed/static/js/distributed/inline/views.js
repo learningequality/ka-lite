@@ -14,11 +14,12 @@ window.ButtonView = Backbone.View.extend({
         var self = this;
         this.model.fetch({ 
             success: function(model, response, options) {
+                console.log("INSIDE OF CLICK CALLBACK!!!!!!************************");
                 //Obtain narrative - array of elements and their attributes
-                var narr = self.model.url;
+                console.log(self.model.url);
 
-                console.log("AFTER RETRIEVING NARR FORM INSIDE VIEWS");
-                console.log(narr);
+
+                var narr = self.model.url;
 
                 //translate narrative into build options for introjs (array->object)
                 var options = self.parseNarrative(narr);
@@ -33,9 +34,9 @@ window.ButtonView = Backbone.View.extend({
                 intro.start();
             },
 
-            // error: function(model, response, options) {
-            //     console.log("Error fetching narrative model sorry bye");
-            // }
+            error: function(model, response, options) {
+                console.log("You got an error because this sucks kbye");
+            }
         });
     },
 
@@ -88,15 +89,12 @@ window.ButtonView = Backbone.View.extend({
 });
 
 
-//On page load
+// Only load button and narrative if there is one defined for page
 $(function() {
-    console.log("INSIDE PAGELOAD VIEWS");
+    console.log("*************INSIDE PAGE LOAD, VIEWS.JS****************");
 
-    // Strip pathname of first '/'
-    var pathname = window.location.pathname;
-    pathname = pathname.substring(1, pathname.length);
-    console.log("pathname inside pageload views:");
-    console.log(pathname);
-    var narrative = new NarrativeModel({id: pathname});
-    var buttonView = new ButtonView( {model: narrative} );
+    if (window.NARRATIVE_ID) { 
+        var narrative = new NarrativeModel({id: 'manage_tab'}); //{id: NARRATIVE_ID});//{
+        var buttonView = new ButtonView( {model: narrative} );
+    }
 });
