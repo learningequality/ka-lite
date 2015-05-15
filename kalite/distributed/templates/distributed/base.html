@@ -181,7 +181,7 @@
                           {# collapse entire menu #}
                           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" aria-hidden="true" id="navbar_toggle">
                               <span class="icon-bar"></span>
-                              <span class="icon-bar"></span>
+                              <span class="icon-bar"></span> 
                               <span class="icon-bar"></span>
                           </button>
                           <div class="navbar-brand">
@@ -191,29 +191,15 @@
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
                           </div>    
                                                    
+                      </div>             
+
+                      <div class="collapse navbar-collapse top-nav" id="nav" role="navigation" aria-label="Main menu">
+                          <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist"></ul>
                       </div>
 
-
-                      
-
-                      <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
-
-                          <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist">
-                            <li>
-                              <form class="navbar-form" action="{% url 'search' %}" method="get" id="search-box" role="search">
-                                {% comment %}translators: this will appear in the navigation bar. please try to keep it as short as possible.{% endcomment %}
-                                <div class="input-group">
-                                  <input type="text" name="query" id="search" class="form-control" placeholder="{% trans 'Topic, video, exercise...' %}" aria-label="{% trans 'Search for' %}" />
-                                  <button id="search-button" class="btn btn-default" type="submit" aria-label="{% trans 'Submit' %}"><i class="glyphicon glyphicon-search" aria-hidden="true"></i></button>
-                                </div>
-                              </form>
-                            </li>
-                           
-                        </ul>
-                      </div>
-                  </div>
-              </div>
-          </div>
+                    </div>
+                </div>
+            </div>
           {# End Header / Navbar #}
 
             {# Body #}

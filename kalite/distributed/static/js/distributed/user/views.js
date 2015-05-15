@@ -325,30 +325,31 @@ window.ToggleNavbarView = BaseView.extend ({
 
         _.bindAll(this);        
         this.listenTo(this.model, "change", this.render);
-        this.$el.html(this.template());
+        $("#topnav").append(this.template(this.facility_id));
+
     },
 
     render: function() {
 
         this.userView = new UserView({ model: this.model, el: "#topnav" });
         this.facility_id = {"facility_id": this.model.get("facility_id")};
-        this.$el.html(this.template(this.facility_id));
-
+        
         // GUEST
         if ( !this.model.get("is_logged_in") ) {
             this.$(".guest").removeClass("display-none");
         }
-
         // ALL LOGGED IN
         if ( this.model.get("is_logged_in") ) {
             this.$(".logged-in").removeClass("display-none");
         }
-
+        // ALL USERS - ensures all tabs appear at the same time
+        if ( this.model.get("is_logged_in") || !this.model.get("is_logged_in") ) {
+            this.$(".learn-tab").removeClass("display-none");
+        }
         // STUDENTS
         if ( this.model.get("is_logged_in") && !this.model.get("is_admin") ) {
             this.$(".student").removeClass("display-none");
         }
-
         // TEACHER
         if ( !this.model.get("is_django_user") && this.model.get("is_admin") ) {
             this.$(".teacher").removeClass("display-none");

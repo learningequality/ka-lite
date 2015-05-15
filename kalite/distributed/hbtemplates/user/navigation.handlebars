@@ -1,12 +1,12 @@
 
-  <li class="teacher admin display-none"><a href="/coachreports/table/"{{!-- id="nav_coachreports"--}}>{{_ "Teach" }}</a></li>
+  <li class="teacher admin display-none" id="search-prepend"><a href="/coachreports/table/"{{!-- id="nav_coachreports"--}}>{{_ "Teach" }}</a></li>
 
   <li class="admin display-none"><a href="/management/zone">{{_ "Manage" }}</a></li>
 
   <li class="teacher display-none"><a href="/management/zone/None/facility/{{ facility_id }}/management/">{{_ "Manage" }}</a></li>
 
   {{!-- Learn for all --}}
-  <li id="nav-handlebars"><a href="/learn" id="nav_learn" class="home-navlink">{{_ "Learn" }}</a></li>
+  <li id="nav-handlebars" class="learn-tab display-none"><a href="/learn" id="nav_learn" class="home-navlink">{{_ "Learn" }}</a></li>
 
   {{!-- Login --}}
   <li><a href="#" class="guest display-none" data-toggle="modal" data-target="#loginModal" title="" id="nav_login">{{_ "Login" }}</a></li>
@@ -23,7 +23,7 @@
     </a>
 
     <ul class="dropdown-menu" data-no-collapse="true" role="menu">
-      <li class="student display-none" role="presentation">
+      <li class="student display-none" id="points-tab" role="presentation">
         <span class="student display-none" id="points">
           {{!-- Points injected here w/ js --}}
         </span>
