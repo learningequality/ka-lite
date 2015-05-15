@@ -326,28 +326,37 @@ window.ToggleNavbarView = BaseView.extend ({
         _.bindAll(this);        
         this.listenTo(this.model, "change", this.render);
         this.$el.html(this.template());
-
     },
 
     render: function() {
 
         this.userView = new UserView({ model: this.model, el: "#topnav" });
+        this.facility_id = {"facility_id": this.model.get("facility_id")};
+        this.$el.html(this.template(this.facility_id));
 
-        // logged in
+        // GUEST
+        if ( !this.model.get("is_logged_in") ) {
+            this.$(".guest").removeClass("display-none");
+        }
+
+        // ALL LOGGED IN
         if ( this.model.get("is_logged_in") ) {
+            this.$(".logged-in").removeClass("display-none");
+        }
 
-            if ( this.model.get("is_admin") ) { // admin
-                if ( this.model.get("is_django_user") ) { // superuser
-                    this.$(".teacher-manage").hide();
-                } else { // teacher
-                    this.$(".admin-manage").hide();
-                }
-            } else { // student
-                this.$(".admin-toggle").hide();
-            }
-        } else { // guest
-            this.$(".admin-toggle").hide();
-        }       
+        // STUDENTS
+        if ( this.model.get("is_logged_in") && !this.model.get("is_admin") ) {
+            this.$(".student").removeClass("display-none");
+        }
+
+        // TEACHER
+        if ( !this.model.get("is_django_user") && this.model.get("is_admin") ) {
+            this.$(".teacher").removeClass("display-none");
+        }
+        // ADMINS
+        if ( this.model.get("is_django_user") ) {
+            this.$(".admin").removeClass("display-none");
+        }
 
     }
 });
