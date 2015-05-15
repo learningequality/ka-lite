@@ -356,9 +356,10 @@ form .input-group {
 
 .card{
   border-radius: 5px;
-  background-color: lightgray;
-  box-shadow: 0;
-  margin:-15px;
+  box-shadow: 2px 2px lightgray;
+  margin-left:-15px;
+  margin-right:-15px;
+  width: 100%;
 }
 
 /*Temporary*/
