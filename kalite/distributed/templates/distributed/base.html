@@ -223,7 +223,7 @@
                             {% if request.is_admin and not request.session.facility_user.facility and not is_config_package_nalanda %}
                               {# Teach for admins => coachreports #}
                               <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
-                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
+                                <a href="{% url 'coach_reports' %}" id="nav_coachreports" class="admin-only">
                                   {% trans "Teach" %}
                                 </a>
                               </li>
@@ -242,7 +242,7 @@
                             <!-- For logged in teachers -->
                             {# Teach for teachers => coachreports #}
                             <li class="{% block teach_active_teachers %}{% endblock teach_active_teachers %}">
-                              <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
+                              <a href="{% url 'coach_reports' %}" id="nav_coachreports" class="teacher-only">
                                 {% trans "Teach" %}
                               </a>
                             </li>
