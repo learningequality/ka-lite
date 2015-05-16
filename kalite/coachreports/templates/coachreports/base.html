@@ -7,27 +7,32 @@
     {% block reports_active %}reports-active active-tab active-nav{% endblock reports_active %}
     {% block teacher_active %}active{% endblock teacher_active %}
     {% block admin_active %}active{% endblock admin_active %}
+    {% block coachnav %}progress-tab-active{% endblock coachnav %}
+    {% block progress_active %}sub-active{% endblock progress_active %}
 {% endblock i18n_do_not_translate %}
 
 {% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/landing-page.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
         var FACILITY_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var GROUP_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
-
     </script>
-    <script type="text/javascript" src="{% static 'js/coachreports/base.js' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='coach_nav' %}"></script>
+    <script src="{% url 'handlebars_templates' module_name='tabular_reports' %}"></script>
+    <script type="text/javascript" src="{% static 'js/coachreports/coach_reports/router.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/coachreports/coach_reports/models.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/coachreports/coach_reports/views.js' %}"></script>
     <script>
         $(function() {
-            window.report_select_view = new NavigationContainerView({
-                el: $('#coachreport-navigation-container')
-            });
+            window.coach_router = new CoachReportRouter();
+            Backbone.history.start({pushState: true, root: "{% url 'landing_page' %}"});
         });
     </script>
 {% endblock headjs %}
@@ -48,7 +53,9 @@
             </div>
         </div>
         {% block report_content %}
-            {# Insert report specifics here #}
+
+            <div id="student_report_container"></div>
+
         {% endblock report_content %}
     </div>
 
