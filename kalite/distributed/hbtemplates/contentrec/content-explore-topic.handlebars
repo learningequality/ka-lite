@@ -1,20 +1,22 @@
-<div id="content-explore-topic">
+<!--likely to be a link to the subject in the sidenav tree-->
+<a href="{{topic_link}}">
+  <div id="content-explore-topic">
+    <div class="row">
+      <div class="col-xs-12">
+          <h5 class="small">Based on your interest in {{ interest_topic }}:</h5>
 
-  <div class="row">
-    <div class="col-xs-12">
-        <h5 class="small">Based on your interest in {{ interest_topic }}:</h5>
-
+      </div>
     </div>
+    <div class="row">
+      <div class="col-xs-6">
+          <h3>{{ suggested_topic }}:</h3>
+      </div>
+      <div class="col-xs-6">
+        <p><b>Description:</b><p>
+        <p>{{ lesson_description }}</p>
+      </div>
+      <hr class="module_divider" />
+    </div>
+
   </div>
-  <div class="row">
-    <div class="col-xs-6">
-        <h3>{{ suggested_topic }}:</h3>
-    </div>
-    <div class="col-xs-6">
-      <p><b>Description:</b><p>
-      <p>{{ lesson_description }}</p>
-    </div>
-    <hr class="module_divider" />
-  </div>
-
-</div>
+</a>

@@ -350,16 +350,20 @@ form .input-group {
 =================================== */
 
 #resume, #nextsteps, #explore{
-  padding-left: 3%;
-  padding-right: 3%;
+  padding:3%;
 }
 
 .card{
   border-radius: 5px;
-  box-shadow: 2px 2px lightgray;
+  box-shadow: 2px 2px lightslategray;
   margin-left:-15px;
   margin-right:-15px;
   width: 100%;
+  border: solid 1px lightgray;
+}
+
+.card *:link{
+  color:inherit !important;
 }
 
 /*Temporary*/

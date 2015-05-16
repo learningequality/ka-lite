@@ -9,27 +9,28 @@
       </div>
       <hr class="module_divider"/>
   </div>
+  <a href="{{video_url}}">
+    <!--Where the video thumbnail and description go-->
+    <div id="content-resume-thumbnail">
+            <div class="row">
+              <center>
+                <div class="col-xs-12"><h3>Algorithms {{ lesson_title }}</h3></div>
+              </center>
+                <div class="col-xs-12">
+                  <img class="img-responsive"src="/static/images/distributed/video.png" alt="video" />
+                </div>
 
-  <!--Where the video thumbnail and description go-->
-  <div id="content-resume-thumbnail">
-          <div class="row">
-            <center>
-              <div class="col-xs-12"><h3>Algorithms {{ lesson_title }}</h3></div>
-            </center>
-              <div class="col-xs-12">
-                <img class="img-responsive"src="/static/images/distributed/video.png" alt="video" />
-              </div>
-
-          </div>
-
-          <div class="row">
-            <div class="col-xs-12"><h3>Description:</h3></div>
-          </div>
-
-          <div class="row">
-            <div class="col-xs-12">
-              <p>{{ lesson_description }}</p>
             </div>
-          </div>
-  </div>
+
+            <div class="row">
+              <div class="col-xs-12"><h3>Description:</h3></div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12">
+                <p>{{ lesson_description }}</p>
+              </div>
+            </div>
+    </div>
+  </a>
 </div>
