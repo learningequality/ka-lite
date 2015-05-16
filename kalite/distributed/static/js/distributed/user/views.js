@@ -325,14 +325,17 @@ window.ToggleNavbarView = BaseView.extend ({
 
         _.bindAll(this);        
         this.listenTo(this.model, "change", this.render);
-        $("#topnav").append(this.template(this.facility_id));
+        $el.append(this.template());
 
     },
 
     render: function() {
-
-        this.userView = new UserView({ model: this.model, el: "#topnav" });
+        
         this.facility_id = {"facility_id": this.model.get("facility_id")};
+        this.$el.html(this.template(this.facility_id));
+        
+        this.userView = new UserView({ model: this.model, el: "#topnav" });
+        $("#topnav").prepend(new AutoCompleteView().$el);
         
         // GUEST
         if ( !this.model.get("is_logged_in") ) {
@@ -342,7 +345,7 @@ window.ToggleNavbarView = BaseView.extend ({
         if ( this.model.get("is_logged_in") ) {
             this.$(".logged-in").removeClass("display-none");
         }
-        // ALL USERS - ensures all tabs appear at the same time
+        // ALL USERS - slight lag in tabs appearing, seems unnecessary but ensures that all tabs appear at the same time
         if ( this.model.get("is_logged_in") || !this.model.get("is_logged_in") ) {
             this.$(".learn-tab").removeClass("display-none");
         }
@@ -359,5 +362,13 @@ window.ToggleNavbarView = BaseView.extend ({
             this.$(".admin").removeClass("display-none");
         }
 
+    },
+
+    // sets a tab with the active css class
+    active_tab: function(id) {
+        console.log(id);
+        var x = id.addClass("active");
+        console.log(x);
     }
+
 });

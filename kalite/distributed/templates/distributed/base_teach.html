@@ -11,6 +11,13 @@
 
 {% block headcss %}{{block.super}}{% endblock headcss %}
 
+<script>
+    $(function() {
+        window.toggleNavbarView.active_tab("#teach-tab");
+        //somehow call the associated li nav bar element on this page
+    });
+</script>
+
 {% block subnavbar %}
 
 <!-- Prevents nav bar from showing up for students/guests on learn tab -->

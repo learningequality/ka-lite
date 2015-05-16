@@ -159,10 +159,7 @@
         });
         $(function() {
           window.statusModel.fetch_data();
-          //window.userView = new UserView({model: statusModel, el: "#user-name"});
           window.toggleNavbarView = new ToggleNavbarView({model: statusModel, el: "#topnav"});
-          window.autoCompleteView = new AutoCompleteView();
-          $("#topnav").prepend(window.autoCompleteView.$el);
         });
         </script>
 
@@ -173,7 +170,7 @@
     <body class="{% block bodyclass %}{% endblock %}">
         <div id="wrapper">
 
-            {# Header & Navbar #}
+            {# Header / Navbar #}
             <div class="navbar kalite-navbar header-footer-bg" role="banner">
               <div class="container">
                   <div class="row">
@@ -193,7 +190,7 @@
                                                    
                       </div>             
 
-                      <div class="collapse navbar-collapse top-nav" id="nav" role="navigation" aria-label="Main menu">
+                      <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
                           <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist"></ul>
                       </div>
 
