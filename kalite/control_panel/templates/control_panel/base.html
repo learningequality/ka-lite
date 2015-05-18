@@ -22,6 +22,15 @@
     </style>
 {% endblock headcss %}
 
+{% block headjs %}
+
+<script>
+    var onManagePage = true; 
+    var onTeachPage, onLearnPage = false;
+</script>
+
+{% endblock headjs %}
+
 {% block content %}
 
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}

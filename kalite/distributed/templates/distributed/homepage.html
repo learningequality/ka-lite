@@ -20,12 +20,14 @@
         if (window.parent.frames.length === 0) {
             window.location = "{% url 'load_test' %}";
         }
+
     </script>
     {% endif %}
 
     <script type="text/javascript">
      var ALL_PLAYLISTS_URL = "{% url 'api_dispatch_list' resource_name='playlist' %}";
      var VIEW_PLAYLIST_TEMPLATE_URL = "/playlists/view/%(playlist_id)s/";
+     var onTeachPage, onManagePage, onLearnPage = false;
     </script>
 
     <script>

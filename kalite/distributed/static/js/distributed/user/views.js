@@ -316,7 +316,7 @@ window.UserView = BaseView.extend({
     }
 });
 
-/* This view toggles which navbar items are displayed to the user */ 
+/* This view toggles which navbar items are displayed to each type of user */ 
 window.ToggleNavbarView = BaseView.extend ({
 
     template: HB.template("user/navigation"),
@@ -325,7 +325,7 @@ window.ToggleNavbarView = BaseView.extend ({
 
         _.bindAll(this);        
         this.listenTo(this.model, "change", this.render);
-        $el.append(this.template());
+        $("topnav").append(this.template());
 
     },
 
@@ -362,13 +362,16 @@ window.ToggleNavbarView = BaseView.extend ({
             this.$(".admin").removeClass("display-none");
         }
 
-    },
-
-    // sets a tab with the active css class
-    active_tab: function(id) {
-        console.log(id);
-        var x = id.addClass("active");
-        console.log(x);
+        // ACTIVATES NAV TAB ACCORDING TO CURRENT PAGE
+        if ( onTeachPage ) {
+            this.$(".teach-tab").addClass("active");
+        } else if ( onManagePage ) {
+            this.$(".manage-tab").addClass("active");
+        } else if ( onLearnPage ) {
+            this.$(".learn-tab").addClass("active");
+        }
+       
     }
 
 });
+

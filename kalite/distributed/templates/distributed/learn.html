@@ -77,6 +77,9 @@
         window.cMapUrl = "{% static 'pdfjs/web/cmaps/' %}";
         window.flash_swf = "{% static "video-js/video-js.swf" %}";
         window.ALL_TOPICS_URL = "{% url 'topic_tree' channel='%(channel_name)s' %}";
+
+        var onLearnPage = true; 
+        var onTeachPage, onManagePage = false;
     </script>
     
     {% if load_perseus_assets %}

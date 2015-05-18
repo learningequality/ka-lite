@@ -4,19 +4,8 @@
 {% load i18n %}
 {% load my_filters %}
 
-{% block i18n_do_not_translate %}
-    {% block teach_active_teachers %}active{% endblock teach_active_teachers %}
-    {% block teach_active_admins %}active{% endblock teach_active_admins %}
-{% endblock i18n_do_not_translate %}
-
 {% block headcss %}{{block.super}}{% endblock headcss %}
 
-<script>
-    $(function() {
-        window.toggleNavbarView.active_tab("#teach-tab");
-        //somehow call the associated li nav bar element on this page
-    });
-</script>
 
 {% block subnavbar %}
 
