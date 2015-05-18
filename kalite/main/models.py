@@ -31,6 +31,12 @@ class Content(models.Model):
     blob = models.TextField()  # A JSON blob... we don't care what it is! Let the front-end deal with the consequences.
 
 
+class AssessmentItem(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    item_data = models.TextField()  # A serialized JSON blob
+    author_names = models.CharField(max_length=200)  # A serialized JSON list
+
+
 class VideoLog(DeferredCountSyncedModel):
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
