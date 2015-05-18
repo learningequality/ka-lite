@@ -30,7 +30,7 @@ window.ButtonView = Backbone.View.extend({
             },
 
             error: function(model, response, options) {
-                console.log("You got an error because this sucks kbye");
+                console.log("Unable to load inline tutorial narrative!");
             }
         });
     },
