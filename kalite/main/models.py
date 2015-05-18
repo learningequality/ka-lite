@@ -3,6 +3,7 @@ All models associated with user learning / usage, including:
 * Exercise/Video progress
 * Login stats
 """
+import json
 import os
 import random
 import uuid
@@ -17,6 +18,7 @@ from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
+from django.utils.translation import gettext as _
 
 from fle_utils.django_utils.classes import ExtendedModel
 from fle_utils.general import datediff, isnumeric
@@ -46,9 +48,8 @@ class Content(models.Model):
     blob = models.TextField()  # A JSON blob... we don't care what it is! Let the front-end deal with the consequences.
 
     def annotations(self, language=settings.LANGUAGE_CODE):
-        # Loop through all content items and put thumbnail urls, content urls,
-        # and subtitle urls on the content dictionary, and list all languages
-        # that the content is available in.
+        # Annotate content items with thumbnail urls, content urls,
+        # and list all languages that the content is available in.
         content = json.loads(self.blob)
         _annotations = {}
         default_thumbnail = create_thumbnail_url(content.get("id"))
@@ -91,7 +92,7 @@ class Content(models.Model):
             _annotations["title"] = _(content["title"])
             _annotations["description"] = _(content.get("description")) if content.get("description") else ""
 
-    return _annotations
+        return _annotations
 
 class AssessmentItem(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
