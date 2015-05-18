@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     "kalite.playlist",
     "kalite.testing",
     "kalite.updates",  #
+    "kalite.student_testing",
     "kalite.caching",
     "kalite.store",
     "kalite.remoteadmin",  # needed for remote connection

@@ -1,0 +1,28 @@
+from django.http.response import Http404
+
+from annoying.decorators import render_to
+
+from kalite.shared.decorators import require_login, require_admin
+from kalite.facility.models import Facility
+
+@require_login
+@render_to("student_testing/test.html")
+def test(request, test_id):
+    """
+    Display a test when it is on exam-mode at Settings only when exam-mode is on for the test.
+    Do the filter if the user is not an admin.
+    """
+    context = {
+        "test_id": test_id,
+    }
+    return context
+
+
+@require_login
+@render_to("student_testing/test_list.html")
+def test_list(request):
+    """
+    Display list of tests for the admin user like the teacher.
+    """
+    context = {}
+    return context
