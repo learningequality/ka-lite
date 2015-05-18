@@ -256,12 +256,14 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
 
         if os.path.exists(i18n.get_srt_path()):
             for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
-                lc = dirpath.split("/")[-2]
-                for filename in filenames:
-                    if filename in subtitle_langs:
-                        subtitle_langs[filename].append(lc)
-                    else:
-                        subtitle_langs[filename] = [lc]
+                # Only both looking at files that are inside a 'subtitles' directory
+                if dirpath.split("/")[-1] == "subtitles":
+                    lc = dirpath.split("/")[-2]
+                    for filename in filenames:
+                        if filename in subtitle_langs:
+                            subtitle_langs[filename].append(lc)
+                        else:
+                            subtitle_langs[filename] = [lc]
 
         for content in CONTENT[language].values():
             default_thumbnail = create_thumbnail_url(content.get("id"))
