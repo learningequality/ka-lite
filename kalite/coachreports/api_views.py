@@ -1,3 +1,5 @@
+from math import ceil
+
 from django.utils.translation import ugettext as _
 from django.db.models import Q
 
@@ -11,15 +13,34 @@ from kalite.topic_tools import get_topic_leaves, get_exercise_cache, get_content
 @require_admin
 def learner_logs(request):
 
+    page = request.GET.get("page", 1)
+
+    limit = request.GET.get("limit", 50)
+
     learner_ids = request.GET.getlist("user_id")
 
     group_ids = request.GET.getlist("group_id")
 
     facility_ids = request.GET.getlist("facility_id")
 
+    # Restrict filtering based on specificity. Use most specific filter (learner_ids, group_ids, facility_ids).
+
+    if learner_ids:
+        learner_filter = Q(pk__in=learner_ids)
+    elif group_ids:
+        learner_filter = Q(group__pk__in=group_ids)
+    else:
+        learner_filter = Q(facility__pk__in=facility_ids)
+
     topic_ids = request.GET.getlist("topic_id", [])
 
-    learners = FacilityUser.objects.filter(Q(group__pk__in=group_ids)|Q(pk__in=learner_ids)|Q(facility__pk__in=facility_ids))
+    learners = FacilityUser.objects.filter(learner_filter).order_by("last_name")
+
+    pages = int(ceil(len(learners)/float(limit)))
+
+    if page*limit < len(learners):
+
+        learners = learners[(page - 1)*limit: page*limit]
 
     log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
 
@@ -58,5 +79,8 @@ def learner_logs(request):
     return JsonResponse({
         "logs": output_logs,
         "contents": output_objects,
-        "learners": [learner for learner in learners.values("first_name", "last_name", "username", "pk")]
+        "learners": [learner for learner in learners.values("first_name", "last_name", "username", "pk")],
+        "page": page,
+        "pages": pages,
+        "limit": limit
     })
