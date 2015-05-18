@@ -66,7 +66,7 @@ class PlaylistTests(FacilityMixins, KALiteTestCase):
 
 class PlaylistAPITests(CreateAdminMixin, BaseTest):
 
-    test_playlist_id = 'g4_u401_p1'
+    test_playlist_id = 'g4_p1'
 
     def _playlist_url(self, playlist_id=None):
         '''

@@ -33,7 +33,6 @@ from kalite.shared.decorators import require_authorized_access_to_student_data, 
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
-from kalite.ab_testing.data.groups import get_grade_by_facility
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
@@ -163,7 +162,7 @@ def landing_page(request, facility):
 def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
     # Define how students are ordered--used to be as efficient as possible.
-    student_ordering = ["last_name", "first_name", "username"]
+    student_ordering = ["first_name", "last_name", "username"]
 
     # Get a list of topics (sorted) and groups
     topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics()]
@@ -273,10 +272,9 @@ def tabular_view(request, facility, report_type="exercise"):
 @render_to("coachreports/exercise_mastery_view.html")
 def exercise_mastery_view(request, facility):
 
-    student_ordering = ["last_name", "first_name", "username"]
+    student_ordering = ["first_name", "last_name", "username"]
 
-    grade = "Grade " + str(get_grade_by_facility(facility))
-    playlists = (filter(lambda p: p.tag==grade, Playlist.all()) or [None])
+    playlists = Playlist.all()
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise")} for p in playlists if p],
@@ -294,7 +292,7 @@ def exercise_mastery_view(request, facility):
     temp = []
     for p in playlists:
         for ex in p.get_playlist_entries("Exercise"):
-            if ex['id'] in exercises:
+            if ex['id'] in exercises and ex not in temp:
                 temp.append(ex)
 
     exercises = sorted(temp, key=lambda e: (e["h_position"], e["v_position"]))
