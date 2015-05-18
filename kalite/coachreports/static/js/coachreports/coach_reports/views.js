@@ -42,19 +42,21 @@ var TabularReportView = BaseView.extend({
             facility: this.model.get("facility"),
             group: this.model.get("group")
         });
-        this.data_model.fetch().then(function() {
-            self.learners = new Backbone.Collection(self.data_model.get("learners"));
-            self.contents = new Backbone.Collection(self.data_model.get("contents"));
-            for (var i = 0; i < self.learners.length; i++) {
-                self.learners.models[i].set("logs", _.object(
-                    _.map(_.filter(self.data_model.get("logs"), function(log) {
-                        return log.user === self.learners.models[i].get("pk");
-                    }), function(item) {
-                        return [item.exercise_id || item.video_id || item.content_id, item];
-                    })));
-            }
-            self.render();
-        });
+        if (this.model.get("facility")) {
+            this.data_model.fetch().then(function() {
+                self.learners = new Backbone.Collection(self.data_model.get("learners"));
+                self.contents = new Backbone.Collection(self.data_model.get("contents"));
+                for (var i = 0; i < self.learners.length; i++) {
+                    self.learners.models[i].set("logs", _.object(
+                        _.map(_.filter(self.data_model.get("logs"), function(log) {
+                            return log.user === self.learners.models[i].get("pk");
+                        }), function(item) {
+                            return [item.exercise_id || item.video_id || item.content_id, item];
+                        })));
+                }
+                self.render();
+            });
+        }
     }
 
 });
@@ -63,6 +65,7 @@ var FacilitySelectView = Backbone.View.extend({
     template: HB.template('coach_nav/facility-select'),
 
     initialize: function() {
+        _.bindAll(this);
         this.facility_list = new FacilityCollection();
         this.facility_list.fetch();
         this.listenTo(this.facility_list, 'sync', this.render);
@@ -74,6 +77,9 @@ var FacilitySelectView = Backbone.View.extend({
             facilities: this.facility_list.toJSON(),
             selected: this.model.get("facility")
         }));
+        if (!this.model.get("facility")) {
+            this.facility_changed();
+        }
         return this;
     },
 
@@ -114,14 +120,16 @@ var GroupSelectView = Backbone.View.extend({
     },
 
     fetch_by_facility: function() {
-        // Get new facility ID and fetch
-        this.group_list.fetch({
-            data: $.param({
-                facility_id: this.model.get("facility"),
-                // TODO(cpauya): Find a better way to set the kwargs argument of the tastypie endpoint
-                // instead of using GET variables.  This will set it as False on the endpoint.
-                groups_only: ""
-            })
-        });
+        if (this.model.get("facility")) {
+            // Get new facility ID and fetch
+            this.group_list.fetch({
+                data: $.param({
+                    facility_id: this.model.get("facility"),
+                    // TODO(cpauya): Find a better way to set the kwargs argument of the tastypie endpoint
+                    // instead of using GET variables.  This will set it as False on the endpoint.
+                    groups_only: ""
+                })
+            });
+        }
     }
 });

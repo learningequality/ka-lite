@@ -30,6 +30,7 @@ def learner_logs(request):
     elif group_ids:
         learner_filter = Q(group__pk__in=group_ids)
     else:
+        # Do this to ensure that we never return more than one facility's worth of anything.
         learner_filter = Q(facility__pk__in=facility_ids)
 
     topic_ids = request.GET.getlist("topic_id", [])
