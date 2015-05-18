@@ -6,7 +6,7 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonRe
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools import get_topic_leaves
+from kalite.topic_tools import get_topic_leaves, get_exercise_cache, get_content_cache
 
 @require_admin
 def learner_logs(request):
@@ -17,13 +17,15 @@ def learner_logs(request):
 
     facility_ids = request.GET.getlist("facility_id")
 
-    topic_ids = request.GET.getlist("topic_id", ["root"])
+    topic_ids = request.GET.getlist("topic_id", [])
 
     learners = FacilityUser.objects.filter(Q(group__pk__in=group_ids)|Q(pk__in=learner_ids)|Q(facility__pk__in=facility_ids))
 
     log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
 
     output_logs = []
+
+    output_objects = []
 
     for log_type in log_types:
         fields = ["user", "points", "complete", "completion_timestamp", "completion_counter"]
@@ -41,7 +43,20 @@ def learner_logs(request):
             obj_id_field = "content_id__in"
         else:
             continue
-        obj_ids = {obj_id_field: [obj.get("id") for topic_id in topic_ids for obj in get_topic_leaves(topic_id=topic_id, leaf_type=log_type.title())]}
-        output_logs.extend(LogModel.objects.filter(user__in=learners, **obj_ids).values(*fields))
+        if topic_ids:
+            objects = [obj for topic_id in topic_ids for obj in get_topic_leaves(topic_id=topic_id, leaf_type=log_type.title())]
+            obj_ids = {obj_id_field: [obj.get("id") for obj in objects]}
+        else:
+            obj_ids = {}
+        log_objects = LogModel.objects.filter(user__in=learners, **obj_ids).values(*fields)
+        output_logs.extend(log_objects)
+        if not topic_ids:
+            id_field = obj_id_field.split("__")[0]
+            objects = dict([(obj[id_field], get_content_cache().get(obj[id_field], get_exercise_cache().get(obj[id_field]))) for obj in log_objects]).values()
+        output_objects.extend(objects)
 
-    return JsonResponse(output_logs)
+    return JsonResponse({
+        "logs": output_logs,
+        "contents": output_objects,
+        "learners": [learner for learner in learners.values("first_name", "last_name", "username", "pk")]
+    })

@@ -9,52 +9,51 @@
 </div>
 <div class="row">
 	<div class="col-md-12">
-		{{#if students}}
+		{{#if learners}}
 			<div id="displaygrid">
 				<div class="users-table">
-					<table class="table table-striped table-bordered">
+					<table class="table table-bordered">
 						<tbody>
 							<tr>
 								<th class="headrowuser">
 									{{_ "Learner"}}
-									<!--for loop from partials report-->
-									{{#each exercises}}
+									{{#each contents}}
 										 <th class="headrow data">
                         					<div>
-                        						<a href="{% url 'learn' %}{{ path }}" title='"{{_ display_name }}"{{#if description }} {{_ description }}){{/if }}'>{{_ title }}</a>
+                        						<a href="{{ url_learn }}{{ path }}" title='"{{_ display_name }}"{{#if description }} {{ description }}{{/if }}'>{{_ title }}</a>
                         					</div>
                     					</th>
 									{{/each}}
 								</th>
 							</tr>
-							<!-- for loop area -->
-							{{#each students}}
+							<!-- for loop area for students -->
+							{{#each learners}}
 								<tr>
 									<th class="username">
-										<span title="{{ name }} ({{ username }})">
+										<span title="{{ first_name }} {{last_name}}({{ username }})">
 											<div class="student-name">
-												<a href="{% url 'student_view' %}?user={{ id }}">{{ name }}</a>
+												<a href="{{ url_student_view }}?user={{ id }}">{{ first_name }} {{last_name}}</a>
 											</div>
 										</span>
 									</th>	
-									<!--second for loop for exercises-->
-									{{#each ../exercises}}
-									 	{{#withItem ../exercise_logs key=this.slug}}
+									<!--second for loop for content-->
+									{{#each ../contents}}
+									 	{{#withItem ../logs key=this.id}}
 											{{#unless this}}
 					                            <td class="status data" title="{{_ "Not Attempted" }}">
 
 						                        {{ else }}
-							                        {{#if this.struggling }}
-							                            <td class="status data struggle" title="{{_ "Struggling" }}">
-							                        {{/if}}
-
 							                        {{#if this.complete }}
 							                            <td class="status data complete" title="{{_ "Complete" }}">
 							                        	{{ else }}
-							                            	<td class="status data partial" title="{{_ "Attempted" }}">
+                                                        {{#if this.struggling }}
+                                                            <td class="status data struggle" title="{{_ "Struggling" }}">
+                                                        {{ else }}
+                                                            <td class="status data partial" title="{{_ "Attempted" }}">
+                                                        {{/if}}
 							                        {{/if}}
-							                            </td>
 						                    {{/unless}}
+                                            </td>
 					                    {{/withItem}}
 									{{/each}} <!-- end inner for loop for exercises -->
 								</tr>
@@ -68,4 +67,3 @@
         {{/if}} 
 	</div>
 </div>
-<!-- end block report content-->
