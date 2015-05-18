@@ -25,6 +25,12 @@ from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
 
 
+class Content(models.Model):
+
+    id = models.CharField(max_length=60, primary_key=True)
+    blob = models.TextField()  # A JSON blob... we don't care what it is! Let the front-end deal with the consequences.
+
+
 class VideoLog(DeferredCountSyncedModel):
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)

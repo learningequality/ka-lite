@@ -32,6 +32,8 @@ from django.utils.translation import gettext as _
 from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
 
+from kalite.main import models as main_models
+
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
 }
@@ -544,8 +546,26 @@ def smart_translate_item_data(item_data):
         return item_data
 
 
-
 def get_content_data(request, content_id=None):
+    try:
+        content_model = main_models.Content.objects.get(id=content_id)
+    except main_models.Content.DoesNotExist:
+        return None
+
+    content = json.loads(content_model.blob)
+    if not content.get("content_urls", None):
+        if request.is_admin:
+            # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
+            messages.warning(request, _("This content was not found! You can download it by going to the Manage > Videos page."))
+        elif request.is_logged_in:
+            messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
+        elif not request.is_logged_in:
+            messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
+
+    return content
+
+
+def _old_get_content_data(request, content_id=None):
 
     content_cache = get_content_cache(language=request.language)
     content = content_cache.get(content_id, None)
