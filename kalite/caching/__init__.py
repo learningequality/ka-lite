@@ -107,7 +107,5 @@ def initialize_content_caches(force=False):
     for lang in i18n.get_installed_language_packs(force=True).keys():
         logging.info("Preloading exercise data for language {lang}.".format(lang=lang))
         topic_tools.get_exercise_cache(force=force, language=lang)
-        logging.info("Preloading content data for language {lang}.".format(lang=lang))
-        topic_tools.get_content_cache(force=force, annotate=True, language=lang)
         logging.info("Preloading topic tree data for language {lang}.".format(lang=lang))
         topic_tools.get_topic_tree(force=force, annotate=True, language=lang)
