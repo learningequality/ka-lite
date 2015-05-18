@@ -512,11 +512,267 @@
         "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 7
+      },
+      {
+        "entity_id": "/v/raising-a-number-to-the-0th-and-1st-power/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/powers-of-1-and---1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/powers-of-zero/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/adding-integers-with-different-signs/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/why-a-negative-times-a-negative-makes-intuitive-sense/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
       }
     ],
     "id": "g6_tp1",
     "show": true,
     "tag": "Grade 6",
     "title": "Playlist Teacher 1 : Unit 1"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/the-distributive-property/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/the-distributive-property-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/distributive_property/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/commutative-law-of-addition/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/commutative-law-of-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/associative-law-of-addition/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/associative-law-of-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      }
+    ],
+    "id": "g6_p4",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 4: Commutative. distributive and associative properties"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/introduction-to-exponents/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/powers-of-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/understanding-exponents-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/exponents_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/understanding-exponents/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      }
+    ],
+    "id": "g6_p5",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 5: Write and identify a number using the base/index notation"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/understanding-square-roots/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/square_roots/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      }
+    ],
+    "id": "g6_p6",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 6: Square and square roots"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/negative-numbers-introduction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/number-line-3-exercise-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/number_line_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/number_line_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/ordering-negative-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/ordering_negative_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/adding-negative-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/adding_negative_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/adding-and-subtracting-negative-number-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/adding_and_subtracting_negative_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g6_p7",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 7: Integer and integer operations - Part 1"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/negative-number-word-problems-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/negative_number_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/u09-l1-t2-we4-adding-real-numbers-application/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/why-a-negative-times-a-negative-is-a-positive/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/multiplying-positive-and-negative-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/dividing-positive-and-negative-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/multiplying-negative-real-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      }
+    ],
+    "id": "g6_p8",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 8: Integer and integer operations - Part 2"
   }
 ]
