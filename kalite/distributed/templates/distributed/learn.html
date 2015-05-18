@@ -3,12 +3,6 @@
 
 {% block title %}{% trans "Learn" %}{% endblock title %}
 
-{% block i18n_do_not_translate %}
-    {% block learn_active %}active{% endblock learn_active %}
-    {% block learn_subnav_active %}active{% endblock learn_subnav_active %}
-    {% block teach_active_teachers %}{% endblock teach_active_teachers %}
-{% endblock i18n_do_not_translate %}
-
 {% block headcss %}{{ block.super }}
 
     <style id="exercise-inline-style"></style> <!-- Used by KA to dynamically add styling to the exercise -->
