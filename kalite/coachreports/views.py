@@ -59,8 +59,8 @@ def student_view_context(request):
 
 @require_authorized_admin
 @facility_required
-@render_to("coachreports/landing_page.html")
-def landing_page(request, facility):
+@render_to("coachreports/coach.html")
+def coach_reports(request, facility):
     """Landing page needs plotting context in order to generate the navbar"""
     return {}
 
@@ -78,23 +78,3 @@ def log_coach_report_view(request):
         except ValidationError as e:
             # Never report this error; don't want this logging to block other functionality.
             logging.error("Failed to update Teacher userlog activity login: %s" % e)
-
-
-def return_list_stat(stat_list, stat):
-    """
-    Return the stat requests from the list provided.
-    Ex: given stat_list = [1, 2, 3] and stat = 'Max' return 3
-    """
-    if stat == 'Max':
-        return_stat = max(stat_list)
-    elif stat == 'Min':
-        return_stat = min(stat_list)
-    elif stat == 'Average':
-        return_stat = sum(stat_list)/len(stat_list)
-    elif stat == 'Std Dev':
-        avg_score = sum(stat_list)/len(stat_list)
-        variance = map(lambda x: (x - avg_score)**2, stat_list)
-        avg_variance = sum(variance)/len(variance)
-        return_stat = sqrt(avg_variance)
-
-    return round(return_stat, 1)

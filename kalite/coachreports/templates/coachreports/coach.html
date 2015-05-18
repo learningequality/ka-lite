@@ -32,7 +32,7 @@
     <script>
         $(function() {
             window.coach_router = new CoachReportRouter();
-            Backbone.history.start({pushState: true, root: "{% url 'landing_page' %}"});
+            Backbone.history.start({pushState: true, root: "{% url 'coach_reports' %}"});
         });
     </script>
 {% endblock headjs %}
@@ -48,15 +48,10 @@
                 {# Note to translators: following this phrase is the name of a class. #}
                 {% trans "Coach Reports" %}
             </div>
-            <div id="coachreport-navigation-container">
+            <div id="coachreport_container">
                 {# insert backbone magic here for coachreport navigation #}
             </div>
         </div>
-        {% block report_content %}
-
-            <div id="student_report_container"></div>
-
-        {% endblock report_content %}
     </div>
 
 {% endblock content %}
