@@ -3,6 +3,7 @@ All models associated with user learning / usage, including:
 * Exercise/Video progress
 * Login stats
 """
+import os
 import random
 import uuid
 from math import ceil
@@ -25,11 +26,72 @@ from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
 
 
+def create_thumbnail_url(thumbnail):
+    if is_content_on_disk(thumbnail, "png"):
+        return settings.CONTENT_URL + thumbnail + ".png"
+    elif is_content_on_disk(thumbnail, "jpg"):
+        return settings.CONTENT_URL + thumbnail + ".jpg"
+    return None
+
+
+def is_content_on_disk(content_id, format="mp4", content_path=None):
+    content_path = content_path or settings.CONTENT_ROOT
+    content_file = os.path.join(content_path, content_id + ".%s" % format)
+    return os.path.isfile(content_file)
+
+
 class Content(models.Model):
 
     id = models.CharField(max_length=60, primary_key=True)
     blob = models.TextField()  # A JSON blob... we don't care what it is! Let the front-end deal with the consequences.
 
+    def annotations(self, language=settings.LANGUAGE_CODE):
+        # Loop through all content items and put thumbnail urls, content urls,
+        # and subtitle urls on the content dictionary, and list all languages
+        # that the content is available in.
+        content = json.loads(self.blob)
+        _annotations = {}
+        default_thumbnail = create_thumbnail_url(content.get("id"))
+        dubmap = i18n.get_id2oklang_map(content.get("id"))
+        if dubmap:
+            content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
+            if content_lang:
+                dubbed_id = dubmap.get(content_lang)
+                format = content.get("format", "")
+                if is_content_on_disk(dubbed_id, format):
+                    _annotations["available"] = True
+                    thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
+                    _annotations["content_urls"] = {
+                        "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
+                        "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                        "thumbnail": thumbnail,
+                    }
+                else:
+                    _annotations["available"] = False
+            else:
+                _annotations["available"] = False
+        else:
+            _annotations["available"] = False
+
+        # Get list of subtitle language codes currently available
+        subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+
+        # Generate subtitle URLs for any subtitles that do exist for this content item
+        subtitle_urls = [{
+            "code": lc,
+            "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
+            "name": i18n.get_language_name(lc)
+            } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+
+        # Sort all subtitle URLs by language code
+        _annotations["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
+
+        with i18n.translate_block(content_lang):
+            _annotations["selected_language"] = content_lang
+            _annotations["title"] = _(content["title"])
+            _annotations["description"] = _(content.get("description")) if content.get("description") else ""
+
+    return _annotations
 
 class AssessmentItem(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
