@@ -72,7 +72,6 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
 
         # Loop through all the nodes in the topic tree
         # and cross reference with the content_cache to check availability.
-        content_cache = get_content_cache(language=language)
         exercise_cache = get_exercise_cache(language=language)
         
         def recurse_nodes(node):
@@ -93,7 +92,7 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
                 if node.get("kind") == "Exercise":
                     cache_node = exercise_cache.get(node.get("id"), {})
                 else:
-                    cache_node = content_cache.get(node.get("id"), {})
+                    cache_node = get_content_data(node.get("id")) or {}
                 node["available"] = cache_node.get("available", True)
 
             # Translate everything for good measure
@@ -224,83 +223,10 @@ def get_leafed_topics(force=False, language=settings.LANGUAGE_CODE):
         LEAFED_TOPICS = [topic for topic in get_node_cache(language=language)["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
     return LEAFED_TOPICS
 
-def create_thumbnail_url(thumbnail):
-    if is_content_on_disk(thumbnail, "png"):
-        return settings.CONTENT_URL + thumbnail + ".png"
-    elif is_content_on_disk(thumbnail, "jpg"):
-        return settings.CONTENT_URL + thumbnail + ".jpg"
-    return None
 
-CONTENT          = None
-CACHE_VARS.append("CONTENT")
 def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CODE):
-    global CONTENT, CONTENT_FILEPATH
+    raise NotImplementedError()
 
-    if CONTENT is None:
-        CONTENT = {}
-    if CONTENT.get(language) is None:
-        CONTENT[language] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
-        annotate = True
-
-    if annotate:
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
-            if content:
-                CONTENT[language] = content
-                return CONTENT[language]
-
-        # Loop through all content items and put thumbnail urls, content urls,
-        # and subtitle urls on the content dictionary, and list all languages
-        # that the content is available in.
-        for content in CONTENT[language].values():
-            default_thumbnail = create_thumbnail_url(content.get("id"))
-            dubmap = i18n.get_id2oklang_map(content.get("id"))
-            if dubmap:
-                content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
-                if content_lang:
-                    dubbed_id = dubmap.get(content_lang)
-                    format = content.get("format", "")
-                    if is_content_on_disk(dubbed_id, format):
-                        content["available"] = True
-                        thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
-                        content["content_urls"] = {
-                            "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
-                            "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
-                            "thumbnail": thumbnail,
-                        }
-                    else:
-                        content["available"] = False
-                else:
-                    content["available"] = False
-            else:
-                content["available"] = False
-
-            # Get list of subtitle language codes currently available
-            subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
-
-            # Generate subtitle URLs for any subtitles that do exist for this content item
-            subtitle_urls = [{
-                "code": lc,
-                "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
-                "name": i18n.get_language_name(lc)
-                } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
-
-            # Sort all subtitle URLs by language code
-            content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
-
-            with i18n.translate_block(content_lang):
-                content["selected_language"] = content_lang
-                content["title"] = _(content["title"])
-                content["description"] = _(content.get("description")) if content.get("description") else ""
-
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
-            try:
-                with open(CONTENT_FILEPATH + "_" + language + ".cache", "w") as f:
-                    json.dump(CONTENT[language], f)
-            except IOError as e:
-                logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
-
-    return CONTENT[language]
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
@@ -555,25 +481,8 @@ def get_content_data(request, content_id=None):
         elif not request.is_logged_in:
             messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
 
-    return content
-
-
-def _old_get_content_data(request, content_id=None):
-
-    content_cache = get_content_cache(language=request.language)
-    content = content_cache.get(content_id, None)
-
-    if not content:
-        return None
-
-    if not content.get("content_urls", None):
-        if request.is_admin:
-            # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
-            messages.warning(request, _("This content was not found! You can download it by going to the Manage > Videos page."))
-        elif request.is_logged_in:
-            messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
-        elif not request.is_logged_in:
-            messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
+    annotations = content.annotations()
+    content.update(annotations)
 
     return content
 
@@ -601,9 +510,3 @@ def convert_leaf_url_to_id(leaf_url):
     leaf_id = [x for x in leaf_url.split("/") if len(x) > 1]
     assert(len(leaf_id) == 1), "Something in leaf ID is malformed: %s" % leaf_url
     return leaf_id[0]
-
-
-def is_content_on_disk(content_id, format="mp4", content_path=None):
-    content_path = content_path or settings.CONTENT_ROOT
-    content_file = os.path.join(content_path, content_id + ".%s" % format)
-    return os.path.isfile(content_file)
