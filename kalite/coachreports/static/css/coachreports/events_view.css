@@ -1,57 +1,4 @@
-.container-margin-bottom {
-    margin-bottom: 50px;
-}
-
-.coach-reports-row {
-    border-bottom: 3px solid #5AA685;
-    padding: 20px 0;
-    margin-bottom: 3%;
-}
-
-#display-topic-report {
-    margin-top: 22px;
-}
-
-#display-coach-report {
-    margin-top: 20px;
-    margin-left: 16px;
-}
-
-#display-topic-report {
-    margin-top: 35px;
-    margin-left: 16px;
-}
-
-@media (min-width: 768px) {
-    #display-coach-report {
-        margin-top: 35px;
-        margin-left: 10px;
-    }
-
-    #display-topic-report {
-        margin-top: 35px;
-        margin-left: 0px;
-    }
-}
-
-.subtitle {
-    font-size: 1.15em;
-    font-weight: bold;
-}
-.mastered {
-	background-color: #669966; /*green*/
-	}
-.inprogress {
-	background-color: #B1DDF3; /*blue*/
-	}
-.struggling {
-	background-color: #FD795B; /*red*/
-	}
-.notstarted {
-	background-color: #FCC059; /*orange*/
-	}
-/* tab-left */
-/*
+/* overriding the nav tabs of bootstrap-overrides.css for the detailed events panel */
 .tabs-left > .nav-tabs {
 	border-bottom: 0;
 	}
@@ -93,4 +40,13 @@
 .tabs-left > .nav-tabs .active > a:focus {
 	border-color: #ddd transparent #ddd #ddd;
 	*border-right-color: #fff;
-	}	*/
+	}	
+
+.tabs-left > .nav-tabs > li > a,
+.tabs-left > .nav-tabs > li .active > a,
+.tabs-left > .nav-tabs > li > a:active {
+	border:1px solid #ddd;
+	border-radius: 5px 0 0 5px;
+	background: #f9f9f9;
+	
+}
