@@ -108,7 +108,6 @@ urlpatterns += patterns(__package__ + '.views',
 
     # the following has no "$", and thus catches anything starting with "learn/"
     url(r'^learn/', 'learn', {}, 'learn'),
-    url(r'^exercisedashboard/', 'exercise_dashboard', {}, 'exercise_dashboard'),
 )
 
 handler403 = __package__ + '.views.handler_403'
