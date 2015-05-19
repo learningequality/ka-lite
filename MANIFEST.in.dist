@@ -1,3 +1,6 @@
+# MANIFEST.in is generated with basic
+# layout of MANIFEST.in.dist
+
 include kalitectl.py
 include LICENSE
 include README.md
