@@ -2,3 +2,4 @@
 behave==1.2.4
 selenium==2.45.0
 pysparklines==0.9
+unittest2==0.7.1
