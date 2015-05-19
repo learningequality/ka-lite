@@ -41,8 +41,9 @@ def check_setup_status(handler):
             logging.error("Key 'registered' not defined in session, but should be by now.")
 
         #Fix for #2047: prompt user to create an admin account if none exists
-        if not User.objects.exists():
-            messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
+        if User.objects.exists():
+            request.has_superuser = True
+            # messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
 
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
