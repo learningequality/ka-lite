@@ -1,7 +1,7 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 MAJOR_VERSION = "0"
 MINOR_VERSION = "13"
-PATCH_VERSION = "1"
+PATCH_VERSION = "2"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
