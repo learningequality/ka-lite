@@ -1,149 +1,80 @@
 Installation overview
-===
+=====================
 
-You will be completing the following steps:
+Since KA Lite 0.14, we are no longer supporting the previous method of installing via git clone.
 
-1. Install Python version 2.6 or 2.7
-2. Install git
-3. Download the KA Lite codebase using git
-4. Run the setup script to complete configuration
-5. Run the server
+Each stable release ships with an installer for Windows, Mac, and Debian/Ubuntu.
+Please refer to the [Installation Guide](https://learningequality.org/docs/installguide/install_main.html)
 
-Jump to below for [Windows installation instructions](#installing-on-windows) or [Mac OS X installation instructions](#installing-on-mac-os-x).
+If you are able to use pip and install conventional python packages from an
+online source, then the quickest option to install the latest stable release
+of KA Lite is `pip install kalite`.
 
-Installing on Linux
-===
 
-### 1. Install Python
+Static vs. Dynamic version
+==========================
 
-Almost all popular versions of Linux come with Python already installed. To ensure that it is a usable version, run `python -V` from the command line, and ensure that the version number starts with 2.6, or 2.7.
+Apart from Python itself, KA Lite depends on a couple of python applications,
+mainly from the Django ecology. These applications can be installed in two ways:
 
-If Python is not installed, install it by running `sudo apt-get install python` or the equivalent command in your distribution's package manager.
+ - **Dynamic**: That means that they are automatically installed through
+   *PIP* as a separate software package accessible to your whole system. This
+   is recommended if you run KA Lite and have internet access while installing
+   and updating.
+ - **Static*: Static means that KA Lite is installed with all the external
+   applications bundled in. Use this method if you need to have KA Lite
+   installed from offline media or if KA Lite's dependencies are in conflict
+   with the system that you install upon.
 
-### 2. Install git
 
-Install git by running `sudo apt-get install git-core` or the equivalent command in your distribution's package manager.
+Virtualenv
+----------
 
-### 3. Download KA Lite
+You can install KA Lite in its very own separate environment that does not
+interfere with other Python software on your machine like this:
 
-Clone the repository into a directory of your choice. Use `cd` to navigate into the target directory, and then run the command below (the files will be put into a subdirectory of your current directory named `ka-lite`):
+    pip install virtualenv virtualenvwrapper
+    mkvirtualenv my-kalite-env
+    workon my-kalite-env
+    pip install ka-lite
 
-`git clone --recursive https://github.com/learningequality/ka-lite.git`
 
-(The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
+Installing through PIP or with setup.py
+=======================================
 
-### 4. Run the setup script
+This documentation is preliminary and will be moved and restructured.
 
-Inside the `ka-lite` directory (that you cloned above) you should find a script called `setup_unix.sh`. Use `cd ka-lite` to navigate into the directory, and run this script using `./setup_unix.sh` to initialize the server database.
+For command line users with access to PIP, you can install the following versions of KA Lite:
 
-### 5. Run the server
+    pip install ka-lite
 
-(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](https://github.com/learningequality/ka-lite/wiki) instead.)
 
-To start the server, use the `bin/kalite` executable from a command line. For instance, on Linux/Mac:
+Static version
+--------------
 
-    $ bin/kalite start  # Start the server
-    $ bin/kalite stop  # Stop the server
+If you need to run KA Lite with static dependencies bundled and isolated from
+the rest of your environment, you can run:
 
-You may want to have this script run automatically when you start the computer. If you are running Ubuntu or another Debian variant, the setup script
-should have given you the option of setting the server to run automatically in the background when the computer boots. If you skipped this step, you
-can do it later by running `sudo scripts/runatboot.sh` from inside the `ka-lite` root directory.
+    pip install ka-lite-static
 
-Wait for the script to show the following:
 
-    To access KA Lite from another connected computer, try the following address(es):
-        http://<ip address of the computer>:8008/
-        http://127.0.0.1:8008/
+Installing tarballs / zip files with setup.py
+---------------------------------------------
 
-The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
+You can also fetch a tarball directly from PyPi.
 
 
-Installing on Windows
-===
+Developers
+==========
 
-### 1. Install Python
+Developers should consider installing in "editable" mode. That means, create a
+git clone and from the git clone source dir (with setup.py), run:
 
-Install Python (version 2.6 or 2.7), if not already installed ([download Python 2.7](https://www.python.org/download/releases/2.7.6/)). On 32-bit Windows, use the [x86 MSI Installer](https://www.python.org/ftp/python/2.7.6/python-2.7.6.msi), and on 64-bit Windows, use the [X86-64 MSI Installer](https://www.python.org/ftp/python/2.7.6/python-2.7.6.amd64.msi).
-
-You will need Python to be on your system PATH, so that it can be run from the command prompt (cmd.exe); see this video about [adding Python to the PATH](http://www.youtube.com/watch?v=ndNlFy-5GKA&hd=1#t=243s) (note that this is for version 2.7; just adapt the paths for older versions). It may be good to add `;C:\Python27\;C:\Python27\Tools\Scripts` to your path, instead of just `;C:\Python27\` as recommended in the video.
-
-### 2. Install git
-
-Install the latest version of [git for Windows](http://git-scm.com/download/win), using all the default options EXCEPT be sure to choose the "Use Git from the Windows Command Prompt" (middle) option on the "Adjusting your PATH environment" page (KA Lite needs to have git accessible on the PATH for updating purposes).
-
-### 3. Download KA Lite
-
-Clone the repository into a folder of your choice. Load `cmd.exe`, and use `cd` to navigate into the target folder (e.g. to put the files in a folder called `ka-lite` on your Desktop, type `cd Desktop`), and then run:
-
-`git clone --recursive https://github.com/learningequality/ka-lite.git`
-
-If you get the message `'git' is not recognized as an internal or external command, operable program or batch file.`, this means git was not added to your PATH. In this case, you can either uninstall git and then re-follow the [git installation instructions above](#2-install-git-1), or [add the git bin folder to your PATH](http://stackoverflow.com/a/4493004/527280) -- use `C:\Program Files\git\bin` (or maybe `C:\Program Files (x86)\git\bin`) as the path.
-
-(The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
-
-### 4. Run the setup script
-
-Inside the `ka-lite` folder (that you cloned above) you should find a script called `setup_windows.bat`. Double-click this script to run it, which will initialize the server database.
-
-### 5. Run the server
-
-(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](https://github.com/learningequality/ka-lite/wiki) instead.)
-
-To start the server, double-click the `start.bat` script in the `ka-lite` folder.
-
-You may want to have this script run automatically when you start the computer, by creating a shortcut to `start.bat` and [copying it to the Startup folder in the Start Menu](http://windows.microsoft.com/en-US/windows-vista/Run-a-program-automatically-when-Windows-starts) -- the installation script should also have given you the option of having this done automatically.
-
-If at any point you see a "Windows Security Alert" [warning about Windows Firewall blocking Python](kalite/static/images/windows-python-network-permissions.png), be sure to check both checkboxes (as seen in the picture) and click "Allow access", to ensure that the server will be accessible.
-
-Wait for the script to show the following:
-
-    To access KA Lite from another connected computer, try the following address(es):
-        http://<ip address of the computer>:8008/
-        http://127.0.0.1:8008/
-
-The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
-
-If the website is not accessible, make sure you have allowed access for the `﻿C:\python27\python.exe` process at `Control Panel > System and Security > Windows Firewall > Allow a program or feature through Windows Firewall` (this is specific to Windows 7 but there should be a similar Control Panel setting for newer Windows versions or on your preferred firewall app).
-
-
-Installing on Mac OS X
-===
-
-### 1. Install Python
-
-Python comes pre-installed on Mac OS X, but due to Apple's release cycle, it's often one or even two years old. To check that you have got a usable version, run `python -V` from the command line (in Terminal from Applications/Utilities), and ensure that the version number starts with 2.6, or 2.7. If it is not a usable version ([download Python 2.7](https://www.python.org/download/releases/2.7.6/)). On 32-bit or 64-bit non PPC Mac OS X 10.6 or higher, use the [64-bit/32-bit x86-64/i386 Installer](https://www.python.org/ftp/python/2.7.6/python-2.7.6-macosx10.6.dmg), and on PPC or 32-bit i386 Mac OS X 10.3-10.6, use the [32-bit i386/PPC Installer](https://www.python.org/ftp/python/2.7.6/python-2.7.6-macosx10.3.dmg).
-
-
-### 2. Install git
-
-Install the latest version of [Git for OS X](http://git-scm.com/download/mac).
-
-### 3. Download KA Lite
-
-Clone the repository into a directory of your choice. Use `cd` to navigate into the target directory (the files will be put into a subdirectory of your current directory named `ka-lite`), and then run:
-
-`git clone --recursive https://github.com/learningequality/ka-lite.git`
-
-(The `--recursive` is required because it includes [khan-exercises](https://github.com/Khan/khan-exercises) as a git submodule.)
-
-### 4. Run the setup script
-
-Inside the `ka-lite` directory (that you cloned above) you should find a script called `setup_mac.command`. Double-click that script to run it, which will initialize the server database.
-
-### 5. Run the server
-
-(If you're installing the server to test/develop, rather than deploy, follow the [development instructions](https://github.com/learningequality/ka-lite/wiki) instead.)
-
-To start the server, double-click the `start.command` script in the `ka-lite` directory.  Wait for the script to show the following:
-
-    To access KA Lite from another connected computer, try the following address(es):
-        http://<ip address of the computer>:8008/
-        http://127.0.0.1:8008/
-
-The local KA Lite website should now be accessible at [http://127.0.0.1:8008/](http://127.0.0.1:8008/) (replace 127.0.0.1 with your computer's external ip address or domain to access it from another connected computer).
+    pip install -e .
 
 
 Optional: Install and configure Apache/mod_wsgi
-===
+===============================================
 
 KA Lite includes a web server implemented in pure Python for serving the website, capable of handling hundreds of simultaneous users while using very little memory. However, if for some reason you wish to serve the website through Apache and mod_wsgi, here are some [useful Apache setup tips](docs/INSTALL-APACHE.md).
+
