@@ -318,7 +318,11 @@ window.TopicContainerInnerView = BaseView.extend({
             alwaysVisible: true
         });
 
-        $(window).resize();
+        // Ensure these are called once in order to get the right size initially.
+        _.defer( function() {
+            self.window_resize_callback();
+            self.window_scroll_callback();
+        });
 
         return this;
     },
