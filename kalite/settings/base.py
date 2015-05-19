@@ -265,7 +265,7 @@ DATABASES = getattr(local_settings, "DATABASES", {
     }
 })
 
-DATABASE_ROUTERS = ["kalite.main.router.TopicToolsRouter", ]
+DATABASE_ROUTERS = ["kalite.topic_tools.router.TopicToolsRouter", ]
 
 INTERNAL_IPS = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
