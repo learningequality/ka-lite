@@ -220,8 +220,11 @@ def create_superuser(request):
             superusername = request.POST.get('superusername', '')
             superpassword = request.POST.get('superpassword', '')
             superemail = request.POST.get('superemail', '')
-            User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
-            return HttpResponse(status=200)
+            if(len(superusername) < 30 and len(superpassword) < 30 and len(superemail) < 30):
+                User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
+                return HttpResponse(status=200)
+            else:
+                return HttpResponse(status=403)
         else:
             return HttpResponse(status=403)
 
