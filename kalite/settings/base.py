@@ -289,6 +289,7 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "kalite.distributed",
     "compressor",
+    "django_js_reverse",
 )
 
 if not BUILT:
@@ -318,6 +319,10 @@ TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
 
 DEFAULT_ENCODING = 'utf-8'
+
+# Due to a newer version of slimit being installed, allowing this causes an error:
+# https://github.com/ierror/django-js-reverse/issues/29
+JS_REVERSE_JS_MINIFY = False
 
 ########################
 # Storage and caching
