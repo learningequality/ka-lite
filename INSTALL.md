@@ -40,7 +40,7 @@ mainly from the Django ecology. These applications can be installed in two ways:
    *PIP* as a separate software package accessible to your whole system. This
    is recommended if you run KA Lite and have internet access while installing
    and updating.
- - **Static*: Static means that KA Lite is installed with all the external
+ - **Static**: Static means that KA Lite is installed with all the external
    applications bundled in. Use this method if you need to have KA Lite
    installed from offline media or if KA Lite's dependencies are in conflict
    with the system that you install upon.
@@ -52,10 +52,10 @@ Virtualenv
 You can install KA Lite in its very own separate environment that does not
 interfere with other Python software on your machine like this:
 
-    pip install virtualenv virtualenvwrapper
-    mkvirtualenv my-kalite-env
-    workon my-kalite-env
-    pip install ka-lite
+    $> pip install virtualenv virtualenvwrapper
+    $> mkvirtualenv my-kalite-env
+    $> workon my-kalite-env
+    $> pip install ka-lite
 
 
 Installing through PIP or with setup.py
@@ -65,7 +65,7 @@ This documentation is preliminary and will be moved and restructured.
 
 For command line users with access to PIP, you can install the following versions of KA Lite:
 
-    pip install ka-lite
+    $> pip install ka-lite
 
 
 Static version
@@ -74,7 +74,7 @@ Static version
 If you need to run KA Lite with static dependencies bundled and isolated from
 the rest of your environment, you can run:
 
-    pip install ka-lite-static
+    $> pip install ka-lite-static
 
 
 Installing tarballs / zip files with setup.py
@@ -89,7 +89,7 @@ Developers
 Developers should consider installing in "editable" mode. That means, create a
 git clone and from the git clone source dir (with setup.py), run:
 
-    pip install -e .
+    $> pip install -e .
 
 
 Testing installers
