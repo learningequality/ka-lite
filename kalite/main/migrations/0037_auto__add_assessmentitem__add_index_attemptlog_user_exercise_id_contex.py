@@ -1,25 +1,30 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
-from south.db import db
+from south.db import db, dbs
 from south.v2 import SchemaMigration
 from django.db import models
-
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Adding model 'AssessmentItem'
-        db.create_table(u'main_assessmentitem', (
+        dbs["topic_tools"].create_table(u'main_assessmentitem', (
             ('id', self.gf('django.db.models.fields.CharField')(max_length=50, primary_key=True)),
             ('item_data', self.gf('django.db.models.fields.TextField')()),
             ('author_names', self.gf('django.db.models.fields.CharField')(max_length=200)),
         ))
-        db.send_create_signal(u'main', ['AssessmentItem'])
+        dbs["topic_tools"].send_create_signal(u'main', ['AssessmentItem'])
+
+        # Adding index on 'AttemptLog', fields ['user', 'exercise_id', 'context_type']
+        db.create_index(u'main_attemptlog', ['user_id', 'exercise_id', 'context_type'])
+
 
     def backwards(self, orm):
+        # Removing index on 'AttemptLog', fields ['user', 'exercise_id', 'context_type']
+        db.delete_index(u'main_attemptlog', ['user_id', 'exercise_id', 'context_type'])
 
         # Deleting model 'AssessmentItem'
-        db.delete_table(u'main_assessmentitem')
+        dbs["topic_tools"].delete_table(u'main_assessmentitem')
 
 
     models = {

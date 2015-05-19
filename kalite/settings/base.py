@@ -193,6 +193,7 @@ if IS_SOURCE:
     
     # This is the legacy location kalite/database/data.sqlite
     DEFAULT_DATABASE_PATH = os.path.join(_data_path, "kalite", "database", "data.sqlite")
+    TT_DATABASE_PATH = os.path.join(_data_path, "kalite", "database", "topic_tools.sqlite")
 
     MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
     STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
@@ -215,6 +216,12 @@ else:
         os.mkdir(DEFAULT_DATABASE_PATH)
     
     DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'default.sqlite')
+
+    TT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
+    if not os.path.exists(TT_DATABASE_PATH):
+        os.mkdir(TT_DATABASE_PATH)
+
+    TT_DATABASE_PATH = os.path.join(TT_DATABASE_PATH, 'topic_tools.sqlite')
     
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security
@@ -240,7 +247,7 @@ STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
 MEDIA_URL = getattr(local_settings, "MEDIA_URL", "/media/")
 STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
 DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
-
+TT_DATABASE_PATH = getattr(local_settings, "TT_DATABASE_PATH", TT_DATABASE_PATH)
 DATABASES = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
@@ -248,8 +255,17 @@ DATABASES = getattr(local_settings, "DATABASES", {
         "OPTIONS": {
             "timeout": 60,
         },
+    },
+    "topic_tools": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": TT_DATABASE_PATH,
+        "OPTIONS": {
+            "timeout": 60,
+        },
     }
 })
+
+DATABASE_ROUTERS = ["kalite.main.router.TopicToolsRouter", ]
 
 INTERNAL_IPS = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
