@@ -268,6 +268,13 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
                             "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
                             "thumbnail": thumbnail,
                         }
+                    elif settings.BACKUP_VIDEO_SOURCE:
+                        content["available"] = True
+                        content["content_urls"] = {
+                            "stream": settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
+                            "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                            "thumbnail": settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
+                        }
                     else:
                         content["available"] = False
                 else:

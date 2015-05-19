@@ -554,11 +554,13 @@ window.ExercisePracticeView = Backbone.View.extend({
         // once it changes, for updating the "total points" in the nav bar display
         this.status_points = this.log_model.get("points");
 
-        this.progress_view = new ExerciseProgressView({
-            el: this.$(".exercise-progress-wrapper"),
-            model: this.log_model,
-            collection: this.attempt_collection
-        });
+        if ( !window.statusModel.get("is_django_user") ) {
+            this.progress_view = new ExerciseProgressView({
+                el: this.$(".exercise-progress-wrapper"),
+                model: this.log_model,
+                collection: this.attempt_collection
+            });
+        }
 
         this.display_message();
 

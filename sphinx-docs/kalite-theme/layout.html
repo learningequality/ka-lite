@@ -1,0 +1,9 @@
+{% extends "basic/layout.html" %}
+{% block relbaritems %}
+    {{ super() }}
+    <li class="right">
+        <a href="http://github.com/learningequality/ka-lite/blob/{{ theme_git_branch }}/sphinx-docs/{{ pagename }}.rst">
+            View on Github
+        </a>{{ reldelim2 }}
+    </li>
+{% endblock %}

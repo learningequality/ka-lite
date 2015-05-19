@@ -1,11 +1,30 @@
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 MAJOR_VERSION = "0"
 MINOR_VERSION = "13"
-PATCH_VERSION = "1"
+PATCH_VERSION = "2"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
 VERSION_INFO = {
+    "0.13.2": {
+        "release_date": "2015/05/18",
+        "git_commit": "6b9a7ff",
+        "new_features": {
+            "all": [],
+            "students": [],
+            "coaches": [],
+            "admins": [],
+        },
+        "bugs_fixed": {
+            "all": ["Fix a rendering bug in the sidebar."],
+            "students": [],
+            "coaches": [],
+            "admins": ["Fix the FAQ links in the download videos page.",
+                       "Avoid a long loop when invalidating the cache.",
+                       "Hide the streakbar for admins."],
+        },
+
+    },
 
     "0.13.1": {
         "release_date": "2015/04/27",
