@@ -54,18 +54,29 @@ class Content(models.Model):
         _annotations = {}
         default_thumbnail = create_thumbnail_url(content.get("id"))
         dubmap = i18n.get_id2oklang_map(content.get("id"))
+        try:
+            contents_folder = os.listdir(settings.CONTENT_ROOT)
+        except OSError:
+            contents_folder = []
         if dubmap:
             content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
             if content_lang:
                 dubbed_id = dubmap.get(content_lang)
                 format = content.get("format", "")
-                if is_content_on_disk(dubbed_id, format):
+                if (dubbed_id + "." + format) in contents_folder:
                     _annotations["available"] = True
                     thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
                     _annotations["content_urls"] = {
                         "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
                         "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
                         "thumbnail": thumbnail,
+                    }
+                elif settings.BACKUP_VIDEO_SOURCE:
+                    _annotations["available"] = True
+                    _annotations["content_urls"] = {
+                        "stream": settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
+                        "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                        "thumbnail": settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
                     }
                 else:
                     _annotations["available"] = False
@@ -74,15 +85,27 @@ class Content(models.Model):
         else:
             _annotations["available"] = False
 
+        subtitle_langs = {}
+        if os.path.exists(i18n.get_srt_path()):
+            for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
+                # Only both looking at files that are inside a 'subtitles' directory
+                if dirpath.split("/")[-1] == "subtitles":
+                    lc = dirpath.split("/")[-2]
+                    for filename in filenames:
+                        if filename in subtitle_langs:
+                            subtitle_langs[filename].append(lc)
+                        else:
+                            subtitle_langs[filename] = [lc]
+
         # Get list of subtitle language codes currently available
-        subtitle_lang_codes = [] if not os.path.exists(i18n.get_srt_path()) else [lc for lc in os.listdir(i18n.get_srt_path()) if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+        subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.get("id")), [])
 
         # Generate subtitle URLs for any subtitles that do exist for this content item
         subtitle_urls = [{
             "code": lc,
             "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
             "name": i18n.get_language_name(lc)
-            } for lc in subtitle_lang_codes if os.path.exists(i18n.get_srt_path(lc, content.get("id")))]
+            } for lc in subtitle_lang_codes]
 
         # Sort all subtitle URLs by language code
         _annotations["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
@@ -93,6 +116,7 @@ class Content(models.Model):
             _annotations["description"] = _(content.get("description")) if content.get("description") else ""
 
         return _annotations
+
 
 class AssessmentItem(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
