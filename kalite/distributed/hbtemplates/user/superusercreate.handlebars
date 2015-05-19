@@ -1,0 +1,20 @@
+<div class="login">
+    <div class="panel panel-default">
+        <div class="panel-body text-center">
+            <p style="color:white;">{{_  "A super user is required for you to manage all your activities!" }}</p>
+            </br>
+            <form class="form-horizontal" id="superusercreate-box" onsubmit="return validateSuperuserForm()" method="post">
+              <label class="sr-only control-label h3" for="super_username">{{_ "Username" }}</label>
+              <input type="text" class="form-control input-lg" id="super_username" name="superusername" placeholder="Username" required>
+              </br>
+              <label class="sr-only control-label h3" for="super_password">{{_ "Password" }}</label>
+              <input type="password" class="form-control input-lg" id="super_password" name="superpassword" placeholder="Password" required>
+              </br>
+              <label class="sr-only control-label h3" for="super_email">{{_ "E-mail" }}</label>
+              <input type="text" class="form-control input-lg" id="super_email" name="superemail" placeholder="E-mail" required>
+              </br>
+            </form>
+          <button class="create-btn btn btn-lg btn-primary" type="submit">{{_ "Create" }}</button>
+        </div>
+    </div>
+</div>

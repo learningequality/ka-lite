@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -212,6 +212,18 @@ def search(request):
         'max_results': max_results_per_category,
         'category': category,
     }
+
+def create_superuser(request):
+    if request.method == 'POST':
+        if(request.POST.get('superusername', '') and request.POST.get('superpassword', '') 
+            and request.POST.get('superemail', '') and '@' in request.POST['superemail']): 
+            superusername = request.POST.get('superusername', '')
+            superpassword = request.POST.get('superpassword', '')
+            superemail = request.POST.get('superemail', '')
+            User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=403)
 
 def crypto_login(request):
     """

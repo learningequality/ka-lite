@@ -1,6 +1,126 @@
 // Separate out the modal behaviour from the login functionality
 // This allows the LoginView to be embedded more flexibly across the site if needed
 
+window.SuperUserCreateModalView = BaseView.extend({
+    template: HB.template("user/superusercreatemodal"),
+
+    initialize: function() {
+        _.bindAll(this);
+        this.render();
+        $("body").append(this.el);
+    },
+
+    render: function() {
+        this.$el.html(this.template());
+        _.defer(this.addSuperUserForm);
+    },
+
+    addSuperUserForm: function() {
+        this.show_modal();
+        if (this.superuserView) {
+            this.superuserView.render();
+        } else {
+            this.superuserView = new SuperUserCreateView({model: this.model, el: "#superusercreate-container"});
+            this.listenTo(this.superuserView, "superusercreate_success", this.close_modal);
+        }
+    },
+
+    close_modal: function() {
+        $("#superUserCreateModal").modal('hide');
+    },
+
+    show_modal: function() {
+        $("#superUserCreateModal").modal('show');
+    }
+});
+
+window.SuperUserCreateView = BaseView.extend({
+
+    events: {
+        "click .create-btn": "create_superuser_click",
+        "keypress #super_username": "key_user",
+        "keypress #super_password": "key_pass",
+        "keypress #super_email": "key_email"
+    },
+
+    template: HB.template("user/superusercreate"),
+
+    initialize: function() {
+        _.bindAll(this);
+        this.admin = false;
+        this.render();
+    },
+
+    render: function() {
+        this.$el.html(this.template());
+    },
+
+    create_superuser_click: function() {
+        if (this.validateForm()){
+            $.ajax({
+                context: this,
+                url: 'create_superuser_from_browser/',
+                type: 'POST',
+                data: $("#superusercreate-box").serialize(),
+                success: function(data, textStatus, xhr)
+                {
+                    this.trigger("superusercreate_success")
+                },
+            });
+        }
+    },
+
+    validateForm: function(){
+        var valid1, valid2, valid2, valid3 = false;
+        if (this.$("#super_username").val()){
+            this.$("#super_username").css({ 'borderColor': 'green', 'border-width': '3px'});
+            valid1 = true;
+        }else{
+            this.$("#super_username").css({ 'borderColor': 'red', 'border-width': '3px'});
+        }
+        if (this.$("#super_password").val()){
+            this.$("#super_password").css({ 'borderColor': 'green', 'border-width': '3px'});
+            valid2 = true;
+        }else{
+            this.$("#super_password").css({ 'borderColor': 'red', 'border-width': '3px'});
+        }
+        if (this.validateEmail(this.$("#super_email").val())){
+            this.$("#super_email").css({ 'borderColor': 'green', 'border-width': '3px'});
+            valid3 = true;
+        }else{
+            this.$("#super_email").css({ 'borderColor': 'red', 'border-width': '3px'});
+        }
+        if (valid1 && valid2 && valid3){
+            return true;
+        }else{
+            return false;
+        }
+    },
+
+    validateEmail: function(email){
+        var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+        return re.test(email);
+    },
+
+    key_user: function(event) {
+        if (event.which == 13) {
+            this.$("#super_password").focus().select();
+        }
+    },
+
+    key_pass: function(event) {
+        if (event.which == 13) {
+            this.$("#super_email").focus().select();
+        }
+    },
+
+    key_email: function(event) {
+        if (event.which == 13) {
+            this.create_superuser_click();
+        }
+    }
+});
+
 window.LoginModalView = BaseView.extend({
     template: HB.template("user/loginmodal"),
 
