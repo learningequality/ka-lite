@@ -28,7 +28,7 @@ window.AutoCompleteView = BaseView.extend({
     fetch_topic_tree: function () {
         var self = this;
         if (this._nodes===undefined) {
-            doRequest(window.Urls.topic_tree(window.sessionModel.get("channel")), null, {
+            doRequest(window.Urls.topic_tree(window.sessionModel.get("CHANNEL")), null, {
                 cache: true,
                 dataType: "json",
                 ifModified: true
