@@ -1,14 +1,33 @@
-Installation overview
-=====================
+Installation overview - Source distribution
+===========================================
 
-Since KA Lite 0.14, we are no longer supporting the previous method of installing via git clone.
+The "source distribution" of KA Lite does NOT involve compiling anything (since
+it's pure Python). You can install it very easily.
+
+**NB! Since KA Lite 0.14, we are no longer supporting the previous method of
+installing via git clone.**
 
 Each stable release ships with an installer for Windows, Mac, and Debian/Ubuntu.
 Please refer to the [Installation Guide](https://learningequality.org/docs/installguide/install_main.html)
 
 If you are able to use pip and install conventional python packages from an
 online source, then the quickest option to install the latest stable release
-of KA Lite is `pip install kalite`.
+of KA Lite is `pip install ka-lite` or `pip install ka-lite-static`.
+
+
+Uninstalling
+------------
+
+You can remove KA Lite (when installed from pip or source distribution) with
+`pip uninstall ka-lite` or `pip uninstall ka-lite-static` (static version).
+
+
+Removing user data
+------------------
+
+Downloaded videos and database files are in `~/.kalite`. So navigate to the
+home directory of the user who used KA Lite and remove that directory to
+potentially reclaim lots of hard drive space.
 
 
 Static vs. Dynamic version
@@ -71,6 +90,30 @@ Developers should consider installing in "editable" mode. That means, create a
 git clone and from the git clone source dir (with setup.py), run:
 
     pip install -e .
+
+
+Testing installers
+------------------
+
+Full range of installation testing possibilities:
+
+ - Straight up setuptools test: `python setup.py install`
+ - Straight up setuptools test, static: `python setup.py install --static`
+ - Straight up pip test: `pip install .`
+ - Straight up pip test, static: N/A, the `--static` option can't be passed through pip.
+ - Dynamic tarball testing: `python setup.py sdist --static` + `pip install dist/ka-lite-XXXX.tar.gz`.
+   Removal: `pip remove ka-lite`.
+ - Static tarball testing: `python setup.py sdist --static` + `pip install dist/ka-lite-static-XXXX.tar.gz`
+   Removal: `pip remove ka-lite-static`.
+
+Those testing scenarios should be sufficient, but there may be small differences
+encountered that we need to look at once in a while with
+`pip install -e` (editable mode) or unzipping a source "ka-lite.XXX.zip" and
+run setup.py with setuptools instead of through pip.
+
+**Using `pip install` and `--static`**: Is not possible, so you cannot install
+the static version in "editable" mode. This is because pip commands do not
+pass our user-defined options to setup.py.
 
 
 Optional: Install and configure Apache/mod_wsgi
