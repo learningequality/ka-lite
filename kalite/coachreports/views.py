@@ -162,7 +162,7 @@ def landing_page(request, facility):
 def tabular_view(request, facility, report_type="exercise"):
     """Tabular view also gets data server-side."""
     # Define how students are ordered--used to be as efficient as possible.
-    student_ordering = ["first_name", "last_name", "username"]
+    student_ordering = ["last_name", "first_name", "username"]
 
     # Get a list of topics (sorted) and groups
     topics = [get_node_cache("Topic").get(tid["id"]) for tid in get_knowledgemap_topics()]
@@ -272,7 +272,7 @@ def tabular_view(request, facility, report_type="exercise"):
 @render_to("coachreports/exercise_mastery_view.html")
 def exercise_mastery_view(request, facility):
 
-    student_ordering = ["first_name", "last_name", "username"]
+    student_ordering = ["last_name", "first_name", "username"]
 
     playlists = Playlist.all()
     context = plotting_metadata_context(request, facility=facility)
