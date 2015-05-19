@@ -313,7 +313,8 @@ class Command(BaseCommand):
             admin.save()
 
         # Now deploy the static files
-        call_command("collectstatic", interactive=False)
+        logging.info("Copying static media...")
+        call_command("collectstatic", interactive=False, verbosity=0)
 
         # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
