@@ -70,6 +70,9 @@ window.ButtonView = Backbone.View.extend({
                     newkey = "position";
                     newvalue = value;
                 }
+                else if (key === "before-showing") {
+                    //TO DO: user actions to taken before showing modal
+                }
                 step[newkey] = value;
             });
             steps.push(step);
@@ -82,14 +85,20 @@ window.ButtonView = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template());
-        $("body").append(this.el);
+        // $("body").append(this.el);
+        $("#inline-btn-container").append(this.el);
     }
 });
 
 // Only load button and narrative if there is one defined for page
 $(function() {
-    if (window.NARRATIVE_ID) { 
-        var narrative = new NarrativeModel({id: NARRATIVE_ID}); 
-        var buttonView = new ButtonView( {model: narrative} );
-    }
+    // if (window.NARRATIVE_ID) { 
+    //     var narrative = new NarrativeModel({id: window.location.pathname}); 
+    //     var buttonView = new ButtonView( {model: narrative} );
+    // }
+
+    var narrative = new NarrativeModel ({id: window.location.pathname});
+
+
+
 });
