@@ -17,7 +17,7 @@ def load_yaml(file_name):
     Returns:
         A dictionary structure that reflects the yaml structure.
     """
-    
+
     # Has to be imported here as version.py is a dependency of setup.py which
     # may be run before dependencies are installed
     import yaml
