@@ -216,6 +216,29 @@ var eventData = {
         ]
     }   
 ]};
+
+var DetailPanelInlineRowView = BaseView.extend({
+
+    tagName: 'tr',
+
+    className: 'details-row',
+
+    initialize: function(options) {
+        this.contents_length = options.contents_length;
+        this.content_item = options.content_item;
+        this.render();
+    },
+
+    render: function() {
+        this.detail_view = new detailsPanelView({
+            tagName: 'td',
+            model: this.model,
+            content_item: this.content_item,
+            attributes: {colspan: this.contents_length + 1}
+        });
+        this.$el.append(this.detail_view.el);
+    }
+})
         
 var detailsPanelView = BaseView.extend({
     
@@ -275,7 +298,9 @@ var TabularReportView = BaseView.extend({
         }));
         var row_views = [];
         for (var i = 0; i < this.learners.length; i++) {
-            row_views.push(this.add_subview(TabularReportRowView, {model: this.learners.at(i), contents: this.contents}));
+            var row_view = this.add_subview(TabularReportRowView, {model: this.learners.at(i), contents: this.contents})
+            row_views.push(row_view);
+            this.listenTo(row_view, "detail_view", this.set_detail_view);
         }
         this.append_views(row_views, ".student-data");
     },
@@ -300,6 +325,15 @@ var TabularReportView = BaseView.extend({
                 }
                 self.render();
             });
+        }
+    },
+
+    set_detail_view: function(detail_view) {
+        if (this.detail_view) {
+            this.detail_view.remove();
+        }
+        if (detail_view) {
+            this.detail_view = detail_view;
         }
     }
 
@@ -329,6 +363,30 @@ var TabularReportRowView = BaseView.extend({
             this.listenTo(new_view, "detail_view", this.show_detail_view);
         }
         this.append_views(cell_views);
+    },
+
+    show_detail_view: function(model) {
+        if (this.detail_view) {
+            // TODO (rtibbles): Implement Models properly here to reflect server side id attributes
+            if (this.detail_view.model.cid === model.cid) {
+                delete this.detail_view;
+                this.trigger("detail_view");
+                return false
+            }
+            this.detail_view.remove();
+        }
+
+
+        var model_id = model.get("exercise_id") || model.get("video_id") || model.get("content_id");
+        this.detail_view = new DetailPanelInlineRowView({
+            model: model,
+            contents_length: this.contents.length,
+            content_item: this.contents.find(function(item) {return item.get("id") === model_id;})
+        });
+        this.$el.after(this.detail_view.el);
+
+        this.trigger("detail_view", this.detail_view);
+
     }
 
 });
@@ -336,6 +394,10 @@ var TabularReportRowView = BaseView.extend({
 var TabularReportRowCellView = BaseView.extend({
 
     tagName: 'td',
+
+    events: {
+        "click": "show_detail_view"
+    },
 
     status_class: function() {
         var status_class = "partial";
@@ -371,6 +433,14 @@ var TabularReportRowCellView = BaseView.extend({
     render: function() {
         if (this.model.has("streak_progress")) {
             this.$el.html(this.model.get("streak_progress") + "%");
+        }
+    },
+
+    show_detail_view: function() {
+        if (_.isEmpty(this.model.attributes)) {
+            return false;
+        } else {
+            this.trigger("detail_view", this.model);
         }
     }
 });

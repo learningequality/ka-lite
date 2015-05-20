@@ -2,6 +2,10 @@
     margin-bottom: 50px;
 }
 
+.table.details-table {
+    width: inherit;
+}
+
 .coach-reports-row {
     border-bottom: 3px solid #5AA685;
     padding: 20px 0;

@@ -1,3 +1,8 @@
+<div>
+    <h4>{{ itemdata.title }}</h4>
+</div>
+
+{{#ifcond itemdata.kind "===" "Exercise"}}
 <div class="body"></div>
 
 <nav>
@@ -9,3 +14,10 @@
 		<li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
 	</ul>
 </nav>
+{{else}}
+<div class="well">
+    <p>{{_ "Description" }}: {{ itemdata.description }}</p>
+    <p>{{_ "Points Earned" }}: {{ model.points }}</p>
+    {{#if model.progress }}<p>{{_ "Progress" }}: {{ model.progress }}</p>{{/if}}
+</div>
+{{/ifcond}}
