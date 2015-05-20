@@ -19,7 +19,6 @@ var CoachReportView = BaseView.extend({
     }
 });
 
-
 var eventData = { 
     page: 1,
     totalPages: 2,
@@ -271,9 +270,14 @@ var TabularReportView = BaseView.extend({
 
     render: function() {
         this.$el.html(this.template({
-            learners: this.learners.toJSON(),
-            contents: this.contents.toJSON()
+            contents: this.contents.toJSON(),
+            learners: this.contents.length
         }));
+        var row_views = [];
+        for (var i = 0; i < this.learners.length; i++) {
+            row_views.push(this.add_subview(TabularReportRowView, {model: this.learners.at(i), contents: this.contents}));
+        }
+        this.append_views(row_views, ".student-data");
     },
 
     set_data_model: function (){
@@ -299,6 +303,76 @@ var TabularReportView = BaseView.extend({
         }
     }
 
+});
+
+var TabularReportRowView = BaseView.extend({
+
+    template: HB.template("tabular_reports/tabular-view-row"),
+
+    tagName: 'tr',
+
+    initialize: function(options) {
+        _.bindAll(this);
+
+        this.contents = options.contents;
+        this.render();
+    },
+
+    render: function() {
+        this.$el.html(this.template(this.model.attributes));
+
+        var cell_views = [];
+        for (var i = 0; i < this.contents.length; i++) {
+            var data = this.model.get("logs")[this.contents.at(i).get("id")];
+            var new_view = this.add_subview(TabularReportRowCellView, {model: new Backbone.Model(data)});
+            cell_views.push(new_view);
+            this.listenTo(new_view, "detail_view", this.show_detail_view);
+        }
+        this.append_views(cell_views);
+    }
+
+});
+
+var TabularReportRowCellView = BaseView.extend({
+
+    tagName: 'td',
+
+    status_class: function() {
+        var status_class = "partial";
+        if (_.isEmpty(this.model.attributes)) {
+            status_class = "not-attempted";
+        } else if (this.model.get("complete")) {
+            status_class = "complete";
+        } else if (this.model.get("struggling")) {
+            status_class = "struggling";
+        }
+        return status_class;
+    },
+
+    className: function() {
+        return sprintf("status data %s", this.status_class());
+    },
+
+    title_attributes: {
+        "not-attempted": gettext("Not Attempted"),
+        "partial": gettext("Attempted"),
+        "complete": gettext("Complete"),
+        "struggling": gettext("Struggling")
+    },
+
+    attributes: function() {
+        return {title: this.title_attributes[this.status_class()]};
+    },
+
+    initialize: function() {
+        this.render();
+    },
+
+    render: function() {
+        if (this.model.has("streak_progress")) {
+            this.$el.html(this.model.get("streak_progress") + "%");
+        }
+    }
 });
 
 var FacilitySelectView = Backbone.View.extend({

@@ -13,7 +13,7 @@
 			<div id="displaygrid">
 				<div class="users-table">
 					<table class="table table-bordered">
-						<tbody>
+						<thead>
 							<tr>
 								<th class="headrowuser">
 									{{_ "Learner"}}
@@ -26,39 +26,9 @@
 									{{/each}}
 								</th>
 							</tr>
-							<!-- for loop area for students -->
-							{{#each learners}}
-								<tr>
-									<th class="username">
-										<span title="{{ first_name }} {{last_name}}({{ username }})">
-											<div class="student-name">
-												<a href="{{ url_student_view }}?user={{ id }}">{{#ifcond first_name "||" last_name }}{{ first_name }} {{last_name}}{{else}}{{username}}{{/ifcond}}</a>
-											</div>
-										</span>
-									</th>	
-									<!--second for loop for content-->
-									{{#each ../contents}}
-									 	{{#withItem ../logs key=this.id}}
-											{{#unless this}}
-					                            <td class="status data" title="{{_ "Not Attempted" }}">
-
-						                        {{ else }}
-							                        {{#if this.complete }}
-							                            <td class="status data complete" title="{{_ "Complete" }}">
-							                        	{{ else }}
-                                                        {{#if this.struggling }}
-                                                            <td class="status data struggle" title="{{_ "Struggling" }}">
-                                                        {{ else }}
-                                                            <td class="status data partial" title="{{_ "Attempted" }}">
-                                                        {{/if}}
-							                        {{/if}}
-						                    {{/unless}}
-                                            </td>
-					                    {{/withItem}}
-									{{/each}} <!-- end inner for loop for exercises -->
-								</tr>
-							{{/each}} <!-- end outer for loop for students-->
-						</tbody>
+						</thead>
+                        <tbody class="student-data">
+                        </tbody>
 					</table>
 					<div style="clear: both;">
 					</div>
