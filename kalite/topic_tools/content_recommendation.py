@@ -1,62 +1,19 @@
 '''
 All logic for generating and retriving content recommendations.
 Three main functions:
-    - get_resume_recommendations()
-    - get_next_recommendations()
-    - get_explore_recommendations()
+    - get_resume_recommendations(user)
+    - get_next_recommendations(user)
+    - get_explore_recommendations(user)
 '''
-
-from kalite.topic_tools import * 
-from kalite.main.models import ExerciseLog 
+import random
 import kalite.facility
+from kalite.topic_tools import * 
 from kalite.facility.models import FacilityUser
-'''
-###
-# The KING function for content recommendation. Call this single function for all 
-# of your content recommendation needs (i.e. in the API call).
-#
-# @param user: the unique facility user model of the current user
-# @param current_subtopic: optional latest subtopic id that the user has worked on/completed. This
-#                          will act as a starting point for some of the algorithms (nearest neighbor, etc.)
-#
-# @return: Still deciding on this, but I assume that it will be a dictionary in the 
-#          form: { 'next_steps':[ ... ], 'explore':[ ... ], etc. } 
-###
-def get_recommendations(user=None, current_subtopic=None):
-
-    #the recommendations to return
-    result = {
-        "resume":{},        #not yet completed exercises, but have been started
-        "next_steps":{},    #things user is struggling on, next relevant items
-        "explore":{}        #less relevant exercises, for exploration
-    }
-
-    #preliminary user check
-    if not user:
-        #return 'Whoa there buddy, you did not specify a user!'
-        user = 'Yamira Jones (Facility: Wilson Elementary (#1829))'
+from kalite.main.models import ExerciseLog , VideoLog
 
 
-    #some initial data used in multiple areas
-    current_subtopic = get_most_recent_subtopic(user)
-
-    #get user exercise log
-    #print ExerciseLog.objects.filter(user='Yamira Jones')
 
 
-    ############### RESUME #############################
-    result['resume'] = get_resume_recommendations(user)
-
-
-    ############### NEXT STEPS ######################### Use current ordering of get_recommended_exercises()
-    result['next_steps'] = get_next_recommendations(user)
-
-
-    ############### EXPLORE ############################ Use middle->end get_recommended_exercises();
-    result['explore'] = get_explore_recommendations(current_subtopic)
-
-    return result
-'''
 
 ########################################## 'RESUME' LOGIC #################################################
 
@@ -64,20 +21,26 @@ def get_recommendations(user=None, current_subtopic=None):
 # Returns a list of all started but NOT completed exercises
 #
 # @param user: facility user model
-# @return: a list of exercise id's that are not completed but have been started.
+# @return: The most recent video/exercise that has been started but NOT completed
 ###
 def get_resume_recommendations(user):
-    #logic for where user left off
-    current_exercises = get_most_recent_incomplete_exercises(user)[:5]    #5 most recent exercises (in-progress ones)
-    return current_exercises
+    #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after
+    table = get_exercise_parents_lookup_table()
+    # ! first pass returns only be the most recent vid/exercise !
+    final = get_most_recent_incomplete_item(user)
+    
+    #add some more data with help of lookup table (if possible)
+    if final['id'] in table:
+        final['title'] = table[ final['id'] ]['title']
+        final['subtopic_title'] = table[ final['id'] ]['subtopic_title']
+
+    return [final] #for first pass, just return the most recent exercise/video
 
 
 
 
 ####################################### 'NEXT STEPS' LOGIC ################################################
-''' TODO working on this: 
-    - WORKING ON THE GROUP ESTIMATION PART (get_group_recommendations))
-'''
+
 ###
 # Returns a list of exercises to go to next. Influenced by other user patterns in the same group as well
 # as the user's struggling pattern shown in the exercise log.
@@ -89,25 +52,59 @@ def get_resume_recommendations(user):
 # - Topic tree structure recommendations based on the most recent subtopic accessed
 #
 # @param user: facility user model
-#        current_subtopics: subtopic ids of the 5 most recently accessed exercise
-# @return: a list of exercise id's of where the user should consider going next.
+#        
+# @return: a list of exercise id's and their titles, [type], and subtopic for where the user 
+#          should consider going next.
 ###
 def get_next_recommendations(user):
 
+    #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after    
+
+    exercise_parents_table = get_exercise_parents_lookup_table()
+
+    most_recent = get_most_recent_exercises(user)
+
+    if len(most_recent) > 0 and most_recent[0] in exercise_parents_table:
+        current_subtopic = exercise_parents_table[most_recent[0]]['subtopic_id']
+    else:
+        current_subtopic = None
+
     #logic for recommendations based off of the topic tree structure
-    current_subtopic = get_most_recent_subtopic(user)                   #the most recent subtopic id accessed by user
-    topic_tree_based_data = get_recommended_exercises(current_subtopic)
-   
+    topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:3]
+    topic_tree_based_data = get_exercises_from_topics(topic_tree_based_data)
+    
+    #for checking that only exercises that have not been accessed are returned
+    check = [] 
+    for ex in topic_tree_based_data:
+        if not ex in most_recent:
+            check.append(ex)
+
+    topic_tree_based_data = check
 
     #logic to generate recommendations based on exercises student is struggling with
-    struggling = get_exercise_prereqs(get_struggling_exercises(user))
-
+    struggling = get_exercise_prereqs(get_struggling_exercises(user))   
 
     #logic to get recommendations based on group patterns, if applicable
     group = get_group_recommendations(user)
 
-    #final recommendations are a combination of current, struggling, group filtering, and topic_tree filtering
-    return group + struggling + topic_tree_based_data[:10]
+   
+    #now append titles and other metadata to each exercise id
+    final = [] # final data to return
+    for exercise in (group[:2] + struggling[:2] + topic_tree_based_data[:1]):  #notice the concatenation
+
+        if exercise in exercise_parents_table:
+            final.append( {
+                    exercise:   {'kind':exercise_parents_table[exercise]['kind'],
+                                  'lesson_title':exercise_parents_table[exercise]['title'],
+                                  'subtopic_title':exercise_parents_table[exercise]['subtopic_title'],
+                                  'subtopic_id':exercise_parents_table[exercise]['subtopic_id']
+                                } 
+                            } 
+                        )
+
+
+    #final recommendations are a combination of struggling, group filtering, and topic_tree filtering
+    return final
 
 
 
@@ -116,50 +113,64 @@ def get_next_recommendations(user):
 # in the same user group - also ordered by empirical count (more people moving onto this -> higher in the
 # list). "Immediately" means the very next exercise after the most recent one the given user has accessed.
 #
+# This function checks if the exercises returned have been accessed already, and only returns those that
+# have not been.
+#
 # A group is defined as a collection of students within the same facility and group (as defined in models)
 def get_group_recommendations(user):
-    user = ExerciseLog.objects.filter(id__lte=1)[0].user        #random person, can delete after                                  
-    most_recent_exercise = get_most_recent_exercises(user)[0]   #get most recently accessed exercise
+    
+    recent_excercises = get_most_recent_exercises(user)         #all exercises
+   
+    most_recent_exercise = recent_excercises[0]                 #get most recently accessed exercise
+
     user_list = get_users_in_group('Student', user.group, user.facility) #may need to debug
     
-    counts = [{'temp':0}]  #array of dictionaries to keep track of counts of subsequent exercises
+    counts = []  #array of dictionaries to keep track of counts of subsequent exercises, in form: {'exercise':'id', 'count':0}
 
-    '''     NEEDS DEBUGGING     '''
+    '''     NEEDS MORE TESTING WITH DATA     '''
     for student in user_list:
         student_exercises = get_most_recent_exercises(student)
-        
+
         #if this student has taken/attempted this exercise
-        if most_recent_exercise in student_exercises and len(student_exercises) > 0:
+        if most_recent_exercise in student_exercises and len(student_exercises) > 1:
             next = student_exercises[0] #start at the most recent one - this will act like a prev pointer
 
             #loop through all exercises, keeping track of previous 
             for exercise in student_exercises:
-              
-                #a match, and not the first one (which would imply that there is no next)
+    
+                #a match to note, and not the first one (which would imply that there is no next)
                 if(exercise == most_recent_exercise and exercise != next):
-                    
+
                     found = False #boolean flag
                     
                     for c in counts:
-                        #if a match
-                        if next.exercise_id in c:
-                            c[next.exercise_id] += 1
-                            found = True
+
+                        #if user has not already attempted this exercise, add it to list!
+                        if not next in recent_excercises:
+
+                            #if a match in counts (exists already)
+                            if next == c['exercise']:
+                                c['count'] += 1
+                                found = True
 
                     #if exercise not found, then make a new object with it with count = 1 
-                    if not found:
-                        counts.append({next.exercise_id : 1})
+                    if not found and not next in recent_excercises:
+                        
+                        counts.append({ "exercise": next, "count":1 })
 
-                    #break #stops inner for loop logic
 
                 next = exercise
 
 
-        ''' NOW NEED TO ORDER COUNTS FROM HIGHEST TO LOWEST '''
-        ''' THEN SIMPLY RETURN THE EXERCISE IDS FROM HIGHEST TO LOWEST '''
-        
+    #sort the results in order of highest counts to smallest
+    sorted_counts = sorted(counts, key=lambda k:k['count'], reverse=False)
     
-    return []
+    group_rec = []  #the final list of recommendations to return, WITHOUT counts
+
+    for c in sorted_counts:
+        group_rec.append(c['exercise'])
+
+    return group_rec
 
 
 
@@ -168,8 +179,8 @@ def get_group_recommendations(user):
 # This amounts to returning only those exercises that have their "struggling" attribute set
 # to True. The exercise ids are also in order of most recent first. 
 def get_struggling_exercises(user):
+    
     exercises_by_user = ExerciseLog.objects.filter(user=user)
-    exercises_by_user = ExerciseLog.objects.filter(id__lte=1)   #temp, delete after
 
     #sort exercises first, in order of most recent first
     exercises_by_user = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
@@ -194,56 +205,155 @@ def get_exercise_prereqs(exercises):
     return prereqs
     
 
+
+
 ########################################## 'EXPLORE' LOGIC ################################################
 
 ###
-# Returns a list of exercises that the user has not explored yet.
+# Returns a list of subtopic ids that the user has not explored yet. 
 #
-# @param: subtopic_id: the subtopic id of the most recent subtopic that the user has engaged in (possibly 
-#         averaged).
+# @param: user - the facility user model corresponding to the current user
+#
 # @return: a list of exercise id's of the 'middle to farthest neighbors,' or less immediately relevant
 #           exercises based on topic tree structure.
 ###
-def get_explore_recommendations(subtopic_id):
-    data = generate_recommendation_data()[subtopic_id]['related_subtopics']
+def get_explore_recommendations(user):
+
+    ''' 
+        Logic: grab 3 random exercises from recent exercises, get their subtopic ids, then using
+        generate_recommendation_data(), get the elements at position 1 and 2 (nearest). return these
+
+    '''
+
+    #user = ExerciseLog.objects.filter(id__lte=1)[4].user            #random person, can delete after   
+
+    data = generate_recommendation_data()                           #topic tree alg
+    exercise_parents_table = get_exercise_parents_lookup_table()    #for finding out subtopic ids
+    recent_exercises = get_most_recent_exercises(user)              #most recent ex
+
+    #simply getting a list of subtopics accessed by user
+    recent_subtopics = []
+    for ex in recent_exercises:
+        if not exercise_parents_table[ex]['subtopic_id'] in recent_subtopics:
+            recent_subtopics.append(exercise_parents_table[ex]['subtopic_id'])
+
+    #choose sample number, up to three
+    if len(recent_exercises) > 0:
+        sampleNum = 1 #must be at least 1
+
+        if len(recent_exercises) > 1:
+            sumpleNum = 2
+
+            if len(recent_exercises) > 2:
+                sampleNum = 3
+
+    else:
+        sampleNum = 0 #user has not attempted any
     
-    data = data[(len(data)/2):]                     #only look at middle to furthest neighbors
-   
-    ''' Need to add some more analysis to ensure that the user has not done these exercises yet'''
+    random_exercises = random.sample(recent_exercises, sampleNum)   #grab the valid/appropriate number of exs, up to 3
+    added = []                                                      #keep track of what has been added (below)
+    final = []                                                      #final recommendations to return
+    
+    for ex in random_exercises:
+        exercise_data = exercise_parents_table[ex]
+        subtopic_id = exercise_data['subtopic_id']                      #subtopic_id of current
+        related_subtopics = data[subtopic_id]['related_subtopics'][2:5] #get recommendations based on this, can tweak numbers!
 
-    return get_exercises_from_topics(data)
+        recommended_topics = []                                         #the recommended topics
+    
+        for subtopic in related_subtopics:
+            curr = get_subtopic_data(subtopic)
+
+            if not curr['id'] in recent_subtopics:                      #check for an unaccessed recommendation
+                recommended_topics.append(curr)                         #add to return
+                                                                                             
+        #dictionary to add to the final list
+        to_append = {   "accessed": exercise_data['subtopic_title'], 
+                        "recommended_topics": recommended_topics
+                    }
+    
+        #if valid (i.e. not a repeat and also some recommendations)
+        if (not exercise_data['subtopic_id'] in added) and (len(to_append['recommended_topics']) > 0):   
+            final.append(to_append)                                     #valid, so append
+            added.append(exercise_data['subtopic_id'])                  #make note
+
+
+    return final
 
 
 
 
+#given a subtopic id, return corresponding data: the subtopic title, ... (right now only the title + id)
+def get_subtopic_data(subtopic_id):
 
+    ### topic tree for traversal###
+    tree = generate_topic_tree()
 
+    for topic in tree['children']:
+        for subtopic in topic['children']:
+            
+            #a match!!
+            if subtopic['id'] == subtopic_id:
+
+                return { "title":subtopic['title'], "id":subtopic_id }
+
+    return [] #ideally should never get here
 
 
 
 ##################################### GENERAL HELPER FUNCTIONS ############################################
 
-''' TODO '''
-# Returns the most recent subtopic id that the given user has started and/or completed.
-def get_most_recent_subtopic(user):
-    return 'early-math' #dummy return
+
+#returns a dictionary of exercises with their metadata.
+#subtopics are the immediate parents (ex: early-math, biology) and topics are one more level above (math)
+def get_exercise_parents_lookup_table():
+
+    ### topic tree for traversal###
+    tree = generate_topic_tree()
+
+    #create a lookup table from traversing the tree - can cache if needed, but is decently fast if TOPICS exists
+    exercise_parents_table = {}
+
+    #3 possible layers
+    for topic in tree['children']:
+        for subtopic in topic['children']:
+            for ex in subtopic['children']:
+
+                exercise_parents_table[ ex['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
+                    "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex['kind'], "title":ex['title']}
+
+                if 'children' in ex: #if there is another layer of children
+
+                    for ex2 in ex['children']:
+
+                        exercise_parents_table[ ex2['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
+                        "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex2['kind'],"title":ex['title']}
+
+                        #if there is yet another level
+                        if 'children' in ex2:
+
+                            for ex3 in ex2['children']:
+                                exercise_parents_table[ ex3['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
+                                "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex3['kind'],"title":ex['title']}
+
+                  
+    return exercise_parents_table
 
 
 #Given a list of subtopic/topic ids, returns an ordered list of the first 5 exercise ids under those ids
 def get_exercises_from_topics(topicId_list):
     exs = []
     for topic in topicId_list:
-        exercises = get_topic_exercises(topic)[:5] #can change this line to allow for more to be recommended
+        exercises = get_topic_exercises(topic)[:5] #can change this line to allow for more to be returned
         for e in exercises:
             exs += [e['id']] #only add the id to the list
 
     return exs
 
 
-#given a facility user model, return the most recent exercise ids that are still in-progress
+#given a facility user model, return all recent EXERCISE ids that are still in-progress
 def get_most_recent_incomplete_exercises(user):
     exercises_by_user = ExerciseLog.objects.filter(user=user)
-    exercises_by_user = ExerciseLog.objects.filter(id__lte=1) #temp
     
     #sorted by completion time in descending order (most recent first)
     sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
@@ -257,22 +367,94 @@ def get_most_recent_incomplete_exercises(user):
     return exercise_list                                #most recent + incomplete
 
 
+#given a facility user model, return all recent VIDEO ids that are still in-progress
+def get_most_recent_incomplete_videos(user):
+    videos_by_user = VideoLog.objects.filter(user=user)
+    
+    #sorted by completion time in descending order (most recent first)
+    sorted_videos = sorted(videos_by_user, key=lambda student: student.completion_timestamp, reverse=True)
+
+    video_list = []
+
+    #basically same as in get_most_recent_incomplete exercise
+    for vid in sorted_videos:
+        if vid.complete == False:                       #only look for incomplete
+            video_list.append(vid.video_id)             #append to list
+
+    return video_list                                   #most recent + incomplete
+
+
+#given a facility user model, returns information of the
+#most recently accessed and incomplete video/exercise. Can expand this later on to
+#include more later, like all items in order or perhaps more logs to look at. 
+def get_most_recent_incomplete_item(user):
+    #get the queryset objects
+    exercises_by_user = ExerciseLog.objects.filter(user=user)
+    videos_by_user = VideoLog.objects.filter(user=user)
+
+    #sort both
+    sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
+    sorted_videos = sorted(videos_by_user, key=lambda student: student.completion_timestamp, reverse=True)
+
+    #now ensure that the item has status = incomplete
+    exercise_list = []    
+    for exercise in sorted_exercises:
+        if exercise.complete == False:                  #only look for incomplete
+            exercise_list.append(exercise)              #append to list
+
+    video_list = []
+    for vid in sorted_videos:
+        if vid.complete == False:                       #only look for incomplete
+            video_list.append(vid)                      #append to list
+
+    #compare the most recent
+    if exercise_list[0].completion_timestamp > video_list[0].completion_timestamp:
+        
+        return {
+            "kind": "Exercise",
+            "id": exercise_list[0].exercise_id
+        }
+    
+    #else default to returning a video 
+    else:
+
+        return {
+            "kind": "Video",
+            "id": video_list[0].video_id,
+            "youtube_id": video_list[0].youtube_id
+        }
+
 
 #given a facility user model, return the most recent exercise ids - incomplete AND complete
 def get_most_recent_exercises(user):
     exercises_by_user = ExerciseLog.objects.filter(user=user)
-    
+
     #sorted by completion time in descending order (most recent first)
     sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
 
-    return sorted_exercises   
-
+    final = []
+    for ex in sorted_exercises:
+        final.append(ex.exercise_id)
+    
+    return final
 
 
 #given a user type (can be null), group id, and a facility name, return all users in that group
 #calls the already defined function in facility module
 def get_users_in_group(user_type, group_id, facility):
     return kalite.facility.get_users_from_group(user_type, group_id, facility)
+
+
+#returns a topic tree representation like in the older versions of ka-lite
+def generate_topic_tree():
+
+      ### populate data exploiting structure of topic tree ###
+    if not TOPICS:
+        tree = get_topic_tree() 
+    else:
+        tree = TOPICS[settings.CHANNEL][settings.LANGUAGE_CODE] #else grab the cached topic tree
+
+    return tree
 
 
 ###################################### BEGIN NEAREST NEIGHBORS ############################################
@@ -344,10 +526,7 @@ def generate_recommendation_data():
 
 
     ### populate data exploiting structure of topic tree ###
-    if not TOPICS:
-        tree = get_topic_tree() 
-    else:
-        tree = TOPICS[settings.CHANNEL][settings.LANGUAGE_CODE] #else grab the cached topic tree
+    tree = generate_topic_tree()
 
     ######## DYNAMIC ALG #########
 
@@ -411,11 +590,7 @@ def generate_recommendation_data():
         data[subtopic]['related_subtopics'] = sorted_related
 
 
-    ##
-    # ITERATION 3 - Take into consideration user data in exercise log to filter data one last time
-    ##    
 
-    '''TODO LATER'''
     return data
 
 
@@ -457,6 +632,9 @@ def get_recommendation_tree(data):
 # @param subtopic_id: the subtopic id (e.g. 'early-math')
 ###
 def get_recommended_exercises(subtopic_id):
+
+    if not subtopic_id:
+        return []
 
     #get a recommendation lookup tree
     tree = get_recommendation_tree(generate_recommendation_data())
