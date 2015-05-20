@@ -24,8 +24,7 @@ var CoachReportModel = Backbone.Model.extend({
     },
 
     url: function() {
-        //Urls.learner_logs()
-        return setGetParamDict("/coachreports/api/learner_logs", {
+        return setGetParamDict(Urls.learner_logs(), {
             facility_id: this.facility,
             group_id: this.group
         });

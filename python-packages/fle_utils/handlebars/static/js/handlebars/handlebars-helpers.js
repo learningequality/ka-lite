@@ -64,3 +64,14 @@ Handlebars.registerHelper ('truncate', function (str, len) {
 Handlebars.registerHelper('withItem', function(object, options) {
     return options.fn(object[options.hash.key]);
 });
+
+// A little bit of magic to let us use Django JS Reverse directly from inside a Handlebars template
+// Simply pass any arguments that you might otherwise use in order
+Handlebars.registerHelper('url', function(url_name) {
+    if (window.Urls) {
+        arguments = Array.prototype.slice.call(arguments, 0, -1);
+        return window.Urls[url_name].call(arguments);
+    } else {
+        return "";
+    }
+})

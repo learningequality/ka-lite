@@ -8,32 +8,32 @@
     </div>
 </div>
 <div class="row">
-	<div class="col-md-12">
-		{{#if learners}}
-			<div id="displaygrid">
-				<div class="users-table">
-					<table class="table table-bordered">
-						<thead>
-							<tr>
-								<th class="headrowuser">
-									{{_ "Learner"}}
-									{{#each contents}}
-										 <th class="headrow data">
-                        					<div>
-                        						<a href="{{ url_learn }}{{ path }}" title='"{{_ display_name }}"{{#if description }} {{ description }}{{/if }}'>{{_ title }}</a>
-                        					</div>
-                    					</th>
-									{{/each}}
-								</th>
-							</tr>
-						</thead>
+    <div class="col-md-12">
+        {{#if learners}}
+            <div id="displaygrid">
+                <div class="users-table">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="headrowuser">
+                                    {{_ "Learner"}}
+                                    {{#each contents}}
+                                         <th class="headrow data">
+                                            <div>
+                                                <a href="{{ url "learn" }}{{ path }}" title='"{{_ display_name }}"{{#if description }} {{ description }}{{/if }}'>{{_ title }}</a>
+                                            </div>
+                                        </th>
+                                    {{/each}}
+                                </th>
+                            </tr>
+                        </thead>
                         <tbody class="student-data">
                         </tbody>
-					</table>
-					<div style="clear: both;">
-					</div>
-				</div>
-			</div>
+                    </table>
+                    <div style="clear: both;">
+                    </div>
+                </div>
+            </div>
         {{/if}} 
-	</div>
+    </div>
 </div>
