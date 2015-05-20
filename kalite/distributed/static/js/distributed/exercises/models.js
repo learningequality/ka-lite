@@ -194,20 +194,23 @@ window.AttemptLogModel = Backbone.Model.extend({
 
     add_response_log_event: function(ev) {
 
-        // inflate the stored JSON if needed
-        if (!this._response_log_cache) {
-            this._response_log_cache = JSON.parse(this.get("response_log") || "[]");
-        }
+        var response_log = this.get("response_log") || [];
 
         // set the timestamp to the current time
         ev.timestamp = window.statusModel.get_server_time();
 
         // add the event to the response log list
-        this._response_log_cache.push(ev);
+        response_log.push(ev);
 
-        // deflate the response log list so it will be saved along with the model later
-        this.set("response_log", JSON.stringify(this._response_log_cache));
+        this.set("response_log", response_log);
 
+    },
+
+    parse: function(response) {
+        if (response.response_log) {
+            response.response_log = JSON.parse(response.response_log);
+        }
+        return response;
     }
 
 });
@@ -218,10 +221,10 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     model: AttemptLogModel,
 
     initialize: function(models, options) {
-        this.filters = $.extend({
+        this.filters = $.extend(options, {
             "user": window.statusModel.get("user_id"),
             "limit": ExerciseParams.STREAK_WINDOW
-        }, options);
+        });
     },
 
     url: function() {
