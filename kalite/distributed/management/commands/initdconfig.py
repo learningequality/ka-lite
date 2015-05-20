@@ -6,8 +6,7 @@ import sys
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-script_template = """
-#! /bin/sh
+script_template = """#! /bin/sh
 
 # Author: Jamie Alexandre, 2012
 #
