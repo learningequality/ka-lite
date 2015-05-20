@@ -6,8 +6,7 @@ import sys
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-script_template = """
-#! /bin/sh
+script_template = """#! /bin/sh
 
 # Author: Jamie Alexandre, 2012
 #
@@ -22,6 +21,10 @@ script_template = """
 # Short-Description: ka-lite daemon, a local Khan Academy content server
 ### END INIT INFO
 
+set -e
+
+/lib/lsb/init-functions
+
 case "$1" in
     start)
         echo "Starting ka-lite!"
@@ -33,6 +36,17 @@ case "$1" in
         echo
         "%(repo_path)s/bin/kalite stop"
         ;;
+  restart)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  status)
+    "%(repo_path)s/bin/kalite status"
+    ;;
+  *)
+    log_success_msg "Usage: /etc/init.d/kalite {start|stop|restart|status}"
+    exit 1
 esac
 
 """

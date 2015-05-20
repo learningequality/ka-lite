@@ -896,11 +896,24 @@ to items you want to have the icon appear with.
     box-shadow: -4px 0 9px 5px #ffa500;
 }
 
-/* Styling for simplified login toggle button */
-.password-btn {
-    float: right;
+/* Styling for login modal dialog */
+#log-box .has-error .form-control {
+	box-shadow: 0 0 5px 3px rgba(171,0,0,0.75) inset;
 }
-
+.login-btn {
+	width: 100%;
+	margin: 0 0 15px;
+}
+.log-input {
+	margin: 0 15px;
+}
+.password-btn {
+	margin: 0 auto;
+}
+#id_password.form-control.input-lg:focus,
+#id_username.form-control.input-lg:focus {
+		box-shadow: 0 0 5px 3px rgba(102,175,233,0.75) inset;
+}
 .login .ui-menu .ui-menu-item a{
     font-size: 1.5em;
 }

@@ -23,10 +23,7 @@ urlpatterns = patterns(__package__ + '.api_views',
     
     url(r'^', include(ContentRecommenderResource().urls)),
 
-    # Data used by the client (browser) for doing search
-    url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),
-
-    # For building a graphical knowledge map
+    # A flat data structure for building a graphical knowledge map
     url(r'^topic_tree/(?P<channel>.*)/?$', 'topic_tree', {}, 'topic_tree'),
 
 )

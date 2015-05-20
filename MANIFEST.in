@@ -14,7 +14,6 @@ exclude kalite/private_key.pem
 exclude kalite/secrets.py
 
 # Data files, these are not picked up by sdist unless listed here
-recursive-include locale *
 recursive-include python-packages *
 recursive-include static-libraries *
 recursive-include data *
