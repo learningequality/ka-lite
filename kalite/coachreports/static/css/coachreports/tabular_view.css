@@ -23,7 +23,7 @@
     height: 34px;
 }
 
-th.username {
+.stick-wrap, th.username {
     font-size: 12px;
     height: 27px;
     white-space: nowrap;
@@ -135,6 +135,7 @@ th.headrowuser {
     margin-bottom: 1.5em;
     width: 100%;
 }
+
 .sticky-wrap .sticky-thead,
 .sticky-wrap .sticky-col,
 .sticky-wrap .sticky-intersect {
@@ -146,19 +147,20 @@ th.headrowuser {
     z-index: 50;
     width: auto; /* Prevent table from stretching to full size */
 }
-    .sticky-wrap .sticky-thead {
-        box-shadow: 0 0.25em 0.1em -0.1em rgba(0,0,0,.125);
-        z-index: 100;
-        width: 100%; /* Force stretch */
-    }
-    .sticky-wrap .sticky-intersect {
-        opacity: 1;
-        z-index: 150;
-    }
-    .sticky-wrap .sticky-intersect th {
-        background-color: #666;
-        color: #eee;
-    }
+
+.sticky-wrap .sticky-thead {
+    box-shadow: 0 0.25em 0.1em -0.1em rgba(0,0,0,.125);
+    z-index: 100;
+    width: 100%; /* Force stretch */
+}
+.sticky-wrap .sticky-intersect {
+    opacity: 1;
+    z-index: 150;
+}
+.sticky-wrap .sticky-intersect th {
+    background-color: #666;
+    color: #eee;
+}
 .sticky-wrap td,
 .sticky-wrap th {
     box-sizing: border-box;
