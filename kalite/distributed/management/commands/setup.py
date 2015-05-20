@@ -11,17 +11,6 @@ from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
 
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-BASE_DIR = os.path.realpath(CURRENT_DIR + "/../../../")
-
-# This is necessary for this script to run before KA Lite has ever been installed.
-if not os.environ.get("DJANGO_SETTINGS_MODULE"):
-    sys.path = [
-        os.path.join(BASE_DIR, "python-packages"),
-        os.path.join(BASE_DIR, "kalite")
-    ] + sys.path
-    os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -190,7 +179,10 @@ class Command(BaseCommand):
         print("                                  ")
 
         if sys.version_info >= (2,8) or sys.version_info < (2,6):
-            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % sys.version_info)
+            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % str(sys.version_info))
+        if sys.version_info != (2, 7, 9):
+            logging.warning("It's recommended that you install Python version 2.7.9. Your version is: %s\n" % str(sys.version_info))
+
 
         if options["interactive"]:
             print("--------------------------------------------------------------------------------")
@@ -211,10 +203,6 @@ class Command(BaseCommand):
             if options["interactive"]:
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
-
-        # Check to see if the current user is the owner of the install directory
-        if not os.access(BASE_DIR, os.W_OK):
-            raise CommandError("You do not have permission to write to this directory!")
 
         install_clean = not kalite.is_installed()
         database_kind = settings.DATABASES["default"]["ENGINE"]
@@ -328,19 +316,11 @@ class Command(BaseCommand):
             admin.save()
 
         # Now deploy the static files
-        call_command("collectstatic", interactive=False)
+        logging.info("Copying static media...")
+        call_command("collectstatic", interactive=False, verbosity=0)
 
+        # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
-            # Move scripts
-            for script_name in ["start", "stop", "run_command"]:
-                script_file = script_name + system_script_extension()
-                dest_dir = os.path.join(settings.PROJECT_PATH, "..")
-                src_dir = os.path.join(dest_dir, "scripts")
-                shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                try:
-                    shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                except OSError:  # even if we have write permission, we might not have permission to change file mode
-                    print("WARNING: Unable to set file permissions on %s! " % script_file)
 
             kalite_executable = 'kalite'
             if not spawn.find_executable('kalite'):

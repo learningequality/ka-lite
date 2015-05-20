@@ -30,7 +30,10 @@ from .base import *
 
 import_installed_app_settings(INSTALLED_APPS, globals())
 
-# Override
+# TODO(benjaoming): Why on earth is there both a PRODUCTION_PORT and a CHERRYPY_PORT !?
+# Mesa confused!
+# TODO(benjaoming): Furthermore, this is dependent on kalite.distributed.settings
+# so there's no way that kalite.distributed was ever decoupled from kalite
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 TEST_RUNNER = KALITE_TEST_RUNNER
 

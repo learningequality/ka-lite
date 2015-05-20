@@ -31,8 +31,10 @@ try:
         "and then call kalite start with an additional argument pointing to "
         "your new settings module:\n\n"
         "    kalite start --settings=kalite.my_settings\n\n"
-        "You can put your settings module in a different location, but make "
-        "sure that this location is in your Python path.",
+        "In the future, it is recommended not to keep your own settings module "
+        "in the kalite code base but to put the file somewhere else in your "
+        "python path, for instance in the current directory when running "
+        "'kalite --settings=my_module'.",
         RemovedInKALite_v015_Warning
     )
 except ImportError:
@@ -130,9 +132,9 @@ else:
     _data_path = os.path.join(ROOT_DATA_PATH,)
     
     # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
-    PROJECT_PATH = os.path.join(
-        os.path.expanduser("~"),
-        '.kalite'
+    PROJECT_PATH = os.environ.get(
+        "KALITE_HOME",
+        os.path.join(os.path.expanduser("~"), ".kalite")
     )
 
 
@@ -177,18 +179,16 @@ LOAD_KHAN_RESOURCES = getattr(local_settings, "LOAD_KHAN_RESOURCES", CHANNEL == 
 # the user running kalite and should be in a user-data
 # storage place.
 
-USER_DATA_ROOT = os.path.join(
-    os.path.expanduser("~"),
-    '.kalite'
+USER_DATA_ROOT = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
 )
 
-if not os.path.exists(USER_DATA_ROOT):
-    os.mkdir(USER_DATA_ROOT)
 
 # Most of these data locations are messed up because of legacy
 if IS_SOURCE:
     USER_DATA_ROOT = SOURCE_DIR
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(_data_path, 'locale'),))
+    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
     
     # This is the legacy location kalite/database/data.sqlite
@@ -197,17 +197,20 @@ if IS_SOURCE:
     MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
     STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
 
+
 # Storing data in a user directory
 else:
+    
+    # Ensure that path exists
+    if not os.path.exists(USER_DATA_ROOT):
+        os.mkdir(USER_DATA_ROOT)
+    
     LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
+    for path in LOCALE_PATHS:
+        if not os.path.exists(path):
+            os.mkdir(path)
     
-    # Copy in the distributed locales
-    for p in LOCALE_PATHS:
-        if not os.path.exists(p):
-            import shutil
-            shutil.copytree(os.path.join(_data_path, 'locale'), p)
     DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
-    
     if not os.path.exists(DEFAULT_DATABASE_PATH):
         os.mkdir(DEFAULT_DATABASE_PATH)
     
@@ -286,6 +289,7 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "kalite.distributed",
     "compressor",
+    "django_js_reverse",
 )
 
 if not BUILT:
@@ -315,6 +319,10 @@ TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
 
 DEFAULT_ENCODING = 'utf-8'
+
+# Due to a newer version of slimit being installed, allowing this causes an error:
+# https://github.com/ierror/django-js-reverse/issues/29
+JS_REVERSE_JS_MINIFY = False
 
 ########################
 # Storage and caching

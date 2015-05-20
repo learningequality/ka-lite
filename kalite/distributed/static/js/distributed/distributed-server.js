@@ -38,7 +38,7 @@ function show_api_messages(messages) {
 function force_sync() {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
-    doRequest(window.sessionModel.get("FORCE_SYNC_URL"))
+    doRequest(window.Urls.api_force_sync())
         .success(function() {
             var msg = gettext("Successfully launched data syncing job.") + " ";
             msg += sprintf(gettext("After syncing completes, visit the <a href='%(devman_url)s'>device management page</a> to view results."), {
@@ -267,7 +267,7 @@ $(function() {
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();
         if (lang_code != "") {
-            doRequest(window.sessionModel.get("SET_DEFAULT_LANGUAGE_URL"),
+            doRequest(window.Urls.set_default_language(),
                       {lang: lang_code}
                      ).success(function() {
                          window.location.reload();
@@ -294,7 +294,7 @@ function get_server_status(options, fields, callback) {
         protocol: "http",
         hostname: "",
         port: 8008,
-        path: window.sessionModel.get("SERVER_INFO_PATH")
+        path: window.Urls.get_server_info()
     };
 
     var args = $.extend(defaults, options);

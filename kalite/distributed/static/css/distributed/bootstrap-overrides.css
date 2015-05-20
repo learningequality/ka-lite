@@ -537,6 +537,9 @@ footer {
     .manage-nav ul li {
         width: 100px;
     }
+    .manage-nav ul li {
+        width: 100px;
+    }
 }
 @media screen and (max-width: 480px) {
     .manage-nav ul li {
