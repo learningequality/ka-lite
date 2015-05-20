@@ -104,6 +104,10 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         #   start the server.  They may have multiple servers open at once.
         if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS',""):
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
+
+        self._bdd_only = kwargs["bdd_only"]  # Extra options from our custom test management command are passed into
+                                             # the constructor, but not the build_suite function where we need them.
+
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
     def run_tests(self, test_labels=None, extra_tests=None, **kwargs):
@@ -170,4 +174,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
                 # build a test suite for this directory
                 extra_tests.append(self.make_bdd_test_suite(features_dir))
 
-        return super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
+        suite = super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
+        if self._bdd_only:
+            suite._tests = filter(lambda x: type(x).__name__ == "DjangoBehaveTestCase", suite._tests)
+        return suite
