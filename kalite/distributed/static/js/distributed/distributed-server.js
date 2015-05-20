@@ -59,6 +59,10 @@ var StatusModel = Backbone.Model.extend({
         client_server_time_diff: 0
     },
 
+    is_student: function() {
+        return this.get("is_logged_in") && !this.get("is_admin");
+    },
+
     urlRoot: function() {
         return window.sessionModel.get("USER_URL");
     },

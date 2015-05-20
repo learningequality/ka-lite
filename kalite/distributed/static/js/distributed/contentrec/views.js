@@ -6,7 +6,20 @@ window.HomepageWrapper = BaseView.extend({
     template: HB.template("contentrec/content-rec-wrapper"),
     
     initialize: function() {
-        
+        _.bindAll(this);
+        this.collection = new window.SuggestedContentCollection();
+        this.listenTo(this.collection, "sync", this.data_load);
+        this.collection.fetch();
+    },
+
+    render: function() {
+        this.$el.html(this.template());
+        this.$("#resume").append(this.content_resume.el);
+        this.$("#nextsteps").append(this.content_nextsteps.el);
+        this.$("#explore").append(this.content_explore.el);
+    },
+
+    data_load: function() {
         var resumeCollection = new window.SuggestedContentCollection(this.collection.where({resume:true}));
         
         var nextStepsCollection = new window.SuggestedContentCollection(this.collection.where({nextSteps:true}));
@@ -15,26 +28,18 @@ window.HomepageWrapper = BaseView.extend({
         
         this.content_resume = new ContentResumeView({
             collection:resumeCollection
-		});
+        });
 
-		this.content_nextsteps = new ContentNextStepsView({
+        this.content_nextsteps = new ContentNextStepsView({
             collection:nextStepsCollection
-		});
+        });
 
-		this.content_explore = new ContentExploreView({
+        this.content_explore = new ContentExploreView({
             collection:exploreCollection
-		});
+        });
                 
         this.render();
-    },
-
-    render: function() {
-        this.$el.html(this.template());
-        this.$("#resume").append(this.content_resume.el);
-        this.$("#nextsteps").append(this.content_nextsteps.el);
-        this.$("#explore").append(this.content_explore.el);
     }
-
 });
 
 /**
@@ -164,18 +169,4 @@ window.ContentExploreView = BaseView.extend({
 });
 
 
-$(function(){    
-        
-    window.suggestedContentCollection = new window.SuggestedContentCollection([
-		{interest_topic: "Chemistry", suggested_topic: "Physics", resume: true},
-		{interest_topic: "Physiology", suggested_topic: "Biology", nextSteps: true},
-		{interest_topic: "Algebra", suggested_topic: "Precalculus", explore: true, nextSteps: true},
-		{interest_topic: "Modern Art", suggested_topic: "Art History", explore: true}
-	]);
-    
-    window.hpwrapper = new HomepageWrapper({
-        collection:suggestedContentCollection,
-        el:"#content-area"
-		});    
-});
 
