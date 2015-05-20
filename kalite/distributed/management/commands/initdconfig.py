@@ -7,8 +7,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 import getpass
 
-script_template = """
-#!/bin/sh
+script_template = """#!/bin/sh
 
 # Author: Foundation for Learning Equality
 #
