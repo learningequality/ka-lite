@@ -53,7 +53,7 @@ var detailsPanelView = BaseView.extend({
         _.bindAll(this);
         this.content_item = options.content_item;
         if (this.content_item.get("kind") === "Exercise") {
-            this.collection = new window.AttemptLogCollection({
+            this.collection = new window.AttemptLogCollection([], {
                 user: this.model.get("user"),
                 limit: this.limit,
                 exercise_id: this.model.get("exercise_id")
@@ -70,13 +70,16 @@ var detailsPanelView = BaseView.extend({
             item_count = this.collection.meta.total_count;
         }
         this.pages = [];
-        for (var i=1; i < item_count/this.limit + 1; i++) {
-            this.pages.push(i);
+        if (item_count/this.limit > 1) {
+            for (var i=1; i < item_count/this.limit + 1; i++) {
+                this.pages.push(i);
+            }
         }
         this.$el.html(this.template({
             model: this.model.attributes,
             itemdata: this.content_item.attributes,
-            pages: this.pages
+            pages: this.pages,
+            collection: this.collection.to_objects()
         }));
         this.bodyView = new detailsPanelBodyView ({
             collection: this.collection,
@@ -96,9 +99,8 @@ var detailsPanelBodyView = BaseView.extend({
     },
     
     render: function() {
-        console.log(this.collection);
         this.$el.html(this.template({
-            collection: this.collection.toJSON()
+            collection: this.collection.to_objects()
         }));
     }
 });

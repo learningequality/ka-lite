@@ -74,4 +74,22 @@ Handlebars.registerHelper('url', function(url_name) {
     } else {
         return "";
     }
-})
+});
+
+Handlebars.registerHelper("math", function(lvalue, operator, rvalue, options) {
+    lvalue = parseFloat(lvalue);
+    rvalue = parseFloat(rvalue);
+
+    return {
+        "+": lvalue + rvalue,
+        "-": lvalue - rvalue,
+        "*": lvalue * rvalue,
+        "/": lvalue / rvalue,
+        "%": lvalue % rvalue
+    }[operator];
+});
+
+Handlebars.registerHelper("datetime", function(datetime_string, options) {
+    var date = new Date(datetime_string);
+    return date.toLocaleString();
+});

@@ -2,9 +2,10 @@
     <h4>{{ itemdata.title }}</h4>
 </div>
 
-{{#ifcond itemdata.kind "===" "Exercise"}}
+{{#if collection}}
 <div class="body"></div>
 
+{{#if pages }}
 <nav>
 	<ul class="pagination">
 		<li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
@@ -14,10 +15,13 @@
 		<li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
 	</ul>
 </nav>
+{{/if}}
 {{else}}
 <div class="well">
+    {{#if itemdata.description }}
     <p>{{_ "Description" }}: {{ itemdata.description }}</p>
+    {{/if}}
     <p>{{_ "Points Earned" }}: {{ model.points }}</p>
     {{#if model.progress }}<p>{{_ "Progress" }}: {{ model.progress }}</p>{{/if}}
 </div>
-{{/ifcond}}
+{{/if}}

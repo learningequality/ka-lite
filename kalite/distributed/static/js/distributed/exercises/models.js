@@ -189,7 +189,11 @@ window.AttemptLogModel = Backbone.Model.extend({
         context_type: "",
         context_id: "",
         response_count: 0,
-        response_log: "[]"
+        response_log: []
+    },
+
+    to_object: function() {
+        return _.clone(this.attributes);
     },
 
     add_response_log_event: function(ev) {
@@ -211,6 +215,14 @@ window.AttemptLogModel = Backbone.Model.extend({
             response.response_log = JSON.parse(response.response_log);
         }
         return response;
+    },
+
+    toJSON: function(options) {
+        var output = Backbone.Model.prototype.toJSON.call(this);
+        if (output.response_log) {
+            output.response_log = JSON.stringify(output.response_log);
+        }
+        return output;
     }
 
 });
@@ -221,14 +233,18 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     model: AttemptLogModel,
 
     initialize: function(models, options) {
-        this.filters = $.extend(options, {
+        this.filters = $.extend({
             "user": window.statusModel.get("user_id"),
             "limit": ExerciseParams.STREAK_WINDOW
-        });
+        }, options);
     },
 
     url: function() {
         return "/api/attemptlog/?" + $.param(this.filters, true);
+    },
+
+    to_objects: function() {
+        return this.map(function(model){ return model.to_object(); });
     },
 
     add_new: function(attemptlog) {
