@@ -179,7 +179,10 @@ class Command(BaseCommand):
         print("                                  ")
 
         if sys.version_info >= (2,8) or sys.version_info < (2,6):
-            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % sys.version_info)
+            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % str(sys.version_info))
+        if sys.version_info != (2, 7, 9):
+            logging.warning("It's recommended that you install Python version 2.7.9. Your version is: %s\n" % str(sys.version_info))
+
 
         if options["interactive"]:
             print("--------------------------------------------------------------------------------")
