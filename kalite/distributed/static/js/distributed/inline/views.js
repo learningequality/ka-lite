@@ -86,20 +86,12 @@ window.ButtonView = Backbone.View.extend({
     render: function() {
         console.log("Rendering the Inline View.....");
         this.$el.html(this.template());
-        // $("body").append(this.el);
         $("#inline-btn-container").append(this.el);
     }
 });
 
 // Only load button and narrative if there is one defined for page
 $(function() {
-    // if (window.NARRATIVE_ID) { 
-    //     var narrative = new NarrativeModel({id: window.location.pathname}); 
-    //     var buttonView = new ButtonView( {model: narrative} );
-    // }
-
     var narrative = new NarrativeModel ({id: window.location.pathname});
     var buttonView = new ButtonView( {model: narrative});
-
-
 });
