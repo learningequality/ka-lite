@@ -84,6 +84,7 @@ window.ButtonView = Backbone.View.extend({
     },
 
     render: function() {
+        console.log("Rendering the Inline View.....");
         this.$el.html(this.template());
         // $("body").append(this.el);
         $("#inline-btn-container").append(this.el);
@@ -98,7 +99,7 @@ $(function() {
     // }
 
     var narrative = new NarrativeModel ({id: window.location.pathname});
-
+    var buttonView = new ButtonView( {model: narrative});
 
 
 });

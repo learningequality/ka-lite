@@ -13,6 +13,9 @@
     <script>var NARRATIVE_ID = "manage_tab";</script>
 {% endblock headjs %}
 
+
+
+
 {% block subnavbar %}
     <div class="manage-nav logged-in-only admin-only">
         <ul class="nav nav-tabs">
@@ -26,6 +29,18 @@
                 <li class="video {% block video_active %}{% endblock video_active %}"><a href="{% url 'update_videos' %}" title="{% trans 'Update this server with new videos and languages' %}"><div><span class="icon icon-uniE610"></span><br/>{% trans "Videos" %}</div></a></li>
                 <li class="languages {% block languages_active %}{% endblock languages_active %}"><a href="{% url 'update_languages' %}"><div><span class="icon icon-uniE600"></span><br/>{% trans "Language" %}</div></a></li>
             </div>
+
+            {% block inline-btn %}
+                    <div class="pull-down pull-right" id="inline-btn-container"></div>
+            {% endblock inline-btn %}
+
+
         </ul>
+
+         
     </div>
+
+
 {% endblock subnavbar %}
+
+
