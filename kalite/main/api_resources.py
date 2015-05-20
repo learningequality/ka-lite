@@ -9,6 +9,7 @@ from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, AssessmentIte
 
 from kalite.distributed.api_views import get_messages_for_api_calls
 from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
+from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -314,6 +315,9 @@ class ContentRecommenderResource(Resource):
     class Meta:
         resource_name = 'contentrecommender'
         object_class = ContentRecommender
+        filtering = {
+            "user": ('exact', ),
+        }
 
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}
@@ -324,7 +328,8 @@ class ContentRecommenderResource(Resource):
         return kwargs
 
     def get_object_list(self, request):
-        raise NotImplementedError
+        output = get_explore_recommendations(request.user) + get_next_recommendations(request.user) + get_resume_recommendations(request.user)
+        return output
 
     def obj_get_list(self, bundle, **kwargs):
         return self.get_object_list(bundle.request)
