@@ -65,7 +65,14 @@
             <script type="text/javascript" src="//cdn.crowdin.com/jipt/jipt.js"></script>
         {% endif %}
 
+        {% if debug %}
+        <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
+        {% else %}
+        <script src="{% static 'django_js_reverse/js/reverse.js' %}"></script>
+        {% endif %}
+
         {% compress js file basejs %}
+
         <!-- JS translation file statically included as a back-up, so that if the saved file below isn't available, we don't choke. -->
         <script type="text/javascript" src="{% static 'js/i18n/en.js' %}"></script>
 
@@ -151,16 +158,8 @@
 
         <script>
         window.sessionModel.set({
-          SEARCH_TOPICS_URL           : "{% url 'topic_tree' channel=channel %}",
-          SEARCH_URL                  : "{% url 'search' %}",
           USER_URL                    : "{% url 'api_dispatch_list' resource_name='user' %}",
-          FORCE_SYNC_URL              : "{% url 'api_force_sync' %}",
 
-          LOCAL_DEVICE_MANAGEMENT_URL : "{% url 'device_redirect' %}",
-          SET_DEFAULT_LANGUAGE_URL    : "{% url 'set_default_language' %}",
-          DELETE_USERS_URL            : "{% url 'delete_users' %}",
-          DELETE_GROUPS_URL           : "{% url 'group_delete' %}",
-          MOVE_TO_GROUP_URL           : "{% url 'move_to_group' %}",
           STATIC_URL                  : "{% static "" %}",
 
           ALL_ASSESSMENT_ITEMS_URL    : "{% url 'api_dispatch_list' resource_name='assessment_item' %}",
@@ -170,10 +169,10 @@
 
           KHAN_EXERCISES_SCRIPT_URL : "{% static 'perseus/ke/khan-exercise.js' %}",
 
-          SERVER_INFO_PATH            : "{% url 'get_server_info' %}",
           CENTRAL_SERVER_HOST         : "{{ central_server_host }}",
           SECURESYNC_PROTOCOL         : "{{ securesync_protocol }}",
-          CURRENT_LANGUAGE            : "{{ current_language }}"
+          CURRENT_LANGUAGE            : "{{ current_language }}",
+          CHANNEL                     : "{{ channel }}",
         });
         $(function() {
           window.statusModel.fetch_data();
