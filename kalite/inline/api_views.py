@@ -12,7 +12,5 @@ def narrative_view(request, narrative_id):
     narrative_json = yaml.safe_load(f)
     f.close()
 
-
-    print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!API_VIEWS!!!!!"
     print narrative_json
     return JsonResponse(narrative_json)
