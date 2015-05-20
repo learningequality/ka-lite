@@ -24,7 +24,7 @@ from kalite.main.models import ExerciseLog , VideoLog
 # @return: The most recent video/exercise that has been started but NOT completed
 ###
 def get_resume_recommendations(user):
-    user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after
+    #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after
     table = get_exercise_parents_lookup_table()
     # ! first pass returns only be the most recent vid/exercise !
     final = get_most_recent_incomplete_item(user)
@@ -58,7 +58,7 @@ def get_resume_recommendations(user):
 ###
 def get_next_recommendations(user):
 
-    user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after    
+    #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after    
 
     exercise_parents_table = get_exercise_parents_lookup_table()
 
@@ -225,7 +225,7 @@ def get_explore_recommendations(user):
 
     '''
 
-    user = ExerciseLog.objects.filter(id__lte=1)[4].user            #random person, can delete after   
+    #user = ExerciseLog.objects.filter(id__lte=1)[4].user            #random person, can delete after   
 
     data = generate_recommendation_data()                           #topic tree alg
     exercise_parents_table = get_exercise_parents_lookup_table()    #for finding out subtopic ids
