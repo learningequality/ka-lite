@@ -325,19 +325,15 @@ class ContentRecommenderResource(Resource):
     resume = fields.BooleanField(attribute='resume', default=False)
     explore = fields.BooleanField(attribute='explore', default=False)
     kind = fields.CharField(attribute='kind', null=True, blank=True)
-    
     # Addition fields for resume and next_steps
     id = fields.CharField(attribute='id', null=True, blank=True)
     subtopic_title = fields.CharField(attribute='subtopic_title', null=True, blank=True)
-    
     # Additional fields for resume recommendation(s) only
     title = fields.CharField(attribute='title', null=True, blank=True)
     youtube_id = fields.CharField(attribute='youtube_id', null=True, blank=True)
-    
     # Additional fields for next_steps
     subtopic_id = fields.CharField(attribute='subtopic_id', null=True, blank=True)
     lesson_title = fields.CharField(attribute='lesson_title', null=True, blank=True)
-
     # Additional fields for explore reccommendations only
     accessed_subtopic = fields.CharField(attribute='accessed_subtopic', null=True, blank=True)
     suggested_subtopic_title = fields.CharField(attribute='suggested_subtopic_title', null=True, blank=True)
@@ -355,31 +351,36 @@ class ContentRecommenderResource(Resource):
     def dehydrate(self, bundle):
         """Remove unused fields...resume, next_steps, and explore have different fields."""
         field_names = [x for x in bundle.data]
-
+        
         for field_name in field_names:
             if not bundle.data[field_name]:
                 del bundle.data[field_name]
+
+        del bundle.data['user']
 
         return bundle
 
     def get_object_list(self, request):
         """Populate response with recommendation(s)"""
         user = getattr(request, "user", None)
+        user_id = request.GET.get('user', None)
         recommendations = []
         
         # TODO: check if multiple filters exist
         # filters = request.GET.get('filters', None)
 
         # retrieve resume recommendation(s) and set resume boolean flag
-        resume_recommendations = get_resume_recommendations(user)
+        resume_recommendations = get_resume_recommendations(user_id)
         for item in resume_recommendations:
+            # each item is of the form {"id": 1, "kind": "someKind", "title": "someTitle", "subtopic_title": "someSubtopicTitle", "youtube_id": "lkdfj3993=924"}}
             item['user'] = user
             item['resume'] = True
             recommendations.append(ContentRecommender(item))
 
         # retrieve next_steps recommendations, set next_steps boolean flag, and flatten results for api response
-        next_recommendations = get_next_recommendations(user)
+        next_recommendations = get_next_recommendations(user_id)
         for item in next_recommendations:
+            # each item is of the form {1: {"kind": "someKind", "lesson_title": "someTitle", "subtopic_title": "anotherSubtopicTitle", "subtopic_id": 2}}
             temp = {}
             temp['user'] = user
             temp['next_steps'] = True
@@ -392,8 +393,9 @@ class ContentRecommenderResource(Resource):
             recommendations.append(ContentRecommender(temp))
 
         # retrieve explore recommendations, set explore boolean flag, and flatten results for api response
-        explore_recommendations = get_explore_recommendations(user)
+        explore_recommendations = get_explore_recommendations(user_id)
         for item in explore_recommendations:
+            # each item is of the form {"accessed": "someSubtopicTitle", "recommended_topics": [{"title": "someRelatedSubtopicTitle", "id": "someRelatedSubtopicId"},{"title": "anotherRelatedSubtopicTitle", "id": "anotherRelatedSubtopicId"}]}]
             temp = {}
             temp['user'] = user
             temp['explore'] = True
