@@ -2,6 +2,7 @@
     width: 11%;
     margin-right: 1px;
     float: left;
+	
 }
 
 .userstatus {
@@ -24,7 +25,7 @@
 }
 
 .stick-wrap, th.username {
-    font-size: 12px;
+    /*font-size: 12px;*/
     height: 27px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -94,9 +95,6 @@ th.headrowuser {
     text-overflow: ellipsis;
 }
 
-.checkbox-name {
-	display: inline-flex;
-}
 
 #legend {
     padding: 6px 0 0 10px;
