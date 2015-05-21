@@ -1,46 +1,48 @@
-
-  <li id="teach-tab" class="teacher teach-tab admin display-none"><a href="/coachreports/table/" {{!-- id="nav_coachreports"--}}>{{_ "Teach" }}</a></li>
-
-  <li class="manage-tab admin display-none"><a href="/management/zone">{{_ "Manage" }}</a></li>
-
-  <li class="manage-tab teacher display-none"><a href="/management/zone/None/facility/{{ facility_id }}/management/">{{_ "Manage" }}</a></li>
-
-  {{!-- Learn for all --}}
-  <li id="nav-handlebars" class="learn-tab display-none"><a href="/learn" id="nav_learn" class="home-navlink">{{_ "Learn" }}</a></li>
-
-  {{!-- Login --}}
-  <li><a href="#" class="guest display-none" data-toggle="modal" data-target="#loginModal" title="" id="nav_login">{{_ "Login" }}</a></li>
-  <li><a href="" id="nav_signup" class="guest display-none" title="">{{_ "Sign Up" }}</a></li>
+{{#if is_admin }}
+  <li class="teach-tab"><a href="/coachreports/table/">{{_ "Teach" }}</a></li>
+  <li class="manage-tab"><a href="/management/zone/None/{{#unless is_django_user }}facility/{{ facility_id }}/management/{{/unless}}">{{_ "Manage" }}</a></li>
+{{/if}}
+{{!-- Learn for all --}}
+  <li id="nav-handlebars" class="learn-tab"><a href="/learn" id="nav_learn" class="home-navlink">{{_ "Learn" }}</a></li>
+{{!-- Login --}}
+{{#unless is_logged_in}}
+  <li><a href="#" data-toggle="modal" data-target="#loginModal" id="nav_login">{{_ "Login" }}</a></li>
+  <li><a href="/securesync/signup/" id="nav_signup">{{_ "Sign Up" }}</a></li>
+{{/unless}}
 
   <hr class="nav-divider">
-  <hr class="nav-divider admin display-none">
+{{#if is_admin}}
+  <hr class="nav-divider">
+{{/if}}
 
-  {{!-- Farthest right nav is logged in user dropdown --}}
+{{!-- Farthest right nav is logged in user dropdown --}}
+{{#if is_logged_in}}
   <li class="dropdown " id="user-name">
-    <a href="#" class="logged-in display-none dropdown-toggle" data-toggle="dropdown" id="user-name-a">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="user-name-a">
         <span id="username">{{!-- Username injected here w/ js --}}</span>
       <span class="caret hidden-xs"></span>
     </a>
 
     <ul class="dropdown-menu" data-no-collapse="true" role="menu">
-      <li class="student display-none" id="points-tab" role="presentation">
-        <span class="student display-none" id="points">
-          {{!-- Points injected here w/ js --}}
-        </span>
+    {{#unless is_admin}}
+      <li id="points-tab" role="presentation">
+        <span id="points">{{!-- Points injected here w/ js --}}</span>
       </li>
-      <li role="presentation" class="divider student display-none"></li>
+      <li role="presentation" class="divider"></li>
       {{!-- Student account management --}}
-      <li role="presentation" class="motivational-feature student display-none">
-        <a role="menuitem" tabindex="-1" href="" id="nav_progress" title="" class="student display-none">
+      <li role="presentation" class="motivational-feature">
+        <a role="menuitem" tabindex="-1" id="nav_progress">
           {{_ "My Progress" }}
         </a>
       </li>
-      <li role="presentation" class="divider student display-none"></li>
+      <li role="presentation" class="divider"></li>
+    {{/unless}}
       {{!-- Logout goes at the bottom! --}}
       <li role="presentation" id="logout">
-        <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in display-none" title="" href="#">
+        <a role="menuitem" tabindex="-1" id="nav_logout" href="#">
           {{_ "Logout" }}
         </a>
       </li>
     </ul>
   </li>
+{{/if}}

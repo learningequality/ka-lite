@@ -323,7 +323,7 @@ window.ToggleNavbarView = BaseView.extend ({
 
     initialize: function() {
 
-        _.bindAll(this);        
+        _.bindAll(this);
         this.listenTo(this.model, "change", this.render);
         $("topnav").append(this.template());
 
@@ -331,46 +331,20 @@ window.ToggleNavbarView = BaseView.extend ({
 
     render: function() {
         
-        this.facility_id = {"facility_id": this.model.get("facility_id")};
-        this.$el.html(this.template(this.facility_id));
+        this.$el.html(this.template(this.model.attributes));
         
         this.userView = new UserView({ model: this.model, el: "#topnav" });
         $("#topnav").prepend(new AutoCompleteView().$el);
-        
-        // GUEST
-        if ( !this.model.get("is_logged_in") ) {
-            this.$(".guest").removeClass("display-none");
-        }
-        // ALL LOGGED IN
-        if ( this.model.get("is_logged_in") ) {
-            this.$(".logged-in").removeClass("display-none");
-        }
-        // ALL USERS - slight lag in tabs appearing, seems unnecessary but ensures that all tabs appear at the same time
-        if ( this.model.get("is_logged_in") || !this.model.get("is_logged_in") ) {
-            this.$(".learn-tab").removeClass("display-none");
-        }
-        // STUDENTS
-        if ( this.model.get("is_logged_in") && !this.model.get("is_admin") ) {
-            this.$(".student").removeClass("display-none");
-        }
-        // TEACHER
-        if ( !this.model.get("is_django_user") && this.model.get("is_admin") ) {
-            this.$(".teacher").removeClass("display-none");
-        }
-        // ADMINS
-        if ( this.model.get("is_django_user") ) {
-            this.$(".admin").removeClass("display-none");
+
+        // activates nav tab according to current page
+        if ( this.model.pageType() == "teachPage" ) {
+            this.$(".teach-tab").addClass("active");
+        } else if ( this.model.pageType() == "learnPage" ) {
+            this.$(".learn-tab").addClass("active");
+        } else if ( this.model.pageType() == "managePage" ) {
+            this.$(".manage-tab").addClass("active");   
         }
 
-        // ACTIVATES NAV TAB ACCORDING TO CURRENT PAGE
-        if ( onTeachPage ) {
-            this.$(".teach-tab").addClass("active");
-        } else if ( onManagePage ) {
-            this.$(".manage-tab").addClass("active");
-        } else if ( onLearnPage ) {
-            this.$(".learn-tab").addClass("active");
-        }
-       
     }
 
 });

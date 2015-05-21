@@ -5,6 +5,10 @@
 
 {% block title %}{% trans "Update Languages" %}{% endblock %}
 
+{% block i18n_do_not_translate %}
+    {% block languages_active %}active{% endblock languages_active %}
+{% endblock i18n_do_not_translate %}
+
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_languages.css' %}" />
 {% endblock headcss %}

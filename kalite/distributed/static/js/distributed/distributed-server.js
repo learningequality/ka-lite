@@ -194,6 +194,20 @@ var StatusModel = Backbone.Model.extend({
         points = points || 0;
         // add the points that existed at page load and the points earned since page load, to get the total current points
         this.set("points", this.get("points") + points);
+    },
+
+    pageType: function() {
+
+        if ( window.location.pathname.search(Urls.coach_reports()) > -1 ) {
+            return "teachPage";
+        } 
+        if ( window.location.pathname.search(Urls.learn()) > -1 ) {
+            return "learnPage";
+        } 
+        if ( window.location.pathname.search(Urls.zone_redirect()) > -1 || window.location.pathname.search("/update/") > -1 ) {
+            return "managePage";
+        }
+        
     }
 
 });
