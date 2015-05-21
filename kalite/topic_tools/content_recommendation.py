@@ -6,15 +6,24 @@ Three main functions:
     - get_explore_recommendations(user)
 '''
 import random
+import copy
 import kalite.facility
 from kalite.topic_tools import * 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog , VideoLog
+from fle_utils.general import softload_json, json_ascii_decoder
 
 
 
+#some things to cache (exercise parents_lookup table isn't as intense, but is used frequently)
+topic_tree = None
+exercise_parents_lookup_table = None
+CACHE_VARS.append("topic_tree")
+CACHE_VARS.append("exercise_parents_lookup_table")
 
-
+TOPICS_FILEPATHS = {
+    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
+}
 ########################################## 'RESUME' LOGIC #################################################
 
 ###
@@ -26,15 +35,22 @@ from kalite.main.models import ExerciseLog , VideoLog
 def get_resume_recommendations(user):
     #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after
     table = get_exercise_parents_lookup_table()
+    topic_table = get_topic_tree_lookup_table()
     # ! first pass returns only be the most recent vid/exercise !
     final = get_most_recent_incomplete_item(user)
-    
+    video = get_most_recent_incomplete_videos(user)[0]
+    final = {}
     #add some more data with help of lookup table (if possible)
-    if final['id'] in table:
-        final['title'] = table[ final['id'] ]['title']
-        final['subtopic_title'] = table[ final['id'] ]['subtopic_title']
+    #if final['id'] in table:
+    if video in table:
+        #final['lesson_title'] = table[ final['id'] ]['title']
+        #final['subtopic_title'] = table[ final['id'] ]['subtopic_title']
+        
+        final['lesson_title'] = table[ video ]['title']
+        final['subtopic_title'] = table[ video ]['subtopic_title']
+        final['lesson_description'] = topic_table[table[video]['subtopic_id']]['description'] #need to change to actual lesson
 
-    return [final] #for first pass, just return the most recent exercise/video
+    return [final] #for first pass, just return the most recent video!!!
 
 
 
@@ -58,7 +74,7 @@ def get_resume_recommendations(user):
 ###
 def get_next_recommendations(user):
 
-    #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after    
+    user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after    
 
     exercise_parents_table = get_exercise_parents_lookup_table()
 
@@ -96,6 +112,7 @@ def get_next_recommendations(user):
             final.append( {
                     exercise:   {'kind':exercise_parents_table[exercise]['kind'],
                                   'lesson_title':exercise_parents_table[exercise]['title'],
+                                  'lesson_description': exercise_parents_table[exercise]['description'],
                                   'subtopic_title':exercise_parents_table[exercise]['subtopic_title'],
                                   'subtopic_id':exercise_parents_table[exercise]['subtopic_id']
                                 } 
@@ -225,7 +242,7 @@ def get_explore_recommendations(user):
 
     '''
 
-    #user = ExerciseLog.objects.filter(id__lte=1)[4].user            #random person, can delete after   
+    user = ExerciseLog.objects.filter(id__lte=1)[4].user            #random person, can delete after   
 
     data = generate_recommendation_data()                           #topic tree alg
     exercise_parents_table = get_exercise_parents_lookup_table()    #for finding out subtopic ids
@@ -294,8 +311,8 @@ def get_subtopic_data(subtopic_id):
             
             #a match!!
             if subtopic['id'] == subtopic_id:
-
-                return { "title":subtopic['title'], "id":subtopic_id }
+                
+                return { "title":subtopic['title'], "id":subtopic_id, 'lesson_description':subtopic['description']}
 
     return [] #ideally should never get here
 
@@ -307,6 +324,10 @@ def get_subtopic_data(subtopic_id):
 #returns a dictionary of exercises with their metadata.
 #subtopics are the immediate parents (ex: early-math, biology) and topics are one more level above (math)
 def get_exercise_parents_lookup_table():
+    global exercise_parents_lookup_table
+
+    if exercise_parents_lookup_table:
+        return exercise_parents_lookup_table
 
     ### topic tree for traversal###
     tree = generate_topic_tree()
@@ -320,21 +341,25 @@ def get_exercise_parents_lookup_table():
             for ex in subtopic['children']:
 
                 exercise_parents_table[ ex['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
-                    "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex['kind'], "title":ex['title']}
+                    "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex['kind'], "title":ex['title'],
+                    "description": ex['description']}
 
                 if 'children' in ex: #if there is another layer of children
 
                     for ex2 in ex['children']:
 
                         exercise_parents_table[ ex2['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
-                        "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex2['kind'],"title":ex['title']}
+                        "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex2['kind'],"title":ex['title'],
+                        "description": ex['description']}
 
                         #if there is yet another level
                         if 'children' in ex2:
 
                             for ex3 in ex2['children']:
+                    
                                 exercise_parents_table[ ex3['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
-                                "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex3['kind'],"title":ex['title']}
+                                "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex3['kind'],"title":ex['title'],
+                                "description": ex['description']}
 
                   
     return exercise_parents_table
@@ -344,6 +369,7 @@ def get_exercise_parents_lookup_table():
 def get_exercises_from_topics(topicId_list):
     exs = []
     for topic in topicId_list:
+
         exercises = get_topic_exercises(topic)[:5] #can change this line to allow for more to be returned
         for e in exercises:
             exs += [e['id']] #only add the id to the list
@@ -446,15 +472,48 @@ def get_users_in_group(user_type, group_id, facility):
 
 
 #returns a topic tree representation like in the older versions of ka-lite
-def generate_topic_tree():
+#import time
+def generate_topic_tree(channel=settings.CHANNEL, language=settings.LANGUAGE_CODE):
+    #start = time.clock()
+    global topic_tree
 
-      ### populate data exploiting structure of topic tree ###
-    if not TOPICS:
-        tree = get_topic_tree() 
-    else:
-        tree = TOPICS[settings.CHANNEL][settings.LANGUAGE_CODE] #else grab the cached topic tree
+    #cached
+    if topic_tree:
+        return topic_tree
 
-    return tree
+    #fun recursion?
+    #lookup_table = get_topic_tree_lookup_table(tree)
+    #topic_tree = recursively_append_children(topic_tree, lookup_table)
+
+    #hehe
+    TOPICS = {}
+    TOPICS[channel] = {}
+    TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)    
+    topic_tree = TOPICS[settings.CHANNEL][settings.LANGUAGE_CODE]
+
+    return topic_tree
+
+
+#helper function for generate_topic_tree() - returns a lookup table that stores object ids and their
+#associated meta data needed for generate_topic_tree()
+def get_topic_tree_lookup_table(tree=get_topic_tree()):
+    table = {}
+    for item in tree:
+        curr = {
+            'id' : item['id'],
+            'title' : item['title'],
+            'kind' : item['kind'],
+            'path' : item['path'],
+            'description' : item['description']
+        }
+
+        #if current item is NOT a video or exercise, also include the children
+        if not (item['kind'] == 'Video' or item['kind'] == 'Exercise'):
+            curr['children'] = item['children']
+
+        table[ item['id'] ] = curr
+
+    return table
 
 
 ###################################### BEGIN NEAREST NEIGHBORS ############################################
