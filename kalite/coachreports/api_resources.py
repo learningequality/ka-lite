@@ -35,7 +35,7 @@ class CoachReportBaseResource(Resource):
 
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}
-        if isinstance(bundle_or_obj, self.object_class):
+        if isinstance(bundle_or_obj, self._meta.object_class):
             kwargs['pk'] = bundle_or_obj.id
         else:
             kwargs['pk'] = bundle_or_obj.obj.id
@@ -60,9 +60,9 @@ class PlaylistProgressResource(CoachReportBaseResource):
     ex_pct_struggling = fields.IntegerField(attribute='ex_pct_struggling')
     ex_pct_incomplete = fields.IntegerField(attribute='ex_pct_incomplete')
     ex_status = fields.CharField(attribute='ex_status')
-    quiz_exists = fields.BooleanField(attribute='quiz_exists')
-    quiz_status = fields.CharField(attribute='quiz_status')
-    quiz_pct_score = fields.IntegerField(attribute='quiz_pct_score')
+    # quiz_exists = fields.BooleanField(attribute='quiz_exists')
+    # quiz_status = fields.CharField(attribute='quiz_status')
+    # quiz_pct_score = fields.IntegerField(attribute='quiz_pct_score')
     n_pl_videos = fields.IntegerField(attribute='n_pl_videos')
     n_pl_exercises = fields.IntegerField(attribute='n_pl_exercises')
 
