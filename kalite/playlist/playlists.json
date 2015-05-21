@@ -764,10 +764,16 @@
         "sort_order": 5
       },
       {
+        "entity_id": "/e/multiplying_and_dividing_negative_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
         "entity_id": "/v/multiplying-negative-real-numbers/",
         "entity_kind": "Video",
         "is_essential": true,
-        "sort_order": 6
+        "sort_order": 7
       }
     ],
     "id": "g6_p8",
