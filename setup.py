@@ -5,14 +5,16 @@ from __future__ import unicode_literals
 from __future__ import print_function
 import os
 import re
+import logging
+import pkg_resources
+import shutil
 import sys
 
-import kalite
-import pkg_resources
-
+from distutils import log
 from setuptools import setup, find_packages
-import logging
-import shutil
+from setuptools.command.install_scripts import install_scripts
+
+import kalite
 
 # Path of setup.py, used to resolve path of requirements.txt file
 where_am_i = os.path.dirname(os.path.realpath(__file__))
@@ -20,19 +22,26 @@ where_am_i = os.path.dirname(os.path.realpath(__file__))
 # Handle requirements
 DIST_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
 
-# Strip comments and empty lines
-req_pattern = re.compile(r'^\s*([^\#]+)')
+
 def filter_requirement_statements(req):
+    """Filter comments and blank lines from a requirements.txt like file
+    content to feed pip"""
+    # Strip comments and empty lines
+    req_pattern = re.compile(r'^\s*([^\#]+)')
+
     m = req_pattern.search(req)
     if m:
         return m.group(0).replace(" ", "")
 
+
+# Filter out comments from requirements
 DIST_REQUIREMENTS = map(filter_requirement_statements, DIST_REQUIREMENTS)
 DIST_REQUIREMENTS = filter(lambda x: bool(x), DIST_REQUIREMENTS)
 
 # Requirements if doing a build with --static
 STATIC_REQUIREMENTS = []
 
+# Decide if the invoked command is a request to do building
 DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wheel")])
 
 # This is where static packages are automatically installed by pip when running
@@ -48,8 +57,10 @@ STATIC_DIST_PACKAGES = os.path.join(where_am_i, 'dist-packages')
 if not os.path.exists(STATIC_DIST_PACKAGES):
     os.mkdir(STATIC_DIST_PACKAGES)
 
+# We are running from source if .KALITE_SOURCE_DIR exists
 RUNNING_FROM_SOURCE = os.path.exists(os.path.join(where_am_i, ".KALITE_SOURCE_DIR"))
 
+# Default description of the distributed package
 DIST_DESCRIPTION = (
     """KA Lite is a light-weight web server for viewing and interacting """
     """with core Khan Academy content (videos and exercises) without """
@@ -138,7 +149,63 @@ data_files += [(
 )]
 
 
-# It's a static build, so we invoke pip to bundle dependencies in python-packages
+################
+# Windows code #
+################
+#
+# Close your eyes
+
+BAT_TEMPLATE = \
+    r"""@echo off
+set mypath=%~dp0
+set pyscript="%mypath%{FNAME}"
+set /p line1=<%pyscript%
+if "%line1:~0,2%" == "#!" (goto :goodstart)
+echo First line of %pyscript% does not start with "#!"
+exit /b 1
+:goodstart
+set py_exe=%line1:~2%
+call %py_exe% %pyscript% %*
+"""
+
+
+class my_install_scripts(install_scripts):
+    def run(self):
+        install_scripts.run(self)
+        if not os.name == "nt":
+            return
+        for filepath in self.get_outputs():
+            # If we can find an executable name in the #! top line of the script
+            # file, make .bat wrapper for script.
+            with open(filepath, 'rt') as fobj:
+                first_line = fobj.readline()
+            if not (first_line.startswith('#!') and
+                    'python' in first_line.lower()):
+                log.info("No #!python executable found, skipping .bat wrapper")
+                continue
+            pth, fname = os.path.split(filepath)
+            froot, ___ = os.path.splitext(fname)
+            bat_file = os.path.join(pth, froot + '.bat')
+            bat_contents = BAT_TEMPLATE.replace('{FNAME}', fname)
+            log.info("Making %s wrapper for %s" % (bat_file, filepath))
+            if self.dry_run:
+                continue
+            with open(bat_file, 'wt') as fobj:
+                fobj.write(bat_contents)
+
+
+# You can open your eyes again
+#
+#####################
+# END: Windows code #
+#####################
+
+
+######################################
+# STATIC AND DYNAMIC BUILD SPECIFICS #
+######################################
+
+# If it's a static build, we invoke pip to bundle dependencies in python-packages
 # This would be the case for commands "bdist" and "sdist"
 if STATIC_BUILD:
     
@@ -192,7 +259,9 @@ if STATIC_BUILD:
         install_distributions(STATIC_REQUIREMENTS)
     
     # Empty the requirements.txt file
-    
+
+
+# It's not a build command with --static or it's not a build command at all
 else:
     
     # If the dist-packages directory is non-empty
@@ -263,4 +332,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
     include_package_data=True,
+    cmdclass={
+        'install_scripts': my_install_scripts  # Windows bat wrapper
+    }
 )
