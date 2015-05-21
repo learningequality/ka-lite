@@ -56,7 +56,8 @@ var detailsPanelView = BaseView.extend({
             this.collection = new window.AttemptLogCollection([], {
                 user: this.model.get("user"),
                 limit: this.limit,
-                exercise_id: this.model.get("exercise_id")
+                exercise_id: this.model.get("exercise_id"),
+                order_by: "timestamp"
             });
             this.collection.fetch();
         }
