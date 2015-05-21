@@ -173,9 +173,6 @@ if STATIC_BUILD:
     enable_log_to_stdout('pip.commands.install')
     
     def install_distributions(distributions):
-        # Turn into a list, because of comment about failure on some systems:
-        # https://github.com/learningequality/ka-lite/pull/3672#issuecomment-104063687
-        distributions = [d for d in distributions]
         command = pip.commands.install.InstallCommand()
         opts, ___ = command.parser.parse_args()
         opts.target_dir = STATIC_DIST_PACKAGES
@@ -192,7 +189,6 @@ if STATIC_BUILD:
     
     # Install requirements into dist-packages
     if DIST_BUILDING_COMMAND:
-        print(STATIC_REQUIREMENTS)
         install_distributions(STATIC_REQUIREMENTS)
     
     # Empty the requirements.txt file
