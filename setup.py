@@ -19,6 +19,9 @@ where_am_i = os.path.dirname(os.path.realpath(__file__))
 # Handle requirements
 DIST_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
 
+# Requirements if doing a build with --static
+STATIC_REQUIREMENTS = []
+
 DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wheel")])
 
 # This is where static packages are automatically installed by pip when running
@@ -159,6 +162,9 @@ if STATIC_BUILD:
     enable_log_to_stdout('pip.commands.install')
     
     def install_distributions(distributions):
+        # Turn into a list, because of comment about failure on some systems:
+        # https://github.com/learningequality/ka-lite/pull/3672#issuecomment-104063687
+        distributions = list(distributions)
         command = pip.commands.install.InstallCommand()
         opts, ___ = command.parser.parse_args()
         opts.target_dir = STATIC_DIST_PACKAGES
