@@ -9,28 +9,29 @@
       </div>
       <hr class="module_divider"/>
   </div>
-  <a href="{{video_url}}">
+  <a href="/learn/{{ path }}">
     <!--Where the video thumbnail and description go-->
     <div id="content-resume-thumbnail">
             <div class="row">
               <center>
-                <div class="col-xs-12"><h3>Algorithms {{ lesson_title }}</h3></div>
+                <div class="col-xs-12"><h3>{{ title }}</h3></div>
               </center>
                 <div class="col-xs-12">
-                  <img class="img-responsive"src="/static/images/distributed/video.png" alt="video" />
+                  <img class="img-responsive" src="{{ thumbnail_url }}" alt="{{ description }}" />
                 </div>
 
             </div>
-
+            {{#if description }}
             <div class="row">
               <div class="col-xs-12"><h3>Description:</h3></div>
             </div>
 
             <div class="row">
               <div class="col-xs-12">
-                <p>{{ lesson_description }}</p>
+                <p>{{ description }}</p>
               </div>
             </div>
+            {{/if}}
     </div>
   </a>
 </div>

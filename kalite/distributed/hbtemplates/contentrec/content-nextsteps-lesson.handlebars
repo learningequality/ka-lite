@@ -1,23 +1,25 @@
 
 <div class="row" id="content-nextsteps-lesson">
-	<a href="{{video_url}}">
+	<a href="/learn/{{ path }}">
       <div class="col-xs-3">
         <center>
           <h1 class="ns_thumb glyphicon glyphicon-expand"></h1>
         </center>
-        <!-- Just for now!
-        <img src="{{video_thumbnail}}" class="img-responsive">
-        -->
+        {{#if thumbnail_url }}
+        <img src="{{thumbnail_url}}" class="img-responsive">
+        {{else}}
+        <i class="icon-{{kind}}"></i>
+        {{/if}}
       </div>
 
       <div class="col-xs-6">
-          <h3>{{ interest_topic }}:</h3>
-          <p>{{ lesson_title }}</p>
+          <h3>{{ topic.title }}:</h3>
+          <p>{{ title }}</p>
       </div>
     </a>
     <!--The URL without the specific video, so that we see the path
     along the nav and show them the entire series-->
-    <a href="{{video_url_sidenav}}">
+    <a href="/learn/{{ topic.path }}">
       <div class="col-xs-3">
           <h4>Series</h4>
           <span class="ns_series_arrow glyphicon glyphicon-arrow-right" aria-hidden="true"></span>

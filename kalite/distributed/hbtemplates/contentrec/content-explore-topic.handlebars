@@ -1,20 +1,22 @@
 <!--likely to be a link to the subject in the sidenav tree-->
-<a href="{{topic_link}}">
+<a href="/learn/{{suggested_topic.path}}">
   <div id="content-explore-topic">
     <div class="row">
       <div class="col-xs-12">
-          <h5 class="small">Based on your interest in {{ interest_topic }}:</h5>
+          <h5 class="small">Based on your interest in {{ interest_topic.title }}:</h5>
 
       </div>
     </div>
     <div class="row">
       <div class="col-xs-6">
-          <h3>{{ suggested_topic }}:</h3>
+          <h3>{{ suggested_topic.title }}:</h3>
       </div>
+      {{#if suggested_topic.description }}
       <div class="col-xs-6">
         <p><b>Description:</b><p>
-        <p>{{ lesson_description }}</p>
+        <p>{{ suggested_topic.description }}</p>
       </div>
+      {{/if}}
       <hr class="module_divider" />
     </div>
 
