@@ -319,6 +319,7 @@ class ContentRecommender(object):
 
 
 class ContentRecommenderResource(Resource):
+    user = fields.ForeignKey(FacilityUserResource, 'user')
     # Define common fields to resume, next_steps, and explore
     next_steps = fields.BooleanField(attribute='next_steps', default=False)
     resume = fields.BooleanField(attribute='resume', default=False)
@@ -372,6 +373,7 @@ class ContentRecommenderResource(Resource):
         # retrieve resume recommendation(s) and set resume boolean flag
         resume_recommendations = get_resume_recommendations(user)
         for item in resume_recommendations:
+            item['user'] = user
             item['resume'] = True
             recommendations.append(ContentRecommender(item))
 
@@ -379,6 +381,7 @@ class ContentRecommenderResource(Resource):
         next_recommendations = get_next_recommendations(user)
         for item in next_recommendations:
             temp = {}
+            temp['user'] = user
             temp['next_steps'] = True
             temp['id'] = item.keys()[0]
             temp['kind'] = item[temp['id']]['kind']
@@ -392,6 +395,7 @@ class ContentRecommenderResource(Resource):
         explore_recommendations = get_explore_recommendations(user)
         for item in explore_recommendations:
             temp = {}
+            temp['user'] = user
             temp['explore'] = True
             temp['kind'] = 'subtopic'
             temp['accessed_subtopic'] = item['accessed']
