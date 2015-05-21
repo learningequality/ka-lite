@@ -296,43 +296,132 @@ class ContentResource(Resource):
         raise NotImplementedError
 
 
-class ContentRecommender:
+class ContentRecommender(object):
+    """
+    Convert dictionary to object
+    Adapted from @source http://stackoverflow.com/a/1305561/383912
+    """
+    def __init__(self, d=None):
+        self.__dict__['d'] = d
+ 
+    def __getattr__(self, key):
+        value = ''
 
-    def __init__(self, lang_code="en", **kwargs):
+        try:
+            value = self.__dict__['d'][key]
+        except:
+            pass
 
-        standard_fields = [
-            "user",
-        ]
-
-        for k in standard_fields:
-            setattr(self, k, kwargs.pop(k, ""))
+        if type(value) == type({}):
+            return ContentRecommender(value)
+ 
+        return value
 
 
 class ContentRecommenderResource(Resource):
+    # Define common fields to resume, next_steps, and explore
+    next_steps = fields.BooleanField(attribute='next_steps', default=False)
+    resume = fields.BooleanField(attribute='resume', default=False)
+    explore = fields.BooleanField(attribute='explore', default=False)
+    kind = fields.CharField(attribute='kind', null=True, blank=True)
+    
+    # Addition fields for resume and next_steps
+    id = fields.CharField(attribute='id', null=True, blank=True)
+    subtopic_title = fields.CharField(attribute='subtopic_title', null=True, blank=True)
+    
+    # Additional fields for resume recommendation(s) only
+    title = fields.CharField(attribute='title', null=True, blank=True)
+    youtube_id = fields.CharField(attribute='youtube_id', null=True, blank=True)
+    
+    # Additional fields for next_steps
+    subtopic_id = fields.CharField(attribute='subtopic_id', null=True, blank=True)
+    lesson_title = fields.CharField(attribute='lesson_title', null=True, blank=True)
 
-    user = fields.ForeignKey(FacilityUserResource, 'user')
-
+    # Additional fields for explore reccommendations only
+    accessed_subtopic = fields.CharField(attribute='accessed_subtopic', null=True, blank=True)
+    suggested_subtopic_title = fields.CharField(attribute='suggested_subtopic_title', null=True, blank=True)
+    suggested_subtopic_id = fields.CharField(attribute='suggested_subtopic_id', null=True, blank=True)
+    
+ 
     class Meta:
         resource_name = 'contentrecommender'
         object_class = ContentRecommender
+        authorization = UserObjectsOnlyAuthorization()
         filtering = {
             "user": ('exact', ),
         }
 
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if getattr(bundle_or_obj, 'obj', None):
-            kwargs['pk'] = bundle_or_obj.obj.id
-        else:
-            kwargs['pk'] = bundle_or_obj.id
-        return kwargs
+    def dehydrate(self, bundle):
+        """Remove unused fields...resume, next_steps, and explore have different fields."""
+        field_names = [x for x in bundle.data]
+
+        for field_name in field_names:
+            if not bundle.data[field_name]:
+                del bundle.data[field_name]
+
+        return bundle
 
     def get_object_list(self, request):
-        output = get_explore_recommendations(request.user) + get_next_recommendations(request.user) + get_resume_recommendations(request.user)
-        return output
+        """Populate response with recommendation(s)"""
+        user = getattr(request, "user", None)
+        recommendations = []
+        
+        # TODO: check if multiple filters exist
+        # filters = request.GET.get('filters', None)
+
+        # retrieve resume recommendation(s) and set resume boolean flag
+        resume_recommendations = get_resume_recommendations(user)
+        for item in resume_recommendations:
+            item['resume'] = True
+            recommendations.append(ContentRecommender(item))
+
+        # retrieve next_steps recommendations, set next_steps boolean flag, and flatten results for api response
+        next_recommendations = get_next_recommendations(user)
+        for item in next_recommendations:
+            temp = {}
+            temp['next_steps'] = True
+            temp['id'] = item.keys()[0]
+            temp['kind'] = item[temp['id']]['kind']
+            temp['subtopic_title'] = item[temp['id']]['subtopic_title']
+            temp['subtopic_id'] = item[temp['id']]['subtopic_id']
+            temp['lesson_title'] = item[temp['id']]['lesson_title']
+
+            recommendations.append(ContentRecommender(temp))
+
+        # retrieve explore recommendations, set explore boolean flag, and flatten results for api response
+        explore_recommendations = get_explore_recommendations(user)
+        for item in explore_recommendations:
+            temp = {}
+            temp['explore'] = True
+            temp['kind'] = 'subtopic'
+            temp['accessed_subtopic'] = item['accessed']
+            
+            # unpack each recommended subtopic and return each as separate recommendation
+            for recommended_topic in item['recommended_topics']:
+                temp['suggested_subtopic_title'] = recommended_topic['title']
+                temp['suggested_subtopic_id'] = recommended_topic['id']
+            
+                recommendations.append(ContentRecommender(temp))
+
+        return recommendations
 
     def obj_get_list(self, bundle, **kwargs):
         return self.get_object_list(bundle.request)
 
     def obj_get(self, bundle, **kwargs):
-        raise NotImplementedError
+        raise NotImplemented("ContentRecommender is a collection resource.")
+
+    def obj_create(self, bundle, **kwargs):
+        raise NotImplemented("ContentRecommender is a read-only resource.")
+
+    def obj_update(self, bundle, **kwargs):
+        raise NotImplemented("ContentRecommender is a read-only resource.")
+
+    def obj_delete_list(self, bundle, **kwargs):
+        raise NotImplemented("ContentRecommender is a read-only resource.")
+
+    def obj_delete(self, bundle, **kwargs):
+        raise NotImplemented("ContentRecommender is a read-only resource.")
+
+    def rollback(self, bundles):
+        raise NotImplemented("ContentRecommender is a read-only resource.")
