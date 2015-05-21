@@ -1,8 +1,9 @@
+{% load i18n %}
 <div class="panel panel-default">
     <div class="panel-body text-center">
         {% if form.errors %}
             <p style="color: white;">
-                This app requires a super user. Please correct the error{{ form.errors|pluralize }} below.
+                {% blocktrans count counter=form.errors.items|length %}This app requires a super user. Please correct the error below.{% plural %}This app requires a super user. Please correct the errors below.{% endblocktrans %}
             </p>
         {% endif %}
         </br>
@@ -23,7 +24,7 @@
             </div>
             </br>
             {% csrf_token %}
-            <button class="create-btn btn btn-lg btn-primary" type="submit">Create</button>
+            <button class="create-btn btn btn-lg btn-primary" type="submit">{% trans 'Create' %}</button>
         </form>
     </div>
 </div>
