@@ -392,7 +392,7 @@ class ContentRecommenderResource(Resource):
     subtopic_id = fields.CharField(attribute='subtopic_id', null=True, blank=True)
     lesson_title = fields.CharField(attribute='lesson_title', null=True, blank=True)
     # Additional fields for explore reccommendations only
-    accessed_subtopic = fields.CharField(attribute='accessed_subtopic', null=True, blank=True)
+    interest_subtopic = fields.CharField(attribute='interest_subtopic', null=True, blank=True)
     suggested_subtopic_title = fields.CharField(attribute='suggested_subtopic_title', null=True, blank=True)
     suggested_subtopic_id = fields.CharField(attribute='suggested_subtopic_id', null=True, blank=True)
     
@@ -457,7 +457,7 @@ class ContentRecommenderResource(Resource):
             temp['user'] = user
             temp['explore'] = True
             temp['kind'] = 'subtopic'
-            temp['accessed_subtopic'] = item['accessed']
+            temp['interest_subtopic'] = item['accessed']
             
             # unpack each recommended subtopic and return each as separate recommendation
             for recommended_topic in item['recommended_topics']:
