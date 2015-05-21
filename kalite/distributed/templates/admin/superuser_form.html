@@ -6,7 +6,6 @@
                 {% blocktrans count counter=form.errors.items|length %}This app requires a super user. Please correct the error below.{% plural %}This app requires a super user. Please correct the errors below.{% endblocktrans %}
             </p>
         {% endif %}
-        </br>
         <form class="form-horizontal" id="superusercreate-box" method="post">
             <div class="field">
                 {{ form.superusername.errors }}
@@ -23,8 +22,9 @@
                 {{ form.superemail }}
             </div>
             </br>
+            </br>
             {% csrf_token %}
-            <button class="create-btn btn btn-lg btn-primary" type="submit">{% trans 'Create' %}</button>
+            <button class="create-btn login-btn btn btn-lg btn-primary" type="submit">{% trans 'Create' %}</button>
         </form>
     </div>
 </div>

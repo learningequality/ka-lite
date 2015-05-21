@@ -66,19 +66,19 @@ window.SuperUserCreateModalView = BaseView.extend({
 
     highlightForm: function(){
         if (this.validateEmail(this.$("#id_superemail").val())){
-            this.$("#id_superemail").css({ 'borderColor': 'green', 'border-width': '3px'});
+            this.$("#id_superemail").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
         }else{
-            this.$("#id_superemail").focus().css({ 'borderColor': 'red', 'border-width': '3px'});
+            this.$("#id_superemail").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
         }
         if (this.$("#id_superpassword").val()){
-            this.$("#id_superpassword").css({ 'borderColor': 'green', 'border-width': '3px'});
+            this.$("#id_superpassword").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
         }else{
-            this.$("#id_superpassword").focus().css({ 'borderColor': 'red', 'border-width': '3px'});
+            this.$("#id_superpassword").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
         }
         if (this.$("#id_superusername").val()){
-            this.$("#id_superusername").css({ 'borderColor': 'green', 'border-width': '3px'});
+            this.$("#id_superusername").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
         }else{
-            this.$("#id_superusername").focus().css({ 'borderColor': 'red', 'border-width': '3px'});
+            this.$("#id_superusername").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
         }
     },
 
