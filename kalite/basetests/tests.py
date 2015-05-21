@@ -223,7 +223,6 @@ class PackagesTests(DependenciesTests):
         "khanacademy": NO_VERSION,
         "playground": NO_VERSION,
         "pyasn1": "0.1.4",
-        "pytz": "2012d",
         "requests": "0.14.2",
         "rsa": "3.1.1",
         "smmap": "0.8.2",
