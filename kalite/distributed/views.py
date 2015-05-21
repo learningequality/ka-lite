@@ -27,6 +27,8 @@ from kalite import topic_tools
 from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
+from kalite.distributed.forms import SuperuserForm
+import json
 
 
 def check_setup_status(handler):
@@ -40,10 +42,8 @@ def check_setup_status(handler):
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
 
-        #Fix for #2047: prompt user to create an admin account if none exists
         if User.objects.exists():
             request.has_superuser = True
-            # messages.warning(request, _("No administrator account detected. Please run 'kalite manage createsuperuser' from the terminal to create one."))
 
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
@@ -215,18 +215,26 @@ def search(request):
 
 def create_superuser(request):
     if request.method == 'POST':
-        if(request.POST.get('superusername', '') and request.POST.get('superpassword', '') 
-            and request.POST.get('superemail', '') and '@' in request.POST['superemail']): 
-            superusername = request.POST.get('superusername', '')
-            superpassword = request.POST.get('superpassword', '')
-            superemail = request.POST.get('superemail', '')
-            if(len(superusername) < 30 and len(superpassword) < 30 and len(superemail) < 30):
-                User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
-                return HttpResponse(status=200)
-            else:
-                return HttpResponse(status=403)
+        intent = request.REQUEST.get('intent', None)
+        if intent == 'addform':
+            form = SuperuserForm()
+            return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+            data = {'Status' : 'ShowModal', 'data' : return_html}
         else:
-            return HttpResponse(status=403)
+            form = SuperuserForm(request.POST)
+            if form.is_valid():
+                # security precaution
+                cd = form.cleaned_data
+                superusername = cd['superusername']
+                superpassword = cd['superpassword']
+                superemail = cd['superemail']
+                User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
+                data = {'Status' : 'Success'}
+            else:
+                return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+                data = {'Status' : 'Invalid', 'data' : return_html}
+
+        return HttpResponse(json.dumps(data), content_type="application/json")
 
 def crypto_login(request):
     """

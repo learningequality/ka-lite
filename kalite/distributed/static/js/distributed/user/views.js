@@ -1,7 +1,11 @@
-// Separate out the modal behaviour from the login functionality
-// This allows the LoginView to be embedded more flexibly across the site if needed
-
 window.SuperUserCreateModalView = BaseView.extend({
+    events: {
+        "click .create-btn": "create_superuser_click",
+        "keypress #id_superusername": "key_user",
+        "keypress #id_superpassword": "key_pass",
+        "keypress #id_superemail": "key_email"
+    },
+
     template: HB.template("user/superusercreatemodal"),
 
     initialize: function() {
@@ -17,83 +21,64 @@ window.SuperUserCreateModalView = BaseView.extend({
 
     addSuperUserForm: function() {
         this.show_modal();
-        if (this.superuserView) {
-            this.superuserView.render();
-        } else {
-            this.superuserView = new SuperUserCreateView({model: this.model, el: "#superusercreate-container"});
-            this.listenTo(this.superuserView, "superusercreate_success", this.close_modal);
-        }
-    },
-
-    close_modal: function() {
-        $("#superUserCreateModal").modal('hide');
-    },
-
-    show_modal: function() {
-        $("#superUserCreateModal").modal('show');
-    }
-});
-
-window.SuperUserCreateView = BaseView.extend({
-
-    events: {
-        "click .create-btn": "create_superuser_click",
-        "keypress #super_username": "key_user",
-        "keypress #super_password": "key_pass",
-        "keypress #super_email": "key_email"
-    },
-
-    template: HB.template("user/superusercreate"),
-
-    initialize: function() {
-        _.bindAll(this);
-        this.admin = false;
-        this.render();
-    },
-
-    render: function() {
-        this.$el.html(this.template());
+        $.ajax({
+            context: this,
+            type: 'post',
+            url: 'api/django_user',
+            dataType: 'json',
+            data : {'intent' : 'addform'},
+            success : function(e){
+                if (e.Status == 'ShowModal'){
+                    $('#superusercreate-container').html(e.data);
+                    setTimeout(function () {this.$("#id_superusername").focus().select()}, 900);
+                }
+            },
+            error : function(e){
+                console.log(e);
+            }
+        });
     },
 
     create_superuser_click: function() {
-        if (this.validateForm()){
+        $('#superusercreate-box').submit({param1: this}, function (e) {
+            mContext = e.data.param1;
+            e.preventDefault();
             $.ajax({
-                context: this,
-                url: 'create_superuser_from_browser/',
-                type: 'POST',
+                context: mContext,
+                type: 'post',
+                url: 'api/django_user',
+                dataType: 'json',
                 data: $("#superusercreate-box").serialize(),
-                success: function(data, textStatus, xhr)
-                {
-                    this.trigger("superusercreate_success")
+                success : function(e){
+                    if (e.Status == 'Success') {
+                        this.close_modal();
+                    }else if (e.Status == 'Invalid'){
+                        $('#superusercreate-container').html(e.data);
+                        this.highlightForm();
+                    }
                 },
+                error : function(e){
+                    console.log(e);
+                }
             });
-        }
+        });
     },
 
-    validateForm: function(){
-        var valid1, valid2, valid2, valid3 = false;
-        if (this.$("#super_username").val()){
-            this.$("#super_username").css({ 'borderColor': 'green', 'border-width': '3px'});
-            valid1 = true;
+    highlightForm: function(){
+        if (this.validateEmail(this.$("#id_superemail").val())){
+            this.$("#id_superemail").css({ 'borderColor': 'green', 'border-width': '3px'});
         }else{
-            this.$("#super_username").css({ 'borderColor': 'red', 'border-width': '3px'});
+            this.$("#id_superemail").focus().css({ 'borderColor': 'red', 'border-width': '3px'});
         }
-        if (this.$("#super_password").val()){
-            this.$("#super_password").css({ 'borderColor': 'green', 'border-width': '3px'});
-            valid2 = true;
+        if (this.$("#id_superpassword").val()){
+            this.$("#id_superpassword").css({ 'borderColor': 'green', 'border-width': '3px'});
         }else{
-            this.$("#super_password").css({ 'borderColor': 'red', 'border-width': '3px'});
+            this.$("#id_superpassword").focus().css({ 'borderColor': 'red', 'border-width': '3px'});
         }
-        if (this.validateEmail(this.$("#super_email").val())){
-            this.$("#super_email").css({ 'borderColor': 'green', 'border-width': '3px'});
-            valid3 = true;
+        if (this.$("#id_superusername").val()){
+            this.$("#id_superusername").css({ 'borderColor': 'green', 'border-width': '3px'});
         }else{
-            this.$("#super_email").css({ 'borderColor': 'red', 'border-width': '3px'});
-        }
-        if (valid1 && valid2 && valid3){
-            return true;
-        }else{
-            return false;
+            this.$("#id_superusername").focus().css({ 'borderColor': 'red', 'border-width': '3px'});
         }
     },
 
@@ -102,25 +87,38 @@ window.SuperUserCreateView = BaseView.extend({
         return re.test(email);
     },
 
+    close_modal: function() {
+        $("#superUserCreateModal").modal('hide');
+    },
+
+    show_modal: function() {
+        $("#superUserCreateModal").modal('show');
+    },
+
     key_user: function(event) {
         if (event.which == 13) {
-            this.$("#super_password").focus().select();
+            event.preventDefault();
+            this.$("#id_superpassword").focus().select();
         }
     },
 
     key_pass: function(event) {
         if (event.which == 13) {
-            this.$("#super_email").focus().select();
+            event.preventDefault();
+            this.$("#id_superemail").focus().select();
         }
     },
 
     key_email: function(event) {
         if (event.which == 13) {
-            this.create_superuser_click();
+            event.preventDefault();
+            this.$(".create-btn").focus().click();
         }
     }
 });
 
+// Separate out the modal behaviour from the login functionality
+// This allows the LoginView to be embedded more flexibly across the site if needed
 window.LoginModalView = BaseView.extend({
     template: HB.template("user/loginmodal"),
 

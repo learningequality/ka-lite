@@ -102,7 +102,7 @@ urlpatterns += patterns(__package__ + '.views',
     # the following pattern is a catch-all, so keep it last:
 
     # Let user to create the super user from browser
-    url(r'^create_superuser_from_browser/$', 'create_superuser'),
+    url(r'^api/django_user$', 'create_superuser'),
 
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
