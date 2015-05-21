@@ -241,7 +241,7 @@ if STATIC_BUILD:
     
     def install_distributions(distributions):
         command = pip.commands.install.InstallCommand()
-        opts, ___ = command.parser.parse_args()
+        opts, ___ = command.parser.parse_args([])
         opts.target_dir = STATIC_DIST_PACKAGES
         opts.build_dir = STATIC_DIST_PACKAGES_TEMP
         opts.download_cache = STATIC_DIST_PACKAGES_DOWNLOAD_CACHE
