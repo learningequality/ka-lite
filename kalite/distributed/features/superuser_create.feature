@@ -17,8 +17,8 @@ Feature: Create superuser from the in browser modal
         Then the username border will turn red
         And the modal won't dismiss
 
-    Scenario: Create superuser with string longer than 30
-        Given I enter a username longer than 30 letters
+    Scenario: Create superuser with string longer than 40
+        Given I enter a username longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
@@ -28,8 +28,8 @@ Feature: Create superuser from the in browser modal
         Then the password border will turn red
         And the modal won't dismiss
 
-    Scenario: Create superuser with password longer than 30
-        Given I enter a password longer than 30 letters
+    Scenario: Create superuser with password longer than 40
+        Given I enter a password longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
@@ -39,13 +39,15 @@ Feature: Create superuser from the in browser modal
         Then the email border will turn red
         And the modal won't dismiss
 
-    Scenario: Create superuser with email address longer than 30
-        Given I enter a email address longer than 30 letters
+    Scenario: Create superuser with email address longer than 40
+        Given I enter a email address longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
     Scenario: Create superuser with correct username and password and email address
-        Given I enter everything correctly
+        Given I enter username correctly
+        And I enter password correctly
+        And I enter email correctly
         When I click the create button
-        Then the modal will dismiss
-        And a superuser is created
+        Then a superuser is created
+        And the modal will dismiss
