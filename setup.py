@@ -4,6 +4,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from __future__ import print_function
 import os
+import re
 import sys
 
 import kalite
@@ -18,6 +19,16 @@ where_am_i = os.path.dirname(os.path.realpath(__file__))
 
 # Handle requirements
 DIST_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
+
+# Strip comments and empty lines
+req_pattern = re.compile(r'^\s*([^\#]+)')
+def filter_requirement_statements(req):
+    m = req_pattern.search(req)
+    if m:
+        return m.group(0).replace(" ", "")
+
+DIST_REQUIREMENTS = map(filter_requirement_statements, DIST_REQUIREMENTS)
+DIST_REQUIREMENTS = filter(lambda x: bool(x), DIST_REQUIREMENTS)
 
 # Requirements if doing a build with --static
 STATIC_REQUIREMENTS = []
@@ -164,7 +175,7 @@ if STATIC_BUILD:
     def install_distributions(distributions):
         # Turn into a list, because of comment about failure on some systems:
         # https://github.com/learningequality/ka-lite/pull/3672#issuecomment-104063687
-        distributions = list(distributions)
+        distributions = [d for d in distributions]
         command = pip.commands.install.InstallCommand()
         opts, ___ = command.parser.parse_args()
         opts.target_dir = STATIC_DIST_PACKAGES
@@ -181,6 +192,7 @@ if STATIC_BUILD:
     
     # Install requirements into dist-packages
     if DIST_BUILDING_COMMAND:
+        print(STATIC_REQUIREMENTS)
         install_distributions(STATIC_REQUIREMENTS)
     
     # Empty the requirements.txt file
