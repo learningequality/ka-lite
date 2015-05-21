@@ -3,7 +3,7 @@ import os
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 MAJOR_VERSION = "0"
 MINOR_VERSION = "14"
-PATCH_VERSION = "dev0"
+PATCH_VERSION = "dev2"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
