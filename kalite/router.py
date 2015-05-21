@@ -36,7 +36,7 @@ class TopicToolsRouter():
         """
         Allow relations between the given models only.
         """
-        if obj1.__name__ in self.MODELS and obj2.__name__ in self.MODELS:
+        if type(obj1).__name__ in self.MODELS and type(obj2).__name__ in self.MODELS:
             return True
         return None
 
