@@ -469,7 +469,7 @@ We have made the full set of KA videos (in the format needed by KA Lite) availab
 
 #. Download and install `BitTorrent Sync`_.
 #. Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to type http://127.0.0.1:8888/ into the address bar of your browser to get the interface.
-#. Click the "Enter a key or link" button, and put in **https://link.getsync.com/#f=ka-lite-compressed&sz=25E9&q=-&s=TOQVB3LLGWCKEQ6NOCFBSEVWA74PRA6I&q=-&i=C4M3QMAVXE7RVXR7B3526TBD5V3KYV5V6&q=-&p=CCGAGLIJGFQFP2X2Z4QWQ3MLPJHTVV3A**
+#. Click the "Enter a key or link" button, and enter **BT7AOITNAIP3X3CSLE2EPQJFXJXMXVGQI**
 #. Select the "content" folder inside your KA Lite installation as the "location" (unless you want the videos to be located elsewhere).
 #. Allow the videos to sync in there from your peers! It may take a while for now, as we don't yet have many seeders on it. On that note -- please help seed by keeping it running even after you've got all the videos, if you have bandwidth to spare! This will make it easier for others to download the content as well.
 
