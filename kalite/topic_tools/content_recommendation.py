@@ -37,18 +37,26 @@ def get_resume_recommendations(user):
     table = get_exercise_parents_lookup_table()
     topic_table = get_topic_tree_lookup_table()
     # ! first pass returns only be the most recent vid/exercise !
-    final = get_most_recent_incomplete_item(user)
+    #final = get_most_recent_incomplete_item(user) 
     video = get_most_recent_incomplete_videos(user)[0]
     final = {}
+
     #add some more data with help of lookup table (if possible)
-    #if final['id'] in table:
-    if video in table:
+ 
+    if video in table and video in topic_table:
+
+        #some leaf nodes do not have descriptions
+        description = topic_table[video]['description']
+        if not description:
+            description = topic_table[ parent_id ]['description']
+
         #final['lesson_title'] = table[ final['id'] ]['title']
         #final['subtopic_title'] = table[ final['id'] ]['subtopic_title']
-        
-        final['lesson_title'] = table[ video ]['title']
-        final['subtopic_title'] = table[ video ]['subtopic_title']
-        final['lesson_description'] = topic_table[table[video]['subtopic_id']]['description'] #need to change to actual lesson
+        final['title'] = table[ video ]['title']
+        #final['subtopic_title'] = table[ video ]['subtopic_title']
+        final['description'] = description
+        final['path'] = topic_table[video]['path']
+        final['id'] = topic_table[video]['id']
 
     return [final] #for first pass, just return the most recent video!!!
 
@@ -74,9 +82,10 @@ def get_resume_recommendations(user):
 ###
 def get_next_recommendations(user):
 
-    user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after    
+    #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after    
 
     exercise_parents_table = get_exercise_parents_lookup_table()
+    topic_table = get_topic_tree_lookup_table()
 
     most_recent = get_most_recent_exercises(user)
 
@@ -109,14 +118,17 @@ def get_next_recommendations(user):
     for exercise in (group[:2] + struggling[:2] + topic_tree_based_data[:1]):  #notice the concatenation
 
         if exercise in exercise_parents_table:
-            final.append( {
-                    exercise:   {'kind':exercise_parents_table[exercise]['kind'],
-                                  'lesson_title':exercise_parents_table[exercise]['title'],
-                                  'lesson_description': exercise_parents_table[exercise]['description'],
-                                  'subtopic_title':exercise_parents_table[exercise]['subtopic_title'],
-                                  'subtopic_id':exercise_parents_table[exercise]['subtopic_id']
-                                } 
+            subtopic_id = exercise_parents_table[exercise]['subtopic_id']
+            final.append(   {     'kind':exercise_parents_table[exercise]['kind'],
+                                  'title':topic_table[exercise]['title'],
+                                  'path': topic_table[exercise]['path'],
+                                
+                                  'topic':{
+                                        'title':exercise_parents_table[exercise]['subtopic_title'],
+                                        'path':topic_table[subtopic_id]['path']
+                                    }
                             } 
+                            
                         )
 
 
@@ -238,11 +250,11 @@ def get_explore_recommendations(user):
 
     ''' 
         Logic: grab 3 random exercises from recent exercises, get their subtopic ids, then using
-        generate_recommendation_data(), get the elements at position 1 and 2 (nearest). return these
+        generate_recommendation_data(), get the elements at certain positions (nearest). 
 
     '''
 
-    user = ExerciseLog.objects.filter(id__lte=1)[4].user            #random person, can delete after   
+    #user = ExerciseLog.objects.filter(id__lte=1)[4].user            #random person, can delete after   
 
     data = generate_recommendation_data()                           #topic tree alg
     exercise_parents_table = get_exercise_parents_lookup_table()    #for finding out subtopic ids
@@ -274,7 +286,7 @@ def get_explore_recommendations(user):
     for ex in random_exercises:
         exercise_data = exercise_parents_table[ex]
         subtopic_id = exercise_data['subtopic_id']                      #subtopic_id of current
-        related_subtopics = data[subtopic_id]['related_subtopics'][2:5] #get recommendations based on this, can tweak numbers!
+        related_subtopics = data[subtopic_id]['related_subtopics'][2:7] #get recommendations based on this, can tweak numbers!
 
         recommended_topics = []                                         #the recommended topics
     
@@ -284,13 +296,23 @@ def get_explore_recommendations(user):
             if not curr['id'] in recent_subtopics:                      #check for an unaccessed recommendation
                 recommended_topics.append(curr)                         #add to return
                                                                                              
-        #dictionary to add to the final list
-        to_append = {   "accessed": exercise_data['subtopic_title'], 
-                        "recommended_topics": recommended_topics
-                    }
+        to_append = []
+        if len(recommended_topics) > 0:#if recommendation present
+            suggested = recommended_topics[0]           #the suggested topic + its data
+            accessed  = exercise_data['subtopic_title'] #corresponds to interest_topic in view
+
+            to_append = {
+
+                'suggested_topic': {
+                    'title':suggested['title'], 'path': suggested['path'],
+                    'description': suggested['description']
+                },
+
+                'interest_topic':{'title': accessed}
+            }
     
         #if valid (i.e. not a repeat and also some recommendations)
-        if (not exercise_data['subtopic_id'] in added) and (len(to_append['recommended_topics']) > 0):   
+        if (not exercise_data['subtopic_id'] in added):   
             final.append(to_append)                                     #valid, so append
             added.append(exercise_data['subtopic_id'])                  #make note
 
@@ -300,20 +322,21 @@ def get_explore_recommendations(user):
 
 
 
-#given a subtopic id, return corresponding data: the subtopic title, ... (right now only the title + id)
+#given a subtopic id, return corresponding data to return in get_explore_recommendations
 def get_subtopic_data(subtopic_id):
 
     ### topic tree for traversal###
-    tree = generate_topic_tree()
+    tree = get_topic_tree_lookup_table()
 
-    for topic in tree['children']:
-        for subtopic in topic['children']:
-            
-            #a match!!
-            if subtopic['id'] == subtopic_id:
-                
-                return { "title":subtopic['title'], "id":subtopic_id, 'lesson_description':subtopic['description']}
+    if subtopic_id in tree:
+        return {
+            'id':subtopic_id,
+            'title': tree[subtopic_id]['title'],
+            'path': tree[subtopic_id]['path'],
+            'description':tree[subtopic_id]['description']
+        }
 
+   
     return [] #ideally should never get here
 
 
@@ -504,7 +527,8 @@ def get_topic_tree_lookup_table(tree=get_topic_tree()):
             'title' : item['title'],
             'kind' : item['kind'],
             'path' : item['path'],
-            'description' : item['description']
+            'description' : item['description'],
+            'parent': item['parent']
         }
 
         #if current item is NOT a video or exercise, also include the children
