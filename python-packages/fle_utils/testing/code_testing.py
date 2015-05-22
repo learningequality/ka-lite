@@ -1,8 +1,11 @@
 import copy
-import glob
-import importlib
 import os
 import re
+import importlib
+import scandir
+
+from django.conf import settings
+
 
 from django.conf import settings; logging = settings.LOG
 from django.utils import unittest
@@ -10,7 +13,7 @@ from django.utils import unittest
 
 def get_module_files(module_dirpath, file_filter_fn):
     source_files = []
-    for root, dirs, files in os.walk(module_dirpath):  # Recurse over all files
+    for root, dirs, files in scandir.walk(module_dirpath):  # Recurse over all files
         source_files += [os.path.join(root, f) for f in files if file_filter_fn(f)]  # Filter py files
     return source_files
 
@@ -219,4 +222,3 @@ class FLECodeTest(unittest.TestCase):
     #         "\n\t".join(self.our_app_dependencies[app]),
     #     ) for app in bad_reversals if bad_reversals[app]])
     #     self.assertFalse(any([app for app, bi in bad_reversals.iteritems() if bi]), "Found unreported app dependencies in URL reversals:\n%s" % bad_reversals_text)
-

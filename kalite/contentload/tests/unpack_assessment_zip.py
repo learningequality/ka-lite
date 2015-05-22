@@ -2,6 +2,7 @@ import StringIO
 import json
 import os
 import requests
+import scandir
 import tempfile
 import zipfile
 from mock import patch, MagicMock, mock_open
@@ -27,7 +28,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
             zf = zipfile.ZipFile(f, "w")
-            for dirpath, _, filenames in os.walk(os.path.join(os.path.dirname(__file__), "fixtures")):
+            for dirpath, _, filenames in scandir.walk(os.path.join(os.path.dirname(__file__), "fixtures")):
                 # this toplevel for loop should only do one loop, but
                 # it's in a for loop nonetheless since it's more idiomatic
                 for filename in filenames:
@@ -99,7 +100,7 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
             zf = zipfile.ZipFile(f, "w")
-            for dirpath, _, filenames in os.walk(os.path.join(os.path.dirname(__file__), "fixtures")):
+            for dirpath, _, filenames in scandir.walk(os.path.join(os.path.dirname(__file__), "fixtures")):
                 # this toplevel for loop should only do one loop, but
                 # it's in a for loop nonetheless since it's more idiomatic
                 for filename in filenames:

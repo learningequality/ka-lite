@@ -20,19 +20,19 @@ Each node in the topic tree comes with lots of metadata, including:
 * kind (Topic, Exercise, Video)
 and more.
 """
+import copy
+import json
 import os
 import re
-import json
-import copy
+import scandir
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.utils.translation import gettext as _
-
-from fle_utils.general import softload_json, json_ascii_decoder
+from fle_utils.general import json_ascii_decoder, softload_json
 from kalite import i18n
-
 from kalite.main import models as main_models
+
 
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
@@ -255,7 +255,7 @@ def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CO
         subtitle_langs = {}
 
         if os.path.exists(i18n.get_srt_path()):
-            for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
+            for (dirpath, dirnames, filenames) in scandir.walk(i18n.get_srt_path()):
                 # Only both looking at files that are inside a 'subtitles' directory
                 if dirpath.split("/")[-1] == "subtitles":
                     lc = dirpath.split("/")[-2]
@@ -370,9 +370,9 @@ def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
     if not topictree:
         topictree = get_topic_tree(language=language)
     node_cache = {}
-    
+
     node_cache["Topic"] = dict([(node.get("id"), node) for node in topictree])
-    
+
     node_cache["Exercise"] = get_exercise_cache(language=language)
     node_cache["Content"] = get_content_cache(language=language)
 

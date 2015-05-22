@@ -1,19 +1,24 @@
 """
 """
-import datetime
-import git
 import glob
+import subprocess
 import os
 import platform
-import requests
 import shutil
 import signal
-import subprocess
 import sys
 import tempfile
 import time
 from optparse import make_option
 from zipfile import ZipFile
+
+import datetime
+
+import git
+import requests
+import scandir
+from django.conf import settings
+
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
@@ -104,10 +109,10 @@ class Command(UpdatesStaticCommand):
         """
         Full update via git
         """
-        
+
         # This should only be done from the source directories
         assert settings.IS_SOURCE, "This is not a source installation, cannot update from git"
-        
+
         self.stages = [
             "clean_pyc",
             "gitpull",
@@ -116,7 +121,7 @@ class Command(UpdatesStaticCommand):
             "stop_server",
             "start_server",
         ]
-        
+
         remote_name = settings.GIT_UPDATE_REMOTE_NAME
         if 'branch' in kwargs:
             remote_branch = kwargs['branch']
@@ -132,7 +137,7 @@ class Command(UpdatesStaticCommand):
             raise CommandError(_("You have not installed KA Lite through Git. Please use the other update methods instead, e.g. 'internet' or 'localzip'"))
 
         # step 1: clean_pyc (has to be first)
-        
+
         # benjaoming: Commented out, this hits the wrong directories currently
         # and should not be necessary.
         # If we have problems with pyc files, we're doing something else wrong.
@@ -173,7 +178,7 @@ class Command(UpdatesStaticCommand):
         #  NOTE: this MUST be done via an external process,
         #  to guarantee all the new code is begin used.
         self.next_stage("Update the database [please wait; no interactive output]")
-        
+
         # This is called because call_command from current source dir will
         # not import fresh copies of what's already imported.
         # should be interactive=False, but this method is a total hack
@@ -181,7 +186,7 @@ class Command(UpdatesStaticCommand):
         sys.stderr.write(out)
         if rc:
             sys.stderr.write(err)
-        
+
         # Please note that this calls the setup command *after* updating with
         # new sources loaded
         call_command("setup", noinput=True)
@@ -657,9 +662,9 @@ class Command(UpdatesStaticCommand):
                     sys.stdout.write("***** Trying to copy contents into dest_dir\n")
 
                 copy_success = 0  # count the # of files successfully moved over
-                for root, dirs, files in os.walk(self.working_dir):
+                for root, dirs, files in scandir.walk(self.working_dir):
                     # Turn root into a relative path
-                    assert root.startswith(self.working_dir), "Root from os.walk should be an absolute path."
+                    assert root.startswith(self.working_dir), "Root from scandir.walk should be an absolute path."
                     relpath = root[len(self.working_dir)+1:]
 
                     # Loop over all directories to create destination directories
