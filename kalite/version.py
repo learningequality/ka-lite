@@ -3,7 +3,7 @@ import os
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 MAJOR_VERSION = "0"
 MINOR_VERSION = "14"
-PATCH_VERSION = "dev0"
+PATCH_VERSION = "dev3"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
@@ -17,7 +17,7 @@ def load_yaml(file_name):
     Returns:
         A dictionary structure that reflects the yaml structure.
     """
-    
+
     # Has to be imported here as version.py is a dependency of setup.py which
     # may be run before dependencies are installed
     import yaml

@@ -11,6 +11,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 
+from django_js_reverse.views import urls_js
+
 from . import api_urls
 import kalite.dynamic_assets.urls
 import kalite.coachreports.urls
@@ -110,6 +112,11 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^learn/', 'learn', {}, 'learn'),
     url(r'^exercisedashboard/', 'exercise_dashboard', {}, 'exercise_dashboard'),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
+    )
 
 handler403 = __package__ + '.views.handler_403'
 handler404 = __package__ + '.views.handler_404'

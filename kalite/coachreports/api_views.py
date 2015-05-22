@@ -197,7 +197,6 @@ def compute_data(data_types, who, where, language=settings.LANGUAGE_CODE):
     # This lambda partial creates a function to return all items with paths matching a list of paths from NODE_CACHE.
     search_fun_multi_path = partial(lambda ts, p: any([t["path"].startswith(p) for t in ts]),  p=tuple(where))
     # Functions that use the functions defined above to return topics, exercises, and videos based on paths.
-    query_topics = partial(lambda t, sf: t if t is not None else [t["id"] for t in filter(sf, get_node_cache('Topic', language=language).values())], sf=search_fun_single_path)
     query_exercises = partial(lambda e, sf: e if e is not None else [ex["id"] for ex in filter(sf, get_exercise_cache(language=language).values())], sf=search_fun_single_path)
     query_videos = partial(lambda v, sf: v if v is not None else [vid["id"] for vid in filter(sf, get_node_cache('Content', language=language).values())], sf=search_fun_single_path)
 
@@ -286,50 +285,6 @@ def compute_data(data_types, who, where, language=settings.LANGUAGE_CODE):
         "exercises": exercises,
         "videos": videos,
     }
-
-
-# view endpoints #######
-
-@api_handle_error_with_json
-def get_topic_tree_by_kinds(request, topic_path, kinds_to_query=None):
-    """Given a root path, returns all topic nodes that contain the requested kind(s).
-    Topic nodes without those kinds are removed.
-    """
-
-    def convert_topic_tree_for_dynatree(node, kinds_to_query):
-        """Converts topic tree from standard dictionary nodes
-        to dictionary nodes usable by the dynatree app"""
-
-        if node["kind"] != "Topic":
-            # Should never happen, but only run this function for topic nodes.
-            return None
-
-        elif not set(kinds_to_query).intersection(set(node["contains"])):
-            # Eliminate topics that don't contain the requested kinds
-            return None
-
-        topic_children = []
-        for child_node in node["children"]:
-            child_dict = convert_topic_tree_for_dynatree(child_node, kinds_to_query)
-            if child_dict:
-                # Only keep children that themselves have the requsted kind
-                topic_children.append(child_dict)
-
-        return {
-            "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
-            "isFolder": True,
-            "key": node["path"],
-            "children": topic_children,
-            "expand": False,  # top level
-        }
-
-    kinds_to_query = kinds_to_query or request.GET.get("kinds", "Exercise").split(",")
-    topic_node = get_topic_by_path(topic_path)
-    if not topic_node:
-        raise Http404
-
-    return JsonResponse(convert_topic_tree_for_dynatree(topic_node, kinds_to_query));
 
 
 @csrf_exempt

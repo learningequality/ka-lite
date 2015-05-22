@@ -19,6 +19,25 @@
     coaches: []
     admins: []
 
+0.13.2:
+  release_date: "2015/05/18"
+  git_commit: "6b9a7ff"
+  new_features:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
+  bugs_fixed:
+    all:
+      - "Fix a rendering bug in the sidebar"
+    students: []
+    coaches: []
+    admins:
+      - "Fix the FAQ links in the download videos page"
+      - "Avoid a long loop when invalidating the cache."
+      - "Hide the streakbar for admins."
+
 
 0.13.0:
   release_date: 2014/11/06
