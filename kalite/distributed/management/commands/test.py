@@ -4,7 +4,10 @@ In particular, we'd like to be able to run only behave tests.
 """
 from optparse import make_option
 
-from django.core.management.commands.test import Command as TestCommand
+try:
+    from south.management.commands.test import Command as TestCommand
+except ImportError:
+    from django.core.management.commands.test import Command as TestCommand
 
 class Command(TestCommand):
     """
