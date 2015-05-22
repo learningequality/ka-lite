@@ -133,7 +133,7 @@ window.ContentLogCollection = Backbone.Collection.extend({
         } else if (typeof this.content_ids !== "undefined") {
             data[this.model_id_key + "__in"] = this.content_ids;
         }
-        return setGetParamDict(this.model.prototype.urlRoot, data);
+        return setGetParamDict(this.model.prototype.urlRoot(), data);
     },
 
     get_first_log_or_new_log: function() {
