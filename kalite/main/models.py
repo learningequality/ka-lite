@@ -3,6 +3,8 @@ All models associated with user learning / usage, including:
 * Exercise/Video progress
 * Login stats
 """
+import json
+import os
 import random
 import uuid
 from math import ceil
@@ -16,6 +18,7 @@ from django.db import models
 from django.db.models import Sum
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
+from django.utils.translation import gettext as _
 
 from fle_utils.django_utils.classes import ExtendedModel
 from fle_utils.general import datediff, isnumeric
@@ -23,6 +26,96 @@ from kalite import i18n
 from kalite.facility.models import FacilityUser
 from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
+
+
+def create_thumbnail_url(thumbnail):
+    if is_content_on_disk(thumbnail, "png"):
+        return settings.CONTENT_URL + thumbnail + ".png"
+    elif is_content_on_disk(thumbnail, "jpg"):
+        return settings.CONTENT_URL + thumbnail + ".jpg"
+    return None
+
+
+def is_content_on_disk(content_id, format="mp4", content_path=None):
+    content_path = content_path or settings.CONTENT_ROOT
+    content_file = os.path.join(content_path, content_id + ".%s" % format)
+    return os.path.isfile(content_file)
+
+
+class Content(models.Model):
+
+    id = models.CharField(max_length=60, primary_key=True)
+    blob = models.TextField()  # A JSON blob... we don't care what it is! Let the front-end deal with the consequences.
+
+    def annotations(self, language=settings.LANGUAGE_CODE):
+        # Annotate content items with thumbnail urls, content urls,
+        # and list all languages that the content is available in.
+        content = json.loads(self.blob)
+        _annotations = {}
+        default_thumbnail = create_thumbnail_url(content.get("id"))
+        dubmap = i18n.get_id2oklang_map(content.get("id"))
+        try:
+            contents_folder = os.listdir(settings.CONTENT_ROOT)
+        except OSError:
+            contents_folder = []
+        if dubmap:
+            content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
+            if content_lang:
+                dubbed_id = dubmap.get(content_lang)
+                format = content.get("format", "")
+                if (dubbed_id + "." + format) in contents_folder:
+                    _annotations["available"] = True
+                    thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
+                    _annotations["content_urls"] = {
+                        "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
+                        "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                        "thumbnail": thumbnail,
+                    }
+                elif settings.BACKUP_VIDEO_SOURCE:
+                    _annotations["available"] = True
+                    _annotations["content_urls"] = {
+                        "stream": settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
+                        "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                        "thumbnail": settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
+                    }
+                else:
+                    _annotations["available"] = False
+            else:
+                _annotations["available"] = False
+        else:
+            _annotations["available"] = False
+
+        subtitle_langs = {}
+        if os.path.exists(i18n.get_srt_path()):
+            for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
+                # Only both looking at files that are inside a 'subtitles' directory
+                if dirpath.split("/")[-1] == "subtitles":
+                    lc = dirpath.split("/")[-2]
+                    for filename in filenames:
+                        if filename in subtitle_langs:
+                            subtitle_langs[filename].append(lc)
+                        else:
+                            subtitle_langs[filename] = [lc]
+
+        # Get list of subtitle language codes currently available
+        subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.get("id")), [])
+
+        # Generate subtitle URLs for any subtitles that do exist for this content item
+        subtitle_urls = [{
+            "code": lc,
+            "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
+            "name": i18n.get_language_name(lc)
+            } for lc in subtitle_lang_codes]
+
+        # Sort all subtitle URLs by language code
+        _annotations["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
+
+        with i18n.translate_block(content_lang):
+            _annotations["selected_language"] = content_lang
+            _annotations["title"] = _(content["title"])
+            _annotations["description"] = _(content.get("description")) if content.get("description") else ""
+
+        return _annotations
 
 
 class AssessmentItem(models.Model):
