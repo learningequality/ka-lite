@@ -39,10 +39,10 @@
                 show_message("success", ds.distributed.front_page_welcome_message);
             }
             var content_rec_load = function() {
-                if (window.statusModel.is_student()) {
+                if (window.statusModel.is_student() && !window.hpwrapper) {
                     window.hpwrapper = new HomepageWrapper({
                         el:"#content-area"
-                    }); 
+                    });
                 }
             }
             window.statusModel.listenTo(window.statusModel, "change", content_rec_load);
@@ -70,7 +70,7 @@
 
 {% block content %}
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-    <div class="container not-logged-in-only" id="content-area">
+    <div class="container" id="content-area">
 
         <div class="row">
             <h2 class="main-headline hidden-xs">{{ channel_data.head_line }}</h2>

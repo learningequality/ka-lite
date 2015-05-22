@@ -22,7 +22,7 @@ window.HomepageWrapper = BaseView.extend({
     data_load: function() {
         var resumeCollection = new window.SuggestedContentCollection(this.collection.where({resume:true}));
         
-        var nextStepsCollection = new window.SuggestedContentCollection(this.collection.where({nextSteps:true}));
+        var nextStepsCollection = new window.SuggestedContentCollection(this.collection.where({next:true}));
         
         var exploreCollection = new window.SuggestedContentCollection(this.collection.where({explore:true}));
         
@@ -50,11 +50,12 @@ window.ContentResumeView = BaseView.extend({
     template: HB.template("contentrec/content-resume"),
     
     initialize: function() {
+        this.model = this.collection.at(0);
         this.render();
     },
 
     render: function() {
-        this.$el.html(this.template());
+        this.$el.html(this.template(this.model.attributes));
     }
 
 });

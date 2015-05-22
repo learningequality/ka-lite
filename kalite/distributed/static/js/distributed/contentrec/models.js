@@ -13,7 +13,7 @@ window.SuggestedContentCollection = Backbone.Collection.extend({
 	},
 
 	url: function() {
-		return '/api/contentrecommender/?' + $.param(this.filters, true);
+		return window.Urls.content_recommender()+ "?" + $.param(this.filters, true);
 	},
 
 	model: SuggestedContentModel

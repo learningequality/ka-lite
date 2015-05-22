@@ -3,13 +3,12 @@
 	<a href="/learn/{{ path }}">
       <div class="col-xs-3">
         <center>
-          <h1 class="ns_thumb glyphicon glyphicon-expand"></h1>
+          {{#if thumbnail_url }}
+          <img src="{{thumbnail_url}}" class="img-responsive">
+          {{else}}
+          <h1 class="icon-{{kind}} glyphicon-expand"></h1>
+          {{/if}}
         </center>
-        {{#if thumbnail_url }}
-        <img src="{{thumbnail_url}}" class="img-responsive">
-        {{else}}
-        <i class="icon-{{kind}}"></i>
-        {{/if}}
       </div>
 
       <div class="col-xs-6">

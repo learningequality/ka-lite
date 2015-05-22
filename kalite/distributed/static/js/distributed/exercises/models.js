@@ -117,8 +117,8 @@ window.ExerciseLogModel = Backbone.Model.extend({
         if (!already_complete && this.get("complete")) {
             this.set({
                 "struggling": false,
-                "completion_timestamp", window.statusModel.get_server_time(),
-                "attempts_before_completion", this.get("attempts")
+                "completion_timestamp": window.statusModel.get_server_time(),
+                "attempts_before_completion": this.get("attempts")
             }, {silent: true});
         }
 

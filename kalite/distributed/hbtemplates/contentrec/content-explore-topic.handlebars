@@ -14,7 +14,7 @@
       {{#if suggested_topic.description }}
       <div class="col-xs-6">
         <p><b>Description:</b><p>
-        <p>{{ suggested_topic.description }}</p>
+        <p>{{ truncate suggested_topic.description 100 }}</p>
       </div>
       {{/if}}
       <hr class="module_divider" />
