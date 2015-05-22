@@ -115,11 +115,14 @@ window.ExerciseLogModel = Backbone.Model.extend({
         this.set("complete", this.get("streak_progress") >= 100);
 
         if (!already_complete && this.get("complete")) {
-            this.set("struggling", false);
-            this.set("completion_timestamp", window.statusModel.get_server_time());
-            this.set("attempts_before_completion", this.get("attempts"));
+            this.set({
+                "struggling": false,
+                "completion_timestamp", window.statusModel.get_server_time(),
+                "attempts_before_completion", this.get("attempts")
+            }, {silent: true});
         }
 
+        this.set("latest_activity_timestamp", window.statusModel.get_server_time(), {silent: true})
         // call the super method that will actually do the saving
         return Backbone.Model.prototype.save.call(this);
     },
