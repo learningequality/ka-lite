@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import unicode_literals
-from __future__ import print_function
+from __future__ import absolute_import, print_function, unicode_literals
+
+import logging
 import os
 import re
-import logging
-import pkg_resources
+import scandir
 import shutil
 import sys
-
 from distutils import log
-from setuptools import setup, find_packages
-from setuptools.command.install_scripts import install_scripts
 
 import kalite
+import pkg_resources
+from setuptools import find_packages, setup
+from setuptools.command.install_scripts import install_scripts
+
 
 # Path of setup.py, used to resolve path of requirements.txt file
 where_am_i = os.path.dirname(os.path.realpath(__file__))
@@ -122,7 +122,7 @@ def gen_data_files(*dirs):
     results = []
 
     for src_dir in dirs:
-        for root, dirs, files in os.walk(src_dir):
+        for root, dirs, files in scandir.walk(src_dir):
             results.append((root, map(lambda f: os.path.join(root, f), files)))
     return results
 
@@ -208,37 +208,37 @@ class my_install_scripts(install_scripts):
 # If it's a static build, we invoke pip to bundle dependencies in python-packages
 # This would be the case for commands "bdist" and "sdist"
 if STATIC_BUILD:
-    
+
     manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
     manifest_content += "\n" + "recursive-include dist-packages *"
     file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-    
+
     sys.stderr.write(
         "This is a static build... invoking pip to put static dependencies in "
         "dist-packages/\n"
     )
-    
+
     STATIC_DIST_PACKAGES_DOWNLOAD_CACHE = os.path.join(where_am_i, 'dist-packages-downloads')
     STATIC_DIST_PACKAGES_TEMP = os.path.join(where_am_i, 'dist-packages-temp')
-    
+
     # Create directory where dynamically created dependencies are put
     if not os.path.exists(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE):
         os.mkdir(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE)
-    
+
     # Should remove the temporary directory always
     if os.path.exists(STATIC_DIST_PACKAGES_TEMP):
         print("Removing previous temporary sources for pip {}".format(STATIC_DIST_PACKAGES_TEMP))
         shutil.rmtree(STATIC_DIST_PACKAGES_TEMP)
-    
+
     # Install from pip
-    
+
     # Code modified from this example:
     # http://threebean.org/blog/2011/06/06/installing-from-pip-inside-python-or-a-simple-pip-api/
     import pip.commands.install
-    
+
     # Ensure we get output from pip
     enable_log_to_stdout('pip.commands.install')
-    
+
     def install_distributions(distributions):
         command = pip.commands.install.InstallCommand()
         opts, ___ = command.parser.parse_args([])
@@ -253,17 +253,17 @@ if STATIC_BUILD:
         command.run(opts, distributions)
         # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
         # requirement_set.install(opts)
-    
+
     # Install requirements into dist-packages
     if DIST_BUILDING_COMMAND:
         install_distributions(STATIC_REQUIREMENTS)
-    
+
     # Empty the requirements.txt file
 
 
 # It's not a build command with --static or it's not a build command at all
 else:
-    
+
     # If the dist-packages directory is non-empty
     if os.listdir(STATIC_DIST_PACKAGES):
         # If we are building something or running from the source
@@ -282,10 +282,10 @@ else:
             # everything in the requirements.txt file
             DIST_REQUIREMENTS = []
             DIST_NAME = 'ka-lite-static'
-            
+
             if "ka-lite" in get_installed_packages():
                 raise RuntimeError("Already installed ka-lite so cannot install ka-lite-static")
-    
+
     # No dist-packages/ and not building, so must be installing the dynamic
     # version
     elif not DIST_BUILDING_COMMAND:
@@ -297,7 +297,7 @@ else:
         manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
         manifest_content += "\n" + "recursive-include dist-packages *"
         file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-    
+
 
 # All files from dist-packages are always included
 data_files += map(

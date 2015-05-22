@@ -1,6 +1,10 @@
 import logging
 import os
+import scandir
 import subprocess
+
+from django.conf import settings
+
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import AppCommand
@@ -15,7 +19,7 @@ def i18nize_parser(parse_dir, extensions, parse_file, ignores):
     files with the extensions specified.
     """
     filenames_to_process = []
-    for dirpath, dirnames, filenames in os.walk(parse_dir):
+    for dirpath, dirnames, filenames in scandir.walk(parse_dir):
         logging.info("==> Looking for template file/s at %s" % dirpath)
         for filename in filenames:
             full_filename = os.path.join(dirpath, filename)

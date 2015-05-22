@@ -1,11 +1,10 @@
 import fnmatch
 import os
-import sys
-import warnings
-from datetime import datetime
-from threading import Thread
-from time import sleep, time
+import scandir
 from optparse import make_option
+
+from django.conf import settings
+
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
@@ -35,7 +34,7 @@ def get_app_subdirectory_paths(subdir):
 
 def get_paths_matching_pattern(pattern, starting_directory=KA_LITE_PATH):
     paths = []
-    for root, dirs, files in os.walk(KA_LITE_PATH):
+    for root, dirs, files in scandir.walk(KA_LITE_PATH):
         # root = make_path_relative(root)
         paths += [os.path.join(root, d) for d in dirs if fnmatch.fnmatch(d, pattern)]
         paths += [os.path.join(root, f) for f in files if fnmatch.fnmatch(f, pattern)]
@@ -44,7 +43,7 @@ def get_paths_matching_pattern(pattern, starting_directory=KA_LITE_PATH):
 
 def get_paths_ending_with(substring, starting_directory=KA_LITE_PATH):
     paths = []
-    for root, dirs, files in os.walk(KA_LITE_PATH):
+    for root, dirs, files in scandir.walk(KA_LITE_PATH):
         # root = make_path_relative(root)
         paths += [os.path.join(root, d) for d in dirs if os.path.join(root, d).endswith(substring)]
         paths += [os.path.join(root, f) for f in files if os.path.join(root, f).endswith(substring)]
