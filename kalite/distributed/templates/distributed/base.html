@@ -188,11 +188,13 @@
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
 
+        {% if inline_help %}
         <!-- inline help, introjs -->
         <script src="{% url 'handlebars_templates' module_name='inline' %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/intro.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/inline/models.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/distributed/inline/views.js' %}"></script>
+        {% endif %}
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}">
