@@ -5,12 +5,13 @@ Three main functions:
     - get_next_recommendations(user)
     - get_explore_recommendations(user)
 '''
+import datetime
 import random
 import copy
 import kalite.facility
 from kalite.topic_tools import * 
 from kalite.facility.models import FacilityUser
-from kalite.main.models import ExerciseLog , VideoLog
+from kalite.main.models import ExerciseLog , VideoLog, ContentLog
 from fle_utils.general import softload_json, json_ascii_decoder
 
 
@@ -33,34 +34,11 @@ TOPICS_FILEPATHS = {
 # @return: The most recent video/exercise that has been started but NOT completed
 ###
 def get_resume_recommendations(user):
-    #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after
-    table = get_exercise_parents_lookup_table()
-    topic_table = get_topic_tree_lookup_table()
-    # ! first pass returns only be the most recent vid/exercise !
-    #final = get_most_recent_incomplete_item(user) 
-    video = get_most_recent_incomplete_videos(user)[0]
-    final = {}
-
-    #add some more data with help of lookup table (if possible)
- 
-    if video in table and video in topic_table:
-
-        #some leaf nodes do not have descriptions
-        description = topic_table[video]['description']
-        if not description:
-            description = topic_table[ parent_id ]['description']
-
-        #final['lesson_title'] = table[ final['id'] ]['title']
-        #final['subtopic_title'] = table[ final['id'] ]['subtopic_title']
-        final['title'] = table[ video ]['title']
-        #final['subtopic_title'] = table[ video ]['subtopic_title']
-        final['description'] = description
-        final['path'] = topic_table[video]['path']
-        final['id'] = topic_table[video]['id']
-
-    return [final] #for first pass, just return the most recent video!!!
-
-
+    final = get_most_recent_incomplete_item(user)
+    if final:
+        return [final] #for first pass, just return the most recent video!!!
+    else:
+        return []
 
 
 ####################################### 'NEXT STEPS' LOGIC ################################################
@@ -400,90 +378,51 @@ def get_exercises_from_topics(topicId_list):
     return exs
 
 
-#given a facility user model, return all recent EXERCISE ids that are still in-progress
-def get_most_recent_incomplete_exercises(user):
-    exercises_by_user = ExerciseLog.objects.filter(user=user)
-    
-    #sorted by completion time in descending order (most recent first)
-    sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
-
-    exercise_list = []
-
-    for exercise in sorted_exercises:
-        if exercise.complete == False:                  #only look for incomplete
-            exercise_list.append(exercise.exercise_id)  #append to list
-
-    return exercise_list                                #most recent + incomplete
-
-
-#given a facility user model, return all recent VIDEO ids that are still in-progress
-def get_most_recent_incomplete_videos(user):
-    videos_by_user = VideoLog.objects.filter(user=user)
-    
-    #sorted by completion time in descending order (most recent first)
-    sorted_videos = sorted(videos_by_user, key=lambda student: student.completion_timestamp, reverse=True)
-
-    video_list = []
-
-    #basically same as in get_most_recent_incomplete exercise
-    for vid in sorted_videos:
-        if vid.complete == False:                       #only look for incomplete
-            video_list.append(vid.video_id)             #append to list
-
-    return video_list                                   #most recent + incomplete
-
-
 #given a facility user model, returns information of the
 #most recently accessed and incomplete video/exercise. Can expand this later on to
 #include more later, like all items in order or perhaps more logs to look at. 
 def get_most_recent_incomplete_item(user):
     #get the queryset objects
-    exercises_by_user = ExerciseLog.objects.filter(user=user)
-    videos_by_user = VideoLog.objects.filter(user=user)
+    exercise_list = list(ExerciseLog.objects.filter(user=user, complete=False).order_by("-latest_activity_timestamp")[:1])
+    video_list = list(VideoLog.objects.filter(user=user, complete=False).order_by("-latest_activity_timestamp")[:1])
+    content_list = list(ContentLog.objects.filter(user=user, complete=False).order_by("-latest_activity_timestamp")[:1])
 
-    #sort both
-    sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
-    sorted_videos = sorted(videos_by_user, key=lambda student: student.completion_timestamp, reverse=True)
+    item_list = []
 
-    #now ensure that the item has status = incomplete
-    exercise_list = []    
-    for exercise in sorted_exercises:
-        if exercise.complete == False:                  #only look for incomplete
-            exercise_list.append(exercise)              #append to list
-
-    video_list = []
-    for vid in sorted_videos:
-        if vid.complete == False:                       #only look for incomplete
-            video_list.append(vid)                      #append to list
-
-    #compare the most recent
-    if exercise_list[0].completion_timestamp > video_list[0].completion_timestamp:
-        
-        return {
+    if exercise_list:
+        item_list.append({
+            "timestamp": exercise_list[0].latest_activity_timestamp or datetime.datetime.min,
+            "id": exercise_list[0].exercise_id,
             "kind": "Exercise",
-            "id": exercise_list[0].exercise_id
-        }
-    
-    #else default to returning a video 
-    else:
-
-        return {
-            "kind": "Video",
+        })
+    if video_list:
+        item_list.append({
+            "timestamp": video_list[0].latest_activity_timestamp or datetime.datetime.min,
             "id": video_list[0].video_id,
-            "youtube_id": video_list[0].youtube_id
-        }
+            "kind": "Content",
+        })
+    if content_list:
+        item_list.append({
+            "timestamp": content_list[0].latest_activity_timestamp or datetime.datetime.min,
+            "id": content_list[0].content_id,
+            "kind": "Content",
+        })
 
+    if item_list:
+        item_list.sort(key=lambda x: x["timestamp"])
+        item = item_list[0]
+        if item.get("kind") == "Content":
+            return get_content_cache().get(item.get("id"))
+        if item.get("kind") == "Exercise":
+            return get_exercise_cache().get(item.get("id"))
+    else:
+        return None
 
 #given a facility user model, return the most recent exercise ids - incomplete AND complete
 def get_most_recent_exercises(user):
-    exercises_by_user = ExerciseLog.objects.filter(user=user)
+    exercises_by_user = ExerciseLog.objects.filter(user=user).order_by("-latest_activity_timestamp")
 
-    #sorted by completion time in descending order (most recent first)
-    sorted_exercises = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
-
-    final = []
-    for ex in sorted_exercises:
-        final.append(ex.exercise_id)
+    final = [log.exercise_id for log in exercises_by_user]
     
     return final
 
