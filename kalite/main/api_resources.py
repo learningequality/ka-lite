@@ -1,74 +1,17 @@
-import re
 import json
 from tastypie import fields
 from tastypie.resources import ModelResource, Resource
 from tastypie.exceptions import NotFound
-from tastypie.serializers import Serializer
 from django.conf.urls import url
 from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
-from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
-from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
+from kalite.topic_tools import get_exercise_data, get_content_data
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
-
-class CamelCaseJSONSerializer(Serializer):
-    formats = ['json']
-    content_types = {
-        'json': 'application/json',
-    }
-
-    def to_json(self, data, options=None):
-        # Changes underscore_separated names to camelCase names to go from python convention to javacsript convention
-        data = self.to_simple(data, options)
-
-        def underscoreToCamel(match):
-            return match.group()[0] + match.group()[2].upper()
-
-        def camelize(data):
-            if isinstance(data, dict):
-                new_dict = {}
-                for key, value in data.items():
-                    new_key = re.sub(r"[a-z]_[a-z]", underscoreToCamel, key)
-                    new_dict[new_key] = camelize(value)
-                return new_dict
-            if isinstance(data, (list, tuple)):
-                for i in range(len(data)):
-                    data[i] = camelize(data[i])
-                return data
-            return data
-
-        camelized_data = camelize(data)
-
-        return json.dumps(camelized_data, sort_keys=True)
-
-    def from_json(self, content):
-        # Changes camelCase names to underscore_separated names to go from javascript convention to python convention
-        data = json.loads(content)
-
-        def camelToUnderscore(match):
-            return match.group()[0] + "_" + match.group()[1].lower()
-
-        def underscorize(data):
-            if isinstance(data, dict):
-                new_dict = {}
-                for key, value in data.items():
-                    new_key = re.sub(r"[a-z][A-Z]", camelToUnderscore, key)
-                    new_dict[new_key] = underscorize(value)
-                return new_dict
-            if isinstance(data, (list, tuple)):
-                for i in range(len(data)):
-                    data[i] = underscorize(data[i])
-                return data
-            return data
-
-        underscored_data = underscorize(data)
-
-        return underscored_data
 
 
 class ExerciseLogResource(ModelResource):
@@ -351,140 +294,3 @@ class ContentResource(Resource):
 
     def rollback(self, bundles):
         raise NotImplementedError
-
-
-class ContentRecommender(object):
-    """
-    Convert dictionary to object
-    Adapted from @source http://stackoverflow.com/a/1305561/383912
-    """
-    def __init__(self, d=None):
-        self.__dict__['d'] = d
- 
-    def __getattr__(self, key):
-        value = ''
-
-        try:
-            value = self.__dict__['d'][key]
-        except:
-            pass
-
-        if type(value) == type({}):
-            return ContentRecommender(value)
- 
-        return value
-
-
-class ContentRecommenderResource(Resource):
-    user = fields.ForeignKey(FacilityUserResource, 'user')
-    # Define common fields to resume, next_steps, and explore
-    next_steps = fields.BooleanField(attribute='next_steps', default=False)
-    resume = fields.BooleanField(attribute='resume', default=False)
-    explore = fields.BooleanField(attribute='explore', default=False)
-    kind = fields.CharField(attribute='kind', null=True, blank=True)
-    # Addition fields for resume and next_steps
-    id = fields.CharField(attribute='id', null=True, blank=True)
-    subtopic_title = fields.CharField(attribute='subtopic_title', null=True, blank=True)
-    # Additional fields for resume recommendation(s) only
-    title = fields.CharField(attribute='title', null=True, blank=True)
-    youtube_id = fields.CharField(attribute='youtube_id', null=True, blank=True)
-    # Additional fields for next_steps
-    subtopic_id = fields.CharField(attribute='subtopic_id', null=True, blank=True)
-    lesson_title = fields.CharField(attribute='lesson_title', null=True, blank=True)
-    # Additional fields for explore reccommendations only
-    interest_subtopic = fields.CharField(attribute='interest_subtopic', null=True, blank=True)
-    suggested_subtopic_title = fields.CharField(attribute='suggested_subtopic_title', null=True, blank=True)
-    suggested_subtopic_id = fields.CharField(attribute='suggested_subtopic_id', null=True, blank=True)
-    
- 
-    class Meta:
-        resource_name = 'contentrecommender'
-        object_class = ContentRecommender
-        authorization = UserObjectsOnlyAuthorization()
-        filtering = {
-            "user": ('exact', ),
-        }
-
-    def dehydrate(self, bundle):
-        """Remove unused fields...resume, next_steps, and explore have different fields."""
-        field_names = [x for x in bundle.data]
-        
-        for field_name in field_names:
-            if bundle.data[field_name] == '':
-                del bundle.data[field_name]
-
-        del bundle.data['user']
-
-        return bundle
-
-    def get_object_list(self, request):
-        """Populate response with recommendation(s)"""
-        user = getattr(request, "user", None)
-        user_id = request.GET.get('user', None)
-        recommendations = []
-        
-        # TODO: check if multiple filters exist
-        # filters = request.GET.get('filters', None)
-
-        # retrieve resume recommendation(s) and set resume boolean flag
-        resume_recommendations = get_resume_recommendations(user_id)
-        for item in resume_recommendations:
-            # each item is of the form {"id": 1, "kind": "someKind", "title": "someTitle", "subtopic_title": "someSubtopicTitle", "youtube_id": "lkdfj3993=924"}}
-            item['user'] = user
-            item['resume'] = True
-            recommendations.append(ContentRecommender(item))
-
-        # retrieve next_steps recommendations, set next_steps boolean flag, and flatten results for api response
-        next_recommendations = get_next_recommendations(user_id)
-        for item in next_recommendations:
-            # each item is of the form {1: {"kind": "someKind", "lesson_title": "someTitle", "subtopic_title": "anotherSubtopicTitle", "subtopic_id": 2}}
-            temp = {}
-            temp['user'] = user
-            temp['next_steps'] = True
-            temp['id'] = item.keys()[0]
-            temp['kind'] = item[temp['id']]['kind']
-            temp['subtopic_title'] = item[temp['id']]['subtopic_title']
-            temp['subtopic_id'] = item[temp['id']]['subtopic_id']
-            temp['lesson_title'] = item[temp['id']]['lesson_title']
-
-            recommendations.append(ContentRecommender(temp))
-
-        # retrieve explore recommendations, set explore boolean flag, and flatten results for api response
-        explore_recommendations = get_explore_recommendations(user_id)
-        for item in explore_recommendations:
-            # each item is of the form {"accessed": "someSubtopicTitle", "recommended_topics": [{"title": "someRelatedSubtopicTitle", "id": "someRelatedSubtopicId"},{"title": "anotherRelatedSubtopicTitle", "id": "anotherRelatedSubtopicId"}]}]
-            temp = {}
-            temp['user'] = user
-            temp['explore'] = True
-            temp['kind'] = 'subtopic'
-            temp['interest_subtopic'] = item['accessed']
-            
-            # unpack each recommended subtopic and return each as separate recommendation
-            for recommended_topic in item['recommended_topics']:
-                temp['suggested_subtopic_title'] = recommended_topic['title']
-                temp['suggested_subtopic_id'] = recommended_topic['id']
-            
-                recommendations.append(ContentRecommender(temp))
-
-        return recommendations
-
-    def obj_get_list(self, bundle, **kwargs):
-        return self.get_object_list(bundle.request)
-
-    def obj_get(self, bundle, **kwargs):
-        raise NotImplemented("ContentRecommender is a collection resource.")
-
-    def obj_create(self, bundle, **kwargs):
-        raise NotImplemented("ContentRecommender is a read-only resource.")
-
-    def obj_update(self, bundle, **kwargs):
-        raise NotImplemented("ContentRecommender is a read-only resource.")
-
-    def obj_delete_list(self, bundle, **kwargs):
-        raise NotImplemented("ContentRecommender is a read-only resource.")
-
-    def obj_delete(self, bundle, **kwargs):
-        raise NotImplemented("ContentRecommender is a read-only resource.")
-
-    def rollback(self, bundles):
-        raise NotImplemented("ContentRecommender is a read-only resource.")

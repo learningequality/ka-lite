@@ -10,9 +10,33 @@ from fle_utils.internet.classes import JsonResponse
 from fle_utils.internet.webcache import backend_cache_page
 
 from kalite.topic_tools import get_topic_tree
+from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
+from kalite.facility.models import FacilityUser
 
 @api_handle_error_with_json
 @backend_cache_page
 def topic_tree(request, channel):
     parent = request.GET.get("parent")
     return JsonResponse(get_topic_tree(channel=channel, language=request.language, parent=parent))
+
+@api_handle_error_with_json
+def content_recommender(request):
+    """Populate response with recommendation(s)"""
+
+    user_id = request.GET.get('user', None)
+    user = FacilityUser.objects.get(pk=user_id)
+
+    def set_bool_flag(flag_name, rec_dict):
+        rec_dict[flag_name] = True
+        return rec_dict
+
+    # retrieve resume recommendation(s) and set resume boolean flag
+    resume_recommendations = [set_bool_flag("resume", rec) for rec in get_resume_recommendations(user)]
+
+    # retrieve next_steps recommendations, set next_steps boolean flag, and flatten results for api response
+    next_recommendations = [set_bool_flag("next", rec) for rec in get_next_recommendations(user)]
+
+    # retrieve explore recommendations, set explore boolean flag, and flatten results for api response
+    explore_recommendations = [set_bool_flag("explore", rec) for rec in get_explore_recommendations(user)]
+
+    return JsonResponse(resume_recommendations + next_recommendations + explore_recommendations)
