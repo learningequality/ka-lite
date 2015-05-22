@@ -44,6 +44,8 @@ def check_setup_status(handler):
 
         if User.objects.exists():
             request.has_superuser = True
+            # next line is for testing
+            # User.objects.all().delete()
 
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
@@ -213,26 +215,27 @@ def search(request):
         'category': category,
     }
 
+def add_superuser_form(request):
+    if request.method == 'POST':
+        form = SuperuserForm()
+        return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+        data = {'Status' : 'ShowModal', 'data' : return_html}
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
 def create_superuser(request):
     if request.method == 'POST':
-        intent = request.REQUEST.get('intent', None)
-        if intent == 'addform':
-            form = SuperuserForm()
-            return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
-            data = {'Status' : 'ShowModal', 'data' : return_html}
+        form = SuperuserForm(request.POST)
+        if form.is_valid():
+            # security precaution
+            cd = form.cleaned_data
+            superusername = cd['superusername']
+            superpassword = cd['superpassword']
+            superemail = cd['superemail']
+            User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
+            data = {'Status' : 'Success'}
         else:
-            form = SuperuserForm(request.POST)
-            if form.is_valid():
-                # security precaution
-                cd = form.cleaned_data
-                superusername = cd['superusername']
-                superpassword = cd['superpassword']
-                superemail = cd['superemail']
-                User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
-                data = {'Status' : 'Success'}
-            else:
-                return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
-                data = {'Status' : 'Invalid', 'data' : return_html}
+            return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+            data = {'Status' : 'Invalid', 'data' : return_html}
 
         return HttpResponse(json.dumps(data), content_type="application/json")
 
