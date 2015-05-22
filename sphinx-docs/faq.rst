@@ -32,7 +32,7 @@ We have made the full set of KA videos (in the format needed by KA Lite) availab
 
 * Download and install BitTorrent Sync
 * Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to load http://127.0.0.1:8888/ to get the interface.
-* Click the "Enter a key or link" button, and put in [#f1]_ ::
+* Click the "Enter a key or link" button, and put in  ::
 
     BT7AOITNAIP3X3CSLE2EPQJFXJXMXVGQI
 
