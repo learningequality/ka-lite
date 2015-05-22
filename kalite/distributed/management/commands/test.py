@@ -21,6 +21,3 @@ class Command(TestCommand):
             help="Only run the behave "
         ),
     )
-
-    def handle(self, *test_labels, **options):
-        super(Command, self).handle(*test_labels, **options)
