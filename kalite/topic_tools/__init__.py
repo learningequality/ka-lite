@@ -216,7 +216,8 @@ CACHE_VARS.append("LEAFED_TOPICS")
 def get_leafed_topics(force=False, language=settings.LANGUAGE_CODE):
     global LEAFED_TOPICS
     if LEAFED_TOPICS is None or force:
-        LEAFED_TOPICS = [topic for topic in get_node_cache(language=language)["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
+        topic_cache = get_node_cache(language=language)["Topic"]
+        LEAFED_TOPICS = [topic for topic in topic_cache.values() if [child for child in topic.get("children", []) if topic_cache.get(child, {}).get("kind") != "Topic"]]
     return LEAFED_TOPICS
 
 def create_thumbnail_url(thumbnail):
