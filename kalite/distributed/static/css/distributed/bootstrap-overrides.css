@@ -377,11 +377,16 @@ form .input-group {
   margin:0;
 }
 
+#content-resume-thumbnail div.col-xs-12 {
+    color: black;
+}
+
 .content-nextsteps-lesson h4{
   margin-top: 20px;
 }
 
 .ns_series_arrow{
+  color: black;
   font-size:3em;
   text-align: center;
 }
@@ -393,6 +398,11 @@ form .input-group {
 #exercise-icon {
     font-size: 4em;
 }
+
+#content-explore-topic div.col-xs-6 {
+    color: black;
+}
+
 /*===================================
     Landing Page
 =================================== */
