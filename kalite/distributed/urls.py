@@ -101,9 +101,6 @@ urlpatterns += patterns(__package__ + '.views',
     url(r'^store/', include(kalite.store.urls)),
     # the following pattern is a catch-all, so keep it last:
 
-    # Let user to create the super user from browser
-    url(r'^api/django_user$', 'create_superuser'),
-
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 

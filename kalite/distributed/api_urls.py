@@ -23,6 +23,11 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^time_set/$', 'time_set', {}, 'time_set'),
 )
 
+# Let user to create the super user from browser
+urlpatterns += patterns(__package__ + '.views',
+    url(r'^django_user$', 'create_superuser'),
+    url(r'^django_user_form$', 'add_superuser_form'),
+)
 
 # Khanload allows users to download data from a Khan Academy account
 urlpatterns += patterns('kalite.khanload.api_views',
