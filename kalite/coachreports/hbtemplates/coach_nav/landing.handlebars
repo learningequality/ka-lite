@@ -1,0 +1,63 @@
+<div id="wrapper">
+	<div id="mainview">
+		<h1>{{ group }}</h1>
+		<div id="chartblock">
+			<div id="chartcontainer">
+				<div class="circlechart">
+					<div id="full_circle1">
+						<p>{{ weekhours }}</p>
+					</div>
+					<div class="charttext">
+						Average hours logged this week
+					</div>
+				</div>
+				<div class="circlechart">
+					<div id="full_circle2">
+					</div>
+					<div class="charttext">
+						Average grade in exercises
+					</div>
+				</div>
+				<div class="circlechart">
+					<div id="full_circle3">
+						
+					</div>
+					<div class="charttext">
+						Average progress completed
+					</div>
+				</div>
+				<div class="circlechart">
+					<div id="full_circle4">
+						<p>{{ exercisehours }}</p>
+					</div>
+					<div class="charttext">
+						Average time spent on exercises
+					</div>
+				</div>
+			</div>
+		</div>
+		<section>	
+		<h1>student activity feed</h1>
+		  <div class="panel-container">	
+		    <table class="panel">
+		        {{#each users }}
+				  <tr>
+				  	<th>{{ learner }}</th>
+		            <td>{{ taskstatus }}</td>
+					<td>{{ task }}</td>  
+					<td>{{ taskval }}</td>  
+					<td>{{#ifcond taskstatus "===" "mastered"}}
+							<button class="praisebtn">Praise</button>
+						{{else}}
+							<button class="helpbtn">Help</button>
+						{{/ifcond}}</td>
+				  </tr>
+				{{/each }}
+		    </table>
+		  </div>
+		  <br>
+		</section>
+	</div>
+</div>
+
+
