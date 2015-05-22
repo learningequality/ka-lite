@@ -386,6 +386,13 @@ form .input-group {
   text-align: center;
 }
 
+#content-nextsteps-lesson h3 {
+    margin-top: 10px;
+}
+
+#exercise-icon {
+    font-size: 4em;
+}
 /*===================================
     Landing Page
 =================================== */
