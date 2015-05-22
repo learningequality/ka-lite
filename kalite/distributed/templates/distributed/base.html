@@ -158,6 +158,8 @@
         $(function() {
           window.statusModel.fetch_data();
           window.toggleNavbarView = new ToggleNavbarView({model: statusModel, el: "#topnav"});
+          window.addEventListener("resize", collapsedNav);
+          window.addEventListener("pageshow", collapsedNav);
         });
         </script>
 
