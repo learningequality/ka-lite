@@ -272,6 +272,8 @@ class Command(BaseCommand):
         # Migrate the database
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+        # Create *.json and friends database
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"), database="topic_tools")
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.

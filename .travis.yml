@@ -13,7 +13,6 @@ install:
 -  pip install .
 -  pip install -r requirements_dev.txt
 -  pip install coveralls
--  bin/kalite manage syncdb --database="topic_tools"
 script:
 # Test that we can run from source directory
 - bin/kalite start --traceback -v 2
