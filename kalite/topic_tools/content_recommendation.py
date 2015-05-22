@@ -8,8 +8,10 @@ Three main functions:
 import datetime
 import random
 import copy
-import kalite.facility
-from kalite.topic_tools import * 
+
+from django.db.models import Count
+
+from kalite.topic_tools import *
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog , VideoLog, ContentLog
 from fle_utils.general import softload_json, json_ascii_decoder
@@ -73,8 +75,11 @@ def get_next_recommendations(user):
         current_subtopic = None
 
     #logic for recommendations based off of the topic tree structure
-    topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:3]
-    topic_tree_based_data = get_exercises_from_topics(topic_tree_based_data)
+    if current_subtopic:
+        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:3]
+        topic_tree_based_data = get_exercises_from_topics(topic_tree_based_data)
+    else:
+        topic_tree_based_data = []
     
     #for checking that only exercises that have not been accessed are returned
     check = [] 
@@ -93,21 +98,13 @@ def get_next_recommendations(user):
    
     #now append titles and other metadata to each exercise id
     final = [] # final data to return
-    for exercise in (group[:2] + struggling[:2] + topic_tree_based_data[:1]):  #notice the concatenation
+    for exercise_id in (group[:2] + struggling[:2] + topic_tree_based_data[:1]):  #notice the concatenation
 
-        if exercise in exercise_parents_table:
-            subtopic_id = exercise_parents_table[exercise]['subtopic_id']
-            final.append(   {     'kind':exercise_parents_table[exercise]['kind'],
-                                  'title':topic_table[exercise]['title'],
-                                  'path': topic_table[exercise]['path'],
-                                
-                                  'topic':{
-                                        'title':exercise_parents_table[exercise]['subtopic_title'],
-                                        'path':topic_table[subtopic_id]['path']
-                                    }
-                            } 
-                            
-                        )
+        if exercise_id in exercise_parents_table:
+            subtopic_id = exercise_parents_table[exercise_id]['subtopic_id']
+            exercise = get_exercise_cache()[exercise_id]
+            exercise["topic"] = topic_table[subtopic_id]
+            final.append(exercise)
 
 
     #final recommendations are a combination of struggling, group filtering, and topic_tree filtering
@@ -125,57 +122,42 @@ def get_next_recommendations(user):
 #
 # A group is defined as a collection of students within the same facility and group (as defined in models)
 def get_group_recommendations(user):
+ 
+    recent_exercises = get_most_recent_exercises(user)
     
-    recent_excercises = get_most_recent_exercises(user)         #all exercises
-   
-    most_recent_exercise = recent_excercises[0]                 #get most recently accessed exercise
+    user_list = FacilityUser.objects.filter(group=user.group)
 
-    user_list = get_users_in_group('Student', user.group, user.facility) #may need to debug
+    if recent_exercises:
+
+        #If the user has recently engaged with exercises, use these exercises as the basis for filtering
+        user_exercises = ExerciseLog.objects.filter(user__in=user_list).order_by("-latest_activity_timestamp").extra(select={'null_complete': "completion_timestamp is null"}, order_by=["-null_complete", "-completion_timestamp"])
     
-    counts = []  #array of dictionaries to keep track of counts of subsequent exercises, in form: {'exercise':'id', 'count':0}
+        exercise_counts = {}
 
-    '''     NEEDS MORE TESTING WITH DATA     '''
-    for student in user_list:
-        student_exercises = get_most_recent_exercises(student)
+        for user in user_list:
+            user_logs = user_exercises.filter(user=user)
+            for i, log in enumerate(user_logs):
+                if i > 0:
+                    prev_log = user_logs[i-1]
+                    if log.exercise_id in recent_exercises:
+                        if prev_log.exercise_id in exercise_counts:
+                            exercise_counts[prev_log.exercise_id] += 1
+                        else:
+                            exercise_counts[prev_log.exercise_id] = 1
 
-        #if this student has taken/attempted this exercise
-        if most_recent_exercise in student_exercises and len(student_exercises) > 1:
-            next = student_exercises[0] #start at the most recent one - this will act like a prev pointer
+        exercise_counts = [{"exercise_id": key, "count": value} for key, value in exercise_counts.iteritems()]
 
-            #loop through all exercises, keeping track of previous 
-            for exercise in student_exercises:
-    
-                #a match to note, and not the first one (which would imply that there is no next)
-                if(exercise == most_recent_exercise and exercise != next):
-
-                    found = False #boolean flag
-                    
-                    for c in counts:
-
-                        #if user has not already attempted this exercise, add it to list!
-                        if not next in recent_excercises:
-
-                            #if a match in counts (exists already)
-                            if next == c['exercise']:
-                                c['count'] += 1
-                                found = True
-
-                    #if exercise not found, then make a new object with it with count = 1 
-                    if not found and not next in recent_excercises:
-                        
-                        counts.append({ "exercise": next, "count":1 })
-
-
-                next = exercise
-
+    else:
+        #If not, only look at the group data
+        exercise_counts = ExerciseLog.objects.filter(user__in=user_list).values("exercise_id").annotate(count=Count("exercise_id"))
 
     #sort the results in order of highest counts to smallest
-    sorted_counts = sorted(counts, key=lambda k:k['count'], reverse=False)
+    sorted_counts = sorted(exercise_counts, key=lambda k:k['count'], reverse=False)
     
     group_rec = []  #the final list of recommendations to return, WITHOUT counts
 
     for c in sorted_counts:
-        group_rec.append(c['exercise'])
+        group_rec.append(c['exercise_id'])
 
     return group_rec
 
@@ -425,12 +407,6 @@ def get_most_recent_exercises(user):
     final = [log.exercise_id for log in exercises_by_user]
     
     return final
-
-
-#given a user type (can be null), group id, and a facility name, return all users in that group
-#calls the already defined function in facility module
-def get_users_in_group(user_type, group_id, facility):
-    return kalite.facility.get_users_from_group(user_type, group_id, facility)
 
 
 #returns a topic tree representation like in the older versions of ka-lite
