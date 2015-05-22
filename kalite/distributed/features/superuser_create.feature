@@ -9,7 +9,6 @@ Feature: Create superuser from the in browser modal
         Given there is no superuser
         And I am on the homepage
         Then I should see a modal
-        And I will not be able to dismiss the modal until a superuser is created
 
     Scenario: Create superuser with empty username
         Given the username is empty

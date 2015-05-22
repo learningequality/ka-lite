@@ -27,11 +27,6 @@ def step_impl(context):
 def step_impl(context):
     assert find_id_with_wait(context, modal_container).is_displayed(), "modal not displayed!"
 
-@then("I will not be able to dismiss the modal until a superuser is created")
-def step_impl(context):
-    # don't know how to test this
-    pass
-
 @given("the username is empty")
 def step_impl(context):
     fill_username(context, "")
@@ -40,7 +35,6 @@ def step_impl(context):
 def step_impl(context):
     create_button = find_css_class_with_wait(context, "create-btn")
     create_button.click()
-    context.browser.implicitly_wait(1)
 
 @then('the username border will turn red')
 def impl(context):
@@ -96,8 +90,7 @@ def impl(context):
 
 @then("a superuser is created")
 def impl(context):
-    context.browser.implicitly_wait(1)
-    assert User.objects.exists(), "superuser not crerated successfully!"
+    assert WebDriverWait(context.browser, 3).until(User.objects.exists()), "superuser not crerated successfully!"
 
 
 def fill_field(context, text, field_id):
@@ -105,7 +98,6 @@ def fill_field(context, text, field_id):
     field = find_id_with_wait(context, field_id)
     field.clear()
     field.send_keys(text)
-    context.browser.implicitly_wait(1)
 
 def fill_username(context, text):
     fill_field(context, text, "id_superusername")
