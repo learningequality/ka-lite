@@ -42,7 +42,7 @@ DIST_REQUIREMENTS = filter(lambda x: bool(x), DIST_REQUIREMENTS)
 STATIC_REQUIREMENTS = []
 
 # Decide if the invoked command is a request to do building
-DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wheel")])
+DIST_BUILDING_COMMAND = any([x in sys.argv for x in ("bdist", "sdist", "bdist_wheel", "bdist_deb", "sdist_dsc")])
 
 # This is where static packages are automatically installed by pip when running
 # setup.py sdist --static or if a distributed version built by the static
