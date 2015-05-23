@@ -30,3 +30,18 @@ var CoachReportModel = Backbone.Model.extend({
         });
     }
 });
+
+var CoachReportAggregateModel = Backbone.Model.extend({
+    initialize: function(options) {
+        this.facility = options.facility;
+        this.group = options.group;
+    },
+
+    url: function() {
+        return setGetParamDict(Urls.learner_logs(), {
+            facility_id: this.facility,
+            group_id: this.group,
+            aggregate: true
+        });
+    }
+});
