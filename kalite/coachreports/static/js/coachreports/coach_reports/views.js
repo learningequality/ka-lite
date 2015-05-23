@@ -1,4 +1,21 @@
+/*
+Hierarchy of views:
+CoachReportView:
+    - FacilitySelectView
+    - GroupSelectView
+    - CoachSummaryView:
+        - TabularReportView:
+            - TabularReportRowView:
+                - TabularReportRowCellView
+                - DetailPanelInlineRowView:
+                    - DetailPanelView:
+                        - DetailPanelBodyView
+*/
+
 var CoachSummaryView = BaseView.extend({
+    /*
+    This view displays summary stats for the currently selected facility (and optionally group)
+    */
 
     template: HB.template("coach_nav/landing"),
 
@@ -46,6 +63,9 @@ var CoachSummaryView = BaseView.extend({
 });
 
 var CoachReportView = BaseView.extend({
+    /*
+    This is the wrapper view for the coach reports
+    */
 
     template: HB.template('coach_nav/reports-nav'),
 
@@ -67,6 +87,9 @@ var CoachReportView = BaseView.extend({
 });
 
 var DetailPanelInlineRowView = BaseView.extend({
+    /*
+    This is a special view that lets the detail view fit in a new row in the tabular report table
+    */
 
     tagName: 'tr',
 
@@ -90,6 +113,9 @@ var DetailPanelInlineRowView = BaseView.extend({
 })
         
 var DetailsPanelView = BaseView.extend({
+    /*
+    This view handles the pagination for the detail view
+    */
     
     //Number of items to show from the collection
     limit: 4,
@@ -138,6 +164,11 @@ var DetailsPanelView = BaseView.extend({
 
 
 var DetailsPanelBodyView = BaseView.extend({
+    /*
+    This view displays details of individual attempt logs
+    It has a tabbed body which will display all the questions it is passed.
+    The number passed to it is determined in its wrapper view above.
+    */
     
     template: HB.template("coach_nav/detailspanelbody"),
     
@@ -154,6 +185,9 @@ var DetailsPanelBodyView = BaseView.extend({
 });
 
 var TabularReportView = BaseView.extend({
+    /*
+    This is the main control view for the Tabular Coach report
+    */
 
     template: HB.template("tabular_reports/tabular-view"),
 
@@ -216,6 +250,9 @@ var TabularReportView = BaseView.extend({
 });
 
 var TabularReportRowView = BaseView.extend({
+    /*
+    This view renders a row of the table (i.e. all the data for one user)
+    */
 
     template: HB.template("tabular_reports/tabular-view-row"),
 
@@ -271,6 +308,9 @@ var TabularReportRowView = BaseView.extend({
 });
 
 var TabularReportRowCellView = BaseView.extend({
+    /*
+    This renders the data for a particular exercise/learner combination - a single cell
+    */
 
     tagName: 'td',
 
@@ -325,6 +365,10 @@ var TabularReportRowCellView = BaseView.extend({
 });
 
 var FacilitySelectView = Backbone.View.extend({
+    /*
+    This fetches data for facilities and displays them in a drop down
+    */
+
     template: HB.template('coach_nav/facility-select'),
 
     initialize: function() {
@@ -357,6 +401,10 @@ var FacilitySelectView = Backbone.View.extend({
 });
 
 var GroupSelectView = Backbone.View.extend({
+    /*
+    This fetches group data for facilities and displays them in a drop down
+    */
+
     template: HB.template('coach_nav/group-select'),
 
     initialize: function() {
