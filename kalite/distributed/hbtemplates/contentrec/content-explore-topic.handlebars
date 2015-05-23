@@ -3,18 +3,18 @@
   <div id="content-explore-topic">
     <div class="row">
       <div class="col-xs-12">
-          <h5 class="small">Based on your interest in {{ interest_topic.title }}:</h5>
+          <h4><small>Based on your interest in {{ interest_topic.title }}:</small></h4>
 
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-6">
+      <div class="col-xs-5">
           <h3>{{ suggested_topic.title }}:</h3>
       </div>
       {{#if suggested_topic.description }}
-      <div class="col-xs-6">
-        <p><b>Description:</b><p>
-        <p>{{ truncate suggested_topic.description 100 }}</p>
+      <div class="col-xs-7">
+        <h4>Description:</h4>
+        <p>{{ truncate suggested_topic.description 70 }}</p>
       </div>
       {{/if}}
       <hr class="module_divider" />
