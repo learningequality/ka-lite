@@ -8,7 +8,8 @@ var CoachSummaryView = BaseView.extend({
 
     initialize: function() {
         _.bindAll(this);
-        this.listenTo(this.model, "change", this.set_data_model)
+        this.listenTo(this.model, "change:facility", this.set_data_model);
+        this.listenTo(this.model, "change:group", this.set_data_model);
         this.set_data_model();
     },
 
