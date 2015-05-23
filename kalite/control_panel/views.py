@@ -25,7 +25,7 @@ from fle_utils.internet.decorators import render_to_csv
 from securesync.models import Device, Zone, SyncSession
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context
-from kalite.facility import get_users_from_group
+from kalite.facility.utils import get_users_from_group
 from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
@@ -264,6 +264,7 @@ def facility_form(request, facility, zone_id=None):
 @require_authorized_admin
 @render_to("control_panel/group_report.html")
 def group_report(request, facility, group_id=None, zone_id=None):
+    # TODO: group_report_context is undefined!?
     context = group_report_context(
         facility_id=facility.id,
         group_id=group_id or request.REQUEST.get("group", ""),
