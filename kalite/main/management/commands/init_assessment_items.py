@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from fle_utils.general import softload_json
 
 from kalite import settings; logging = settings.LOG
-from kalite.main.models import AssessmentItem
+from kalite.topic_tools.models import AssessmentItem
 
 # From topic_tools/__init__.py
 ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
