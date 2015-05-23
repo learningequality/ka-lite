@@ -1,6 +1,6 @@
 // Views
 
-/*The wrapper where everything goes, makes for a dynamic page*/
+/*The wrapper where all content recommendation cards go*/
 window.HomepageWrapper = BaseView.extend({
 
     template: HB.template("contentrec/content-rec-wrapper"),
@@ -78,7 +78,7 @@ window.ContentNextStepsLessonView = BaseView.extend({
 });
 
 /**
- * View that wraps the next steps card on the home page
+ * View that wraps all the next steps cards on the home page
  */
 window.ContentNextStepsView = BaseView.extend({
 
@@ -132,7 +132,7 @@ window.ContentExploreTopicView = BaseView.extend({
 });
 
 /**
- * View that wraps the content explore card on the home page
+ * View that wraps all the content explore cards on the home page
  */
 window.ContentExploreView = BaseView.extend({
 

@@ -3,7 +3,7 @@
   <div id="content-explore-topic">
     <div class="row">
       <div class="col-xs-12">
-          <h5 class="small">Based on your interest in {{ interest_topic.title }}:</h5>
+          <h5 class="small">{{_ "Based on your interest in" }} {{ interest_topic.title }}:</h5>
 
       </div>
     </div>
@@ -13,7 +13,7 @@
       </div>
       {{#if suggested_topic.description }}
       <div class="col-xs-6">
-        <p><b>Description:</b><p>
+        <p><b>{{_ "Description" }}:</b><p>
         <p>{{ truncate suggested_topic.description 100 }}</p>
       </div>
       {{/if}}

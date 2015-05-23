@@ -8,6 +8,7 @@ Three main functions:
 import datetime
 import random
 import copy
+import collections
 
 from django.db.models import Count
 
@@ -62,8 +63,6 @@ def get_resume_recommendations(user):
 ###
 def get_next_recommendations(user):
 
-    #user = ExerciseLog.objects.filter(id__lte=1)[4].user        #random person, can delete after    
-
     exercise_parents_table = get_exercise_parents_lookup_table()
     topic_table = get_topic_tree_lookup_table()
 
@@ -82,10 +81,7 @@ def get_next_recommendations(user):
         topic_tree_based_data = []
     
     #for checking that only exercises that have not been accessed are returned
-    check = [] 
-    for ex in topic_tree_based_data:
-        if not ex in most_recent:
-            check.append(ex)
+    topic_tree_based_data = [ex for ex in topic_tree_based_data if not ex in most_recent] 
 
     topic_tree_based_data = check
 
@@ -130,20 +126,19 @@ def get_group_recommendations(user):
     if recent_exercises:
 
         #If the user has recently engaged with exercises, use these exercises as the basis for filtering
-        user_exercises = ExerciseLog.objects.filter(user__in=user_list).order_by("-latest_activity_timestamp").extra(select={'null_complete': "completion_timestamp is null"}, order_by=["-null_complete", "-completion_timestamp"])
+        user_exercises = ExerciseLog.objects\
+            .filter(user__in=user_list).order_by("-latest_activity_timestamp")\
+            .extra(select={'null_complete': "completion_timestamp is null"},
+                order_by=["-null_complete", "-completion_timestamp"])
     
-        exercise_counts = {}
+        exercise_counts = collections.default_dict(lambda :0)
 
         for user in user_list:
             user_logs = user_exercises.filter(user=user)
-            for i, log in enumerate(user_logs):
-                if i > 0:
-                    prev_log = user_logs[i-1]
-                    if log.exercise_id in recent_exercises:
-                        if prev_log.exercise_id in exercise_counts:
-                            exercise_counts[prev_log.exercise_id] += 1
-                        else:
-                            exercise_counts[prev_log.exercise_id] = 1
+            for i, log in enumerate(user_logs[1:]):
+                prev_log = user_logs[i]
+                if log.exercise_id in recent_exercises:
+                    exercise_counts[prev_log.exercise_id] += 1
 
         exercise_counts = [{"exercise_id": key, "count": value} for key, value in exercise_counts.iteritems()]
 
@@ -154,10 +149,8 @@ def get_group_recommendations(user):
     #sort the results in order of highest counts to smallest
     sorted_counts = sorted(exercise_counts, key=lambda k:k['count'], reverse=False)
     
-    group_rec = []  #the final list of recommendations to return, WITHOUT counts
-
-    for c in sorted_counts:
-        group_rec.append(c['exercise_id'])
+    #the final list of recommendations to return, WITHOUT counts
+    group_rec = [c['exercise_id'] for c in sorted_counts]
 
     return group_rec
 
@@ -214,8 +207,6 @@ def get_explore_recommendations(user):
 
     '''
 
-    #user = ExerciseLog.objects.filter(id__lte=1)[4].user            #random person, can delete after   
-
     data = generate_recommendation_data()                           #topic tree alg
     exercise_parents_table = get_exercise_parents_lookup_table()    #for finding out subtopic ids
     recent_exercises = get_most_recent_exercises(user)              #most recent ex
@@ -227,17 +218,7 @@ def get_explore_recommendations(user):
             recent_subtopics.append(exercise_parents_table[ex]['subtopic_id'])
 
     #choose sample number, up to three
-    if len(recent_exercises) > 0:
-        sampleNum = 1 #must be at least 1
-
-        if len(recent_exercises) > 1:
-            sumpleNum = 2
-
-            if len(recent_exercises) > 2:
-                sampleNum = 3
-
-    else:
-        sampleNum = 0 #user has not attempted any
+    sampleNum = min(len(recent_exercises), 3)
     
     random_exercises = random.sample(recent_exercises, sampleNum)   #grab the valid/appropriate number of exs, up to 3
     added = []                                                      #keep track of what has been added (below)
@@ -257,7 +238,7 @@ def get_explore_recommendations(user):
                 recommended_topics.append(curr)                         #add to return
                                                                                              
         to_append = []
-        if len(recommended_topics) > 0:#if recommendation present
+        if len(recommended_topics):#if recommendation present
             suggested = recommended_topics[0]           #the suggested topic + its data
             accessed  = exercise_data['subtopic_title'] #corresponds to interest_topic in view
 
@@ -410,20 +391,13 @@ def get_most_recent_exercises(user):
 
 
 #returns a topic tree representation like in the older versions of ka-lite
-#import time
 def generate_topic_tree(channel=settings.CHANNEL, language=settings.LANGUAGE_CODE):
-    #start = time.clock()
     global topic_tree
 
     #cached
     if topic_tree:
         return topic_tree
 
-    #fun recursion?
-    #lookup_table = get_topic_tree_lookup_table(tree)
-    #topic_tree = recursively_append_children(topic_tree, lookup_table)
-
-    #hehe
     TOPICS = {}
     TOPICS[channel] = {}
     TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)    
