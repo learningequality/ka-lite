@@ -77,8 +77,6 @@ def get_next_recommendations(user):
     #for checking that only exercises that have not been accessed are returned
     topic_tree_based_data = [ex for ex in topic_tree_based_data if not ex in most_recent] 
 
-    topic_tree_based_data = check
-
     #logic to generate recommendations based on exercises student is struggling with
     struggling = get_exercise_prereqs(get_struggling_exercises(user))   
 
@@ -115,7 +113,7 @@ def get_group_recommendations(user):
             .extra(select={'null_complete': "completion_timestamp is null"},
                 order_by=["-null_complete", "-completion_timestamp"])
     
-        exercise_counts = collections.default_dict(lambda :0)
+        exercise_counts = collections.defaultdict(lambda :0)
 
         for user in user_list:
             user_logs = user_exercises.filter(user=user)

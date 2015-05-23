@@ -5,6 +5,8 @@ Here, these are focused on:
 * GET student progress (video, exercise)
 * topic tree views (search, knowledge map)
 """
+from django.shortcuts import get_object_or_404
+
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse
 from fle_utils.internet.webcache import backend_cache_page
@@ -24,19 +26,23 @@ def content_recommender(request):
     """Populate response with recommendation(s)"""
 
     user_id = request.GET.get('user', None)
-    user = FacilityUser.objects.get(pk=user_id)
+    user = get_object_or_404(FacilityUser, pk=user_id)
+
+    resume = request.GET.get('resume', None)
+    next = request.GET.get('next', None)
+    explore = request.GET.get('explore', None)
 
     def set_bool_flag(flag_name, rec_dict):
         rec_dict[flag_name] = True
         return rec_dict
 
     # retrieve resume recommendation(s) and set resume boolean flag
-    resume_recommendations = [set_bool_flag("resume", rec) for rec in get_resume_recommendations(user)]
+    resume_recommendations = [set_bool_flag("resume", rec) for rec in get_resume_recommendations(user)] if resume else []
 
     # retrieve next_steps recommendations, set next_steps boolean flag, and flatten results for api response
-    next_recommendations = [set_bool_flag("next", rec) for rec in get_next_recommendations(user)]
+    next_recommendations = [set_bool_flag("next", rec) for rec in get_next_recommendations(user)] if next else []
 
     # retrieve explore recommendations, set explore boolean flag, and flatten results for api response
-    explore_recommendations = [set_bool_flag("explore", rec) for rec in get_explore_recommendations(user)]
+    explore_recommendations = [set_bool_flag("explore", rec) for rec in get_explore_recommendations(user)] if explore else []
 
     return JsonResponse(resume_recommendations + next_recommendations + explore_recommendations)

@@ -97,7 +97,7 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
     save: _.throttle(function(key, val, options){this.saveNow(key, val, options);}, 30000),
 
     saveNow: function (key, val, options){
-        this.set("latest_activity_timestamp", window.statusModel.get_server_time(), {silent: true})
+        this.set("latest_activity_timestamp", window.statusModel.get_server_time(), {silent: true});
         Backbone.Model.prototype.save.call(this, key, val, options);
     },
 
