@@ -1,6 +1,6 @@
 // Views
 
-/*The wrapper where everything goes, makes for a dynamic page*/
+/*All 3 cards go into this wrapper, which makes the page responsive*/
 window.HomepageWrapper = BaseView.extend({
 
     template: HB.template("contentrec/content-rec-wrapper"),
