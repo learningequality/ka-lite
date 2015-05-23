@@ -1,6 +1,6 @@
 // Views
 
-/*The wrapper where all content recommendation cards go*/
+/*All 3 cards go into this wrapper, which makes the page responsive*/
 window.HomepageWrapper = BaseView.extend({
 
     template: HB.template("contentrec/content-rec-wrapper"),

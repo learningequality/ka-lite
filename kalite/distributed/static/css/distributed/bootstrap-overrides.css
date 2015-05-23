@@ -376,17 +376,19 @@ form .input-group {
 .module_divider{
   margin:0;
 }
+/*
 
 #content-resume-thumbnail div.col-xs-12 {
     color: black;
 }
+*/
 
 .content-nextsteps-lesson h4{
   margin-top: 20px;
 }
 
 .ns_series_arrow{
-  color: black;
+  color: inherit;
   font-size:3em;
   text-align: center;
 }
@@ -399,8 +401,14 @@ form .input-group {
     font-size: 4em;
 }
 
+/*
 #content-explore-topic div.col-xs-6 {
     color: black;
+}
+*/
+
+.suggested_topic_title{
+  vertical-align: middle; 
 }
 
 /*===================================
