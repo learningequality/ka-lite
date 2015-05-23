@@ -1,6 +1,6 @@
 <div id="coach_report_wrapper">
 	<div id="summary_mainview">
-		<h1>{{#if status.group_name }}{{ status.group_name }}{{else}}{{ status.facility_name }}{{/if}}</h1>
+		<h1>{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}<button id="show_tabular_report" class="btn btn-success pull-right">{{_ "Show Tabular Report" }}</button></h1>
 		<div id="radial_chartblock">
 			<div id="chartcontainer">
 				<h3>{{_ "This week" }}</h3>

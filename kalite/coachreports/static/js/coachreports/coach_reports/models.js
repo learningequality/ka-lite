@@ -1,7 +1,22 @@
 var StateModel = Backbone.Model.extend({
     defaults: {
-        group_id: window.GROUP_ID || "",
-        facility_id: window.FACILITY_ID || ""
+        group: window.GROUP_ID || "",
+        facility: window.FACILITY_ID || ""
+    },
+
+    initialize: function() {
+        _.bindAll(this);
+    },
+
+    set: function(key, val, options) {
+        if (key === "facility" || key.facility) {
+            this.set({
+                group: undefined,
+                group_name: undefined
+            })
+        }
+
+        Backbone.Model.prototype.set.call(this, key, val, options);
     }
 });
 

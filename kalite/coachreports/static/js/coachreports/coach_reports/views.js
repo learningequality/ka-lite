@@ -3,13 +3,14 @@ var CoachSummaryView = BaseView.extend({
     template: HB.template("coach_nav/landing"),
 
     events: {
-        "click": "show_tabular_view"
+        "click #show_tabular_report": "show_tabular_view"
     },
 
     initialize: function() {
         _.bindAll(this);
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
+        this.listenTo(this.model, "change", this.render);
         this.set_data_model();
     },
 
@@ -30,10 +31,13 @@ var CoachSummaryView = BaseView.extend({
             data: this.data_model.attributes
         }));
 
+        delete this.tabular_report_view;
+
     },
 
     show_tabular_view: function() {
         if (!this.tabular_report_view) {
+            this.$("#show_tabular_report").attr("disabled", "disabled");
             this.tabular_report_view = new TabularReportView({model: this.model});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         }
@@ -75,7 +79,7 @@ var DetailPanelInlineRowView = BaseView.extend({
     },
 
     render: function() {
-        this.detail_view = new detailsPanelView({
+        this.detail_view = new DetailsPanelView({
             tagName: 'td',
             model: this.model,
             content_item: this.content_item,
@@ -85,7 +89,7 @@ var DetailPanelInlineRowView = BaseView.extend({
     }
 })
         
-var detailsPanelView = BaseView.extend({
+var DetailsPanelView = BaseView.extend({
     
     //Number of items to show from the collection
     limit: 4,
@@ -125,7 +129,7 @@ var detailsPanelView = BaseView.extend({
             pages: this.pages,
             collection: this.collection.to_objects()
         }));
-        this.bodyView = new detailsPanelBodyView ({
+        this.bodyView = new DetailsPanelBodyView ({
             collection: this.collection,
             el: this.$(".body")
         });
@@ -133,7 +137,7 @@ var detailsPanelView = BaseView.extend({
 });
 
 
-var detailsPanelBodyView = BaseView.extend({
+var DetailsPanelBodyView = BaseView.extend({
     
     template: HB.template("coach_nav/detailspanelbody"),
     
@@ -160,16 +164,20 @@ var TabularReportView = BaseView.extend({
     },
 
     render: function() {
+        var self = this;
+
         this.$el.html(this.template({
             contents: this.contents.toJSON(),
             learners: this.contents.length
         }));
+
         var row_views = [];
-        for (var i = 0; i < this.learners.length; i++) {
-            var row_view = this.add_subview(TabularReportRowView, {model: this.learners.at(i), contents: this.contents})
+        this.learners.each(function(model){
+            var row_view = self.add_subview(TabularReportRowView, {model: model, contents: self.contents})
             row_views.push(row_view);
-            this.listenTo(row_view, "detail_view", this.set_detail_view);
-        }
+            self.listenTo(row_view, "detail_view", self.set_detail_view);
+        });
+
         this.append_views(row_views, ".student-data");
     },
 
@@ -183,14 +191,14 @@ var TabularReportView = BaseView.extend({
             this.data_model.fetch().then(function() {
                 self.learners = new Backbone.Collection(self.data_model.get("learners"));
                 self.contents = new Backbone.Collection(self.data_model.get("contents"));
-                for (var i = 0; i < self.learners.length; i++) {
-                    self.learners.models[i].set("logs", _.object(
+                self.learners.each(function(model){
+                    model.set("logs", _.object(
                         _.map(_.filter(self.data_model.get("logs"), function(log) {
-                            return log.user === self.learners.models[i].get("pk");
+                            return log.user === model.get("pk");
                         }), function(item) {
                             return [item.exercise_id || item.video_id || item.content_id, item];
                         })));
-                }
+                });
                 self.render();
             });
         }
@@ -221,15 +229,18 @@ var TabularReportRowView = BaseView.extend({
     },
 
     render: function() {
+        var self = this;
+
         this.$el.html(this.template(this.model.attributes));
 
         var cell_views = [];
-        for (var i = 0; i < this.contents.length; i++) {
-            var data = this.model.get("logs")[this.contents.at(i).get("id")];
-            var new_view = this.add_subview(TabularReportRowCellView, {model: new Backbone.Model(data)});
+        this.contents.each(function(model){
+            var data = self.model.get("logs")[model.get("id")];
+            var new_view = self.add_subview(TabularReportRowCellView, {model: new Backbone.Model(data)});
             cell_views.push(new_view);
-            this.listenTo(new_view, "detail_view", this.show_detail_view);
-        }
+            self.listenTo(new_view, "detail_view", self.show_detail_view);
+        });
+
         this.append_views(cell_views);
     },
 
@@ -356,6 +367,14 @@ var GroupSelectView = Backbone.View.extend({
     },
 
     render: function() {
+        var self = this;
+        // Remove reference to groups from another facility
+        if (!this.group_list.some(function(model){ return model.get("id") === self.model.get("group");})) {
+            this.model.set({
+                "group": undefined,
+                "group_name": undefined
+            }, {silent: true});
+        }
         this.$el.html(this.template({
             groups: this.group_list.toJSON(),
             selected: this.model.get("group")

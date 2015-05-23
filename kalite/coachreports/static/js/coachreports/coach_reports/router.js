@@ -1,7 +1,7 @@
 CoachReportRouter = Backbone.Router.extend({
     initialize: function(options) {
         _.bindAll(this);
-        this.state_model = new Backbone.Model();
+        this.state_model = new StateModel();
         this.listenTo(this.state_model, "change", this.set_url);
     },
 
@@ -23,7 +23,7 @@ CoachReportRouter = Backbone.Router.extend({
         }
     },
 
-    set_url: function() {
+    set_url: function(model) {
         var url = ""
         if (this.state_model.get("facility")) {
             url += this.state_model.get("facility") + "/";
