@@ -28,15 +28,18 @@ CACHE_VARS.append("exercise_parents_lookup_table")
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
 }
-########################################## 'RESUME' LOGIC #################################################
 
-###
-# Returns a list of all started but NOT completed exercises
-#
-# @param user: facility user model
-# @return: The most recent video/exercise that has been started but NOT completed
-###
+
+
 def get_resume_recommendations(user):
+    """Get the recommendation for the Resume section.
+
+
+    Args:
+    user -- The current user as a facility user model object.
+
+    """
+
     final = get_most_recent_incomplete_item(user)
     if final:
         return [final] #for first pass, just return the most recent video!!!
@@ -44,24 +47,15 @@ def get_resume_recommendations(user):
         return []
 
 
-####################################### 'NEXT STEPS' LOGIC ################################################
 
-###
-# Returns a list of exercises to go to next. Influenced by other user patterns in the same group as well
-# as the user's struggling pattern shown in the exercise log.
-#
-# Full List:
-# - Incomplete exercises (where user left off - MOVED TO RESUME)
-# - Struggling (pre-reqs for exercises marked as "struggling" for the student)
-# - User patterns based on group analysis (maximum likelihood estimation and empirical count)
-# - Topic tree structure recommendations based on the most recent subtopic accessed
-#
-# @param user: facility user model
-#        
-# @return: a list of exercise id's and their titles, [type], and subtopic for where the user 
-#          should consider going next.
-###
 def get_next_recommendations(user):
+    """Get the recommendations for the Next section, and return them as a list.
+
+
+    Args:
+    user -- The current user as a facility user model object.
+
+    """
 
     exercise_parents_table = get_exercise_parents_lookup_table()
     topic_table = get_topic_tree_lookup_table()
@@ -106,19 +100,9 @@ def get_next_recommendations(user):
     #final recommendations are a combination of struggling, group filtering, and topic_tree filtering
     return final
 
-
-
-
-# Given a facility user model, return a list of ALL exercises (ids) that are immediately tackled by other users
-# in the same user group - also ordered by empirical count (more people moving onto this -> higher in the
-# list). "Immediately" means the very next exercise after the most recent one the given user has accessed.
-#
-# This function checks if the exercises returned have been accessed already, and only returns those that
-# have not been.
-#
-# A group is defined as a collection of students within the same facility and group (as defined in models)
 def get_group_recommendations(user):
- 
+    """Returns a list of exercises immediately tackled by other individuals in the same group."""
+
     recent_exercises = get_most_recent_exercises(user)
     
     user_list = FacilityUser.objects.filter(group=user.group)
@@ -154,14 +138,9 @@ def get_group_recommendations(user):
 
     return group_rec
 
-
-
-
-# Given a facility user model, return a list ALL exercises (ids) that the user is struggling on
-# This amounts to returning only those exercises that have their "struggling" attribute set
-# to True. The exercise ids are also in order of most recent first. 
 def get_struggling_exercises(user):
-    
+    """Return a list of all exercises (ids) that the user is currently struggling on."""
+
     exercises_by_user = ExerciseLog.objects.filter(user=user)
 
     #sort exercises first, in order of most recent first
@@ -174,38 +153,26 @@ def get_struggling_exercises(user):
 
     return struggles
 
-
-
-
-# Given a list of exercise ids, return a concatenated list of prereqs for each of the exercises
 def get_exercise_prereqs(exercises):
+    """Return a list of prequisites (if applicable) for each specified exercise."""
+
     ex_cache = get_exercise_cache()
     prereqs = []
     for exercise in exercises:
         prereqs += ex_cache[exercise]['prerequisites']
 
     return prereqs
-    
 
 
 
-########################################## 'EXPLORE' LOGIC ################################################
-
-###
-# Returns a list of subtopic ids that the user has not explored yet. 
-#
-# @param: user - the facility user model corresponding to the current user
-#
-# @return: a list of exercise id's of the 'middle to farthest neighbors,' or less immediately relevant
-#           exercises based on topic tree structure.
-###
 def get_explore_recommendations(user):
+    """Get the recommendations for the Explore section, and return them as a list.
 
-    ''' 
-        Logic: grab 3 random exercises from recent exercises, get their subtopic ids, then using
-        generate_recommendation_data(), get the elements at certain positions (nearest). 
 
-    '''
+    Args:
+    user -- The current user as a facility user model object.
+
+    """
 
     data = generate_recommendation_data()                           #topic tree alg
     exercise_parents_table = get_exercise_parents_lookup_table()    #for finding out subtopic ids
@@ -260,11 +227,8 @@ def get_explore_recommendations(user):
 
     return final
 
-
-
-
-#given a subtopic id, return corresponding data to return in get_explore_recommendations
 def get_subtopic_data(subtopic_id):
+    """Return metadata for the subtopic, such as title and path."""
 
     ### topic tree for traversal###
     tree = get_topic_tree_lookup_table()
@@ -282,12 +246,11 @@ def get_subtopic_data(subtopic_id):
 
 
 
-##################################### GENERAL HELPER FUNCTIONS ############################################
 
 
-#returns a dictionary of exercises with their metadata.
-#subtopics are the immediate parents (ex: early-math, biology) and topics are one more level above (math)
 def get_exercise_parents_lookup_table():
+    """Return a dictionary with exercise ids as keys and metadata, like topic_id, as values."""
+
     global exercise_parents_lookup_table
 
     if exercise_parents_lookup_table:
@@ -328,9 +291,9 @@ def get_exercise_parents_lookup_table():
                   
     return exercise_parents_table
 
-
-#Given a list of subtopic/topic ids, returns an ordered list of the first 5 exercise ids under those ids
 def get_exercises_from_topics(topicId_list):
+    """Return an ordered list of the first 5 exercise ids under a given subtopic/topic."""
+
     exs = []
     for topic in topicId_list:
 
@@ -340,11 +303,9 @@ def get_exercises_from_topics(topicId_list):
 
     return exs
 
-
-#given a facility user model, returns information of the
-#most recently accessed and incomplete video/exercise. Can expand this later on to
-#include more later, like all items in order or perhaps more logs to look at. 
 def get_most_recent_incomplete_item(user):
+    """Return the most recently accessed item (video/exer) that has yet to be completed by user."""
+
     #get the queryset objects
     exercise_list = list(ExerciseLog.objects.filter(user=user, complete=False).order_by("-latest_activity_timestamp")[:1])
     video_list = list(VideoLog.objects.filter(user=user, complete=False).order_by("-latest_activity_timestamp")[:1])
@@ -381,17 +342,18 @@ def get_most_recent_incomplete_item(user):
     else:
         return None
 
-#given a facility user model, return the most recent exercise ids - incomplete AND complete
 def get_most_recent_exercises(user):
+    """Return a list of the most recent exercises (ids) accessed by the user."""
+
     exercises_by_user = ExerciseLog.objects.filter(user=user).order_by("-latest_activity_timestamp")
 
     final = [log.exercise_id for log in exercises_by_user]
     
     return final
 
-
-#returns a topic tree representation like in the older versions of ka-lite
 def generate_topic_tree(channel=settings.CHANNEL, language=settings.LANGUAGE_CODE):
+    """Reconstruct and return the original topic tree (non-flat)."""
+
     global topic_tree
 
     #cached
@@ -405,10 +367,9 @@ def generate_topic_tree(channel=settings.CHANNEL, language=settings.LANGUAGE_COD
 
     return topic_tree
 
-
-#helper function for generate_topic_tree() - returns a lookup table that stores object ids and their
-#associated meta data needed for generate_topic_tree()
 def get_topic_tree_lookup_table(tree=get_topic_tree()):
+    """Traverses flat topic tree and returns a lookup table for each node + its metadata."""
+
     table = {}
     for item in tree:
         curr = {
@@ -429,17 +390,10 @@ def get_topic_tree_lookup_table(tree=get_topic_tree()):
     return table
 
 
-###################################### BEGIN NEAREST NEIGHBORS ############################################
 
-### MULTI-PURPOSE NEAREST NEIGHBORS ALGORITH, USE AS YOU PLEASE ###
-### THE MAIN THING TO REMEMBER IS THAT get_recommended_exercises(subtopic) IS THE MAIN FUNCTION TO CALL ###
 
-###
-# Returns a dictionary with each subtopic and their related
-# topics.
-#
-###
 def generate_recommendation_data():
+    """Traverses topic tree to generate a dictionary with related subtopics per subtopic."""
 
     #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values. Not currently in use.
     data_hardcoded = {
@@ -565,15 +519,15 @@ def generate_recommendation_data():
 
     return data
 
-
-
-### 
-# Returns a lookup table (a tree) that contains a list of related
-# EXERCISES for each subtopic.
-#
-# @param data: a dicitonary with each subtopic and its related subtopics
-###
 def get_recommendation_tree(data):
+    """Returns a dictionary of related exercises for each subtopic.
+
+
+    Args:
+    data -- a dictionary with each subtopic and its related_subtopics (from generate_recommendation_data())
+    
+    """
+
     recommendation_tree = {}  # tree to return
 
     #loop through all subtopics passed in data
@@ -594,16 +548,8 @@ def get_recommendation_tree(data):
 
     return recommendation_tree
       
-
-
-###
-# Returns a list of recommended exercise ids given a
-# subtopic id. This will be the function called via the api
-# endpoint.
-#
-# @param subtopic_id: the subtopic id (e.g. 'early-math')
-###
 def get_recommended_exercises(subtopic_id):
+    """Return a list of recommended exercises (ids) based on the given subtopic."""
 
     if not subtopic_id:
         return []
@@ -615,16 +561,9 @@ def get_recommended_exercises(subtopic_id):
     #recommendations to a set amount??
     return tree[subtopic_id]
 
-
-
-###
-# Helper function for generating recommendation data using the topic tree.
-# Returns a list of the neihbors at distance 1 from the specified subtopic.
-#
-# @param topic: the index of the topic that the subtopic belongs to (e.g. math, sciences)
-#        subtopic: the index of the subtopic to find the neighbors for
-###
 def get_neighbors_at_dist_1(topic, subtopic, tree):
+    """Return a list of the neighbors at distance 1 from the specified subtopic."""
+
     neighbors = []  #neighbor list to be returned
     topic_index = topic #store topic index
     topic = tree['children'][topic] #subtree rooted at the topic that we are looking at
@@ -663,18 +602,17 @@ def get_neighbors_at_dist_1(topic, subtopic, tree):
 
     return neighbors
 
-
-
-###
-# Performs Breadth-first search given recommendation data.
-# Returns neighbors of a node in order of increasing distance.
-# 
-# @param nearest_neighbors: array holding the current left and right neighbors at dist 1 (always 2)
-# @param data: dictionary of subtopics and their neighbors at distance 1
-# @param curr: the current subtopic
-###
-
 def get_subsequent_neighbors(nearest_neighbors, data, curr):
+    """BFS algorithm. Returns a list of the other neighbors (dist > 1) for the given subtopic.
+
+
+    Args:
+    nearest_neighbors -- list of neighbors at dist 1 from subtopic.
+    data -- the dictionary of subtopics and their neighbors at distance 1
+    curr -- the current subtopic
+    
+    """
+
     left_neigh = nearest_neighbors[1].split(' ')  # subtopic id and distance string of left neighbor
     right_neigh = nearest_neighbors[2].split(' ') # same but for right
 
@@ -759,5 +697,3 @@ def get_subsequent_neighbors(nearest_neighbors, data, curr):
             right = data[right]['related_subtopics'][2].split(' ')[0]
 
     return other_neighbors
-
-### END content recommendation ###
