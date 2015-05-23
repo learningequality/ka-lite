@@ -5,6 +5,7 @@ from .api_resources import PlaylistProgressResource, PlaylistProgressDetailResou
 
 urlpatterns = patterns(__package__ + '.api_views',
     url(r'logs/$',      'learner_logs', {}, 'learner_logs'),
+    url(r'summary/$',      'aggregate_learner_logs', {}, 'aggregate_learner_logs'),
 
     # TastyPie API Urls
     url(r'^', include(PlaylistProgressResource().urls)),

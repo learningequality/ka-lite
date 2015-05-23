@@ -38,10 +38,9 @@ var CoachReportAggregateModel = Backbone.Model.extend({
     },
 
     url: function() {
-        return setGetParamDict(Urls.learner_logs(), {
+        return setGetParamDict(Urls.aggregate_learner_logs(), {
             facility_id: this.facility,
-            group_id: this.group,
-            aggregate: true
+            group_id: this.group
         });
     }
 });
