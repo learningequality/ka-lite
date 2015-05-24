@@ -1,20 +1,10 @@
-import cgi
-import json
-import logging
 import re
-import uuid
 
-from django.core.urlresolvers import reverse
-from django.contrib import messages
-from django.contrib.messages.api import get_messages
-from django.db import models as db_models
-from django.http import HttpResponse
 from django.utils import simplejson
-from django.utils.safestring import SafeString, SafeUnicode, mark_safe
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.gzip import gzip_page
 
-from . import get_serialized_models, save_serialized_models, get_device_counters, serialize
+from .utils import get_serialized_models, save_serialized_models, get_device_counters, serialize
 from .models import *
 from ..devices.models import *  # inter-dependence
 from fle_utils.chronograph.utils import force_job

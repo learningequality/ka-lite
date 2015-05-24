@@ -19,9 +19,6 @@ IP_MAX_LENGTH=50
 
 VERSION = "1.0"
 
-from .devices.__init__ import *
-from .engine.__init__ import *
-
 # JsonResponseMessageError codes
 class ERROR_CODES:
     CLIENT_DEVICE_CORRUPTED = "client_device_corrupted"
