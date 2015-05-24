@@ -1,13 +1,10 @@
 """
 """
-import logging
 import re
 import json
-import uuid
 
-from django.conf import settings
 
-from . import get_serialized_models, save_serialized_models, get_device_counters, deserialize
+from .utils import get_serialized_models, save_serialized_models, get_device_counters, deserialize
 from .models import *
 from ..api_client import BaseClient
 from ..devices.api_client import RegistrationClient

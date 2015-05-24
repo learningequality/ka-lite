@@ -8,7 +8,7 @@ Three main functions:
 
 from kalite.topic_tools import * 
 from kalite.main.models import ExerciseLog 
-import kalite.facility
+import kalite.facility.utils
 from kalite.facility.models import FacilityUser
 '''
 ###
@@ -272,7 +272,7 @@ def get_most_recent_exercises(user):
 #given a user type (can be null), group id, and a facility name, return all users in that group
 #calls the already defined function in facility module
 def get_users_in_group(user_type, group_id, facility):
-    return kalite.facility.get_users_from_group(user_type, group_id, facility)
+    return kalite.facility.utils.get_users_from_group(user_type, group_id, facility)
 
 
 ###################################### BEGIN NEAREST NEIGHBORS ############################################
