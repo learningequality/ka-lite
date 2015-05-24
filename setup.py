@@ -299,11 +299,13 @@ else:
         file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
     
 
-# All files from dist-packages are always included
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, 'python-packages'), x[1]),
-    gen_data_files('dist-packages')
-)
+# All files from dist-packages are included if the directory exists
+if os.listdir(STATIC_DIST_PACKAGES):
+    data_files += map(
+        lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
+        gen_data_files('dist-packages')
+    )
+
 
 setup(
     name=DIST_NAME,
