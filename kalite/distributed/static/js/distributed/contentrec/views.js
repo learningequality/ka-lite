@@ -110,7 +110,7 @@ window.ContentNextStepsView = BaseView.extend({
         var container = document.createDocumentFragment();
 
         for(i = 0; i < this.collection.length; i++) {
-            var name = new String('content_nextsteps_lesson_'+i);
+            var name = 'content_nextsteps_lesson_'+ i;
             this[name] = this.add_subview(ContentNextStepsLessonView, {
                 model: this.collection.models[i]
             });
@@ -164,7 +164,7 @@ window.ContentExploreView = BaseView.extend({
         var container = document.createDocumentFragment();
 
         for(i = 0; i < this.collection.length; i++) {
-            var name = new String('content_explore_topic_'+i);
+            var name = 'content_explore_topic_' + i;
             this[name] = this.add_subview(ContentExploreTopicView, {
                 model: this.collection.models[i]
             });
