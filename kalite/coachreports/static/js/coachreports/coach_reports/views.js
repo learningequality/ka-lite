@@ -62,27 +62,74 @@ var CoachSummaryView = BaseView.extend({
 
 });
 
-var CoachReportView = BaseView.extend({
+var DetailsPanelBodyView = BaseView.extend({
     /*
-    This is the wrapper view for the coach reports
+    This view displays details of individual attempt logs
+    It has a tabbed body which will display all the questions it is passed.
+    The number passed to it is determined in its wrapper view above.
     */
 
-    template: HB.template('coach_nav/reports-nav'),
+    template: HB.template("coach_nav/detailspanelbody"),
 
-    initialize: function(options) {
-
-        this.facility_select_view = new FacilitySelectView({model: this.model});
-        this.group_select_view = new GroupSelectView({model: this.model});
-        this.coach_summary_view = new CoachSummaryView({model: this.model});
-
+    initialize: function (options) {
+        _.bindAll(this);
         this.render();
     },
 
     render: function() {
-        this.$el.html(this.template());
-        this.$('#group-select-container').append(this.group_select_view.el);
-        this.$('#facility-select-container').append(this.facility_select_view.el);
-        this.$("#student_report_container").append(this.coach_summary_view.el);
+        this.$el.html(this.template({
+            collection: this.collection.to_objects()
+        }));
+    }
+});
+
+var DetailsPanelView = BaseView.extend({
+    /*
+    This view handles the pagination for the detail view
+    */
+
+    //Number of items to show from the collection
+    limit: 4,
+
+    template: HB.template("coach_nav/detailspanel"),
+
+    initialize: function (options) {
+        _.bindAll(this);
+        this.content_item = options.content_item;
+        if (this.content_item.get("kind") === "Exercise") {
+            this.collection = new window.AttemptLogCollection([], {
+                user: this.model.get("user"),
+                limit: this.limit,
+                exercise_id: this.model.get("exercise_id"),
+                order_by: "timestamp"
+            });
+            this.collection.fetch();
+        }
+        this.listenToOnce(this.collection, "sync", this.render);
+        this.render();
+    },
+
+    render: function() {
+        var item_count = 0;
+        if (this.collection.meta) {
+            item_count = this.collection.meta.total_count;
+        }
+        this.pages = [];
+        if (item_count/this.limit > 1) {
+            for (var i=1; i < item_count/this.limit + 1; i++) {
+                this.pages.push(i);
+            }
+        }
+        this.$el.html(this.template({
+            model: this.model.attributes,
+            itemdata: this.content_item.attributes,
+            pages: this.pages,
+            collection: this.collection.to_objects()
+        }));
+        this.bodyView = new DetailsPanelBodyView ({
+            collection: this.collection,
+            el: this.$(".body")
+        });
     }
 });
 
@@ -110,201 +157,6 @@ var DetailPanelInlineRowView = BaseView.extend({
         });
         this.$el.append(this.detail_view.el);
     }
-})
-        
-var DetailsPanelView = BaseView.extend({
-    /*
-    This view handles the pagination for the detail view
-    */
-    
-    //Number of items to show from the collection
-    limit: 4,
-    
-    template: HB.template("coach_nav/detailspanel"),
-    
-    initialize: function (options) {
-        _.bindAll(this);
-        this.content_item = options.content_item;
-        if (this.content_item.get("kind") === "Exercise") {
-            this.collection = new window.AttemptLogCollection([], {
-                user: this.model.get("user"),
-                limit: this.limit,
-                exercise_id: this.model.get("exercise_id"),
-                order_by: "timestamp"
-            });
-            this.collection.fetch();
-        }
-        this.listenToOnce(this.collection, "sync", this.render);
-        this.render();
-    },
-    
-    render: function() {
-        var item_count = 0;
-        if (this.collection.meta) {
-            item_count = this.collection.meta.total_count;
-        }
-        this.pages = [];
-        if (item_count/this.limit > 1) {
-            for (var i=1; i < item_count/this.limit + 1; i++) {
-                this.pages.push(i);
-            }
-        }
-        this.$el.html(this.template({
-            model: this.model.attributes,
-            itemdata: this.content_item.attributes,
-            pages: this.pages,
-            collection: this.collection.to_objects()
-        }));
-        this.bodyView = new DetailsPanelBodyView ({
-            collection: this.collection,
-            el: this.$(".body")
-        });
-    }
-});
-
-
-var DetailsPanelBodyView = BaseView.extend({
-    /*
-    This view displays details of individual attempt logs
-    It has a tabbed body which will display all the questions it is passed.
-    The number passed to it is determined in its wrapper view above.
-    */
-    
-    template: HB.template("coach_nav/detailspanelbody"),
-    
-    initialize: function (options) {
-        _.bindAll(this);
-        this.render();
-    },
-    
-    render: function() {
-        this.$el.html(this.template({
-            collection: this.collection.to_objects()
-        }));
-    }
-});
-
-var TabularReportView = BaseView.extend({
-    /*
-    This is the main control view for the Tabular Coach report
-    */
-
-    template: HB.template("tabular_reports/tabular-view"),
-
-    initialize: function() {
-        _.bindAll(this);
-        this.set_data_model();
-        this.listenTo(this.model, "change", this.set_data_model);
-    },
-
-    render: function() {
-        var self = this;
-
-        this.$el.html(this.template({
-            contents: this.contents.toJSON(),
-            learners: this.contents.length
-        }));
-
-        var row_views = [];
-        this.learners.each(function(model){
-            var row_view = self.add_subview(TabularReportRowView, {model: model, contents: self.contents})
-            row_views.push(row_view);
-            self.listenTo(row_view, "detail_view", self.set_detail_view);
-        });
-
-        this.append_views(row_views, ".student-data");
-    },
-
-    set_data_model: function (){
-        var self = this;
-        this.data_model = new CoachReportModel({
-            facility: this.model.get("facility"),
-            group: this.model.get("group")
-        });
-        if (this.model.get("facility")) {
-            this.data_model.fetch().then(function() {
-                self.learners = new Backbone.Collection(self.data_model.get("learners"));
-                self.contents = new Backbone.Collection(self.data_model.get("contents"));
-                self.learners.each(function(model){
-                    model.set("logs", _.object(
-                        _.map(_.filter(self.data_model.get("logs"), function(log) {
-                            return log.user === model.get("pk");
-                        }), function(item) {
-                            return [item.exercise_id || item.video_id || item.content_id, item];
-                        })));
-                });
-                self.render();
-            });
-        }
-    },
-
-    set_detail_view: function(detail_view) {
-        if (this.detail_view) {
-            this.detail_view.remove();
-        }
-        if (detail_view) {
-            this.detail_view = detail_view;
-        }
-    }
-
-});
-
-var TabularReportRowView = BaseView.extend({
-    /*
-    This view renders a row of the table (i.e. all the data for one user)
-    */
-
-    template: HB.template("tabular_reports/tabular-view-row"),
-
-    tagName: 'tr',
-
-    initialize: function(options) {
-        _.bindAll(this);
-
-        this.contents = options.contents;
-        this.render();
-    },
-
-    render: function() {
-        var self = this;
-
-        this.$el.html(this.template(this.model.attributes));
-
-        var cell_views = [];
-        this.contents.each(function(model){
-            var data = self.model.get("logs")[model.get("id")];
-            var new_view = self.add_subview(TabularReportRowCellView, {model: new Backbone.Model(data)});
-            cell_views.push(new_view);
-            self.listenTo(new_view, "detail_view", self.show_detail_view);
-        });
-
-        this.append_views(cell_views);
-    },
-
-    show_detail_view: function(model) {
-        if (this.detail_view) {
-            // TODO (rtibbles): Implement Models properly here to reflect server side id attributes
-            if (this.detail_view.model.cid === model.cid) {
-                delete this.detail_view;
-                this.trigger("detail_view");
-                return false
-            }
-            this.detail_view.remove();
-        }
-
-
-        var model_id = model.get("exercise_id") || model.get("video_id") || model.get("content_id");
-        this.detail_view = new DetailPanelInlineRowView({
-            model: model,
-            contents_length: this.contents.length,
-            content_item: this.contents.find(function(item) {return item.get("id") === model_id;})
-        });
-        this.$el.after(this.detail_view.el);
-
-        this.trigger("detail_view", this.detail_view);
-
-    }
-
 });
 
 var TabularReportRowCellView = BaseView.extend({
@@ -362,6 +214,129 @@ var TabularReportRowCellView = BaseView.extend({
             this.trigger("detail_view", this.model);
         }
     }
+});
+
+var TabularReportRowView = BaseView.extend({
+    /*
+    This view renders a row of the table (i.e. all the data for one user)
+    */
+
+    template: HB.template("tabular_reports/tabular-view-row"),
+
+    tagName: 'tr',
+
+    initialize: function(options) {
+        _.bindAll(this);
+
+        this.contents = options.contents;
+        this.render();
+    },
+
+    render: function() {
+        var self = this;
+
+        this.$el.html(this.template(this.model.attributes));
+
+        var cell_views = [];
+        this.contents.each(function(model){
+            var data = self.model.get("logs")[model.get("id")];
+            var new_view = self.add_subview(TabularReportRowCellView, {model: new Backbone.Model(data)});
+            cell_views.push(new_view);
+            self.listenTo(new_view, "detail_view", self.show_detail_view);
+        });
+
+        this.append_views(cell_views);
+    },
+
+    show_detail_view: function(model) {
+        if (this.detail_view) {
+            // TODO (rtibbles): Implement Models properly here to reflect server side id attributes
+            if (this.detail_view.model.cid === model.cid) {
+                delete this.detail_view;
+                this.trigger("detail_view");
+                return false;
+            }
+            this.detail_view.remove();
+        }
+
+
+        var model_id = model.get("exercise_id") || model.get("video_id") || model.get("content_id");
+        this.detail_view = new DetailPanelInlineRowView({
+            model: model,
+            contents_length: this.contents.length,
+            content_item: this.contents.find(function(item) {return item.get("id") === model_id;})
+        });
+        this.$el.after(this.detail_view.el);
+
+        this.trigger("detail_view", this.detail_view);
+
+    }
+
+});
+
+var TabularReportView = BaseView.extend({
+    /*
+    This is the main control view for the Tabular Coach report
+    */
+
+    template: HB.template("tabular_reports/tabular-view"),
+
+    initialize: function() {
+        _.bindAll(this);
+        this.set_data_model();
+        this.listenTo(this.model, "change", this.set_data_model);
+    },
+
+    render: function() {
+        var self = this;
+
+        this.$el.html(this.template({
+            contents: this.contents.toJSON(),
+            learners: this.contents.length
+        }));
+
+        var row_views = [];
+        this.learners.each(function(model){
+            var row_view = self.add_subview(TabularReportRowView, {model: model, contents: self.contents});
+            row_views.push(row_view);
+            self.listenTo(row_view, "detail_view", self.set_detail_view);
+        });
+
+        this.append_views(row_views, ".student-data");
+    },
+
+    set_data_model: function (){
+        var self = this;
+        this.data_model = new CoachReportModel({
+            facility: this.model.get("facility"),
+            group: this.model.get("group")
+        });
+        if (this.model.get("facility")) {
+            this.data_model.fetch().then(function() {
+                self.learners = new Backbone.Collection(self.data_model.get("learners"));
+                self.contents = new Backbone.Collection(self.data_model.get("contents"));
+                self.learners.each(function(model){
+                    model.set("logs", _.object(
+                        _.map(_.filter(self.data_model.get("logs"), function(log) {
+                            return log.user === model.get("pk");
+                        }), function(item) {
+                            return [item.exercise_id || item.video_id || item.content_id, item];
+                        })));
+                });
+                self.render();
+            });
+        }
+    },
+
+    set_detail_view: function(detail_view) {
+        if (this.detail_view) {
+            this.detail_view.remove();
+        }
+        if (detail_view) {
+            this.detail_view = detail_view;
+        }
+    }
+
 });
 
 var FacilitySelectView = Backbone.View.extend({
@@ -454,5 +429,29 @@ var GroupSelectView = Backbone.View.extend({
                 })
             });
         }
+    }
+});
+
+var CoachReportView = BaseView.extend({
+    /*
+    This is the wrapper view for the coach reports
+    */
+
+    template: HB.template('coach_nav/reports-nav'),
+
+    initialize: function(options) {
+
+        this.facility_select_view = new FacilitySelectView({model: this.model});
+        this.group_select_view = new GroupSelectView({model: this.model});
+        this.coach_summary_view = new CoachSummaryView({model: this.model});
+
+        this.render();
+    },
+
+    render: function() {
+        this.$el.html(this.template());
+        this.$('#group-select-container').append(this.group_select_view.el);
+        this.$('#facility-select-container').append(this.facility_select_view.el);
+        this.$("#student_report_container").append(this.coach_summary_view.el);
     }
 });

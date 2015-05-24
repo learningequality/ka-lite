@@ -24,7 +24,7 @@ CoachReportRouter = Backbone.Router.extend({
     },
 
     set_url: function(model) {
-        var url = ""
+        var url = "";
         if (this.state_model.get("facility")) {
             url += this.state_model.get("facility") + "/";
             if (this.state_model.get("group")) {

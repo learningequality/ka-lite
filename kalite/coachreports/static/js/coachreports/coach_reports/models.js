@@ -13,7 +13,7 @@ var StateModel = Backbone.Model.extend({
             this.set({
                 group: undefined,
                 group_name: undefined
-            })
+            });
         }
 
         Backbone.Model.prototype.set.call(this, key, val, options);
