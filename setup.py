@@ -120,10 +120,20 @@ def gen_data_files(*dirs):
     Thanks: http://stackoverflow.com/a/7288382/405682
     """
     results = []
-
+    
+    filter_illegal_extensions = lambda f: os.path.splitext(f)[1] != ".pyc"
+    
     for src_dir in dirs:
         for root, dirs, files in os.walk(src_dir):
-            results.append((root, map(lambda f: os.path.join(root, f), files)))
+            results.append(
+                (
+                    root,
+                    filter(
+                        filter_illegal_extensions,
+                        map(lambda f: os.path.join(root, f), files)
+                    )
+                )
+            )
     return results
 
 # Append the ROOT_DATA_PATH to all paths
