@@ -11,7 +11,7 @@ from tastypie.resources import ModelResource
 
 from securesync.models import Zone, Device, SyncSession
 
-from kalite.facility import get_accessible_objects_from_logged_in_user
+from kalite.facility.utils import get_accessible_objects_from_logged_in_user
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog
 from kalite.shared.api_auth.auth import ObjectAdminAuthorization

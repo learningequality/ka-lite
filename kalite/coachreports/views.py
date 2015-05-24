@@ -15,7 +15,7 @@ from django.utils.translation import ungettext, ugettext_lazy, ugettext as _
 from .api_views import get_data_form, stats_dict
 from django.shortcuts import get_object_or_404
 
-from kalite.facility import get_accessible_objects_from_logged_in_user
+from kalite.facility.utils import get_accessible_objects_from_logged_in_user
 from kalite.control_panel import api_resources as control_panel_api_resources
 from kalite.distributed.api_views import compute_total_points
 from kalite.facility.decorators import facility_required
