@@ -1,5 +1,4 @@
 django-compressor==1.4
-pyyaml==3.11
 docopt>=0.6,<0.7
 South==0.8.4
 django-js-reverse==0.5.0
