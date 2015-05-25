@@ -79,12 +79,10 @@ window.ButtonView = Backbone.View.extend({
         });
 
         options["steps"] = steps;
-        console.log(options);
         return options;
     },
 
     render: function() {
-        console.log("Rendering the Inline View.....");
         this.$el.html(this.template());
         $("#inline-btn-container").append(this.el);
     }
