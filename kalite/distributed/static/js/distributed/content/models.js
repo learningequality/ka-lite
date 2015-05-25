@@ -89,6 +89,11 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         return window.sessionModel.get("GET_CONTENT_LOGS_URL");
     },
 
+    // We let the view call save whenever it feels like on this model - essentially on every
+    // change event that we can register on the content viewer (video playback updating, etc.)
+    // However, in order not to overwhelm the server with unnecessary saves, we throttle the save
+    // call here. On page exit, 'saveNow' is called to prevent data loss.
+
     save: _.throttle(function(key, val, options){this.saveNow(key, val, options);}, 30000),
 
     saveNow: function (key, val, options){
@@ -133,7 +138,7 @@ window.ContentLogCollection = Backbone.Collection.extend({
         } else if (typeof this.content_ids !== "undefined") {
             data[this.model_id_key + "__in"] = this.content_ids;
         }
-        return setGetParamDict(this.model.prototype.urlRoot, data);
+        return setGetParamDict(this.model.prototype.urlRoot(), data);
     },
 
     get_first_log_or_new_log: function() {

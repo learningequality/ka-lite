@@ -12,56 +12,6 @@ CoachReportView:
                         - DetailPanelBodyView
 */
 
-var CoachSummaryView = BaseView.extend({
-    /*
-    This view displays summary stats for the currently selected facility (and optionally group)
-    */
-
-    template: HB.template("coach_nav/landing"),
-
-    events: {
-        "click #show_tabular_report": "show_tabular_view"
-    },
-
-    initialize: function() {
-        _.bindAll(this);
-        this.listenTo(this.model, "change:facility", this.set_data_model);
-        this.listenTo(this.model, "change:group", this.set_data_model);
-        this.listenTo(this.model, "change", this.render);
-        this.set_data_model();
-    },
-
-    set_data_model: function (){
-        this.data_model = new CoachReportAggregateModel({
-            facility: this.model.get("facility"),
-            group: this.model.get("group")
-        });
-        if (this.model.get("facility")) {
-            this.listenTo(this.data_model, "sync", this.render);
-            this.data_model.fetch();
-        }
-    },
-
-    render: function() {
-        this.$el.html(this.template({
-            status:this.model.attributes,
-            data: this.data_model.attributes
-        }));
-
-        delete this.tabular_report_view;
-
-    },
-
-    show_tabular_view: function() {
-        if (!this.tabular_report_view) {
-            this.$("#show_tabular_report").attr("disabled", "disabled");
-            this.tabular_report_view = new TabularReportView({model: this.model});
-            this.$("#detailed_report_view").append(this.tabular_report_view.el);
-        }
-    }
-
-});
-
 var DetailsPanelBodyView = BaseView.extend({
     /*
     This view displays details of individual attempt logs
@@ -342,6 +292,56 @@ var TabularReportView = BaseView.extend({
         }
         if (detail_view) {
             this.detail_view = detail_view;
+        }
+    }
+
+});
+
+var CoachSummaryView = BaseView.extend({
+    /*
+    This view displays summary stats for the currently selected facility (and optionally group)
+    */
+
+    template: HB.template("coach_nav/landing"),
+
+    events: {
+        "click #show_tabular_report": "show_tabular_view"
+    },
+
+    initialize: function() {
+        _.bindAll(this);
+        this.listenTo(this.model, "change:facility", this.set_data_model);
+        this.listenTo(this.model, "change:group", this.set_data_model);
+        this.listenTo(this.model, "change", this.render);
+        this.set_data_model();
+    },
+
+    set_data_model: function (){
+        this.data_model = new CoachReportAggregateModel({
+            facility: this.model.get("facility"),
+            group: this.model.get("group")
+        });
+        if (this.model.get("facility")) {
+            this.listenTo(this.data_model, "sync", this.render);
+            this.data_model.fetch();
+        }
+    },
+
+    render: function() {
+        this.$el.html(this.template({
+            status:this.model.attributes,
+            data: this.data_model.attributes
+        }));
+
+        delete this.tabular_report_view;
+
+    },
+
+    show_tabular_view: function() {
+        if (!this.tabular_report_view) {
+            this.$("#show_tabular_report").attr("disabled", "disabled");
+            this.tabular_report_view = new TabularReportView({model: this.model});
+            this.$("#detailed_report_view").append(this.tabular_report_view.el);
         }
     }
 
