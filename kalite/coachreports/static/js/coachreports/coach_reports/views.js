@@ -305,6 +305,10 @@ var TabularReportView = BaseView.extend({
         this.append_views(row_views, ".student-data");
     },
 
+    no_user_error: function() {
+        show_message("warning", "No learner accounts in this group have been created.");
+    },
+
     set_data_model: function (){
         var self = this;
         this.data_model = new CoachReportModel({
@@ -315,15 +319,19 @@ var TabularReportView = BaseView.extend({
             this.data_model.fetch().then(function() {
                 self.learners = new Backbone.Collection(self.data_model.get("learners"));
                 self.contents = new Backbone.Collection(self.data_model.get("contents"));
-                self.learners.each(function(model){
-                    model.set("logs", _.object(
-                        _.map(_.filter(self.data_model.get("logs"), function(log) {
-                            return log.user === model.get("pk");
-                        }), function(item) {
-                            return [item.exercise_id || item.video_id || item.content_id, item];
-                        })));
-                });
-                self.render();
+                if (self.learners.length > 0) {
+                    self.learners.each(function(model){
+                        model.set("logs", _.object(
+                            _.map(_.filter(self.data_model.get("logs"), function(log) {
+                                return log.user === model.get("pk");
+                            }), function(item) {
+                                return [item.exercise_id || item.video_id || item.content_id, item];
+                            })));
+                    });
+                    self.render();
+                } else {
+                    self.no_user_error();
+                }
             });
         }
     },
