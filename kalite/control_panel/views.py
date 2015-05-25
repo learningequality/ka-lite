@@ -260,21 +260,6 @@ def facility_form(request, facility, zone_id=None):
     return context
 
 
-@facility_required
-@require_authorized_admin
-@render_to("control_panel/group_report.html")
-def group_report(request, facility, group_id=None, zone_id=None):
-    context = group_report_context(
-        facility_id=facility.id,
-        group_id=group_id or request.REQUEST.get("group", ""),
-        topic_id=request.REQUEST.get("topic", ""),
-        zone_id=zone_id
-    )
-
-    context.update(control_panel_context(request, zone_id=zone_id, facility_id=facility.id, group_id=group_id))
-    return context
-
-
 @require_authorized_admin
 @render_to_csv(["students"], key_label="user_id", order="stacked")
 def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):

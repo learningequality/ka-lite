@@ -58,9 +58,8 @@ def student_view_context(request):
 
 
 @require_authorized_admin
-@facility_required
 @render_to("coachreports/coach.html")
-def coach_reports(request, facility):
+def coach_reports(request):
     """Landing page needs plotting context in order to generate the navbar"""
     return {}
 
