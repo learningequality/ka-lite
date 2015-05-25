@@ -7,15 +7,16 @@ Three main functions:
 '''
 import datetime
 import random
-import copy
 import collections
 
 from django.db.models import Count
 
-from kalite.topic_tools import *
+from kalite.topic_tools import * 
+from kalite.main.models import ExerciseLog, VideoLog, ContentLog
+
+
 from kalite.facility.models import FacilityUser
-from kalite.main.models import ExerciseLog , VideoLog, ContentLog
-from fle_utils.general import softload_json, json_ascii_decoder
+from fle_utils.general import softload_json
 
 
 
@@ -386,7 +387,6 @@ def get_topic_tree_lookup_table(tree=get_topic_tree()):
         table[ item['id'] ] = curr
 
     return table
-
 
 
 

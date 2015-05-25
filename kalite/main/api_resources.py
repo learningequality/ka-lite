@@ -5,7 +5,8 @@ from tastypie.exceptions import NotFound
 from django.conf.urls import url
 from django.conf import settings
 
-from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, AssessmentItem
+from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
+from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
 from kalite.topic_tools import get_exercise_data, get_content_data

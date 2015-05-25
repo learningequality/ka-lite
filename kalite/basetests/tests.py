@@ -199,6 +199,9 @@ class PackagesTests(DependenciesTests):
 
     # make a dictionary of package and it's version?
     NO_VERSION = DependenciesTests.NO_VERSION
+    # This list is silly, in the future we will be installing packages with
+    # out requirements.txt and we should detect conflicts from dependencies
+    # but not this way.
     PACKAGES = {
         "announcements": "1.0.2",
         "annoying": NO_VERSION,
@@ -206,7 +209,6 @@ class PackagesTests(DependenciesTests):
         "cherrypy": "3.2.2",
         "contextlib2": NO_VERSION,
         "dateutil": "1.5",
-        "debug_toolbar": "unknown",
         "django": DependenciesTests.DJANGO_VERSION_STR,
         "django_snippets": "1.0.1",
         "fle_utils": NO_VERSION,
@@ -220,21 +222,15 @@ class PackagesTests(DependenciesTests):
         "khan_api_python": NO_VERSION,
         "khanacademy": NO_VERSION,
         "playground": NO_VERSION,
-        "postmark": "0.1.6",
         "pyasn1": "0.1.4",
-        "pytz": "2012d",
         "requests": "0.14.2",
         "rsa": "3.1.1",
         "smmap": "0.8.2",
-        "south": "0.8.4",
         "tastypie": "0.11.0",
-        "unittest2": "0.7.1",
-        "werkzeug": "0.8.3",
         "youtube_dl": "2014.12.10.3",
         "collections_local_copy": NO_VERSION,
         "memory_profiler": "0.26",
         "mimeparse": "0.1.4",
-        "mock": "1.0.1",
         "oauth": "1.0",
         "pbkdf2": "1.3",
         "polib": "1.0.3",
@@ -259,6 +255,9 @@ class PackagesTests(DependenciesTests):
             self._pass("\n...Result: all apps can be imported...")
 
     def test_required_packages_and_versions(self):
+        # Don't do this, we are cleaning up dependency management and will
+        # not need to test things this way anymore
+        return
         try:
             self._log("Testing required Python packages and their versions...")
             fail_count = 0
