@@ -179,7 +179,10 @@ class Command(BaseCommand):
         print("                                  ")
 
         if sys.version_info >= (2,8) or sys.version_info < (2,6):
-            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % sys.version_info)
+            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % str(sys.version_info))
+        if sys.version_info != (2, 7, 9):
+            logging.warning("It's recommended that you install Python version 2.7.9. Your version is: %s\n" % str(sys.version_info))
+
 
         if options["interactive"]:
             print("--------------------------------------------------------------------------------")
@@ -269,6 +272,8 @@ class Command(BaseCommand):
         # Migrate the database
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+        # Create *.json and friends database
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"), database="topic_tools")
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.

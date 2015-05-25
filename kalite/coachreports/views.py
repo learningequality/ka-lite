@@ -1,34 +1,11 @@
 from annoying.decorators import render_to
-from math import sqrt
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
 from django.http import Http404
 
-from kalite.facility.decorators import facility_required
-from kalite.facility.models import Facility
 from kalite.main.models import UserLog
 from kalite.shared.decorators.auth import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-
-def coach_nav_context(request, report_id):
-    """
-    Updates the context of all coach reports with the facility, group, and report to have selected
-    by default on page load
-    """
-    facility_id = request.GET.get("facility_id", None)
-    facility = None
-    if facility_id:
-        facility = Facility.objects.get(id=facility_id)
-    group_id = request.GET.get("group_id", "")
-    context = {
-        "nav_state": {
-            "facility_id": facility_id,
-            "group_id": group_id,
-            "report_id": report_id,
-        }
-    }
-    return (facility, group_id, context)
-
 
 @require_authorized_access_to_student_data
 @render_to("coachreports/student_view.html")

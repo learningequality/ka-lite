@@ -32,7 +32,7 @@ from django.utils.translation import gettext as _
 from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
 
-from kalite.main import models as main_models
+from kalite.topic_tools import models as main_models
 
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")

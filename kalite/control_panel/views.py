@@ -25,7 +25,7 @@ from fle_utils.internet.decorators import render_to_csv
 from securesync.models import Device, Zone, SyncSession
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context
-from kalite.facility import get_users_from_group
+from kalite.facility.utils import get_users_from_group
 from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
