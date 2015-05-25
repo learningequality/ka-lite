@@ -29,6 +29,8 @@ IMAGE_URLS_NOT_TO_REPLACE = set([
     "https://www.kasandbox.org/programming-images/creatures/OhNoes.png",
 ])
 
+# This is used for image URLs that don't end in an image extension, or are otherwise messed up.
+# Here we can manually map such URLs to a nice, friendly filename that will get used in the assessment item data.
 MANUAL_IMAGE_URL_TO_FILENAME_MAPPING = {
     "http://www.marineland.com/~/media/UPG/Marineland/Products/Glass%20Aquariums/Cube%20Aquariums/12268%20MCT45B%200509jpg49110640x640.ashx?w=300&h=300&bc=white": "aquarium.jpg",
     "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSbTT6DecPnyTp5t-Ar9bgQcwNxLV8F6dvSFDYHKZSs1JINCCRFJw": "ar9bgqcwnxlv8f6dvsfdyhkzss1jinccrfjw.jpg",

@@ -131,7 +131,7 @@ class Command(NoArgsCommand):
         if hasattr(channel_tools, "channel_data_files"):
             channel_tools.channel_data_files(dest=channel_path)
 
-        sys.stdout.write(
+        logging.info(
             """Downloaded topic_tree data for
             {exercises} exercises
             {contents} content files
@@ -139,5 +139,5 @@ class Command(NoArgsCommand):
             """.format(
             exercises=len(node_cache["Exercise"]),
             contents=len(node_cache["Content"]),
-            assessments=len(node_cache["AssessmentItem"],)
+            assessments=len(node_cache["AssessmentItem"]),
         ))
