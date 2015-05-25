@@ -6,3 +6,4 @@ django-js-reverse==0.5.0
 ply==3.4
 # used by django-js-reverse
 slimit==0.8.1
+six==1.9.0
