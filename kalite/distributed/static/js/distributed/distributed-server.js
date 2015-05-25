@@ -5,7 +5,7 @@
 
 // Functions related to loading the page
 
-function toggle_state(state, status){
+function toggle_state(state, status) {
     $("." + (status ? "not-" : "") + state + "-only").hide();
     $("." + (!status ? "not-" : "") + state + "-only").show();
     // Use display block setting instead of inline to prevent misalignment of navbar items.
@@ -57,6 +57,10 @@ var StatusModel = Backbone.Model.extend({
     defaults: {
         points: 0,
         client_server_time_diff: 0
+    },
+
+    is_student: function() {
+        return this.get("is_logged_in") && !this.get("is_admin");
     },
 
     urlRoot: function() {
@@ -188,13 +192,26 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
             $('.navbar-right').show();
         });
-
     },
 
     update_total_points: function(points) {
         points = points || 0;
         // add the points that existed at page load and the points earned since page load, to get the total current points
         this.set("points", this.get("points") + points);
+    },
+
+    pageType: function() {
+
+        if ( window.location.pathname.search(Urls.coach_reports()) > -1 ) {
+            return "teachPage";
+        } 
+        if ( window.location.pathname.search(Urls.learn()) > -1 ) {
+            return "learnPage";
+        } 
+        if ( window.location.pathname.search(Urls.zone_redirect()) > -1 || window.location.pathname.search("/update/") > -1 ) {
+            return "managePage";
+        }
+        
     }
 
 });
@@ -425,3 +442,17 @@ $(function() {
     });
 
 });
+
+
+/*This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
+function collapsedNav() {
+    var data_toggle = document.getElementById("user-name-a");
+    var menu = document.getElementById("user-name");
+        if ( $('body').innerWidth() <= 750 ) {
+            data_toggle.removeAttribute("data-toggle");
+            menu.classList.add("open");
+      } else {
+            data_toggle.setAttribute("data-toggle", "dropdown");
+            menu.classList.remove("open");
+      }
+}

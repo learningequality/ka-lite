@@ -315,3 +315,37 @@ window.UserView = BaseView.extend({
         this.model.logout();
     }
 });
+
+/* This view toggles which navbar items are displayed to each type of user */ 
+window.ToggleNavbarView = BaseView.extend ({
+
+    template: HB.template("user/navigation"),
+
+    initialize: function() {
+
+        _.bindAll(this);
+        this.listenTo(this.model, "change", this.render);
+        $("topnav").append(this.template());
+
+    },
+
+    render: function() {
+        
+        this.$el.html(this.template(this.model.attributes));
+        
+        this.userView = new UserView({ model: this.model, el: "#topnav" });
+        $("#topnav").prepend(new AutoCompleteView().$el);
+
+        // activates nav tab according to current page
+        if ( this.model.pageType() == "teachPage" ) {
+            this.$(".teach-tab").addClass("active");
+        } else if ( this.model.pageType() == "learnPage" ) {
+            this.$(".learn-tab").addClass("active");
+        } else if ( this.model.pageType() == "managePage" ) {
+            this.$(".manage-tab").addClass("active");   
+        }
+
+    }
+
+});
+

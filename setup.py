@@ -277,7 +277,7 @@ else:
     # If the dist-packages directory is non-empty
     if os.listdir(STATIC_DIST_PACKAGES):
         # If we are building something or running from the source
-        if DIST_BUILDING_COMMAND or RUNNING_FROM_SOURCE:
+        if DIST_BUILDING_COMMAND or (RUNNING_FROM_SOURCE and "install" in sys.argv):
             sys.stderr.write((
                 "Installing from source or not building with --static, so clearing "
                 "out dist-packages: {}\n\nIf you wish to install a static version "
