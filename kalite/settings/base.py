@@ -305,6 +305,7 @@ INSTALLED_APPS = (
     "kalite.distributed",
     "compressor",
     "django_js_reverse",
+    "kalite.inline",
 )
 
 if not BUILT:
