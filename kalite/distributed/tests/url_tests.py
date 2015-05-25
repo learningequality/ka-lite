@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.test import Client
 
 from kalite.testing.base import KALiteTestCase
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
 
 import importlib
 
@@ -36,7 +37,13 @@ class UrlTestCases(KALiteTestCase):
 
 
 
-class AllUrlsTest(KALiteTestCase):
+class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
+
+    def setUp(self):
+        super(AllUrlsTest, self).setUp()
+
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
 
     def test_responses(self, allowed_http_codes=[200, 302, 400, 404, 405],
             credentials={}, logout_url="", default_kwargs={}, quiet=False):
@@ -66,7 +73,8 @@ class AllUrlsTest(KALiteTestCase):
         # Some URLs only use POST requests, exclude them here.
         url_blacklist = []
         module = importlib.import_module(settings.ROOT_URLCONF)
-        if credentials:
+        if credentials or self.admin_data:
+            credentials = credentials or self.admin_data
             self.client.login(**credentials)
         def check_urls(urlpatterns, prefix=''):
             for pattern in urlpatterns:
