@@ -120,10 +120,20 @@ def gen_data_files(*dirs):
     Thanks: http://stackoverflow.com/a/7288382/405682
     """
     results = []
-
+    
+    filter_illegal_extensions = lambda f: os.path.splitext(f)[1] != ".pyc"
+    
     for src_dir in dirs:
         for root, dirs, files in os.walk(src_dir):
-            results.append((root, map(lambda f: os.path.join(root, f), files)))
+            results.append(
+                (
+                    root,
+                    filter(
+                        filter_illegal_extensions,
+                        map(lambda f: os.path.join(root, f), files)
+                    )
+                )
+            )
     return results
 
 # Append the ROOT_DATA_PATH to all paths
@@ -299,11 +309,13 @@ else:
         file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
     
 
-# All files from dist-packages are always included
-data_files += map(
-    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, 'python-packages'), x[1]),
-    gen_data_files('dist-packages')
-)
+# All files from dist-packages are included if the directory exists
+if os.listdir(STATIC_DIST_PACKAGES):
+    data_files += map(
+        lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
+        gen_data_files('dist-packages')
+    )
+
 
 setup(
     name=DIST_NAME,
