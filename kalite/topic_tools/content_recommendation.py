@@ -16,20 +16,12 @@ from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
 
 from kalite.facility.models import FacilityUser
-from fle_utils.general import softload_json
-
-
-
-#some things to cache (exercise parents_lookup table isn't as intense, but is used frequently)
-topic_tree = None
-exercise_parents_lookup_table = None
-CACHE_VARS.append("topic_tree")
-CACHE_VARS.append("exercise_parents_lookup_table")
 
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
 }
 
+TOPIC_RECOMMENDATION_DEPTH = 3
 
 def get_resume_recommendations(user, request):
     """Get the recommendation for the Resume section.
@@ -61,7 +53,6 @@ def get_next_recommendations(user, request):
     """
 
     exercise_parents_table = get_exercise_parents_lookup_table()
-    topic_table = get_topic_tree_lookup_table()
 
     most_recent = get_most_recent_exercises(user)
 
@@ -72,7 +63,7 @@ def get_next_recommendations(user, request):
 
     #logic for recommendations based off of the topic tree structure
     if current_subtopic:
-        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:3]
+        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:TOPIC_RECOMMENDATION_DEPTH]
         topic_tree_based_data = get_exercises_from_topics(topic_tree_based_data)
     else:
         topic_tree_based_data = []
@@ -142,15 +133,11 @@ def get_group_recommendations(user):
 def get_struggling_exercises(user):
     """Return a list of all exercises (ids) that the user is currently struggling on."""
 
-    exercises_by_user = ExerciseLog.objects.filter(user=user)
-
-    #sort exercises first, in order of most recent first
-    exercises_by_user = sorted(exercises_by_user, key=lambda student: student.completion_timestamp, reverse=True)
-
-    struggles = []                                              #TheStruggleIsReal
-    for exercise in exercises_by_user:
-        if exercise.struggling:
-            struggles.append(exercise.exercise_id)
+    # Return all exercise ids that the user is struggling on, ordered most recent first.
+    struggles = ExerciseLog.objects.filter(
+        user=user, struggling=True).order_by(
+        "-latest_activity_timestamp").values_list(
+        "exercise_id", flat=True)
 
     return struggles
 
@@ -179,77 +166,36 @@ def get_explore_recommendations(user, request):
     recent_exercises = get_most_recent_exercises(user)              #most recent ex
 
     #simply getting a list of subtopics accessed by user
-    recent_subtopics = []
-    for ex in recent_exercises:
-        if not exercise_parents_table[ex]['subtopic_id'] in recent_subtopics:
-            recent_subtopics.append(exercise_parents_table[ex]['subtopic_id'])
+    recent_subtopics = list(set([exercise_parents_table[ex]['subtopic_id'] for ex in recent_exercises]))
 
     #choose sample number, up to three
-    sampleNum = min(len(recent_exercises), 3)
+    sampleNum = min(len(recent_subtopics), TOPIC_RECOMMENDATION_DEPTH)
     
-    random_exercises = random.sample(recent_exercises, sampleNum)   #grab the valid/appropriate number of exs, up to 3
+    random_subtopics = random.sample(recent_subtopics, sampleNum)
     added = []                                                      #keep track of what has been added (below)
     final = []                                                      #final recommendations to return
     
-    for ex in random_exercises:
-        exercise_data = exercise_parents_table[ex]
-        subtopic_id = exercise_data['subtopic_id']                      #subtopic_id of current
+    for subtopic_id in random_subtopics:
+
         related_subtopics = data[subtopic_id]['related_subtopics'][2:7] #get recommendations based on this, can tweak numbers!
 
-        recommended_topics = []                                         #the recommended topics
-    
-        for subtopic in related_subtopics:
-            curr = get_subtopic_data(subtopic)
+        recommended_topic = next(topic for topic in related_subtopics if not topic in added and not topic in recent_subtopics)
 
-            if not curr['id'] in recent_subtopics:                      #check for an unaccessed recommendation
-                recommended_topics.append(curr)                         #add to return
-                                                                                             
-        to_append = []
-        if len(recommended_topics):#if recommendation present
-            suggested = recommended_topics[0]           #the suggested topic + its data
-            accessed  = exercise_data['subtopic_title'] #corresponds to interest_topic in view
+        if recommended_topic:
 
-            to_append = {
+            final.append({
+                'suggested_topic': get_topic_data(request, recommended_topic),
+                'interest_topic': get_topic_data(request, subtopic_id),
+            })
 
-                'suggested_topic': {
-                    'title':suggested['title'], 'path': suggested['path'],
-                    'description': suggested['description']
-                },
-
-                'interest_topic':{'title': accessed}
-            }
-    
-        #if valid (i.e. not a repeat and also some recommendations)
-        if (not exercise_data['subtopic_id'] in added):   
-            final.append(to_append)                                     #valid, so append
-            added.append(exercise_data['subtopic_id'])                  #make note
-
+            added.append(recommended_topic)
 
     return final
 
-def get_subtopic_data(subtopic_id):
-    """Return metadata for the subtopic, such as title and path."""
-
-    ### topic tree for traversal###
-    tree = get_topic_tree_lookup_table()
-
-    if subtopic_id in tree:
-        return {
-            'id':subtopic_id,
-            'title': tree[subtopic_id]['title'],
-            'path': tree[subtopic_id]['path'],
-            'description':tree[subtopic_id]['description']
-        }
-
-   
-    return [] #ideally should never get here
-
-
-
-
-
+exercise_parents_lookup_table = {}
+CACHE_VARS.append("exercise_parents_lookup_table")
 def get_exercise_parents_lookup_table():
-    """Return a dictionary with exercise ids as keys and metadata, like topic_id, as values."""
+    """Return a dictionary with exercise ids as keys and topic_ids as values."""
 
     global exercise_parents_lookup_table
 
@@ -257,38 +203,23 @@ def get_exercise_parents_lookup_table():
         return exercise_parents_lookup_table
 
     ### topic tree for traversal###
-    tree = generate_topic_tree()
+    tree = get_topic_tree(parent="root")
 
     #create a lookup table from traversing the tree - can cache if needed, but is decently fast if TOPICS exists
     exercise_parents_table = {}
 
     #3 possible layers
-    for topic in tree['children']:
-        for subtopic in topic['children']:
-            for ex in subtopic['children']:
+    for topic in tree:
+        for subtopic_id in topic['children']:
+            exercises = get_topic_exercises(subtopic_id)
 
-                exercise_parents_table[ ex['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
-                    "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex['kind'], "title":ex['title'],
-                    "description": ex['description']}
+            for ex in exercises:
+                if ex['id'] not in exercise_parents_table:
+                    exercise_parents_table[ ex['id'] ] = {
+                        "subtopic_id": subtopic_id,
+                        "topic_id": topic['id'],
+                    }
 
-                if 'children' in ex: #if there is another layer of children
-
-                    for ex2 in ex['children']:
-
-                        exercise_parents_table[ ex2['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
-                        "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex2['kind'],"title":ex['title'],
-                        "description": ex['description']}
-
-                        #if there is yet another level
-                        if 'children' in ex2:
-
-                            for ex3 in ex2['children']:
-                    
-                                exercise_parents_table[ ex3['id'] ] = { "subtopic_id":subtopic['id'], "topic_id":topic['id'],
-                                "subtopic_title":subtopic['title'], "topic_title": topic['title'] , "kind":ex3['kind'],"title":ex['title'],
-                                "description": ex['description']}
-
-                  
     return exercise_parents_table
 
 def get_exercises_from_topics(topicId_list):
@@ -334,128 +265,32 @@ def get_most_recent_incomplete_item(user):
 
     if item_list:
         item_list.sort(key=lambda x: x["timestamp"])
-        item = item_list[0]
-        if item.get("kind") == "Content":
-            return get_content_cache().get(item.get("id"))
-        if item.get("kind") == "Exercise":
-            return get_exercise_cache().get(item.get("id"))
+        return item_list[0]
     else:
         return None
 
 def get_most_recent_exercises(user):
     """Return a list of the most recent exercises (ids) accessed by the user."""
 
-    exercises_by_user = ExerciseLog.objects.filter(user=user).order_by("-latest_activity_timestamp")
+    exercises_by_user = ExerciseLog.objects.filter(user=user).order_by("-latest_activity_timestamp").values_list("exercise_id", flat=True)
+ 
+    return exercises_by_user
 
-    final = [log.exercise_id for log in exercises_by_user]
-    
-    return final
-
-def generate_topic_tree(channel=settings.CHANNEL, language=settings.LANGUAGE_CODE):
-    """Reconstruct and return the original topic tree (non-flat)."""
-
-    global topic_tree
-
-    #cached
-    if topic_tree:
-        return topic_tree
-
-    TOPICS = {}
-    TOPICS[channel] = {}
-    TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)    
-    topic_tree = TOPICS[settings.CHANNEL][settings.LANGUAGE_CODE]
-
-    return topic_tree
-
-def get_topic_tree_lookup_table(tree=get_topic_tree()):
-    """Traverses flat topic tree and returns a lookup table for each node + its metadata."""
-
-    table = {}
-    for item in tree:
-        curr = {
-            'id' : item['id'],
-            'title' : item['title'],
-            'kind' : item['kind'],
-            'path' : item['path'],
-            'description' : item['description'],
-            'parent': item['parent']
-        }
-
-        #if current item is NOT a video or exercise, also include the children
-        if not (item['kind'] == 'Video' or item['kind'] == 'Exercise'):
-            curr['children'] = item['children']
-
-        table[ item['id'] ] = curr
-
-    return table
-
-
-
+recommendation_data = {}
+CACHE_VARS.append("recommendation_data")
 def generate_recommendation_data():
     """Traverses topic tree to generate a dictionary with related subtopics per subtopic."""
 
-    #hardcoded data, each subtopic is the key with its related subtopics and current courses as the values. Not currently in use.
-    data_hardcoded = {
-        "early-math": {"related_subtopics": ["early-math", "arithmetic", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
-        "arithmetic": {"related_subtopics": ["arithmetic", "pre-algebra", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
-        "pre-algebra": {"related_subtopics": ["pre-algebra", "algebra", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology"]},
-        "algebra": {"related_subtopics": ["algebra", "geometry", "recreational-math", "competition-math", "chemistry"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy"]},
-        "geometry": {"related_subtopics": ["geometry", "algebra2", "recreational-math", "competition-math", "chemistry"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy"]},
-        "algebra2": {"related_subtopics": ["algebra2", "trigonometry", "probability", "competition-math", "chemistry", "microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium"]},
-        "trigonometry": {"related_subtopics": ["trigonometry", "linear-algebra", "precalculus", "physics", "microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium"]},
-        "probability": {"related_subtopics": ["probability", "recreational-math"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium"]},
-        "precalculus": {"related_subtopics": ["precalculus", "differential calculus", "probability"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium"]},
-        "differential-calculus": {"related_subtopics": ["differential-calculus", "differential-equations", "physics", "microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium"]},
-        "integral-calculus": {"related_subtopics": ["integral-calculus", "differential-equations", "physics", "microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium"]},
-        "multivariate-calculus": {"related_subtopics": ["multivariate-calculus", "differential-equations", "physics", "microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium"]},
-        "differential-equations": {"related_subtopics": ["differential-equations", "physics", "microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
-        "linear-algebra": {"related_subtopics": ["linear-algebra", "precalculus"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
-        "recreational-math": {"related_subtopics": ["recreational-math", "pre-algebra", "algebra", "geometry", "algebra2"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
-        "competition-math": {"related_subtopics": ["competition-math","algebra", "geometry", "algebra2"], "unrelated_subtopics": ["music", "history", "biology", "cosmology-and-astronomy", "lebron-asks-subject", "art-history", "CAS-biodiversity", "Exploratorium", "discoveries-projects"]},
-
-
-        "biology": {"related_subtopics": ["biology", "health-and-medicine", "CAS-biodiversity", "Exploratorium", "chemistry", "physics", "cosmology-and-astronomy", "nasa"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "physics": {"related_subtopics": ["physics", "discoveries-projects", "cosmology-and-astronomy", "nasa", "Exploratorium", "biology", "CAS-biodiversity", "health-and-medicine", "differential-calculus"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "chemistry": {"related_subtopics": ["chemistry", "organic-chemistry", "biology", "health-and-medicine", "physics", "cosmology-and-astronomy", "discoveries-projects", "CAS-biodiversity", "Exploratorium", "nasa"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "organic-chemistry": {"related_subtopics": ["organic-chemistry", "biology", "health-and-medicine", "physics", "cosmology-and-astronomy", "discoveries-projects", "CAS-biodiversity", "Exploratorium", "nasa"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "cosmology-and-astronomy": {"related_subtopics": ["cosmology-and-astronomy", "nasa", "chemistry", "biology", "health-and-medicine", "physics", "discoveries-projects", "CAS-biodiversity", "Exploratorium", "nasa"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "health-and-medicine": {"related_subtopics": ["health-and-medicine", "biology", "chemistry", "CAS-biodiversity", "Exploratorium", "physics", "cosmology-and-astronomy", "nasa"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "discoveries-projects": {"related_subtopics": ["discoveries-projects", "physics", "computing", "cosmology-and-astronomy", "nasa", "Exploratorium", "biology", "CAS-biodiversity", "health-and-medicine", "differential-calculus"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-
-        "microeconomics": {"related_subtopics": ["microeconomics", "macroeconomics"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "macroeconomics": {"related_subtopics": ["macroeconomics", "microeconomics", "core-finance"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "core-finance": {"related_subtopics": ["core-finance", "entrepreneurship2", "macroeconomics", "microeconomics", "core-finance"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-        "entrepreneurship2": {"related_subtopics": ["entrepreneurship2", "core-finance", "macroeconomics", "microeconomics", "core-finance"], "unrelated_subtopics": ["music", "philosophy", "microeconomics", "macroeconomics", "history", "art-history", "asian-art-museum"]},
-
-        "history": {"related_subtopics": ["history", "art-history", "american-civics-subject", "asian-art-museum", "Exploratorium"], "unrelated_subtopics": ["biology", "music", "health-and-medicine"]},
-        "art-history": {"related_subtopics": ["art-history", "ap-art-history", "asian-art-museum", "history", "american-civics-subject", "Exploratorium"], "unrelated_subtopics": ["biology", "music", "health-and-medicine"]},
-        "american-civics-subject": {"related_subtopics": ["american-civics-subject", "history"], "unrelated_subtopics": ["biology", "music", "health-and-medicine"]},
-        "music": {"related_subtopics": ["music"], "unrelated_subtopics": ["biology", "health-and-medicine"]},
-        "philosophy": {"related_subtopics": ["philosophy"]},
-
-        "computing": {"related_subtopics": ["computing", "early-math", "arithmetic", "pre-algebra", "geometry", "probability", "recreational-math", "biology", "physics", "chemistry", "organic-chemistry", "health-and-medicine", "discoveries-projects", "microeconomics", "macroeconomics", "core-finance", "music"]},
-
-        "sat": {"related_subtopics": ["sat", "arithmetic", "pre-algebra", "algebra", "algebra2", "geometry", "probability", "recreational-math"]},
-        "mcat": {"related_subtopics": ["mcat", "arithmetic", "pre-algebra", "geometry", "probability", "recreational-math", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine"]},
-        "NCLEX-RN": {"related_subtopics": ["NCLEX-RN", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine"]},
-        "gmat": {"related_subtopics": ["gmat", "arithmetic", "pre-algebra", "algebra", "algebra2" "geometry", "probability", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "history", "microeconomics", "macroeconomics"]},
-        "cahsee-subject": {"related_subtopics": ["cahsee-subject", "early-math", "arithmetic", "pre-algebra", "geometry", "probability", "recreational-math"]},
-        "iit-jee-subject": {"related_subtopics": ["iit-jee-subject", "arithmetic", "pre-algebra", "geometry", "differential-equations", "differential-calculus", "integral-calculus", "linear-algebra", "probability", "chemistry", "physics", "organic-chemistry"]},
-        "ap-art-history": {"related_subtopics": ["ap-art-history", "art-history", "history"]},
-
-        "CAS-biodiversity": {"related_subtopics": ["CAS-biodiversity", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "Exploratorium"]},
-        "Exploratorium": {"related_subtopics": ["Exploratorium", "chemistry", "biology", "physics", "organic-chemistry", "health-and-medicine", "CAS-biodiversity", "art-history", "music"]},
-        "asian-art-museum": {"related_subtopics": ["asian-art-museum", "art-history", "history", "ap-art-history"]},
-        "ssf-cci": {"related_subtopics": ["ssf-cci", "art-history", "history"]},
-    }
-
+    global recommendation_data
+    if recommendation_data:
+        return recommendation_data
 
     ### populate data exploiting structure of topic tree ###
-    tree = generate_topic_tree()
+    tree = get_topic_tree(parent="root")
 
     ######## DYNAMIC ALG #########
 
-    data = {};
+    recommendation_data = {};
 
     ##
     # ITERATION 1 - grabs all immediate neighbors of each subtopic
@@ -466,17 +301,17 @@ def generate_recommendation_data():
     subtopic_index = 0
 
     #for each topic 
-    for topic in tree['children']:
+    for topic in tree:
 
         subtopic_index = 0
 
         #for each subtopic add the neighbors at distance 0 and 1 (at dist one has 2 for each)
-        for subtopic in topic['children']:
+        for subtopic_id in topic['children']:
 
-            neighbors_dist_1 = get_neighbors_at_dist_1(topic_index, subtopic_index, tree)
+            neighbors_dist_1 = get_neighbors_at_dist_1(topic_index, subtopic_index, topic)
 
-            #add to data - distance 0 (itself) + distance 1
-            data[ subtopic['id'] ] = { 'related_subtopics' : ([subtopic['id'] + ' 0'] + neighbors_dist_1) }
+            #add to recommendation_data - distance 0 (itself) + distance 1
+            recommendation_data[ subtopic_id ] = { 'related_subtopics' : ([subtopic_id + ' 0'] + neighbors_dist_1) }
             subtopic_index+=1
             
         topic_index+=1
@@ -486,25 +321,25 @@ def generate_recommendation_data():
     # Breadth-first search (BFS)
     ##
 
-    #loop through all subtopics currently in data dict
-    for subtopic in data:
-        related = data[subtopic]['related_subtopics'] # list of related subtopics (right now only 2)
-        other_neighbors = get_subsequent_neighbors(related, data, subtopic)
-        data[subtopic]['related_subtopics'] += other_neighbors ##append new neighbors
+    #loop through all subtopics currently in recommendation_data dict
+    for subtopic in recommendation_data:
+        related = recommendation_data[subtopic]['related_subtopics'] # list of related subtopics (right now only 2)
+        other_neighbors = get_subsequent_neighbors(related, recommendation_data, subtopic)
+        recommendation_data[subtopic]['related_subtopics'] += other_neighbors ##append new neighbors
 
 
     ##
     # ITERATION 2.5 - Sort all results by increasing distance and to strip the final
-    # result of all distance values in data (note that there are only 3 possible: 0,1,4).
+    # result of all distance values in recommendation_data (note that there are only 3 possible: 0,1,4).
     ##
 
-    #for each item in data
-    for subtopic in data:
+    #for each item in recommendation_data
+    for subtopic in recommendation_data:
         at_dist_4 = []          #array to hold the subtopic ids of recs at distance 4
         at_dist_lt_4 = []       #array to hold subtopic ids of recs at distance 0 or 1
 
         #for this item, loop through all recommendations
-        for recc in data[subtopic]['related_subtopics']:
+        for recc in recommendation_data[subtopic]['related_subtopics']:
             if recc.split(" ")[1] == '4':   #if at dist 4, add to the array
                 at_dist_4.append(recc.split(" ")[0]) 
             else:
@@ -512,11 +347,11 @@ def generate_recommendation_data():
 
        
         sorted_related = at_dist_lt_4 + at_dist_4 #append later items at end of earlier
-        data[subtopic]['related_subtopics'] = sorted_related
+        recommendation_data[subtopic]['related_subtopics'] = sorted_related
 
 
 
-    return data
+    return recommendation_data
 
 def get_recommendation_tree(data):
     """Returns a dictionary of related exercises for each subtopic.
@@ -560,40 +395,39 @@ def get_recommended_exercises(subtopic_id):
     #recommendations to a set amount??
     return tree[subtopic_id]
 
-def get_neighbors_at_dist_1(topic, subtopic, tree):
+def get_neighbors_at_dist_1(topic_index, subtopic_index, topic):
     """Return a list of the neighbors at distance 1 from the specified subtopic."""
 
     neighbors = []  #neighbor list to be returned
-    topic_index = topic #store topic index
-    topic = tree['children'][topic] #subtree rooted at the topic that we are looking at
-    #curr_subtopic = tree['children'][topic]['children'][subtopic]['id'] #id of topic passed in
+
+    tree = get_topic_tree(parent="root")
 
     #pointers to the previous and next subtopic (list indices)
-    prev = subtopic - 1 
-    next = subtopic + 1
+    prev = subtopic_index - 1 
+    next = subtopic_index + 1
 
     #if there is a previous topic (neighbor to left)
     if(prev > -1 ):
-        neighbors.append(topic['children'][prev]['id'] + ' 1') # neighbor on the left side
+        neighbors.append(topic['children'][prev] + ' 1') # neighbor on the left side
 
     #else check if there is a neighboring topic (left)    
     else:
         if (topic_index-1) > -1:
-            neighbor_length = len(tree['children'][(topic_index-1)]['children'])
-            neighbors.append(tree['children'][(topic_index-1)]['children'][(neighbor_length-1)]['id'] + ' 4')
+            neighbor_length = len(tree[(topic_index-1)]['children'])
+            neighbors.append(tree[(topic_index-1)]['children'][(neighbor_length-1)] + ' 4')
 
         else:
             neighbors.append(' ') # no neighbor to the left
 
     #if there is a neighbor to the right
     if(next < len(topic['children'])):
-        neighbors.append(topic['children'][next]['id'] + ' 1') # neighbor on the right side
+        neighbors.append(topic['children'][next] + ' 1') # neighbor on the right side
 
     #else check if there is a neighboring topic (right)
     else:
-        if (topic_index + 1) < len(tree['children']):
+        if (topic_index + 1) < len(tree):
             #the 4 denotes the # of nodes in path to this other node, will always be 4
-            neighbors.append(tree['children'][(topic_index+1)]['children'][0]['id'] + ' 4') 
+            neighbors.append(tree[(topic_index+1)]['children'][0] + ' 4') 
 
         else:
             neighbors.append(' ') # no neighbor on right side
