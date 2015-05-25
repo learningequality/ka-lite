@@ -517,6 +517,11 @@ def get_content_data(request, content_id=None):
 
     return content
 
+def get_topic_data(request, topic_id=None):
+    topic_cache = get_node_cache(node_type='Topic', language=request.language)
+    topic = topic_cache.get(topic_id, None)
+
+    return topic
 
 def video_dict_by_video_id(node_cache=None):
     # TODO (aron): Add i18n by varying the language of the topic tree here

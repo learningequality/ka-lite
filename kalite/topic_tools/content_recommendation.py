@@ -31,8 +31,7 @@ TOPICS_FILEPATHS = {
 }
 
 
-
-def get_resume_recommendations(user):
+def get_resume_recommendations(user, request):
     """Get the recommendation for the Resume section.
 
 
@@ -43,13 +42,16 @@ def get_resume_recommendations(user):
 
     final = get_most_recent_incomplete_item(user)
     if final:
-        return [final] #for first pass, just return the most recent video!!!
+        if final.get("kind") == "Content":
+            return [get_content_data(request, final.get("id"))]
+        if final.get("kind") == "Exercise":
+            return [get_exercise_data(request, final.get("id"))]
     else:
         return []
 
 
 
-def get_next_recommendations(user):
+def get_next_recommendations(user, request):
     """Get the recommendations for the Next section, and return them as a list.
 
 
@@ -91,8 +93,8 @@ def get_next_recommendations(user):
 
         if exercise_id in exercise_parents_table:
             subtopic_id = exercise_parents_table[exercise_id]['subtopic_id']
-            exercise = get_exercise_cache()[exercise_id]
-            exercise["topic"] = topic_table[subtopic_id]
+            exercise = get_exercise_data(request, exercise_id)
+            exercise["topic"] = get_topic_data(request, subtopic_id)
             final.append(exercise)
 
 
@@ -163,8 +165,7 @@ def get_exercise_prereqs(exercises):
     return prereqs
 
 
-
-def get_explore_recommendations(user):
+def get_explore_recommendations(user, request):
     """Get the recommendations for the Explore section, and return them as a list.
 
 
