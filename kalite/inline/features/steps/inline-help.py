@@ -76,7 +76,7 @@ def step_impl(context):
 
 @then("the back button is disabled")
 def step_impl(context):
-    assert not modal.back_button.is_enabled(), "The back button should be disabled!"
+    assert not context.modal.back_button.is_enabled(), "The back button should be disabled!"
 
 
 @given("I'm on a page with no intro")
@@ -95,7 +95,7 @@ def step_impl(context):
 
 @when("I click outside the modal")
 def step_impl(context):
-    elem = find_css_class_with_wait(STEP_NUMBER_CLASS)
+    elem = find_css_class_with_wait(context, STEP_NUMBER_CLASS)
     actions = ActionChains(context.browser)
     # Move the mouse postion to the top left of the element, and
     # then offset the position. Should lay outside of the element.
