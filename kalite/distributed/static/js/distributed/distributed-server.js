@@ -451,4 +451,4 @@ function collapsedNav() {
             data_toggle.setAttribute("data-toggle", "dropdown");
             menu.classList.remove("open");
       }
-};
+}
