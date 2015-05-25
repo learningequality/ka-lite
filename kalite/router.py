@@ -1,6 +1,6 @@
 class TopicToolsRouter():
     """
-    A router to control database operations for the following models in the main app:
+    A router to control database operations for the following models in the topic_tools app:
     * AssessmentItem
 
     This is meant to be a "static" database -- used so this data exposes Django ORM methods, and can be conservatively
@@ -8,17 +8,17 @@ class TopicToolsRouter():
 
     See: https://docs.djangoproject.com/en/1.5/topics/db/multi-db/#database-routers
     """
-    MODELS = ("AssessmentItem", )
+    MODELS = ("AssessmentItem",)
 
     def db_for_read(self, model, **hints):
         """
-        Send requests for specific Models to the topic_tools db.
+        Send requests for specific Models to the assessment_items db.
         """
         return self._the_db_or_none(model)
 
     def db_for_write(self, model, **hints):
         """
-        Send requests for specific Models to the topic_tools db.
+        Send requests for specific Models to the assessment_items db.
         """
         return self._the_db_or_none(model)
 
@@ -28,7 +28,7 @@ class TopicToolsRouter():
         to the default router.
         """
         if model.__name__ in self.MODELS:
-            return "topic_tools"
+            return "assessment_items"
         else:
             return None
 
@@ -42,9 +42,9 @@ class TopicToolsRouter():
 
     def allow_syncdb(self, db, model):
         """
-        Make sure the given models only appear in the topic_tools db.
+        Make sure the given models only appear in the assessment_items db.
         """
-        if db == 'topic_tools':
+        if db == 'assessment_items':
             return model.__name__ in self.MODELS
         elif model.__name__ in self.MODELS:
             return False  # Don't sync these models to any other DB

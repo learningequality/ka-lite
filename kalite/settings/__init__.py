@@ -83,7 +83,6 @@ if package_selected("nalanda"):
 UNIT_POINTS = 2000
 
 # for extracting assessment item resources
-ASSESSMENT_ITEMS_RESOURCES_DIR = os.path.join(USER_DATA_ROOT, "content", "khan")
 ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/%s/content/assessment.zip" % version.SHORTVERSION
 
 if package_selected("UserRestricted"):
