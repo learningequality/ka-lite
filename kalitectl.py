@@ -58,6 +58,7 @@ import os
 if 'KALITE_DIR' in os.environ:
     sys.path = [
         os.path.join(os.environ['KALITE_DIR'], 'python-packages'),
+        os.path.join(os.environ['KALITE_DIR'], 'dist-packages'),
         os.path.join(os.environ['KALITE_DIR'], 'kalite')
     ] + sys.path
 # KALITE_DIR not set, so called from some other source

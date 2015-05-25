@@ -6,3 +6,5 @@ unittest2==0.7.1
 werkzeug # Not sure about version
 mock==1.0.1
 django-debug-toolbar # Version was not described in previously bundled files, used by kalite.testing app
+pyyaml==3.11
+
