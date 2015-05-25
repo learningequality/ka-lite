@@ -3,12 +3,6 @@
 {% load i18n %}
 {% load my_filters %}
 
-{% block i18n_do_not_translate %}
-    {% block reports_active %}reports-active active-tab active-nav{% endblock reports_active %}
-    {% block teacher_active %}active{% endblock teacher_active %}
-    {% block admin_active %}active{% endblock admin_active %}
-{% endblock i18n_do_not_translate %}
-
 {% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
