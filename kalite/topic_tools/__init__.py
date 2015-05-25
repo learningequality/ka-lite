@@ -27,6 +27,7 @@ import copy
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
+from django.db import DatabaseError
 from django.utils.translation import gettext as _
 
 from fle_utils.general import softload_json, json_ascii_decoder
@@ -451,6 +452,8 @@ def get_assessment_item_data(request, assessment_item_id=None):
     try:
         assessment_item = main_models.AssessmentItem.objects.get(id=assessment_item_id)
     except main_models.AssessmentItem.DoesNotExist:
+        return None
+    except DatabaseError:
         return None
 
     try:
