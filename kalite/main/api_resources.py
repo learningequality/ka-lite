@@ -49,6 +49,9 @@ class AttemptLogResource(ModelResource):
             "user": ('exact', ),
             "context_type": ('exact', 'in', ),
         }
+        ordering = [
+            "timestamp",
+        ]
         authorization = UserObjectsOnlyAuthorization()
 
     def obj_create(self, bundle, **kwargs):

@@ -106,7 +106,7 @@ input[type="submit"] {
 .nav-tabs li a:active {
     border: 0;
     border-radius: 5px 15px 0 0;
-    margin: 0;
+    margin: 0 0 6px 0;
     background-color: #5AA685;
     color: #5AA685;
     -webkit-transition: all 80ms ease-out;
@@ -141,6 +141,9 @@ a#user-name-a.dropdown-toggle {
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
 }
+a#user-name-a.dropdown-toggle {
+    margin-bottom: 0px;
+}
 .navbar ul li.dropdown,
 .navbar ul li.dropdown.open {
     padding-right: 0;
@@ -150,12 +153,15 @@ a#user-name-a.dropdown-toggle {
 #points {
     text-align: left;
 }
-
+#points-tab {
+    padding: 10px 0px 5px 0px;
+}
 .navbar ul li.dropdown.open a {
     color: #5AA685;
 }
 .dropdown-menu {
     min-width: 0;
+    text-align: left;
 }
 .navbar ul li.dropdown.open ul.dropdown-menu li a,
 .navbar ul li.dropdown.open ul.dropdown-menu li span {
@@ -261,6 +267,9 @@ form .input-group {
 }
 .navbar-toggle .icon-bar {
     background-color: #fff;
+}
+.display-none {
+    display: none !important;
 }
 /* ======= Logged in student only ======== */
 .relative-block{
