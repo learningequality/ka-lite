@@ -54,11 +54,35 @@ if (!Element.prototype.addEventListener) {
 
 window.BaseView = Backbone.View.extend({
 
+
+    /**
+     * Add a subview to the view to allow for easy clean up on remove/close.
+     * @param {Object} subview_type - The constructor for the view you want to instantiate.
+     * @param {Object} options - The options object for instantiating the subview.
+     */
     add_subview: function(subview_type, options) {
         this.subviews = this.subviews || [];
         var subview = new subview_type(options);
         this.subviews.push(subview);
         return subview;
+    },
+
+    /**
+     * Bulk append views to the view to allow for minimal repaint when adding many views.
+     * @param {Array} view_list - An array of all the views you want to append.
+     * @param {String} identifier - CSS selector to use to find the element to append to.
+     * This parameter is optional, if omitted, it will simply append to the $el of the view.
+     */
+    append_views: function(view_list, identifier) {
+      var docfrag = document.createDocumentFragment();
+      for (i = 0; i < view_list.length; i++) {
+        docfrag.appendChild(view_list[i].el);
+      }
+      if (identifier) {
+        return this.$(identifier).append(docfrag);
+      } else {
+        return this.$el.append(docfrag);
+      }
     },
 
     listenToDOM: function(DOMElement, event_name, callback) {

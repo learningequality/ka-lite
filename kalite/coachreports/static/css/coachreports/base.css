@@ -2,6 +2,19 @@
     margin-bottom: 50px;
 }
 
+.table.details-table {
+    width: inherit;
+}
+
+.detail-tab.correct {
+    color: #669966;
+}
+
+.detail-tab.incorrect {
+    color: #FD795B; /*red*/
+    font-weight: bold;
+}
+
 .coach-reports-row {
     border-bottom: 3px solid #5AA685;
     padding: 20px 0;
@@ -38,3 +51,14 @@
     font-size: 1.15em;
     font-weight: bold;
 }
+
+.mastered {
+	background-color: #669966; 
+	}
+.inprogress {
+	background-color: #B1DDF3; 
+	}
+.struggling {
+	background-color: #FD795B; 
+	}
+
