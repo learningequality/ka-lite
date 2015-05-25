@@ -77,17 +77,23 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         "content_source",
         "content_kind",
         "progress",
-        "views"
+        "views",
+        "latest_activity_timestamp"
     ],
+
+    initialize: function() {
+        _.bindAll(this);
+    },
 
     urlRoot: function() {
         return window.sessionModel.get("GET_CONTENT_LOGS_URL");
     },
 
-    save: _.throttle(function(){this.saveNow();}, 30000),
+    save: _.throttle(function(key, val, options){this.saveNow(key, val, options);}, 30000),
 
-    saveNow: function (){
-        Backbone.Model.prototype.save.call(this);
+    saveNow: function (key, val, options){
+        this.set("latest_activity_timestamp", window.statusModel.get_server_time(), {silent: true});
+        Backbone.Model.prototype.save.call(this, key, val, options);
     },
 
     set_complete: function() {

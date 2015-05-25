@@ -288,7 +288,7 @@ function setGetParam(href, name, val) {
         vars[key] = value;
     });
 
-    if (val === "" || val == "----" || val === undefined) {
+    if (val === "" || val == "----" || val === undefined || val === null) {
         delete vars[name];
     } else {
         vars[name] = val;
