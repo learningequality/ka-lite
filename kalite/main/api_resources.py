@@ -9,9 +9,10 @@ from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
-from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
+from kalite.topic_tools import get_exercise_data, get_content_data
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
+
 
 
 class ExerciseLogResource(ModelResource):
@@ -48,6 +49,9 @@ class AttemptLogResource(ModelResource):
             "user": ('exact', ),
             "context_type": ('exact', 'in', ),
         }
+        ordering = [
+            "timestamp",
+        ]
         authorization = UserObjectsOnlyAuthorization()
 
     def obj_create(self, bundle, **kwargs):
@@ -293,42 +297,4 @@ class ContentResource(Resource):
         raise NotImplementedError
 
     def rollback(self, bundles):
-        raise NotImplementedError
-
-
-class ContentRecommender:
-
-    def __init__(self, lang_code="en", **kwargs):
-
-        standard_fields = [
-            "user",
-        ]
-
-        for k in standard_fields:
-            setattr(self, k, kwargs.pop(k, ""))
-
-
-class ContentRecommenderResource(Resource):
-
-    user = fields.ForeignKey(FacilityUserResource, 'user')
-
-    class Meta:
-        resource_name = 'contentrecommender'
-        object_class = ContentRecommender
-
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if getattr(bundle_or_obj, 'obj', None):
-            kwargs['pk'] = bundle_or_obj.obj.id
-        else:
-            kwargs['pk'] = bundle_or_obj.id
-        return kwargs
-
-    def get_object_list(self, request):
-        raise NotImplementedError
-
-    def obj_get_list(self, bundle, **kwargs):
-        return self.get_object_list(bundle.request)
-
-    def obj_get(self, bundle, **kwargs):
         raise NotImplementedError
