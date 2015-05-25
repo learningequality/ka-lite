@@ -32,7 +32,7 @@
         {% endcompress %}
 
         <!-- INTROJS.CSS testing -->
-        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/introjs.css' True %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/inline/introjs.css' True %}">
 
         <!-- CSS for dynamic settings -->
         <link rel="stylesheet" type="text/css" href="{% url 'dynamic_css' %}">
@@ -174,9 +174,9 @@
         {% if inline_help %}
         <!-- inline help, introjs -->
         <script src="{% url 'handlebars_templates' module_name='inline' %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/intro.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/inline/models.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/distributed/inline/views.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/inline/intro.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/inline/models.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/inline/views.js' %}"></script>
         {% endif %}
     </head>
 
