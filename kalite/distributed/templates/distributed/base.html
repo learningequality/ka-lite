@@ -31,6 +31,9 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.qtip.min.css' %}">
         {% endcompress %}
 
+        <!-- INTROJS.CSS testing -->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/introjs.css' True %}">
+
         <!-- CSS for dynamic settings -->
         <link rel="stylesheet" type="text/css" href="{% url 'dynamic_css' %}">
 
@@ -129,6 +132,7 @@
         <script src="{% static 'js/distributed/search/views.js' %}"></script>
         {% endcompress %}
 
+
         {# Trigger tooltips for help icons #}
         <script>
             $(function(){
@@ -166,6 +170,12 @@
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
+
+        <!-- inline help, introjs -->
+        <script src="{% url 'handlebars_templates' module_name='inline' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/intro.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/inline/models.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/distributed/inline/views.js' %}"></script>
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}">
@@ -215,4 +225,5 @@
         {# Footer #}
         {% include "distributed/partials/_footer.html" %}
     </body>
+
 </html>
