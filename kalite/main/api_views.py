@@ -27,6 +27,7 @@ def content_recommender(request):
 
     user_id = request.GET.get('user', None)
     user = request.session.get('facility_user')
+
     if not user:
         if request.user.is_authenticated() and request.user.is_superuser:
             user = get_object_or_404(FacilityUser, pk=user_id)
