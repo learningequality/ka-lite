@@ -69,8 +69,8 @@ Handlebars.registerHelper('withItem', function(object, options) {
 // Simply pass any arguments that you might otherwise use in order
 Handlebars.registerHelper('url', function(url_name) {
     if (window.Urls) {
-        arguments = Array.prototype.slice.call(arguments, 0, -1);
-        return window.Urls[url_name].call(arguments);
+        arguments = Array.prototype.slice.call(arguments, 1, -1);
+        return window.Urls[url_name].apply(window.Urls, arguments);
     } else {
         return "";
     }

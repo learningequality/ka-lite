@@ -325,7 +325,7 @@ setup(
     url="https://www.learningequality.org",
     description=DIST_DESCRIPTION,
     license="GPLv3",
-    keywords="khan academy offline",
+    keywords=("khan academy", "offline", "education", "OER"),
     scripts=['bin/kalite'],
     packages=find_packages(exclude=["python-packages"]),
     data_files=data_files,
