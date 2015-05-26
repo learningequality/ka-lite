@@ -18,7 +18,7 @@ from kalite.topic_tools import get_content_cache, get_exercise_cache
 
 logging = settings.LOG
 
-ZIP_FILE_PATH = os.path.join(settings.USER_DATA_ROOT, "assessments.zip")
+ZIP_FILE_PATH = os.path.join(settings.USER_DATA_ROOT, "assessment.zip")
 
 IMAGE_URL_REGEX = re.compile('https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-\%]+\.(png|gif|jpg|jpeg|svg))', flags=re.IGNORECASE)
 
