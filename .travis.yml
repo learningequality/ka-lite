@@ -11,7 +11,7 @@ install:
 -  npm install
 -  npm install -g grunt-cli
 -  pip install .
--  pip install -r requirements_dev.txt
+-  pip install -r requirements_test.txt
 -  pip install coveralls
 script:
 # Test that we can run from source directory
