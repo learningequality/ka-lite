@@ -101,7 +101,6 @@ BUILD_INDICATOR_FILE = os.path.join(default_source_path, "_built.touch")
 # whether this installation was processed by the build server
 BUILT = os.path.exists(BUILD_INDICATOR_FILE)
 
-
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
     _data_path = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -230,6 +229,12 @@ KHAN_CONTENT_PATH = os.path.join(CONTENT_ROOT, "khan")
 ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.sqlite')
 ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.version')
 ASSESSMENT_ITEM_JSON_PATH = os.path.join(USER_DATA_ROOT, "data", "khan", "assessmentitems.json")
+
+if not os.path.exists(CONTENT_ROOT):
+    os.mkdir(CONTENT_ROOT)
+
+if not os.path.exists(KHAN_CONTENT_PATH):
+    os.mkdir(KHAN_CONTENT_PATH)
 
 # Necessary for Django compressor
 if not DEBUG:
