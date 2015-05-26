@@ -7,3 +7,4 @@ ply==3.4
 # used by django-js-reverse
 slimit==0.8.1
 six==1.9.0
+django-appconf==1.0.1
