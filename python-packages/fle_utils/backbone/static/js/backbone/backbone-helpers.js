@@ -54,6 +54,8 @@ if (!Element.prototype.addEventListener) {
 
 window.BaseView = Backbone.View.extend({
 
+    _loading_overlay_count: 0,
+
     add_subview: function(subview_type, options) {
         this.subviews = this.subviews || [];
         var subview = new subview_type(options);
@@ -110,5 +112,19 @@ window.BaseView = Backbone.View.extend({
             }
         }
         Backbone.View.prototype.remove.call(this);
+    },
+
+    show_loading_overlay: function() {
+        this._loading_overlay_count++;
+        this.$el.addClass('is-loading');
+        this.$el.plainOverlay('show');
+    },
+
+    hide_loading_overlay: function() {
+        this._loading_overlay_count--;
+        if (this._loading_overlay_count == 0) {
+            this.$el.removeClass('is-loading');
+            this.$el.plainOverlay('hide');
+        }
     }
 });
