@@ -52,7 +52,6 @@ INSTALLED_APPS = (
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
-    "kalite.knowledgemap",
     "kalite.django_cherrypy_wsgiserver",  # API endpoint for PID
     "kalite.i18n",  #
     "kalite.contentload",  # content loading interactions
@@ -161,7 +160,12 @@ CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defi
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    KEY_PREFIX = version.VERSION_INFO()[version.VERSION]["git_commit"][0:6]  # new cache for every build
+    # We can bump the version and forget about version info
+    version_info = version.VERSION_INFO()
+    if version.VERSION in version_info:
+        KEY_PREFIX = version_info[version.VERSION]["git_commit"][0:6]  # new cache for every build
+    else:
+        KEY_PREFIX = "unknown_version"
     if 'CACHES' not in locals():
         CACHES = {}
 

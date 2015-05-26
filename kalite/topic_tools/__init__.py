@@ -32,7 +32,7 @@ from django.utils.translation import gettext as _
 from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
 
-from kalite.main import models as main_models
+from kalite.topic_tools import models as main_models
 
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
@@ -216,7 +216,8 @@ CACHE_VARS.append("LEAFED_TOPICS")
 def get_leafed_topics(force=False, language=settings.LANGUAGE_CODE):
     global LEAFED_TOPICS
     if LEAFED_TOPICS is None or force:
-        LEAFED_TOPICS = [topic for topic in get_node_cache(language=language)["Topic"].values() if [child for child in topic.get("children", []) if child.get("kind") != "Topic"]]
+        topic_cache = get_node_cache(language=language)["Topic"]
+        LEAFED_TOPICS = [topic for topic in topic_cache.values() if [child for child in topic.get("children", []) if topic_cache.get(child, {}).get("kind") != "Topic"]]
     return LEAFED_TOPICS
 
 def create_thumbnail_url(thumbnail):
@@ -409,18 +410,11 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     return leaves
 
 
-def get_topic_leaves(topic_id=None, path=None, leaf_type=None):
-    """Given a topic (identified by topic_id or path), return all descendent leaf nodes"""
-    assert (topic_id or path) and not (topic_id and path), "Specify topic_id or path, not both."
+def get_topic_leaves(topic_id=None, leaf_type=None):
+    """Given a topic (identified by topic_id ), return all descendent leaf nodes"""
 
-    if not path:
-        topic_node = get_node_cache('Topic').get(topic_id, None)
-        if not topic_node:
-            return []
-        else:
-            path = topic_node['path']
+    topic_node = get_node_cache('Topic').get(topic_id, None)
 
-    topic_node = get_topic_by_path(path)
     exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
 
     return exercises
@@ -440,9 +434,6 @@ def get_topic_videos(*args, **kwargs):
 
 def get_exercise_data(request, exercise_id=None):
     exercise = get_exercise_cache(language=request.language).get(exercise_id, None)
-
-    if not exercise:
-        return None
 
     return exercise
 
@@ -517,6 +508,11 @@ def get_content_data(request, content_id=None):
 
     return content
 
+def get_topic_data(request, topic_id=None):
+    topic_cache = get_node_cache(node_type='Topic', language=request.language)
+    topic = topic_cache.get(topic_id, None)
+
+    return topic
 
 def video_dict_by_video_id(node_cache=None):
     # TODO (aron): Add i18n by varying the language of the topic tree here
