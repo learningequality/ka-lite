@@ -232,7 +232,7 @@ def handler_403(request, *args, **kwargs):
         return JsonResponseMessageError(_("You must be logged in with an account authorized to view this page (API)."), status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
-        return HttpResponseRedirect(set_query_params(reverse("homepage"), {"next": request.get_full_path()}))
+        return HttpResponseRedirect(set_query_params(reverse("homepage"), {"next": request.get_full_path(), "login": True}))
 
 @render_to("distributed/perseus.html")
 def perseus(request):

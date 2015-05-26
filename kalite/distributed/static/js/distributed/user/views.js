@@ -4,8 +4,9 @@
 window.LoginModalView = BaseView.extend({
     template: HB.template("user/loginmodal"),
 
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this);
+        this.set_options(options);
         this.render();
         $("body").append(this.el);
     },
@@ -18,8 +19,9 @@ window.LoginModalView = BaseView.extend({
     addLoginView: function() {
         if (this.loginView) {
             this.loginView.render();
+            this.loginView.next = this.next;
         } else {
-            this.loginView = new LoginView({model: this.model, el: "#login-container"});
+            this.loginView = new LoginView({model: this.model, el: "#login-container", next: this.next});
             this.listenTo(this.loginView, "login_success", this.close_modal);
         }
         if (this.start_open) {
@@ -33,6 +35,11 @@ window.LoginModalView = BaseView.extend({
 
     show_modal: function() {
         $("#loginModal").modal('show');
+    },
+
+    set_options: function(options) {
+        this.start_open = options.start_open;
+        this.next = options.next;
     }
 });
 
@@ -48,8 +55,9 @@ window.LoginView = BaseView.extend({
 
     template: HB.template("user/login"),
 
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this);
+        this.next = options.next;
         this.facility = (this.model.get("facilities")[0] || {id:""}).id;
         this.admin = false;
         if (this.model.get("simplified_login")) {
@@ -89,6 +97,11 @@ window.LoginView = BaseView.extend({
     handle_login: function(response) {
         if (response.status == 200) {
             this.trigger("login_success");
+            if (this.next) {
+                window.location = this.next;
+            } else if (response.redirect) {
+                window.location = response.redirect;
+            }
         } else {
             var error_data = JSON.parse(response.responseText);
             var message = error_data.messages.error;
@@ -299,15 +312,25 @@ window.UserView = BaseView.extend({
                 this.totalPointViewXs = new TotalPointView({model: this.model, el: "#points-xs"});
             }
         } else {
-            if (this.loginModalView) {
-                this.loginModalView.render();
-            } else {
-                this.loginModalView = new LoginModalView({model: this.model});
-            }
-            if (window.location.search.search("login") > -1 || this.login_start_open) {
-                this.loginModalView.start_open = true;
+            var options = {};
+            var next = getParamValue("next");
+            var login = getParamValue("login");
+            if (login || this.login_start_open) {
+                options.start_open = true;
+
                 delete this.login_start_open;
             }
+            if (next) {
+                options.next = next;
+            }
+            if (this.loginModalView) {
+                this.loginModalView.set_options(options);
+                this.loginModalView.render();
+            } else {
+                options.model = this.model;
+                this.loginModalView = new LoginModalView(options);
+            }
+
         }
     },
 
