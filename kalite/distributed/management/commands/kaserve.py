@@ -143,13 +143,13 @@ class Command(BaseCommand):
 
         if options['startuplock']:
             os.unlink(options['startuplock'])
-        
+
         # Now call the proper command
         if not options["production"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
             del options["production"]
-            sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
+            sys.stdout.write("You can now access KA Lite by opening one of the following addresses in your web browser:\n")
             for addr in get_ip_addresses():
                 sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))
             call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()], **base_django_settings)
