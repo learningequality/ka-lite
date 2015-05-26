@@ -205,22 +205,19 @@ def get_exercise_parents_lookup_table():
     ### topic tree for traversal###
     tree = get_topic_tree(parent="root")
 
-    #create a lookup table from traversing the tree - can cache if needed, but is decently fast if TOPICS exists
-    exercise_parents_table = {}
-
     #3 possible layers
     for topic in tree:
         for subtopic_id in topic['children']:
             exercises = get_topic_exercises(subtopic_id)
 
             for ex in exercises:
-                if ex['id'] not in exercise_parents_table:
-                    exercise_parents_table[ ex['id'] ] = {
+                if ex['id'] not in exercise_parents_lookup_table:
+                    exercise_parents_lookup_table[ ex['id'] ] = {
                         "subtopic_id": subtopic_id,
                         "topic_id": topic['id'],
                     }
 
-    return exercise_parents_table
+    return exercise_parents_lookup_table
 
 def get_exercises_from_topics(topicId_list):
     """Return an ordered list of the first 5 exercise ids under a given subtopic/topic."""
@@ -289,8 +286,6 @@ def generate_recommendation_data():
     tree = get_topic_tree(parent="root")
 
     ######## DYNAMIC ALG #########
-
-    recommendation_data = {};
 
     ##
     # ITERATION 1 - grabs all immediate neighbors of each subtopic
