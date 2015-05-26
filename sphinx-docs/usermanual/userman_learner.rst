@@ -59,7 +59,7 @@ To answer a question, enter the answer in the box on the top right of the module
 
 After answering a question, the exercise module will not advance to the next question until you click the "Next Question..." button on the right hand side of the module.
 
-The bar on the top right will display your progress as you go through the exercises. After 10 correct answers in a row, your points for the exercise will be added to our total and you will have mastered the exercise. If you get an answer wrong or ask for a hint, all the points you have earned for this exercise will be lost. 
+The bar on the top right will display your progress as you go through the exercises. After 8 correct answers out of the last 10 answered, your points for the exercise will be added to our total and you will have mastered the exercise. If you get an answer wrong or ask for a hint, you will be unable to earn points from that question until it is presented again.
 
 .. HINT:: 
 	If you are stuck on a problem, you can ask for a hint by clickin on the "Show hints" button! Use your hints wisely, for there are a limited number of them for every section. 
