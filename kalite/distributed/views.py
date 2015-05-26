@@ -85,18 +85,6 @@ def learn(request):
     return context
 
 
-@backend_cache_page
-@render_to("knowledgemap/knowledgemap.html")
-def exercise_dashboard(request):
-    title = _("Your Knowledge Map")
-
-    context = {
-        "title": title,
-        "data_url": settings.CONTENT_DATA_URL + settings.CHANNEL,
-    }
-
-    return context
-
 @check_setup_status
 @render_to("distributed/homepage.html")
 def homepage(request):

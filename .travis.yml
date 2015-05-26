@@ -10,8 +10,7 @@ before_install:
 install:
 -  npm install
 -  npm install -g grunt-cli
--  pip install .
--  pip install -r requirements_dev.txt
+-  pip install -r requirements_test.txt
 -  pip install coveralls
 
 script:
@@ -24,15 +23,6 @@ script:
 # Check that there are no processes remaining containing the string "kalite" after stopping
 - if [ ! `ps ax | grep kalite | wc -l` -eq 1 ]; then echo "Processes remain after stop"; ps ax | grep kalite; exit 1; fi
 
-# Test that we can run as the installed script
-- kalite start --traceback -v 2
-- kalite status
-- kalite stop --traceback -v 2
-
-# Check that there are no processes remaining containing the string "kalite" after stopping
-- if [ ! `ps ax|grep kalite| wc -l` -eq 1 ]; then echo "Processes remain after stop"; ps ax | grep kalite; exit 1; fi
-
-# Test fle_utils
 - python python-packages/fle_utils/tests.py
 
 # KA Lite tests with coverage
@@ -40,9 +30,6 @@ script:
 
 # JavaScript tests
 - grunt jshint
-
-- bin/kalite manage bundleassets
-- ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS
 
 notifications:
   email:

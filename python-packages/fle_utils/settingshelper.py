@@ -43,6 +43,11 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
 
     for app in installed_apps:
         
+        # Do not try to import settings modules from other applications than
+        # the ones that use this diabolic pattern
+        if not app.startswith("kalite") and app not in ("fle_utils.chronograph", "securesync"):
+            continue
+        
         try:
             # Craziness... these apps' settings modules cannot be loaded because
             # of circularity so they got moved

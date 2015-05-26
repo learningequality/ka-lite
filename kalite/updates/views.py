@@ -10,7 +10,7 @@ from kalite.control_panel.views import local_install_context
 from kalite.i18n import get_installed_language_packs
 from kalite.shared.decorators.auth import require_admin
 from securesync.models import Device
-from securesync.devices import require_registration
+from securesync.devices.decorators import require_registration
 
 
 def update_context(request):

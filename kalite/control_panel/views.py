@@ -25,7 +25,7 @@ from fle_utils.internet.decorators import render_to_csv
 from securesync.models import Device, Zone, SyncSession
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context
-from kalite.facility import get_users_from_group
+from kalite.facility.utils import get_users_from_group
 from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
@@ -257,21 +257,6 @@ def facility_form(request, facility, zone_id=None):
             return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone_id}))
 
     context.update({"form": form})
-    return context
-
-
-@facility_required
-@require_authorized_admin
-@render_to("control_panel/group_report.html")
-def group_report(request, facility, group_id=None, zone_id=None):
-    context = group_report_context(
-        facility_id=facility.id,
-        group_id=group_id or request.REQUEST.get("group", ""),
-        topic_id=request.REQUEST.get("topic", ""),
-        zone_id=zone_id
-    )
-
-    context.update(control_panel_context(request, zone_id=zone_id, facility_id=facility.id, group_id=group_id))
     return context
 
 

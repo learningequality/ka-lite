@@ -28,7 +28,7 @@ window.AutoCompleteView = BaseView.extend({
     fetch_topic_tree: function () {
         var self = this;
         if (this._nodes===undefined) {
-            doRequest(window.sessionModel.get("SEARCH_TOPICS_URL"), null, {
+            doRequest(window.Urls.topic_tree(window.sessionModel.get("CHANNEL")), null, {
                 cache: true,
                 dataType: "json",
                 ifModified: true
@@ -49,13 +49,10 @@ window.AutoCompleteView = BaseView.extend({
         var _titles = this._titles;
         var _keywords = this._keywords;
 
-        // now take that structured object, and reduce.
-        var flattened_nodes = {};
-        _.each(_nodes, function(val, key) {
-            $.extend(flattened_nodes, val);
-        });
-        _nodes = flattened_nodes;
-        _.each(_nodes, function(val, key){
+        var node_lookup = {};
+
+        _.each(_nodes, function(val){
+            var key = val["id"];
             if(!_.has(_titles, val["title"])){
                 _titles[val["title"]] = key;
                 var keywords = _.flatten(_.values(_.pick(val, self.search_items)));
@@ -68,8 +65,9 @@ window.AutoCompleteView = BaseView.extend({
                     }
                 });
             }
+            node_lookup[key] = val;
         });
-        this._nodes = _nodes;
+        this._nodes = node_lookup;
         this._keywords = _keywords;
         this._titles = _titles;
 
@@ -78,7 +76,7 @@ window.AutoCompleteView = BaseView.extend({
 
     render: function() {
 
-        this.$el.html(this.template({search_url: window.sessionModel.get("SEARCH_URL")}));
+        this.$el.html(this.template({search_url: window.Urls.search()}));
 
         this.$("#search").autocomplete({
             autoFocus: true,

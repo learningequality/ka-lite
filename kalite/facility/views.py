@@ -88,7 +88,7 @@ def facility_user_signup(request):
     """
     Anyone can sign up, unless we have set the restricted flag
     """
-    if request.user.is_authenticated():
+    if getattr(request, "is_logged_in", False):
         return HttpResponseRedirect(reverse("homepage"))
 
     if settings.DISABLE_SELF_ADMIN:
