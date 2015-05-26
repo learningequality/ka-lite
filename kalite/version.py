@@ -26,4 +26,4 @@ def VERSION_INFO():
     # this file. Importing it on top will lead to circular imports.
     from django.conf import settings
 
-    return open_json_or_yml(os.path.join(settings.CONTENT_DATA_PATH, "version"))
+    return open_json_or_yml(os.path.join(settings.CONTENT_DATA_PATH, "version.yml"))
