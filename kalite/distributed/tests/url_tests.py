@@ -45,11 +45,11 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
 
-    def test_responses(self, allowed_http_codes=[200, 302, 400, 404, 405],
+    def test_responses(self, allowed_http_codes=[200, 302, 400, 401, 404, 405],
             credentials={}, logout_url="", default_kwargs={}, quiet=False):
         """
         This is a very liberal test, we are mostly just concerned with making sure
-        that no pages throw errors.
+        that no pages throw errors (500).
         Adapted from:
         http://stackoverflow.com/questions/14454001/list-all-suburls-and-check-if-broken-in-python#answer-19162337
         Test all pattern in root urlconf and included ones.
