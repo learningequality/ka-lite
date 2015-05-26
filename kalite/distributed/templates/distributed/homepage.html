@@ -3,10 +3,6 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block i18n_do_not_translate %}
-    {% block home_active %}active{% endblock home_active %}
-{% endblock i18n_do_not_translate %}
-
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}">
 {% endblock headcss %}
@@ -14,12 +10,18 @@
 {% block headjs %}{{ block.super }}
     <!-- import handlebars templates here -->
     <script src="{% url 'handlebars_templates' module_name="playlists" %}"></script>
+    <script src="{% url 'handlebars_templates' module_name="contentrec" %}"></script>
+
+    <script type="text/javascript" src="{% static 'js/backbone/backbone-helpers.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/playlist/models.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/contentrec/views.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/distributed/contentrec/models.js' %}"></script>
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>
         if (window.parent.frames.length === 0) {
             window.location = "{% url 'load_test' %}";
         }
+
     </script>
     {% endif %}
 
@@ -33,6 +35,14 @@
             if (ds.distributed.front_page_welcome_message) {
                 show_message("success", ds.distributed.front_page_welcome_message);
             }
+            var content_rec_load = function() {
+                if (window.statusModel.is_student() && !window.hpwrapper) {
+                    window.hpwrapper = new HomepageWrapper({
+                        el:"#content-area"
+                    });
+                }
+            }
+            window.statusModel.listenTo(window.statusModel, "change", content_rec_load);
         });
     </script>
 
@@ -57,7 +67,7 @@
 
 {% block content %}
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
-    <div class="container">
+    <div class="container" id="content-area">
 
         <div class="row">
             <h2 class="main-headline hidden-xs">{{ channel_data.head_line }}</h2>
@@ -78,16 +88,5 @@
         </div>
     </div>
 
-    <div class="not-admin-only">
-        <div class="logged-in-only">
-
-            <img src="/static/images/loading.gif" class="float-center loading" alt="" />
-
-            <!--<div id="playlist-table-container">
-
-            </div> -->
-
-        </div>
-    </div>
 
 {% endblock content %}

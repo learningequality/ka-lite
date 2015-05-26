@@ -13,11 +13,5 @@ The following apps are imported and used by the distributed app:
 * securesync - for sharing data between the KA Lite installation and our central data repository
 * updates - for dynamic updating of content, resources, and the server software.
 """
-import mimetypes
 
-########################
-# Font setup
-########################
-
-# Add additional mimetypes to avoid errors/warnings
-mimetypes.add_type("font/opentype", ".otf", True)
+# DO NOT PUT ANYTHING HERE

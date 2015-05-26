@@ -29,32 +29,6 @@ def save_cache_file(cache_type, cache_object=None, node_cache=None, data_path=No
         with open(dest_filepath, "w") as fp:
             fp.write(json.dumps(cache_object))
 
-def validate_data(topic_tree, node_cache, slug2id_map):
-    # Validate related videos
-    for exercise in node_cache['Exercise'].values():
-        exercise_path = EXERCISE_FILEPATH_TEMPLATE % exercise.get("file_name", "")
-        if not os.path.exists(exercise_path) and not exercise.get("uses_assessment_items", False):
-            logging.warning("Could not find exercise HTML file: %s\n" % exercise_path)
-        for vid_slug in exercise.get("related_video_slugs", []):
-            if vid_slug not in slug2id_map or slug2id_map[vid_slug] not in node_cache["Content"]:
-                logging.warning("Could not find related video %s in node_cache (from exercise %s)\n" % (vid_slug, exercise["slug"]))
-
-    # Validate all topics have leaves
-    for topic in node_cache["Topic"].values():
-        if not topic.get("children"):
-            logging.warning("Could not find any children for topic %s\n" % (topic["title"]))
-
-    # Validate related content
-    for content in node_cache["Content"].values():
-        related = content.get("related_content", [])
-        if related:
-            for cont in related:
-                if cont["id"] not in node_cache["Content"] and cont["id"] not in node_cache["Content"] and cont["id"] not in node_cache["Exercise"]:
-                    logging.warning("Could not find related content %s in node_cache (from content %s)\n" % (cont["id"], content["slug"]))
-        ex = content.get("related_exercise", None)
-        if ex:
-            if ex["slug"] not in node_cache["Exercise"]:
-                logging.warning("Could not find related exercise %s in node_cache (from content %s)\n" % (ex["slug"], content["slug"]))
 
 def scrub_topic_tree(node_cache, channel_data):
     # Now, remove unnecessary values
@@ -130,17 +104,14 @@ class Command(NoArgsCommand):
         assessment_item_cache = channel_tools.build_full_cache(assessment_items)
         content_cache = channel_tools.build_full_cache(content)
 
-        node_cache = topic_tools.generate_node_cache(topic_tree)
+        node_cache = {}
 
         node_cache["Exercise"] = exercise_cache
         node_cache["Content"] = content_cache
         node_cache["AssessmentItem"] = assessment_item_cache
-        slug2id_map = topic_tools.generate_slug_to_video_id_map(node_cache)
 
         if channel_tools.channel_data["temp_ok_atts"]:
             scrub_topic_tree(node_cache=node_cache, channel_data=channel_tools.channel_data)
-
-        validate_data(topic_tree, node_cache, slug2id_map)
 
         # The reason why we catch all errors was that this thing takes
         # around 6 hours to run, and having them error out in the end
@@ -160,15 +131,13 @@ class Command(NoArgsCommand):
         if hasattr(channel_tools, "channel_data_files"):
             channel_tools.channel_data_files(dest=channel_path)
 
-        sys.stdout.write(
+        logging.info(
             """Downloaded topic_tree data for
-            {topics} topics
             {exercises} exercises
             {contents} content files
             {assessments} assessment items
             """.format(
-            topics=len(node_cache["Topic"]),
             exercises=len(node_cache["Exercise"]),
             contents=len(node_cache["Content"]),
-            assessments=len(node_cache["AssessmentItem"],)
+            assessments=len(node_cache["AssessmentItem"]),
         ))

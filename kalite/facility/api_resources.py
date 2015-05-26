@@ -158,7 +158,7 @@ class FacilityUserResource(ModelResource):
 
 
     def generate_status(self, request, **kwargs):
-        # Build a list of messages to pass to the user.
+        #Build a list of messages to pass to the user.
         #   Iterating over the messages removes them from the
         #   session storage, thus they only appear once.
 

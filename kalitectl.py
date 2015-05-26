@@ -42,7 +42,7 @@ Planned features:
   kalite diagnose             Outputs user and copy-paste friendly diagnostics
   kalite query [COMMAND ...]  A query method for external UIs etc. to send
                               commands and obtain data from kalite.
-  
+
   Universal --verbose option and --debug option. Shows INFO level and DEBUG
   level from logging.. depends on proper logging being introduced and
   settings.LOGGERS. Currently, --debug just tells cherrypy to do "debug" mode.
@@ -58,6 +58,7 @@ import os
 if 'KALITE_DIR' in os.environ:
     sys.path = [
         os.path.join(os.environ['KALITE_DIR'], 'python-packages'),
+        os.path.join(os.environ['KALITE_DIR'], 'dist-packages'),
         os.path.join(os.environ['KALITE_DIR'], 'kalite')
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
@@ -66,26 +67,36 @@ else:
     sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
 
 
-from django.core.management import ManagementUtility, get_commands
+import httplib
+import re
+import subprocess
+
 from threading import Thread
 from docopt import docopt
-import httplib
 from urllib2 import URLError
 from socket import timeout
-from kalite.version import VERSION
 
-if os.name == "nt":
-    from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
+from django.core.management import ManagementUtility
+
+from kalite.version import VERSION
+from kalite.shared.compat import OrderedDict
 
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
 
-KALITE_HOME = os.path.join(os.path.expanduser("~"), ".kalite")
+# Where to store user data
+KALITE_HOME = os.environ.get(
+    "KALITE_HOME",
+    os.path.join(os.path.expanduser("~"), ".kalite")
+)
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
 PID_FILE_JOB_SCHEDULER = os.path.join(KALITE_HOME, 'kalite_cronserver.pid')
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
+
+# if this environment variable is set, we activate the profiling machinery
+PROFILE = os.environ.get("PROFILE")
 
 # TODO: Currently, this address might be hard-coded elsewhere, too
 LISTEN_ADDRESS = "0.0.0.0"
@@ -112,7 +123,6 @@ STATUS_UNKNOW = 101
 
 
 class NotRunning(Exception):
-
     """
     Raised when server was expected to run, but didn't. Contains a status
     code explaining why.
@@ -121,6 +131,45 @@ class NotRunning(Exception):
     def __init__(self, status_code):
         self.status_code = status_code
         super(NotRunning, self).__init__()
+
+
+def update_default_args(defaults, updates):
+    """
+    Takes a list of default arguments and overwrites the defaults with
+    contents of updates.
+
+    e.g.:
+
+    update_default_args(["--somearg=default"], ["--somearg=overwritten"])
+     => ["--somearg=overwritten"]
+
+    This is done to avoid defining all known django command line arguments,
+    we just want to proxy things and update with our own default values without
+    looking into django.
+    """
+    # Returns either the default or an updated argument
+    arg_name = re.compile(r"^-?-?\s*=?([^\s=-]+)")
+    # Create a dictionary of defined defaults and updates where '-somearg' is
+    # always the key, update the defined defaults dictionary with the updates
+    # dictionary thus overwriting the defaults.
+    defined_defaults_ = map(
+        lambda arg: (arg_name.search(arg).group(1), arg),
+        defaults
+    )
+    # OrderedDict because order matters when space-split options such as "-v 2"
+    # cause arguments to span over severel elements.
+    defined_defaults = OrderedDict()
+    for elm in defined_defaults_:
+        defined_defaults[elm[0]] = elm[1]
+    defined_updates_ = map(
+        lambda arg: (arg_name.search(arg).group(1), arg),
+        updates
+    )
+    defined_updates = OrderedDict()
+    for elm in defined_updates_:
+        defined_updates[elm[0]] = elm[1]
+    defined_defaults.update(defined_updates)
+    return defined_defaults.values()
 
 
 # Utility functions for pinging or killing PIDs
@@ -281,25 +330,32 @@ def manage(command, args=[], in_background=False):
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param in_background: Creates a sub-process for the command
+    :param in_background: Creates a new process for the command
     """
-    # Ensure that django.core.management's global _command variable is set
-    # before call commands, especially the once that run in the background
-    get_commands()
-    # Import here so other commands can run faster
+
     if not in_background:
+        if PROFILE:
+            profile_memory()
+
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
         # 'kalitectl.py' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        if os.name != "nt":
-            thread = ManageThread(command, args=args, name=" ".join([command] + args))
-            thread.start()
+        # Create a new subprocess, beware that it won't die with the parent
+        # so you have to kill it in another fashion
+
+        # If we're on windows, we need to create a new process group, otherwise
+        # the newborn will be murdered when the parent becomes a daemon
+        if os.name == "nt":
+            kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
         else:
-            # TODO (aron): for versions > 0.13, see if we can just have everyone spawn another process (Popen vs. ManageThread)
-            Popen([sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args, creationflags=CREATE_NEW_PROCESS_GROUP)
+            kwargs = {}
+        subprocess.Popen(
+            [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
+            **kwargs
+        )
 
 
 def start(debug=False, args=[], skip_job_scheduler=False):
@@ -349,16 +405,20 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=['--daemon',
-                  '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)
-                  ]
+            args=update_default_args(
+                ['--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)],
+                args
+            )
         )
-    args = ["--host=%s" % LISTEN_ADDRESS,
+    args = update_default_args(
+        [
+            "--host=%s" % LISTEN_ADDRESS,
             "--daemonize",
             "--pidfile=%s" % PID_FILE,
             "--startup-lock-file=%s" % STARTUP_LOCK,
-            ]
-    args += ["--production"] if not debug else []
+        ] + (["--production"] if not debug else []),
+        args
+    )
     manage('kaserve', args)
 
 
@@ -489,6 +549,61 @@ status_job_scheduler.codes = {
     100: 'Invalid PID file',
 }
 
+
+def profile_memory():
+    print("activating profile infrastructure.")
+
+    import atexit
+    import csv
+    import resource
+    import signal
+    import sparkline
+    import time
+
+    starttime = time.time()
+
+    mem_usage = []
+
+    def print_results():
+        try:
+            highest_mem_usage = next(s for s in sorted(mem_usage, key=lambda x: x['mem_usage'], reverse=True))
+        except StopIteration:
+            highest_mem_usage = {"pid": os.getpid(), "timestamp": 0, "mem_usage": 0}
+
+        graph = sparkline.sparkify([m['mem_usage'] for m in mem_usage]).encode("utf-8")
+
+        print("PID: {pid} Highest memory usage: {mem_usage}MB. Usage over time: {sparkline}".format(sparkline=graph, **highest_mem_usage))
+
+
+    def write_profile_results(filename=None):
+
+        if not filename:
+            filename = os.path.join(os.getcwd(), "memory_profile.log")
+
+        with open(filename, "w") as f:
+            si_es_vi = csv.DictWriter(f, ["pid", "timestamp", "mem_usage"])
+            si_es_vi.writeheader()
+            for _, content in enumerate(mem_usage):
+                si_es_vi.writerow(content)
+
+    def handle_exit():
+        write_profile_results()
+        print_results()
+
+    def collect_mem_usage(_sig, _frame):
+        """
+        Callback for when we get a SIGPROF from the kernel. When called,
+        we record the time and memory usage.
+        """
+        pid = os.getpid()
+        m = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        curtime = time.time() - starttime
+        mem_usage.append({"pid": pid, "timestamp": curtime, "mem_usage": m / 1024})
+
+    signal.setitimer(signal.ITIMER_PROF, 1, 1)
+
+    signal.signal(signal.SIGPROF, collect_mem_usage)
+    atexit.register(handle_exit)
 
 if __name__ == "__main__":
     arguments = docopt(__doc__, version=str(VERSION), options_first=True)

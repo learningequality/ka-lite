@@ -20,7 +20,7 @@ from .forms import RegisteredDevicePublicKeyForm
 from .models import Device, Zone, RegisteredDevicePublicKey
 from .. import crypto
 from ..engine.models import SyncSession
-from fle_utils.chronograph import force_job
+from fle_utils.chronograph.utils import force_job
 from fle_utils.config.models import Settings
 from fle_utils.internet.classes import JsonResponse
 from fle_utils.internet.decorators import allow_jsonp
@@ -42,6 +42,9 @@ def initialize_registration():
 @login_required
 @render_to("securesync/register_public_key_client.html")
 def register_public_key_client(request):
+
+    # Delete the registration state from the session to ensure it is refreshed next pageload
+    del request.session["registered"]
 
     own_device = Device.get_own_device()
     if own_device.is_registered():

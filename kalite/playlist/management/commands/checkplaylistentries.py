@@ -4,7 +4,7 @@ import os
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand
 
-from kalite.topic_tools import video_dict_by_video_id, get_flat_topic_tree
+from kalite.topic_tools import video_dict_by_video_id, get_node_cache
 
 
 MALFORMED_IDS = []
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         MALFORMED_IDS = []
 
         video_slugs = set(video_dict_by_video_id().keys())
-        exercise_slugs = set(get_flat_topic_tree()["Exercise"].keys())
+        exercise_slugs = set(get_node_cache()["Exercise"].keys())
 
         all_playlists = json.load(open(os.path.join(settings.PROJECT_PATH, 'playlist/playlists.json')))
 
