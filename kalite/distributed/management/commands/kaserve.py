@@ -149,7 +149,13 @@ class Command(BaseCommand):
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
             del options["production"]
+            addresses = get_ip_addresses(include_loopback=False)
+            loopbacks = set(get_ip_addresses(include_loopback=True)) - set(addresses)
             sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
-            for addr in get_ip_addresses():
+            for addr in addresses:
                 sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))
+            sys.stdout.write("To access KA Lite from this machine, try the following address(es):\n")
+            for addr in loopbacks:
+                sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))
+
             call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()], **base_django_settings)
