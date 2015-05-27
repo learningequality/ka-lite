@@ -1,23 +1,36 @@
 management/zone/.*:
-  - 'a#manage.admin-only':
+  - 'li.manage-tab.active':
     - step: 1
     - text: 'Welcome! This is the landing page for admins. If at any point you would like to navigate back to this page, click on this tab!'
   - 'li.facility':
     - step: 2
-    - text: 'Clicking on this tab will show you a quick overview of all facilities and devices'
+    - text: 'Clicking on this tab will show you a quick overview of all facilities and devices you have set up.'
     - position: right
-  - 'a.create-facility':
+  - 'div.col-xs-12':
     - step: 3
-    - text: 'To add new facilities, click on this link.'
-  - 'div.row:nth-child(3)':
+    - text: "An overview of all facilities will be shown here"
+  - 'a.create-facility':
     - step: 4
-    - text: 'Information on your device status will be shown here'
-  - '#not-registered':
+    - text: 'To add new facilities, click on this link.'
+  - 'a.facility-name':
     - step: 5
-    - text: 'By registering your device with our central hub, you can sync your data. This allows you to manage user accounts and view usage data remotely!'
-  - '#not-registered':
+    - text: 'To view more detailed information such as learner groups, learners, and coaches belonging to a facility, click on the facility name.'
+  - 'div.row:nth-child(3)':
     - step: 6
-    - text: 'If you decide to register your device to our central hub, click this button!'
+    - text: 'Information on your device status will be shown here'
   - 'unattached':
     - step: 7
     - text: 'Any more questions? Be sure to consult the FAQ and Documentation!'
+update/videos:
+  - 'li.video.active':
+    - step: 1
+    - text: 'Selecting this "Videos" tab will lead you to the place where you can download new videos for all topics!'
+  - 'li.dynatree-lastsib span.dynatree-expander':
+    - step: 2
+    - text: 'Simply toggle the "-" button to view see less information under a topic....'
+  - 'li.dynatree-lastsib span.dynatree-expander':
+    - step: 3
+    - text: 'Or toggle the "+" to view more subtopics under a topic!'
+
+
+
