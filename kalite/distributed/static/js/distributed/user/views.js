@@ -13,18 +13,22 @@ window.LoginModalView = BaseView.extend({
 
     render: function() {
         this.$el.html(this.template());
+        // If we don't want for render to complete, often, the containing element for the login is missing
         _.defer(this.addLoginView);
     },
 
     addLoginView: function() {
         if (this.loginView) {
+            // If loginView already exists rerender and set this.next on it so it has URL redirect info
             this.loginView.render();
             this.loginView.next = this.next;
         } else {
+            // Otherwise create a new login view, and close the model when the login successfully completes
             this.loginView = new LoginView({model: this.model, el: "#login-container", next: this.next});
             this.listenTo(this.loginView, "login_success", this.close_modal);
         }
         if (this.start_open) {
+            // If the start_open option is flagged, show the modal straight away.
             this.show_modal();
         }
     },
@@ -312,19 +316,32 @@ window.UserView = BaseView.extend({
                 this.totalPointViewXs = new TotalPointView({model: this.model, el: "#points-xs"});
             }
         } else {
+            // User is not logged in, so initialize the login modal
             var options = {};
+            /* 
+            *  Check the GET params to see if there is a 'next'
+            *  This means that someone has tried to access an unauthorized page, but we want them to
+            *  login before accessing this page
+            */
             var next = getParamValue("next");
+            // Check the GET params to see if a 'login' flag has been set
+            // If this is the case, the modal should start open
             var login = getParamValue("login");
             if (login) {
+                // Set an option for the modal to start open
                 options.start_open = true;
             }
             if (next) {
+                // Set the option for the URL redirect after login success
                 options.next = next;
             }
             if (this.loginModalView) {
+                // If there is already a loginModalView for some reason, just set the above options on it
+                // and rerender
                 this.loginModalView.set_options(options);
                 this.loginModalView.render();
             } else {
+                // Otherwise just start the modal view with these options, but add in the statusModel with it
                 options.model = this.model;
                 this.loginModalView = new LoginModalView(options);
             }
