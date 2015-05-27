@@ -20,6 +20,8 @@ Linux Installation
 
 #. Install Python version 2.7 (*sudo apt-get install python2.7*).
 	* Or use your Distro's Package Manager by searching for *Python*.
+#. Install pip (*sudo apt-get install python-pip*)
+    * Or use your Distro's Package Manager by searching for *pip*.
 #. (Recommended; essential on slower platforms like Raspberry Pi) Install M2Crypto with *sudo apt-get install python-m2crypto*.
 	* Or use your Distro's Package Manager by searching for *M2Crypto*.
 #. Run *sudo pip install ka-lite-static*.
