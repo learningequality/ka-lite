@@ -17,10 +17,11 @@ from django.dispatch import receiver
 from django.utils.text import compress_string
 from django.utils.translation import ugettext_lazy as _
 
-from . import add_syncing_models
+from .utils import add_syncing_models
 from .. import ID_MAX_LENGTH, IP_MAX_LENGTH
 from fle_utils.config.models import Settings
-from fle_utils.django_utils import validate_via_booleans, ExtendedModel
+from fle_utils.django_utils.debugging import validate_via_booleans
+from fle_utils.django_utils.classes import ExtendedModel
 
 
 def _get_own_device():

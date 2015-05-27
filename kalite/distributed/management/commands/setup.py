@@ -11,17 +11,6 @@ from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
 
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-BASE_DIR = os.path.realpath(CURRENT_DIR + "/../../../")
-
-# This is necessary for this script to run before KA Lite has ever been installed.
-if not os.environ.get("DJANGO_SETTINGS_MODULE"):
-    sys.path = [
-        os.path.join(BASE_DIR, "python-packages"),
-        os.path.join(BASE_DIR, "kalite")
-    ] + sys.path
-    os.environ["DJANGO_SETTINGS_MODULE"] = "kalite.settings"  # allows django commands to run
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -30,12 +19,10 @@ from django.core.management.base import BaseCommand, CommandError
 import kalite
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
-from fle_utils.internet import get_ip_addresses
 from fle_utils.platforms import is_windows, system_script_extension
 from kalite.version import VERSION
 from kalite.facility.models import Facility
-from securesync.management.commands.initdevice import load_data_for_offline_install, confirm_or_generate_zone, Command as InitCommand
-from securesync.models import Zone, Device
+from securesync.models import Device
 
 
 def raw_input_yn(prompt):
@@ -85,7 +72,7 @@ def get_username_password(current_user="", password=None):
 def get_hostname_and_description(hostname=None, description=None):
     default_hostname = get_host_name()
     while not hostname:
-        prompt = "Please enter a name for this server%s: " % ("" if not default_hostname else (" (or, press Enter to use '%s')" % get_host_name()))
+        prompt = "Please enter a hostname for this server%s: " % ("" if not default_hostname else (" (or, press Enter to use '%s')" % get_host_name()))
         hostname = raw_input(prompt) or default_hostname
         if not hostname:
             logging.error("\tError: hostname must not be empty.\n")
@@ -106,7 +93,7 @@ def get_assessment_items_filename():
             return False
 
     def find_recommended_file():
-        filename_guess = "assessment_item_resources.zip"
+        filename_guess = "assessment.zip"
         curdir = os.path.abspath(os.curdir)
         pardir = os.path.abspath(os.path.join(curdir, os.pardir))
         while curdir != pardir:
@@ -192,7 +179,10 @@ class Command(BaseCommand):
         print("                                  ")
 
         if sys.version_info >= (2,8) or sys.version_info < (2,6):
-            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % sys.version_info)
+            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % str(sys.version_info))
+        if sys.version_info != (2, 7, 9):
+            logging.warning("It's recommended that you install Python version 2.7.9. Your version is: %s\n" % str(sys.version_info))
+
 
         if options["interactive"]:
             print("--------------------------------------------------------------------------------")
@@ -213,10 +203,6 @@ class Command(BaseCommand):
             if options["interactive"]:
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
-
-        # Check to see if the current user is the owner of the install directory
-        if not os.access(BASE_DIR, os.W_OK):
-            raise CommandError("You do not have permission to write to this directory!")
 
         install_clean = not kalite.is_installed()
         database_kind = settings.DATABASES["default"]["ENGINE"]
@@ -275,12 +261,19 @@ class Command(BaseCommand):
             print("(Re)moving database file to temp location, starting clean install.  Recovery location: %s" % dest_file)
             shutil.move(database_file, dest_file)
 
+        # benjaoming: Commented out, this hits the wrong directories currently
+        # and should not be necessary.
+        # If we have problems with pyc files, we're doing something else wrong.
+        # See https://github.com/learningequality/ka-lite/issues/3487
+
         # Should clean_pyc for (clean) reinstall purposes
-        call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
+        # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
         # Migrate the database
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+        # Create *.json and friends database
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"), database="assessment_items")
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
@@ -315,25 +308,6 @@ class Command(BaseCommand):
         if not Facility.objects.count():
             Facility.initialize_default_facility()
 
-        # Install data
-        # if install_clean:
-        #     # Create device, load on any zone data
-        #     call_command("generatekeys", verbosity=options.get("verbosity"))
-        #     call_command("initdevice", hostname, description, verbosity=options.get("verbosity"))
-        #     Facility.initialize_default_facility()
-
-        #else:
-            # Device exists; load data if required.
-            #
-            # Hackish, as this duplicates code from initdevice.
-            #
-            #if os.path.exists(InitCommand.data_json_file):
-            #    # This is a pathway to install zone-based data on a software upgrade.
-            #    print("Loading zone data from '%s'\n" % InitCommand.data_json_file)
-            #    load_data_for_offline_install(in_file=InitCommand.data_json_file)
-
-        #    confirm_or_generate_zone()
-
         # Create the admin user
         if password:  # blank password (non-interactive) means don't create a superuser
             admin = get_object_or_None(User, username=username)
@@ -344,19 +318,11 @@ class Command(BaseCommand):
             admin.save()
 
         # Now deploy the static files
-        call_command("collectstatic", interactive=False)
+        logging.info("Copying static media...")
+        call_command("collectstatic", interactive=False, verbosity=0)
 
+        # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
-            # Move scripts
-            for script_name in ["start", "stop", "run_command"]:
-                script_file = script_name + system_script_extension()
-                dest_dir = os.path.join(settings.PROJECT_PATH, "..")
-                src_dir = os.path.join(dest_dir, "scripts")
-                shutil.copyfile(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                try:
-                    shutil.copystat(os.path.join(src_dir, script_file), os.path.join(dest_dir, script_file))
-                except OSError:  # even if we have write permission, we might not have permission to change file mode
-                    print("WARNING: Unable to set file permissions on %s! " % script_file)
 
             kalite_executable = 'kalite'
             if not spawn.find_executable('kalite'):

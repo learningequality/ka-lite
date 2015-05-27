@@ -1,15 +1,7 @@
 {% extends "distributed/base_teach.html" %}
 
 {% load i18n %}
-{% load kalite_staticfiles %}
-
-{% block i18n_do_not_translate %}
-  {% block home_active %}active{% endblock home_active %}
-  {% block playlist_active %}playlists-active active-tab active-nav{% endblock playlist_active %}
-  {% block teacher_active %}active{% endblock teacher_active %}
-  {% block assign_playlists_active %}active{% endblock assign_playlists_active %}
-  {% block teach_active_admins-nalanda %}active{% endblock teach_active_admins-nalanda %}
-{% endblock i18n_do_not_translate %}
+{% load staticfiles %}
 
 {% block headcss %}{{ block.super }}
   <link rel="stylesheet" type="text/css" href="{% static 'css/playlist/assign_playlists.css' %}">

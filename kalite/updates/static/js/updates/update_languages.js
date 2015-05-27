@@ -2,8 +2,23 @@ var installable_languages = [];
 var installed_languages = [];
 var downloading = false;
 
+function version_comparison(v1, v2) {
+    // compare two version strings and return 1 if the first is higher than the second,
+    // -1 if the first is lower than the second, and 0 if they are equal
+    var v1parts = v1.split('.'), v2parts = v2.split('.');
+    var maxLen = Math.max(v1parts.length, v2parts.length);
+    var part1, part2;
+    for(var i = 0; i < maxLen; i++) {
+        part1 = parseInt(v1parts[i], 10) || 0;
+        part2 = parseInt(v2parts[i], 10) || 0;
+        if (part1 > part2) return 1;
+        if (part2 > part1) return -1;
+    }
+    return 0;
+}
+
 function get_available_languages() {
-    return doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
+    return doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
@@ -16,7 +31,7 @@ function get_available_languages() {
 }
 
 function get_installed_languages() {
-    return doRequest(INSTALLED_LANGUAGES_URL, null, {
+    return doRequest(window.Urls.installed_language_packs(), null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
@@ -42,7 +57,7 @@ function display_languages() {
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
-            if (lang['code'] !== defaultLanguage) {
+            if (lang['code'] !== window.sessionModel.get("DEFAULT_LANGUAGE")) {
                 link_text = sprintf("<span><a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'><button type='button' class='btn btn-default btn-sm'>%(link_text)s</button></a></span>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
@@ -54,10 +69,10 @@ function display_languages() {
             lang["translated"] = gettext("Translated");
             var lang_name_data = sprintf("<b>%(name)s</b><br>%(subtitle_count)d %(subtitles)s <br> %(percent_translated)d%% %(translated)s", lang);
             var lang_code = lang['code'];
-            
+
             var lang_description = sprintf("<tr><td class='lang-name'>%s</td><td class='lang-link'>%s </td>", lang_name_data, link_text);
 
-            
+
 
             // check if there's a new version of the languagepack, if so, add an "UPGRADE NOW!" option
             // NOTE: N^2 algorithm right here, but meh
@@ -66,7 +81,10 @@ function display_languages() {
                 if (matching_installable.length != 0) {
                     matching_installable = matching_installable[0];
 
-                    var upgradeable = matching_installable.language_pack_version > lang.language_pack_version;
+                    var software_version_comparison = version_comparison(matching_installable.software_version, lang.software_version);
+                    var upgradeable =
+                        (software_version_comparison == 1) || // language pack is for a new KA Lite version
+                        (software_version_comparison == 0 && (matching_installable.language_pack_version > lang.language_pack_version)); // same KA Lite version, new lang pack
                     if (upgradeable) {
                         //add upgrade link here
                         var percent_translated_diff = matching_installable.percent_translated - lang.percent_translated;
@@ -104,7 +122,7 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
-    doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
+    doRequest(window.Urls.delete_language_pack(), {lang: lang_code})
         .success(function(resp) {
             get_installed_languages();
             display_languages(installables);
@@ -138,7 +156,7 @@ $(function () {
 
     });
 });
-  
+
 function populate_installable_lang_pack_dd(){
     //
     // show list of installable languages in the dropdown box
@@ -199,7 +217,7 @@ function start_languagepack_download(lang_code) {
     downloading = true;
     // tell server to start languagepackdownload job
     doRequest(
-        start_languagepackdownload_url,
+        window.sessionModel.get("START_LANGUAGEPACKDOWNLOAD_URL"),
         { lang: lang_code }
     ).success(function(progress, status, req) {
         updatesStart(
@@ -254,7 +272,7 @@ function languagepack_reset_callback(progress, resp) {
 }
 
 function set_server_language(lang) {
-    doRequest(SET_DEFAULT_LANGUAGE_URL,
+    doRequest(window.sessionModel.get("SET_DEFAULT_LANGUAGE_URL"),
               {lang: lang}
              ).success(function() {
                  window.location.reload();
@@ -269,7 +287,7 @@ function update_server_status() {
             updatesStart("languagepackdownload", 1000, languagepack_callbacks);
         } else {
             clear_messages();
-            show_message("error", gettext("The server does not have internet access; language packs cannot be downloaded at this time."));
+            show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));
         }
     });
 }

@@ -1,0 +1,10 @@
+django-compressor==1.4
+docopt>=0.6,<0.7
+South==0.8.4
+django-js-reverse==0.5.0
+# used by django-js-reverse
+ply==3.4
+# used by django-js-reverse
+slimit==0.8.1
+six==1.9.0
+django-appconf==1.0.1

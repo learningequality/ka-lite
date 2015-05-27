@@ -42,8 +42,8 @@ class LinkUserManual:
         if request.path == reverse("homepage"):
             messages.info(request, mark_safe(_("Welcome to our demo server!"
                 "  Please visit our <a href='%(um_url)s'>user's manual</a> or <a href='%(home_url)s'>homepage</a> for more information.") % {
-                    "um_url": "http://kalitewiki.learningequality.org/user-s-manual/using-ka-lite",
-                    "home_url": "http://kalite.learningequality.org/",
+                    "um_url": "https://learningequality.org/docs/usermanual/userman_main.html",
+                    "home_url": "https://learningequality.org/ka-lite/",
             }))
 
 class ShowAdminLogin:
@@ -52,9 +52,8 @@ class ShowAdminLogin:
         if is_static_file(request.path):
             return
         if not request.is_logged_in:
-            messages.info(request, mark_safe(_("<a href='%(sign_up_url)s'>Sign up as a learner</a>, or <a href='%(log_in_url)s'>log in</a> as the site-wide admin (username=%(user_name)s, password=%(passwd)s)" % {
+            messages.info(request, mark_safe(_("<a href='%(sign_up_url)s'>Sign up as a learner</a>, or log in as the site-wide admin (username=%(user_name)s, password=%(passwd)s)" % {
                 "sign_up_url": reverse("facility_user_signup"),
-                "log_in_url": reverse("login"),
                 "user_name": settings.DEMO_ADMIN_USERNAME,
                 "passwd": settings.DEMO_ADMIN_PASSWORD,
             })))

@@ -85,7 +85,7 @@ var video_callbacks = {
 
 $(function() {
 
-    doRequest(URL_GET_ANNOTATED_TOPIC_TREE, {})
+    doRequest(window.Urls.get_annotated_topic_tree(), {})
         .success(function(treeData) {
             if ($.isEmptyObject(treeData)) {
                 $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
@@ -151,7 +151,7 @@ $(function() {
                             $(".enable-when-server-online").removeAttr("disabled");
                             updatesStart("videodownload", 5000, video_callbacks);
                         } else {
-                            show_message("error", gettext("The server does not have internet access; videos cannot be downloaded at this time."));
+                            show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
                         }
                     });
                 }
@@ -167,7 +167,7 @@ $(function() {
         numVideos = youtube_ids.length;
 
         // Do the request
-        doRequest(URL_START_VIDEO_DOWNLOADS, {youtube_ids: youtube_ids})
+        doRequest(window.Urls.start_video_download(), {youtube_ids: youtube_ids})
             .success(function() {
                 updatesStart("videodownload", 5000, video_callbacks);
             })
@@ -205,7 +205,7 @@ $(function() {
 
                     var youtube_ids = getSelectedStartedMetadata("youtube_id");
                     // Do the request
-                    doRequest(URL_DELETE_VIDEOS, {youtube_ids: youtube_ids})
+                    doRequest(window.Urls.delete_videos(), {youtube_ids: youtube_ids})
                         .success(function() {
                             $.each(youtube_ids, function(ind, id) {
                                 setNodeClass(id, "unstarted");
@@ -244,7 +244,7 @@ $(function() {
         // Prep
 
         // Do the request
-        doRequest(URL_CANCEL_VIDEO_DOWNLOADS)
+        doRequest(window.Urls.cancel_video_download())
             .success(function() {
                 // Reset ALL of the progress tracking
                 updatesReset();
@@ -265,7 +265,7 @@ $(function() {
         // Prep
 
         // Do the request
-        doRequest(URL_START_VIDEO_DOWNLOADS, {});
+        doRequest(window.Urls.start_video_download(), {});
 
         // Update the UI
         $(this).attr("disabled", "disabled");

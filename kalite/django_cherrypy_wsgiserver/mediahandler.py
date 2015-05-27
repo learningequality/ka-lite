@@ -3,8 +3,6 @@
 # fix these up
 import os, stat, mimetypes
 
-import django
-from django.conf import settings
 from django.utils.http import http_date
 
 

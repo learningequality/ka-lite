@@ -6,11 +6,13 @@ from django.conf.urls import url
 from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
+from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
-from kalite.topic_tools import get_exercise_data, get_assessment_item_data, get_content_data
-from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.topic_tools import get_exercise_data, get_content_data
+from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
+
 
 
 class ExerciseLogResource(ModelResource):
@@ -47,6 +49,9 @@ class AttemptLogResource(ModelResource):
             "user": ('exact', ),
             "context_type": ('exact', 'in', ),
         }
+        ordering = [
+            "timestamp",
+        ]
         authorization = UserObjectsOnlyAuthorization()
 
     def obj_create(self, bundle, **kwargs):
@@ -161,27 +166,10 @@ class ExerciseResource(Resource):
         raise NotImplemented("Operation not implemented yet for exercises.")
 
 
-class AssessmentItem():
-
-    def __init__(self, **kwargs):
-        self.id = kwargs.get('id')
-        self.kind = kwargs.get('kind')
-        self.item_data = kwargs.get('item_data')
-        self.author_names = kwargs.get('author_names')
-        self.sha = kwargs.get('sha')
-
-
-class AssessmentItemResource(Resource):
-
-    kind = fields.CharField(attribute='kind')
-    item_data = fields.CharField(attribute='item_data')
-    author_names = fields.CharField(attribute='author_names')
-    sha = fields.CharField(attribute='sha')
-    id = fields.CharField(attribute='id')
-
+class AssessmentItemResource(ModelResource):
     class Meta:
         resource_name = 'assessment_item'
-        object_class = AssessmentItem
+        queryset = AssessmentItem.objects.all()
 
     def prepend_urls(self):
         return [
@@ -198,19 +186,6 @@ class AssessmentItemResource(Resource):
             kwargs['pk'] = bundle_or_obj.id
         return kwargs
 
-    def obj_get_list(self, bundle, **kwargs):
-        """
-        Get the list of assessment_items.
-        """
-        raise NotImplemented("Operation not implemented yet for assessment_items.")
-
-    def obj_get(self, bundle, **kwargs):
-        assessment_item_id = kwargs.get("id", None)
-        assessment_item = get_assessment_item_data(bundle.request, assessment_item_id)
-        if assessment_item:
-            return AssessmentItem(**assessment_item)
-        else:
-            raise NotFound('AssessmentItem with id %s not found' % assessment_item_id)
 
     def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")
@@ -240,7 +215,6 @@ class Content:
             "kind",
             "content_urls",
             "selected_language",
-            "subtitle_urls",
             "available",
         ]
 

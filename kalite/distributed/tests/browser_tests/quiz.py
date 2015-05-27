@@ -11,8 +11,8 @@ from django.test.utils import override_settings
 from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
-from selenium.webdriver.common.keys import Keys
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 PLAYLIST_ID = "g4_u400_ap1"
 

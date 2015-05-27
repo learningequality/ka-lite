@@ -1,6 +1,8 @@
 window.VideoLogModel = ContentLogModel.extend({
 
-    urlRoot: GET_VIDEO_LOGS_URL
+    urlRoot: function() {
+        return window.sessionModel.get("GET_VIDEO_LOGS_URL");
+    }
 
 });
 

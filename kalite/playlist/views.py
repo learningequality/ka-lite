@@ -1,6 +1,6 @@
 from annoying.decorators import render_to
 
-from kalite.shared.decorators import require_admin, require_login
+from kalite.shared.decorators.auth import require_admin
 
 
 @require_admin

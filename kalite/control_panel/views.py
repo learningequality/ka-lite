@@ -21,16 +21,16 @@ from django.utils.translation import ugettext as _
 from .forms import ZoneForm, UploadFileForm, DateRangeForm
 from fle_utils.chronograph.models import Job
 from fle_utils.django_utils.paginate import paginate_data
-from fle_utils.internet import render_to_csv
+from fle_utils.internet.decorators import render_to_csv
 from securesync.models import Device, Zone, SyncSession
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.coachreports.views import student_view_context
-from kalite.facility import get_users_from_group
+from kalite.facility.utils import get_users_from_group
 from kalite.facility.decorators import facility_required
 from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
-from kalite.shared.decorators import require_authorized_admin, require_authorized_access_to_student_data
+from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
 from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 
@@ -260,21 +260,6 @@ def facility_form(request, facility, zone_id=None):
     return context
 
 
-@facility_required
-@require_authorized_admin
-@render_to("control_panel/group_report.html")
-def group_report(request, facility, group_id=None, zone_id=None):
-    context = group_report_context(
-        facility_id=facility.id,
-        group_id=group_id or request.REQUEST.get("group", ""),
-        topic_id=request.REQUEST.get("topic", ""),
-        zone_id=zone_id
-    )
-
-    context.update(control_panel_context(request, zone_id=zone_id, facility_id=facility.id, group_id=group_id))
-    return context
-
-
 @require_authorized_admin
 @render_to_csv(["students"], key_label="user_id", order="stacked")
 def facility_management_csv(request, facility, group_id=None, zone_id=None, frequency=None, period_start="", period_end="", user_type=None):
@@ -392,7 +377,7 @@ def account_management(request):
 
     # Only log 'coachreport' activity for students,
     #   (otherwise it's hard to compare teachers)
-    if "facility_user" in request.session and not request.session["facility_user"].is_teacher and reverse("login") not in request.META.get("HTTP_REFERER", ""):
+    if "facility_user" in request.session and not request.session["facility_user"].is_teacher:
         try:
             # Log a "begin" and end here
             user = request.session["facility_user"]
@@ -586,8 +571,8 @@ def local_install_context(request):
 
     return {
         "software_version": current_version,
-        "software_release_date": VERSION_INFO[current_version]["release_date"],
-        "install_dir": os.path.realpath(os.path.join(settings.PROJECT_PATH, "..")),
+        "software_release_date": VERSION_INFO()[current_version]["release_date"],
+        "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
         "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
         "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
     }

@@ -1,3 +1,10 @@
+"""
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other updates.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that updates.settings has been copied over to kalite.settings
+
+"""
 import shutil
 
 from django.db.models.signals import post_save, pre_delete
@@ -6,7 +13,7 @@ from django.dispatch import receiver
 from .models import UpdateProgressLog, VideoFile
 from .videos import *
 from fle_utils.chronograph.models import Job
-from fle_utils.internet import invalidate_web_cache
+from fle_utils.internet.webcache import invalidate_web_cache
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_locale_path
 
 

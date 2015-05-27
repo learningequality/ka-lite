@@ -1,11 +1,7 @@
 {% extends "distributed/base_teach.html" %}
 
 {% load i18n %}
-{% load kalite_staticfiles %}
-
-{% block current_unit_active %}units-active active-tab active-nav{% endblock current_unit_active %}
-{% block teacher_active %}active{% endblock teacher_active %}
-{% block admin_active %}active{% endblock admin_active %}
+{% load staticfiles %}
 
 {% block title %}{% trans "Current Unit" %}{{ block.super }}{% endblock %}
 

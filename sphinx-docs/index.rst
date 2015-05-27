@@ -19,3 +19,4 @@ Welcome to the KA Lite Documentation page! Here, you will find all the informati
     User Manual <usermanual/userman_main>
     FAQ <faq>
     Contributing and Development <developer_docs/contributing>
+    For Devs <developer_docs/index>

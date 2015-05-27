@@ -3,10 +3,10 @@ import os
 from django.db import models
 from django.conf import settings
 
-from fle_utils.django_utils import ExtendedModel
+from fle_utils.django_utils.classes import ExtendedModel
 
 from kalite.facility.models import FacilityGroup, FacilityUser
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache
+from kalite.topic_tools import get_node_cache
 
 from securesync.models import DeferredCountSyncedModel
 
@@ -180,7 +180,7 @@ class VanillaPlaylistEntry:
     @staticmethod
     def add_full_title_from_topic_tree(entry, video_title_dict):
         # TODO (aron): Add i18n by varying the language of the topic tree here
-        topictree = get_flat_topic_tree(alldata=True)
+        topictree = get_node_cache()
 
         entry_kind = entry['entity_kind']
         entry_name = entry['entity_id']

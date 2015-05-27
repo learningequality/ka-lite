@@ -1,13 +1,12 @@
 """
 """
 import glob
+import logging
 import os
 import socket
-from django.conf import settings; logging = settings.LOG
 
-from .general import ensure_dir
-from .internet import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
-
+from general import ensure_dir
+from internet.download import callback_percent_proxy, download_file, URLNotFound, DownloadCancelled
 
 OUTSIDE_DOWNLOAD_BASE_URL = "http://s3.amazonaws.com/KA-youtube-converted/"  # needed for redirects
 OUTSIDE_DOWNLOAD_URL = OUTSIDE_DOWNLOAD_BASE_URL + "%s/%s"  # needed for default behavior, below
@@ -30,10 +29,10 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
 
     url, thumb_url = get_outside_video_urls(youtube_id, download_url=download_url, format=format)
     video_filename = "%(id)s.%(format)s" % {"id": youtube_id, "format": format}
-    filepath = download_path + video_filename
+    filepath = os.path.join(download_path, video_filename)
 
     thumb_filename = "%(id)s.png" % {"id": youtube_id}
-    thumb_filepath = download_path + thumb_filename
+    thumb_filepath = os.path.join(download_path, thumb_filename)
 
     try:
         path, response = download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))

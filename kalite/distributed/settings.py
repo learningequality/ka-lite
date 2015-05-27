@@ -1,3 +1,5 @@
+FLE_USE_STUPID_IMPORT_MAGIC = True
+
 import getpass
 import hashlib
 import os
@@ -5,15 +7,17 @@ import sys
 import tempfile
 import time
 import uuid
-import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
+from django.http import HttpRequest
+from kalite import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
+
+from kalite.settings.base import USER_DATA_ROOT
 
 try:
-    import local_settings
+    from kalite import local_settings
 except ImportError:
     local_settings = object()
 
 DEBUG = getattr(local_settings, "DEBUG", False)
-
 
 ########################
 # Functions, for support
@@ -32,6 +36,7 @@ def USER_FACING_PORT():
 # TODO(bcipolli): change these to "login" and "logout", respectively, if/when
 #  we migrate to a newer version of Django.  Older versions require these
 #  to be set if using the login_required decorator.
+# TODO(benjaoming): Use reverse_lazy for this sort of stuff
 LOGIN_URL = "/securesync/login/"
 LOGOUT_URL = "/securesync/logout/"
 
@@ -47,7 +52,6 @@ INSTALLED_APPS = (
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
-    "kalite.knowledgemap",
     "kalite.django_cherrypy_wsgiserver",  # API endpoint for PID
     "kalite.i18n",  #
     "kalite.contentload",  # content loading interactions
@@ -78,6 +82,19 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",  # expose request object within templates
     __package__ + ".custom_context_processors.custom",  #
 )
+
+COMPRESS_CONTEXT_REQUEST = HttpRequest()
+COMPRESS_CONTEXT_REQUEST.is_admin = False
+COMPRESS_CONTEXT_REQUEST.is_teacher = False
+COMPRESS_CONTEXT_REQUEST.is_student = False
+COMPRESS_CONTEXT_REQUEST.is_logged_in = False
+COMPRESS_CONTEXT_REQUEST.is_django_user = False
+COMPRESS_CONTEXT_REQUEST.language = "en"
+
+COMPRESS_OFFLINE_CONTEXT = {
+    "base_template": "distributed/base.html",
+    "request": COMPRESS_CONTEXT_REQUEST,
+}
 
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 
@@ -143,12 +160,17 @@ CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defi
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    KEY_PREFIX = version.VERSION_INFO[version.VERSION]["git_commit"][0:6]  # new cache for every build
+    # We can bump the version and forget about version info
+    version_info = version.VERSION_INFO()
+    if version.VERSION in version_info:
+        KEY_PREFIX = version_info[version.VERSION]["git_commit"][0:6]  # new cache for every build
+    else:
+        KEY_PREFIX = "unknown_version"
     if 'CACHES' not in locals():
         CACHES = {}
 
     # File-based cache
-    install_location_hash = hashlib.sha1(PROJECT_PATH).hexdigest()
+    install_location_hash = hashlib.sha1(USER_DATA_ROOT).hexdigest()
     username = getpass.getuser() or "unknown_user"
     cache_dir_name = "kalite_web_cache_%s" % (username)
     CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
@@ -203,32 +225,12 @@ assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must s
 LOCKDOWN = getattr(local_settings, "LOCKDOWN", False)
 
 
+# TODO(benjaoming): Get rid of this
+import mimetypes
+
 ########################
-# Screenshots
+# Font setup
 ########################
 
-from django.conf import settings
-PROJECT_PATH = os.path.realpath(getattr(local_settings, "PROJECT_PATH", settings.PROJECT_PATH)) + "/"
-
-SCREENSHOTS_OUTPUT_PATH = os.path.join(os.path.realpath(PROJECT_PATH), "..", "data", "screenshots")
-SCREENSHOTS_EXTENSION = ".png"
-
-SCREENSHOTS_DATABASE_NAME = "screenshot-data.sqlite"
-SCREENSHOTS_DATABASE_PATH = os.path.join(SCREENSHOTS_OUTPUT_PATH, SCREENSHOTS_DATABASE_NAME)
-
-SCREENSHOTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "data")
-SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_JSON_PATH, 'screenshots.json')
-SCREENSHOTS_ROUTER = 'default'
-SQLITE3_ENGINE = 'django.db.backends.sqlite3'
-
-if 'screenshots' in sys.argv:
-    # use another sqlite3 database for the screenshots
-    DATABASES = {
-        SCREENSHOTS_ROUTER: {
-            "ENGINE": getattr(local_settings, "DATABASE_TYPE", SQLITE3_ENGINE),
-            "NAME": SCREENSHOTS_DATABASE_PATH,
-            "OPTIONS": {
-                "timeout": 60,
-            },
-        }
-    }
+# Add additional mimetypes to avoid errors/warnings
+mimetypes.add_type("font/opentype", ".otf", True)

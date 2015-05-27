@@ -1,9 +1,8 @@
 <label for="facility-select">{{_ "Facility" }}&nbsp;&nbsp;&nbsp;</label>
 <select id="facility-select" class="reports-select form-control">
     {{#if facilities}}
-        <option value="">{{_ "All" }}</option>
         {{#each facilities}}
-            <option value="{{ id }}" {{#ifcond ../selected "===" id }}selected{{/ifcond}}>{{ name }}</option>
+            <option value="{{ id }}" {{#if ../selected }}{{#ifcond ../../selected "===" id }}selected{{/ifcond}}{{ else }}{{#if @first}}selected{{/if}}{{/if}}>{{ name }}</option>
         {{/each}}
     {{else}}
         <option value="">{{_ "this device" }}</option>

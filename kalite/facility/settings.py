@@ -1,5 +1,5 @@
 try:
-    import local_settings
+    from kalite import local_settings
 except ImportError:
     local_settings = object()
 
@@ -65,3 +65,7 @@ PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
 DISABLE_SELF_ADMIN = getattr(local_settings, "DISABLE_SELF_ADMIN", False)  #
 
 RESTRICTED_TEACHER_PERMISSIONS = getattr(local_settings, "RESTRICTED_TEACHER_PERMISSIONS", False)  # setting this to True will disable creating/editing/deleting facilties/students for teachers
+
+# Setting this to True will eliminate the need for password authentication for student accounts
+# Further, it will provide an autocomplete for any student account on typing.
+SIMPLIFIED_LOGIN = getattr(local_settings, "SIMPLIFIED_LOGIN", False)

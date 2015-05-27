@@ -1,3 +1,11 @@
+#displaygrid td {
+	al
+}
+
+#displaygrid {
+	overflow: auto;
+}
+
 #displaygrid > .users-table {
     width: 11%;
     margin-right: 1px;
@@ -23,8 +31,8 @@
     height: 34px;
 }
 
-th.username {
-    font-size: 12px;
+.stick-wrap, th.username {
+    /*font-size: 12px;*/
     height: 27px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -32,10 +40,14 @@ th.username {
 
 th.headrow, th.headrow div {
     width: 80px;
+    table-layout: fixed;
     font-weight: bold;
+    word-wrap: break-word;
     background-color: white;
     overflow: hidden;
     text-overflow: ellipsis;
+    /*white-space: nowrap;
+    text-align: justify;*/
 }
 
 th.headrowuser {
@@ -51,13 +63,17 @@ th.headrowuser {
     background-color: #5AA685;
 }
 
-.struggle {
-    background-color: #CA4D4D;
+.struggling {
+    background-color: #FD795B;
+}
+
+.not-attempted {
+	background-color: #eee;
 }
 
 #displaygrid td, #displaygrid th {
     min-width: 60px;
-    max-width: 60px;
+    /*max-width: 60px;*/
     overflow: hidden;
     /*white-space: nowrap;*/
 }
@@ -86,10 +102,14 @@ th.headrowuser {
     text-overflow: ellipsis;
 }
 
+
 #legend {
-    padding-left: 0;
-    padding-top: 20px;
-    margin-bottom: 50px;
+    padding: 6px 0 0 10px;
+    margin-top:33px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	text-align: center;
+	
 }
 
 .legend {
@@ -97,7 +117,6 @@ th.headrowuser {
     height: 20px;
     overflow: hidden;
     text-align: center;
-    width: 120px;
     padding-right: 10px;
 }
 
@@ -105,6 +124,10 @@ th.headrowuser {
     float: left;
     width: 35px;
     height: 21px;
+}
+
+.legend span {
+    padding-left: 10px;
 }
 
 .selection {
@@ -118,4 +141,44 @@ th.headrowuser {
 @media only screen and (max-width: 400px) {
     select#topic { margin-left: 0 !important; }
     /* Moves "Select Topic" dropdown slightly to the right so that it lines up with "Select Topic" and "Select Report" */
+}
+
+
+/* CSS For Sticky Header */
+.sticky-wrap {
+    overflow-x: auto;
+    position: relative;
+    margin-bottom: 1.5em;
+    width: 100%;
+}
+
+.sticky-wrap .sticky-thead,
+.sticky-wrap .sticky-col,
+.sticky-wrap .sticky-intersect {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all .125s ease-in-out;
+    z-index: 50;
+    width: auto; /* Prevent table from stretching to full size */
+}
+
+.sticky-wrap .sticky-thead {
+    box-shadow: 0 0.25em 0.1em -0.1em rgba(0,0,0,.125);
+    z-index: 100;
+    width: 100%; /* Force stretch */
+}
+.sticky-wrap .sticky-intersect {
+    opacity: 1;
+    z-index: 150;
+}
+.sticky-wrap .sticky-intersect th {
+    background-color: #666;
+    color: #eee;
+}
+
+.sticky-wrap td,
+.sticky-wrap th {
+    box-sizing: border-box;
 }

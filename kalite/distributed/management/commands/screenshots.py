@@ -212,7 +212,10 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.loginfo("==> Setting-up browser ...")
         super(Screenshot, self).setUp()
         self.browser.set_window_size(1024, 768)
-        self.browser.implicitly_wait(15)
+        self.browser.implicitly_wait(3)
+
+        # After initializing the server (with setUp) and a browser, set the language
+        self.set_session_language(kwargs['language'])
 
         # After initializing the server (with setUp) and a browser, set the language
         self.set_session_language(kwargs['language'])

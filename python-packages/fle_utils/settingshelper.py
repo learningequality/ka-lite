@@ -1,11 +1,35 @@
-import os
-import sys
+"""
+
+
+benjaoming:
+
+
+This crazyness will die in 0.14
+
+
+However, until then, we will continue to magically import settings to avoid too
+much refactoring.
+
+It has been necessary to change this file to not resolve modules by some
+perceived file path relative to calling module's __file__, but because we
+are installing in a system python environment, Python will resolve the
+module imports for us.
+
+
+
+"""
+
 
 ########################
 # Import settings from INSTALLED_APPS
 ########################
 def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__", processed_apps=set([])):
     """
+    TODO(benjaoming): This horrible way of dynamically importing stuff will soon
+    die, not to worry!
+    
+    https://github.com/learningequality/ka-lite/issues/2952
+    
     Loop over all installed_apps, and search for their
       settings.py in the path.  Then load the settings.py
       directly (to avoid running the package's __init__.py file)
@@ -18,27 +42,40 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
     this_filepath = global_vars.get("__file__")  # this would be the project settings file
 
     for app in installed_apps:
-        app_settings = None
-        try:
-            for path in sys.path:
-                app_path = os.path.join(path, app.replace(".", "/"))
-                settings_filepath = os.path.join(app_path, "settings.py")
-                if os.path.exists(settings_filepath):
-                    app_settings = {"__package__": app}  # explicit setting of the __package__, to allow absolute package ref'ing
-                    global_vars.update({"__file__": settings_filepath})  # must let the app's settings file be set to that file!
-                    execfile(settings_filepath, global_vars, app_settings)
-                    break
-
-            if app_settings is None:
-                raise ImportError("File not found in path: %s settings.py" % app)
-        except ImportError as err:
-            #print "ImportError", err, app
+        
+        # Do not try to import settings modules from other applications than
+        # the ones that use this diabolic pattern
+        if not app.startswith("kalite") and app not in ("fle_utils.chronograph", "securesync"):
             continue
-
-        # We found the app's settings.py and loaded it into app_settings;
-        #   now set those variables in the global space here.
-        for var, var_val in app_settings.iteritems():
-            if var.startswith("_") or var.upper() != var:# == "local_settings":
+        
+        try:
+            # Craziness... these apps' settings modules cannot be loaded because
+            # of circularity so they got moved
+            if app == 'kalite.i18n':
+                app_settings = __import__('kalite.legacy.i18n_settings').legacy.i18n_settings
+            elif app == 'kalite.topic_tools':
+                app_settings = __import__('kalite.legacy.topic_tools_settings').legacy.topic_tools_settings
+            elif app == 'kalite.caching':
+                app_settings = __import__('kalite.legacy.caching_settings').legacy.caching_settings
+            elif app == 'kalite.updates':
+                app_settings = __import__('kalite.legacy.updates_settings').legacy.updates_settings
+            else:
+                app_settings = __import__(app + ".settings")
+                # The module that we are importing is stored as an attribute
+                # of app_settings... i.e. "kalite.x.y.z.settings" becomes
+                # "app_settings.x.y.z.settings"
+                for x in app.split(".")[1:]:
+                    app_settings = getattr(app_settings, x)
+                app_settings = getattr(app_settings, "settings")
+        except ImportError:
+            continue
+        
+        for var in dir(app_settings):
+            var_val = getattr(app_settings, var)
+            
+            # var.upper() != var is a way of saying "contains non-uppercase
+            # letters".
+            if var.startswith("_") or var.upper() != var:
                 # Don't combine / overwrite global variables or local_settings
                 continue
             elif isinstance(var_val, tuple):
@@ -65,16 +102,13 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
                 global_vars.update({var: var_val})
             elif global_vars.get(var) != var_val:
                 # Unknown variables that do exist must have the same value--otherwise, conflict!
-                #logging.warn("(%s) %s is already set; resetting can cause confusion." % (app, var))
                 pass
-
-        #print "\n%s" % processed_apps
+        
         processed_apps = processed_apps.union(set([app]))
-        #print processed_apps
         # Now if INSTALLED_APPS exist, go do those.
-        if "INSTALLED_APPS" in app_settings:
+        if "INSTALLED_APPS" in dir(app_settings):
                 # Combine the variable values, then import
-                remaining_apps = set(app_settings["INSTALLED_APPS"]) - processed_apps
+                remaining_apps = set(app_settings.INSTALLED_APPS) - processed_apps
                 if remaining_apps:
                     import_installed_app_settings(
                         installed_apps=remaining_apps,

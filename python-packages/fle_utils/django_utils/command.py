@@ -143,9 +143,13 @@ def call_outside_command_with_output(command, *args, **kwargs):
     Runs call_command for a KA Lite installation at the given location,
     and returns the output.
     """
-    assert "kalite_dir" in kwargs, "don't forget to specify the kalite_dir"
-    kalite_dir = kwargs.pop('kalite_dir')
-
+    
+    if settings.IS_SOURCE:
+        assert "kalite_dir" in kwargs, "don't forget to specify the kalite_dir"
+        kalite_dir = kwargs.pop('kalite_dir')
+    else:
+        kalite_dir = None
+    
     # some custom variables that have to be put inside kwargs
     # or else will mess up the way the command is called
     output_to_stdout = kwargs.pop('output_to_stdout', False)
@@ -153,7 +157,11 @@ def call_outside_command_with_output(command, *args, **kwargs):
     wait = kwargs.pop('wait', True)
 
     # build the command
-    cmd = (os.path.join(kalite_dir, "bin/kalite"), "manage", command)
+    if kalite_dir:
+        kalite_bin = os.path.join(kalite_dir, "bin/kalite")
+    else:
+        kalite_bin = 'kalite'
+    cmd = (kalite_bin, "manage", command)
     for arg in args:
         cmd += (arg,)
     for key, val in kwargs.items():

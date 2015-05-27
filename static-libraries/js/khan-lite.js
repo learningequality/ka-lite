@@ -38,7 +38,7 @@ function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
     if ($.url(url).param("lang") === undefined && data !== null && data !== undefined) {
         if (!data.hasOwnProperty('lang')) {
-            url = setGetParam(url, "lang", CURRENT_LANGUAGE);
+            url = setGetParam(url, "lang", window.sessionModel.get("CURRENT_LANGUAGE"));
         }
     }
 
@@ -61,7 +61,7 @@ function doRequest(url, data, opts) {
                 break;
         }
     }
-
+    // TODO-BLOCKER (rtibbles): Make setting of the success and fail callbacks more flexible.
     return $.ajax(request_options)
         .success(function(resp) {
             handleSuccessAPI(resp);
@@ -138,17 +138,21 @@ function handleFailedAPI(resp, error_prefix) {
             messages = {error: gettext("Could not connect to the server.") + " " + gettext("Please try again later.")};
             break;
 
-        case 200:  // return JSON messages
+        case 401:
 
-        case 201:  // return JSON messages
+        case 403:
+            messages = {error: gettext("You are not authorized to complete the request.  Please login as an authorized user, then retry the request.")};
+            if (window.statusModel) {
+                window.statusModel.fetch().success(function() {
+                    window.userView.login_start_open = true;
+                })
+            }
+            break;
 
-        case 500:  // also currently return JSON messages
-
-            // handle empty responses gracefully
-            resp.responseText = resp.responseText || "{}";
+        default:
 
             try {
-                messages = $.parseJSON(resp.responseText || "{}");
+                messages = $.parseJSON(resp.responseText || "{}").messages || $.parseJSON(resp.responseText || "{}");
             } catch (e) {
                 var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
@@ -156,20 +160,6 @@ function handleFailedAPI(resp, error_prefix) {
                 console.log(e);
             }
             break;
-        case 401:
-
-    case 403:
-        // Redirect to Login Page and add the current url as next
-        window.location.href = setGetParam(USER_LOGIN_URL, "next", window.location.pathname + window.location.hash)
-        messages = {error: sprintf(gettext("You are not authorized to complete the request.  Please <a href='%(login_url)s'>login</a> as an authorized user, then retry the request."), {
-            login_url: USER_LOGIN_URL
-        })};
-        break;
-
-    default:
-        console.log(resp);
-        var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
-        messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
     }
 
     clear_messages();  // Clear all messages before showing the new (error) message.
@@ -218,7 +208,10 @@ function show_message(msg_class, msg_text, msg_id) {
     //    or to display purely client-side messages.
     // msg_class includes error, warning, and success
     if (msg_id === undefined) {
-        msg_id = msg_text.hashCode();
+        // Only do this if msg_text and its hashCode are both defined
+        if ((typeof msg_text !== "undefined" ? msg_text.hashCode : void 0)) {
+            msg_id = msg_text.hashCode();
+        }
     }
 
     // Avoid duplicating the same message by removing any existing message with the same id
@@ -295,7 +288,7 @@ function setGetParam(href, name, val) {
         vars[key] = value;
     });
 
-    if (val === "" || val == "----" || val === undefined) {
+    if (val === "" || val == "----" || val === undefined || val === null) {
         delete vars[name];
     } else {
         vars[name] = val;
