@@ -18,7 +18,7 @@ class DynamicSettings(DynamicSettingsBase):
 # settings.RESTRICTED_TEACHER_PERMISSIONS
 def modify_dynamic_settings(ds, request=None, user=None):
     ds["facility"].teacher_can_create_facilities = not settings.RESTRICTED_TEACHER_PERMISSIONS
-    ds["facility"].teacher_can_create_students   = not settings.RESTRICTED_TEACHER_PERMISSIONS
+    ds["facility"].teacher_can_create_students   = True
     ds["facility"].teacher_can_delete_facilities = not settings.RESTRICTED_TEACHER_PERMISSIONS
     ds["facility"].teacher_can_delete_students   = not settings.RESTRICTED_TEACHER_PERMISSIONS
     ds["facility"].teacher_can_edit_facilities   = not settings.RESTRICTED_TEACHER_PERMISSIONS
