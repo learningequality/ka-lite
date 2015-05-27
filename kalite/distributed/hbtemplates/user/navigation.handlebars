@@ -1,13 +1,13 @@
 {{#if is_admin }}
-  <li class="teach-tab"><a href="/coachreports/table/">{{_ "Teach" }}</a></li>
-  <li class="manage-tab"><a href="/management/zone/None/{{#unless is_django_user }}facility/{{ facility_id }}/management/{{/unless}}">{{_ "Manage" }}</a></li>
+  <li class="teach-tab"><a href="{{ url "coach_reports" }}">{{_ "Teach" }}</a></li>
+  <li class="manage-tab"><a href="{{#unless is_django_user }}{{ url "facility_management" "None" facility_id }}{{else}}{{url "zone_redirect" }}{{/unless}}">{{_ "Manage" }}</a></li>
 {{/if}}
 {{!-- Learn for all --}}
-  <li id="nav-handlebars" class="learn-tab"><a href="/learn" id="nav_learn" class="home-navlink">{{_ "Learn" }}</a></li>
+  <li id="nav-handlebars" class="learn-tab"><a href="{{url "learn" }}" id="nav_learn" class="home-navlink">{{_ "Learn" }}</a></li>
 {{!-- Login --}}
 {{#unless is_logged_in}}
   <li><a href="#" data-toggle="modal" data-target="#loginModal" id="nav_login">{{_ "Login" }}</a></li>
-  <li><a href="/securesync/signup/" id="nav_signup">{{_ "Sign Up" }}</a></li>
+  <li><a href="{{ url "facility_user_signup" }}" id="nav_signup">{{_ "Sign Up" }}</a></li>
 {{/unless}}
 
   <hr class="nav-divider">

@@ -136,7 +136,7 @@ def aggregate_learner_logs(request):
         log_objects = LogModel.objects.filter(
             user__in=learners,
             latest_activity_timestamp__gte=start_date,
-            latest_activity_timestamp__lte=end_date, **obj_ids).values(*fields).order_by("-latest_activity_timestamp")
+            latest_activity_timestamp__lte=end_date, **obj_ids).order_by("-latest_activity_timestamp")
 
              
         if id_field == "video":

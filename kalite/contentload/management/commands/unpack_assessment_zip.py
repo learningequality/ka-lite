@@ -15,19 +15,6 @@ logging = settings.LOG
 
 from kalite import version
 
-KHAN_DATA_PATH = os.path.join(
-    settings.CONTENT_DATA_PATH,
-    "khan",
-)
-
-KHAN_CONTENT_PATH = os.path.join(
-    settings.CONTENT_ROOT,
-    "khan"
-)
-
-ASSESSMENT_ITEMS_PATH = os.path.join(KHAN_DATA_PATH, "assessmentitems.json")
-ASSESSMENT_ITEMS_VERSION_PATH = os.path.join(KHAN_DATA_PATH, "assessmentitems.json.version")
-
 logging = settings.LOG
 
 class Command(BaseCommand):
@@ -74,31 +61,25 @@ class Command(BaseCommand):
 
         print "Unpacking..."
         zf = zipfile.ZipFile(f, "r")
-        extract_assessment_items_to_data_dir(zf)
         unpack_zipfile_to_khan_content(zf)
 
 
 def should_upgrade_assessment_items():
-    # if assessmentitems.json.version doesn't exist, then we assume
+    # if assessmentitems.version doesn't exist, then we assume
     # that they haven't got assessment items EVER
-    if not os.path.exists(ASSESSMENT_ITEMS_VERSION_PATH):
-        logging.debug("%s does not exist; downloading assessment items" % ASSESSMENT_ITEMS_VERSION_PATH)
+    if not os.path.exists(settings.ASSESSMENT_ITEM_DATABASE_PATH) or not os.path.exists(settings.ASSESSMENT_ITEM_VERSION_PATH):
+        logging.debug("%s does not exist; downloading assessment items" % settings.ASSESSMENT_ITEM_DATABASE_PATH)
         return True
 
-    with open(ASSESSMENT_ITEMS_VERSION_PATH) as f:
+    with open(settings.ASSESSMENT_ITEM_VERSION_PATH) as f:
         assessment_items_version = StrictVersion(f.read())
 
     software_version = StrictVersion(version.SHORTVERSION)
     return software_version > assessment_items_version
 
 
-def extract_assessment_items_to_data_dir(zf):
-    zf.extract("assessmentitems.json", KHAN_DATA_PATH)
-    zf.extract("assessmentitems.json.version", KHAN_DATA_PATH)
-
-
 def unpack_zipfile_to_khan_content(zf):
-    folder = settings.ASSESSMENT_ITEMS_RESOURCES_DIR
+    folder = settings.KHAN_CONTENT_PATH
     ensure_dir(folder)
     zf.extractall(folder)
 
