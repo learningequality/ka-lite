@@ -315,10 +315,8 @@ window.UserView = BaseView.extend({
             var options = {};
             var next = getParamValue("next");
             var login = getParamValue("login");
-            if (login || this.login_start_open) {
+            if (login) {
                 options.start_open = true;
-
-                delete this.login_start_open;
             }
             if (next) {
                 options.next = next;
