@@ -139,8 +139,6 @@ class Command(BaseCommand):
         logging.info("Copying static media...")
         call_command("collectstatic", interactive=False, verbosity=0)
 
-        call_command("collectstatic_js_reverse", interactive=False)
-
         if options['startuplock']:
             os.unlink(options['startuplock'])
         
