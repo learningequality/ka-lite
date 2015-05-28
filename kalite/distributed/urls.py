@@ -116,6 +116,13 @@ if settings.DEBUG:
     urlpatterns += patterns('',
         url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
     )
+else:
+    from django.views.decorators.cache import cache_page
+    from django_js_reverse.views import urls_js
+    urlpatterns += patterns('',
+        url(r'^jsreverse/$', cache_page(60 * 60 * 24 * 365)(urls_js), name='js_reverse'),  # Cached for 1 year
+    )
+
 
 handler403 = __package__ + '.views.handler_403'
 handler404 = __package__ + '.views.handler_404'
