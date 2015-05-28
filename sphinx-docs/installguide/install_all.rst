@@ -28,10 +28,6 @@ Linux: Installing as a PyPI package
 #. Run *sudo pip install ka-lite-static*.
 #. Run *kalite manage setup*. Follow the on-screen prompts to complete the setup.
 #. After completing the setup, follow the on-screen instructions to start KA Lite using the *kalite* command!
-#. **IF** you want the server to start automatically in the background when your system boots:
-    * Enter *sudo ./runatboot.sh* in the terminal from inside the ka-lite/scripts directory. Note that if this step does not succeed, you will not be able to start or stop the server using the two commands described below!
-    * To start the server the for the first time, run *sudo service kalite start*. Subsequently the server should start automatically at boot.
-    * Use *sudo service kalite stop* or *sudo service kalite start* to stop and start the server at any other time.
 
 Raspberry Pi
 ============
