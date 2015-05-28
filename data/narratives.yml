@@ -1,0 +1,23 @@
+management/zone/.*:
+  - 'a#manage.admin-only':
+    - step: 1
+    - text: 'Welcome! This is the landing page for admins. If at any point you would like to navigate back to this page, click on this tab!'
+  - 'li.facility':
+    - step: 2
+    - text: 'Clicking on this tab will show you a quick overview of all facilities and devices'
+    - position: right
+  - 'a.create-facility':
+    - step: 3
+    - text: 'To add new facilities, click on this link.'
+  - 'div.row:nth-child(3)':
+    - step: 4
+    - text: 'Information on your device status will be shown here'
+  - '#not-registered':
+    - step: 5
+    - text: 'By registering your device with our central hub, you can sync your data. This allows you to manage user accounts and view usage data remotely!'
+  - '#not-registered':
+    - step: 6
+    - text: 'If you decide to register your device to our central hub, click this button!'
+  - 'unattached':
+    - step: 7
+    - text: 'Any more questions? Be sure to consult the FAQ and Documentation!'
