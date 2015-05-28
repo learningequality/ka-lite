@@ -356,6 +356,9 @@ window.ToggleNavbarView = BaseView.extend ({
     collapsed_nav: function() {
         var data_toggle = document.getElementById("#user-name-a");
         var menu = document.getElementById("user-name");
+        if (data_toggle === null || menu === null) {
+            return;
+        }
         if ( $('body').innerWidth() <= 750 ) {
             data_toggle.removeAttribute("data-toggle");
             menu.classList.add("open");
