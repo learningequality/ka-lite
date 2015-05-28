@@ -36,8 +36,8 @@ def USER_FACING_PORT():
 #  we migrate to a newer version of Django.  Older versions require these
 #  to be set if using the login_required decorator.
 # TODO(benjaoming): Use reverse_lazy for this sort of stuff
-LOGIN_URL = "/securesync/login/"
-LOGOUT_URL = "/securesync/logout/"
+LOGIN_URL = "?login=true"
+LOGOUT_URL = "/securesync/api/user/logout/"
 
 INSTALLED_APPS = (
     "django.contrib.messages",
