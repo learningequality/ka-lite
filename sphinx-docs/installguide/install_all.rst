@@ -2,7 +2,7 @@ Windows Installation
 ====================
 
 1. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-latest>`_ installer.
-2. After downloading the .exe file, double click it. A window will appear and guide you through the process of installing KA Lite on the server.1
+2. After downloading the .exe file, double click it. A window will appear and guide you through the process of installing KA Lite on the server.
 
 Mac Installation
 ================
@@ -11,28 +11,83 @@ Mac Installation
 
 .. warning:: Dear maintainers, please update this link.
 
-Linux Installation
-==================
+Linux: Debian/Ubuntu Installation
+=================================
 
-.. note:: You will need to make sure *sudo* is installed for both Debian and Ubuntu. These commands can then be used for both operating systems.
+1. Download `the deb file <http://overtag.dk/upload/ka-lite_0.14~dev9-1_all.deb>`_ and enjoy!
+
+.. _linux-pypi-install:
+
+Linux: Installing as a PyPI package
+===================================
 
 .. note:: Type the following commands in a terminal.
 
-#. Install Python version 2.7 (*sudo apt-get install python2.7*).
-	* Or use your Distro's Package Manager by searching for *Python*.
-#. Install pip (*sudo apt-get install python-pip*)
-    * Or use your Distro's Package Manager by searching for *pip*.
-#. (Recommended; essential on slower platforms like Raspberry Pi) Install M2Crypto with *sudo apt-get install python-m2crypto*.
-	* Or use your Distro's Package Manager by searching for *M2Crypto*.
+#. Install pip (*sudo apt-get install python-pip* or use your distro's package manager).
+#. (Recommended; essential on slower platforms like Raspberry Pi) Install M2Crypto (*sudo apt-get install python-m2crypto*).
 #. Run *sudo pip install ka-lite-static*.
 #. Run *kalite manage setup*. Follow the on-screen prompts to complete the setup.
+#. After completing the setup, follow the on-screen instructions to start KA Lite using the *kalite* command!
 #. **IF** you want the server to start automatically in the background when your system boots:
-	* Enter *sudo ./runatboot.sh* in the terminal from inside the ka-lite/scripts directory. Note that if this step does not succeed, you will not be able to start or stop the server using the two commands described below!
-	* To start the server the for the first time, run *sudo service kalite start*. Subsequently the server should start automatically at boot.
-	* Use *sudo service kalite stop* or *sudo service kalite start* to stop and start the server at any other time.
-#. **IF** the automatic background option was not chosen or *sudo ./runatboot.sh* did not succeed, start and stop the server by running *kalite start* and *kalite stop* in the ka-lite/bin directory.
-#. KA Lite should be accessible from http://127.0.0.1:8008/
-	* Replace *127.0.0.1* with the computer's external IP address or domain name to access it from another computer.
+    * Enter *sudo ./runatboot.sh* in the terminal from inside the ka-lite/scripts directory. Note that if this step does not succeed, you will not be able to start or stop the server using the two commands described below!
+    * To start the server the for the first time, run *sudo service kalite start*. Subsequently the server should start automatically at boot.
+    * Use *sudo service kalite stop* or *sudo service kalite start* to stop and start the server at any other time.
+
+Raspberry Pi
+============
+
+Please follow the steps for installing as a :ref:`PyPI packagae <linux-pypi-install>`.
+
+During setup you will be asked to optimize your installation for performance on the Raspberry Pi.
+
+Say **YES!** Make sure you have a stable Internet connection during the process, as you will be downloading a number of 3rd party open source libraries.
+
+Raspberry Pi Wi-Fi
+------------------
+
+.. note:: Two Wi-Fi USB modules have been tested with KA Lite on the Raspberry Pi
+
+    * Raspberry Pi WiPi adaptor
+    * Edimax EW-7811Un
+
+In our tests, we found that the WiPi adaptor supported a higher number tablet connections.
+
+Installation
+^^^^^^^^^^^^
+
+.. note:: The Raspberry Pi may crash if the USB adaptor is inserted or removed while the computer is switched on.
+
+    * Make sure to shutdown and remove the power from the Raspberry Pi.
+    * Afterwards, insert the wireless USB adaptor.
+    * Lastly, switch the Raspberry Pi on.
+
+#. Make sure the Raspberry Pi operating system is up-to-date.
+    * Login with the account used to install KA Lite
+    * Update the Raspberry Pi operating system by:
+        * *sudo apt-get update*
+        * *sudo apt-get upgrade*
+#. Get the installation scripts.
+    * *cd /opt*
+    * *sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git*
+#. Install and configure the access point.
+    * *cd /opt/ka-lite-pi-scripts*
+    * *sudo ./configure.sh*
+    .. note:: If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
+#. Install the USB adaptor software.
+	* If using the WiPi, run this command:
+        * *cd /opt/ka-lite-pi-scripts*
+        * *sudo ./use_wipi.sh*
+    * If using the Edimax EW-7811Un, run this command:
+        * *cd /opt/ka-lite-pi-scripts*
+        * *sudo ./use_edimax.sh*
+#. Complete the access point configuration
+    * *sudo python ./configure_network_interfaces.py*
+    * *sudo insserv hostapd*
+#. Finally
+    * *sudo reboot*
+    * A wireless network named "kalite" should be available.
+    * Connect to this network
+    * If the KA Lite server is started, browse to 1.1.1.1
 
 Advanved Installation overview - Source distribution
 ====================================================
