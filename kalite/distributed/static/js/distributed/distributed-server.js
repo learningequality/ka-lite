@@ -442,17 +442,3 @@ $(function() {
     });
 
 });
-
-
-/*This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
-function collapsedNav() {
-    var data_toggle = document.getElementById("user-name-a");
-    var menu = document.getElementById("user-name");
-        if ( $('body').innerWidth() <= 750 ) {
-            data_toggle.removeAttribute("data-toggle");
-            menu.classList.add("open");
-      } else {
-            data_toggle.setAttribute("data-toggle", "dropdown");
-            menu.classList.remove("open");
-      }
-}
