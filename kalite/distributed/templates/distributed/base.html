@@ -63,7 +63,7 @@
             <script type="text/javascript" src="//cdn.crowdin.com/jipt/jipt.js"></script>
         {% endif %}
 
-        {% if debug %}
+        {% if settings.DEBUG %}
         <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
         {% else %}
         <script src="{% static 'django_js_reverse/js/reverse.js' %}"></script>
