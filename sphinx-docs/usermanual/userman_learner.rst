@@ -50,6 +50,21 @@ The icons to the left of the menu selections describe whether or not it is a vid
 
 Once you have found the video or exercise that you'd like to engage with, simply click on that selection.
 
+Content Recommendation
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+The content recommendations based off of your current progress are on the homepage - visible after you have made some progress on at least one exercise. 
+
+There are three cards:
+
+**Resume:**
+Allows you to navigate to the last exercise you were on.
+
+**Next Steps:**
+Allows you to navigate to your in-progress exercises and the topics of those exercises.
+
+**Explore:**
+Shows some recommended topics for you based on your previous in-progress and completed topics, and also random topics to further your learning and exploration.
+
 
 How to Practice Exercises
 --------------------------
