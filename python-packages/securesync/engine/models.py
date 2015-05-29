@@ -448,7 +448,11 @@ class DeferredSignSyncedModel(SyncedModel):
     Synced model that defers signing until it's time to sync. This helps with CPU efficency because
     we don't need to recalculate the model signature every time the model is updated and saved.
     """
-    def save(self, sign=settings.CENTRAL_SERVER, *args, **kwargs):
+    def save(self, sign=None, *args, **kwargs):
+
+        if not sign:
+            sign = settings.CENTRAL_SERVER
+
         super(DeferredSignSyncedModel, self).save(*args, sign=sign, **kwargs)
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
@@ -461,12 +465,16 @@ class DeferredCountSyncedModel(DeferredSignSyncedModel):
     Defer incrementing counters until syncing. This helps with IO efficiency because we don't need to
     update the counter_position on our device's metadata model everytime this model is saved.
     """
-    def save(self, increment_counters=settings.CENTRAL_SERVER, *args, **kwargs):
+    def save(self, increment_counters=None, *args, **kwargs):
         """
         Note that increment_counters will set counters to None,
         and that if the object must be created, counter will be incremented
         and temporarily set, to create the object ID.
         """
+
+        if not increment_counters:
+            increment_counters = settings.CENTRAL_SERVER
+
         super(DeferredCountSyncedModel, self).save(*args, increment_counters=increment_counters, **kwargs)
 
     def set_id(self):
