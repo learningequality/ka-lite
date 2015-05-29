@@ -10,14 +10,16 @@ A screenshot directive has a number of required options
         1. selector action [options] ["|" selector action [options]] ...
         2. aliased_action_sequence [options]
 
-        selector will identify the element... for now we'll just implement
-            selection by id e.g. "#username-field"
+        An explanation of navigation steps follows. Some examples can be found
+        in ss_examples.rst in this directory.
+
+        Selector is a single css selector (no whitespace allowed).
             "NEXT", which just sends a tab keystroke
             "SAME", which just stays focused on the element from the last action
         Where action could be one of "click", "send_keys", or "submit":
             click has no options and just clicks the element
             send_keys sends a sequence of keystrokes specified as a string by options
-                (potentially with special characters representing tab, enter, etc.)
+                
             submit submits a form and has no options
         Multiple actions on a page can be specified by putting a | separator,
             and specifying the action using the same syntax.
