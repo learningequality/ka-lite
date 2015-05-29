@@ -29,7 +29,9 @@
 .navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Document.available {
     color: white;
 }
-.navbar-collapse .ui-menu .ui-menu-item a{
+.navbar-collapse .ui-menu .ui-menu-item a,
+.navbar-collapse .ui-menu .ui-menu-item a.ui-state-focus {
+    margin: -1px 0 0 0;
     outline: 0;
     padding-top: 10px;
     padding-bottom: 0;
@@ -37,6 +39,7 @@
     border: 0px;
     padding-left: 16px;
 }
+
 .navbar-collapse .ui-menu .ui-menu-item span {
     font-weight: 300;
     font-size: 0.95em;
