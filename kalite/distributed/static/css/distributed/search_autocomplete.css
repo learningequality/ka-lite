@@ -33,11 +33,17 @@
 .navbar-collapse .ui-menu .ui-menu-item a.ui-state-focus {
     margin: -1px 0 0 0;
     outline: 0;
-    padding-top: 10px;
-    padding-bottom: 0;
     border-radius: 6px;
     border: 0px;
-    padding-left: 16px;
+    padding-left: 0.5em;
+    overflow: hidden;
+}
+
+/* ensure these elements have the same height */
+.navbar-collapse .ui-menu .ui-menu-item a,
+.navbar-collapse .ui-menu .ui-menu-item a.ui-state-focus,
+.navbar-collapse .ui-menu .ui-menu-item .dropdown-icon {
+    height: 2em;
 }
 
 .navbar-collapse .ui-menu .ui-menu-item span {
@@ -46,12 +52,17 @@
     padding-right: 0;
 }
 
+/* inner spans */
+.navbar-collapse .ui-menu .ui-menu-item span > span {
+    text-transform: none;
+}
+
 .navbar-collapse .ui-menu .ui-menu-item .dropdown-icon {
     font-weight: 300;
     font-size: 1em;
     padding-right: 16px;
     float: left;
-    height: 30px;
+    padding-top: 0.3em;
 }
 
 .navbar-collapse .available {
