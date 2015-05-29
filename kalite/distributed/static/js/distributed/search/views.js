@@ -131,7 +131,8 @@ window.AutoCompleteView = BaseView.extend({
             var label = this.item_template(node);
             results.push({
                 label: label,
-                value: ids_filtered[i]
+                value: node.title,
+                data_value: ids_filtered[i]
             });
         }
 
@@ -140,7 +141,7 @@ window.AutoCompleteView = BaseView.extend({
 
     select_item: function( event, ui ) {
         // When they click a specific item, just go there (if we recognize it)
-        var id = ui.item.value;
+        var id = ui.item.data_value;
         if (this._nodes && id in this._nodes && this._nodes[id]) {
             if ("channel_router" in window) {
                 window.channel_router.navigate(this._nodes[id].path, {trigger: true});
