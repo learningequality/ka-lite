@@ -116,6 +116,14 @@ window.AutoCompleteView = BaseView.extend({
             return compvalue;
         });
 
+        // Then sort again by availability!
+        ids_filtered.sort(function(id1, id2) {
+            var node1 = self._nodes[id1];
+            var node2 = self._nodes[id2];
+            var compvalue = node1.available ? (node2.available ? 0 : 1) : (node2.available ? -1 : 0);
+            return -1 * compvalue;  // Reverse the order; it's apparently reversed again in display.
+        });
+
         // From the filtered titles, produce labels (html) and values (for doing stuff)
         var results = [];
 
