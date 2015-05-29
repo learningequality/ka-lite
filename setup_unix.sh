@@ -7,7 +7,7 @@ pyexec=`"$SCRIPT_DIR"/python.sh`
 
 # Raspberry Pi
 # Check if we are on a Linux running on armv6l/armv7l
-if uname | grep -q Linux && uname -m | grep -q armv ; then
+if uname | grep -q Linux && uname -a | grep -q armv ; then
     while true
     do
         echo

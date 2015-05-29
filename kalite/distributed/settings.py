@@ -10,7 +10,6 @@ import uuid
 from django.http import HttpRequest
 from kalite import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
-from kalite.settings.base import USER_DATA_ROOT
 
 try:
     from kalite import local_settings
@@ -160,17 +159,13 @@ CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defi
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    # We can bump the version and forget about version info
-    version_info = version.VERSION_INFO()
-    if version.VERSION in version_info:
-        KEY_PREFIX = version_info[version.VERSION]["git_commit"][0:6]  # new cache for every build
-    else:
-        KEY_PREFIX = "unknown_version"
+    # When we change versions, cache changes, too
+    KEY_PREFIX = ".".join(version.VERSION)
     if 'CACHES' not in locals():
         CACHES = {}
 
     # File-based cache
-    install_location_hash = hashlib.sha1(USER_DATA_ROOT).hexdigest()
+    install_location_hash = hashlib.sha1(".".join(version.VERSION)).hexdigest()
     username = getpass.getuser() or "unknown_user"
     cache_dir_name = "kalite_web_cache_%s" % (username)
     CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
