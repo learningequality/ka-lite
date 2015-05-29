@@ -327,7 +327,6 @@ window.ToggleNavbarView = BaseView.extend ({
         this.listenTo(this.model, "change", this.render);
         $("topnav").append(this.template());
         $(window).on("resize", this.collapsed_nav);
-        $(window).on("pageshow", this.collapsed_nav); // The "pageshow" event may be deprecated
     },
 
     render: function() {
@@ -346,19 +345,18 @@ window.ToggleNavbarView = BaseView.extend ({
             this.$(".manage-tab").addClass("active");   
         }
 
+        this.collapsed_nav();
     },
 
-    /* MCGallaspy: When the page width is less than 750px (apparently, is this a magic number?) then the menu is
-        collapsed into a hamburger. This function ensure the "user" dropdown is collapsed if that happens.
-        Apparently it otherwise doesn't play nicely.
+    /*  This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu.
+        Specifically, it ensures that the "user" dropdown menu is already expanded when the containing menu is collapsed
     */
-    /*This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
     collapsed_nav: function() {
-        var data_toggle = document.getElementById("#user-name-a");
-        var menu = document.getElementById("user-name");
-        if (data_toggle === null || menu === null) {
-            return;
+        if ( !this.model.get("is_logged_in") ) {
+            return; // If not logged in, the needed elements won't exist.
         }
+        var data_toggle = document.getElementById("user-name-a");
+        var menu = document.getElementById("user-name");
         if ( $('body').innerWidth() <= 750 ) {
             data_toggle.removeAttribute("data-toggle");
             menu.classList.add("open");
