@@ -21,6 +21,10 @@ Linux: Debian/Ubuntu Installation
 Linux: Installing as a PyPI package
 ===================================
 
+To install KA Lite from a file, go to our `PyPi page <https://pypi.python.org/pypi/ka-lite-static>`_ and download a .tar.gz or .zip. You can then install the file from a system by unpacking it and running *python setup.py install* or *pip install ka-lite-static-X.Y.Z.tar.gz*.
+
+Alternatively, install with *pip* using the instructions below:
+
 .. note:: Type the following commands in a terminal.
 
 #. Install pip (*sudo apt-get install python-pip* or use your distro's package manager).
@@ -85,8 +89,8 @@ Installation
     * Connect to this network
     * If the KA Lite server is started, browse to 1.1.1.1
 
-Advanved Installation overview - Source distribution
-====================================================
+Advanced Installation
+=====================
 
 The "source distribution" of KA Lite does NOT involve compiling anything (since
 it's pure Python). You can install it very easily.
