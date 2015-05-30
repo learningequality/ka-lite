@@ -71,7 +71,12 @@ kalite_path = os.path.abspath(kalite_path)
 
 env = {}
 env.update(os.environ.copy())
-env['KALITE_DIR'] = kalite_path
+
+if not os.path.exists(kalite_path):
+    raise RuntimeError("Assuming kalite data path {} but it doesn't exist!".format(kalite_path))
+
+# Converts to normal string for Windows users, where it gets turned into a unicode string and errors out in subprocess
+env['KALITE_DIR'] = str(kalite_path)
 
 if 'KALITE_PYTHON' in os.environ:
     python_executable = os.environ['KALITE_PYTHON']

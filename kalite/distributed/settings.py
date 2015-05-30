@@ -10,7 +10,6 @@ import uuid
 from django.http import HttpRequest
 from kalite import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
-from kalite.settings.base import USER_DATA_ROOT
 
 try:
     from kalite import local_settings
@@ -52,7 +51,6 @@ INSTALLED_APPS = (
     "kalite.facility",  # must come first, all other apps depend on this one.
     "kalite.control_panel",  # in both apps
     "kalite.coachreports",  # in both apps; reachable on central via control_panel
-    "kalite.knowledgemap",
     "kalite.django_cherrypy_wsgiserver",  # API endpoint for PID
     "kalite.i18n",  #
     "kalite.contentload",  # content loading interactions
@@ -161,12 +159,13 @@ CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defi
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    KEY_PREFIX = version.VERSION_INFO()[version.VERSION]["git_commit"][0:6]  # new cache for every build
+    # When we change versions, cache changes, too
+    KEY_PREFIX = ".".join(version.VERSION)
     if 'CACHES' not in locals():
         CACHES = {}
 
     # File-based cache
-    install_location_hash = hashlib.sha1(USER_DATA_ROOT).hexdigest()
+    install_location_hash = hashlib.sha1(".".join(version.VERSION)).hexdigest()
     username = getpass.getuser() or "unknown_user"
     cache_dir_name = "kalite_web_cache_%s" % (username)
     CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"

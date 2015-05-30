@@ -1,25 +1,14 @@
 """
 """
-import cgi
-import json
-import re
-import uuid
-from annoying.functions import get_object_or_None
-
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.messages.api import get_messages
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models as db_models
 from django.http import HttpResponse
 from django.utils import simplejson
-from django.utils.safestring import SafeString, SafeUnicode, mark_safe
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
-from django.views.decorators.gzip import gzip_page
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
-from .. import engine
+from ..engine.utils import serialize, deserialize
 from fle_utils.django_utils.functions import get_request_ip
 from fle_utils.internet.decorators import allow_jsonp, api_handle_error_with_json
 from fle_utils.internet.functions import am_i_online
@@ -46,7 +35,7 @@ def register_device(request):
         #   is less than the version of a client--something that should never happen
         try:
             local_version = Device.get_own_device().get_version()
-            models = engine.deserialize(data["client_device"], src_version=local_version, dest_version=local_version)
+            models = deserialize(data["client_device"], src_version=local_version, dest_version=local_version)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
@@ -118,7 +107,7 @@ def register_device(request):
     # Addition: always back central server object--in case they didn't get it during install,
     #   they need it for software updating.
     return JsonResponse(
-        engine.serialize([Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        serialize([Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
 
 

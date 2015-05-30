@@ -3,11 +3,6 @@
 
 {% block title %}{% trans title %}{% endblock title %}
 
-{% block i18n_do_not_translate %}
-    {% block users_active %}active{% endblock %}
-    {% block signup_active %}active{% endblock signup_active %}
-{% endblock i18n_do_not_translate %}
-
 {% block headcss %}{{ block.super }}
     <style>
         #id_group {

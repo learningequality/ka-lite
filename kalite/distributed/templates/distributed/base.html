@@ -8,9 +8,9 @@
 {% get_current_language as lang_code %}
 <html lang="{{ lang_code }}">
     <head>
-        <!--[if lt IE 9]>
+        <!--[if lt IE 9]> 
               <script src="{% static "js/html5shiv.js" %}"></script>
-        <![endif]-->
+        <![endif] -->
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="wot-verification" content="075abe861486e6bb3ab9"/>
@@ -22,13 +22,17 @@
         {% compress css file basecss %}
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' %}">	
+		<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/events_view.css' %}">	
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' %}">
         <link href="{% static "fonts/style.css" %}" rel="stylesheet" type="text/css">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/search_autocomplete.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.qtip.min.css' %}">
         {% endcompress %}
+
+        <!-- INTROJS.CSS testing -->
+        <link rel="stylesheet" type="text/css" href="{% static 'css/inline/introjs.css' True %}">
 
         <!-- CSS for dynamic settings -->
         <link rel="stylesheet" type="text/css" href="{% url 'dynamic_css' %}">
@@ -51,9 +55,7 @@
             window.onerror=function(msg){
                 window.js_errors = window.js_errors || [];
                 window.js_errors.push(msg);
-            }
-
-            
+            }           
         </script>
 
         {% if request.in_context_localized %}
@@ -64,7 +66,14 @@
             <script type="text/javascript" src="//cdn.crowdin.com/jipt/jipt.js"></script>
         {% endif %}
 
+        {% if settings.DEBUG %}
+        <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
+        {% else %}
+        <script src="{% static 'django_js_reverse/js/reverse.js' %}"></script>
+        {% endif %}
+
         {% compress js file basejs %}
+
         <!-- JS translation file statically included as a back-up, so that if the saved file below isn't available, we don't choke. -->
         <script type="text/javascript" src="{% static 'js/i18n/en.js' %}"></script>
 
@@ -89,22 +98,6 @@
         $(function() {
             FastClick.attach(document.body);
         });
-
-         /* TODO(jtamiace): Backbonify this function and this page... when the time comes.
-            This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
-          function collapsedNav(e) {
-            if ( $('body').innerWidth() <= 750 ) {
-                document.getElementById("user-name-a").removeAttribute("data-toggle");
-                document.getElementById("user-name").classList.add("open");
-              } 
-            if ( $('body').innerWidth() >= 751 ) {
-                document.getElementById("user-name-a").setAttribute("data-toggle", "dropdown");
-                document.getElementById("user-name").classList.remove("open");
-              }
-            };
-          window.addEventListener("resize", collapsedNav, false);
-          window.addEventListener("pageshow", collapsedNav, true);
-
         </script>
         <script type="text/javascript" src="{% static 'js/underscore-min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/backbone/backbone.js' %}"></script>
@@ -139,6 +132,7 @@
         <script src="{% static 'js/distributed/search/views.js' %}"></script>
         {% endcompress %}
 
+
         {# Trigger tooltips for help icons #}
         <script>
             $(function(){
@@ -150,16 +144,8 @@
 
         <script>
         window.sessionModel.set({
-          SEARCH_TOPICS_URL           : "{% url 'flat_topic_tree' lang_code=current_language %}",
-          SEARCH_URL                  : "{% url 'search' %}",
           USER_URL                    : "{% url 'api_dispatch_list' resource_name='user' %}",
-          FORCE_SYNC_URL              : "{% url 'api_force_sync' %}",
 
-          LOCAL_DEVICE_MANAGEMENT_URL : "{% url 'device_redirect' %}",
-          SET_DEFAULT_LANGUAGE_URL    : "{% url 'set_default_language' %}",
-          DELETE_USERS_URL            : "{% url 'delete_users' %}",
-          DELETE_GROUPS_URL           : "{% url 'group_delete' %}",
-          MOVE_TO_GROUP_URL           : "{% url 'move_to_group' %}",
           STATIC_URL                  : "{% static "" %}",
 
           ALL_ASSESSMENT_ITEMS_URL    : "{% url 'api_dispatch_list' resource_name='assessment_item' %}",
@@ -169,27 +155,35 @@
 
           KHAN_EXERCISES_SCRIPT_URL : "{% static 'perseus/ke/khan-exercise.js' %}",
 
-          SERVER_INFO_PATH            : "{% url 'get_server_info' %}",
           CENTRAL_SERVER_HOST         : "{{ central_server_host }}",
           SECURESYNC_PROTOCOL         : "{{ securesync_protocol }}",
-          CURRENT_LANGUAGE            : "{{ current_language }}"
+          CURRENT_LANGUAGE            : "{{ current_language }}",
+          CHANNEL                     : "{{ channel }}",
         });
         $(function() {
           window.statusModel.fetch_data();
-          window.userView = new UserView({model: statusModel, el: "#user-name"});
-          window.autoCompleteView = new AutoCompleteView();
-          $("#topnav").prepend(window.autoCompleteView.$el);
+          window.toggleNavbarView = new ToggleNavbarView({model: statusModel, el: "#topnav"});
+          window.addEventListener("resize", collapsedNav);
+          window.addEventListener("pageshow", collapsedNav);
         });
         </script>
 
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
+
+        {% if inline_help %}
+        <!-- inline help, introjs -->
+        <script src="{% url 'handlebars_templates' module_name='inline' %}"></script>
+        <script type="text/javascript" src="{% static 'js/inline/intro.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/inline/models.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/inline/views.js' %}"></script>
+        {% endif %}
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}">
         <div id="wrapper">
 
-            {# Header & Navbar #}
+            {# Header / Navbar #}
             <div class="navbar kalite-navbar header-footer-bg" role="banner">
               <div class="container">
                   <div class="row">
@@ -197,7 +191,7 @@
                           {# collapse entire menu #}
                           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" aria-hidden="true" id="navbar_toggle">
                               <span class="icon-bar"></span>
-                              <span class="icon-bar"></span>
+                              <span class="icon-bar"></span> 
                               <span class="icon-bar"></span>
                           </button>
                           <div class="navbar-brand">
@@ -205,129 +199,17 @@
                                   <img src="/data/{{ channel }}/images/horizontal-logo-small.png" alt="{{ channel_data.channel_name }} {% trans 'logo' %}">
                               </a>
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
-                          </div>                             
-                      </div>
+                          </div>    
+                                                   
+                      </div>             
 
                       <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
-                          <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist">
+                          <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist"></ul>
+                      </div>
 
-                            <!-- For logged in admins -->
-                            {% if request.is_admin and is_config_package_nalanda and not request.session.facility_user.facility %}
-                              {# Teach for admins => assigning playlists for Nalanda #}
-                              <li class="{% block teach_active_admins-nalanda %}{% endblock teach_active_admins-nalanda %}">
-                                <a href="{% url 'assign_playlists' %}" id="nav_coachreports" class="admin-only">
-                                  {% trans "Teach" %}
-                                </a>
-                              </li>
-                            {% endif %}
-                            {% if request.is_admin and not request.session.facility_user.facility and not is_config_package_nalanda %}
-                              {# Teach for admins => coachreports #}
-                              <li class="{% block teach_active_admins %}{% endblock teach_active_admins %}">
-                                <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="admin-only">
-                                  {% trans "Teach" %}
-                                </a>
-                              </li>
-                            {% endif %}
-
-                            {# Manage for admins => zone control panel #}
-                            {% if request.is_django_user %}
-                            <li class="{% block manage_active_admins %}{% endblock manage_active_admins %}">
-                              <a href="{% url 'zone_redirect' %}" id="manage" class="admin-only">
-                                {% trans "Manage" %}
-                              </a>
-                            </li>
-                            {% endif %}
-                            <!-- End for logged in admins -->
-
-                            <!-- For logged in teachers -->
-                            {# Teach for teachers => coachreports #}
-                            <li class="{% block teach_active_teachers %}{% endblock teach_active_teachers %}">
-                              <a href="{% url 'tabular_view' %}" id="nav_coachreports" class="teacher-only">
-                                {% trans "Teach" %}
-                              </a>
-                            </li>
-
-                            {# Manage for teachers => facility management #}
-                            {% if request.session.facility_user.facility %}
-                              <li class="{% block manage_active_teachers %}{% endblock manage_active_teachers %}">
-                                <a href="{% url 'facility_management' zone_id=None facility_id=request.session.facility_user.facility.id %}" id="manage" class="teacher-only">
-                                  {% trans "Manage" %}
-                                </a>
-                              </li>
-                            {% endif %}
-                            <!-- End for logged in teachers -->
-
-                            <!-- Universal Learn tab -->
-                            {# Learn for all #}
-                            <li class="{% block learn_active %}{% endblock learn_active %}">
-                              <a href="{% url 'learn' %}" id="nav_learn" class="home-navlink">
-                                {% trans "Learn" %}
-                              </a>
-                            </li>
-
-                            <!-- For logged out users  -->
-                            {# Login #}
-                            <li class="{% block login_active %}{% endblock login_active %}">
-                              <a href="#" class="not-logged-in-only" data-toggle="modal" data-target="#loginModal" title="{% trans 'Login' %}" id="nav_login">
-                                {% trans "Login" %}
-                              </a>
-                            </li>
-
-                            {% if not restricted %}
-                              <li class="{% block signup_active %}{% endblock signup_active %}">
-                                <a href="{% url 'facility_user_signup' %}" id="nav_signup" class="not-logged-in-only" title="{% trans 'Register to start tracking your progress' %}">
-                                  {% trans "Sign Up" %}
-                                </a>
-                              </li>
-                            {% endif %}
-                            
-                            <hr class="nav-divider student-only">
-                            {% if request.is_admin or request.session.facility_user.facility %}
-                            <hr class="nav-divider admin-only">
-                            {% endif %}
-
-                            <!-- Farthest right nav is logged in user dropdown -->
-                            <li class="dropdown {% block help_active %}{% endblock help_active %}{% block progress_active %}{% endblock progress_active %} " id="user-name">
-                              <a href="#" class="logged-in-only dropdown-toggle" data-toggle="dropdown" id="user-name-a">
-                                  <span id="username">
-                                    <!-- Username injected here w/ js -->
-                                  </span>
-                                <span class="caret hidden-xs"></span>
-                              </a>
-
-                              <ul class="dropdown-menu" data-no-collapse="true" role="menu">
-                                <li class="student-only" role="presentation">
-                                  <span class="student-only" id="points">
-                                    <!-- Points injected here w/ js -->
-                                  </span>
-                                </li>
-                                <li role="presentation" class="divider student-only"></li>
-                                {# Student account management #}
-                                <li role="presentation" class="motivational-feature student-only">
-                                  <a role="menuitem" tabindex="-1" href="{% url 'account_management' %}" id="nav_progress" title="{% trans 'My Progress'%}" class="student-only">
-                                    {% trans "My Progress" %}
-                                  </a>
-                                </li>
-                                <!-- TODO-BLOCKER(jamalex): re-enable these links once non-playlist "my progress" works, and help link is meaningful again -->
-                                <!--
-                                <li role="presentation">
-                                  <a role="menuitem" tabindex="-1" href="{% url 'help' %}" id="nav_help">{% trans "Help" %}</a>
-                                </li> -->
-                                <li role="presentation" class="divider student-only"></li>
-                                <!-- Logout goes at the bottom! -->
-                                <li role="presentation" id="logout">
-                                  <a role="menuitem" tabindex="-1" id="nav_logout" class="logged-in-only" title="{% trans 'Logout'%}" href="#">
-                                    {% trans "Logout" %}
-                                  </a>
-                                </li>
-                              </ul>
-                            </li>
-
-                          </ul>
-                        </div>
-                  </div>
-              </div>
-          </div>
+                    </div>
+                </div>
+            </div>
           {# End Header / Navbar #}
 
             {# Body #}
@@ -345,4 +227,5 @@
         {# Footer #}
         {% include "distributed/partials/_footer.html" %}
     </body>
+
 </html>

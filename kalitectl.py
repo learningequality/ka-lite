@@ -42,7 +42,7 @@ Planned features:
   kalite diagnose             Outputs user and copy-paste friendly diagnostics
   kalite query [COMMAND ...]  A query method for external UIs etc. to send
                               commands and obtain data from kalite.
-  
+
   Universal --verbose option and --debug option. Shows INFO level and DEBUG
   level from logging.. depends on proper logging being introduced and
   settings.LOGGERS. Currently, --debug just tells cherrypy to do "debug" mode.
@@ -58,6 +58,7 @@ import os
 if 'KALITE_DIR' in os.environ:
     sys.path = [
         os.path.join(os.environ['KALITE_DIR'], 'python-packages'),
+        os.path.join(os.environ['KALITE_DIR'], 'dist-packages'),
         os.path.join(os.environ['KALITE_DIR'], 'kalite')
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
@@ -94,6 +95,9 @@ PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
 PID_FILE_JOB_SCHEDULER = os.path.join(KALITE_HOME, 'kalite_cronserver.pid')
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
+# if this environment variable is set, we activate the profiling machinery
+PROFILE = os.environ.get("PROFILE")
+
 # TODO: Currently, this address might be hard-coded elsewhere, too
 LISTEN_ADDRESS = "0.0.0.0"
 # TODO: Can be configured in django settings which is really odd because that's
@@ -129,16 +133,16 @@ class NotRunning(Exception):
         super(NotRunning, self).__init__()
 
 
-def udpate_default_args(defaults, updates):
+def update_default_args(defaults, updates):
     """
     Takes a list of default arguments and overwrites the defaults with
     contents of updates.
-    
+
     e.g.:
-    
-    udpate_default_args(["--somearg=default"], ["--somearg=overwritten"])
+
+    update_default_args(["--somearg=default"], ["--somearg=overwritten"])
      => ["--somearg=overwritten"]
-    
+
     This is done to avoid defining all known django command line arguments,
     we just want to proxy things and update with our own default values without
     looking into django.
@@ -166,7 +170,7 @@ def udpate_default_args(defaults, updates):
         defined_updates[elm[0]] = elm[1]
     defined_defaults.update(defined_updates)
     return defined_defaults.values()
-        
+
 
 # Utility functions for pinging or killing PIDs
 if os.name == 'posix':
@@ -328,8 +332,11 @@ def manage(command, args=[], in_background=False):
     :param args: List of options to parse to the django management command
     :param in_background: Creates a new process for the command
     """
-    
+
     if not in_background:
+        if PROFILE:
+            profile_memory()
+
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
         # 'kalitectl.py' (a part from the top most text in `kalite manage help`
@@ -338,7 +345,7 @@ def manage(command, args=[], in_background=False):
     else:
         # Create a new subprocess, beware that it won't die with the parent
         # so you have to kill it in another fashion
-        
+
         # If we're on windows, we need to create a new process group, otherwise
         # the newborn will be murdered when the parent becomes a daemon
         if os.name == "nt":
@@ -398,12 +405,12 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=udpate_default_args(
+            args=update_default_args(
                 ['--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)],
                 args
             )
         )
-    args = udpate_default_args(
+    args = update_default_args(
         [
             "--host=%s" % LISTEN_ADDRESS,
             "--daemonize",
@@ -450,7 +457,7 @@ def stop(args=[], sys_exit=True):
             if sys_exit:
                 sys.exit(-1)
             return  # Do not continue because error could not be handled
- 
+
     # If there's no PID for the job scheduler, just quit
     if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
         pass
@@ -542,6 +549,61 @@ status_job_scheduler.codes = {
     100: 'Invalid PID file',
 }
 
+
+def profile_memory():
+    print("activating profile infrastructure.")
+
+    import atexit
+    import csv
+    import resource
+    import signal
+    import sparkline
+    import time
+
+    starttime = time.time()
+
+    mem_usage = []
+
+    def print_results():
+        try:
+            highest_mem_usage = next(s for s in sorted(mem_usage, key=lambda x: x['mem_usage'], reverse=True))
+        except StopIteration:
+            highest_mem_usage = {"pid": os.getpid(), "timestamp": 0, "mem_usage": 0}
+
+        graph = sparkline.sparkify([m['mem_usage'] for m in mem_usage]).encode("utf-8")
+
+        print("PID: {pid} Highest memory usage: {mem_usage}MB. Usage over time: {sparkline}".format(sparkline=graph, **highest_mem_usage))
+
+
+    def write_profile_results(filename=None):
+
+        if not filename:
+            filename = os.path.join(os.getcwd(), "memory_profile.log")
+
+        with open(filename, "w") as f:
+            si_es_vi = csv.DictWriter(f, ["pid", "timestamp", "mem_usage"])
+            si_es_vi.writeheader()
+            for _, content in enumerate(mem_usage):
+                si_es_vi.writerow(content)
+
+    def handle_exit():
+        write_profile_results()
+        print_results()
+
+    def collect_mem_usage(_sig, _frame):
+        """
+        Callback for when we get a SIGPROF from the kernel. When called,
+        we record the time and memory usage.
+        """
+        pid = os.getpid()
+        m = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        curtime = time.time() - starttime
+        mem_usage.append({"pid": pid, "timestamp": curtime, "mem_usage": m / 1024})
+
+    signal.setitimer(signal.ITIMER_PROF, 1, 1)
+
+    signal.signal(signal.SIGPROF, collect_mem_usage)
+    atexit.register(handle_exit)
 
 if __name__ == "__main__":
     arguments = docopt(__doc__, version=str(VERSION), options_first=True)

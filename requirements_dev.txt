@@ -1,3 +1,5 @@
--r requirements.txt
-behave==1.2.4
-selenium==2.45.0
+-r requirements_test.txt
+werkzeug # Not sure about version
+django-debug-toolbar # Version was not described in previously bundled files, used by kalite.testing app
+pyyaml==3.11
+

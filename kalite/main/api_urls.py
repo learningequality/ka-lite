@@ -6,7 +6,7 @@ they're imported into the project's urls.py file.
 """
 from django.conf.urls import include, patterns, url
 
-from .api_resources import VideoLogResource, ExerciseLogResource, AttemptLogResource, ContentLogResource, ExerciseResource, AssessmentItemResource, ContentResource, ContentRecommenderResource
+from .api_resources import VideoLogResource, ExerciseLogResource, AttemptLogResource, ContentLogResource, ExerciseResource, AssessmentItemResource, ContentResource
 
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -21,12 +21,9 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^', include(AssessmentItemResource().urls)),
     url(r'^', include(ContentResource().urls)),
     
-    url(r'^', include(ContentRecommenderResource().urls)),
+    url(r'^content_recommender/?$', 'content_recommender', {}, 'content_recommender'),
 
-    # Data used by the client (browser) for doing search
-    url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),
-
-    # For building a graphical knowledge map
+    # A flat data structure for building a graphical knowledge map
     url(r'^topic_tree/(?P<channel>.*)/?$', 'topic_tree', {}, 'topic_tree'),
 
 )

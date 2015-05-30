@@ -20,15 +20,15 @@ from django.utils.translation import ugettext as _
 from . import delete_downloaded_files, get_local_video_size, get_remote_video_size
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
-from fle_utils.chronograph import force_job
+from fle_utils.chronograph.utils import force_job
 from fle_utils.django_utils.command import call_command_async
-from fle_utils.general import isnumeric, break_into_chunks
+from fle_utils.general import isnumeric, break_into_chunks, softload_json
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
 from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools import get_topic_tree
+from kalite.topic_tools import TOPICS_FILEPATHS
 from kalite.caching import initialize_content_caches
 
 
@@ -323,7 +323,7 @@ def get_annotated_topic_tree(request, lang_code=None):
     lang_code = lang_code or request.language      # Get annotations for the current language.
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
 
-    return JsonResponse(annotate_topic_tree(get_topic_tree(language=lang_code), statusdict=statusdict, lang_code=lang_code))
+    return JsonResponse(annotate_topic_tree(softload_json(TOPICS_FILEPATHS.get(settings.CHANNEL), logger=logging.debug, raises=False), statusdict=statusdict, lang_code=lang_code))
 
 
 """

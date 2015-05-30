@@ -101,7 +101,6 @@ BUILD_INDICATOR_FILE = os.path.join(default_source_path, "_built.touch")
 # whether this installation was processed by the build server
 BUILT = os.path.exists(BUILD_INDICATOR_FILE)
 
-
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
     _data_path = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -160,7 +159,6 @@ CHANNEL_DATA_PATH = os.path.join(CONTENT_DATA_PATH, CHANNEL)
 
 CONTENT_DATA_URL = getattr(local_settings, "CONTENT_DATA_URL", "/data/")
 
-
 # Parsing a whole JSON file just to load the settings is not nice
 try:
     CHANNEL_DATA = json.load(open(os.path.join(CHANNEL_DATA_PATH, "channel_data.json"), 'r'))
@@ -183,7 +181,6 @@ USER_DATA_ROOT = os.environ.get(
     "KALITE_HOME",
     os.path.join(os.path.expanduser("~"), ".kalite")
 )
-
 
 # Most of these data locations are messed up because of legacy
 if IS_SOURCE:
@@ -215,7 +212,7 @@ else:
         os.mkdir(DEFAULT_DATABASE_PATH)
     
     DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'default.sqlite')
-    
+
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security
     HTTPSRV_PATH = os.path.join(USER_DATA_ROOT, 'httpsrv')
@@ -224,6 +221,20 @@ else:
     MEDIA_ROOT = os.path.join(HTTPSRV_PATH, "media")
     STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
 
+
+# Content path-related settings
+CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content')))
+CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
+KHAN_CONTENT_PATH = os.path.join(CONTENT_ROOT, "khan")
+ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.sqlite')
+ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.version')
+ASSESSMENT_ITEM_JSON_PATH = os.path.join(USER_DATA_ROOT, "data", "khan", "assessmentitems.json")
+
+if not os.path.exists(CONTENT_ROOT):
+    os.mkdir(CONTENT_ROOT)
+
+if not os.path.exists(KHAN_CONTENT_PATH):
+    os.mkdir(KHAN_CONTENT_PATH)
 
 # Necessary for Django compressor
 if not DEBUG:
@@ -240,7 +251,6 @@ STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
 MEDIA_URL = getattr(local_settings, "MEDIA_URL", "/media/")
 STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
 DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
-
 DATABASES = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
@@ -248,8 +258,16 @@ DATABASES = getattr(local_settings, "DATABASES", {
         "OPTIONS": {
             "timeout": 60,
         },
+    },
+    "assessment_items": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": ASSESSMENT_ITEM_DATABASE_PATH,
+        "OPTIONS": {
+        },
     }
 })
+
+DATABASE_ROUTERS = ["kalite.router.TopicToolsRouter", ]
 
 INTERNAL_IPS = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
@@ -289,6 +307,8 @@ INSTALLED_APPS = (
     "django.contrib.sessions",
     "kalite.distributed",
     "compressor",
+    "django_js_reverse",
+    "kalite.inline",
 )
 
 if not BUILT:
@@ -311,6 +331,7 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     # needed for django admin
     "django.contrib.messages.context_processors.messages",
+    "kalite.distributed.inline_context_processor.inline",
 ) + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', tuple())
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
@@ -318,6 +339,10 @@ TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
 
 DEFAULT_ENCODING = 'utf-8'
+
+# Due to a newer version of slimit being installed, allowing this causes an error:
+# https://github.com/ierror/django-js-reverse/issues/29
+JS_REVERSE_JS_MINIFY = False
 
 ########################
 # Storage and caching

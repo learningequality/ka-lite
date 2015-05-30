@@ -3,13 +3,11 @@
 {% load staticfiles %}
 {% load compress %}
 
-{% block i18n_do_not_translate %}
-    {% block languages_active %}active active-tab active-nav{% endblock languages_active %}
-    {% block users_active %}active{% endblock users_active %}
-    {% block manage_active %}active{% endblock manage_active %}
-{% endblock i18n_do_not_translate %}
-
 {% block title %}{% trans "Update Languages" %}{% endblock %}
+
+{% block i18n_do_not_translate %}
+    {% block languages_active %}active{% endblock languages_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_languages.css' %}" />
@@ -21,10 +19,7 @@
     {% endcompress %}
     <script type="text/javascript">
      window.sessionModel.set({
-         START_LANGUAGEPACKDOWNLOAD_URL: "{% url 'start_languagepack_download' %}",
-         INSTALLED_LANGUAGES_URL: "{% url 'installed_language_packs' %}",
          AVAILABLE_LANGUAGEPACK_URL: "http://" + window.sessionModel.get("CENTRAL_SERVER_HOST") + "/api/i18n/language_packs/available/{{ SHORTVERSION }}",
-         DELETE_LANGUAGEPACK_URL: "{% url 'delete_language_pack' %}",
          DEFAULT_LANGUAGE: "{{ default_language }}",
      });
     </script>

@@ -106,7 +106,7 @@ input[type="submit"] {
 .nav-tabs li a:active {
     border: 0;
     border-radius: 5px 15px 0 0;
-    margin: 0;
+    margin: 0 0 6px 0;
     background-color: #5AA685;
     color: #5AA685;
     -webkit-transition: all 80ms ease-out;
@@ -141,6 +141,9 @@ a#user-name-a.dropdown-toggle {
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
 }
+a#user-name-a.dropdown-toggle {
+    margin-bottom: 0px;
+}
 .navbar ul li.dropdown,
 .navbar ul li.dropdown.open {
     padding-right: 0;
@@ -150,12 +153,15 @@ a#user-name-a.dropdown-toggle {
 #points {
     text-align: left;
 }
-
+#points-tab {
+    padding: 10px 0px 5px 0px;
+}
 .navbar ul li.dropdown.open a {
     color: #5AA685;
 }
 .dropdown-menu {
     min-width: 0;
+    text-align: left;
 }
 .navbar ul li.dropdown.open ul.dropdown-menu li a,
 .navbar ul li.dropdown.open ul.dropdown-menu li span {
@@ -262,6 +268,9 @@ form .input-group {
 .navbar-toggle .icon-bar {
     background-color: #fff;
 }
+.display-none {
+    display: none !important;
+}
 /* ======= Logged in student only ======== */
 .relative-block{
     position: relative;
@@ -345,6 +354,78 @@ form .input-group {
     margin: 0 auto;
 }
 
+/* ===================================
+    Content Recommendation
+=================================== */
+
+#resume, #nextsteps, #explore{
+  padding:3%;
+}
+
+.card{
+  border-radius: 5px;
+  box-shadow: 2px 2px lightslategray;
+  margin-left:-15px;
+  margin-right:-15px;
+  width: 100%;
+  border: solid 1px lightgray;
+}
+
+.card *:link{
+  color:inherit !important;
+}
+
+/*Temporary*/
+.ns_thumb{
+  vertical-align: text-top;
+  font-size: 4em;
+  margin: 20px;
+}
+/*Because bootstrap thinks we need a huge margin on top + bottom*/
+.module_divider{
+  margin:0;
+}
+/*
+
+#content-resume-thumbnail div.col-xs-12 {
+    color: black;
+}
+*/
+
+.content-nextsteps-lesson h4{
+  margin-top: 20px;
+}
+
+.ns_series_arrow{
+  color: inherit;
+  font-size:3em;
+  text-align: center;
+}
+
+#content-nextsteps-lesson h3 {
+    margin-top: 10px;
+}
+
+#exercise-icon {
+    font-size: 4em;
+}
+
+/*
+#content-explore-topic div.col-xs-6 {
+    color: black;
+}
+*/
+
+.suggested_topic_title{
+  vertical-align: middle; 
+}
+
+/*===================================
+    Landing Page
+=================================== */
+table td.title {
+    font-size: 36px;
+} 
 
 /* ===================================
     Coach Page
@@ -486,6 +567,9 @@ footer {
     .navbar-collapse.in {
         overflow-y: hidden;
         overflow-x: hidden;
+    }
+    .manage-nav ul li {
+        width: 100px;
     }
     .manage-nav ul li {
         width: 100px;

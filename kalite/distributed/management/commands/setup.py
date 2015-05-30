@@ -72,7 +72,7 @@ def get_username_password(current_user="", password=None):
 def get_hostname_and_description(hostname=None, description=None):
     default_hostname = get_host_name()
     while not hostname:
-        prompt = "Please enter a name for this server%s: " % ("" if not default_hostname else (" (or, press Enter to use '%s')" % get_host_name()))
+        prompt = "Please enter a hostname for this server%s: " % ("" if not default_hostname else (" (or, press Enter to use '%s')" % get_host_name()))
         hostname = raw_input(prompt) or default_hostname
         if not hostname:
             logging.error("\tError: hostname must not be empty.\n")
@@ -179,7 +179,10 @@ class Command(BaseCommand):
         print("                                  ")
 
         if sys.version_info >= (2,8) or sys.version_info < (2,6):
-            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % sys.version_info)
+            raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % str(sys.version_info))
+        if sys.version_info != (2, 7, 9):
+            logging.warning("It's recommended that you install Python version 2.7.9. Your version is: %s\n" % str(sys.version_info))
+
 
         if options["interactive"]:
             print("--------------------------------------------------------------------------------")
@@ -269,6 +272,8 @@ class Command(BaseCommand):
         # Migrate the database
         call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+        # Create *.json and friends database
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"), database="assessment_items")
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
@@ -313,7 +318,8 @@ class Command(BaseCommand):
             admin.save()
 
         # Now deploy the static files
-        call_command("collectstatic", interactive=False)
+        logging.info("Copying static media...")
+        call_command("collectstatic", interactive=False, verbosity=0)
 
         # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
