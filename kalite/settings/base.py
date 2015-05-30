@@ -308,6 +308,7 @@ INSTALLED_APPS = (
     "kalite.distributed",
     "compressor",
     "django_js_reverse",
+    "kalite.inline",
 )
 
 if not BUILT:
@@ -330,6 +331,7 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     # needed for django admin
     "django.contrib.messages.context_processors.messages",
+    "kalite.distributed.inline_context_processor.inline",
 ) + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', tuple())
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
