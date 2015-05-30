@@ -14,8 +14,7 @@ from django.db.models import Count
 from kalite.topic_tools import * 
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
-
-from kalite.facility.models import FacilityUser
+from kalite.facility.models import Facility, FacilityUser
 
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
