@@ -136,12 +136,15 @@ class VanillaPlaylist:
 
         return playlists
 
-    def get_playlist_entries(playlist, entry_type, language=settings.LANGUAGE_CODE):
+    def get_playlist_entries(playlist, entry_type, language=None):
         """
         Given a VanillaPlaylist, inspect its 'entries' attribute and return a list
         containing corresponding nodes for each item from the topic tree.
         entry_type should be "Exercise" or "Video".
         """
+        if not language:
+            language = settings.LANGUAGE_CODE
+
         unprepared = filter(lambda e: e["entity_kind"]==entry_type, playlist.entries)
         prepared = []
         for entry in unprepared:
