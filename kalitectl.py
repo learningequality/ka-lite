@@ -269,7 +269,7 @@ def get_pid():
 
     # TODO: why is the port in django settings!? :) /benjaoming
     from django.conf import settings
-    listen_port = getattr(settings, "CHERRYPY_PORT", LISTEN_PORT)
+    listen_port = getattr(settings, "PRODUCTION_PORT", LISTEN_PORT)
 
     # Timeout is 1 second, we don't want the status command to be slow
     conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
@@ -354,6 +354,7 @@ def manage(command, args=[], in_background=False):
             kwargs = {}
         subprocess.Popen(
             [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
+            env=os.environ,
             **kwargs
         )
 
@@ -371,6 +372,14 @@ def start(debug=False, args=[], skip_job_scheduler=False):
 
     # TODO: What does not the production=true actually do and how can we
     # control the log level and which log files to write to
+
+    # Deal with command-line options that affect the django settings module
+    for i, arg in enumerate(args):
+        match = re.search(r"port=(?P<port>\d+)", arg)
+        if match:
+            os.environ["KALITE_LISTEN_PORT"] = match.group("port")
+            del args[i]
+            break
 
     if os.path.exists(STARTUP_LOCK):
         try:
