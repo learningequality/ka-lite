@@ -546,12 +546,13 @@ To delete language packs:
     :class: screenshot
     :registered: true
 
+.. _restarting-your-server:
 
 Restarting Your Server
 -----------------------
-If you have made some configuration changes (such as changing the filepath to your video content to your liking), or if you feel the need to reboot your KA Lite system, you may want to restart your server. Please note that this will cause KA Lite to become inaccessible to any users. However, this will not delete any user accounts or information that you have configured during set up. 
+If you have made some configuration changes (such as changing the filepath to your video content to your liking), or if you feel the need to reboot your KA Lite system, you may want to restart your server. Please note that this will cause KA Lite to become inaccessible to any users. However, this will not delete any user accounts or information that you have configured during set up.
 
-This process varies, depending on which OS you are running the KA Lite Server on. 
+This process varies, depending on which OS you are running the KA Lite Server on.
 
 Restarting Your Server: Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
