@@ -28,7 +28,7 @@ If you want to change your installation's content folder from the default (say, 
     **For example, on Windows:** ``CONTENT_ROOT="C:\\videos_location\\"``
 
     **For example, on Linux:** ``CONTENT_ROOT="/home/me/videos_location/"``
-#. Restart your server. If you are unsure on how to do this, please see `Restarting Your Server`_ .
+#. Restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
 
 
 Is there somewhere I can find Spanish language content organized by topic?
