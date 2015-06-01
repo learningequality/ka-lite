@@ -129,7 +129,7 @@ def stop_server(pidfile):
 
 
 def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=False, pidfile=None, autoreload=False, startuplock=None):
-    port = port or getattr(settings, "CHERRYPY_PORT", 8008)
+    port = port or getattr(settings, "PRODUCTION_PORT", 8008)
     threads = threads or getattr(settings, "CHERRYPY_THREAD_COUNT", 18)
 
     if daemonize:
