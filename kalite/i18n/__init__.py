@@ -163,12 +163,16 @@ def get_id2oklang_map(video_id, force=False):
         return ID2OKLANG_MAP
 
 
-def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
+def get_youtube_id(video_id, lang_code=None):
     """Given a video ID, return the youtube ID for the given language.
     If lang_code is None, return the base / default youtube_id for the given video_id.
     If youtube_id for the given lang_code is not found, function returns None.
     Accepts lang_code in ietf format
     """
+
+    if not lang_code:
+        lang_code = settings.LANGUAGE_CODE
+
     if not lang_code or lang_code == "en":  # looking for the base/default youtube_id
         return video_id
     return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
@@ -405,9 +409,9 @@ def select_best_available_language(target_code, available_codes=None):
 
     # Scrub the input
     target_code = lcode_to_django_lang(target_code)
-    
+
     store_cache = False
-    
+
     # Only use cache when available_codes is trivial, i.e. not a set of
     # language codes
     if available_codes is None:
@@ -418,7 +422,7 @@ def select_best_available_language(target_code, available_codes=None):
             available_codes = get_installed_language_packs().keys()
 
     # logging.debug("choosing best language among %s" % (available_codes))
-    
+
     # Make it a tuple so we can hash it
     available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
@@ -438,11 +442,11 @@ def select_best_available_language(target_code, available_codes=None):
 
     # if actual_code != target_code:
     #    logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
-    
+
     # Store in cache when available_codes are not set
     if store_cache:
         __select_best_available_language[target_code] = actual_code
-    
+
     return actual_code
 
 

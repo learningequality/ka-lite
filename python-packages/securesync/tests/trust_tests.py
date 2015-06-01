@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.test import TestCase
 from django.utils import unittest
+from django.test.utils import override_settings
 
 from .base import SecuresyncTestCase
 from .decorators import distributed_server_test, central_server_test
@@ -83,7 +84,7 @@ class TestChainOfTrust(SecuresyncTestCase):
         chain = ChainOfTrust(zone=zone, device=new_device)
         self.assertTrue(chain.verify(), "Chain of trust should verify.")
 
-
+    @override_settings(DEBUG=True)
     @distributed_server_test
     @unittest.skipIf(version_diff("0.13", VERSION) > 0, "generate_zone not available before v0.13.")
     def test_invalid_invitation(self):

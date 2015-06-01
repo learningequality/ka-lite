@@ -52,7 +52,14 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
 # Globals that can be filled
 TOPICS          = None
 CACHE_VARS.append("TOPICS")
-def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, language=settings.LANGUAGE_CODE, parent=None):
+def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
+
+    if not channel:
+        channel = settings.CHANNEL
+
+    if not language:
+        language = settings.LANGUAGE_CODE
+
     global TOPICS, TOPICS_FILEPATHS
     if not TOPICS:
         TOPICS = {}
@@ -134,7 +141,11 @@ def get_topic_tree(force=False, annotate=False, channel=settings.CHANNEL, langua
 
 NODE_CACHE = None
 CACHE_VARS.append("NODE_CACHE")
-def get_node_cache(node_type=None, force=False, language=settings.LANGUAGE_CODE):
+def get_node_cache(node_type=None, force=False, language=None):
+
+    if not language:
+        language = settings.LANGUAGE_CODE
+
     global NODE_CACHE
     if NODE_CACHE is None or force:
         NODE_CACHE = generate_node_cache()
@@ -145,7 +156,11 @@ def get_node_cache(node_type=None, force=False, language=settings.LANGUAGE_CODE)
 
 EXERCISES          = None
 CACHE_VARS.append("EXERCISES")
-def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
+def get_exercise_cache(force=False, language=None):
+
+    if not language:
+        language = settings.LANGUAGE_CODE
+
     global EXERCISES, EXERCISES_FILEPATH
     if EXERCISES is None:
         EXERCISES = {}
@@ -214,7 +229,11 @@ def get_exercise_cache(force=False, language=settings.LANGUAGE_CODE):
 
 LEAFED_TOPICS = None
 CACHE_VARS.append("LEAFED_TOPICS")
-def get_leafed_topics(force=False, language=settings.LANGUAGE_CODE):
+def get_leafed_topics(force=False, language=None):
+
+    if not language:
+        language = settings.LANGUAGE_CODE
+
     global LEAFED_TOPICS
     if LEAFED_TOPICS is None or force:
         topic_cache = get_node_cache(language=language)["Topic"]
@@ -230,7 +249,11 @@ def create_thumbnail_url(thumbnail):
 
 CONTENT          = None
 CACHE_VARS.append("CONTENT")
-def get_content_cache(force=False, annotate=False, language=settings.LANGUAGE_CODE):
+def get_content_cache(force=False, annotate=False, language=None):
+
+    if not language:
+        language = settings.LANGUAGE_CODE
+
     global CONTENT, CONTENT_FILEPATH
 
     if CONTENT is None:
@@ -364,17 +387,20 @@ def generate_slug_to_video_id_map(node_cache=None):
     return slug2id_map
 
 
-def generate_node_cache(topictree=None, language=settings.LANGUAGE_CODE):
+def generate_node_cache(topictree=None, language=None):
     """
     Given the KA Lite topic tree, generate a dictionary of all Topic, Exercise, and Content nodes.
     """
 
+    if not language:
+        language = settings.LANGUAGE_CODE
+
     if not topictree:
         topictree = get_topic_tree(language=language)
     node_cache = {}
-    
+
     node_cache["Topic"] = dict([(node.get("id"), node) for node in topictree])
-    
+
     node_cache["Exercise"] = get_exercise_cache(language=language)
     node_cache["Content"] = get_content_cache(language=language)
 
