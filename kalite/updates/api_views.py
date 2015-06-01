@@ -235,11 +235,15 @@ def delete_language_pack(request):
     return JsonResponse({"success": _("Successfully deleted language pack for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)}})
 
 
-def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
+def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=None):
     # Not needed when on an api request (since translation.activate is already called),
     #   but just to do things right / in an encapsulated way...
     # Though to be honest, this isn't quite right; we should be DE-activating translation
     #   at the end.  But with so many function exit-points... just a nightmare.
+
+    if not lang_code:
+        lang_code = settings.LANGUAGE_CODE
+
     if level == 0:
         translation.activate(lang_code)
 
