@@ -16,6 +16,16 @@ from setuptools.command.install_scripts import install_scripts
 
 import kalite
 
+# Since pip 7.0.1, bdist_wheel has started to be called automatically when
+# the sdist was being installed. Let's not have that.
+# By raising an exception,
+
+if 'bdist_wheel' in sys.argv:
+    raise RuntimeError(
+        "Harmless: Because of a bug in Wheel, we do not support bdist_wheel. "
+        "See: https://bitbucket.org/pypa/wheel/issue/92/bdist_wheel-makes-absolute-data_files"
+    )
+
 # Path of setup.py, used to resolve path of requirements.txt file
 where_am_i = os.path.dirname(os.path.realpath(__file__))
 
