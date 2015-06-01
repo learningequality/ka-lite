@@ -244,13 +244,13 @@ if STATIC_BUILD:
     
     # Code modified from this example:
     # http://threebean.org/blog/2011/06/06/installing-from-pip-inside-python-or-a-simple-pip-api/
-    import pip.commands.install
+    from pip.commands.install import InstallCommand
     
     # Ensure we get output from pip
     enable_log_to_stdout('pip.commands.install')
     
     def install_distributions(distributions):
-        command = pip.commands.install.InstallCommand()
+        command = InstallCommand()
         opts, ___ = command.parser.parse_args([])
         opts.target_dir = STATIC_DIST_PACKAGES
         opts.build_dir = STATIC_DIST_PACKAGES_TEMP
