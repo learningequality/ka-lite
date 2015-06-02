@@ -31,11 +31,13 @@ TopicChannelRouter = Backbone.Router.extend({
 
     navigate_channel: function(channel, splat) {
         if (this.channel!==channel) {
-            this.control_view = new SidebarView({
-                channel: channel,
-                entity_key: "children",
-                entity_collection: TopicCollection
-            });
+            React.render(
+                React.createElement(SidebarView, {
+                    channel: channel, 
+                    entity_key: "children", 
+                    entity_collection: TopicCollection}),
+                document.getElementById('sidebar-container')
+            );
             this.channel = channel;
         }
         this.navigate_splat(splat);
@@ -54,12 +56,18 @@ TopicChannelRouter = Backbone.Router.extend({
     },
 
     navigate_splat: function(splat) {
-        splat = splat || "/";
+        if(splat){
+            splat = splat || "/";
+            splat = 'root/' + splat;
+        }else{
+            splat = 'root/';
+        }
         if (splat.indexOf("/", splat.length - 1)==-1) {
             splat += "/";
             this.navigate(Backbone.history.getFragment() + "/");
         }
-        this.control_view.navigate_paths(splat.split("/").slice(0,-1), this.set_page_title);
+        var selected_path = splat.split("/").slice(0,-1);
+        sidebar_columns_model.set('columns', selected_path);
     },
 
     set_page_title: function(title) {
