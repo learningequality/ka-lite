@@ -59,7 +59,6 @@ INSTALLED_APPS = (
     "kalite.store",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
-    "kalite.ab_testing",
     "kalite.dynamic_assets",
 )
 
