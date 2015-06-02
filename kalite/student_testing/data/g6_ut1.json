@@ -1,0 +1,19 @@
+{
+  "id": "g6_ut1",
+  "title": "Grade 6 - Unit 1",
+  "seed": 3288,
+  "playlist_ids": ["g6_p1", "g6_p2", "g6_p3", "g6_p4", "g6_p5", "g6_p6", "g6_p7", "g6_p8"],
+  "repeats": "3",
+  "ids": [
+    "least_common_multiple", "greatest_common_divisor",
+    "least_common_multiple_and_greatest_common_divisor_word_problems",
+    "divisibility_tests", "prime_numbers", "composite_numbers",
+    "prime_factorization", "distributive_property", "exponents_1",
+    "square_roots", "number_line_2", "number_line_3", "ordering_negative_numbers",
+    "adding_negative_numbers", "adding_and_subtracting_negative_numbers",
+    "negative_number_word_problems", "multiplying_and_dividing_negative_numbers"
+  ],
+  "is_practice": false,
+  "grade": 6,
+  "show": true
+}
