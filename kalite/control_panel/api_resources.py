@@ -9,12 +9,10 @@ from tastypie.resources import Resource, ModelResource
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog
 from kalite.shared.api_auth import ObjectAdminAuthorization
-from kalite.store.models import StoreTransactionLog 
 from kalite.student_testing.models import TestLog
 from securesync.models import Zone, Device, SyncSession
 
 from .api_serializers import CSVSerializer
-from store.models import StoreItem 
 
 
 class FacilityResource(ModelResource):
@@ -245,23 +243,6 @@ class ExerciseLogResource(ParentFacilityUserResource):
             attempt_logs = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"])
             bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
             bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
-            bundle.data["unit"] = 0
-
-            # Anything done after Nov 15, 2014 is in the RCT which starts from Unit 101
-            if StoreTransactionLog.objects.filter(user=user, context_type="unit_points_reset", purchased_at__gte=datetime(2014, 11, 15, 0, 0, 0)).count() == 0:
-                bundle.data["unit"] = 101
-
-            elif bundle.data["timestamp_first"]:
-                for i in xrange(101,104):
-                    if StoreTransactionLog.objects.filter(user=user, context_id=i, context_type="unit_points_reset", purchased_at__gte=bundle.data["timestamp_first"]).count() > 0:
-                        bundle.data["unit"] = i
-                        break
-
-            # For entries we are not sure about the unit, we keep them as 0, mostly chances are that the unit would be the current_unit.
-            # As we can't predict the current unit on the central server, its better to have the value as 0.
-            # We can't predict the current unit because in some database we have unit_point_reset gift card for unit 101 whereas the current unit is also 101.
-            # So we can't find current_unit by saying that the first unit that doesn't have the unit_point_reset gift card is current_unit.
-
             bundle.data["part1_answered"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"]).count()
             bundle.data["part1_correct"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], correct=True, context_type__in=["playlist", "exercise"]).count()
             bundle.data["part2_attempted"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["exercise_fixedblock", "playlist_fixedblock"]).count()
@@ -300,45 +281,3 @@ class DeviceLogResource(ParentFacilityUserResource):
             bundle.data["total_sync_sessions"] = len(all_sessions)
 
         return to_be_serialized
-
-
-class StoreTransactionLogResource(ParentFacilityUserResource):
-
-    _facility_users = None
-
-    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
-
-    class Meta:
-        queryset = StoreTransactionLog.objects.all()
-        resource_name = 'store_transaction_log_csv'
-        authorization = ObjectAdminAuthorization()
-        excludes = ['signed_version', 'counter', 'signature', 'deleted', 'reversible']
-        serializer = CSVSerializer()
-        limit = 0
-        max_limit = 0
-
-    def obj_get_list(self, bundle, **kwargs):
-        self._facility_users = self._get_facility_users(bundle)
-        store_logs = StoreTransactionLog.objects.filter(user__id__in=self._facility_users.keys()).exclude(context_type="unit_points_reset")
-        return super(StoreTransactionLogResource, self).authorized_read_list(store_logs, bundle)
-
-    def alter_list_data_to_serialize(self, request, to_be_serialized):
-        """Add username, user ID, facility name, and facility ID to responses"""
-        store_items = StoreItem.all()
-        for bundle in to_be_serialized["objects"]:
-            user_id = bundle.data["user"].data["id"]
-            user = self._facility_users.get(user_id)
-            bundle.data["user_id"] = user_id
-            bundle.data["person_name"] = user.get_name()
-            bundle.data["username"] = user.username
-            bundle.data["facility_name"] = user.facility.name
-            bundle.data["facility_id"] = user.facility.id
-            bundle.data["is_teacher"] = user.is_teacher
-            item_id = bundle.data["item"].strip("/").split("/")[-1]
-            bundle.data["item"] = item_id
-            item = store_items.get(item_id)
-            bundle.data["item_name"] = item.title if item else None
-            bundle.data.pop("user")
-
-        return to_be_serialized
-

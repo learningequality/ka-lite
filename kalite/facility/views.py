@@ -9,7 +9,6 @@ from securesync.devices.views import *  # ARGH! TODO(aron): figure out what thin
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
@@ -25,7 +24,6 @@ from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.i18n import get_default_language
 from kalite.main.models import UserLog
 from kalite.shared.decorators import require_authorized_admin
-from kalite.student_testing.utils import set_exam_mode_off
 
 
 @require_authorized_admin
@@ -230,10 +228,6 @@ def login(request, facility):
     facility_id = (facility and facility.id) or None
     facilities = list(Facility.objects.all())
 
-    #Fix for #2047: prompt user to create an admin account if none exists
-    if not User.objects.exists():
-        messages.warning(request, _("No administrator account detected. Please run 'python manage.py createsuperuser' from the terminal to create one."))
-
     # Fix for #1211: refresh cached facility info when it's free and relevant
     refresh_session_facility_info(request, facility_count=len(facilities))
 
@@ -295,9 +289,6 @@ def login(request, facility):
 
 
 def logout(request):
-    # TODO(dylanjbarth) this is Nalanda specific
-    if request.is_teacher:
-        set_exam_mode_off()
 
     auth_logout(request)
     next = request.GET.get("next", reverse("homepage"))

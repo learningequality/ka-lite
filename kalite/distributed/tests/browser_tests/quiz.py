@@ -14,7 +14,7 @@ from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 from selenium.webdriver.common.keys import Keys
 
-PLAYLIST_ID = "g4_u400_ap1"
+PLAYLIST_ID = "g4_p1"
 
 
 class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
@@ -60,7 +60,7 @@ class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
         self.assertEqual(self.browser.execute_script("return quizlog._response_log_cache[0]"), 1)
 
 
-    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Passes locally but fails on travis")
+    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, "Skip tests that fail when run on Travis, but succeed locally.")
     def test_unauthorized_request_redirect_to_login(self):
 
         self.browse_to(

@@ -30,14 +30,9 @@ from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import AttemptLog, VideoLog, ExerciseLog, UserLog
 from kalite.playlist.models import VanillaPlaylist as Playlist
 from kalite.shared.decorators import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
-from kalite.store.api_resources import StoreItemResource
-from kalite.store.models import StoreItem, StoreTransactionLog
 from kalite.student_testing.api_resources import TestResource
 from kalite.student_testing.models import TestLog
 from kalite.topic_tools import get_topic_exercises, get_topic_videos, get_knowledgemap_topics, get_node_cache, get_topic_tree, get_flat_topic_tree, get_live_topics, get_id2slug_map, get_slug2id_map, convert_leaf_url_to_id
-from kalite.playlist import UNITS
-from kalite.student_testing.utils import get_current_unit_settings_value
-from kalite.ab_testing.data.groups import get_grade_by_facility
 
 # shared by test_view and test_detail view
 SUMMARY_STATS = [ugettext_lazy('Max'), ugettext_lazy('Min'), ugettext_lazy('Average'), ugettext_lazy('Std Dev')]
@@ -279,11 +274,10 @@ def exercise_mastery_view(request, facility):
 
     student_ordering = ["last_name", "first_name", "username"]
 
-    grade = "Grade " + str(get_grade_by_facility(facility))
-    playlists = (filter(lambda p: p.unit >= 100 and p.unit <= 104 and p.tag==grade, Playlist.all()) or [None])
+    playlists = Playlist.all()
     context = plotting_metadata_context(request, facility=facility)
     context.update({
-        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise"), "unit": p.unit } for p in playlists if p],
+        "playlists": [{"id": p.id, "title": p.title, "tag": p.tag, "exercises": p.get_playlist_entries("Exercise")} for p in playlists if p],
     })
 
     exercises = str(request.GET.get("playlist", ""))
@@ -298,7 +292,7 @@ def exercise_mastery_view(request, facility):
     temp = []
     for p in playlists:
         for ex in p.get_playlist_entries("Exercise"):
-            if ex['id'] in exercises:
+            if ex['id'] in exercises and ex not in temp:
                 temp.append(ex)
 
     exercises = sorted(temp, key=lambda e: (e["h_position"], e["v_position"]))
@@ -611,49 +605,6 @@ def test_detail_view(request, facility, test_id):
         "test_options": test_options,
     })
     return context
-
-
-@require_authorized_admin
-@facility_required
-@render_to("coachreports/spending_report_view.html")
-def spending_report_view(request, facility):
-    """View total points remaining for students"""
-    group_id = request.GET.get("group", "")
-    users = get_user_queryset(request, facility, group_id)
-    user_points = {}
-    for user in users:
-        user_points[user] = compute_total_points(user)
-    context = plotting_metadata_context(request, facility=facility)
-    context.update({
-        "user_points": user_points,
-    })
-    return context
-
-
-@require_authorized_admin
-@render_to("coachreports/spending_report_detail_view.html")
-def spending_report_detail_view(request, user_id):
-    """View transaction logs for student"""
-    student = get_object_or_404(FacilityUser, id=user_id)
-    transactions = StoreTransactionLog.objects.filter(user=student, context_type='unit').order_by('purchased_at') # TODO(dylanjbarth): filter out gift cards?
-    context = plotting_metadata_context(request)
-    store_items = StoreItem.all()
-    humanized_transactions = []
-    for t in transactions:
-        # Hydrate the store item object
-        item_key = t.item.strip("/").split("/")[-1]
-        humanized_transactions.append({
-            "purchased_at": t.purchased_at,
-            "item": store_items.get(item_key, ""),
-            "value": abs(t.value),
-            "context_id": t.context_id,
-        })
-    context.update({
-        "student": student,
-        "transactions": humanized_transactions,
-    })
-    return context
-
 
 def get_user_queryset(request, facility, group_id):
     """Return set of users appropriate to the facility and group"""

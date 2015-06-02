@@ -9,9 +9,6 @@ from kalite.shared.contextmanagers.db import inside_transaction
 from kalite.topic_tools import video_dict_by_video_id, get_slug2id_map
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization, tastypie_require_admin
 from kalite.facility.api_resources import FacilityUserResource
-from kalite.student_testing.utils import get_current_unit_settings_value
-from kalite.ab_testing.data.groups import get_grade_by_facility
-
 
 class PlaylistResource(Resource):
 
@@ -21,7 +18,6 @@ class PlaylistResource(Resource):
     title = fields.CharField(attribute='title')
     groups_assigned = fields.ListField(attribute='groups_assigned')
     entries = fields.ListField(attribute='entries')
-    unit = fields.IntegerField(attribute='unit')
 
     class Meta:
         resource_name = 'playlist'
@@ -52,20 +48,16 @@ class PlaylistResource(Resource):
             playlists = Playlist.all()
             if 'facility_user' in request.session:
                 facility_id = request.session['facility_user'].facility.id
-                unit = get_current_unit_settings_value(facility_id)
                 facility = request.session['facility_user'].facility
-                playlists = [pl for pl in playlists if (pl.unit <= unit and int((pl.tag).split()[-1]) == get_grade_by_facility(facility))]
+                playlists = [pl for pl in playlists]
 
         elif request.is_logged_in and not request.is_admin:  # user is a student
-            # only allow them to access playlists that they're assigned to
-            # and on the current unit
             playlists = Playlist.all()
             group = request.session['facility_user'].group
             facility_id = request.session['facility_user'].facility.id
             playlist_mappings_for_user_group = PlaylistToGroupMapping.objects.filter(group=group).values('playlist').values()
             playlist_ids_assigned = [mapping['playlist'] for mapping in playlist_mappings_for_user_group]
-            unit = get_current_unit_settings_value(facility_id)
-            playlists = [pl for pl in playlists if (pl.id in playlist_ids_assigned and pl.unit <= unit)]
+            playlists = [pl for pl in playlists if (pl.id in playlist_ids_assigned)]
 
         return playlists
 

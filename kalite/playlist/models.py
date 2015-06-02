@@ -5,7 +5,7 @@ from django.db import models
 from fle_utils.django_utils import ExtendedModel
 
 from kalite.facility.models import FacilityGroup, FacilityUser
-from kalite.topic_tools import get_flat_topic_tree, get_node_cache
+from kalite.topic_tools import get_flat_topic_tree, get_node_cache, generate_slug_to_video_id_map
 
 from securesync.models import DeferredCountSyncedModel
 
@@ -90,7 +90,7 @@ class VanillaPlaylist:
     """
     playlistjson = os.path.join(os.path.dirname(__file__), 'playlists.json')
 
-    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned', 'unit', 'show']
+    __slots__ = ['pk', 'id', 'title', 'description', 'groups_assigned', 'show']
 
     def __init__(self, **kwargs):
         self.pk = self.id = kwargs.get('id')
@@ -98,7 +98,6 @@ class VanillaPlaylist:
         self.tag = kwargs.get('tag')
         self.description = kwargs.get('description')
         self.groups_assigned = kwargs.get('groups_assigned')
-        self.unit = kwargs.get('unit')
 
     @classmethod
     def all(cls, limit_to_shown=True):
@@ -118,7 +117,7 @@ class VanillaPlaylist:
                            show=playlist_dict.get('show', False),
                            id=playlist_dict['id'],
                            tag=playlist_dict['tag'],
-                           unit=playlist_dict['unit'])
+                           )
 
             # instantiate the groups assigned to this playlist
             groups_assigned = FacilityGroup.objects.filter(playlists__playlist=playlist.id).values('id', 'name')
@@ -141,7 +140,11 @@ class VanillaPlaylist:
         unprepared = filter(lambda e: e["entity_kind"]==entry_type, playlist.entries)
         prepared = []
         for entry in unprepared:
-            new_item = get_node_cache()[entry_type].get(entry['entity_id'], [None])[0]
+            if entry_type == "Exercise":
+                new_item = get_node_cache()[entry_type].get(entry['entity_id'], [None])[0]
+            elif entry_type == "Video":
+                video_id = generate_slug_to_video_id_map(get_node_cache())[entry['entity_id']]
+                new_item = get_node_cache()[entry_type].get(video_id, [None])[0]
             if new_item:
                 prepared.append(new_item)
         return prepared

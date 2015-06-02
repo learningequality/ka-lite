@@ -27,6 +27,12 @@
                 el: $("#test-setting-app-container")
             });
         });
+
+        $(function() {
+            $('.header').click(function(){
+                $(this).toggleClass('expand').nextUntil('tr.header').slideToggle(100);
+            });
+        });
     </script>
 
 

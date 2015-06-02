@@ -59,7 +59,6 @@ INSTALLED_APPS = (
     "kalite.store",
     "kalite.remoteadmin",  # needed for remote connection
     "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
-    "kalite.ab_testing",
     "kalite.dynamic_assets",
 )
 
@@ -69,7 +68,6 @@ MIDDLEWARE_CLASSES = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     __package__ + ".middleware.LockdownCheck",
-    "student_testing.middleware.ExamModeCheck",
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

@@ -1,34 +1,78 @@
-li.autocomplete {
-    font-weight: bold;
-    line-height: 35px;
-    padding-left: 35px;
-    margin: 3px 0px 3px 0px;
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 25px 25px;
+.navbar-collapse .autocomplete {
     cursor: pointer;
 }
-li.autocomplete-exercise.available {
-    background-image:url(/static/images/distributed/search-exercise-available.png);
+
+.navbar-collapse ul.ui-autocomplete  {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin: 0 3px;
+    border-color: rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    z-index: 1500;
 }
-li.autocomplete-topic.available {
-    background-image:url(/static/images/distributed/search-topic-available.png);
+.navbar-collapse .ui-state-hover,
+.navbar-collapse .ui-widget-content .ui-state-hover,
+.navbar-collapse .ui-widget-header .ui-state-hover,
+.navbar-collapse .ui-state-focus,
+.navbar-collapse .ui-widget-content .ui-state-focus,
+.navbar-collapse .ui-widget-header .ui-state-focus {
+    background: #5AA685;
+    border: 0;
+    border-radius: 6px;
+    color: white;
 }
-li.autocomplete-video.available {
-    background-image:url(/static/images/distributed/search-video-available.png);
+.navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Topic.available,
+.navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Exercise.available,
+.navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Video.available,
+.navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Document.available {
+    color: white;
 }
-li.autocomplete-exercise.unavailable {
-    background-image:url(/static/images/distributed/search-exercise-unavailable.png);
+.navbar-collapse .ui-menu .ui-menu-item a{
+    outline: 0;
+    padding-top: 10px;
+    padding-bottom: 0;
+    border-radius: 6px;
+    border: 0px;
 }
-li.autocomplete-topic.unavailable {
-    background-image:url(/static/images/distributed/search-topic-unavailable.png);
+.navbar-collapse .ui-menu .ui-menu-item span {
+    font-weight: 300;
+    font-size: 1em;
+    padding-right: 0;
 }
-li.autocomplete-video.unavailable {
-    background-image:url(/static/images/distributed/search-video-unavailable.png);
+.navbar-collapse .available {
+    color: #000;
 }
-.available {
-    color: black;
+.navbar-collapse .unavailable {
+    color: rgba(0, 0, 0, 0.5);
 }
-.unavailable {
-    color:gray;
+
+/* Misc visuals
+----------------------------------*/
+
+/* Corner radius */
+.navbar-collapse .ui-corner-all,
+.navbar-collapse .ui-corner-top,
+.navbar-collapse .ui-corner-left,
+.navbar-collapse .ui-corner-tl {
+    border-top-left-radius: 0;
+}
+.navbar-collapse .ui-corner-all,
+.navbar-collapse .ui-corner-top,
+.navbar-collapse .ui-corner-right,
+.navbar-collapse .ui-corner-tr {
+    border-top-right-radius: 0;
+}
+.navbar-collapse .ui-corner-all,
+.navbar-collapse .ui-corner-bottom,
+.navbar-collapse .ui-corner-left,
+.navbar-collapse .ui-corner-bl {
+    border-bottom-left-radius: 0;
+}
+.navbar-collapse .ui-corner-all,
+.navbar-collapse .ui-corner-bottom,
+.navbar-collapse .ui-corner-right,
+.navbar-collapse .ui-corner-br {
+    border-bottom-right-radius: 0;
 }

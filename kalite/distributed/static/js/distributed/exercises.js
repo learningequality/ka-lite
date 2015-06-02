@@ -1413,17 +1413,6 @@ window.ExerciseQuizView = Backbone.View.extend({
 
         if(this.log_model.get("attempts")==1){
             if(this.points > 0){
-                var purchased_model = new PurchasedStoreItemModel({
-                    item: "/api/store/storeitem/gift_card/",
-                    purchased_at: window.statusModel.get_server_time(),
-                    reversible: false,
-                    context_id: ds.ab_testing.unit || 0,
-                    context_type: "unit",
-                    user: window.statusModel.get("user_uri"),
-                    value: this.points
-                });
-                purchased_model.save();
-
                 statusModel.set("newpoints", statusModel.get("newpoints") + this.points);
             }
         }

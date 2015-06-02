@@ -168,7 +168,8 @@ header nav {
 #logged-in-name {
     display: inline-block;
     min-width: 10px;
-    max-width: 100px;
+    max-width: 200px;
+    font-size: 20px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -640,3 +641,20 @@ div#fade {
 }
 
 /* END styles for modal dialog */
+
+/* Styling for simplified login toggle button */
+.password-btn {
+    float: right;
+}
+
+.login .ui-menu .ui-menu-item a{
+    font-size: 1.5em;
+}
+
+.login {
+    font-size: 1.5em;
+}
+
+.has-error input {
+    border: 2px solid red;
+}

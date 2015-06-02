@@ -41,7 +41,6 @@ from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import lcode_to_ietf
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.shared.decorators import require_admin
-from kalite.store.models import StoreTransactionLog
 
 
 @require_admin
@@ -81,32 +80,14 @@ def compute_total_points(user):
     if user.is_teacher:
         return None
     else:
-        return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user) + StoreTransactionLog.get_points_for_user(user)
+        return VideoLog.get_points_for_user(user) + ExerciseLog.get_points_for_user(user)
 
 
-# On pages with no forms, we want to ensure that the CSRF cookie is set, so that AJAX POST
-# requests will be possible. Since `status` is always loaded, it's a good place for this.
-@ensure_csrf_cookie
-@allow_api_profiling
-@api_handle_error_with_json
-def status(request):
-    """In order to promote (efficient) caching on (low-powered)
-    distributed devices, we do not include ANY user data in our
-    templates.  Instead, an AJAX request is made to download user
-    data, and javascript used to update the page.
-
-    This view is the view providing the json blob of user information,
-    for each page view on the distributed server.
-
-    Besides basic user data, we also provide access to the
-    Django message system through this API, again to promote
-    caching by excluding any dynamic information from the server-generated
-    templates.
+def get_messages_for_api_calls(request):
     """
-    # Build a list of messages to pass to the user.
-    #   Iterating over the messages removes them from the
-    #   session storage, thus they only appear once.
-    message_dicts = []
+    Re-usable function that returns a list of messages to be used by API calls.
+    """
+    message_lists = []
     for message in get_messages(request):
         # Make sure to escape strings not marked as safe.
         # Note: this duplicates a bit of Django template logic.
@@ -114,37 +95,6 @@ def status(request):
         if not (isinstance(msg_txt, SafeString) or isinstance(msg_txt, SafeUnicode)):
             msg_txt = cgi.escape(unicode(msg_txt))
         msg_type = message.tags
-        message_dicts.append({msg_type: msg_txt})
 
-    # Default data
-    data = {
-        "is_logged_in": request.is_logged_in,
-        "registered": request.session.get("registered", True),
-        "is_admin": request.is_admin,
-        "is_django_user": request.is_django_user,
-        "points": 0,
-        "current_language": request.session[settings.LANGUAGE_COOKIE_NAME],
-        "messages": message_dicts,
-        "status_timestamp": datetime.datetime.now(),
-        "version": version.VERSION,
-    }
-
-    # Override properties using facility data
-    if "facility_user" in request.session:  # Facility user
-        user = request.session["facility_user"]
-        data["is_logged_in"] = True
-        data["username"] = user.get_name()
-        # TODO-BLOCKER(jamalex): re-enable this conditional once tastypie endpoints invalidate cached session value
-        # if "points" not in request.session:
-        request.session["points"] = compute_total_points(user)
-        data["points"] = request.session["points"]
-        data["user_id"] = user.id
-        data["user_uri"] = reverse("api_dispatch_detail", kwargs={"resource_name": "user", "pk": user.id})
-        data["facility_id"] = user.facility.id
-
-    # Override data using django data
-    if request.user.is_authenticated():  # Django user
-        data["is_logged_in"] = True
-        data["username"] = request.user.username
-
-    return JsonResponse(data)
+        message_lists.append({msg_type: msg_txt})
+    return message_lists

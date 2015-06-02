@@ -57,13 +57,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
         } else {
             //normal key
             var field = this.field[0];
-            if (_.isFunction(field.setRangeText)) {
-                // overwrite the current selection with the new key (which will just insert if nothing is selected)
-                field.setRangeText(key);
-                field.selectionStart = field.selectionEnd = field.value.length;
-            } else {
-                this.field.val(this.field.val() + key);
-            }
+            this.field.val(this.field.val() + key);
         }
 
         this.field.trigger("keypress");

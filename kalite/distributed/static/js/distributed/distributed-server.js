@@ -75,12 +75,16 @@ var StatusModel = Backbone.Model.extend({
         client_server_time_diff: 0
     },
 
-    url: STATUS_URL,
+    url: USER_URL + "status/",
 
     initialize: function() {
 
         _.bindAll(this);
 
+        this.load_status();
+    },
+
+    load_status: function() {
         // save the deferred object from the fetch, so we can run stuff after this model has loaded
         this.loaded = this.fetch();
 
@@ -94,6 +98,69 @@ var StatusModel = Backbone.Model.extend({
     get_server_time: function () {
         // Function to return time corrected to server clock based on status update.
         return (new Date(new Date() - this.get("client_server_time_diff"))).toISOString().slice(0, -1);
+    },
+
+    login: function(username, password, facility, callback) {
+        var self = this;
+
+        data = {
+            username: username || "",
+            password: password || "",
+            facility: facility || ""
+        };
+
+        $.ajax({
+            url: USER_URL + "login/",
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'POST',
+            data: JSON.stringify(data),
+            success: function(data, status, response) {
+                if (data.redirect) {
+                    window.location = data.redirect;
+                } else {
+                    self.load_status();
+                    if (callback) {
+                        callback(response);
+                    }
+                }
+            },
+            error: function(response) {
+                handleFailedAPI(response);
+                if (callback) {
+                    callback(response);
+                }
+            }
+        });
+    },
+
+    logout: function(callback) {
+        var self = this;
+
+        $.ajax({
+            url: USER_URL + "logout/",
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'GET',
+            success: function(data, status, response) {
+                if (data.success) {
+                    if (data.redirect) {
+                        window.location = data.redirect;
+                    } else {
+                        self.load_status();
+                        if (callback) {
+                            callback(response);
+                        }
+                    }
+                }
+            },
+            error: function(response) {
+                handleFailedAPI(response);
+                if (callback) {
+                    callback(response);
+                }
+            }
+        });
     },
 
     after_loading: function() {
@@ -161,9 +228,6 @@ var TotalPointView = Backbone.View.extend({
 
         if (points > 0) {
             message = sprintf("%s<span> | %s</span>", username_span, sprintf(gettext("Total Points: %(points)d "), { points : points }));
-            if (ds.store.show_store_link_once_points_earned) {
-                message += " | <a href='/store/'>Store!</a>";
-            }
         } else {
             message = sprintf(gettext("Welcome, %(username)s!"), {username: username_span});
         }

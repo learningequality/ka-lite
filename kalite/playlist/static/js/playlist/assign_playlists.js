@@ -105,6 +105,8 @@ var PlaylistGroupView = Backbone.View.extend({
     template: _.template($("#playlist-group-template").html()),
 
     render: function() {
+        this.listenToOnce(groups, "sync", this.render);
+
         var dict = this.model.toJSON();
         if (groups.findWhere({id: dict.id}) != null) {
             this.$el.html(this.template(dict));
@@ -152,15 +154,8 @@ var AppView = Backbone.View.extend({
     addNewPlaylist: function(playlist) {
         var view = new PlaylistView({model: playlist});
         var title = playlist.get('title');
-        if (title.indexOf("Core") > -1){
-            $("#core-playlists").append(view.render().el);
-        } else if (title.indexOf("Prerequisite") > -1){
-            $("#pre-playlists").append(view.render().el);
-        } else if (title.indexOf("Advanced") > -1){
-            $("#advanced-playlists").append(view.render().el);
-        } else if (title.indexOf("Exam Prep") > -1){
-            $("#exam-prep-playlists").append(view.render().el);
-        }
+        var grade = playlist.get('tag').slice(-1);
+        $("#grade-" + grade).append(view.render().el);
     },
 
     addAllPlaylists: function() {
@@ -175,5 +170,13 @@ $(function() {
     statusModel.loaded.then(function() {
         var app = new AppView;
     });
+
+});
+
+$(function() {
+
+    $('.header').click(function(){
+        $(this).toggleClass('expand').nextUntil('tr.header').slideToggle(100);
+    });
 
 });

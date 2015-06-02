@@ -213,8 +213,6 @@ if package_selected("Nalanda"):
     RESTRICTED_TEACHER_PERMISSIONS = True
     FIXED_BLOCK_EXERCISES = 5
     QUIZ_REPEATS = 3
-UNIT_POINTS = 2000
-
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")

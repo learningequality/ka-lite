@@ -22,8 +22,9 @@ class KALiteClient(Client):
 
     def __init__(self, *args, **kwargs):
         super(KALiteClient, self).__init__(*args, **kwargs)
-        self.login_url = reverse('login')
-        self.logout_url = reverse('logout')
+        self.status_url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'status/'
+        self.login_url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'login/'
+        self.logout_url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'logout/'
 
     def setUp(self):
         # Aron: we don't delete this since after a big refactoring
@@ -32,15 +33,15 @@ class KALiteClient(Client):
         pass
 
     def login(self, username, password, facility=None):
-        self.get(self.login_url)
+        self.get(self.status_url)
         data = {
             "csrfmiddlewaretoken": self.cookies["csrftoken"].value,
             "facility": facility,
             "username": username,
             "password": password,
         }
-        response = self.post(self.login_url, data=data)
-        return response.status_code == 302
+        response = self.post_json(self.login_url, data=data)
+        return response.status_code == 200
 
     def login_user(self, data, facility=None, use_default_facility=True, follow=True):
         if facility:
@@ -51,7 +52,7 @@ class KALiteClient(Client):
             data['facility'] = data['facility'].id
         else:
             data['facility'] = None
-        response = self.post(self.login_url, data=data, follow=follow)
+        response = self.post_json(self.login_url, data=data)
         return response
 
     def login_teacher(self, data=None, facility=None, use_default_facility=True, follow=True):

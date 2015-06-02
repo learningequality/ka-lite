@@ -18,8 +18,6 @@ from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins import BrowserActionMixins, FacilityMixins
 from kalite.student_testing.models import TestLog
 from kalite.student_testing.settings import STUDENT_TESTING_DATA_PATH
-from kalite.student_testing.utils import set_exam_mode_on
-
 
 # TODO (rtibbles): After integration into develop,
 # this needs to be modified to create a test and test using the test.
@@ -53,7 +51,6 @@ class StudentTestTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase
             facility_name=self.facility_name,
         )
 
-        set_exam_mode_on(TEST_ID)
         self.browse_to(
             self.live_server_url +
             reverse("test", kwargs={"test_id": TEST_ID}))
@@ -123,7 +120,6 @@ class LoadTestTest(KALiteBrowserTestCase):
         for testfile in glob.iglob(STUDENT_TESTING_DATA_PATH + "/*.json"):
             with open(testfile) as f:
                 test_id = os.path.splitext(os.path.basename(f.name))[0]
-                set_exam_mode_on(test_id)
                 logging.debug("Testing test : " + test_id)
                 self.browse_to(
                     self.live_server_url +
