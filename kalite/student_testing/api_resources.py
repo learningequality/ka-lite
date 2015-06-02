@@ -16,7 +16,6 @@ from fle_utils.internet import api_handle_error_with_json
 from kalite.shared.api_auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 from kalite.facility.models import Facility
-from kalite.ab_testing.data.groups import get_grade_by_facility, GRADE_BY_FACILITY as GRADE
 
 from .models import Test, TestLog
 
@@ -86,6 +85,7 @@ class TestResource(Resource):
     repeats = fields.IntegerField(attribute='repeats')
     test_id = fields.CharField(attribute='test_id')
     test_url = fields.CharField(attribute='test_url')
+    grade = fields.IntegerField(attribute='grade')
 
     class Meta:
         resource_name = 'test'
@@ -101,8 +101,8 @@ class TestResource(Resource):
 
     def _read_facility_tests(self, facility, test_id=None, force=False):
         testscache = Test.all(force=force)
-        valid_tests = dict((id, test) for (id, test) in testscache.iteritems() if test.grade == get_grade_by_facility(facility))
-        return sorted(valid_tests.values(), key=lambda test: test.title)
+        valid_tests = dict((id, test) for (id, test) in testscache.iteritems())
+        return sorted(valid_tests.values(), key=lambda test: (test.grade, test.title))
 
     def prepend_urls(self):
         return [
