@@ -625,7 +625,7 @@ def profile_memory():
     atexit.register(handle_exit)
 
 if __name__ == "__main__":
-    arguments = docopt(__doc__, version=str(VERSION))
+    arguments = docopt(__doc__, version=str(VERSION), options_first=True)
 
     if arguments['start']:
         if arguments["--port"]:
