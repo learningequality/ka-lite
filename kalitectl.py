@@ -6,7 +6,7 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
+  kalite start [options] [--port=<arg>] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite status [job-scheduler] [options]
@@ -24,6 +24,7 @@ Options:
   --debug               Output debug messages (for development)
   --skip-job-scheduler  For `kalite start`: Skips running the job scheduler
                         (useful for dev)
+  --port=<arg>          A port number the server will listen on.
   DJANGO_OPTIONS        All options are passed on to the django manage command.
                         Notice that all django options must be place *last* and
                         should not be mixed with other options.
@@ -373,14 +374,6 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     # TODO: What does not the production=true actually do and how can we
     # control the log level and which log files to write to
 
-    # Deal with command-line options that affect the django settings module
-    for i, arg in enumerate(args):
-        match = re.search(r"port=(?P<port>\d+)", arg)
-        if match:
-            os.environ["KALITE_LISTEN_PORT"] = match.group("port")
-            del args[i]
-            break
-
     if os.path.exists(STARTUP_LOCK):
         try:
             pid = int(open(STARTUP_LOCK).read())
@@ -615,7 +608,7 @@ def profile_memory():
     atexit.register(handle_exit)
 
 if __name__ == "__main__":
-    arguments = docopt(__doc__, version=str(VERSION), options_first=True)
+    arguments = docopt(__doc__, version=str(VERSION))
 
     if arguments['start']:
         start(
