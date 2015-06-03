@@ -21,7 +21,6 @@ INSTALLED_APPS = (
     "django.contrib.auth",  # central server login still embedded here
     "django.contrib.sessions",  # install_validated
     "django.contrib.messages",
-    "django_extensions", # needed for clean_pyc (testing)
     "fle_utils.config",  # Settings (private_key)
     "fle_utils.chronograph",  # force_job
     "fle_utils.django_utils",  # templatetags
