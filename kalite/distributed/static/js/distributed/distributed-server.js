@@ -35,14 +35,14 @@ function show_api_messages(messages) {
     }
 }
 
-function force_sync() {
+function force_sync(zone_id, device_id) {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
     doRequest(window.Urls.api_force_sync())
         .success(function() {
             var msg = gettext("Successfully launched data syncing job.") + " ";
             msg += sprintf(gettext("After syncing completes, visit the <a href='%(devman_url)s'>device management page</a> to view results."), {
-                devman_url: window.sessionModel.get("LOCAL_DEVICE_MANAGEMENT_URL")
+                devman_url: Urls.device_management(zone_id, device_id)
             });
             show_message("success", msg);
         });
