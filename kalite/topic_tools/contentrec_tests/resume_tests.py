@@ -9,68 +9,65 @@ from kalite.topic_tools.content_recommendation import *
 
 class TestResumeMethods(unittest.TestCase):
 
+	ORIGINAL_POINTS = 37
+	ORIGINAL_ATTEMPTS = 3
+	ORIGINAL_STREAK_PROGRESS = 20
+	NEW_POINTS_LARGER = 22
+	NEW_ATTEMPTS = 5
+	NEW_STREAK_PROGRESS_LARGER = 10
+	NEW_POINTS_SMALLER = 0
+	NEW_STREAK_PROGRESS_SMALLER = 0
+	EXERCISE_ID = "number_line"
+	EXERCISE_ID2 = "radius_diameter_and_circumference"
+	USERNAME1 = "test_user_resume1"
+	USERNAME2 = "test_user_resume2"
+	PASSWORD = "dummies"
+	FACILITY = "Test Facility Resume"
+	TIMESTAMP_LATER = datetime.datetime(2014, 11, 17, 20, 51, 2, 342662)
+	TIMESTAMP_EARLY = datetime.datetime(2014, 10, 8, 15, 59, 59, 370290)
+
 	def setUp(self):
 		'''Performed before every test'''
 
 		#a brand new user 
-		self.facility = Facility(name="Test Facility")
+		self.facility = Facility(name=self.FACILITY)
 		self.facility.save()
-		self.user_with_no_activity = FacilityUser(username="testuser", facility=self.facility)
-		self.user_with_no_activity.set_password("dumber")
+
+		self.user_with_no_activity = FacilityUser(username=self.USERNAME1, facility=self.facility)
+		self.user_with_no_activity.set_password(self.PASSWORD)
 		self.user_with_no_activity.save()
 
-		#a user with valid rows in Facility+ExerciseLogs, hence grabbing from ExerciseLog, random!
-		self.user_with_activity = ExerciseLog.objects.order_by('?')[0].user												
+		#a user with valid exercises
+		self.user_with_activity = FacilityUser(username=self.USERNAME2, facility=self.facility)
+		self.user_with_activity.set_password(self.PASSWORD)		
+		self.user_with_activity.save()							
 
-	def tearDown(self):
-		'''Performed after each test'''
+		#add some exercises for second user (both incomplete)
+		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID, user = self.user_with_activity, complete=False)
+		self.original_exerciselog2.points = self.ORIGINAL_POINTS
+		self.original_exerciselog2.attempts = self.ORIGINAL_POINTS
+		self.original_exerciselog2.streak_progress = self.ORIGINAL_STREAK_PROGRESS
+		self.original_exerciselog2.latest_activity_timestamp = self.TIMESTAMP_EARLY
+		self.original_exerciselog2.completion_timestamp = self.TIMESTAMP_EARLY
+		self.original_exerciselog2.save()
 
-		self.user_with_activity = None
-		self.user_with_no_activity = None
-
-	def test_resume_overall(self):
-		'''get_resume_recommendations()'''
-		
-		#this is really just get_most_recent_incomplete item...
-
+		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID2, user = self.user_with_activity, complete=False)
+		self.original_exerciselog2.points = self.ORIGINAL_POINTS
+		self.original_exerciselog2.attempts = self.ORIGINAL_POINTS
+		self.original_exerciselog2.streak_progress = self.ORIGINAL_STREAK_PROGRESS
+		self.original_exerciselog2.latest_activity_timestamp = self.TIMESTAMP_LATER
+		self.original_exerciselog2.completion_timestamp = self.TIMESTAMP_LATER
+		self.original_exerciselog2.save()		
 
 	def test_get_most_recent_incomplete_item(self):
 		'''get_most_recent_incomplete_item()'''
 
 		#test user with activity first
-		exercises = ExerciseLog.objects.filter(user=self.user_with_activity, complete=False)
-		videos = VideoLog.objects.filter(user=self.user_with_activity, complete=False)
-		content = ContentLog.objects.filter(user=self.user_with_activity, complete=False)
-		most_recent_exs = sorted(exercises, key=lambda ex:ex.latest_activity_timestamp, reverse=True)
-		most_recent_vids = sorted(videos, key=lambda ex:ex.latest_activity_timestamp, reverse=True)
-		most_recent_cont = sorted(content, key=lambda ex:ex.latest_activity_timestamp, reverse=True)
-		
-		expected = None
-		top = []
-		if most_recent_cont:
-			top.append({
-					"timestamp":most_recent_cont[0].latest_activity_timestamp or datetime.datetime.min,
-					"id":most_recent_cont[0].content_id,
-					"kind":"Content"
-				})
-		if most_recent_exs:
-			top.append({
-					"timestamp":most_recent_exs[0].latest_activity_timestamp or datetime.datetime.min,
-					"id":most_recent_exs[0].exercise_id,
-					"kind":"Exercise"
-				})
-		if most_recent_vids:
-			top.append({
-					"timestamp":most_recent_vids[0].latest_activity_timestamp or datetime.datetime.min,
-					"id":most_recent_vids[0].video_id,
-					"kind":"Video"
-				})
-		
-		if top:
-			expected = sorted(top, key=lambda ex: ex['timestamp'], reverse=True)[0]
-		else:
-			expected = []
-
+		expected = {
+			"id": unicode(self.EXERCISE_ID2, 'utf-8'),
+			"timestamp": self.TIMESTAMP_LATER,
+			"kind": "Exercise"
+		}
 		actual = get_most_recent_incomplete_item(self.user_with_activity)
 		self.assertEqual(expected, actual)
 
