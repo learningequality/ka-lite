@@ -1,7 +1,7 @@
 $(function () {
     $("#force-sync").click(function(ev){
         ev.preventDefault();
-        force_sync();
+        force_sync(window.ZONE_ID, window.DEVICE_ID);
     });
 
     $(".facility-delete-link").click(function(event) {
