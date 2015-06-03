@@ -326,7 +326,7 @@ window.ToggleNavbarView = BaseView.extend ({
         _.bindAll(this);
         this.listenTo(this.model, "change", this.render);
         $("topnav").append(this.template());
-
+        $(window).on("resize", this.collapsed_nav);
     },
 
     render: function() {
@@ -345,6 +345,25 @@ window.ToggleNavbarView = BaseView.extend ({
             this.$(".manage-tab").addClass("active");   
         }
 
+        this.collapsed_nav();
+    },
+
+    /*  This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu.
+        Specifically, it ensures that the "user" dropdown menu is already expanded when the containing menu is collapsed
+    */
+    collapsed_nav: function() {
+        if ( !this.model.get("is_logged_in") ) {
+            return; // If not logged in, the needed elements won't exist.
+        }
+        var data_toggle = document.getElementById("user-name-a");
+        var menu = document.getElementById("user-name");
+        if ( $('body').innerWidth() <= 750 ) {
+            data_toggle.removeAttribute("data-toggle");
+            menu.classList.add("open");
+        } else {
+            data_toggle.setAttribute("data-toggle", "dropdown");
+            menu.classList.remove("open");
+        }
     }
 
 });
