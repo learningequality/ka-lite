@@ -233,7 +233,18 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
     # If local (and, for security purposes, a distributed server), get device metadata
     if context["is_own_device"]:
-        context.update(local_install_context(request))
+        database_path = settings.DATABASES["default"]["NAME"]
+        current_version = request.GET.get("version", VERSION)  # allows easy development by passing a different version
+
+        context.update({
+            "software_version": current_version,
+            "software_release_date": VERSION_INFO().get(
+                current_version, {}
+            ).get("release_date", "Unknown"),
+            "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
+            "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
+            "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
+        })
 
     return context
 
@@ -563,18 +574,3 @@ def control_panel_context(request, **kwargs):
         context["device"] = get_object_or_404(Device, pk=kwargs["device_id"])
         context["device_id"] = kwargs["device_id"] or "None"
     return context
-
-
-def local_install_context(request):
-    database_path = settings.DATABASES["default"]["NAME"]
-    current_version = request.GET.get("version", VERSION)  # allows easy development by passing a different version
-
-    return {
-        "software_version": current_version,
-        "software_release_date": VERSION_INFO().get(
-            current_version, {}
-        ).get("release_date", "Unknown"),
-        "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
-        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
-        "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
-    }
