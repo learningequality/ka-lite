@@ -18,7 +18,7 @@ script:
 - bin/kalite status
 - bin/kalite stop --traceback -v 2
 - python python-packages/fle_utils/tests.py
-- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" manage.py test --traceback -v 2
+- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" bin/kalite manage test --traceback -v 2
 - grunt jshint
 notifications:
   email:
