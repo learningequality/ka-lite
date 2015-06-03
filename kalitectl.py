@@ -611,6 +611,8 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version=str(VERSION))
 
     if arguments['start']:
+        if arguments["--port"]:
+            os.environ["KALITE_LISTEN_PORT"] = arguments["--port"]
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
