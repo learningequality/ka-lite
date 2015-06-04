@@ -117,12 +117,20 @@ window.AutoCompleteView = BaseView.extend({
         });
 
         // Then sort again by availability!
-        ids_filtered.sort(function(id1, id2) {
-            var node1 = self._nodes[id1];
-            var node2 = self._nodes[id2];
+        // Use the original ordering to make Array.prototype.sort stable
+        ids_with_ind = _.map(ids_filtered, function(id, index) {
+            return { "id": id,  "index": index };
+        });
+        ids_with_ind.sort(function(el1, el2) {
+            var node1 = self._nodes[el1.id];
+            var node2 = self._nodes[el2.id];
             var compvalue = node1.available ? (node2.available ? 0 : 1) : (node2.available ? -1 : 0);
+            if (compvalue === 0) {
+                compvalue = el1.index < el2.index ? 1 : -1;
+            }
             return -1 * compvalue;  // Reverse the order; it's apparently reversed again in display.
         });
+        ids_filtered = _.map(ids_with_ind, function(el) { return el.id; });
 
         // From the filtered titles, produce labels (html) and values (for doing stuff)
         var results = [];
