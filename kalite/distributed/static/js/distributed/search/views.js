@@ -116,6 +116,22 @@ window.AutoCompleteView = BaseView.extend({
             return compvalue;
         });
 
+        // Then sort again by availability!
+        // Use the original ordering to make Array.prototype.sort stable
+        ids_with_ind = _.map(ids_filtered, function(id, index) {
+            return { "id": id,  "index": index };
+        });
+        ids_with_ind.sort(function(el1, el2) {
+            var node1 = self._nodes[el1.id];
+            var node2 = self._nodes[el2.id];
+            var compvalue = node1.available ? (node2.available ? 0 : 1) : (node2.available ? -1 : 0);
+            if (compvalue === 0) {
+                compvalue = el1.index < el2.index ? 1 : -1;
+            }
+            return -1 * compvalue;  // Reverse the order; it's apparently reversed again in display.
+        });
+        ids_filtered = _.map(ids_with_ind, function(el) { return el.id; });
+
         // From the filtered titles, produce labels (html) and values (for doing stuff)
         var results = [];
 
@@ -131,7 +147,8 @@ window.AutoCompleteView = BaseView.extend({
             var label = this.item_template(node);
             results.push({
                 label: label,
-                value: ids_filtered[i]
+                value: node.title,
+                data_value: ids_filtered[i]
             });
         }
 
@@ -140,7 +157,7 @@ window.AutoCompleteView = BaseView.extend({
 
     select_item: function( event, ui ) {
         // When they click a specific item, just go there (if we recognize it)
-        var id = ui.item.value;
+        var id = ui.item.data_value;
         if (this._nodes && id in this._nodes && this._nodes[id]) {
             if ("channel_router" in window) {
                 window.channel_router.navigate(this._nodes[id].path, {trigger: true});
