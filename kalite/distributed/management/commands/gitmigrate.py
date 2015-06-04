@@ -4,7 +4,6 @@ import shutil
 from distutils.dir_util import copy_tree
 
 from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings; logging = settings.LOG
 
 from optparse import make_option
 
@@ -37,11 +36,17 @@ class Command(BaseCommand):
         if not os.path.exists(os.path.join(path, "kalite", "database", "data.sqlite")):
             raise CommandError("No database file found to migrate")
         else:
+            print("-------------------------------------------------------------------")
+            print("Attempting to copy Database file from previous installation")
+            print("-------------------------------------------------------------------\n")
             shutil.copy2(os.path.join(path, "kalite", "database", "data.sqlite"), os.path.join(os.environ.get("KALITE_DIR"), "kalite", "database", "data.sqlite"))
-            logging.info("Database file successfully copied")
+            print("***Database file successfully copied***\n")
 
         if not os.path.exists(os.path.join(path, "content")):
             raise CommandError("No content folder find to migrate")
         else:
+            print("-------------------------------------------------------------------")
+            print("Attempting to copy content files from previous installation")
+            print("-------------------------------------------------------------------\n")
             output = copy_tree(os.path.join(path, "content"), os.path.join(os.environ.get("KALITE_DIR"), "content"), update=True)
-            logging.info("Copied {files} files from the previous content folder".format(files=len(output)))
+            print("***Copied {files} files from the previous content folder***\n".format(files=len(output)))
