@@ -145,15 +145,15 @@ var StatusModel = Backbone.Model.extend({
 
     handle_login_logout_success: function(data, status, response, callback) {
         if (data.redirect) {
-            window.location = data.redirect;
+            response.redirect = data.redirect;
+        }
+        this.fetch_data();
+        if (callback) {
+            callback(response);
         } else {
-            // TODO (rtibbles) Reinstate the code below once
-            // the front end app responds better to statusModel changes
-            window.location.reload();
-            // self.load_status();
-            // if (callback) {
-            //     callback(response);
-            // }
+            if (data.redirect) {
+                window.location = data.redirect;
+            }
         }
     },
 

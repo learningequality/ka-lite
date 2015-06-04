@@ -4,25 +4,31 @@
 window.LoginModalView = BaseView.extend({
     template: HB.template("user/loginmodal"),
 
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this);
+        this.set_options(options);
         this.render();
         $("body").append(this.el);
     },
 
     render: function() {
         this.$el.html(this.template());
+        // If we don't want for render to complete, often, the containing element for the login is missing
         _.defer(this.addLoginView);
     },
 
     addLoginView: function() {
         if (this.loginView) {
+            // If loginView already exists rerender and set this.next on it so it has URL redirect info
             this.loginView.render();
+            this.loginView.next = this.next;
         } else {
-            this.loginView = new LoginView({model: this.model, el: "#login-container"});
+            // Otherwise create a new login view, and close the model when the login successfully completes
+            this.loginView = new LoginView({model: this.model, el: "#login-container", next: this.next});
             this.listenTo(this.loginView, "login_success", this.close_modal);
         }
         if (this.start_open) {
+            // If the start_open option is flagged, show the modal straight away.
             this.show_modal();
         }
     },
@@ -33,6 +39,11 @@ window.LoginModalView = BaseView.extend({
 
     show_modal: function() {
         $("#loginModal").modal('show');
+    },
+
+    set_options: function(options) {
+        this.start_open = options.start_open;
+        this.next = options.next;
     }
 });
 
@@ -48,8 +59,9 @@ window.LoginView = BaseView.extend({
 
     template: HB.template("user/login"),
 
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this);
+        this.next = options.next;
         this.facility = (this.model.get("facilities")[0] || {id:""}).id;
         this.admin = false;
         if (this.model.get("simplified_login")) {
@@ -89,6 +101,11 @@ window.LoginView = BaseView.extend({
     handle_login: function(response) {
         if (response.status == 200) {
             this.trigger("login_success");
+            if (this.next) {
+                window.location = this.next;
+            } else if (response.redirect) {
+                window.location = response.redirect;
+            }
         } else {
             var error_data = JSON.parse(response.responseText);
             var message = error_data.messages.error;
@@ -299,15 +316,36 @@ window.UserView = BaseView.extend({
                 this.totalPointViewXs = new TotalPointView({model: this.model, el: "#points-xs"});
             }
         } else {
+            // User is not logged in, so initialize the login modal
+            var options = {};
+            /* 
+            *  Check the GET params to see if there is a 'next'
+            *  This means that someone has tried to access an unauthorized page, but we want them to
+            *  login before accessing this page
+            */
+            var next = getParamValue("next");
+            // Check the GET params to see if a 'login' flag has been set
+            // If this is the case, the modal should start open
+            var login = getParamValue("login");
+            if (login) {
+                // Set an option for the modal to start open
+                options.start_open = true;
+            }
+            if (next) {
+                // Set the option for the URL redirect after login success
+                options.next = next;
+            }
             if (this.loginModalView) {
+                // If there is already a loginModalView for some reason, just set the above options on it
+                // and rerender
+                this.loginModalView.set_options(options);
                 this.loginModalView.render();
             } else {
-                this.loginModalView = new LoginModalView({model: this.model});
+                // Otherwise just start the modal view with these options, but add in the statusModel with it
+                options.model = this.model;
+                this.loginModalView = new LoginModalView(options);
             }
-            if (window.location.search.search("login") > -1 || this.login_start_open) {
-                this.loginModalView.start_open = true;
-                delete this.login_start_open;
-            }
+
         }
     },
 
