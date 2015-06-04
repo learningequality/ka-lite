@@ -368,8 +368,7 @@ window.ToggleNavbarView = BaseView.extend ({
     },
 
     render: function() {
-        
-        console.log("called");
+
         this.$el.html(this.template(this.model.attributes));
         
         this.userView = new UserView({ model: this.model, el: "#topnav" });
