@@ -217,7 +217,7 @@ function start_languagepack_download(lang_code) {
     downloading = true;
     // tell server to start languagepackdownload job
     doRequest(
-        window.sessionModel.get("START_LANGUAGEPACKDOWNLOAD_URL"),
+        Urls.start_languagepack_download(),
         { lang: lang_code }
     ).success(function(progress, status, req) {
         updatesStart(
