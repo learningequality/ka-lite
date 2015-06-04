@@ -1259,6 +1259,7 @@ window.ExerciseTestView = Backbone.View.extend({
 
                 // don't render the related videos box on tests
                 this.exercise_view.stopListening(this.data_model, "change:related_videos");
+                this.exercise_view.stopListening(this.data_model, "change:title");
 
                 this.listenTo(this.exercise_view, "check_answer", this.check_answer);
                 this.listenTo(this.exercise_view, "problem_loaded", this.problem_loaded);
