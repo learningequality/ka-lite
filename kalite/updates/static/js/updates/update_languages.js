@@ -272,7 +272,7 @@ function languagepack_reset_callback(progress, resp) {
 }
 
 function set_server_language(lang) {
-    doRequest(window.sessionModel.get("SET_DEFAULT_LANGUAGE_URL"),
+    doRequest(Urls.set_default_language(),
               {lang: lang}
              ).success(function() {
                  window.location.reload();
