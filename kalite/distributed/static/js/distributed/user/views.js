@@ -362,7 +362,7 @@ window.ToggleNavbarView = BaseView.extend ({
     initialize: function() {
 
         _.bindAll(this);
-        this.listenTo(this.model, "change", this.render);
+        this.listenTo(this.model, "change:client_server_time_diff", this.render);
         $("topnav").append(this.template());
         $(window).on("resize", this.collapsed_nav);
     },
