@@ -12,7 +12,7 @@ from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseRedirect, HttpResponseNotFound
+from django.http import Http404, HttpResponseRedirect, HttpResponseNotFound, HttpResponseForbidden
 from django.db.models import Max
 from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
@@ -251,7 +251,11 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
 @require_authorized_admin
 @render_to("control_panel/facility.html")
-def facility_form(request, facility_id=None, zone_id=None):
+@dynamic_settings
+def facility_form(request, ds, facility_id=None, zone_id=None):
+    if request.is_teacher and not ds["facility"].teacher_can_edit_facilities:
+        return HttpResponseForbidden()
+
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility_id)
 
     if request.method != "POST":
