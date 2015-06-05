@@ -1,9 +1,7 @@
 """
 """
-import urlparse
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from securesync.devices.models import Zone
 from securesync.devices.views import *  # ARGH! TODO(aron): figure out what things are imported here, and import them specifically
 
 from django.conf import settings; logging = settings.LOG
@@ -15,47 +13,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
 from .decorators import facility_required
-from .forms import FacilityUserForm, FacilityForm, FacilityGroupForm
-from .models import Facility, FacilityGroup, FacilityUser
+from .forms import FacilityUserForm, FacilityGroupForm
+from .models import FacilityGroup, FacilityUser
 from fle_utils.internet.functions import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
 from kalite.i18n import get_default_language
 from kalite.shared.decorators.auth import require_authorized_admin
-
-
-@require_authorized_admin
-@render_to("facility/facility.html")
-@dynamic_settings
-def facility_edit(request, ds, id=None, zone_id=None):
-
-    if request.is_teacher and not ds["facility"].teacher_can_edit_facilities:
-        return HttpResponseForbidden()
-
-    facil = (id != "new" and get_object_or_404(Facility, pk=id)) or None
-    if facil:
-        zone = facil.get_zone()
-    else:
-        zone = get_object_or_None(Zone, pk=zone_id)
-
-    if settings.CENTRAL_SERVER:
-        assert zone is not None
-
-    if request.method != "POST":
-        form = FacilityForm(instance=facil, initial={"zone_fallback": zone})
-    else:
-        form = FacilityForm(data=request.POST, instance=facil)
-        if not form.is_valid():
-            messages.error(request, _("Failed to save the facility; please review errors below."))
-        else:
-            form.save()
-            facil = form.instance
-            # Translators: Do not change the text of '%(facility_name)s' because it is a variable, but you can change its position.
-            messages.success(request, _("The facility '%(facility_name)s' has been successfully saved!") % {"facility_name": form.instance.name})
-            return HttpResponseRedirect(request.next or reverse("zone_management", kwargs={"zone_id": getattr(facil.get_zone(), "id", "None")}))
-
-    return {
-        "form": form
-    }
 
 
 @require_authorized_admin
