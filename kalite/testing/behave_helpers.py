@@ -53,6 +53,10 @@ MAX_WAIT_TIME = 5
 MAX_PAGE_LOAD_TIME = 3
 
 
+def assert_no_element_by_css_selector(context, elem):
+    with context._runner.test_case.assertRaises(NoSuchElementException):
+        context.browser.find_element_by_css_selector(elem)
+
 def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     """ Click an element and then wait for the page to load. Does this by
     first getting an element on the page, clicking, and then waiting for the
