@@ -6,8 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.playlist.models import VanillaPlaylist as Playlist, QuizLog
-from kalite.topic_tools import get_slug2id_map, get_id2slug_map, convert_leaf_url_to_id, get_leafed_topics, get_content_cache, get_exercise_cache, get_node_cache
+from kalite.playlist.models import QuizLog
+from kalite.topic_tools import get_id2slug_map, get_leafed_topics, get_content_cache, get_exercise_cache, get_node_cache
 
 class PlaylistProgressParent:
     """Parent class for helpful class methods"""
@@ -71,7 +71,7 @@ class PlaylistProgress(PlaylistProgressParent):
 
         exercise_ids = set([ex_log["exercise_id"] for ex_log in user_ex_logs])
         video_ids = set([get_id2slug_map().get(vid_log["video_id"]) for vid_log in user_vid_logs])
-        quiz_log_ids = [ql_id["quiz"] for ql_id in QuizLog.objects.filter(user=user).values("quiz")]
+        # quiz_log_ids = [ql_id["quiz"] for ql_id in QuizLog.objects.filter(user=user).values("quiz")]
         # Build a list of playlists for which the user has at least one data point
         user_playlists = list()
         for p in all_playlists:
@@ -204,7 +204,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         objects associated with a specific user and playlist ID.
         """
         user = FacilityUser.objects.get(id=user_id)
-        playlist = next((pl for pl in [plist.__dict__ for plist in Playlist.all()] + get_leafed_topics() if pl.get("id") == playlist_id), None)
+        playlist = next((pl for pl in get_leafed_topics() if pl.get("id") == playlist_id), None)
 
         pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist)
 
@@ -217,13 +217,12 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         # Finally, sort an ordered list of the playlist entries, with user progress
         # injected where it exists.
         progress_details = list()
-        for ent in (playlist.get("entries") or playlist.get("children")):
+        for entity_id in playlist.get("children"):
             entry = {}
-            kind = ent.get("entity_kind") or ent.get("kind")
-            if kind == "Divider":
-                continue
-            elif kind == "Video":
-                entity_id = get_slug2id_map().get(ent.get("entity_id")) or ent.get("id")
+            leaf_node = get_content_cache().get(entity_id, get_exercise_cache().get(entity_id, {}))
+            kind = leaf_node.get("kind")
+
+            if kind == "Video":
                 vid_log = next((vid_log for vid_log in user_vid_logs if vid_log["video_id"] == entity_id), None)
                 if vid_log:
                     if vid_log.get("complete"):
@@ -232,8 +231,6 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                         status = "inprogress"
                     else:
                         status = "notstarted"
-
-                    leaf_node = get_content_cache().get(vid_log["video_id"])
 
                     entry = {
                         "id": entity_id,
@@ -245,7 +242,6 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     }
 
             elif kind == "Exercise":
-                entity_id = (ent.get("entity_id") or ent.get("id"))
                 ex_log = next((ex_log for ex_log in user_ex_logs if ex_log["exercise_id"] == entity_id), None)
                 if ex_log:
                     if ex_log.get("struggling"):
@@ -255,11 +251,8 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     elif ex_log.get("attempts"):
                         status = "inprogress"
 
-                    ex_log_id = ex_log.get("exercise_id")
-                    leaf_node = get_exercise_cache().get(ex_log_id)
-
                     entry = {
-                        "id": ex_log_id,
+                        "id": entity_id,
                         "kind": kind,
                         "status": status,
                         "score": ex_log.get("streak_progress"),
@@ -267,31 +260,31 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                         "path": leaf_node["path"],
                     }
 
-            elif kind == "Quiz":
-                entity_id = playlist["id"]
-                if quiz_log:
-                    if quiz_log.complete:
-                        if quiz_pct_score <= 59:
-                            status = "fail"
-                        elif quiz_pct_score <= 79:
-                            status = "borderline"
-                        else:
-                            status = "pass"
-                    elif quiz_log.attempts:
-                        status = "inprogress"
-                    else:
-                        status = "notstarted"
+            # elif kind == "Quiz":
+            #     entity_id = playlist["id"]
+            #     if quiz_log:
+            #         if quiz_log.complete:
+            #             if quiz_pct_score <= 59:
+            #                 status = "fail"
+            #             elif quiz_pct_score <= 79:
+            #                 status = "borderline"
+            #             else:
+            #                 status = "pass"
+            #         elif quiz_log.attempts:
+            #             status = "inprogress"
+            #         else:
+            #             status = "notstarted"
 
-                    quiz_log_id = quiz_log.quiz
+            #         quiz_log_id = quiz_log.quiz
 
-                    entry = {
-                        "id": quiz_log_id,
-                        "kind": "Quiz",
-                        "status": status,
-                        "score": quiz_pct_score,
-                        "title": playlist.get("title"),
-                        "path": "",
-                    }
+            #         entry = {
+            #             "id": quiz_log_id,
+            #             "kind": "Quiz",
+            #             "status": status,
+            #             "score": quiz_pct_score,
+            #             "title": playlist.get("title"),
+            #             "path": "",
+            #         }
 
             if not entry:
                 entry = cls.create_empty_entry(entity_id, kind, playlist)
