@@ -12,7 +12,7 @@ Feature: Coach reports
 		Given I am on the coach report
 		When I click on the dropdown button under the Group label
 		Then I should see the list of groups that I teach
-		When I can click on a group name
+		When I click on a group name
 		Then I should see the contents of the summary change according to the group selected
 		
 	Scenario: I teach two groups
@@ -20,16 +20,14 @@ Feature: Coach reports
 		When I click on the dropdown button under the Group label
 		Then I should see the the two groups listed
 		And I should see the option of selecting all groups
-		When I can click on a group name
+		When I click on a group name
 		Then I should see the contents of the summary change according to the group selected
 		
-	Scenario: I want a more detailed report of my group
-		Given I selected the preferred group
-		When I click on the Show Tabular Report button
-		Then I should see the tabular report 
-	
-		Given there are three learners
-		And they have each completed ten exercises
+	Scenario: I want to see all the relevant data
+		Given I am on the coach report
+		And I selected the preferred group
+		And there are three learners
+		And all learners have completed ten exercises
 		When I click on the Show Tabular Report button
 		Then I should see the tabular report
 		And there should be three learner rows displayed
@@ -71,11 +69,11 @@ Feature: Coach reports
 		Then I should not see the tabular report anymore
 		
 	Scenario: I want to know more about a specific learner
-		Given that I am on the tabular report
+		Given I am on the tabular report
 		When I click on the learner name
 		Then I should be taken to the learner's progress report page
 
 	Scenario: I want to know more about a specific exercise
-		Given that I am on the tabular report
+		Given I am on the tabular report
 		When I click on the exercise name
 		Then I should be taken to that exercise within the Learn tab
