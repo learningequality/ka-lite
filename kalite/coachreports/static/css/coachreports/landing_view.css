@@ -2,7 +2,10 @@
 background-color: #F7FFF5;
 float: left;
 height: 100%;
-width: calc(100% - 11em);
+width: 100%;
+border: 1px solid #ddd;
+margin-bottom: 40px;
+	
 }
 #summary_mainview h1 {
 font-weight: 100;
@@ -104,7 +107,7 @@ color: #32739E;
 }
 .charttext {
 text-align: center;
-margin: auto auto;
+margin: 15px auto;
 bottom: 0;    
 width: 12em;
 font-weight: 100;
