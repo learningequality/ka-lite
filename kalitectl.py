@@ -352,6 +352,11 @@ def manage(command, args=[], in_background=False):
             kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
         else:
             kwargs = {}
+
+        kwargs.update({
+            "stdout": open("kalite.log", "a"),
+            "stderr": subprocess.STDOUT,
+        })
         subprocess.Popen(
             [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
             **kwargs
@@ -419,7 +424,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         ] + (["--production"] if not debug else []),
         args
     )
-    manage('kaserve', args)
+    manage('kaserve', args, in_background=True)
 
 
 def stop(args=[], sys_exit=True):

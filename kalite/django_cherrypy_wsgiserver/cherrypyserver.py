@@ -135,14 +135,6 @@ def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=Fal
     if daemonize:
         if not pidfile:
             pidfile = '~/cpwsgi_%d.pid' % port
-        
-        # benjaoming: stopping the server is an explicit logic that has already
-        # been implemented other places. Killing some process related to a
-        # possibly out-dated pidfile is not exactly best practice
-        # stop_server(pidfile)
-
-        from django.utils.daemonize import become_daemon
-        become_daemon()
 
         fp = open(pidfile, 'w')
         fp.write("%d\n" % os.getpid())
