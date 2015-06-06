@@ -258,6 +258,13 @@ window.SidebarView = BaseView.extend({
         else {
             this.sidebarBack.offset({left: -(this.sidebarBack.width())});
         }
+
+        // Disable or enable the back button depending on whether it is visible or not.
+        if (this.sidebarBack.position().left <= 0) {
+            this.sidebarBack.find("button").attr("disabled", "disabled");
+        } else {
+            this.sidebarBack.find("button").removeAttr("disabled");
+        }
     },
 
     sidebar_back_one_level: function() {
