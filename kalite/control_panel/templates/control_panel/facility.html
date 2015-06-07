@@ -1,4 +1,4 @@
-{% extends "distributed/base_manage.html" %}
+{% extends "control_panel/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
 
@@ -12,6 +12,7 @@
 {% endblock title %}
 
 {% block headcss %}
+{{ block.super }}
     <style>
         #map_canvas {
             display: none;

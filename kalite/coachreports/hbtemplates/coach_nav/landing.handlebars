@@ -6,7 +6,7 @@
 				<h3>{{_ "This week" }}</h3>
 				<div class="circlechart">
 					<div id="full_circle1">
-						<p>{{ data.total_time_logged }}</p>
+						<p>{{#if data.total_time_logged }}{{ data.total_time_logged }}{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
 					<div class="charttext">
 						{{_ "Total hours logged" }}
@@ -22,7 +22,7 @@
 				</div>
 				<div class="circlechart">
 					<div id="full_circle3">
-						<p>{{ data.exercise_attempts }}</p>
+						<p>{{#if data.exercise_attempts }}{{ data.exercise_attempts }}{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
 					<div class="charttext">
 						{{_ "Total exercise attempts" }}
@@ -30,7 +30,7 @@
 				</div>
 				<div class="circlechart">
 					<div id="full_circle4">
-						<p>{{ data.content_time_spent }}</p>
+						<p>{{#if data.content_time_spent }}{{ data.content_time_spent }}{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
 					<div class="charttext">
 						{{_ "Total time spent on content" }}
