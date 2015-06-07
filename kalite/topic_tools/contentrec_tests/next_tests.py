@@ -3,11 +3,11 @@ This module contains all tests for the functions invoked to
 get the "Next" recommendations.
 '''
 
-import unittest
 from kalite.topic_tools.content_recommendation import *
 from kalite.facility.models import FacilityGroup
+from kalite.testing.base import KALiteTestCase
 
-class TestNextMethods(unittest.TestCase):
+class TestNextMethods(KALiteTestCase):
 
 	ORIGINAL_POINTS = 37
 	ORIGINAL_ATTEMPTS = 3
@@ -112,8 +112,3 @@ class TestNextMethods(unittest.TestCase):
 		actual = get_exercise_prereqs([ex_id])
 		
 		self.assertEqual(expected, actual, "Exercise Prereqs incorrect.")
-
-
-#runs tests
-suite = unittest.TestLoader().loadTestsFromTestCase(TestNextMethods)
-unittest.TextTestRunner(verbosity=2).run(suite)

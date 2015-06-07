@@ -3,11 +3,10 @@ This module contains all tests for the functions invoked to
 get the "Resume" recommendations.
 '''
 
-import unittest
 from kalite.topic_tools.content_recommendation import *
-#from kalite.testing.base import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 
-class TestResumeMethods(unittest.TestCase):
+class TestResumeMethods(KALiteTestCase):
 
 	ORIGINAL_POINTS = 37
 	ORIGINAL_ATTEMPTS = 3
@@ -74,9 +73,3 @@ class TestResumeMethods(unittest.TestCase):
 
 		#new user just created (no activity logged)
 		self.assertEqual(None, get_most_recent_incomplete_item(user=self.user_with_no_activity))
-
-
-
-#runs tests
-suite = unittest.TestLoader().loadTestsFromTestCase(TestResumeMethods)
-unittest.TextTestRunner(verbosity=2).run(suite)

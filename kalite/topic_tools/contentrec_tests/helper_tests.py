@@ -3,10 +3,10 @@ This module contains all tests for the functions implemented and used
 in multiple content recommendation functions.
 '''
 
-import unittest
 from kalite.topic_tools.content_recommendation import *
+from kalite.testing.base import KALiteTestCase
 
-class TestHelperMethods(unittest.TestCase):
+class TestHelperMethods(KALiteTestCase):
 
 	TOPIC_TO_TEST = 'decimal-to-fraction-pre-alg' #actually a subtopic, but is still valid
 	ORIGINAL_POINTS = 37
@@ -79,9 +79,3 @@ class TestHelperMethods(unittest.TestCase):
 		actual = get_most_recent_exercises(self.user1)
 	
 		self.assertSequenceEqual(expected, actual)
-
-
-
-#runs tests
-suite = unittest.TestLoader().loadTestsFromTestCase(TestHelperMethods)
-unittest.TextTestRunner(verbosity=2).run(suite)
