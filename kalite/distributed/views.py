@@ -5,6 +5,7 @@ Views for the KA Lite app are wide-ranging, and include:
 * Administrative pages
 and more!
 """
+import os
 import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
@@ -14,7 +15,7 @@ from django.contrib.auth.models import User
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -23,7 +24,7 @@ from django.utils.translation import ugettext as _
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
 from fle_utils.internet.webcache import backend_cache_page
-from kalite import topic_tools
+from kalite import topic_tools, ROOT_DATA_PATH
 from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
@@ -249,3 +250,15 @@ def handler_500(request):
         "value": unicode(value),
     }
     return HttpResponseServerError(render_to_string("distributed/500.html", context, context_instance=RequestContext(request)))
+
+def sphinx_docs(request, doc_url):
+    if not doc_url:
+        doc_url = "index.html"
+    split_doc_url = doc_url.split("/")
+    doc_location = os.path.join(ROOT_DATA_PATH, "sphinx-docs", "_build", "html", *split_doc_url)
+    if os.path.exists(doc_location):
+        with open(doc_location) as f:
+            html_str = f.read()
+        return HttpResponse(html_str)
+    else:
+        return handler_404(request)

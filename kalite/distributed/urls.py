@@ -40,6 +40,9 @@ urlpatterns += patterns('',
     url(r'^securesync/', include(securesync.urls)),
 )
 
+urlpatterns += patterns(__package__ + '.views',
+    url(r'^documentation/(?P<doc_url>(.*\.html$|$))', 'sphinx_docs', name='sphinx_docs'),
+)
 
 # TODO: This should only be in DEBUG settings and the HTTP server should be
 # serving it otherwise. Cherrypy is currently serving it through modifications
