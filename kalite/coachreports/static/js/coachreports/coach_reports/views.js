@@ -253,6 +253,21 @@ var TabularReportView = BaseView.extend({
         });
 
         this.append_views(row_views, ".student-data");
+
+        this.make_sticky(); 
+
+    },
+
+    make_sticky: function() {
+        $(document).ready(function(){
+            var counter = 0;
+            $("th.headrow").each(function(){
+                var width = $('th.headrow:last td:eq(' + counter + ')').width();
+                $("th.headrow").append(this);
+                this.width = width;
+                counter++;
+            });
+        });
     },
 
     no_user_error: function() {
