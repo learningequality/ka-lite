@@ -32,7 +32,7 @@ The overview will display the activity of the group: the total hours logged, the
     :user-role: coach
     :url: /coachreports/
     :navigation-steps: #show_tabular_report click
-	:focus: div#displaygrid
+    :focus: div#displaygrid
     :class: screenshot
 
 Tabular Report
@@ -63,7 +63,7 @@ Detailed View
     :user-role: coach
     :url: /coachreports/teach
     :navigation-steps: .status click
-	:focus: div.users-table
+    :focus: div.users-table
     :class: screenshot
 
 1. Click on the colored cells.
