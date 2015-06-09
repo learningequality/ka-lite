@@ -33,6 +33,8 @@ Alternatively, install with *pip* using the instructions below:
 #. Run *kalite manage setup*. Follow the on-screen prompts to complete the setup.
 #. After completing the setup, follow the on-screen instructions to start KA Lite using the *kalite* command!
 
+For more tips see :ref:`advanced-installation`.
+
 Raspberry Pi
 ============
 
@@ -89,6 +91,7 @@ Installation
     * Connect to this network
     * If the KA Lite server is started, browse to 1.1.1.1
 
+.. _advanced-installation:
 Advanced Installation
 =====================
 
