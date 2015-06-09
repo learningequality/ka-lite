@@ -25,7 +25,7 @@ try:
         "your installation is to rename your local_settings.py (keeping it in "
         "the same directory) and add an import statement in the very first "
         "line of the new file so it looks like this:\n\n"
-        "    from kalite.settings.base import *\n"
+        "    from kalite.project.settings.base import *\n"
         "    # Put custom settings here...\n"
         "    FOO = BAR\n\n"
         "and then call kalite start with an additional argument pointing to "
