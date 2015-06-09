@@ -74,10 +74,6 @@ LOG.setLevel(LOGGING_LEVEL)
 logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 
-##############################
-# Basic Django settings
-##############################
-
 ###################################################
 # RUNNING FROM STATIC SOURCE DIR?
 ###################################################
@@ -510,3 +506,36 @@ SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 # TODO(benjaoming): Use reverse_lazy for this sort of stuff
 LOGIN_URL = "/?login=true"
 LOGOUT_URL = "/securesync/api/user/logout/"
+
+
+########################
+# After all settings, but before config packages,
+#   import settings from other apps.
+#
+# This allows app-specific settings to be localized and augment
+#   the settings here, while also allowing
+#   config packages to override settings.
+########################
+
+from kalite.distributed.settings import *
+from kalite.django_cherrypy_wsgiserver.settings import *
+from kalite.coachreports.settings import *
+from securesync.settings import *
+from fle_utils.chronograph.settings import *
+from kalite.facility.settings import *
+from kalite.main.settings import *
+from kalite.contentload.settings import *
+from kalite.playlist.settings import *
+from kalite.student_testing.settings import *
+from kalite.remoteadmin.settings import *
+
+# This would seem only necessary when running the testing application,
+# however it's harmless so we just import it unconditionally in case
+# some of it is needed through "from kalite.settings import xx"
+from kalite.testing.settings import *
+
+# Import from applications with problematic __init__.py files
+from kalite.legacy.i18n_settings import *
+from kalite.legacy.topic_tools_settings import *
+from kalite.legacy.caching_settings import *
+from kalite.legacy.updates_settings import *

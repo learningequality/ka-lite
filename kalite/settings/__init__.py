@@ -16,33 +16,6 @@ def package_selected(package_name):
 
 from .base import *
 
-########################
-# After all settings, but before config packages,
-#   import settings from other apps.
-#
-# This allows app-specific settings to be localized and augment
-#   the settings here, while also allowing
-#   config packages to override settings.
-########################
-
-from kalite.distributed.settings import *
-from kalite.django_cherrypy_wsgiserver.settings import *
-from kalite.coachreports.settings import *
-from kalite.testing.settings import *
-from securesync.settings import *
-from fle_utils.chronograph.settings import *
-from kalite.facility.settings import *
-from kalite.main.settings import *
-from kalite.contentload.settings import *
-from kalite.playlist.settings import *
-from kalite.student_testing.settings import *
-from kalite.remoteadmin.settings import *
-
-# Import from applications with problematic __init__.py files
-from kalite.legacy.i18n_settings import *
-from kalite.legacy.topic_tools_settings import *
-from kalite.legacy.caching_settings import *
-from kalite.legacy.updates_settings import *
 
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 
@@ -113,12 +86,15 @@ if package_selected("Demo"):
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
-    MIDDLEWARE_CLASSES += ('kalite.distributed.demo_middleware.StopAdminAccess','kalite.distributed.demo_middleware.LinkUserManual','kalite.distributed.demo_middleware.ShowAdminLogin',)
+    MIDDLEWARE_CLASSES += (
+        'kalite.distributed.demo_middleware.StopAdminAccess',
+        'kalite.distributed.demo_middleware.LinkUserManual',
+        'kalite.distributed.demo_middleware.ShowAdminLogin',
+    )
 
 
 # Force DeprecationWarning to show in DEBUG
 if DEBUG:
-    import warnings
     warnings.simplefilter('error', DeprecationWarning)
 
 CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
