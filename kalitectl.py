@@ -82,7 +82,7 @@ from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
 
 # Necessary for loading default settings from kalite
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings")
 
 # Where to store user data
 KALITE_HOME = os.environ.get(

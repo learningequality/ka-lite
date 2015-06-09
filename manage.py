@@ -43,7 +43,7 @@ if __name__ == "__main__":
     ########################
     # Run it.
     ########################
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings")
 
     from django.core.management import execute_from_command_line
     execute_from_command_line(sys.argv)
