@@ -40,7 +40,7 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
     assert not set(processed_apps).intersection(set(installed_apps)), "Should never process the same app twice."
 
     this_filepath = global_vars.get("__file__")  # this would be the project settings file
-
+    
     for app in installed_apps:
         
         # Do not try to import settings modules from other applications than
@@ -60,14 +60,17 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
             elif app == 'kalite.updates':
                 app_settings = __import__('kalite.legacy.updates_settings').legacy.updates_settings
             else:
+
                 app_settings = __import__(app + ".settings")
                 # The module that we are importing is stored as an attribute
                 # of app_settings... i.e. "kalite.x.y.z.settings" becomes
                 # "app_settings.x.y.z.settings"
                 for x in app.split(".")[1:]:
                     app_settings = getattr(app_settings, x)
+                print "from %s.settings import *" % app
                 app_settings = getattr(app_settings, "settings")
         except ImportError:
+            print "FAILED"
             continue
         
         for var in dir(app_settings):
@@ -104,7 +107,7 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
                 # Unknown variables that do exist must have the same value--otherwise, conflict!
                 pass
         
-        processed_apps = processed_apps.union(set([app]))
+        processed_apps.add(app)
         # Now if INSTALLED_APPS exist, go do those.
         if "INSTALLED_APPS" in dir(app_settings):
                 # Combine the variable values, then import
