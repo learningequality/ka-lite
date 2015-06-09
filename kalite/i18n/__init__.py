@@ -13,6 +13,7 @@ import re
 import requests
 import shutil
 from collections_local_copy import OrderedDict
+from fle_utils.internet.webcache import invalidate_web_cache
 
 from django.http import HttpRequest
 from django.utils import translation
@@ -463,7 +464,6 @@ def delete_language(lang_code):
             else:
                 logging.debug("Not deleting missing language pack resource path: %s" % langpack_resource_path)
 
-    from fle_utils.internet.webcache import invalidate_web_cache
     invalidate_web_cache()
 
 
