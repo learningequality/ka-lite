@@ -6,13 +6,13 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [options] [--port=<arg>] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
-  kalite stop [options] [DJANGO_OPTIONS ...]
-  kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
-  kalite status [job-scheduler] [options]
-  kalite shell [options] [DJANGO_OPTIONS ...]
-  kalite test [options] [DJANGO_OPTIONS ...]
-  kalite manage COMMAND [options] [DJANGO_OPTIONS ...]
+  kalite [options] [--skip-job-scheduler] start [DJANGO_OPTIONS ...]
+  kalite [options] stop [DJANGO_OPTIONS ...]
+  kalite [options] [--skip-job-scheduler] restart [DJANGO_OPTIONS ...]
+  kalite [job-scheduler] status [options]
+  kalite [options] shell [DJANGO_OPTIONS ...]
+  kalite [options] test [DJANGO_OPTIONS ...]
+  kalite [options] manage COMMAND [DJANGO_OPTIONS ...]
   kalite -h | --help
   kalite --version
 
