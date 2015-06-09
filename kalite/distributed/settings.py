@@ -1,12 +1,10 @@
-FLE_USE_STUPID_IMPORT_MAGIC = True
-
-import getpass
 import hashlib
 import os
 import sys
 import tempfile
 import time
 import uuid
+
 from django.http import HttpRequest
 from kalite import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
@@ -32,55 +30,6 @@ def USER_FACING_PORT():
 # Django settings
 ##############################
 
-# TODO(bcipolli): change these to "login" and "logout", respectively, if/when
-#  we migrate to a newer version of Django.  Older versions require these
-#  to be set if using the login_required decorator.
-# TODO(benjaoming): Use reverse_lazy for this sort of stuff
-LOGIN_URL = "/?login=true"
-LOGOUT_URL = "/securesync/api/user/logout/"
-
-INSTALLED_APPS = (
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "fle_utils.config",
-    "fle_utils.chronograph",
-    "fle_utils.django_utils",  # templatetags
-    "fle_utils.handlebars",
-    "fle_utils.backbone",
-    "fle_utils.build",
-    "kalite.facility",  # must come first, all other apps depend on this one.
-    "kalite.control_panel",  # in both apps
-    "kalite.coachreports",  # in both apps; reachable on central via control_panel
-    "kalite.django_cherrypy_wsgiserver",  # API endpoint for PID
-    "kalite.i18n",  #
-    "kalite.contentload",  # content loading interactions
-    "kalite.topic_tools",  # Querying topic tree
-    "kalite.main", # in order for securesync to work, this needs to be here.
-    "kalite.playlist",
-    "kalite.testing",
-    "kalite.updates",  #
-    "kalite.student_testing",
-    "kalite.caching",
-    "kalite.store",
-    "kalite.remoteadmin",  # needed for remote connection
-    "securesync",  # needed for views that probe Device, Zone, even online status (BaseClient)
-    "kalite.ab_testing",
-    "kalite.dynamic_assets",
-)
-
-MIDDLEWARE_CLASSES = (
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",  # a bunch of shortcuts used by distributed
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    __package__ + ".middleware.LockdownCheck",
-    "kalite.student_testing.middleware.ExamModeCheck",
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.core.context_processors.request",  # expose request object within templates
-    __package__ + ".custom_context_processors.custom",  #
-)
 
 COMPRESS_CONTEXT_REQUEST = HttpRequest()
 COMPRESS_CONTEXT_REQUEST.is_admin = False
@@ -97,9 +46,6 @@ COMPRESS_OFFLINE_CONTEXT = {
 
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 
-if DEBUG:
-    INSTALLED_APPS += ("django_snippets",)   # used in contact form and (debug) profiling middleware
-    TEMPLATE_CONTEXT_PROCESSORS += ("django.core.context_processors.debug",)  # used in conjunction with toolbar to show query information
 
 
 ##############################
@@ -138,58 +84,6 @@ PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
 
 HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", None)
 HTTPS_PROXY     = getattr(local_settings, "HTTPS_PROXY", None)
-
-
-########################
-# Storage and caching
-########################
-
-# Local memory cache is to expensive to use for the page cache.
-#   instead, use a file-based cache.
-# By default, cache for maximum possible time.
-#   Note: caching for 100 years can be too large a value
-#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
-#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
-_5_years = 5 * 365 * 24 * 60 * 60
-_100_years = 100 * 365 * 24 * 60 * 60
-_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
-CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
-CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
-
-# Cache is activated in every case,
-#   EXCEPT: if CACHE_TIME=0
-if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    # When we change versions, cache changes, too
-    KEY_PREFIX = ".".join(version.VERSION)
-    if 'CACHES' not in locals():
-        CACHES = {}
-
-    # File-based cache
-    install_location_hash = hashlib.sha1(".".join(version.VERSION)).hexdigest()
-    username = getpass.getuser() or "unknown_user"
-    cache_dir_name = "kalite_web_cache_%s" % (username)
-    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
-    CACHES["file_based_cache"] = {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
-        'TIMEOUT': CACHE_TIME, # should be consistent
-        'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-        },
-    }
-
-    # Memory-based cache
-    CACHES["mem_cache"] = {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-        'TIMEOUT': CACHE_TIME, # should be consistent
-        'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-        },
-    }
-
-    # The chosen cache
-    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
 
 
 ########################

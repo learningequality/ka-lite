@@ -1,3 +1,8 @@
+import time
+import tempfile
+import getpass
+from kalite import version
+import hashlib
 import logging
 import os
 import json
@@ -298,41 +303,119 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
-INSTALLED_APPS = (
-    # this and the following are needed to enable django admin.
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.messages",
-    "django.contrib.sessions",
-    "kalite.distributed",
-    "compressor",
-    "django_js_reverse",
-    "kalite.inline",
-)
+INSTALLED_APPS = [
+    'django.contrib.auth',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.admin',
+    'django.contrib.staticfiles',
+    'django.contrib.contenttypes',
+    'tastypie',
+    'compressor',
+    'django_js_reverse',
+    'securesync',
+    'south',
+    'fle_utils.build',
+    'fle_utils.handlebars',
+    'fle_utils.django_utils',
+    'fle_utils.config',
+    'fle_utils.backbone',
+    'fle_utils.chronograph',
+    'kalite.django_cherrypy_wsgiserver',
+    'kalite.coachreports',
+    'kalite.distributed',
+    'kalite.main',
+    'kalite.playlist',
+    'kalite.caching',
+    'kalite.updates',
+    'kalite.facility',
+    'kalite.student_testing',
+    'kalite.store',
+    'kalite.topic_tools',
+    'kalite.contentload',
+    'kalite.dynamic_assets',
+    'kalite.remoteadmin',
+    'kalite.inline',
+    'kalite.i18n',
+    'kalite.ab_testing',
+    'kalite.control_panel',
+]
 
 if not BUILT:
-    INSTALLED_APPS += (
+    INSTALLED_APPS += [
         "fle_utils.testing",
         "kalite.testing",
+        'kalite.testing.loadtesting',
         "kalite.basetests",
-    ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
+    ] + getattr(local_settings, 'INSTALLED_APPS', [])
 else:
-    INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
+    INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', [])
 
-MIDDLEWARE_CLASSES = (
-    # gzip has to be placed at the top, before others
-    "django.middleware.gzip.GZipMiddleware",
-    # needed for django admin
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django_snippets.session_timeout_middleware.SessionIdleTimeout",
-) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    # needed for django admin
-    "django.contrib.messages.context_processors.messages",
-    "kalite.distributed.inline_context_processor.inline",
-) + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', tuple())
+MIDDLEWARE_CLASSES = [
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'kalite.i18n.middleware.SessionLanguage',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'fle_utils.django_utils.middleware.GetNextParam',
+    'kalite.facility.middleware.AuthFlags',
+    'kalite.facility.middleware.FacilityCheck',
+    'securesync.middleware.RegisteredCheck',
+    'securesync.middleware.DBCheck',
+    'django.middleware.common.CommonMiddleware',
+    'kalite.distributed.middleware.LockdownCheck',
+    'kalite.student_testing.middleware.ExamModeCheck',
+    'django.middleware.gzip.GZipMiddleware',
+    'django_snippets.session_timeout_middleware.SessionIdleTimeout'
+] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
+
+TEMPLATE_CONTEXT_PROCESSORS = [
+    'django.core.context_processors.i18n',
+    'kalite.i18n.custom_context_processors.languages',
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request',
+    'kalite.facility.custom_context_processors.custom',
+    'kalite.distributed.custom_context_processors.custom',
+    'django.contrib.messages.context_processors.messages',
+    'kalite.distributed.inline_context_processor.inline',
+] + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', [])
+
+
+if DEBUG:
+    INSTALLED_APPS += ["django_snippets"]  # used in contact form and (debug) profiling middleware
+    TEMPLATE_CONTEXT_PROCESSORS += ["django.core.context_processors.debug"]  # used in conjunction with toolbar to show query information
+    
+
+# benjaoming: what's this!?
+USE_DEBUG_TOOLBAR = getattr(local_settings, "USE_DEBUG_TOOLBAR", False)
+
+if USE_DEBUG_TOOLBAR:
+    INSTALLED_APPS += ['debug_toolbar']
+    MIDDLEWARE_CLASSES += [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+        'fle_utils.django_utils.middleware.JsonAsHTML'
+    ]
+    DEBUG_TOOLBAR_PANELS = (
+        'debug_toolbar.panels.version.VersionDebugPanel',
+        'debug_toolbar.panels.timer.TimerDebugPanel',
+        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
+        'debug_toolbar.panels.headers.HeaderDebugPanel',
+        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
+        'debug_toolbar.panels.template.TemplateDebugPanel',
+        'debug_toolbar.panels.sql.SQLDebugPanel',
+        'debug_toolbar.panels.signals.SignalDebugPanel',
+        'debug_toolbar.panels.logger.LoggingPanel',
+    )
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'HIDE_DJANGO_SQL': False,
+        'ENABLE_STACKTRACES' : True,
+    }
+    # Debug toolbar must be set in conjunction with CACHE_TIME=0
+    CACHE_TIME = 0
+
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 # libraries common to all apps
@@ -348,12 +431,62 @@ JS_REVERSE_JS_MINIFY = False
 # Storage and caching
 ########################
 
+########################
+# Storage and caching
+########################
+
+# Local memory cache is to expensive to use for the page cache.
+#   instead, use a file-based cache.
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
+CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
+
 # Sessions use the default cache, and we want a local memory cache for that.
 CACHES = {
     "default": {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+# Cache is activated in every case,
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    # When we change versions, cache changes, too
+    KEY_PREFIX = ".".join(version.VERSION)
+
+    # File-based cache
+    install_location_hash = hashlib.sha1(".".join(version.VERSION)).hexdigest()
+    username = getpass.getuser() or "unknown_user"
+    cache_dir_name = "kalite_web_cache_%s" % (username)
+    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
+    CACHES["file_based_cache"] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
+
+    # Memory-based cache
+    CACHES["mem_cache"] = {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
+
+    # The chosen cache
+    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
+
 
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(
@@ -374,21 +507,6 @@ API_LIMIT_PER_PAGE = 0
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 
-# DEPRECATED BEHAVIOURS
-
-# Copy INSTALLED_APPS to prevent any overwriting
-OLD_INSTALLED_APPS = INSTALLED_APPS[:]
-
-# NOW OVER WRITE EVERYTHING WITH ANY POSSIBLE LOCAL SETTINGS
-try:
-    from kalite.local_settings import *  # @UnusedWildImport
-except ImportError:
-    pass
-
-# Ensure that any INSTALLED_APPS mentioned in local_settings is concatenated
-# to previous INSTALLED_APPS because that was expected behaviour in 0.13
-try:
-    from kalite.local_settings import INSTALLED_APPS
-    INSTALLED_APPS = OLD_INSTALLED_APPS + INSTALLED_APPS
-except ImportError:
-    pass
+# TODO(benjaoming): Use reverse_lazy for this sort of stuff
+LOGIN_URL = "/?login=true"
+LOGOUT_URL = "/securesync/api/user/logout/"

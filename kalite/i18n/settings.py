@@ -49,30 +49,6 @@ def allow_all_languages_alist(langlookupfile):
 
 
 ########################
-# Django dependencies
-########################
-
-INSTALLED_APPS = (
-    "django.contrib.sessions",  # default_language, language_choices, etc
-    "fle_utils.config",  # default_language
-    "fle_utils.django_utils",  # templatetags
-    "kalite.facility",  # middleware for setting user's default language.  TODO: move this code to facility, break the dependency.
-)
-
-MIDDLEWARE_CLASSES = (
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "kalite.i18n.middleware.SessionLanguage",
-    'django.middleware.locale.LocaleMiddleware',  # Must define after i18n.middleware.SessionLanguage
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.core.context_processors.i18n",
-    __package__ + ".custom_context_processors.languages",
-)
-
-
-########################
 # (Aron): Setting the LANGUAGES configuration.
 ########################
 

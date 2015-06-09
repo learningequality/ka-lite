@@ -14,16 +14,7 @@ This will be cleaned up in KA Lite 0.14
 
 """
 
-########################
-# Django dependencies
-########################
 import os
-
-INSTALLED_APPS = (
-    "kalite.i18n",  # get_video_id
-    "kalite.contentload",  # because we have KA path weirdness in our topic tree.  TODO: remove for LEX
-    "kalite.testing",
-)
 
 try:
     from kalite import local_settings

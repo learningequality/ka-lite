@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 import platform
-from fle_utils.settingshelper import import_installed_app_settings
 from kalite import version
 
 
@@ -26,16 +25,30 @@ from .base import *
 #   config packages to override settings.
 ########################
 
-# Here is all the old magic crap that should go... /benjaoming
+from kalite.distributed.settings import *
+from kalite.django_cherrypy_wsgiserver.settings import *
+from kalite.coachreports.settings import *
+from kalite.testing.settings import *
+from securesync.settings import *
+from fle_utils.chronograph.settings import *
+from kalite.facility.settings import *
+from kalite.main.settings import *
+from kalite.contentload.settings import *
+from kalite.playlist.settings import *
+from kalite.student_testing.settings import *
+from kalite.remoteadmin.settings import *
 
-import_installed_app_settings(INSTALLED_APPS, globals())
+# Import from applications with problematic __init__.py files
+from kalite.legacy.i18n_settings import *
+from kalite.legacy.topic_tools_settings import *
+from kalite.legacy.caching_settings import *
+from kalite.legacy.updates_settings import *
 
-# TODO(benjaoming): Why on earth is there both a PRODUCTION_PORT and a CHERRYPY_PORT !?
-# Mesa confused!
-# TODO(benjaoming): Furthermore, this is dependent on kalite.distributed.settings
-# so there's no way that kalite.distributed was ever decoupled from kalite
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
-TEST_RUNNER = KALITE_TEST_RUNNER
+
+if DEBUG:
+    from kalite.testing.loadtesting.settings import *
+    TEST_RUNNER = KALITE_TEST_RUNNER
 
 ########################
 # IMPORTANT: Do not add new settings below this line
@@ -122,7 +135,7 @@ CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
 try:
     DEFAULT_ENCODING = DEFAULT_ENCODING
 except NameError:
-    from django.conf.settings import DEFAULT_ENCODING
+    from django.conf.settings import DEFAULT_ENCODING  # @UnresolvedImport
 
 if sys.getdefaultencoding() != DEFAULT_ENCODING:
     reload(sys)
