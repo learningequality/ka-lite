@@ -1,7 +1,7 @@
 """
 These methods will probably be used again and again in behave tests.
 We'll make an assumption: every function here takes a behave context
-as the first positional argument. 
+as the first positional argument.
 
 Useful functions you should know about and use include:
 
@@ -52,12 +52,28 @@ MAX_WAIT_TIME = 5
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 3
 
+def rgba_to_hex(rgba_string):
+    """
+    Returns an uppercase HEX representation of an rgba(xxx, yyy, zzz, a) string
+    """
+    return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
+
+def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+    try:
+        wait_elem = context.browser.find_element_by_css_selector(elem)
+        WebDriverWait(context.browser, wait_time).until(
+            EC.staleness_of(wait_elem)
+        )
+    except NoSuchElementException:
+        pass
+    with context._runner.test_case.assertRaises(NoSuchElementException):
+        context.browser.find_element_by_css_selector(elem)
 
 def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     """ Click an element and then wait for the page to load. Does this by
     first getting an element on the page, clicking, and then waiting for the
     reference to become stale. If the element doesn't become stale then it throws
-    a TimeoutException. (So if you pass an element to click that doesn't cause a 
+    a TimeoutException. (So if you pass an element to click that doesn't cause a
     page load, then you'll probably get a TimeoutException.)
     context: a behave context
     elem: a WebElement to click.
@@ -66,7 +82,7 @@ def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     # The body element should always be on the page.
     wait_elem = context.browser.find_element_by_tag_name("body")
     elem.click()
-    WebDriverWait(context.browser, wait_time).until(
+    return WebDriverWait(context.browser, wait_time).until(
         EC.staleness_of(wait_elem)
     )
 
@@ -79,7 +95,7 @@ def click_and_wait_for_id_to_appear(context, elem_click, elem_wait, wait_time=MA
     wait_time: Optional. Has a default value.
     """
     elem_click.click()
-    id_shown_with_wait(context, elem_wait, wait_time=wait_time)
+    return id_shown_with_wait(context, elem_wait, wait_time=wait_time)
 
 
 
@@ -168,6 +184,16 @@ def find_xpath_with_wait(context, id_str, **kwargs):
     Returns the element if found or None
     """
     return _find_elem_with_wait(context, (By.XPATH, id_str), **kwargs)
+
+def find_css_with_wait(context, id_str, **kwargs):
+    """ Tries to find an element with given XPATH with an explicit timeout.
+    context: a behave context
+    id_str: A string with the CSS Selector
+    kwargs: can optionally pass "wait_time", which will be the max wait time in
+        seconds. Default is defined by behave_helpers.py
+    Returns the element if found or None
+    """
+    return _find_elem_with_wait(context, (By.CSS_SELECTOR, id_str), **kwargs)
 
 def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
@@ -272,7 +298,7 @@ def logout(context):
 
 def post(context, url, data=""):
     """ Sends a POST request to the testing server associated with context
-    
+
     context: A `behave` context
     url: A relative url, i.e. "/zone/management/None" or "/securesync/logout"
     data: A string containing the body of the request
@@ -284,7 +310,7 @@ def post(context, url, data=""):
 
 def get(context, url, data=""):
     """ Sends a GET request to the testing server associated with context
-    
+
     context: A `behave` context
     url: A relative url, i.e. "/zone/management/None" or "/securesync/logout"
     data: A string containing the body of the request
@@ -312,11 +338,11 @@ def request(context, url, method="GET", data=""):
     class ContextWithMixin(BrowserActionMixins):
         def __init__(self):
             self.browser = context.browser
-    
+
     context_wm = ContextWithMixin()
-  
+
     context.browser.get(build_url(context, reverse("homepage")))
-    context_wm.browser_wait_for_js_object_exists("$") 
+    context_wm.browser_wait_for_js_object_exists("$")
     context.browser.execute_script('window.FLAG=false; $.ajax({type: "%s", url: "%s", data: \'%s\', contentType: "application/json", success: function(data){window.FLAG=true; window.DATA=data}})' % (method, url, data))
     context_wm.browser_wait_for_js_condition("window.FLAG")
     resp = context.browser.execute_script("return window.DATA")
