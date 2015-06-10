@@ -195,7 +195,10 @@ def search(request):
                 query in [x.lower() for x in node.get('tags', [])]))
 
             # Only return max results
-            possible_matches[node_type] = list(islice(match_generator, (page-1)*max_results_per_category, page*max_results_per_category))
+            try:
+                possible_matches[node_type] = list(islice(match_generator, (page-1)*max_results_per_category, page*max_results_per_category))
+            except ValueError:
+                return HttpResponseNotFound("Page does not exist")
 
             hit_max[node_type] = next(match_generator, False)
 
