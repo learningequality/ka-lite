@@ -3,7 +3,7 @@
 </div>
 
 {{#if collection}}
-<div id="detailpanel" class="body"></div>
+<div class="body"></div>
 
 {{#if pages }}
 <nav>
@@ -22,6 +22,6 @@
     <p>{{_ "Description" }}: {{ itemdata.description }}</p>
     {{/if}}
     <p>{{_ "Points Earned" }}: {{ model.points }}</p>
-    {{#if model.progress }}<p>{{_ "Progress" }}: {{ model.progress }}</p>{{/if}}
+    {{#if model.progress }}<p class="item-progress">{{_ "Progress" }}: {{ model.progress }}</p>{{/if}}
 </div>
 {{/if}}
