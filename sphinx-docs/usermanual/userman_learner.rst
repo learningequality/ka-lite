@@ -52,18 +52,18 @@ Once you have found the video or exercise that you'd like to engage with, simply
 
 Content Recommendation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-The content recommendations based off of your current progress are on the homepage - visible after you have made some progress on at least one exercise. 
+The content recommendations based off of your current progress are on the homepage and becomes visible after you have made some progress on at least one exercise. After you have made any form of progress, this is the first page you should see after logging in. If at any point you would like to get to your homepage, please click on the KA Lite logo in the top left hand corner.
 
-There are three cards:
+The homepage now provides you with three cards:
 
 **Resume:**
-Allows you to navigate to the last exercise you were on.
+This card allows you to navigate to the last exercise you were on. This includes both videos and written exercises.
 
 **Next Steps:**
-Allows you to navigate to your in-progress exercises and the topics of those exercises.
+This card allows you to navigate to excercises you have begun; you can also to navigate to the over-arching topic to which that exercise belongs to.
 
 **Explore:**
-Shows some recommended topics for you based on your previous in-progress and completed topics, and also random topics to further your learning and exploration.
+This card recommends content for you based on topics you have completed and begun. This card also recommends random content from our collection of topics to encourage learning from multiple fields.
 
 
 How to Practice Exercises
