@@ -41,6 +41,8 @@ var DetailsPanelView = BaseView.extend({
     //Number of items to show from the collection
     limit: 4,
 
+    id: "details-panel-view",
+
     template: HB.template("coach_nav/detailspanel"),
 
     initialize: function (options) {
@@ -136,6 +138,13 @@ var TabularReportRowCellView = BaseView.extend({
         return sprintf("status data %s", this.status_class());
     },
 
+    attributes: function() {
+        return {
+            value: this.model.get("exercise_id") || this.model.get("video_id") || this.model.get("content_id"),
+            title: this.title_attributes[this.status_class()]
+        };
+    },
+
     title_attributes: {
         "not-attempted": gettext("Not Attempted"),
         "partial": gettext("Attempted"),
@@ -143,17 +152,16 @@ var TabularReportRowCellView = BaseView.extend({
         "struggling": gettext("Struggling")
     },
 
-    attributes: function() {
-        return {title: this.title_attributes[this.status_class()]};
-    },
-
     initialize: function() {
+        _.bindAll(this);
         this.render();
     },
 
     render: function() {
         if (this.model.has("streak_progress")) {
-            this.$el.html(this.model.get("streak_progress") + "%");
+            if (this.model.get("streak_progress") < 100) {
+                this.$el.html(this.model.get("streak_progress") + "%");
+            }
         }
     },
 
@@ -174,6 +182,12 @@ var TabularReportRowView = BaseView.extend({
     template: HB.template("tabular_reports/tabular-view-row"),
 
     tagName: 'tr',
+
+    className: 'user-data-row',
+
+    id: function() {
+        return this.model.get("pk");
+    },
 
     initialize: function(options) {
         _.bindAll(this);
