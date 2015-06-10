@@ -18,7 +18,8 @@ window.ButtonView = Backbone.View.extend({
                 var narr = self.model.attributes;
 
                 //translate narrative into build options for introjs
-                var options = self.parseNarrative(narr);
+                var before_showing = [];
+                var options = self.parseNarrative(narr, before_showing);
 
                 //set the options on introjs object
                 var intro = introJs();
@@ -26,6 +27,17 @@ window.ButtonView = Backbone.View.extend({
                 intro.setOption('positionPrecedence', ['left', 'right', 'bottom', 'top']);
                 intro.setOptions(options);
 
+                //runs before-showing, if applicable (before-showing[] populated)
+                var i = 0;
+                if (before_showing.length !== 0) {
+                    intro.onafterchange(function(target) {
+                        if (target == document.querySelector(before_showing[0]["element"]) ){ 
+                            console.log("an action should be performed on this element");
+                            $(target).trigger(before_showing[0]["action"]);
+                            i++;
+                        }
+                    });
+                }
                 intro.start();
             },
 
@@ -36,7 +48,7 @@ window.ButtonView = Backbone.View.extend({
     },
 
     //Translate narrative into JSON obj used to set introjs options
-    parseNarrative: function(narr) {
+    parseNarrative: function(narr, before_showing) {
         var options = {};
         var steps = [];
 
@@ -71,7 +83,12 @@ window.ButtonView = Backbone.View.extend({
                     newvalue = value;
                 }
                 else if (key === "before-showing") {
-                    //TO DO: user actions to taken before showing modal
+                    //add the before-showing attribute to a separate
+                    //"before-showing" array to be used in intro.onchange()
+                    var before_showing_obj = {};
+                    before_showing_obj["element"] = selectorKey;
+                    before_showing_obj["action"] = value;
+                    before_showing.push(before_showing_obj);
                 }
                 step[newkey] = value;
             });

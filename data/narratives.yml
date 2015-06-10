@@ -28,9 +28,11 @@ update/videos:
   - 'li.dynatree-lastsib span.dynatree-expander':
     - step: 2
     - text: 'Simply toggle the "-" button to view see less information under a topic....'
-  - 'li.dynatree-lastsib span.dynatree-expander':
+    - before-showing: 'click'
+  - 'span.dynatree-expander':
     - step: 3
     - text: 'Or toggle the "+" to view more subtopics under a topic!'
+    - before-showing: 'click'
 
 
 
