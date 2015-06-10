@@ -157,7 +157,7 @@ def aggregate_learner_logs(request):
         "struggling": log.struggling,
         "progress": log.streak_progress,
         "exercise": get_exercise_cache().get(log.exercise_id),
-        } for log in output_logs[:event_limit]]
+        } for log in output_logs[:event_limit] if type(log) != VideoLog]
     output_dict["total_time_logged"] = UserLogSummary.objects\
         .filter(user__in=learners, last_activity_datetime__gte=start_date, last_activity_datetime__lte=end_date)\
         .aggregate(Sum("total_seconds")).get("total_seconds__sum") or 0
