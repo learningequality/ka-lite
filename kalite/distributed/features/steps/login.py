@@ -64,7 +64,7 @@ def impl(context):
 def impl(context):
     login_button = find_css_class_with_wait(context, "login-btn")
     # Grab an element reference from the current page. Used to test a page reload later.
-    context.wait_elem = context.browser.find_element_by_tag_name("body")
+    context.wait_elem = context.browser.find_element_by_id("nav_login")
     login_button.click()
 
 @then('a tooltip should appear on the username box only')
@@ -83,7 +83,7 @@ def impl(context):
 def impl(context):
     assert check_single_popover(context, "password")
 
-@then('the page should reload')
+@then('the login button should disappear')
 def impl(context):
     assert WebDriverWait(context.browser, PAGE_RELOAD_TIMEOUT).until(
         EC.staleness_of(context.wait_elem)

@@ -54,13 +54,20 @@ def calc_last_modified(request, *args, **kwargs):
     return last_modified
 
 
-def backend_cache_page(handler, cache_time=settings.CACHE_TIME, cache_name=settings.CACHE_NAME):
+def backend_cache_page(handler, cache_time=None, cache_name=None):
     """
     Applies all logic for getting a page to cache in our backend,
     and never in the browser, so we can control things from Django/Python.
 
     This function does this all with the settings we want, specified in settings.
     """
+
+    if not cache_time:
+        cache_time = settings.CACHE_TIME
+
+    if not cache_name:
+        cache_name = settings.CACHE_NAME
+
     if caching_is_enabled():
         @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
         @cache_control(no_cache=True)  # must appear before @cache_page

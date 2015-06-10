@@ -217,7 +217,7 @@ function start_languagepack_download(lang_code) {
     downloading = true;
     // tell server to start languagepackdownload job
     doRequest(
-        window.sessionModel.get("START_LANGUAGEPACKDOWNLOAD_URL"),
+        Urls.start_languagepack_download(),
         { lang: lang_code }
     ).success(function(progress, status, req) {
         updatesStart(
@@ -272,7 +272,7 @@ function languagepack_reset_callback(progress, resp) {
 }
 
 function set_server_language(lang) {
-    doRequest(window.sessionModel.get("SET_DEFAULT_LANGUAGE_URL"),
+    doRequest(Urls.set_default_language(),
               {lang: lang}
              ).success(function() {
                  window.location.reload();

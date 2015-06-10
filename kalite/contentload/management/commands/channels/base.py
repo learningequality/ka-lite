@@ -52,6 +52,9 @@ def whitewash_node_data(node, path="", channel_data={}):
         node["title"] = (node.get(channel_data["title_key"][kind], ""))
     node["title"] = (node["title"] or "").strip()
 
+    if "description" in node:
+        node["description"] = node["description"].strip()
+
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
         node["video_id"] = node.get("youtube_id", "")

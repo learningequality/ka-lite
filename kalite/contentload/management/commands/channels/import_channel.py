@@ -285,7 +285,7 @@ def channel_data_files(dest=None):
             sourcedir = os.path.dirname(path)
             sourcefile = os.path.basename(path) + ".json" if os.path.exists(os.path.basename(path) + ".json") else channel_data_filename
         else:
-            source = channel_data_path
+            sourcedir = channel_data_path
             sourcefile = channel_data_filename
         shutil.copy(os.path.join(sourcedir, sourcefile), os.path.join(dest, channel_data_filename))
         shutil.rmtree(os.path.join(dest, "images"), ignore_errors=True)

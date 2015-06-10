@@ -221,7 +221,6 @@ class PackagesTests(DependenciesTests):
         "kaa": "0.99.2dev",
         "khan_api_python": NO_VERSION,
         "khanacademy": NO_VERSION,
-        "playground": NO_VERSION,
         "pyasn1": "0.1.4",
         "requests": "0.14.2",
         "rsa": "3.1.1",

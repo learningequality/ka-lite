@@ -5,7 +5,7 @@ from kalite.shared.utils import open_json_or_yml
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 MAJOR_VERSION = "0"
 MINOR_VERSION = "14"
-PATCH_VERSION = "dev8"
+PATCH_VERSION = "dev11"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
@@ -26,4 +26,4 @@ def VERSION_INFO():
     # this file. Importing it on top will lead to circular imports.
     from django.conf import settings
 
-    return open_json_or_yml(os.path.join(settings.CONTENT_DATA_PATH, "version"))
+    return open_json_or_yml(os.path.join(settings.CONTENT_DATA_PATH, "version.yml"))

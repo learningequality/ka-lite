@@ -2,6 +2,17 @@
 {% load staticfiles %}
 {% load i18n %}
 
+{% block headjs %}{{ block.super }}
+<script type="text/javascript">
+    window.ZONE_ID = "{{ zone_id }}";
+    {% for id, device in devices.items %}
+        {% if device.is_own_device %}
+            window.DEVICE_ID = "{{ id }}";
+        {% endif %}
+    {% endfor %}
+</script>
+{% endblock headjs %}
+
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/base.css' %}" />
     <!-- Override bootstrap here to fix up search bar -->
