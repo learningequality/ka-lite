@@ -124,6 +124,8 @@ class PlaylistProgress(PlaylistProgressParent):
             else:
                 ex_status = "complete"
 
+            # Oh Quizzes, we hardly knew ye!
+            # TODO (rtibbles): Sort out the status of Quizzes, and either reinstate them or remove them.
             # Compute quiz stats
             # quiz_exists, quiz_log, quiz_pct_score = cls.get_quiz_log(user, (p.get("entries") or p.get("children")), p.get("id"))
             # if quiz_log:
@@ -260,6 +262,10 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                         "path": leaf_node["path"],
                     }
 
+            # Oh Quizzes, we hardly knew ye!
+            # TODO (rtibbles): Sort out the status of Quizzes, and either reinstate them or remove them.
+            # Quizzes were introduced to provide a way of practicing multiple types of exercise at once
+            # However, there is currently no way to access them, and the manner for generating them (from the now deprecated Playlist models) is inaccessible
             # elif kind == "Quiz":
             #     entity_id = playlist["id"]
             #     if quiz_log:
