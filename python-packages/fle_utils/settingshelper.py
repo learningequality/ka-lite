@@ -16,7 +16,7 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
     assert not set(processed_apps).intersection(set(installed_apps)), "Should never process the same app twice."
 
     this_filepath = global_vars.get("__file__")  # this would be the project settings file
-
+    
     for app in installed_apps:
         app_settings = None
         try:
@@ -68,9 +68,7 @@ def import_installed_app_settings(installed_apps, global_vars, cur_app="__root__
                 #logging.warn("(%s) %s is already set; resetting can cause confusion." % (app, var))
                 pass
 
-        #print "\n%s" % processed_apps
-        processed_apps = processed_apps.union(set([app]))
-        #print processed_apps
+        processed_apps.add(app)
         # Now if INSTALLED_APPS exist, go do those.
         if "INSTALLED_APPS" in app_settings:
                 # Combine the variable values, then import
