@@ -43,11 +43,13 @@
           {{_ "Logout" }}
         </a>
       </li>
+    {{#if docs_exist}}
       <li role="presentation" id="documentation">
         <a role="menuitem" id="documentation_a" href="/static/html/index.html">
           {{_ "Documenatation" }}
         </a>
       </li>
+    {{/if}}
     </ul>
   </li>
 {{/if}}
