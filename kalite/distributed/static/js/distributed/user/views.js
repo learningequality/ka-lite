@@ -1,8 +1,14 @@
-// Separate out the modal behaviour from the login functionality
-// This allows the LoginView to be embedded more flexibly across the site if needed
+var ENTER_KEY = 13;
 
-window.LoginModalView = BaseView.extend({
-    template: HB.template("user/loginmodal"),
+window.SuperUserCreateModalView = BaseView.extend({
+    events: {
+        "click .create-btn": "create_superuser_click",
+        "keypress #id_superusername": "key_user",
+        "keypress #id_superpassword": "key_pass",
+        "keypress #id_superemail": "key_email"
+    },
+
+    template: HB.template("user/superusercreatemodal"),
 
     initialize: function() {
         _.bindAll(this);
@@ -12,17 +18,136 @@ window.LoginModalView = BaseView.extend({
 
     render: function() {
         this.$el.html(this.template());
+        _.defer(this.add_superuser_form);
+    },
+
+    add_superuser_form: function() {
+        this.show_modal();
+        $.ajax({
+            context: this,
+            type: 'post',
+            url: 'api/django_user_form',
+            dataType: 'json',
+            success : function(e){
+                if (e.Status == 'ShowModal'){
+                    $('#superusercreate-container').html(e.data);
+                    setTimeout(function () {this.$("#id_superusername").focus().select()}, 900);
+                }
+            },
+            error : function(e){
+                console.log(e);
+            }
+        });
+    },
+
+    create_superuser_click: function() {
+        $('#superusercreate-box').submit({param1: this}, function (e) {
+            mContext = e.data.param1;
+            e.preventDefault();
+            $.ajax({
+                context: mContext,
+                type: 'post',
+                url: 'api/django_user',
+                dataType: 'json',
+                data: $("#superusercreate-box").serialize(),
+                success : function(e){
+                    if (e.Status == 'Success') {
+                        this.close_modal();
+                    }else if (e.Status == 'Invalid'){
+                        $('#superusercreate-container').html(e.data);
+                        this.highlight_form();
+                    }
+                },
+                error : function(e){
+                    console.log(e);
+                }
+            });
+        });
+    },
+
+    highlight_form: function(){
+        if (this.validate_email(this.$("#id_superemail").val())){
+            this.$("#id_superemail").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
+        }else{
+            this.$("#id_superemail").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
+        }
+        if (this.$("#id_superpassword").val()){
+            this.$("#id_superpassword").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
+        }else{
+            this.$("#id_superpassword").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
+        }
+        if (this.$("#id_superusername").val()){
+            this.$("#id_superusername").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
+        }else{
+            this.$("#id_superusername").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
+        }
+    },
+
+    validate_email: function(email){
+        var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+        return re.test(email);
+    },
+
+    close_modal: function() {
+        $("#superUserCreateModal").modal('hide');
+    },
+
+    show_modal: function() {
+        $("#superUserCreateModal").modal('show');
+    },
+
+    key_user: function(event) {
+        if (event.which == ENTER_KEY) {
+            event.preventDefault();
+            this.$("#id_superpassword").focus().select();
+        }
+    },
+
+    key_pass: function(event) {
+        if (event.which == ENTER_KEY) {
+            event.preventDefault();
+            this.$("#id_superemail").focus().select();
+        }
+    },
+
+    key_email: function(event) {
+        if (event.which == ENTER_KEY) {
+            event.preventDefault();
+            this.$(".create-btn").focus().click();
+        }
+    }
+});
+
+// Separate out the modal behaviour from the login functionality
+// This allows the LoginView to be embedded more flexibly across the site if needed
+window.LoginModalView = BaseView.extend({
+    template: HB.template("user/loginmodal"),
+
+    initialize: function(options) {
+        _.bindAll(this);
+        this.set_options(options);
+        this.render();
+        $("body").append(this.el);
+    },
+
+    render: function() {
+        this.$el.html(this.template());
+        // If we don't want for render to complete, often, the containing element for the login is missing
         _.defer(this.addLoginView);
     },
 
     addLoginView: function() {
         if (this.loginView) {
+            // If loginView already exists rerender and set this.next on it so it has URL redirect info
             this.loginView.render();
+            this.loginView.next = this.next;
         } else {
-            this.loginView = new LoginView({model: this.model, el: "#login-container"});
+            // Otherwise create a new login view, and close the model when the login successfully completes
+            this.loginView = new LoginView({model: this.model, el: "#login-container", next: this.next});
             this.listenTo(this.loginView, "login_success", this.close_modal);
         }
         if (this.start_open) {
+            // If the start_open option is flagged, show the modal straight away.
             this.show_modal();
         }
     },
@@ -33,6 +158,11 @@ window.LoginModalView = BaseView.extend({
 
     show_modal: function() {
         $("#loginModal").modal('show');
+    },
+
+    set_options: function(options) {
+        this.start_open = options.start_open;
+        this.next = options.next;
     }
 });
 
@@ -48,8 +178,9 @@ window.LoginView = BaseView.extend({
 
     template: HB.template("user/login"),
 
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this);
+        this.next = options.next;
         this.facility = (this.model.get("facilities")[0] || {id:""}).id;
         this.admin = false;
         if (this.model.get("simplified_login")) {
@@ -89,6 +220,11 @@ window.LoginView = BaseView.extend({
     handle_login: function(response) {
         if (response.status == 200) {
             this.trigger("login_success");
+            if (this.next) {
+                window.location = this.next;
+            } else if (response.redirect) {
+                window.location = response.redirect;
+            }
         } else {
             var error_data = JSON.parse(response.responseText);
             var message = error_data.messages.error;
@@ -299,15 +435,36 @@ window.UserView = BaseView.extend({
                 this.totalPointViewXs = new TotalPointView({model: this.model, el: "#points-xs"});
             }
         } else {
+            // User is not logged in, so initialize the login modal
+            var options = {};
+            /* 
+            *  Check the GET params to see if there is a 'next'
+            *  This means that someone has tried to access an unauthorized page, but we want them to
+            *  login before accessing this page
+            */
+            var next = getParamValue("next");
+            // Check the GET params to see if a 'login' flag has been set
+            // If this is the case, the modal should start open
+            var login = getParamValue("login");
+            if (login) {
+                // Set an option for the modal to start open
+                options.start_open = true;
+            }
+            if (next) {
+                // Set the option for the URL redirect after login success
+                options.next = next;
+            }
             if (this.loginModalView) {
+                // If there is already a loginModalView for some reason, just set the above options on it
+                // and rerender
+                this.loginModalView.set_options(options);
                 this.loginModalView.render();
             } else {
-                this.loginModalView = new LoginModalView({model: this.model});
+                // Otherwise just start the modal view with these options, but add in the statusModel with it
+                options.model = this.model;
+                this.loginModalView = new LoginModalView(options);
             }
-            if (window.location.search.search("login") > -1 || this.login_start_open) {
-                this.loginModalView.start_open = true;
-                delete this.login_start_open;
-            }
+
         }
     },
 
@@ -324,13 +481,13 @@ window.ToggleNavbarView = BaseView.extend ({
     initialize: function() {
 
         _.bindAll(this);
-        this.listenTo(this.model, "change", this.render);
+        this.listenTo(this.model, "change:is_logged_in", this.render);
         $("topnav").append(this.template());
-
+        $(window).on("resize", this.collapsed_nav);
     },
 
     render: function() {
-        
+
         this.$el.html(this.template(this.model.attributes));
         
         this.userView = new UserView({ model: this.model, el: "#topnav" });
@@ -345,6 +502,25 @@ window.ToggleNavbarView = BaseView.extend ({
             this.$(".manage-tab").addClass("active");   
         }
 
+        this.collapsed_nav();
+    },
+
+    /*  This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu.
+        Specifically, it ensures that the "user" dropdown menu is already expanded when the containing menu is collapsed
+    */
+    collapsed_nav: function() {
+        if ( !this.model.get("is_logged_in") ) {
+            return; // If not logged in, the needed elements won't exist.
+        }
+        var data_toggle = document.getElementById("user-name-a");
+        var menu = document.getElementById("user-name");
+        if ( $('body').innerWidth() <= 750 ) {
+            data_toggle.removeAttribute("data-toggle");
+            menu.classList.add("open");
+        } else {
+            data_toggle.setAttribute("data-toggle", "dropdown");
+            menu.classList.remove("open");
+        }
     }
 
 });

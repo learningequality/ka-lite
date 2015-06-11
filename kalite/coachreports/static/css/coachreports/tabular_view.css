@@ -1,9 +1,14 @@
+.student-data:hover {
+	cursor: pointer;
+}
+
 #displaygrid td {
 	al
 }
 
 #displaygrid {
 	overflow: auto;
+	border-right: 1px solid #bbb;
 }
 
 #displaygrid > .users-table {
@@ -29,6 +34,9 @@
 
 .status {
     height: 34px;
+	color: #2a6496;
+	font-weight: bold;
+	text-align: center;
 }
 
 .stick-wrap, th.username {
@@ -36,6 +44,7 @@
     height: 27px;
     white-space: nowrap;
     text-overflow: ellipsis;
+
 }
 
 th.headrow, th.headrow div {
@@ -56,7 +65,7 @@ th.headrowuser {
 }
 
 .partial {
-    background-color: #ACD289;
+    background-color: #C0E7F3;
 }
 
 .complete {
@@ -105,11 +114,15 @@ th.headrowuser {
 
 #legend {
     padding: 6px 0 0 10px;
-    margin-top:33px;
+	margin-top: 0;
+	margin-left: 15px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
-	text-align: center;
-	
+	text-align: center;	
+}
+
+#legendMargin {
+	margin-left: 15px;
 }
 
 .legend {
