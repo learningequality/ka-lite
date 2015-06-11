@@ -2,12 +2,12 @@ Feature: Create superuser from the in browser modal
 
     Scenario: Superuser already exists
         Given there is superuser 
-        And I am on the homepage
+        And I go to homepage
         Then there should be no modal displayed
 
     Scenario: Superuser does not exist yet
         Given there is no superuser
-        And I am on the homepage
+        And I go to homepage
         Then I should see a modal
 
     Scenario: Create superuser with empty username

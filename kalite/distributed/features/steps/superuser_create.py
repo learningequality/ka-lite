@@ -5,6 +5,10 @@ from django.contrib.auth.models import User
 
 modal_container = "superusercreate-container"
 
+@given("I go to homepage")
+def step_impl(context):
+    go_to_homepage(context)
+
 @given("there is superuser")
 def step_impl(context):
     if User.objects.exists():
@@ -25,6 +29,8 @@ def step_impl(context):
 
 @then("I should see a modal")
 def step_impl(context):
+    driver = webdriver.Firefox()
+    driver.implicitly_wait(2)
     assert find_id_with_wait(context, modal_container).is_displayed(), "modal not displayed!"
 
 @given("the username is empty")
@@ -46,6 +52,8 @@ def step_impl(context):
 
 @then("the modal won't dismiss")
 def step_impl(context):
+    driver = webdriver.Firefox()
+    driver.implicitly_wait(2)
     assert find_id_with_wait(context, modal_container).is_displayed(), "modal dismissed!"
 
 @given("the password is empty")
@@ -86,11 +94,13 @@ def step_impl(context):
 
 @then("the modal will dismiss")
 def impl(context):
+    driver = webdriver.Firefox()
+    driver.implicitly_wait(2)
     assert not find_id_with_wait(context, modal_container).is_displayed(), "modal not dismissed!"
 
 @then("a superuser is created")
 def impl(context):
-    assert WebDriverWait(context.browser, 3).until(User.objects.exists()), "superuser not crerated successfully!"
+    assert User.objects.exists(), "superuser not crerated successfully!"
 
 
 def fill_field(context, text, field_id):
