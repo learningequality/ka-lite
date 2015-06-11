@@ -8,7 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.utils.six import StringIO
 
@@ -90,7 +90,6 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None,
         ensure_dir(settings.SCREENSHOTS_OUTPUT_PATH)
 
         new_io = StringIO()
-        call_command("reset_db", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
         call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
         call_command("migrate", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
         if username and email and password:
@@ -140,7 +139,6 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
     KEY_INPUTS = 'inputs'
     KEY_PAGES = 'pages'
     KEY_FOCUS = 'focus'
-    # Notes aren't used anywhere...
     KEY_NOTES = 'notes'
 
     KEY_CMD_SLUG = '<slug>'
@@ -221,7 +219,6 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
                  (self.browser.name, self.live_server_url,))
         self.loginfo("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
 
-
     def set_session_language(self, lang_code):
         """ Uses the "set_default_language" api endpoint to set the language for the session.
         The language pack should already be downloaded, or the behavior is undefined.
@@ -238,7 +235,6 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.browser_wait_for_js_condition("window.SUCCESS")    
         # Ensure the changes are loaded 
         self.browser.get(self.live_server_url + reverse("homepage"))
-        
 
     def validate_json_keys(self, shot):
         """
