@@ -178,7 +178,7 @@ class FacilityUserResource(ModelResource):
             "version": version.VERSION,
             "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
-            "docs_exist": any(map(lambda x: os.path.join("sphinx-docs", "_build") in x, settings.STATICFILES_DIRS)),
+            "docs_exist": settings._DOCS_EXIST,
         }
 
         # Override properties using facility data
