@@ -13,10 +13,6 @@
     background: white;
 }
 
-.headrowuser div {
-    width: 130px;
-}
-
 .userstatus {
     overflow: auto;
     width: 88%;
@@ -42,8 +38,9 @@ th.username span {
     color: #fff;
     line-height: normal;
     width: 97px;
-    height: 36px;
+    height: 37px;
     padding-top: 0px;
+    border: 1px solid #ddd;
 }
 
 table.tab_report th.username {
@@ -53,12 +50,11 @@ table.tab_report th.username {
     color: transparent;
     border: none;
     white-space: nowrap;
-
 }
 
 th.headrow, th.headrow div {
     width: 80px;
-    /*table-layout: fixed;*/
+    table-layout: fixed;
     font-weight: bold;
     word-wrap: break-word;
     background-color: white;
@@ -69,8 +65,8 @@ th.headrow, th.headrow div {
 th.headrowuser {
     font-weight: bold;
     border-top: none;
+    border-right: 0px;
 }
-
 
 .partial {
     background-color: #ACD289;
