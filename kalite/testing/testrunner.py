@@ -1,23 +1,19 @@
 """
 Test support harness to make setup.py test work.
 """
-import functools
 import os
-import pdb
-import sys
 
 from django.conf import settings; logging = settings.LOG
-from django.core import management
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import get_app
-from django.test.simple import DjangoTestSuiteRunner
-from django.test.utils import override_settings
+from django.db.models import get_app, get_apps
+from django.test.simple import DjangoTestSuiteRunner, build_suite, build_test, reorder_suite
+from django.utils import unittest
 
 from behave.configuration import options
 
 from optparse import make_option
 
-from kalite.testing.base import KALiteBrowserTestCase, DjangoBehaveTestCase
+from kalite.testing.base import DjangoBehaveTestCase
 
 
 def get_app_dir(app_module):
@@ -169,4 +165,22 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
                 # build a test suite for this directory
                 extra_tests.append(self.make_bdd_test_suite(features_dir))
 
-        return super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
+        suite = unittest.TestSuite()
+
+        if test_labels:
+            for label in test_labels:
+                if '.' in label:
+                    suite.addTest(build_test(label))
+                else:
+                    app = get_app(label)
+                    suite.addTest(build_suite(app))
+        else:
+            # Exclude Django tests from our test suite
+            for app in (app for app in get_apps() if not app.__name__.startswith("django")):
+                suite.addTest(build_suite(app))
+
+        if extra_tests:
+            for test in extra_tests:
+                suite.addTest(test)
+
+        return reorder_suite(suite, (unittest.TestCase,))

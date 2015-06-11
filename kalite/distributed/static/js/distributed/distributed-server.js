@@ -35,14 +35,14 @@ function show_api_messages(messages) {
     }
 }
 
-function force_sync() {
+function force_sync(zone_id, device_id) {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
     doRequest(window.Urls.api_force_sync())
         .success(function() {
             var msg = gettext("Successfully launched data syncing job.") + " ";
             msg += sprintf(gettext("After syncing completes, visit the <a href='%(devman_url)s'>device management page</a> to view results."), {
-                devman_url: window.sessionModel.get("LOCAL_DEVICE_MANAGEMENT_URL")
+                devman_url: Urls.device_management(zone_id, device_id)
             });
             show_message("success", msg);
         });
@@ -145,15 +145,15 @@ var StatusModel = Backbone.Model.extend({
 
     handle_login_logout_success: function(data, status, response, callback) {
         if (data.redirect) {
-            window.location = data.redirect;
+            response.redirect = data.redirect;
+        }
+        this.fetch_data();
+        if (callback) {
+            callback(response);
         } else {
-            // TODO (rtibbles) Reinstate the code below once
-            // the front end app responds better to statusModel changes
-            window.location.reload();
-            // self.load_status();
-            // if (callback) {
-            //     callback(response);
-            // }
+            if (data.redirect) {
+                window.location = data.redirect;
+            }
         }
     },
 
@@ -442,17 +442,3 @@ $(function() {
     });
 
 });
-
-
-/*This function addresses Bootstrap's limitation of having a dropdown menu in an already collapsed menu*/
-function collapsedNav() {
-    var data_toggle = document.getElementById("user-name-a");
-    var menu = document.getElementById("user-name");
-        if ( $('body').innerWidth() <= 750 ) {
-            data_toggle.removeAttribute("data-toggle");
-            menu.classList.add("open");
-      } else {
-            data_toggle.setAttribute("data-toggle", "dropdown");
-            menu.classList.remove("open");
-      }
-}
