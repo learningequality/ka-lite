@@ -41,6 +41,8 @@ var DetailsPanelView = BaseView.extend({
     //Number of items to show from the collection
     limit: 4,
 
+    id: "details-panel-view",
+
     template: HB.template("coach_nav/detailspanel"),
 
     initialize: function (options) {
@@ -136,6 +138,13 @@ var TabularReportRowCellView = BaseView.extend({
         return sprintf("status data %s", this.status_class());
     },
 
+    attributes: function() {
+        return {
+            value: this.model.get("exercise_id") || this.model.get("video_id") || this.model.get("content_id"),
+            title: this.title_attributes[this.status_class()]
+        };
+    },
+
     title_attributes: {
         "not-attempted": gettext("Not Attempted"),
         "partial": gettext("Attempted"),
@@ -143,17 +152,16 @@ var TabularReportRowCellView = BaseView.extend({
         "struggling": gettext("Struggling")
     },
 
-    attributes: function() {
-        return {title: this.title_attributes[this.status_class()]};
-    },
-
     initialize: function() {
+        _.bindAll(this);
         this.render();
     },
 
     render: function() {
         if (this.model.has("streak_progress")) {
-            this.$el.html(this.model.get("streak_progress") + "%");
+            if (this.model.get("streak_progress") < 100) {
+                this.$el.html(this.model.get("streak_progress") + "%");
+            }
         }
     },
 
@@ -174,6 +182,12 @@ var TabularReportRowView = BaseView.extend({
     template: HB.template("tabular_reports/tabular-view-row"),
 
     tagName: 'tr',
+
+    className: 'user-data-row',
+
+    id: function() {
+        return this.model.get("pk");
+    },
 
     initialize: function(options) {
         _.bindAll(this);
@@ -305,25 +319,32 @@ var CoachSummaryView = BaseView.extend({
     template: HB.template("coach_nav/landing"),
 
     events: {
-        "click #show_tabular_report": "show_tabular_view"
+        "click #show_tabular_report": "toggle_tabular_view"
     },
 
     initialize: function() {
         _.bindAll(this);
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
-        this.listenTo(this.model, "change", this.render);
         this.set_data_model();
     },
 
     set_data_model: function (){
-        this.data_model = new CoachReportAggregateModel({
-            facility: this.model.get("facility"),
-            group: this.model.get("group")
-        });
-        if (this.model.get("facility")) {
-            this.listenTo(this.data_model, "sync", this.render);
-            this.data_model.fetch();
+        if (this.data_model) {
+            if (this.data_model.get("facility") !== this.model.get("facility") || this.data_model.get("group") !== this.model.get("group")) {
+                delete this.data_model;
+            }
+        }
+
+        if (!this.data_model) {
+            this.data_model = new CoachReportAggregateModel({
+                facility: this.model.get("facility"),
+                group: this.model.get("group")
+            });
+            if (this.model.get("facility")) {
+                this.listenTo(this.data_model, "sync", this.render);
+                this.data_model.fetch();
+            }
         }
     },
 
@@ -333,17 +354,28 @@ var CoachSummaryView = BaseView.extend({
             data: this.data_model.attributes
         }));
 
+        // If no user data at all, then show a warning to the user
+        var ref, ref1;
+
+        if ((this.data_model != null ? this.data_model.get("learner_events") != null ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
+          show_message("warning", "No recent learner data for this group is available.");
+        }
+
         delete this.tabular_report_view;
 
     },
 
-    show_tabular_view: function() {
+    toggle_tabular_view: _.debounce(function() {
         if (!this.tabular_report_view) {
-            this.$("#show_tabular_report").attr("disabled", "disabled");
+            this.$("#show_tabular_report").text("Hide Tabular Report");
             this.tabular_report_view = new TabularReportView({model: this.model});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
+        } else {
+            this.$("#show_tabular_report").text("Show Tabular Report");
+            this.tabular_report_view.remove();
+            delete this.tabular_report_view;
         }
-    }
+    }, 100)
 
 });
 
@@ -410,6 +442,7 @@ var GroupSelectView = Backbone.View.extend({
             groups: this.group_list.toJSON(),
             selected: this.model.get("group")
         }));
+
         return this;
     },
 
