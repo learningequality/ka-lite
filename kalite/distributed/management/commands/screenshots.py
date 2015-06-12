@@ -1,4 +1,3 @@
-#TODO-BLOCKER(MCGallaspy): Better Exception handling in this file.
 import glob
 import json
 import os
@@ -255,8 +254,6 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
         if focus:
             self.browser_wait_for_js_object_exists("$")
-            # Apply the specified styles to element. Currently only selection by
-            # id is supported. TODO: Extend it a more generic CSS selector.
             selector = focus['selector']
             styles = focus['styles']
             try:
