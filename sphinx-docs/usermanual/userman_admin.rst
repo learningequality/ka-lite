@@ -173,7 +173,7 @@ KA Lite assumes that you are going to be using the software primarily in one pla
 
 .. screenshot::
     :user-role: admin
-    :url: /securesync/zone/None/facility/new/
+    :url: /management/zone/None/facility/new/
     :navigation-steps: #id_name click | #id_name send_keys Your School | NEXT send_keys An optional description of your school...
     :focus: input.submit | Click here to create a new facility after filling in the form above.
     :class: screenshot
