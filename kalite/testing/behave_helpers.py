@@ -186,7 +186,7 @@ def find_xpath_with_wait(context, id_str, **kwargs):
     return _find_elem_with_wait(context, (By.XPATH, id_str), **kwargs)
 
 def find_css_with_wait(context, id_str, **kwargs):
-    """ Tries to find an element with given XPATH with an explicit timeout.
+    """ Tries to find an element with given css selector with an explicit timeout.
     context: a behave context
     id_str: A string with the CSS Selector
     kwargs: can optionally pass "wait_time", which will be the max wait time in
