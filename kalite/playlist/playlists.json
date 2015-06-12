@@ -322,6 +322,606 @@
   {
     "entries": [
       {
+        "entity_id": "/v/place-value-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/place-value-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/place_value/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/place-value-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/representing-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/comparing-place-values/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/place-value-relationships-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/understanding-place-value-1-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/regrouping-numbers-intro-various-place-values/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/comparing-whole-number-place-values/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/largest-possible-number-from-4-digits-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/counting-1-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/e/counting_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 12
+      }
+    ],
+    "id": "g5_p1",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 1: Place values"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/regrouping-whole-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/regrouping-whole-numbers-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/regrouping-whole-numbers-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/greater-than-and-less-than-symbols/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/plotting-inequalities-on-a-number-line/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/writing-numerical-inequalities-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/inequalities-in-one-variable-1-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/inequalities-on-a-number-line/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/figuring-out-days-of-the-week/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/comparing_whole_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/inequalities_on_a_number_line/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      }
+    ],
+    "id": "g5_p2",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 2: Understanding & regrouping whole numbers- counting and inequalities"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/basic-addition/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/basic-subtraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "e/addition_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/subtraction_1",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/adding-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/subtraction-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/subtracting-whole-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/level-2-addition/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/addition_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/subtraction_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/carrying-when-adding-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/why-carrying-works/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/example-adding-with-carrying/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/addition-4/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/addition_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/e/addition_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/basic-regrouping-or-borrowing-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/regrouping-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/v/regrouping-twice-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/regrouping-from-0-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/v/borrowing-once-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/v/regrouping--borrowing--twice-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/e/subtraction_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 22
+      },
+      {
+        "entity_id": "/e/subtraction_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 23
+      },
+      {
+        "entity_id": "/e/subtraction_word_problem/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 24
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 25
+      }
+    ],
+    "id": "g5_p3",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 3: Addition & subtraction- addition with carrying"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/multiplication-intro/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/multiplication-as-groups-of-objects/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/more-on-the-concept-of-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/number-line-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/basic-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/multiplication-2--the-multiplication-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/multiplying-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/multiplication-3--10-11-12-times-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/number_line/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/multiplication_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g5_p4",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 4: Concept of multiplication- basics of multiplication"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/multiplying-by-multiples-of-10/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/more-on-the-concept-of-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/number-line-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/3-digit-times-1-digit-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/4-digit-times-1-digit-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/multiplication-5---2-digit-times-a-2-digit-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/multiplying-whole-numbers-and-applications-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/multiplication-6--multiple-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/multiplying-whole-numbers-and-applications-4/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/multiplication-7--old-video-giving-more-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/multiplication_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/e/multiplication_1.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/e/multiplication_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/multiplication_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/multiplication_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/lattice-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/why-lattice-multiplication-works/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      }
+    ],
+    "id": "g5_p5",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 5:  Multi-digit multiplication- lattice multiplication"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/comparing-with-multiplication-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/multiplying-whole-numbers-and-applications-6/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/multiplication-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/division-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/multiplication-and-division-word-problems-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-t2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/understanding-multiplication-through-area-models/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/area-model-for-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/multistep-word-problems-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/multistep-word-problems-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/multistep-word-problems-example-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      }
+    ],
+    "id": "g5_p6",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 6:  Multiplication and division word problems"
+  },
+  {
+    "entries": [
+      {
         "entity_id": "/v/divisibility-tests-for-2--3--4--5--6--9--10/",
         "entity_kind": "Video",
         "is_essential": true,
@@ -780,5 +1380,133 @@
     "show": true,
     "tag": "Grade 6",
     "title": "Playlist 8: Integer and integer operations - Part 2"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "v/recognizing-irrational-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      }
+    ],
+    "id": "g7_p1",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 1: Rational Numbers"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "v/understanding-square-roots/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "e/square-roots-of-perfect-squares/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "v/approximating-square-roots/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "e/square-roots-2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "v/simplifying-square-roots-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "e/simplying-radicals",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "v/square-roots-and-real-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "e/multiplying_radicals/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "v/more-simplifying-radical-expressions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "e/adding_and_subtracting_radicals/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g7_p2",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 2: Square and Square roots"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "v/introduction-to-exponents/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "v/understanding-exponents-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "v/exponent-rules-part-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      }
+    ],
+    "id": "g7_p3",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 3: Indices"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "v/reading-bar-graphs/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "e/reading_bar_charts_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      }
+    ],
+    "id": "g7_p4",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 4: Joint Bar Graphs"
   }
 ]
