@@ -2,8 +2,10 @@
 import glob
 import json
 import os
+
 from optparse import make_option
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import WebDriverException
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -257,10 +259,18 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
             # id is supported. TODO: Extend it a more generic CSS selector.
             selector = focus['selector']
             styles = focus['styles']
-            for key, value in styles.iteritems():
-                self.browser.execute_script('$("%s").css("%s", "%s");' % (selector, key, value))
-            if note:
-                self.browser.execute_script("$('%s').qtip({content:{text:\"%s\"},show:{ready:true,delay:0,effect:false}})" % (selector, note))
+            try:
+                for key, value in styles.iteritems():
+                    self.browser.execute_script('$("%s").css("%s", "%s");' % (selector, key, value))
+                if note:
+                    self.browser.execute_script("$('%s').qtip({content:{text:\"%s\"},show:{ready:true,delay:0,effect:false}})" % (selector, note))
+            except WebDriverException as e:
+                log.error("Error taking screenshot:")
+                log.error(str(e))
+                log.error("Screenshot info: {0}".format((focus, note)))
+                log.error("Current url: {0}".format(self.browser.current_url))
+                import sys
+                sys.exit(1)
         self.browser.save_screenshot(filename)
 
     def process_snap(self, shot, browser=None):
@@ -270,61 +280,55 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.validate_json_keys(shot)
 
         start_url = '/'
-        try:
-            # Let's just always start logged out
-            if self.browser_is_logged_in():
-                self.browser_logout_user()
+        # Let's just always start logged out
+        if self.browser_is_logged_in():
+            self.browser_logout_user()
 
-            # Make sure to unregister after finishing for the next shot
-            if shot["registered"]:
-                self._do_fake_registration()
+        # Make sure to unregister after finishing for the next shot
+        if shot["registered"]:
+            self._do_fake_registration()
 
-            if USER_TYPE_STUDENT in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.student_username):
-                self.browser_login_student(self.student_username, self.default_password, self.facility.name)
-            elif USER_TYPE_COACH in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.coach_username):
-                self.browser_login_teacher(self.coach_username, self.default_password, self.facility.name)
-            elif USER_TYPE_ADMIN in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.admin_username):
-                self.browser_login_user(self.admin_username, self.default_password)
-            elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.browser_is_logged_in():
-                self.browser_logout_user()
+        if USER_TYPE_STUDENT in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.student_username):
+            self.browser_login_student(self.student_username, self.default_password, self.facility.name)
+        elif USER_TYPE_COACH in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.coach_username):
+            self.browser_login_teacher(self.coach_username, self.default_password, self.facility.name)
+        elif USER_TYPE_ADMIN in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.admin_username):
+            self.browser_login_user(self.admin_username, self.default_password)
+        elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.browser_is_logged_in():
+            self.browser_logout_user()
 
-            start_url = "%s%s" % (self.live_server_url, shot["start_url"],)
-            if self.browser.current_url != start_url:
-                self.browse_to(start_url)
+        start_url = "%s%s" % (self.live_server_url, shot["start_url"],)
+        if self.browser.current_url != start_url:
+            self.browse_to(start_url)
 
-            inputs = shot[self.KEY_INPUTS]
-            focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
-            note = shot[self.KEY_NOTES] if self.KEY_NOTES in shot else {}
-            for item in inputs:
-                for key, value in item.iteritems():
-                    if key:
-                        if key.lower() == self.KEY_CMD_SLUG:
-                            self.snap(slug=value, focus=focus, note=note)
-                        elif key.lower() == self.KEY_CMD_SUBMIT:
-                            self.browser_send_keys(Keys.RETURN)
+        inputs = shot[self.KEY_INPUTS]
+        focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
+        note = shot[self.KEY_NOTES] if self.KEY_NOTES in shot else {}
+        for item in inputs:
+            for key, value in item.iteritems():
+                if key:
+                    if key.lower() == self.KEY_CMD_SLUG:
+                        self.snap(slug=value, focus=focus, note=note)
+                    elif key.lower() == self.KEY_CMD_SUBMIT:
+                        self.browser_send_keys(Keys.RETURN)
+                    else:
+                        if key[0] == "#":
+                            kwargs = {'id': key[1:]}
+                        elif key[0] == ".":
+                            kwargs = {'css_class': key[1:]}
                         else:
-                            if key[0] == "#":
-                                kwargs = {'id': key[1:]}
-                            elif key[0] == ".":
-                                kwargs = {'css_class': key[1:]}
-                            else:
-                                kwargs = {'name': key}
-                            self.browser_activate_element(**kwargs)
-                            if value:
-                                self.browser_send_keys(value)
-                    elif not key and value:
-                        self.browser_send_keys(value)
+                            kwargs = {'name': key}
+                        self.browser_activate_element(**kwargs)
+                        if value:
+                            self.browser_send_keys(value)
+                elif not key and value:
+                    self.browser_send_keys(value)
 
-            if shot[self.KEY_SLUG]:
-                self.snap(slug=shot[self.KEY_SLUG], focus=focus, note=note)
-            
-            if shot["registered"]:
-                self._undo_fake_registration()
-        except Exception as exc:
-            log.error("====> EXCEPTION snapping url %s: %s" % (start_url, exc,))
-            log.error("'shot' object: %s" % repr(shot))
-            self.browser.close()
-            raise
+        if shot[self.KEY_SLUG]:
+            self.snap(slug=shot[self.KEY_SLUG], focus=focus, note=note)
+
+        if shot["registered"]:
+            self._undo_fake_registration()
 
     def snap_all(self, browser=None, **options):
         """
