@@ -30,7 +30,8 @@ Options:
                         you can skip it!
   DJANGO_OPTIONS        All options are passed on to the django manage command.
                         Notice that all django options must appear *last* and
-                        should not be mixed with other options.
+                        should not be mixed with other options. Only long-name
+                        options ('--long-name') are supported.
 
 Examples:
   kalite start          Start KA Lite
@@ -653,7 +654,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
-        left = map(lambda x: "{}{}".format(x.long or x.short, "=" + x.value if x.argcount > 0 else ""), left)
+        left = map(lambda x: "{0}{1}".format(x.long or x.short, "=" + x.value if x.argcount > 0 else ""), left)
         result['DJANGO_OPTIONS'] = left
         return result
     raise DocoptExit()
