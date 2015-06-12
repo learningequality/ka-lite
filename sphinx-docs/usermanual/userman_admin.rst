@@ -227,8 +227,8 @@ Adding Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: a.create-student
     :class: screenshot
 
@@ -237,8 +237,8 @@ Adding Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click | .create-student click
+    :url: /securesync/student/
+    :navigation-steps:
     :focus: input.submit
     :class: screenshot
 
@@ -253,8 +253,8 @@ Permanently Deleting Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students td input | You can check one or more of these checkboxes.
     :class: screenshot
 
@@ -262,8 +262,8 @@ Permanently Deleting Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students .form-inline .form-group:last-child
     :class: screenshot
 
@@ -279,8 +279,8 @@ Adding Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches .add-new-table-item a
     :class: screenshot
 
@@ -306,8 +306,8 @@ Permanently Deleting Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches td input | Click a checkbox to select a coach.
     :class: screenshot
 
@@ -315,8 +315,8 @@ Permanently Deleting Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches div.row div.col-md-2 button
     :class: screenshot
 
@@ -334,8 +334,8 @@ You can create groups within a facility. Each group can represent a classroom, a
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #groups .add-new-table-item a
     :class: screenshot
 
@@ -362,8 +362,8 @@ Deleting a Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: .delete-group
     :class: screenshot
 
@@ -376,8 +376,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students td input :first | Click this checkbox.
     :class: screenshot
 
@@ -385,8 +385,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click | .movegrouplist click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps: .movegrouplist click
     :focus: .movegrouplist | Select one of these options!
     :class: screenshot
 
@@ -394,8 +394,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students .movegroup
     :class: screenshot
 
@@ -416,8 +416,8 @@ For each group, you should be able to view some statistics.
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #groups td a :first | Click here to view group statistics!
     :class: screenshot
 
