@@ -654,15 +654,20 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
-        left = map(lambda x: "{0}{1}".format(x.long or x.short, "=" + x.value if x.argcount > 0 else ""), left)
-        result['DJANGO_OPTIONS'] = left
+        result['DJANGO_OPTIONS'] = sys.argv[len(collected) + 1:]
+        # If any of the collected arguments are also in the DJANGO_OPTIONS,
+        # then exit because we don't want users to have put options for kalite
+        # at the end of the command
+        if any(map(lambda x: x.name in result['DJANGO_OPTIONS'], collected)):
+            raise DocoptExit()
         return result
     raise DocoptExit()
 
 
 if __name__ == "__main__":
+    # Since positional arguments should always come first, we can safely
+    # replace " " with "=" to make options "--xy z" same as "--xy=z".
     arguments = docopt(__doc__, version=str(VERSION), options_first=False)
-    
     if arguments['start']:
         if arguments["--port"]:
             os.environ["KALITE_LISTEN_PORT"] = arguments["--port"]

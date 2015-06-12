@@ -14,11 +14,11 @@ install:
 -  pip install coveralls
 script:
 # Test that we can run from source directory
-- bin/kalite start --traceback --verbosity 2
+- bin/kalite start --traceback -v 2
 - bin/kalite status
-- bin/kalite stop --traceback --verbosity 2
+- bin/kalite stop --traceback -v 2
 - python python-packages/fle_utils/tests.py
-- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" bin/kalite manage test --traceback --verbosity 2
+- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" bin/kalite manage test --traceback -v 2
 - grunt jshint
 notifications:
   email:
