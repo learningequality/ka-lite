@@ -331,19 +331,14 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         Take screenshots for each item from json grouped by user.
         """
         shots = []
-        try:
-            if options['cl_str']:
-                shots = json.loads(options['cl_str'])
-            else:
-                self.loginfo('==> Fetching screenshots.json from %s ...' % (settings.SCREENSHOTS_JSON_FILE,))
-                shots = json.load(open(settings.SCREENSHOTS_JSON_FILE))
-            for shot in shots:
-                self.process_snap(shot, browser=browser)
-            self.browser.quit()
-        except Exception as exc:
-            log.error("Cannot open `screenshots.json` at %s:\n  exception:  %s" %
-                      (settings.SCREENSHOTS_JSON_FILE, exc,))
-            raise
+        if options['cl_str']:
+            shots = json.loads(options['cl_str'])
+        else:
+            self.loginfo('==> Fetching screenshots.json from %s ...' % (settings.SCREENSHOTS_JSON_FILE,))
+            shots = json.load(open(settings.SCREENSHOTS_JSON_FILE))
+        for shot in shots:
+            self.process_snap(shot, browser=browser)
+        self.browser.quit()
 
     def _do_fake_registration(self):
         # Create a Zone and DeviceZone to fool the Device into thinking it's registered
