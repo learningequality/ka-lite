@@ -64,6 +64,8 @@ def process_screenshots(app, env):
         command += ["--lang", language]
     subprocess = Popen(command)
     subprocess.wait()
+    if subprocess.returncode:
+        raise Exception("Screenshot process had nonzero return code: {0}".format(subprocess.returncode))
     if display:
         display.stop()
 
