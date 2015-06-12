@@ -6,13 +6,13 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
-  kalite stop [options] [DJANGO_OPTIONS ...]
-  kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
-  kalite status [job-scheduler] [options]
-  kalite shell [options] [DJANGO_OPTIONS ...]
-  kalite test [options] [DJANGO_OPTIONS ...]
-  kalite manage COMMAND [options] [DJANGO_OPTIONS ...]
+  kalite [options] [--skip-job-scheduler] start [DJANGO_OPTIONS ...]
+  kalite [options] stop [DJANGO_OPTIONS ...]
+  kalite [options] [--skip-job-scheduler] restart [DJANGO_OPTIONS ...]
+  kalite [job-scheduler] status [options]
+  kalite [options] shell [DJANGO_OPTIONS ...]
+  kalite [options] test [DJANGO_OPTIONS ...]
+  kalite [options] manage COMMAND [DJANGO_OPTIONS ...]
   kalite -h | --help
   kalite --version
 
@@ -24,6 +24,7 @@ Options:
   --debug               Output debug messages (for development)
   --skip-job-scheduler  For `kalite start`: Skips running the job scheduler
                         (useful for dev)
+  --port=<arg>          A port number the server will listen on.
   DJANGO_OPTIONS        All options are passed on to the django manage command.
                         Notice that all django options must be place *last* and
                         should not be mixed with other options.
@@ -221,6 +222,24 @@ else:
         ctypes.windll.kernel32.CloseHandle(handle)  # @UndefinedVariable
 
 
+def read_pid_file(filename):
+    """
+    Reads a pid file and returns the contents. Pid files have 1 or 2 lines; the first line is always the pid, and the
+    optional second line is the port the server is listening on.
+
+    :param filename: Filename to read
+    :return: the tuple (pid, port) with the pid in the file and the port number if it exists. If the port number doesn't
+        exist, then port is None.
+    """
+    try:
+        pid, port = open(filename, "r").readlines()
+        pid, port = int(pid), int(port)
+    except ValueError:
+        # The file only had one line
+        pid, port = int(open(filename, "r").read()), None
+    return pid, port
+
+
 def get_pid():
     """
     Tries to get the PID of a server.
@@ -243,7 +262,7 @@ def get_pid():
         # Is there a startup lock?
         if os.path.isfile(STARTUP_LOCK):
             try:
-                pid = int(open(STARTUP_LOCK).read())
+                pid, port = read_pid_file(STARTUP_LOCK)
                 # Does the PID in there still exist?
                 if pid_exists(pid):
                     raise NotRunning(4)
@@ -257,7 +276,7 @@ def get_pid():
 
     # PID file exists, check if it is running
     try:
-        pid = int(open(PID_FILE, "r").read())
+        pid, port = read_pid_file(PID_FILE)
     except (ValueError, OSError):
         raise NotRunning(100)  # Invalid PID file
 
@@ -267,9 +286,7 @@ def get_pid():
             raise NotRunning(6)  # Failed to start
         raise NotRunning(7)  # Unclean shutdown
 
-    # TODO: why is the port in django settings!? :) /benjaoming
-    from django.conf import settings
-    listen_port = getattr(settings, "CHERRYPY_PORT", LISTEN_PORT)
+    listen_port = port or LISTEN_PORT
 
     # Timeout is 1 second, we don't want the status command to be slow
     conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
@@ -354,6 +371,7 @@ def manage(command, args=[], in_background=False):
             kwargs = {}
         subprocess.Popen(
             [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
+            env=os.environ,
             **kwargs
         )
 
@@ -374,7 +392,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
 
     if os.path.exists(STARTUP_LOCK):
         try:
-            pid = int(open(STARTUP_LOCK).read())
+            pid, port = read_pid_file(STARTUP_LOCK)
             # Does the PID in there still exist?
             if pid_exists(pid):
                 sys.stderr.write(
@@ -393,9 +411,11 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     except NotRunning:
         pass
 
-    # Write current PID to a startup lock file
+    # Write current PID and optional port to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
         f.write(str(os.getpid()))
+        if os.environ.get("KALITE_LISTEN_PORT", None):
+            f.write("\n" + os.environ["KALITE_LISTEN_PORT"])
 
     # Start the job scheduler (not Celery yet...)
     # This command is run before starting the server, in case the server
@@ -445,8 +465,7 @@ def stop(args=[], sys_exit=True):
                 "Not responding, killing with force\n"
             )
             try:
-                f = open(PID_FILE, "r")
-                pid = int(f.read())
+                pid, port = read_pid_file(PID_FILE)
                 kill_pid(pid)
                 killed_with_force = True
             except ValueError:
@@ -609,6 +628,8 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version=str(VERSION), options_first=True)
 
     if arguments['start']:
+        if arguments["--port"]:
+            os.environ["KALITE_LISTEN_PORT"] = arguments["--port"]
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
