@@ -1,4 +1,4 @@
-import datetime
+    import datetime
 import random
 
 from behave import *
@@ -116,7 +116,7 @@ def impl(context, exercise, learner, progress_text, progress_colour):
 @when(u"I click on the learner name")
 def impl(context):
     student_name = find_css_class_with_wait(context, "student-name")
-    student_name.find_element_by_tag_name("a").click()
+    click_and_wait_for_page_load(context, student_name.find_element_by_tag_name("a"))
 
 @then(u"I should be taken to that exercise within the Learn tab")
 def impl(context):
@@ -161,7 +161,7 @@ def impl(context):
 @when(u"I click on the exercise name")
 def impl(context):
     headrow = find_css_class_with_wait(context, "headrow")
-    headrow.find_element_by_tag_name("a").click()
+    click_and_wait_for_id_to_appear(context, headrow.find_element_by_tag_name("a"))
 
 @given(u"all learners have completed ten exercises")
 def impl(context):
