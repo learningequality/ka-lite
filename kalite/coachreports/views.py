@@ -159,7 +159,7 @@ def landing_page(request, facility):
 @require_authorized_admin
 @facility_required
 @render_to("coachreports/tabular_view.html")
-def tabular_view(request, facility, report_type="exercise"):
+def tabular_view(request, facility, report_type="exercise", report_option="playlist"):
     """Tabular view also gets data server-side."""
     # Define how students are ordered--used to be as efficient as possible.
     student_ordering = ["last_name", "first_name", "username"]
@@ -170,6 +170,8 @@ def tabular_view(request, facility, report_type="exercise"):
     context = plotting_metadata_context(request, facility=facility)
     context.update({
         # For translators: the following two translations are nouns
+        "report_options": (_("playlist"), _("topic")),
+        "request_report_option": report_option,
         "report_types": (_("exercise"), _("video")),
         "request_report_type": report_type,
         "topics": [{"id": t[0]["id"], "title": t[0]["title"]} for t in topics if t],

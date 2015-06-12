@@ -21,8 +21,12 @@
             // As such, changing any of the values of the items requires a change of URL and subsequent
             // navigation event in order to produce the new report.
 
+            $("#report_option").change(function(){
+                window.location.href="{% url 'tabular_view' %}" + $("#report_option option:selected").val()+ "/" + $("#report_type option:selected").val();
+            });
+
             $("#report_type").change(function(){
-                window.location.href="{% url 'tabular_view' %}"+$("#report_type option:selected").val()+ "/" + window.location.search;
+                window.location.href="{% url 'tabular_view' %}" + $("#report_option option:selected").val()+ "/" + $("#report_type option:selected").val();
             });
 
             $("#student").change(function(){
@@ -79,11 +83,23 @@
 
     <div id="selection-bar">
         <div class="selection">
+        {# Select the coach report option #}
+        {% if report_options %}
+            <div class="subtitle">{% trans "Select Type" %}</div>
+            <select id="report_option">
+                {% for report_option in report_options %}
+                    <option value="{% trans report_option %}" {% if report_option == request_report_option %}selected{% endif %}>{{ report_option }}</option>
+                {% endfor %}
+            </select>
+        {% else %}
+            <div class="subtitle">{% trans "No report types available." %}</div>
+        {% endif %}
+        </div>
+        <div class="selection">
         {# Select the coach report type #}
         {% if report_types %}
             <div class="subtitle">{% trans "Select Report" %}</div>
             <select id="report_type">
-                <option {% if not request_report_type %}selected{% endif %}>----</option>
                 {% for report_type in report_types %}
                     <option value="{% trans report_type %}" {% if report_type == request_report_type %}selected{% endif %}>{{ report_type }}</option>
                 {% endfor %}
@@ -103,7 +119,7 @@
             </select>
         </div>
         {% elif groups %}
-            {% if playlists %}
+            {% if playlists and request_report_option == "playlist" %}
                 <div class="selection">
                     <div class="subtitle">{% trans "Select Playlist" %}</div>
                     <select id="playlist">
@@ -149,7 +165,7 @@
             {% comment %}Group was selected, but data not queried because a topic or playlist was not selected
             (NOTE: this required knowledge of how the view queries data){% endcomment %}
             <div id="no_topic_or_playlist_error">
-            {% if playlists %}
+            {% if playlists and request_report_option == "playlist" %}
                 {% trans "Please select a playlist above." %}
             {% elif topics %}
                 {% trans "Please select a topic above." %}
