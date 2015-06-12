@@ -161,7 +161,7 @@ def impl(context):
 @when(u"I click on the exercise name")
 def impl(context):
     headrow = find_css_class_with_wait(context, "headrow")
-    click_and_wait_for_id_to_appear(context, headrow.find_element_by_tag_name("a"))
+    click_and_wait_for_page_load(context, headrow.find_element_by_tag_name("a"))
 
 @given(u"all learners have completed ten exercises")
 def impl(context):
