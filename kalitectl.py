@@ -6,13 +6,13 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite [options] [--skip-job-scheduler] start [DJANGO_OPTIONS ...]
-  kalite [options] stop [DJANGO_OPTIONS ...]
-  kalite [options] [--skip-job-scheduler] restart [DJANGO_OPTIONS ...]
-  kalite [job-scheduler] status [options]
-  kalite [options] shell [DJANGO_OPTIONS ...]
-  kalite [options] test [DJANGO_OPTIONS ...]
-  kalite [options] manage COMMAND [DJANGO_OPTIONS ...]
+  kalite start [options] [DJANGO_OPTIONS ...]
+  kalite stop [options] [DJANGO_OPTIONS ...]
+  kalite restart [options] [DJANGO_OPTIONS ...]
+  kalite status [job-scheduler] [options]
+  kalite shell [options] [DJANGO_OPTIONS ...]
+  kalite test [options] [DJANGO_OPTIONS ...]
+  kalite manage [options] COMMAND [DJANGO_OPTIONS ...]
   kalite -h | --help
   kalite --version
 
@@ -22,18 +22,21 @@ Options:
   COMMAND               The name of any available django manage command. For
                         help, type `kalite manage help`
   --debug               Output debug messages (for development)
-  --skip-job-scheduler  For `kalite start`: Skips running the job scheduler
-                        (useful for dev)
-  --port=<arg>          A port number the server will listen on.
+  --port=<arg>          Use a non-default port on which to start the HTTP server
+                        or to query an existing server (stop/status)
+  --skip-job-scheduler  KA Lite runs a so-called "cronograph", it's own built-in
+                        automatic job scheduler required for downloading videos
+                        and sync'ing with online sources. If you don't need this
+                        you can skip it!
   DJANGO_OPTIONS        All options are passed on to the django manage command.
-                        Notice that all django options must be place *last* and
+                        Notice that all django options must appear *last* and
                         should not be mixed with other options.
 
 Examples:
-  kalite start          Start kalite
-  kalite url            Tell me where kalite is available from
-  kalite status         How is kalite doing?
-  kalite stop           Stop kalite again
+  kalite start          Start KA Lite
+  kalite url            Tell me where KA Lite is available from
+  kalite status         How is KA Lite doing?
+  kalite stop           Stop KA Lite
   kalite shell          Display a Django shell
   kalite manage help    Show the Django management usage dialogue
 
@@ -73,7 +76,9 @@ import re
 import subprocess
 
 from threading import Thread
-from docopt import docopt
+from docopt import DocoptExit, printable_usage, parse_defaults,\
+    parse_pattern, formal_usage, parse_argv, TokenStream, Option, AnyOptions,\
+    extras, Dict
 from urllib2 import URLError
 from socket import timeout
 
@@ -624,9 +629,39 @@ def profile_memory():
     signal.signal(signal.SIGPROF, collect_mem_usage)
     atexit.register(handle_exit)
 
-if __name__ == "__main__":
-    arguments = docopt(__doc__, version=str(VERSION), options_first=True)
 
+# TODO(benjaoming): When this PR is merged, we can stop this crazyness
+# https://github.com/docopt/docopt/pull/283
+def docopt(doc, argv=None, help=True, version=None, options_first=False):
+    """Re-implementation of docopt.docopt() function to parse ANYTHING at
+    the end (for proxying django options)."""
+    if argv is None:
+        argv = sys.argv[1:]
+
+    DocoptExit.usage = printable_usage(doc)
+    options = parse_defaults(doc)
+    pattern = parse_pattern(formal_usage(DocoptExit.usage), options)
+    argv = parse_argv(TokenStream(argv, DocoptExit), list(options),
+                      options_first)
+    pattern_options = set(pattern.flat(Option))
+    for ao in pattern.flat(AnyOptions):
+        doc_options = parse_defaults(doc)
+        ao.children = list(set(doc_options) - pattern_options)
+    extras(help, version, argv, doc)
+    matched, left, collected = pattern.fix().match(argv)
+    
+    # if matched and left == []:  # better error message if left?
+    if collected:  # better error message if left?
+        result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
+        left = map(lambda x: "{}{}".format(x.long or x.short, "=" + x.value if x.argcount > 0 else ""), left)
+        result['DJANGO_OPTIONS'] = left
+        return result
+    raise DocoptExit()
+
+
+if __name__ == "__main__":
+    arguments = docopt(__doc__, version=str(VERSION), options_first=False)
+    
     if arguments['start']:
         if arguments["--port"]:
             os.environ["KALITE_LISTEN_PORT"] = arguments["--port"]
