@@ -1,13 +1,8 @@
 from behave import *
-from selenium import webdriver
 from kalite.testing.behave_helpers import *
 from django.contrib.auth.models import User
 
 modal_container = "superusercreate-container"
-
-@given("there is superuser")
-def step_impl(context):
-    assert User.objects.exists(), "superuser not exists!"
 
 @then("there should be no modal displayed")
 def step_impl(context):
@@ -33,6 +28,7 @@ def step_impl(context):
 
 @when('I click the create button')
 def step_impl(context):
+    context.modal_element = find_id_with_wait(context, modal_container)  # Grab a reference for later
     create_button = find_css_class_with_wait(context, "create-btn")
     create_button.click()
 
@@ -46,7 +42,7 @@ def step_impl(context):
 
 @then("the modal won't dismiss")
 def step_impl(context):
-    assert find_id_with_wait(context, modal_container, wait_time=5).is_displayed(), "modal dismissed!"
+    assert not elem_is_invisible_with_wait(context, modal_container), "modal dismissed!"
 
 @given("the password is empty")
 def step_impl(context):
@@ -86,13 +82,7 @@ def step_impl(context):
 
 @then("the modal will dismiss")
 def impl(context):
-    modal_element = find_id_with_wait(context, modal_container, wait_time=5)
-    assert elem_is_invisible_with_wait(context, modal_element, wait_time=5), "modal not dismissed!"
-
-@then("a superuser is created")
-def impl(context):
-    assert User.objects.exists(), "superuser not crerated successfully!"
-
+    assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=5), "modal not dismissed!"
 
 def fill_field(context, text, field_id):
     assert find_id_with_wait(context, field_id), "field is None!"
@@ -113,5 +103,4 @@ def is_border_red(context, field_id):
     assert find_id_with_wait(context, field_id), "border field is None!"
     border = find_id_with_wait(context, field_id)
     border_color = border.value_of_css_property('border-color')
-    print ('border_color: ', border_color)
     assert border_color == 'rgb(169, 68, 66)', "border not red!"
