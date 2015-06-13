@@ -5,4 +5,4 @@ import warnings
 
 warnings.filterwarnings('ignore', message=r'kalite\.settings', append=True)
 
-from kalite.settings.base import *  # @UnusedWildImport
+from kalite.settings import *  # @UnusedWildImport
