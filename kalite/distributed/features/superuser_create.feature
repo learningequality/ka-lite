@@ -54,6 +54,6 @@ Feature: Create superuser from the in browser modal
         And I enter password correctly
         And I enter email correctly
         When I click the create button
-        And the modal will dismiss
+        Then the modal will dismiss
         Given I am on the homepage
         Then there should be no modal displayed

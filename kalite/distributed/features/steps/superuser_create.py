@@ -42,7 +42,7 @@ def step_impl(context):
 
 @then("the modal won't dismiss")
 def step_impl(context):
-    assert not elem_is_invisible_with_wait(context, modal_container), "modal dismissed!"
+    assert not elem_is_invisible_with_wait(context, context.modal_element), "modal dismissed!"
 
 @given("the password is empty")
 def step_impl(context):
