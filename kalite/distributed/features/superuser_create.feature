@@ -10,39 +10,46 @@ Feature: Create superuser from the in browser modal
         Then I should see a modal
 
     Scenario: Create superuser with empty username
+        Given superuser is deleted
         Given the username is empty
         When I click the create button
         Then the username border will turn red
         And the modal won't dismiss
 
     Scenario: Create superuser with string longer than 40
+        Given superuser is deleted
         Given I enter a username longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
     Scenario: Create superuser with empty password
+        Given superuser is deleted
         Given the password is empty
         When I click the create button
         Then the password border will turn red
         And the modal won't dismiss
 
     Scenario: Create superuser with password longer than 40
+        Given superuser is deleted
         Given I enter a password longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
     Scenario: Create superuser with incorrect email address
+        Given superuser is deleted
         Given I enter my email address incorrectly
         When I click the create button
         Then the email border will turn red
         And the modal won't dismiss
 
     Scenario: Create superuser with email address longer than 40
+        Given superuser is deleted
         Given I enter a email address longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
     Scenario: Create superuser with correct username and password and email address
+        Given superuser is deleted
         Given I enter username correctly
         And I enter password correctly
         And I enter email correctly
