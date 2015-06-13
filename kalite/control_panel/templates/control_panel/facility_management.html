@@ -206,9 +206,7 @@
                             {% trans "You currently have no group data available." %}
                         </p>
                     {% else %}
-                        {% if not request.is_teacher %}
                           <button class="delete-group btn btn-success" disabled="disabled" value="#groups">{% trans "Delete Groups" %}</button>
-                        {% endif %}
 
                         <div class="table-responsive">
                             <table class="table selectable-table">

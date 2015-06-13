@@ -1,0 +1,14 @@
+{
+  "id": "g7_ut1",
+  "title": "Grade 7 - Unit 1",
+  "seed": 4735,
+  "playlist_ids": ["g7_p1", "g7_p2", "g7_p3", "g7_p4" ],
+  "repeats": "3",
+  "ids": [
+    "square-roots-of-perfect-squares", "square-roots-2", "simplying-radicals", "multiplying_radicals",
+    "adding_and_subtracting_radicals", "reading_bar_charts_2"
+  ],
+  "is_practice": false,
+  "grade": 7,
+  "show": true
+}
