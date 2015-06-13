@@ -1,5 +1,4 @@
 from behave import *
-from selenium import webdriver
 from kalite.testing.behave_helpers import *
 from django.contrib.auth.models import User
 
@@ -84,11 +83,6 @@ def step_impl(context):
 @then("the modal will dismiss")
 def impl(context):
     assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=5), "modal not dismissed!"
-
-@then("a superuser is created")
-def impl(context):
-    assert User.objects.exists(), "superuser not crerated successfully!"
-
 
 def fill_field(context, text, field_id):
     assert find_id_with_wait(context, field_id), "field is None!"
