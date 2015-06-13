@@ -5,10 +5,6 @@ from django.contrib.auth.models import User
 
 modal_container = "superusercreate-container"
 
-@given("there is superuser")
-def step_impl(context):
-    assert User.objects.exists(), "superuser not exists!"
-
 @then("there should be no modal displayed")
 def step_impl(context):
     assert not find_id_with_wait(context, modal_container), "modal is not supposed to be found!"
