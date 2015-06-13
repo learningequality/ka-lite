@@ -109,5 +109,4 @@ def is_border_red(context, field_id):
     assert find_id_with_wait(context, field_id), "border field is None!"
     border = find_id_with_wait(context, field_id)
     border_color = border.value_of_css_property('border-color')
-    print ('border_color: ', border_color)
     assert border_color == 'rgb(169, 68, 66)', "border not red!"
