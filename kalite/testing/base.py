@@ -138,6 +138,8 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         # from behave/__main__.py
         #stream = self.behave_config.output
         runner = BehaveRunner(self.behave_config)
+        runner.test_case = self
+
         failed = runner.run()
 
         try:
