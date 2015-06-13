@@ -55,13 +55,14 @@ class TestAddFacility(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCa
         self.browser_check_django_message(message_type="success", contains="has been successfully saved!")
 
 
-class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin):
+class DeviceUnregisteredTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase):
     """Validate all the steps of registering a device.
 
     Currently, only testing that the device is not registered works.
     """
 
     def setUp(self):
+        super(DeviceUnregisteredTest, self).setUp()
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
 
