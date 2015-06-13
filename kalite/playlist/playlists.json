@@ -1404,7 +1404,7 @@
         "sort_order": 0
       },
       {
-        "entity_id": "e/square_roots_of_perfect_squares/",
+        "entity_id": "e/square_roots/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
@@ -1428,7 +1428,7 @@
         "sort_order": 4
       },
       {
-        "entity_id": "e/simplying_radicals",
+        "entity_id": "e/simplifying_radicals",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 5
