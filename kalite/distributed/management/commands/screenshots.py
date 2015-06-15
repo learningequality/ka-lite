@@ -94,6 +94,7 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None,
         call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
         call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity, database="assessment_items")
         call_command("migrate", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
+        call_command("generaterealdata", interactive=False, stdout=new_io, router=router, verbosity=verbosity)  # For coachreports pages
         if username and email and password:
             log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,)) if int(verbosity) > 0 else None
             call_command("createsuperuser", username=username, email=email,
