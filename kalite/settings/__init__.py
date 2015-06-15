@@ -145,8 +145,12 @@ if 'screenshots' in sys.argv:
     # use another sqlite3 database for the screenshots
     DATABASES = {
         SCREENSHOTS_ROUTER: {
-            "ENGINE": getattr(local_settings, "DATABASE_TYPE", SQLITE3_ENGINE),
+            "ENGINE": SQLITE3_ENGINE,
             "NAME": ":memory:",
-        }
+        },
+        "assessment_items": {
+            "ENGINE": SQLITE3_ENGINE,
+            "NAME": ":memory:",
+        },
     }
 
