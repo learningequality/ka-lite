@@ -138,7 +138,7 @@ def aggregate_learner_logs(request):
             latest_activity_timestamp__gte=start_date,
             latest_activity_timestamp__lte=end_date, **obj_ids).order_by("-latest_activity_timestamp")
 
-             
+
         if id_field == "video":
             output_dict["content_time_spent"] += log_objects.aggregate(Sum("total_seconds_watched"))["total_seconds_watched__sum"]
         elif id_field == "content":
@@ -154,9 +154,9 @@ def aggregate_learner_logs(request):
     output_dict["learner_events"] = [{
         "learner": log.user.get_name(),
         "complete": log.complete,
-        "struggling": log.struggling,
-        "progress": log.streak_progress,
-        "exercise": get_exercise_cache().get(log.exercise_id),
+        "struggling": getattr(log, "struggling", None),
+        "progress": getattr(log, "streak_progress", getattr(log, "progress", None)),
+        "content": get_exercise_cache().get(getattr(log, "exercise_id"), get_content_cache().get(getattr(log, "video_id", getattr(log, "content_id")), {})),
         } for log in output_logs[:event_limit]]
     output_dict["total_time_logged"] = UserLogSummary.objects\
         .filter(user__in=learners, last_activity_datetime__gte=start_date, last_activity_datetime__lte=end_date)\
