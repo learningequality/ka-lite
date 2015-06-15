@@ -310,9 +310,9 @@ if IS_SOURCE:
     INSTALLED_APPS += (
         "kalite.testing",
         "kalite.basetests",
-    ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
-else:
-    INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
+    )
+
+INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = (
     # gzip has to be placed at the top, before others
