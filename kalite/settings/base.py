@@ -96,11 +96,6 @@ IS_SOURCE = (
 SOURCE_DIR = None
 
 
-# Not sure if this is relevant anymore? /benjaoming
-BUILD_INDICATOR_FILE = os.path.join(default_source_path, "_built.touch")
-# whether this installation was processed by the build server
-BUILT = os.path.exists(BUILD_INDICATOR_FILE)
-
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
     _data_path = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -311,9 +306,8 @@ INSTALLED_APPS = (
     "kalite.inline",
 )
 
-if not BUILT:
+if IS_SOURCE:
     INSTALLED_APPS += (
-        "fle_utils.testing",
         "kalite.testing",
         "kalite.basetests",
     ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
