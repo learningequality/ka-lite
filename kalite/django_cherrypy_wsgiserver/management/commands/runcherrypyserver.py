@@ -50,7 +50,7 @@ Examples:
 
 CPWSGI_OPTIONS = {
     'host': '127.0.0.1', # changed from localhost to avoid ip6 problem -clm
-    'port': getattr(settings, "CHERRYPY_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
+    'port': getattr(settings, "PRODUCTION_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
     'threads': getattr(settings, "CHERRPY_THREAD_COUNT", 50),
     'daemonize': False,
     'pidfile': None,
