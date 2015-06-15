@@ -54,6 +54,7 @@ class ExternalAPITests(FacilityMixins,
         self.client.logout()
 
 class InternalAPITests(FacilityMixins,
+                       StudentProgressMixin,
                        CreateZoneMixin,
                        CreateAdminMixin,
                        KALiteTestCase):
@@ -83,6 +84,20 @@ class InternalAPITests(FacilityMixins,
         self.client.logout()
 
     def test_aggregate_endpoint(self):
+        response_keys = ["content_time_spent","exercise_attempts","exercise_mastery", "total_time_logged", "learner_events"]
+        self.client.login(username='admin', password='admin')
+        api_resp = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("aggregate_learner_logs"), self.facility.id)).content)
+        for key in response_keys:
+            assert key in api_resp, "{key} not found in learner log API response".format(key)
+        self.client.logout()
+
+    def test_aggregate_endpoint_different_logs(self):
+        # Regression test for #3799
+
+        self.student = self.create_student()
+        self.create_video_log(user=self.student)
+        self.create_exercise_log(user=self.student)
+
         response_keys = ["content_time_spent","exercise_attempts","exercise_mastery", "total_time_logged", "learner_events"]
         self.client.login(username='admin', password='admin')
         api_resp = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("aggregate_learner_logs"), self.facility.id)).content)

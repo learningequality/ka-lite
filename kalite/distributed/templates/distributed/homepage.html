@@ -63,6 +63,15 @@
         </tr>
       </table>
     </script>
+
+    {% if not request.has_superuser %}
+      <script type="text/javascript">
+        $(function() {
+          window.SuperUserCreateModalView = new SuperUserCreateModalView();
+        });
+      </script>
+    {% endif %}
+    
 {% endblock headjs %}
 
 {% block content %}
