@@ -20,6 +20,7 @@ from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.distributed.management.commands.katest import unregister_distributed_server
+from kalite.facility.models import Facility
 
 USER_TYPE_ADMIN = "admin"
 USER_TYPE_COACH = "coach"
@@ -201,9 +202,10 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         if not self.admin_user:
             raise Exception("==> Did not successfully setup database!")
 
-        self.facility = self.create_facility()
-        self.create_student(username=self.student_username, password=self.default_password)
-        self.create_teacher(username=self.coach_username, password=self.default_password)
+        Facility.initialize_default_facility("Silly Facility")  # Default facility required to avoid pernicious facility selection page
+        facility = self.facility = Facility.objects.get(name="Silly Facility")
+        self.create_student(username=self.student_username, password=self.default_password, facility=facility)
+        self.create_teacher(username=self.coach_username, password=self.default_password, facility=facility)
 
         self.persistent_browser = True
         self.max_wait_time = kwargs.get('max_wait_time', 30)
