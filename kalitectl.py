@@ -6,13 +6,13 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
+  kalite start [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
-  kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
+  kalite restart [options] [DJANGO_OPTIONS ...]
   kalite status [job-scheduler] [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
-  kalite manage COMMAND [options] [DJANGO_OPTIONS ...]
+  kalite manage [options] COMMAND [DJANGO_OPTIONS ...]
   kalite -h | --help
   kalite --version
 
@@ -22,17 +22,22 @@ Options:
   COMMAND               The name of any available django manage command. For
                         help, type `kalite manage help`
   --debug               Output debug messages (for development)
-  --skip-job-scheduler  For `kalite start`: Skips running the job scheduler
-                        (useful for dev)
+  --port=<arg>          Use a non-default port on which to start the HTTP server
+                        or to query an existing server (stop/status)
+  --skip-job-scheduler  KA Lite runs a so-called "cronograph", it's own built-in
+                        automatic job scheduler required for downloading videos
+                        and sync'ing with online sources. If you don't need this
+                        you can skip it!
   DJANGO_OPTIONS        All options are passed on to the django manage command.
-                        Notice that all django options must be place *last* and
-                        should not be mixed with other options.
+                        Notice that all django options must appear *last* and
+                        should not be mixed with other options. Only long-name
+                        options ('--long-name') are supported.
 
 Examples:
-  kalite start          Start kalite
-  kalite url            Tell me where kalite is available from
-  kalite status         How is kalite doing?
-  kalite stop           Stop kalite again
+  kalite start          Start KA Lite
+  kalite url            Tell me where KA Lite is available from
+  kalite status         How is KA Lite doing?
+  kalite stop           Stop KA Lite
   kalite shell          Display a Django shell
   kalite manage help    Show the Django management usage dialogue
 
@@ -72,7 +77,9 @@ import re
 import subprocess
 
 from threading import Thread
-from docopt import docopt
+from docopt import DocoptExit, printable_usage, parse_defaults,\
+    parse_pattern, formal_usage, parse_argv, TokenStream, Option, AnyOptions,\
+    extras, Dict
 from urllib2 import URLError
 from socket import timeout
 
@@ -221,6 +228,24 @@ else:
         ctypes.windll.kernel32.CloseHandle(handle)  # @UndefinedVariable
 
 
+def read_pid_file(filename):
+    """
+    Reads a pid file and returns the contents. Pid files have 1 or 2 lines; the first line is always the pid, and the
+    optional second line is the port the server is listening on.
+
+    :param filename: Filename to read
+    :return: the tuple (pid, port) with the pid in the file and the port number if it exists. If the port number doesn't
+        exist, then port is None.
+    """
+    try:
+        pid, port = open(filename, "r").readlines()
+        pid, port = int(pid), int(port)
+    except ValueError:
+        # The file only had one line
+        pid, port = int(open(filename, "r").read()), None
+    return pid, port
+
+
 def get_pid():
     """
     Tries to get the PID of a server.
@@ -243,7 +268,7 @@ def get_pid():
         # Is there a startup lock?
         if os.path.isfile(STARTUP_LOCK):
             try:
-                pid = int(open(STARTUP_LOCK).read())
+                pid, port = read_pid_file(STARTUP_LOCK)
                 # Does the PID in there still exist?
                 if pid_exists(pid):
                     raise NotRunning(4)
@@ -257,7 +282,7 @@ def get_pid():
 
     # PID file exists, check if it is running
     try:
-        pid = int(open(PID_FILE, "r").read())
+        pid, port = read_pid_file(PID_FILE)
     except (ValueError, OSError):
         raise NotRunning(100)  # Invalid PID file
 
@@ -267,9 +292,7 @@ def get_pid():
             raise NotRunning(6)  # Failed to start
         raise NotRunning(7)  # Unclean shutdown
 
-    # TODO: why is the port in django settings!? :) /benjaoming
-    from django.conf import settings
-    listen_port = getattr(settings, "CHERRYPY_PORT", LISTEN_PORT)
+    listen_port = port or LISTEN_PORT
 
     # Timeout is 1 second, we don't want the status command to be slow
     conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
@@ -354,6 +377,7 @@ def manage(command, args=[], in_background=False):
             kwargs = {}
         subprocess.Popen(
             [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
+            env=os.environ,
             **kwargs
         )
 
@@ -374,7 +398,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
 
     if os.path.exists(STARTUP_LOCK):
         try:
-            pid = int(open(STARTUP_LOCK).read())
+            pid, port = read_pid_file(STARTUP_LOCK)
             # Does the PID in there still exist?
             if pid_exists(pid):
                 sys.stderr.write(
@@ -393,9 +417,11 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     except NotRunning:
         pass
 
-    # Write current PID to a startup lock file
+    # Write current PID and optional port to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
         f.write(str(os.getpid()))
+        if os.environ.get("KALITE_LISTEN_PORT", None):
+            f.write("\n" + os.environ["KALITE_LISTEN_PORT"])
 
     # Start the job scheduler (not Celery yet...)
     # This command is run before starting the server, in case the server
@@ -445,8 +471,7 @@ def stop(args=[], sys_exit=True):
                 "Not responding, killing with force\n"
             )
             try:
-                f = open(PID_FILE, "r")
-                pid = int(f.read())
+                pid, port = read_pid_file(PID_FILE)
                 kill_pid(pid)
                 killed_with_force = True
             except ValueError:
@@ -605,10 +630,47 @@ def profile_memory():
     signal.signal(signal.SIGPROF, collect_mem_usage)
     atexit.register(handle_exit)
 
-if __name__ == "__main__":
-    arguments = docopt(__doc__, version=str(VERSION), options_first=True)
 
+# TODO(benjaoming): When this PR is merged, we can stop this crazyness
+# https://github.com/docopt/docopt/pull/283
+def docopt(doc, argv=None, help=True, version=None, options_first=False):
+    """Re-implementation of docopt.docopt() function to parse ANYTHING at
+    the end (for proxying django options)."""
+    if argv is None:
+        argv = sys.argv[1:]
+
+    DocoptExit.usage = printable_usage(doc)
+    options = parse_defaults(doc)
+    pattern = parse_pattern(formal_usage(DocoptExit.usage), options)
+    argv = parse_argv(TokenStream(argv, DocoptExit), list(options),
+                      options_first)
+    pattern_options = set(pattern.flat(Option))
+    for ao in pattern.flat(AnyOptions):
+        doc_options = parse_defaults(doc)
+        ao.children = list(set(doc_options) - pattern_options)
+    extras(help, version, argv, doc)
+    matched, left, collected = pattern.fix().match(argv)
+    
+    # if matched and left == []:  # better error message if left?
+    if collected:  # better error message if left?
+        result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
+        result['DJANGO_OPTIONS'] = sys.argv[len(collected) + 1:]
+        # If any of the collected arguments are also in the DJANGO_OPTIONS,
+        # then exit because we don't want users to have put options for kalite
+        # at the end of the command
+        if any(map(lambda x: x.name in result['DJANGO_OPTIONS'], collected)):
+            raise DocoptExit()
+        return result
+    raise DocoptExit()
+
+
+if __name__ == "__main__":
+    # Since positional arguments should always come first, we can safely
+    # replace " " with "=" to make options "--xy z" same as "--xy=z".
+    arguments = docopt(__doc__, version=str(VERSION), options_first=False)
     if arguments['start']:
+        if arguments["--port"]:
+            os.environ["KALITE_LISTEN_PORT"] = arguments["--port"]
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],

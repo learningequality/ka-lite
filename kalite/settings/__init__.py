@@ -23,6 +23,7 @@ if DEBUG:
     from kalite.testing.loadtesting.settings import *
     TEST_RUNNER = KALITE_TEST_RUNNER
 
+
 ########################
 # IMPORTANT: Do not add new settings below this line
 #
@@ -48,7 +49,6 @@ if package_selected("RPi"):
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
     assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
-    CHERRYPY_PORT = PRODUCTION_PORT  # re-do above override AGAIN.
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
     #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
 
