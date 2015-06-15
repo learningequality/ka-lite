@@ -9,6 +9,8 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from itertools import islice
+
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.conf import settings; logging = settings.LOG
@@ -23,6 +25,7 @@ from django.utils.translation import ugettext as _
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
 from fle_utils.internet.webcache import backend_cache_page
+from fle_utils.django_utils.paginate import paginate_data
 from kalite import topic_tools
 from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
@@ -152,6 +155,7 @@ def device_redirect(request):
 @render_to('distributed/search_page.html')
 def search(request):
     # Inputs
+    page = int(request.GET.get('page', 1))
     query = request.GET.get('query')
     category = request.GET.get('category')
     max_results_per_category = request.GET.get('max_results', 25)
@@ -160,6 +164,13 @@ def search(request):
     query_error = None
     possible_matches = {}
     hit_max = {}
+
+
+    node_kinds = {
+        "Topic": ["Topic"],
+        "Exercise": ["Exercise"],
+        "Content": ["Video", "Audio", "Document"],
+    }
 
     if query is None:
         query_error = _("Error: query not specified.")
@@ -170,34 +181,49 @@ def search(request):
     else:
         query = query.lower()
         # search for topic, video or exercise with matching title
-        nodes = []
         for node_type, node_dict in topic_tools.get_node_cache().iteritems():
             if category and node_type != category:
                 # Skip categories that don't match (if specified)
                 continue
 
-            possible_matches[node_type] = []  # make dict only for non-skipped categories
-            for node in node_dict.values():
-                title = _(node['title']).lower()  # this could be done once and stored.
-                keywords = [x.lower() for x in node.get('keywords', [])]
-                tags = [x.lower() for x in node.get('tags', [])]
-                if title == query:
-                    # Redirect to an exact match
-                    return HttpResponseRedirect(reverse('learn') + node['path'])
+            exact_match = filter(lambda node: node["kind"] in node_kinds[node_type] and node["title"].lower() == query, node_dict.values())[:1]
 
-                elif (len(possible_matches[node_type]) < max_results_per_category and
-                    (query in title or query in keywords or query in tags)):
-                    # For efficiency, don't do substring matches when we've got lots of results
-                    possible_matches[node_type].append(node)
+            if exact_match:
+                # Redirect to an exact match
+                return HttpResponseRedirect(reverse('learn') + exact_match[0]['path'])
 
+            # For efficiency, don't do substring matches when we've got lots of results
+            match_generator = (node for node in node_dict.values()
+                if node["kind"] in node_kinds[node_type] and (query in node["title"].lower() or query in [x.lower() for x in node.get('keywords', [])] or
+                query in [x.lower() for x in node.get('tags', [])]))
 
-            hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
+            # Only return max results
+            try:
+                possible_matches[node_type] = list(islice(match_generator, (page-1)*max_results_per_category, page*max_results_per_category))
+            except ValueError:
+                return HttpResponseNotFound("Page does not exist")
+
+            hit_max[node_type] = next(match_generator, False)
+
+    previous_params = request.GET.copy()
+    previous_params['page'] = page - 1
+
+    previous_url = "?" + previous_params.urlencode()
+
+    next_params = request.GET.copy()
+    next_params['page'] = page + 1
+
+    next_url = "?" + next_params.urlencode()
 
     return {
         'title': _("Search results for '%(query)s'") % {"query": (query if query else "")},
         'query_error': query_error,
         'results': possible_matches,
         'hit_max': hit_max,
+        'more': any(hit_max.values()),
+        'page': page,
+        'previous_url': previous_url,
+        'next_url': next_url,
         'query': query,
         'max_results': max_results_per_category,
         'category': category,
