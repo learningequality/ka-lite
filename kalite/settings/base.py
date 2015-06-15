@@ -86,6 +86,7 @@ default_source_path = os.path.split(
 if not default_source_path:
     default_source_path = '.'
 
+# Indicates that we are in a git repo
 IS_SOURCE = (
     os.path.exists(os.path.join(default_source_path, '.KALITE_SOURCE_DIR')) and
     (
