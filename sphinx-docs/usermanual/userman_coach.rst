@@ -30,7 +30,7 @@ The overview will display the activity of the group: the total hours logged, the
 
 .. screenshot::
     :user-role: coach
-    :url: /coachreports/
+    :url: /coachreports/teach
     :navigation-steps: #show_tabular_report click
     :focus: div#displaygrid
     :class: screenshot
