@@ -47,7 +47,6 @@ COMPRESS_OFFLINE_CONTEXT = {
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 
 
-
 ##############################
 # KA Lite settings
 ##############################
@@ -55,10 +54,12 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
 ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
+CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
 SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "https" if not DEBUG else "http")
-CENTRAL_SERVER_HOST   = getattr(local_settings, "CENTRAL_SERVER_HOST",   ("staging.%s" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
-CENTRAL_WIKI_URL      = getattr(local_settings, "CENTRAL_WIKI_URL",      "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
+CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", ("staging.%s" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
+CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
+CENTRAL_WIKI_URL = getattr(local_settings, "CENTRAL_WIKI_URL", "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
 
 PDFJS = getattr(local_settings, "PDFJS", True)
 

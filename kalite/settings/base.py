@@ -53,7 +53,6 @@ except ImportError:
 # Used everywhere, so ... set it up top.
 DEBUG = getattr(local_settings, "DEBUG", False)
 
-CENTRAL_SERVER = False  # Hopefully will be removed soon.
 
 ##############################
 # Basic setup of logging

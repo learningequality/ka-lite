@@ -83,6 +83,7 @@ if package_selected("Demo"):
 
     CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", "staging.learningequality.org")
     SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "http")
+    CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
@@ -96,8 +97,6 @@ if package_selected("Demo"):
 # Force DeprecationWarning to show in DEBUG
 if DEBUG:
     warnings.simplefilter('error', DeprecationWarning)
-
-CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
 
 
 # set the default encoding
