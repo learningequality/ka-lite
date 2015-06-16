@@ -96,6 +96,9 @@ def impl(context):
 
 @when("I log in as a coach")
 def impl(context):
+    context.execute_steps("""
+        when I click log in
+    """)
     fill_username(context, context.coach.username)
     fill_password(context, context.coach_password)
     context.execute_steps("""
