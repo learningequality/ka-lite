@@ -270,6 +270,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     alog.save()
 
                 elog.attempts = attempts
+                elog.latest_activity_timestamp = start_date + date_diff
                 elog.streak_progress = sum([log.correct for log in alogs][-10:])*10
                 elog.points = sum([log.points for log in alogs][-10:])
 
@@ -409,6 +410,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         points=points,
                         complete=(pct_completed == 100.),
                         completion_timestamp=date_completed,
+                        latest_activity_timestamp=date_completed,
                     )
                     try:
                         vlog.save()  # avoid userlog issues
