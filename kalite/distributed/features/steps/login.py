@@ -92,7 +92,7 @@ def impl(context):
 @given("I have a coach account")
 def impl(context):
     context.coach_password = password = "superpassword"
-    context.coach = FacilityMixins.create_teacher(password=password
+    context.coach = FacilityMixins.create_teacher(password=password)
 
 @when("I log in as a coach")
 def impl(context):
