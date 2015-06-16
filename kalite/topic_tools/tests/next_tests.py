@@ -77,9 +77,9 @@ class TestNextMethods(KALiteTestCase):
 		self.original_exerciselog3.points = self.ORIGINAL_POINTS
 		self.original_exerciselog3.attempts = self.ORIGINAL_POINTS
 		self.original_exerciselog3.streak_progress = 0
+		self.original_exerciselog3.attempts = 100
 		self.original_exerciselog3.latest_activity_timestamp = self.TIMESTAMP_STRUGGLE
 		self.original_exerciselog3.completion_timestamp = self.TIMESTAMP_STRUGGLE
-		self.original_exerciselog3.attempts = 100
 		self.original_exerciselog3.save()
 
 		#set all other exercise's struggling param to false
