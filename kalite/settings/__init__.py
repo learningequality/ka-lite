@@ -19,9 +19,6 @@ from .base import *
 
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 
-TEST_RUNNER = KALITE_TEST_RUNNER
-
-
 ########################
 # IMPORTANT: Do not add new settings below this line
 #

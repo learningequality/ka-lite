@@ -522,13 +522,12 @@ from kalite.playlist.settings import *
 from kalite.student_testing.settings import *
 from kalite.remoteadmin.settings import *
 
-# This would seem only necessary when running the testing application,
-# however it's harmless so we just import it unconditionally in case
-# some of it is needed through "from kalite.settings import xx"
-from kalite.testing.settings import *
-
 # Import from applications with problematic __init__.py files
 from kalite.legacy.i18n_settings import *
 from kalite.legacy.topic_tools_settings import *
 from kalite.legacy.caching_settings import *
 from kalite.legacy.updates_settings import *
+
+from kalite.testing.loadtesting.settings import *
+from kalite.testing.settings import *
+TEST_RUNNER = KALITE_TEST_RUNNER
