@@ -7,7 +7,7 @@ from kalite.testing.behave_helpers import *
 
 from kalite.facility.models import Facility
 
-from kalite.testing.mixins.facility_mixins import CreateFacilityMixin, CreateStudentMixin
+from kalite.testing.mixins.facility_mixins import CreateFacilityMixin, CreateStudentMixin, FacilityMixins
 
 PAGE_RELOAD_TIMEOUT = 10
 
@@ -88,6 +88,27 @@ def impl(context):
     assert WebDriverWait(context.browser, PAGE_RELOAD_TIMEOUT).until(
         EC.staleness_of(context.wait_elem)
     )
+
+@given("I have a coach account")
+def impl(context):
+    context.coach_password = password = "superpassword"
+    context.coach = FacilityMixins.create_teacher(password=password
+
+@when("I log in as a coach")
+def impl(context):
+    fill_username(context, context.coach.username)
+    fill_password(context, context.coach_password)
+    context.execute_steps("""
+        when I click the login button
+    """)
+
+@then("I am redirected to coach reports page")
+def impl(context):
+    assert WebDriverWait(context.browser, PAGE_RELOAD_TIMEOUT).until(
+        EC.staleness_of(context.homepage_elem_ref)
+    ), "Was not redirected away from the homepage"
+    assert context.browser.current_url == reverse("coach_reports"),\
+        "Current url {0}\nExpected url{1}".format(context.browser.current_url, reverse("coach_reports"))
 
 def fill_field(context, text, field_id):
     field = find_id_with_wait(context, field_id)

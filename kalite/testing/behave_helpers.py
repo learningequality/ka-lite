@@ -238,9 +238,19 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
 def build_url(context, url):
     return urljoin(context.config.server_url, url)
 
-def go_to_homepage(context):
+def go_to_homepage(context, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Gets the homepage and doesn't return control until the page is loaded.
+    TODO: Add a wait condition that is aware of the front-end JS stuff.
+    :param context: A behave context
+    :return: Nothing!
+    """
     url = reverse("homepage")
+    wait_elem = context.browser.find_element_by_tag_name("body")
     context.browser.get(build_url(context, url))
+    WebDriverWait(context.browser, wait_time).until(
+        EC.staleness_of(wait_elem)
+    )
 
 
 def _login_user(context, username, password, facility=None):

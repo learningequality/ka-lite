@@ -41,3 +41,9 @@ Feature: Logging into KA Lite
         and I enter my password correctly
         and I click the login button
         then the login button should disappear
+
+    Scenario: Logging in as a coach redirects to coach reports
+        Given I have a coach account
+        And I am on the homepage
+        When I log in as a coach
+        Then I am redirected to coach reports page
