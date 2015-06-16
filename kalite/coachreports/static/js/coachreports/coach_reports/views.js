@@ -253,14 +253,7 @@ var TabularReportView = BaseView.extend({
         });
 
         this.append_views(row_views, ".student-data");
-        
-        this.$('.headrowuser').css("min-width", this.$('.headrow.data').outerWidth());
-        
-        //this.make_sticky(); 
 
-    },
-
-    make_sticky: function() {
     },
 
     no_user_error: function() {
