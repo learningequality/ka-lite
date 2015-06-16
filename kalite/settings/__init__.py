@@ -19,9 +19,7 @@ from .base import *
 
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 
-if DEBUG:
-    from kalite.testing.loadtesting.settings import *
-    TEST_RUNNER = KALITE_TEST_RUNNER
+TEST_RUNNER = KALITE_TEST_RUNNER
 
 
 ########################
