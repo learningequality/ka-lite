@@ -122,7 +122,12 @@ class FacilityUserResource(ModelResource):
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ")
                 + _("-- be sure to log out when you finish."))
 
-            return self.create_response(request, {'success': True})
+            extras = {'success': True}
+            if user.is_teacher:
+                extras.update({
+                    "redirect": reverse("coach_reports")
+                })
+            return self.create_response(request, extras)
 
 
     def logout(self, request, **kwargs):
