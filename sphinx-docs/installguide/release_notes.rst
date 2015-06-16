@@ -1,6 +1,21 @@
 Release Notes
 =============
 
+0.14.0
+------
+
+General
+^^^^^^^
+Installation from source (using ``git``) is no longer supported for end-users.
+If you have previously installed from source, in order to upgrade you must first install KA Lite again in a separate location using one of the supported installers.
+Then you can migrate your data from your old installation to your new one using the command::
+
+    kalite manage setup --git-migrate [/path/to/your/old/installation/]
+
+You *must* use the ``kalite`` command that comes with your new installation.
+The path you should specify is the base project directory -- it should contain the ``kalite`` directory, which should in turn contain the ``database`` directory.
+Follow the on-screen prompts to complete the migration.
+
 0.13.0
 ------
 

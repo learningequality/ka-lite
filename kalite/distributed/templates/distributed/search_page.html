@@ -38,6 +38,23 @@
                 <hr class="visible-xs">
             {% endfor %}
             </div>
+            {% if more or page > 1 %}
+            <nav>
+              <ul class="pagination">
+                <li {% if page == 1 %}class="disabled"{% endif %}>
+                  <a href="{{ previous_url }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="active"><a href="#">{{ page }} <span class="sr-only">({% trans "current" %})</span></a></li>
+                <li {% if not more %}class="disabled"{% endif %}>
+                  <a href="{{ next_url }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            {% endif %}
         </div>
     {% endif %}
 {% endblock %}

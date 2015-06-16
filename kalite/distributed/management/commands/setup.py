@@ -158,6 +158,11 @@ class Command(BaseCommand):
             dest='force-assessment-item-dl',
             default=False,
             help='Downloads assessment items from the url specified by settings.ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
+        make_option('-g', '--git-migrate',
+            action='store',
+            dest='git_migrate_path',
+            default=None,
+            help='Runs the git migrate management command to migrate from previous installations of KA Lite using Git'),
     )
 
     def handle(self, *args, **options):
@@ -203,6 +208,11 @@ class Command(BaseCommand):
             if options["interactive"]:
                 if not raw_input_yn("Do you wish to continue and install it as root?"):
                     raise CommandError("Aborting script.\n")
+
+        git_migrate_path = options["git_migrate_path"]
+
+        if git_migrate_path:
+            call_command("gitmigrate", path=git_migrate_path)
 
         install_clean = not kalite.is_installed()
         database_kind = settings.DATABASES["default"]["ENGINE"]

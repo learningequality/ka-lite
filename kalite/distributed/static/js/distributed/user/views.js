@@ -31,7 +31,7 @@ window.SuperUserCreateModalView = BaseView.extend({
             success : function(e){
                 if (e.Status == 'ShowModal'){
                     $('#superusercreate-container').html(e.data);
-                    setTimeout(function () {this.$("#id_superusername").focus().select()}, 900);
+                    setTimeout(function () {this.$("#id_superusername").focus().select();}, 900);
                 }
             },
             error : function(e){
