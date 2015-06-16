@@ -326,7 +326,6 @@ var CoachSummaryView = BaseView.extend({
         _.bindAll(this);
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
-        this.set_data_model();
     },
 
     set_data_model: function (){
@@ -349,10 +348,14 @@ var CoachSummaryView = BaseView.extend({
     },
 
     render: function() {
+        delete this.fetching;
+
         this.$el.html(this.template({
             status:this.model.attributes,
             data: this.data_model.attributes
         }));
+
+        clear_messages();
 
         // If no user data at all, then show a warning to the user
         var ref, ref1;
