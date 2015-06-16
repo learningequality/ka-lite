@@ -14,7 +14,7 @@
 				</div>
 				<div class="circlechart">
 					<div id="full_circle2">
-						<p>{{#if data.exercise_mastery }}{{data.exercise_mastery }}{{else}}{{_ "N/A" }}{{/if}}</p>
+						<p>{{#if data.exercise_mastery }}{{data.exercise_mastery }} %{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
 					<div class="charttext">
 						{{_ "Average progress in exercises" }}
@@ -30,7 +30,7 @@
 				</div>
 				<div class="circlechart">
 					<div id="full_circle4">
-						<p>{{#if data.content_time_spent }}{{ data.content_time_spent }}{{else}}{{_ "N/A" }}{{/if}}</p>
+						<p>{{#if data.content_time_spent }}{{ data.content_time_spent }} {{_ "Hours" }}{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
 					<div class="charttext">
 						{{_ "Total time spent on content" }}
