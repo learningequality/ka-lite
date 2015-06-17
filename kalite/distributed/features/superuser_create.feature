@@ -33,21 +33,16 @@ Feature: Create superuser from the in browser modal
         When I click the create button
         Then the modal won't dismiss
 
-    Scenario: Create superuser with incorrect email address
-        Given I enter my email address incorrectly
+    Scenario: Create superuser with unmatched password
+        Given I enter an unmatched password
         When I click the create button
-        Then the email border will turn red
+        Then the confirmsuperpassword border will turn red
         And the modal won't dismiss
 
-    Scenario: Create superuser with email address longer than 40
-        Given I enter a email address longer than 40 letters
-        When I click the create button
-        Then the modal won't dismiss
-
-    Scenario: Create superuser with correct username and password and email address
+    Scenario: Create superuser with correct username and password and re-enter password
         Given I enter username correctly
         And I enter password correctly
-        And I enter email correctly
+        And I re-enter password correctly
         When I click the create button
         Then a superuser is created
         And the modal will dismiss
