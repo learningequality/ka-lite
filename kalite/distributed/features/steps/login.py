@@ -88,6 +88,7 @@ def impl(context):
     assert WebDriverWait(context.browser, PAGE_RELOAD_TIMEOUT).until(
         EC.staleness_of(context.wait_elem)
     )
+    context.logged_in = True
 
 @given("I have a coach account")
 def impl(context):
