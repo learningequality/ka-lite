@@ -204,6 +204,10 @@ var TabularReportRowCellView = BaseView.extend({
             if (this.model.get("streak_progress") < 100) {
                 this.$el.html(this.model.get("streak_progress") + "%");
             }
+        } else if (this.model.has("video_id") || this.model.has("content_id")) {
+            if (this.model.get("points") < ds.distributed.points_per_video) {
+                this.$el.html(Math.round(100*this.model.get("points")/ds.distributed.points_per_video) + "%");
+            }
         }
     },
 
