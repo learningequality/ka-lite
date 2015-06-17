@@ -196,7 +196,7 @@ a:hover {
 .teach-nav li a:hover {
     color: #5AA685;
 }
-.teach-nav span.icon {
+.teach-nav i.icon {
     font-size: 40pt;
 }
 .link-width {
@@ -283,7 +283,7 @@ a:hover {
     font-weight: bold;
     text-decoration: none;
 }
-.manage-nav span.icon {
+.manage-nav i.icon {
     font-size: 40pt;
 }
 
