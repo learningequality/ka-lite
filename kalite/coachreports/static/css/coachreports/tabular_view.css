@@ -2,10 +2,6 @@
 	cursor: pointer;
 }
 
-#displaygrid td {
-	al
-}
-
 #displaygrid {
 	overflow: auto;
 	border-right: 1px solid #bbb;
@@ -84,7 +80,7 @@ th.headrowuser {
 	background-color: #eee;
 }
 
-#displaygrid td, #displaygrid th {
+#displaygrid td.status, #displaygrid th {
     min-width: 60px;
     /*max-width: 60px;*/
     overflow: hidden;

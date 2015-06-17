@@ -8,7 +8,7 @@
     </ul>
     <div class="tab-content">
         {{#each collection}}
-        <div class="tab-pane {{#if @first}}active{{/if}}" id="{{ id }}">
+        <div class="tab-pane detail-panel-contents {{#if @first}}active{{/if}}" id="{{ id }}">
             <p class="detail-tab {{#if correct }}correct">{{_ "Correct" }}{{else}}incorrect">{{_ "Incorrect" }}{{/if}}</p>
             {{#if time_taken }}<p>{{_ "Time taken" }}: {{ math time_taken "/" 1000 }} {{_ "seconds" }}</p>{{/if}}
             {{#if points }}<p>{{_ "Points" }}: {{ points }}</p>{{/if}}
@@ -25,10 +25,10 @@
                 <tbody>
                 {{#each response_log }}
                 <tr>
-                    <td>{{ math @index "+" 1  }}</td>
-                    <td>{{ type }}{{#if answer}}: {{answer}}{{/if}}</td>
-                    <td>{{ datetime timestamp }}</td>
-                    <td>{{#ifcond correct "===" true}}{{_ "Correct" }}{{else}}{{#ifcond correct "===" false }}{{_ "Incorrect" }}{{/ifcond}}{{/ifcond}}</td>
+                    <td class="detail-table-cell">{{ math @index "+" 1  }}</td>
+                    <td class="detail-table-cell">{{ type }}{{#if answer}}: {{#ifObject answer}}{{#each answer.[0] }}{{#unless @first }}, {{/unless}}{{#each this }}{{this}}{{/each}}{{/each}}{{else}}{{answer}}{{/ifObject}}{{/if}}</td>
+                    <td class="detail-table-cell">{{ datetime timestamp }}</td>
+                    <td class="detail-table-cell">{{#ifcond correct "===" true}}{{_ "Correct" }}{{else}}{{#ifcond correct "===" false }}{{_ "Incorrect" }}{{/ifcond}}{{/ifcond}}</td>
                 </tr>
                 {{/each}}
                 </tbody>

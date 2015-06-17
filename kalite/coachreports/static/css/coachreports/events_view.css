@@ -46,3 +46,13 @@
 	background: #f9f9f9;
 	
 }
+
+/* Force panel to a min width and cells to a max-width to keep table inline */
+.detail-panel-contents {
+	min-width: 500px;
+}
+
+table.details-table td.detail-table-cell {
+	overflow: auto;
+	max-width: 120px;
+}
