@@ -28,7 +28,7 @@ def get_learners_from_GET(request):
         # Do this to ensure that we never return more than one facility's worth of anything.
         learner_filter = Q(facility__pk__in=facility_ids)
 
-    return FacilityUser.objects.filter(learner_filter).order_by("last_name")
+    return FacilityUser.objects.filter(learner_filter & Q(is_teacher=False)).order_by("last_name")
 
 def return_log_type_details(log_type, topic_ids=None):
     fields = ["user", "points", "complete", "completion_timestamp", "completion_counter"]
