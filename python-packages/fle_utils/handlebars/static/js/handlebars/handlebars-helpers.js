@@ -93,3 +93,11 @@ Handlebars.registerHelper("datetime", function(datetime_string, options) {
     var date = new Date(datetime_string);
     return date.toLocaleString();
 });
+
+Handlebars.registerHelper("ifObject", function(candidate, options){
+    if (_.isObject(candidate)) {
+        return options.fn(this);
+    } else {
+        return options.inverse(this);
+    }
+})
