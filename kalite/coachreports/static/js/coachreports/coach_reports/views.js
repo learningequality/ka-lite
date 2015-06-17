@@ -23,12 +23,14 @@ var DetailsPanelBodyView = BaseView.extend({
 
     initialize: function (options) {
         _.bindAll(this);
+        this.start_number = options.start_number;
         this.render();
     },
 
     render: function() {
         this.$el.html(this.template({
-            collection: this.collection.to_objects()
+            collection: this.collection.to_objects(),
+            start_number: this.start_number
         }));
     }
 });
@@ -45,20 +47,48 @@ var DetailsPanelView = BaseView.extend({
 
     template: HB.template("coach_nav/detailspanel"),
 
+    events: {
+        "click .pagination-link": "change_page"
+    },
+
     initialize: function (options) {
         _.bindAll(this);
         this.content_item = options.content_item;
+        this.page = 1;
         if (this.content_item.get("kind") === "Exercise") {
-            this.collection = new window.AttemptLogCollection([], {
-                user: this.model.get("user"),
-                limit: this.limit,
-                exercise_id: this.model.get("exercise_id"),
-                order_by: "timestamp"
-            });
-            this.collection.fetch();
+            this.instantiate_collection();
+        } else {
+            this.render();
         }
+    },
+
+    instantiate_collection: function() {
+        this.collection = new window.AttemptLogCollection([], {
+            user: this.model.get("user"),
+            limit: this.limit,
+            offset: (this.page - 1)*this.limit,
+            exercise_id: this.model.get("exercise_id"),
+            order_by: "timestamp"
+        });
         this.listenToOnce(this.collection, "sync", this.render);
-        this.render();
+        this.collection.fetch();
+    },
+
+    change_page: function(event) {
+        var page = this.$(event.currentTarget).attr("value");
+        switch (page) {
+            case "next":
+                this.page++;
+                break;
+            case "previous":
+                this.page--;
+                break;
+            default:
+                this.page = Number(page);
+                break;
+        }
+        this.instantiate_collection();
+        return false;
     },
 
     render: function() {
@@ -76,10 +106,12 @@ var DetailsPanelView = BaseView.extend({
             model: this.model.attributes,
             itemdata: this.content_item.attributes,
             pages: this.pages,
+            page: this.page,
             collection: this.collection.to_objects()
         }));
         this.bodyView = new DetailsPanelBodyView ({
             collection: this.collection,
+            start_number: (this.page - 1)*this.limit + 1,
             el: this.$(".body")
         });
     }

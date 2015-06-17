@@ -2,7 +2,7 @@
     <ul class="nav nav-tabs">
         {{#each collection}}
         <li role="presentation" class="detail-tab {{#if correct }}correct{{else}}incorrect{{/if}}{{#if @first}} active{{/if}}">
-            <a href="#{{ id }}" data-toggle="tab" aria-expanded="true">Question {{ math @index "+" 1 }}</a>
+            <a href="#{{ id }}" data-toggle="tab" aria-expanded="true">Question {{ math @index "+" ../start_number }}</a>
         </li>
         {{/each}}
     </ul>
