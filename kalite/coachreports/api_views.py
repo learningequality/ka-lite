@@ -99,7 +99,12 @@ def learner_logs(request):
     return JsonResponse({
         "logs": output_logs,
         "contents": output_objects,
-        "learners": [learner for learner in learners.values("first_name", "last_name", "username", "pk")],
+        "learners": [{
+            "first_name": learner.first_name,
+            "last_name": learner.last_name,
+            "username": learner.username,
+            "pk": learner.pk
+            } for learner in learners],
         "page": page,
         "pages": pages,
         "limit": limit
