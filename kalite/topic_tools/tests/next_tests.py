@@ -10,7 +10,7 @@ from kalite.testing.base import KALiteTestCase
 class TestNextMethods(KALiteTestCase):
 
 	ORIGINAL_POINTS = 37
-	ORIGINAL_ATTEMPTS = 3
+	ORIGINAL_ATTEMPTS = 0
 	ORIGINAL_STREAK_PROGRESS = 20
 	NEW_POINTS_LARGER = 22
 	NEW_ATTEMPTS = 5
@@ -59,7 +59,7 @@ class TestNextMethods(KALiteTestCase):
 		#user 2
 		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID, user = self.user2, struggling=False)
 		self.original_exerciselog2.points = self.ORIGINAL_POINTS
-		self.original_exerciselog2.attempts = self.ORIGINAL_POINTS
+		self.original_exerciselog2.attempts = self.ORIGINAL_ATTEMPTS
 		self.original_exerciselog2.streak_progress = self.ORIGINAL_STREAK_PROGRESS
 		self.original_exerciselog2.latest_activity_timestamp = self.TIMESTAMP_EARLY
 		self.original_exerciselog2.completion_timestamp = self.TIMESTAMP_EARLY
@@ -67,7 +67,7 @@ class TestNextMethods(KALiteTestCase):
 
 		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID2, user = self.user2, struggling=False)
 		self.original_exerciselog2.points = self.ORIGINAL_POINTS
-		self.original_exerciselog2.attempts = self.ORIGINAL_POINTS
+		self.original_exerciselog2.attempts = self.ORIGINAL_ATTEMPTS
 		self.original_exerciselog2.streak_progress = self.ORIGINAL_STREAK_PROGRESS
 		self.original_exerciselog2.latest_activity_timestamp = self.TIMESTAMP_LATER
 		self.original_exerciselog2.completion_timestamp = self.TIMESTAMP_LATER
@@ -75,7 +75,7 @@ class TestNextMethods(KALiteTestCase):
 
 		self.original_exerciselog3 = ExerciseLog(exercise_id=self.EXERCISE_ID_STRUGGLE, user = self.user2, struggling=True)
 		self.original_exerciselog3.points = self.ORIGINAL_POINTS
-		self.original_exerciselog3.attempts = self.ORIGINAL_POINTS
+		self.original_exerciselog3.attempts = self.ORIGINAL_POINTS #intentionally made larger to trigger struggling
 		self.original_exerciselog3.streak_progress = 0
 		self.original_exerciselog3.attempts = 100
 		self.original_exerciselog3.latest_activity_timestamp = self.TIMESTAMP_STRUGGLE
