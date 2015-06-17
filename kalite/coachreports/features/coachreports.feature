@@ -8,6 +8,7 @@ Feature: Coach reports
         Given there is no data
         And I am on the coach report
         Then I should see a warning
+        And there should be no Show Tabular Report button
 
     Scenario: I teach two groups
         Given there are two groups
