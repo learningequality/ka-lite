@@ -23,6 +23,7 @@ from fle_utils.platforms import is_windows, system_script_extension
 from kalite.version import VERSION
 from kalite.facility.models import Facility
 from securesync.models import Device
+import warnings
 
 
 def raw_input_yn(prompt):
@@ -263,7 +264,20 @@ class Command(BaseCommand):
         ########################
         # Now do stuff
         ########################
-
+        
+        # Clean *pyc files if we are in a git repo
+        if not install_clean and settings.IS_SOURCE:
+            if os.access(settings.SOURCE_DIR, os.W_OK):
+                for root, dirs, files in os.walk(settings.SOURCE_DIR):
+                    pyc_files = filter(lambda filename: filename.endswith(".pyc"), files)
+                    py_files = set(filter(lambda filename: filename.endswith(".py"), files))
+                    excess_pyc_files = filter(lambda pyc_filename: pyc_filename[:-1] not in py_files, pyc_files)
+                    for excess_pyc_file in excess_pyc_files:
+                        full_path = os.path.join(root, excess_pyc_file)
+                        os.remove(full_path)
+            else:
+                warnings.warn("{0} is not writable so cannot delete stale *pyc files")
+        
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
