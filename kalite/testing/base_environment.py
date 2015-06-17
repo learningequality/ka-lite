@@ -26,6 +26,8 @@ def after_all(context):
 
 def before_feature(context, feature):
     context.logged_in = False
+    # A superuser now needs to exist or UI is blocked by a modal.
+    # https://github.com/learningequality/ka-lite/pull/3668
     if not User.objects.exists():
         User.objects.create_superuser(username='superusername', password='superpassword', email='super@email.com')
     if "as_admin" in feature.tags:

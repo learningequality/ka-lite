@@ -108,12 +108,13 @@ function display_languages() {
                 }
             }
 
-            if ( lang_code != 'en')
+            if ( lang_code != 'en') {
                 lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete'));
-            else
-                if (lang['subtitle_count'] > 0) {
-                    lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete Subtitles'));
-                }
+            } else if (lang['subtitle_count'] > 0) {
+                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete Subtitles'));
+            } else {
+                lang_description += sprintf("<td class='delete-language-button'></td>"); // Ensure the number of <td>s is consistent
+            }
 
             lang_description += "<td class='clear'></td></tr>";
 

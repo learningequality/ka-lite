@@ -291,7 +291,12 @@ class FormGroupTest(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, 
         self.assertEqual(txt, select)
 
 
-class HomePageTest(BrowserActionMixins, KALiteBrowserTestCase):
+class HomePageTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase):
+
+    def setUp(self):
+        super(HomePageTest, self).setUp()
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
 
     def test_homepage_search(self):
         self.browse_to(self.reverse("homepage"));

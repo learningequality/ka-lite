@@ -55,11 +55,16 @@ class TestAddFacility(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCa
         self.browser_check_django_message(message_type="success", contains="has been successfully saved!")
 
 
-class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase):
+class DeviceUnregisteredTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase):
     """Validate all the steps of registering a device.
 
     Currently, only testing that the device is not registered works.
     """
+
+    def setUp(self):
+        super(DeviceUnregisteredTest, self).setUp()
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
 
     @unittest.skipIf(getattr(settings, 'CONFIG_PACKAGE', None), "Fails if settings.CONFIG_PACKAGE is set.")
     def test_device_unregistered(self):
@@ -71,7 +76,7 @@ class DeviceUnregisteredTest(BrowserActionMixins, KALiteBrowserTestCase):
 
         # First, get the homepage without any automated information.
         self.browse_to(home_url) # Load page
-        self.browser_check_django_message(message_type="warning", contains=["No administrator account detected", "complete the setup."], num_messages=2)
+        self.browser_check_django_message(message_type="warning", contains="complete the setup.")
         self.assertFalse(self.browser_is_logged_in(), "Not (yet) logged in")
 
 

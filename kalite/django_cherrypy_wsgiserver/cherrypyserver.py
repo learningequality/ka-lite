@@ -129,7 +129,7 @@ def stop_server(pidfile):
 
 
 def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=False, pidfile=None, autoreload=False, startuplock=None):
-    port = port or getattr(settings, "CHERRYPY_PORT", 8008)
+    port = port or getattr(settings, "PRODUCTION_PORT", 8008)
     threads = threads or getattr(settings, "CHERRYPY_THREAD_COUNT", 18)
 
     if daemonize:
@@ -144,9 +144,9 @@ def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=Fal
         from django.utils.daemonize import become_daemon
         become_daemon()
 
-        fp = open(pidfile, 'w')
-        fp.write("%d\n" % os.getpid())
-        fp.close()
+        with open(pidfile, 'w') as f:
+            f.write("%d\n" % os.getpid())
+            f.write(port)
 
     cherrypy.config.update({
         'server.socket_host': host,
