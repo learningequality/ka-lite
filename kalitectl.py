@@ -654,10 +654,10 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
-        collected_django_options = result.get('DJANGO_OPTIONS', [])
+        collected_django_options = len(result.get('DJANGO_OPTIONS', []))
         result['DJANGO_OPTIONS'] = (
             result.get('DJANGO_OPTIONS', []) +
-            sys.argv[len(collected) + len(collected_django_options):]
+            sys.argv[len(collected) + (collected_django_options or 1):]
         )
         # If any of the collected arguments are also in the DJANGO_OPTIONS,
         # then exit because we don't want users to have put options for kalite
