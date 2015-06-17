@@ -163,7 +163,7 @@ def aggregate_learner_logs(request):
         "complete": log.complete,
         "struggling": getattr(log, "struggling", None),
         "progress": getattr(log, "streak_progress", getattr(log, "progress", None)),
-        "content": get_exercise_cache().get(getattr(log, "exercise_id"), get_content_cache().get(getattr(log, "video_id", getattr(log, "content_id", "")), {})),
+        "content": get_exercise_cache().get(getattr(log, "exercise_id", ""), get_content_cache().get(getattr(log, "video_id", getattr(log, "content_id", "")), {})),
         } for log in output_logs[:event_limit]]
     output_dict["total_time_logged"] = UserLogSummary.objects\
         .filter(user__in=learners, last_activity_datetime__gte=start_date, last_activity_datetime__lte=end_date)\
