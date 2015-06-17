@@ -75,6 +75,7 @@ else:
 import httplib
 import re
 import subprocess
+from docopt import docopt
 
 from threading import Thread
 from docopt import DocoptExit, printable_usage, parse_defaults,\
@@ -629,39 +630,6 @@ def profile_memory():
 
     signal.signal(signal.SIGPROF, collect_mem_usage)
     atexit.register(handle_exit)
-
-
-# TODO(benjaoming): When this PR is merged, we can stop this crazyness
-# https://github.com/docopt/docopt/pull/283
-def docopt(doc, argv=None, help=True, version=None, options_first=False):
-    """Re-implementation of docopt.docopt() function to parse ANYTHING at
-    the end (for proxying django options)."""
-    if argv is None:
-        argv = sys.argv[1:]
-
-    DocoptExit.usage = printable_usage(doc)
-    options = parse_defaults(doc)
-    pattern = parse_pattern(formal_usage(DocoptExit.usage), options)
-    argv = parse_argv(TokenStream(argv, DocoptExit), list(options),
-                      options_first)
-    pattern_options = set(pattern.flat(Option))
-    for ao in pattern.flat(AnyOptions):
-        doc_options = parse_defaults(doc)
-        ao.children = list(set(doc_options) - pattern_options)
-    extras(help, version, argv, doc)
-    matched, left, collected = pattern.fix().match(argv)
-    
-    # if matched and left == []:  # better error message if left?
-    if collected:  # better error message if left?
-        result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
-        result['DJANGO_OPTIONS'] = sys.argv[len(collected) + 1:]
-        # If any of the collected arguments are also in the DJANGO_OPTIONS,
-        # then exit because we don't want users to have put options for kalite
-        # at the end of the command
-        if any(map(lambda x: x.name in result['DJANGO_OPTIONS'], collected)):
-            raise DocoptExit()
-        return result
-    raise DocoptExit()
 
 
 if __name__ == "__main__":
