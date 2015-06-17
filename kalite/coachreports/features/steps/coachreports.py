@@ -39,6 +39,10 @@ def step_impl(context):
     warning = find_css_class_with_wait(context, "alert-warning")
     assert warning, "No warning shown."
 
+@then(u"there should be no Show Tabular Report button")
+def impl(context):
+    assert_no_element_by_css_selector(context, "#show_tabular_report")
+
 @then(u"I should be taken to the learner's progress report page")
 def impl(context):
     assert reverse("student_view") in context.browser.current_url, "Assertion failed. {url} not in {current_url}".format(url=reverse("student_view"), current_url=context.browser.current_url)
@@ -100,6 +104,7 @@ def impl(context, learner, progress_verbs, exercise):
             log.attempts = 25
         for i in range(0, log.attempts):
             attempt_log, created = AttemptLog.objects.get_or_create(exercise_id=exercise, user=user, seed=i, timestamp=datetime.datetime.now())
+        log.latest_activity_timestamp = datetime.datetime.now()
         log.save()
 
 @then(u'I should see the "{exercise}" marked for "{learner}" as "{progress_text}" and coloured "{progress_colour}"')
@@ -168,10 +173,13 @@ def impl(context):
     exercises = random.sample(get_exercise_cache().keys(), 10)
     for user in FacilityUser.objects.all():
         for exercise in exercises:
-            log, created = ExerciseLog.objects.get_or_create(exercise_id=exercise, user=user)
-            log.streak_progress = 100
-            log.attempts = 15
-            log.save()
+            log, created = ExerciseLog.objects.get_or_create(
+                exercise_id=exercise,
+                user=user,
+                streak_progress=100,
+                attempts=15,
+                latest_activity_timestamp=datetime.datetime.now()
+                )
 
 
 @given(u"there are two groups")
