@@ -654,11 +654,19 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
-        result['DJANGO_OPTIONS'] = sys.argv[len(collected) + 1:]
+        collected_django_options = result.get('DJANGO_OPTIONS', [])
+        result['DJANGO_OPTIONS'] = (
+            result.get('DJANGO_OPTIONS', []) +
+            sys.argv[len(collected) + len(collected_django_options):]
+        )
         # If any of the collected arguments are also in the DJANGO_OPTIONS,
         # then exit because we don't want users to have put options for kalite
         # at the end of the command
-        if any(map(lambda x: x.name in result['DJANGO_OPTIONS'], collected)):
+        if any(map(lambda x: x.name in map(lambda x: x.split("=")[0], result['DJANGO_OPTIONS']), collected)):
+            sys.stderr.write(
+                "Cannot mix django manage command options with kalite options. "
+                "Always put django management options last.\n\n"
+            )
             raise DocoptExit()
         return result
     raise DocoptExit()
