@@ -80,6 +80,7 @@ th.headrowuser {
 	background-color: #eee;
 }
 
+/* Make this specific to .status to prevent it overriding cells in the details panel table. */
 #displaygrid td.status, #displaygrid th {
     min-width: 60px;
     /*max-width: 60px;*/

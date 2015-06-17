@@ -23,6 +23,7 @@ var DetailsPanelBodyView = BaseView.extend({
 
     initialize: function (options) {
         _.bindAll(this);
+        // Track the number of the first Question in this panel.
         this.start_number = options.start_number;
         this.render();
     },
@@ -63,6 +64,8 @@ var DetailsPanelView = BaseView.extend({
     },
 
     instantiate_collection: function() {
+        // Instantiate a collection, with the right attributes to fetch just the AttemptLogs needed
+        // for the currently requested page and no more.
         this.collection = new window.AttemptLogCollection([], {
             user: this.model.get("user"),
             limit: this.limit,
@@ -111,6 +114,7 @@ var DetailsPanelView = BaseView.extend({
         }));
         this.bodyView = new DetailsPanelBodyView ({
             collection: this.collection,
+            // Question number of first question on this page
             start_number: (this.page - 1)*this.limit + 1,
             el: this.$(".body")
         });
@@ -141,6 +145,7 @@ var DetailPanelInlineRowView = BaseView.extend({
             attributes: {colspan: this.contents_length - this.content_item_place}
         });
 
+        // Add in a view that spans the columns up to the selected cell.
         this.spacer_view = new BaseView({
             tagName: 'td',
             attributes: {colspan: this.content_item_place + 1}
@@ -205,6 +210,7 @@ var TabularReportRowCellView = BaseView.extend({
                 this.$el.html(this.model.get("streak_progress") + "%");
             }
         } else if (this.model.has("video_id") || this.model.has("content_id")) {
+            // Calculate progress from points if not an exercise.
             if (this.model.get("points") < ds.distributed.points_per_video) {
                 this.$el.html(Math.round(100*this.model.get("points")/ds.distributed.points_per_video) + "%");
             }
@@ -396,8 +402,6 @@ var CoachSummaryView = BaseView.extend({
     },
 
     render: function() {
-        delete this.fetching;
-
         this.$el.html(this.template({
             status:this.model.attributes,
             data: this.data_model.attributes

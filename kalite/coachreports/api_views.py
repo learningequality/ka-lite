@@ -99,6 +99,7 @@ def learner_logs(request):
     return JsonResponse({
         "logs": output_logs,
         "contents": output_objects,
+        # Sometimes 'learners' gets collapsed to a list from the Queryset. This insures against that eventuality.
         "learners": [{
             "first_name": learner.first_name,
             "last_name": learner.last_name,
