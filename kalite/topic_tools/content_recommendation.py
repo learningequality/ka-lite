@@ -14,8 +14,7 @@ from django.db.models import Count
 from kalite.topic_tools import * 
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
-
-from kalite.facility.models import FacilityUser
+from kalite.facility.models import Facility, FacilityUser
 
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
@@ -26,7 +25,9 @@ TOPIC_RECOMMENDATION_DEPTH = 3
 def get_resume_recommendations(user, request):
     """Get the recommendation for the Resume section.
 
-
+    Logic:
+    Find the most recent incomplete item (video or exercise) and
+    return that as the recommendation.
     Args:
     user -- The current user as a facility user model object.
 
@@ -46,7 +47,12 @@ def get_resume_recommendations(user, request):
 def get_next_recommendations(user, request):
     """Get the recommendations for the Next section, and return them as a list.
 
-
+    Logic:
+    Next recommendations are currently comprised of 3 main subgroups: group recommendations,
+    struggling exercises, and topic tree based data. Group recommendations consist of 
+    finding the most common item tackled immediately after the most recent item, struggling
+    is determined by the "struggling" model attribute, and topic tree data is based off
+    the graphical distance between neighboring exercise/topic nodes. 
     Args:
     user -- The current user as a facility user model object.
 
@@ -155,7 +161,11 @@ def get_exercise_prereqs(exercises):
 def get_explore_recommendations(user, request):
     """Get the recommendations for the Explore section, and return them as a list.
 
-
+    Logic:
+    Looks at a preset distance away, beginning at 2 to exclude self recommendations, to 
+    recommend a topic for exploration. Currently, the cap is a distance of 6 so that all
+    recommendations will still be of moderate relatedness. This number is not permanent, and
+    can be tweaked as needed.
     Args:
     user -- The current user as a facility user model object.
 
