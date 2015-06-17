@@ -2,58 +2,47 @@ Feature: Create superuser from the in browser modal
 
     Scenario: Superuser already exists
         Given I am on the homepage
+        And there is superuser 
         Then there should be no modal displayed
 
     Scenario: Superuser does not exist yet
-        Given superuser is deleted
-        And I am on the homepage
-        Then I should see a modal
+        Given I am on the homepage
+        And superuser is deleted
+        Then refresh homepage
+        And I should see a modal
 
     Scenario: Create superuser with empty username
-        Given superuser is deleted
         Given the username is empty
         When I click the create button
         Then the username border will turn red
         And the modal won't dismiss
 
     Scenario: Create superuser with string longer than 40
-        Given superuser is deleted
         Given I enter a username longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
     Scenario: Create superuser with empty password
-        Given superuser is deleted
         Given the password is empty
         When I click the create button
         Then the password border will turn red
         And the modal won't dismiss
 
     Scenario: Create superuser with password longer than 40
-        Given superuser is deleted
         Given I enter a password longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
-    Scenario: Create superuser with incorrect email address
-        Given superuser is deleted
-        Given I enter my email address incorrectly
+    Scenario: Create superuser with unmatched password
+        Given I enter an unmatched password
         When I click the create button
-        Then the email border will turn red
+        Then the confirmsuperpassword border will turn red
         And the modal won't dismiss
 
-    Scenario: Create superuser with email address longer than 40
-        Given superuser is deleted
-        Given I enter a email address longer than 40 letters
-        When I click the create button
-        Then the modal won't dismiss
-
-    Scenario: Create superuser with correct username and password and email address
-        Given superuser is deleted
+    Scenario: Create superuser with correct username and password and re-enter password
         Given I enter username correctly
         And I enter password correctly
-        And I enter email correctly
+        And I re-enter password correctly
         When I click the create button
-        Then the modal will dismiss
-        Given I am on the homepage
-        Then there should be no modal displayed
+        Then a superuser is created
+        And the modal will dismiss
