@@ -276,7 +276,7 @@ class Command(BaseCommand):
                         full_path = os.path.join(root, excess_pyc_file)
                         os.remove(full_path)
             else:
-                warnings.warn("{0} is not writable so cannot delete stale *pyc files")
+                warnings.warn("{0} is not writable so cannot delete stale *pyc files".format(settings.SOURCE_DIR))
         
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
