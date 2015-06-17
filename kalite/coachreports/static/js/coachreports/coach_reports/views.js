@@ -97,6 +97,7 @@ var DetailPanelInlineRowView = BaseView.extend({
     initialize: function(options) {
         this.contents_length = options.contents_length;
         this.content_item = options.content_item;
+        this.content_item_place = options.content_item_place;
         this.render();
     },
 
@@ -105,8 +106,17 @@ var DetailPanelInlineRowView = BaseView.extend({
             tagName: 'td',
             model: this.model,
             content_item: this.content_item,
-            attributes: {colspan: this.contents_length + 1}
+            attributes: {colspan: this.contents_length - this.content_item_place}
         });
+
+        this.spacer_view = new BaseView({
+            tagName: 'td',
+            attributes: {colspan: this.content_item_place + 1}
+        });
+
+        this.spacer_view.render();
+
+        this.$el.append(this.spacer_view.el);
         this.$el.append(this.detail_view.el);
     }
 });
@@ -225,10 +235,12 @@ var TabularReportRowView = BaseView.extend({
 
 
         var model_id = model.get("exercise_id") || model.get("video_id") || model.get("content_id");
+        var content_item = this.contents.find(function(item) {return item.get("id") === model_id;});
         this.detail_view = new DetailPanelInlineRowView({
             model: model,
             contents_length: this.contents.length,
-            content_item: this.contents.find(function(item) {return item.get("id") === model_id;})
+            content_item: content_item,
+            content_item_place: this.contents.indexOf(content_item)
         });
         this.$el.after(this.detail_view.el);
 
