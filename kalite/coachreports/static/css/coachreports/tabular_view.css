@@ -17,6 +17,10 @@
     float: left;
 }
 
+.detailspanel{
+    overflow: auto;
+}
+
 .userstatus {
     overflow: auto;
     width: 88%;
