@@ -271,7 +271,7 @@ def get_most_recent_incomplete_item(user):
         })
 
     if item_list:
-        item_list.sort(key=lambda x: x["timestamp"])
+        item_list.sort(key=lambda x: x["timestamp"], reverse=True)
         return item_list[0]
     else:
         return None
