@@ -2,7 +2,6 @@ Feature: Create superuser from the in browser modal
 
     Scenario: Superuser already exists
         Given I am on the homepage
-        And there is superuser 
         Then there should be no modal displayed
 
     Scenario: Superuser does not exist yet
@@ -12,37 +11,45 @@ Feature: Create superuser from the in browser modal
         And I should see a modal
 
     Scenario: Create superuser with empty username
-        Given the username is empty
+        Given superuser is deleted
+        And the username is empty
         When I click the create button
         Then the username border will turn red
         And the modal won't dismiss
 
     Scenario: Create superuser with string longer than 40
-        Given I enter a username longer than 40 letters
+        Given superuser is deleted
+        And I enter a username longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
     Scenario: Create superuser with empty password
-        Given the password is empty
+        Given superuser is deleted
+        And the password is empty
         When I click the create button
         Then the password border will turn red
         And the modal won't dismiss
 
     Scenario: Create superuser with password longer than 40
-        Given I enter a password longer than 40 letters
+        Given superuser is deleted
+        And I enter a password longer than 40 letters
         When I click the create button
         Then the modal won't dismiss
 
     Scenario: Create superuser with unmatched password
-        Given I enter an unmatched password
+        Given superuser is deleted
+        And I enter an unmatched password
         When I click the create button
         Then the confirmsuperpassword border will turn red
         And the modal won't dismiss
 
     Scenario: Create superuser with correct username and password and re-enter password
-        Given I enter username correctly
+        Given superuser is deleted
+        And I am on the homepage
+        And I enter username correctly
         And I enter password correctly
         And I re-enter password correctly
         When I click the create button
-        Then a superuser is created
-        And the modal will dismiss
+        Then the modal will dismiss
+        Given I am on the homepage
+        Then there should be no modal displayed 
