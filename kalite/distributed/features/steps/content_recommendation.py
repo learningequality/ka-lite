@@ -10,7 +10,7 @@ from kalite.topic_tools import get_exercise_cache, get_content_cache
 
 @then(u'the resume card should be shown on the very left of the page')
 def impl(context):
-    assert find_css_with_wait(context, "div#content-rec-wrapper > div.row > div#resume"), "Resume card not displayed!"
+    assert find_id_with_wait(context, "resume"), "Resume card not displayed!"
 
 @given(u'I have already made some progress on lessons')
 def impl(context):
@@ -39,11 +39,11 @@ def impl(context):
 
 @then(u'the explore card should be shown on the very right of the page')
 def impl(context):
-    assert find_css_with_wait(context, "div#content-rec-wrapper > div.row > div#explore"), "Explore card not displayed!"
+    assert find_id_with_wait(context, "explore"), "Explore card not displayed!"
 
 @then(u'the next steps card should be shown in the middle of the page')
 def impl(context):
-    assert find_css_with_wait(context, "div#content-rec-wrapper > div.row > div#nextsteps"), "Next Steps card not displayed!"
+    assert find_id_with_wait(context, "nextsteps"), "Next Steps card not displayed!"
 
 @then(u'the last in-progress video/exercise should be shown')
 def impl(context):
@@ -51,7 +51,9 @@ def impl(context):
 
 @when(u'I click on the right of an exercise suggestion on the next steps card')
 def impl(context):
-    click_and_wait_for_page_load(context, find_css_with_wait(context, "#content-nextsteps-lesson > a:nth-child(2)"))
+    card = find_css_class_with_wait(context, "content-nextsteps-lesson")
+    element = card.find_elements_by_tag_name("a")[1]
+    click_and_wait_for_page_load(context, element)
 
 @then(u'I should be taken to that topic')
 def impl(context):
@@ -59,11 +61,13 @@ def impl(context):
 
 @when(u'I click in the middle of an exercise suggestion on the next steps card')
 def impl(context):
-    click_and_wait_for_page_load(context, find_css_with_wait(context, "#content-nextsteps-lesson > a:nth-child(1)"))
+    card = find_css_class_with_wait(context, "content-nextsteps-lesson")
+    element = card.find_elements_by_tag_name("a")[0]
+    click_and_wait_for_page_load(context, element)
 
 @then(u'the content recommendation cards should be shown')
 def impl(context):
-    assert find_css_with_wait(context, "div#content-rec-wrapper"), "Content Recommednation cards not displayed!"
+    assert find_id_with_wait(context, "content-rec-wrapper"), "Content Recommendation cards not displayed!"
 
 @when(u'the home page is loaded')
 def impl(context):
@@ -71,7 +75,9 @@ def impl(context):
 
 @when(u'I click on a suggested topic on the explore card')
 def impl(context):
-    click_and_wait_for_page_load(context, find_css_with_wait(context, "#content-explore-topics > div > a"))
+    card = find_css_class_with_wait(context, "content-explore-topics")
+    element = card.find_element_by_tag_name("a")
+    click_and_wait_for_page_load(context, element)
 
 @then(u'I should be taken to that exercise')
 def impl(context):
@@ -79,4 +85,6 @@ def impl(context):
 
 @when(u'I click on the resume card lesson')
 def impl(context):
-    click_and_wait_for_page_load(context, find_css_with_wait(context, "div#resume a"))
+    card = find_css_class_with_wait(context, "resume")
+    element = card.find_element_by_tag_name("a")
+    click_and_wait_for_page_load(context, element)
