@@ -282,8 +282,8 @@ def get_content_cache(force=False, annotate=False, language=None):
         if os.path.exists(i18n.get_srt_path()):
             for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
                 # Only both looking at files that are inside a 'subtitles' directory
-                if dirpath.split("/")[-1] == "subtitles":
-                    lc = dirpath.split("/")[-2]
+                if os.path.basename(dirpath) == "subtitles":
+                    lc = os.path.basename(os.path.dirname(dirpath))
                     for filename in filenames:
                         if filename in subtitle_langs:
                             subtitle_langs[filename].append(lc)
