@@ -2,6 +2,10 @@ from kalite.testing.base import KALiteClientTestCase
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 class TestCoachRedirect(FacilityMixins, KALiteClientTestCase):
+    """
+    Regression test for https://github.com/learningequality/ka-lite/issues/3857
+    Ensures that the login api response for a coach redirects to the proper page.
+    """
 
     def setUp(self):
         super(TestCoachRedirect, self).setUp()
