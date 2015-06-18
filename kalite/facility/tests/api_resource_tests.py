@@ -1,3 +1,5 @@
+import json
+
 from kalite.testing.base import KALiteClientTestCase
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 
@@ -14,13 +16,13 @@ class TestCoachRedirect(FacilityMixins, KALiteClientTestCase):
 
     def test(self):
         resp = self.client.post(
-            self.reverse("api_dispatch_list", kwargs={"resource_name": "facility"}) + "login",
-            data={
+            self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/",
+            json.dumps({
                 "username": self.coach.username,
                 "password": self.password,
-                "facility": self.coach.facility,
-            },
-            content_type="application/json"
+                "facility": self.coach.facility.id,
+            }),
+            content_type="application/json",
         )
-        redirect = resp.get("redirect", None)
+        redirect = json.loads(resp.content).get("redirect")
         self.assertEqual(redirect, self.reverse("zone_redirect"), "Logging in as coach does not redirect!")
