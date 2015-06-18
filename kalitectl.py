@@ -6,13 +6,14 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [options] [DJANGO_OPTIONS ...]
+  kalite start [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
-  kalite restart [options] [DJANGO_OPTIONS ...]
+  kalite setting SETTING_NAME
+  kalite restart [options] [--skip-job-scheduler] [DJANGO_OPTIONS ...]
   kalite status [job-scheduler] [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
-  kalite manage [options] COMMAND [DJANGO_OPTIONS ...]
+  kalite manage COMMAND [options] [DJANGO_OPTIONS ...]
   kalite -h | --help
   kalite --version
 
@@ -22,22 +23,17 @@ Options:
   COMMAND               The name of any available django manage command. For
                         help, type `kalite manage help`
   --debug               Output debug messages (for development)
-  --port=<arg>          Use a non-default port on which to start the HTTP server
-                        or to query an existing server (stop/status)
-  --skip-job-scheduler  KA Lite runs a so-called "cronograph", it's own built-in
-                        automatic job scheduler required for downloading videos
-                        and sync'ing with online sources. If you don't need this
-                        you can skip it!
+  --skip-job-scheduler  For `kalite start`: Skips running the job scheduler
+                        (useful for dev)
   DJANGO_OPTIONS        All options are passed on to the django manage command.
-                        Notice that all django options must appear *last* and
-                        should not be mixed with other options. Only long-name
-                        options ('--long-name') are supported.
+                        Notice that all django options must be place *last* and
+                        should not be mixed with other options.
 
 Examples:
-  kalite start          Start KA Lite
-  kalite url            Tell me where KA Lite is available from
-  kalite status         How is KA Lite doing?
-  kalite stop           Stop KA Lite
+  kalite start          Start kalite
+  kalite url            Tell me where kalite is available from
+  kalite status         How is kalite doing?
+  kalite stop           Stop kalite again
   kalite shell          Display a Django shell
   kalite manage help    Show the Django management usage dialogue
 
@@ -47,7 +43,7 @@ Planned features:
   kalite diagnose             Outputs user and copy-paste friendly diagnostics
   kalite query [COMMAND ...]  A query method for external UIs etc. to send
                               commands and obtain data from kalite.
-
+  
   Universal --verbose option and --debug option. Shows INFO level and DEBUG
   level from logging.. depends on proper logging being introduced and
   settings.LOGGERS. Currently, --debug just tells cherrypy to do "debug" mode.
@@ -63,47 +59,33 @@ import os
 if 'KALITE_DIR' in os.environ:
     sys.path = [
         os.path.join(os.environ['KALITE_DIR'], 'python-packages'),
-        os.path.join(os.environ['KALITE_DIR'], 'dist-packages'),
         os.path.join(os.environ['KALITE_DIR'], 'kalite')
     ] + sys.path
 # KALITE_DIR not set, so called from some other source
 else:
-    filedir = os.path.dirname(__file__)
-    sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
+    sys.path = ['python-packages', 'kalite'] + sys.path
 
 
-import httplib
-import re
-import subprocess
-
+from django.core.management import ManagementUtility, get_commands
 from threading import Thread
-from docopt import DocoptExit, printable_usage, parse_defaults,\
-    parse_pattern, formal_usage, parse_argv, TokenStream, Option, AnyOptions,\
-    extras, Dict
+from docopt import docopt
+import httplib
 from urllib2 import URLError
 from socket import timeout
-
-from django.core.management import ManagementUtility
-
 from kalite.version import VERSION
-from kalite.shared.compat import OrderedDict
+
+if os.name == "nt":
+    from subprocess import Popen, CREATE_NEW_PROCESS_GROUP
 
 # Necessary for loading default settings from kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
 
-# Where to store user data
-KALITE_HOME = os.environ.get(
-    "KALITE_HOME",
-    os.path.join(os.path.expanduser("~"), ".kalite")
-)
+KALITE_HOME = os.path.join(os.path.expanduser("~"), ".kalite")
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
 PID_FILE_JOB_SCHEDULER = os.path.join(KALITE_HOME, 'kalite_cronserver.pid')
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
-
-# if this environment variable is set, we activate the profiling machinery
-PROFILE = os.environ.get("PROFILE")
 
 # TODO: Currently, this address might be hard-coded elsewhere, too
 LISTEN_ADDRESS = "0.0.0.0"
@@ -130,6 +112,7 @@ STATUS_UNKNOW = 101
 
 
 class NotRunning(Exception):
+
     """
     Raised when server was expected to run, but didn't. Contains a status
     code explaining why.
@@ -138,45 +121,6 @@ class NotRunning(Exception):
     def __init__(self, status_code):
         self.status_code = status_code
         super(NotRunning, self).__init__()
-
-
-def update_default_args(defaults, updates):
-    """
-    Takes a list of default arguments and overwrites the defaults with
-    contents of updates.
-
-    e.g.:
-
-    update_default_args(["--somearg=default"], ["--somearg=overwritten"])
-     => ["--somearg=overwritten"]
-
-    This is done to avoid defining all known django command line arguments,
-    we just want to proxy things and update with our own default values without
-    looking into django.
-    """
-    # Returns either the default or an updated argument
-    arg_name = re.compile(r"^-?-?\s*=?([^\s=-]+)")
-    # Create a dictionary of defined defaults and updates where '-somearg' is
-    # always the key, update the defined defaults dictionary with the updates
-    # dictionary thus overwriting the defaults.
-    defined_defaults_ = map(
-        lambda arg: (arg_name.search(arg).group(1), arg),
-        defaults
-    )
-    # OrderedDict because order matters when space-split options such as "-v 2"
-    # cause arguments to span over severel elements.
-    defined_defaults = OrderedDict()
-    for elm in defined_defaults_:
-        defined_defaults[elm[0]] = elm[1]
-    defined_updates_ = map(
-        lambda arg: (arg_name.search(arg).group(1), arg),
-        updates
-    )
-    defined_updates = OrderedDict()
-    for elm in defined_updates_:
-        defined_updates[elm[0]] = elm[1]
-    defined_defaults.update(defined_updates)
-    return defined_defaults.values()
 
 
 # Utility functions for pinging or killing PIDs
@@ -228,24 +172,6 @@ else:
         ctypes.windll.kernel32.CloseHandle(handle)  # @UndefinedVariable
 
 
-def read_pid_file(filename):
-    """
-    Reads a pid file and returns the contents. Pid files have 1 or 2 lines; the first line is always the pid, and the
-    optional second line is the port the server is listening on.
-
-    :param filename: Filename to read
-    :return: the tuple (pid, port) with the pid in the file and the port number if it exists. If the port number doesn't
-        exist, then port is None.
-    """
-    try:
-        pid, port = open(filename, "r").readlines()
-        pid, port = int(pid), int(port)
-    except ValueError:
-        # The file only had one line
-        pid, port = int(open(filename, "r").read()), None
-    return pid, port
-
-
 def get_pid():
     """
     Tries to get the PID of a server.
@@ -268,7 +194,7 @@ def get_pid():
         # Is there a startup lock?
         if os.path.isfile(STARTUP_LOCK):
             try:
-                pid, port = read_pid_file(STARTUP_LOCK)
+                pid = int(open(STARTUP_LOCK).read())
                 # Does the PID in there still exist?
                 if pid_exists(pid):
                     raise NotRunning(4)
@@ -282,7 +208,7 @@ def get_pid():
 
     # PID file exists, check if it is running
     try:
-        pid, port = read_pid_file(PID_FILE)
+        pid = int(open(PID_FILE, "r").read())
     except (ValueError, OSError):
         raise NotRunning(100)  # Invalid PID file
 
@@ -292,7 +218,9 @@ def get_pid():
             raise NotRunning(6)  # Failed to start
         raise NotRunning(7)  # Unclean shutdown
 
-    listen_port = port or LISTEN_PORT
+    # TODO: why is the port in django settings!? :) /benjaoming
+    from django.conf import settings
+    listen_port = getattr(settings, "CHERRYPY_PORT", LISTEN_PORT)
 
     # Timeout is 1 second, we don't want the status command to be slow
     conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
@@ -353,33 +281,25 @@ def manage(command, args=[], in_background=False):
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param in_background: Creates a new process for the command
+    :param in_background: Creates a sub-process for the command
     """
-
+    # Ensure that django.core.management's global _command variable is set
+    # before call commands, especially the once that run in the background
+    get_commands()
+    # Import here so other commands can run faster
     if not in_background:
-        if PROFILE:
-            profile_memory()
-
         utility = ManagementUtility([os.path.basename(sys.argv[0]), command] + args)
         # This ensures that 'kalite' is printed in help menus instead of
         # 'kalitectl.py' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        # Create a new subprocess, beware that it won't die with the parent
-        # so you have to kill it in another fashion
-
-        # If we're on windows, we need to create a new process group, otherwise
-        # the newborn will be murdered when the parent becomes a daemon
-        if os.name == "nt":
-            kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
+        if os.name != "nt":
+            thread = ManageThread(command, args=args, name=" ".join([command]+args))
+            thread.start()
         else:
-            kwargs = {}
-        subprocess.Popen(
-            [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
-            env=os.environ,
-            **kwargs
-        )
+            # TODO (aron): for versions > 0.13, see if we can just have everyone spawn another process (Popen vs. ManageThread)
+            Popen([sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args, creationflags=CREATE_NEW_PROCESS_GROUP)
 
 
 def start(debug=False, args=[], skip_job_scheduler=False):
@@ -398,7 +318,7 @@ def start(debug=False, args=[], skip_job_scheduler=False):
 
     if os.path.exists(STARTUP_LOCK):
         try:
-            pid, port = read_pid_file(STARTUP_LOCK)
+            pid = int(open(STARTUP_LOCK).read())
             # Does the PID in there still exist?
             if pid_exists(pid):
                 sys.stderr.write(
@@ -417,11 +337,9 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     except NotRunning:
         pass
 
-    # Write current PID and optional port to a startup lock file
+    # Write current PID to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
         f.write(str(os.getpid()))
-        if os.environ.get("KALITE_LISTEN_PORT", None):
-            f.write("\n" + os.environ["KALITE_LISTEN_PORT"])
 
     # Start the job scheduler (not Celery yet...)
     # This command is run before starting the server, in case the server
@@ -431,22 +349,22 @@ def start(debug=False, args=[], skip_job_scheduler=False):
         manage(
             'cronserver',
             in_background=True,
-            args=update_default_args(
-                ['--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)],
-                args
-            )
+            args=['--daemon',
+                  '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)
+                  ]
         )
-    args = update_default_args(
-        [
-            "--host=%s" % LISTEN_ADDRESS,
+    args = ["--host=%s" % LISTEN_ADDRESS,
             "--daemonize",
             "--pidfile=%s" % PID_FILE,
             "--startup-lock-file=%s" % STARTUP_LOCK,
-        ] + (["--production"] if not debug else []),
-        args
-    )
+            ]
+    args += ["--production"] if not debug else []
     manage('kaserve', args)
 
+
+def setting(setting_name):
+    import kalite.settings
+    print(kalite.settings.package_selected(setting_name))
 
 def stop(args=[], sys_exit=True):
     """
@@ -471,7 +389,8 @@ def stop(args=[], sys_exit=True):
                 "Not responding, killing with force\n"
             )
             try:
-                pid, port = read_pid_file(PID_FILE)
+                f = open(PID_FILE, "r")
+                pid = int(f.read())
                 kill_pid(pid)
                 killed_with_force = True
             except ValueError:
@@ -575,102 +494,10 @@ status_job_scheduler.codes = {
 }
 
 
-def profile_memory():
-    print("activating profile infrastructure.")
-
-    import atexit
-    import csv
-    import resource
-    import signal
-    import sparkline
-    import time
-
-    starttime = time.time()
-
-    mem_usage = []
-
-    def print_results():
-        try:
-            highest_mem_usage = next(s for s in sorted(mem_usage, key=lambda x: x['mem_usage'], reverse=True))
-        except StopIteration:
-            highest_mem_usage = {"pid": os.getpid(), "timestamp": 0, "mem_usage": 0}
-
-        graph = sparkline.sparkify([m['mem_usage'] for m in mem_usage]).encode("utf-8")
-
-        print("PID: {pid} Highest memory usage: {mem_usage}MB. Usage over time: {sparkline}".format(sparkline=graph, **highest_mem_usage))
-
-
-    def write_profile_results(filename=None):
-
-        if not filename:
-            filename = os.path.join(os.getcwd(), "memory_profile.log")
-
-        with open(filename, "w") as f:
-            si_es_vi = csv.DictWriter(f, ["pid", "timestamp", "mem_usage"])
-            si_es_vi.writeheader()
-            for _, content in enumerate(mem_usage):
-                si_es_vi.writerow(content)
-
-    def handle_exit():
-        write_profile_results()
-        print_results()
-
-    def collect_mem_usage(_sig, _frame):
-        """
-        Callback for when we get a SIGPROF from the kernel. When called,
-        we record the time and memory usage.
-        """
-        pid = os.getpid()
-        m = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        curtime = time.time() - starttime
-        mem_usage.append({"pid": pid, "timestamp": curtime, "mem_usage": m / 1024})
-
-    signal.setitimer(signal.ITIMER_PROF, 1, 1)
-
-    signal.signal(signal.SIGPROF, collect_mem_usage)
-    atexit.register(handle_exit)
-
-
-# TODO(benjaoming): When this PR is merged, we can stop this crazyness
-# https://github.com/docopt/docopt/pull/283
-def docopt(doc, argv=None, help=True, version=None, options_first=False):
-    """Re-implementation of docopt.docopt() function to parse ANYTHING at
-    the end (for proxying django options)."""
-    if argv is None:
-        argv = sys.argv[1:]
-
-    DocoptExit.usage = printable_usage(doc)
-    options = parse_defaults(doc)
-    pattern = parse_pattern(formal_usage(DocoptExit.usage), options)
-    argv = parse_argv(TokenStream(argv, DocoptExit), list(options),
-                      options_first)
-    pattern_options = set(pattern.flat(Option))
-    for ao in pattern.flat(AnyOptions):
-        doc_options = parse_defaults(doc)
-        ao.children = list(set(doc_options) - pattern_options)
-    extras(help, version, argv, doc)
-    matched, left, collected = pattern.fix().match(argv)
-    
-    # if matched and left == []:  # better error message if left?
-    if collected:  # better error message if left?
-        result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
-        result['DJANGO_OPTIONS'] = sys.argv[len(collected) + 1:]
-        # If any of the collected arguments are also in the DJANGO_OPTIONS,
-        # then exit because we don't want users to have put options for kalite
-        # at the end of the command
-        if any(map(lambda x: x.name in result['DJANGO_OPTIONS'], collected)):
-            raise DocoptExit()
-        return result
-    raise DocoptExit()
-
-
 if __name__ == "__main__":
-    # Since positional arguments should always come first, we can safely
-    # replace " " with "=" to make options "--xy z" same as "--xy=z".
-    arguments = docopt(__doc__, version=str(VERSION), options_first=False)
+    arguments = docopt(__doc__, version=str(VERSION), options_first=True)
+
     if arguments['start']:
-        if arguments["--port"]:
-            os.environ["KALITE_LISTEN_PORT"] = arguments["--port"]
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
@@ -687,6 +514,9 @@ if __name__ == "__main__":
             skip_job_scheduler=arguments['--skip-job-scheduler'],
             args=arguments['DJANGO_OPTIONS']
         )
+
+    elif arguments['setting']:
+        setting(setting_name=arguments['SETTING_NAME'])
 
     elif arguments['status']:
         if arguments['job-scheduler']:
