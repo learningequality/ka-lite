@@ -191,8 +191,7 @@ window.AttemptLogModel = Backbone.Model.extend({
         points: 0,
         context_type: "",
         context_id: "",
-        response_count: 0,
-        response_log: []
+        response_count: 0
     },
 
     to_object: function() {
