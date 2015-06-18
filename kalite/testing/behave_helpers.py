@@ -250,10 +250,29 @@ def _login_user(context, username, password, facility=None):
     data = {"username": username, "password": password}
     if facility:
         data['facility'] = facility
+        context.facility = facility
     data = json.dumps(data)
     url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
     resp = post(context, url, data)
+    context.user = username
     assert resp, "Login failed. url: %s\ndata: %s" % (url, data)
+
+def login_as_learner(context, learner_name="mrpibb", learner_pass="abc123"):
+    """ Log in as a learner specified by the optional arguments, or create
+    such a user and log in if it doesn't exist.
+    :context: a behave context, used for its browser
+    :learner_name: optional. username of the learner.
+    :learner_pass: optional. password of the learner.
+    """
+    if not FacilityUser.objects.filter(username=learner_name):
+        class ContextWithMixin(FacilityMixins):
+            def __init__(self):
+                self.browser = context.browser
+        context_wm = ContextWithMixin()
+        context_wm.create_student(username=learner_name, password=learner_pass)
+    facility = FacilityUser.objects.get(username=learner_name).facility.id
+    _login_user(context, learner_name, learner_pass, facility=facility)
+
 
 
 def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):

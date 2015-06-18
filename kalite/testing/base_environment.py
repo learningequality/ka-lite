@@ -11,7 +11,7 @@ from selenium import webdriver
 from urlparse import urljoin
 from django.contrib.auth.models import User
 
-from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout
+from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
 
 def before_all(context):
     browser = context.browser = webdriver.Firefox()
@@ -36,6 +36,9 @@ def before_feature(context, feature):
     elif "as_coach" in feature.tags:
         context.logged_in = True
         login_as_coach(context)
+    elif "as_learner" in feature.tags:
+        context.logged_in = True
+        login_as_learner(context)
 
 def after_feature(context, feature):
     if context.logged_in:
