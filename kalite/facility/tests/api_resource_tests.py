@@ -25,4 +25,4 @@ class TestCoachRedirect(FacilityMixins, KALiteClientTestCase):
             content_type="application/json",
         )
         redirect = json.loads(resp.content).get("redirect")
-        self.assertEqual(redirect, self.reverse("zone_redirect"), "Logging in as coach does not redirect!")
+        self.assertEqual(redirect, self.reverse("coach_reports"), "Logging in as coach does not redirect!")
