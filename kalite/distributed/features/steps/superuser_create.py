@@ -56,7 +56,7 @@ def impl(context):
 def step_impl(context):
     fill_password(context, "x" * 41)
 
-@given("I enter unmatched password")
+@given("I enter an unmatched password")
 def step_impl(context):
     reenter_password(context, "unmatched")
 
