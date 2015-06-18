@@ -51,7 +51,7 @@ def impl(context):
 
 @when(u'I click on the right of an exercise suggestion on the next steps card')
 def impl(context):
-    card = find_css_class_with_wait(context, "content-nextsteps-lesson")
+    card = find_id_with_wait(context, "nextsteps")
     element = card.find_elements_by_tag_name("a")[1]
     click_and_wait_for_page_load(context, element)
 
@@ -61,7 +61,7 @@ def impl(context):
 
 @when(u'I click in the middle of an exercise suggestion on the next steps card')
 def impl(context):
-    card = find_css_class_with_wait(context, "content-nextsteps-lesson")
+    card = find_id_with_wait(context, "nextsteps")
     element = card.find_elements_by_tag_name("a")[0]
     click_and_wait_for_page_load(context, element)
 
@@ -75,7 +75,7 @@ def impl(context):
 
 @when(u'I click on a suggested topic on the explore card')
 def impl(context):
-    card = find_css_class_with_wait(context, "content-explore-topics")
+    card = find_id_with_wait(context, "explore")
     element = card.find_element_by_tag_name("a")
     click_and_wait_for_page_load(context, element)
 
@@ -85,6 +85,6 @@ def impl(context):
 
 @when(u'I click on the resume card lesson')
 def impl(context):
-    card = find_css_class_with_wait(context, "resume")
+    card = find_id_with_wait(context, "resume")
     element = card.find_element_by_tag_name("a")
     click_and_wait_for_page_load(context, element)
