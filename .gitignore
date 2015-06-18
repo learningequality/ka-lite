@@ -96,7 +96,6 @@ writeup/
 /kalite/i18n/static/
 /.vagrant/
 ghostdriver.log
-/kalite/_built.touch
 *.swp
 /data/khan/assessmentitems.json.version
 file_map.json
