@@ -16,6 +16,10 @@ For finding and interacting with elements safely:
 
 For navigating the site:
 * build_url
+The following functions will wait for a page to load before continuing:
+* go_to_homepage
+* go_to_coachreports
+You can build your own such function using the "private" function `_go_to_url`.
 
 For logging in and out:
 * login_as_coach
@@ -239,9 +243,33 @@ def build_url(context, url):
     return urljoin(context.config.server_url, url)
 
 def go_to_homepage(context):
+    """
+    Goes to the homepage. Raises a TimeoutException if page does not load.
+    """
     url = reverse("homepage")
-    context.browser.get(build_url(context, url))
+    _go_to_url(context, build_url(context, url))
 
+def go_to_coachreports(context):
+    """
+    Goes to coach reports. Raises a TimeoutException if page does not load.
+    """
+    url = reverse("coach_reports")
+    _go_to_url(context, build_url(context, url))
+
+def _go_to_url(context, url, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Tries to browse to a page. Waits for the page to load, since WebDriver.get does not.
+    :param context: A behave context
+    :param url: a url, passed to WebDriver.get
+    :param wait_time: specify a non-default wait time, in seconds.
+    :return: nothing. Raises a selenium.common.exceptions.TimeoutException if unable to get to the page.
+    """
+    # The body element should always be on the page.
+    wait_elem = context.browser.find_element_by_tag_name("body")
+    context.browser.get(url)
+    WebDriverWait(context.browser, wait_time).until(
+        EC.staleness_of(wait_elem)
+    )
 
 def _login_user(context, username, password, facility=None):
     """ Logs a user in (either User of FacilityUser) with an api endpoint.
