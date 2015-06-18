@@ -25,8 +25,7 @@ colour_legend = {
 
 @given("I am on the coach report")
 def step_impl(context):
-    url = reverse("coach_reports")
-    context.browser.get(build_url(context, url))
+    go_to_coachreports(context)
 
 @given("there is no data")
 def step_impl(context):
