@@ -176,7 +176,7 @@ def get_explore_recommendations(user, request):
     recent_exercises = get_most_recent_exercises(user)              #most recent ex
 
     #simply getting a list of subtopics accessed by user
-    recent_subtopics = list(set([exercise_parents_table[ex]['subtopic_id'] for ex in recent_exercises]))
+    recent_subtopics = list(set([exercise_parents_table[ex]['subtopic_id'] for ex in recent_exercises if ex in exercise_parents_table]))
 
     #choose sample number, up to three
     sampleNum = min(len(recent_subtopics), TOPIC_RECOMMENDATION_DEPTH)
