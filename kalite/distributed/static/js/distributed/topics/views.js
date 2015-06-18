@@ -261,10 +261,18 @@ window.SidebarView = BaseView.extend({
 
         // Disable or enable the back button depending on whether it is visible or not.
         if (this.sidebarBack.position().left <= 0) {
-            this.sidebarBack.find("button").attr("disabled", "disabled");
+            this.disable_back_button();
         } else {
-            this.sidebarBack.find("button").removeAttr("disabled");
+            this.enable_back_button();
         }
+    },
+
+    enable_back_button: function() {
+        this.sidebarBack.find("button").removeAttr("disabled");
+    },
+
+    disable_back_button: function() {
+        this.sidebarBack.find("button").attr("disabled", "disabled");
     },
 
     sidebar_back_one_level: function() {
@@ -390,10 +398,6 @@ window.TopicContainerInnerView = BaseView.extend({
 
     show_sidebar: function() {
         this.trigger("showSidebar");
-    },
-
-    backToParent: function(ev) {
-        this.trigger('back_button_clicked', this.model);
     },
 
     deferred_node_by_slug: function(slug, callback) {
@@ -549,7 +553,6 @@ window.TopicContainerOuterView = BaseView.extend({
         this.trigger("inner_view_added");
 
         // Listeners
-        this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
         this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
         this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
     },
@@ -671,7 +674,6 @@ window.TopicContainerOuterView = BaseView.extend({
     },
 
     back_to_parent: function() {
-        this.remove_topic_views(1);
         window.channel_router.url_back();
     },
 
