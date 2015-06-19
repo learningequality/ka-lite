@@ -173,7 +173,7 @@ KA Lite assumes that you are going to be using the software primarily in one pla
 
 .. screenshot::
     :user-role: admin
-    :url: /securesync/zone/None/facility/new/
+    :url: /management/zone/None/facility/new/
     :navigation-steps: #id_name click | #id_name send_keys Your School | NEXT send_keys An optional description of your school...
     :focus: input.submit | Click here to create a new facility after filling in the form above.
     :class: screenshot
@@ -227,8 +227,8 @@ Adding Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: a.create-student
     :class: screenshot
 
@@ -237,8 +237,8 @@ Adding Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click | .create-student click
+    :url: /securesync/student/
+    :navigation-steps:
     :focus: input.submit
     :class: screenshot
 
@@ -253,8 +253,8 @@ Permanently Deleting Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students td input | You can check one or more of these checkboxes.
     :class: screenshot
 
@@ -262,8 +262,8 @@ Permanently Deleting Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students .form-inline .form-group:last-child
     :class: screenshot
 
@@ -279,8 +279,8 @@ Adding Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches .add-new-table-item a
     :class: screenshot
 
@@ -306,8 +306,8 @@ Permanently Deleting Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches td input | Click a checkbox to select a coach.
     :class: screenshot
 
@@ -315,8 +315,8 @@ Permanently Deleting Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches div.row div.col-md-2 button
     :class: screenshot
 
@@ -334,8 +334,8 @@ You can create groups within a facility. Each group can represent a classroom, a
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #groups .add-new-table-item a
     :class: screenshot
 
@@ -362,8 +362,8 @@ Deleting a Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: .delete-group
     :class: screenshot
 
@@ -376,8 +376,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students td input :first | Click this checkbox.
     :class: screenshot
 
@@ -385,8 +385,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click | .movegrouplist click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps: .movegrouplist click
     :focus: .movegrouplist | Select one of these options!
     :class: screenshot
 
@@ -394,8 +394,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students .movegroup
     :class: screenshot
 
@@ -416,8 +416,8 @@ For each group, you should be able to view some statistics.
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #groups td a :first | Click here to view group statistics!
     :class: screenshot
 
@@ -600,13 +600,13 @@ Updating on Mac OS and Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 At this time, the only supported way to update is to grab the source and run the setup management command.
-Follow the instructions in the :doc:`installation guide <installguide/install_main>` to ensure you're using the latest version.
+Follow the instructions in the :doc:`installation guide </installguide/install_main>` to ensure you're using the latest version.
 
 Updating on Windows
 ^^^^^^^^^^^^^^^^^^^
 
 To update on Windows, simply use our Windows installer. You will have the option to update from a prior version.
-See the :doc:`Windows installation guide <installguide/install_windows>`.
+See the :doc:`Windows installation guide </installguide/install_windows>`.
 
 Configuration Settings
 ----------------------

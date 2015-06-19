@@ -130,9 +130,6 @@ if sys.getdefaultencoding() != DEFAULT_ENCODING:
 SCREENSHOTS_OUTPUT_PATH = os.path.join(USER_DATA_ROOT, "data", "screenshots")
 SCREENSHOTS_EXTENSION = ".png"
 
-SCREENSHOTS_DATABASE_NAME = "screenshot-data.sqlite"
-SCREENSHOTS_DATABASE_PATH = os.path.join(SCREENSHOTS_OUTPUT_PATH, SCREENSHOTS_DATABASE_NAME)
-
 SCREENSHOTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "data")
 SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_JSON_PATH, 'screenshots.json')
 SCREENSHOTS_ROUTER = 'default'
@@ -142,11 +139,12 @@ if 'screenshots' in sys.argv:
     # use another sqlite3 database for the screenshots
     DATABASES = {
         SCREENSHOTS_ROUTER: {
-            "ENGINE": getattr(local_settings, "DATABASE_TYPE", SQLITE3_ENGINE),
-            "NAME": SCREENSHOTS_DATABASE_PATH,
-            "OPTIONS": {
-                "timeout": 60,
-            },
-        }
+            "ENGINE": SQLITE3_ENGINE,
+            "NAME": ":memory:",
+        },
+        "assessment_items": {
+            "ENGINE": SQLITE3_ENGINE,
+            "NAME": ":memory:",
+        },
     }
 
