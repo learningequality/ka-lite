@@ -20,7 +20,7 @@ def step_impl(context):
 
 @then("I should see a modal")
 def step_impl(context):
-    assert find_id_with_wait(context, modal_container).is_displayed(), "modal not displayed!"
+    assert find_id_with_wait(context, modal_container), "modal not displayed!"
 
 @given("the username is empty")
 def step_impl(context):
