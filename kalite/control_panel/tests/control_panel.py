@@ -108,6 +108,34 @@ class FacilityControlTests(FacilityMixins,
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath('//a[@class="facility-delete-link"]')
 
+    def test_facility_with_no_missing_metadata(self):
+        facility_name = 'no-missing-metadata'
+        self.fac = self.create_facility(name=facility_name)
+        teacher_username, teacher_password = 'teacher1', 'password'
+        self.teacher = self.create_teacher(username=teacher_username,
+                                           password=teacher_password)
+        self.browser_login_teacher(username=teacher_username,
+                                   password=teacher_password,
+                                   facility_name=self.teacher.facility.name)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
+
+    def test_facility_with_missing_metadata(self):
+        facility_name = 'missing-metadata'
+        self.fac = self.create_facility(name=facility_name)
+        teacher_username, teacher_password = 'teacher1', 'password'
+        self.teacher = self.create_teacher(username=teacher_username,
+                                           password=teacher_password)
+        self.browser_login_teacher(username=teacher_username,
+                                   password=teacher_password,
+                                   facility_name=self.teacher.facility.name)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+
+        warning=self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
+        return self.assertTrue(len(warning) != 0)
+
 
 class GroupControlTests(FacilityMixins,
                         CreateAdminMixin,

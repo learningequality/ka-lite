@@ -137,12 +137,14 @@ def zone_management(request, zone_id="None"):
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
+            "meta_data_in_need": check_meta_data(facility.id),
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
         }
 
     context.update({
         "is_headless_zone": is_headless_zone,
         "facilities": facility_data,
+        "missing_meta": any([facility['meta_data_in_need'] for facility in facility_data.values()]),
         "devices": device_data,
         "upload_form": UploadFileForm(),
         "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
@@ -556,6 +558,27 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             del group_data[None]
 
     return (user_data, group_data)
+
+
+def check_meta_data(facility_id):
+    '''Checks whether any metadata is missing for the specified facility.
+
+    Args: 
+      facility_id (str): id of facility to check
+ 
+    Returns:
+      bool: True if one or more metadata fields are missing'''
+
+    facility_data = {}
+    facility_entry = Facility.objects.filter(id=facility_id)[0]
+    facility_data['usercount'] = facility_entry.user_count
+    facility_data['latitude'] = facility_entry.latitude
+    facility_data['longitude'] = facility_entry.longitude
+    facility_data['address'] = facility_entry.address
+    facility_data['contact_name'] = facility_entry.contact_name
+    facility_data['contact_phone'] = facility_entry.contact_phone
+    facility_data['contact_email'] = facility_entry.contact_email
+    return any([value is None for value in facility_data.values()])
 
 
 # context functions
