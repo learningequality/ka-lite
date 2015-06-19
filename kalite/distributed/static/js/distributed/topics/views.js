@@ -712,6 +712,7 @@ window.TopicContainerOuterView = BaseView.extend({
         }
         this.content_view.model = entry;
         this.inner_views.unshift(this.content_view);
+        this.trigger("inner_view_added");
         this.state_model.set("content_displayed", true);
         this.hide_sidebar();
     },
