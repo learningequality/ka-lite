@@ -86,6 +86,7 @@ default_source_path = os.path.split(
 if not default_source_path:
     default_source_path = '.'
 
+# Indicates that we are in a git repo
 IS_SOURCE = (
     os.path.exists(os.path.join(default_source_path, '.KALITE_SOURCE_DIR')) and
     (
@@ -95,11 +96,6 @@ IS_SOURCE = (
 )
 SOURCE_DIR = None
 
-
-# Not sure if this is relevant anymore? /benjaoming
-BUILD_INDICATOR_FILE = os.path.join(default_source_path, "_built.touch")
-# whether this installation was processed by the build server
-BUILT = os.path.exists(BUILD_INDICATOR_FILE)
 
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
@@ -311,14 +307,13 @@ INSTALLED_APPS = (
     "kalite.inline",
 )
 
-if not BUILT:
+if IS_SOURCE:
     INSTALLED_APPS += (
-        "fle_utils.testing",
         "kalite.testing",
         "kalite.basetests",
-    ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
-else:
-    INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
+    )
+
+INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = (
     # gzip has to be placed at the top, before others
@@ -336,7 +331,16 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 # libraries common to all apps
-STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
+built_docs_path = os.path.join(_data_path, "sphinx-docs", "_build")
+if os.path.exists(built_docs_path):
+    STATICFILES_DIRS = (
+        os.path.join(_data_path, 'static-libraries'),
+        built_docs_path,
+    )
+    _DOCS_EXIST = True
+else:
+    STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
+    _DOCS_EXIST = False
 
 DEFAULT_ENCODING = 'utf-8'
 
