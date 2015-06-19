@@ -137,7 +137,7 @@ def zone_management(request, zone_id="None"):
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
-            "meta_data_in_need": check_meta_data(facility.id),
+            "meta_data_in_need": check_meta_data(facility),
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
         }
 
@@ -560,25 +560,17 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
     return (user_data, group_data)
 
 
-def check_meta_data(facility_id):
+def check_meta_data(facility):
     '''Checks whether any metadata is missing for the specified facility.
 
     Args: 
-      facility_id (str): id of facility to check
+      facility (Facility instance): facility to check for missing metadata
  
     Returns:
       bool: True if one or more metadata fields are missing'''
 
-    facility_data = {}
-    facility_entry = Facility.objects.filter(id=facility_id)[0]
-    facility_data['usercount'] = facility_entry.user_count
-    facility_data['latitude'] = facility_entry.latitude
-    facility_data['longitude'] = facility_entry.longitude
-    facility_data['address'] = facility_entry.address
-    facility_data['contact_name'] = facility_entry.contact_name
-    facility_data['contact_phone'] = facility_entry.contact_phone
-    facility_data['contact_email'] = facility_entry.contact_email
-    return any([value is None for value in facility_data.values()])
+    check_fields = ['usercount', 'latitude', 'longitude', 'address', 'contact_name', 'contact_phone', 'contact_email']
+    return any([getattr(facility, field, None) is None for field in check_fields])
 
 
 # context functions
