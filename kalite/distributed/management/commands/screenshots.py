@@ -214,6 +214,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
         self.loginfo("==> Setting-up browser ...")
         super(Screenshot, self).setUp()
+        # Selenium won't scroll to an element, so we have to make the window size is large enough so that everything is visible
         self.browser.set_window_size(1920, 1080)
         self.browser.implicitly_wait(3)
 
