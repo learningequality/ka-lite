@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from tastypie import fields
 from tastypie.http import HttpUnauthorized
@@ -182,6 +183,7 @@ class FacilityUserResource(ModelResource):
             "version": version.VERSION,
             "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
+            "docs_exist": getattr(settings, "_DOCS_EXIST", False),
         }
 
         # Override properties using facility data
