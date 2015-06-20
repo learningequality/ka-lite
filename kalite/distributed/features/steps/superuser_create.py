@@ -81,8 +81,8 @@ def impl(context):
     assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=5), "modal not dismissed!"
 
 def fill_field(context, text, field_id):
-    assert find_id_with_wait(context, field_id), "field is None!"
-    field = find_id_with_wait(context, field_id)
+    assert find_id_with_wait(context, field_id, wait_time=5), "field is None!"
+    field = find_id_with_wait(context, field_id, wait_time=5)
     field.clear()
     field.send_keys(text)
 
