@@ -23,8 +23,8 @@ KA Lite is like a normal django project, if you have done Django before, you wil
 
 Now, everytime you work on your development environment, just remember to switch on your virtual environment with `workon kalite`. This can be done automatically with _`oh-my-zsh`.
 
-_`github`: https://github.com/learningequality/ka-lite
-_`oh-my-zsh`: https://github.com/
+.. _github: https://github.com/learningequality/ka-lite
+.. _oh-my-zsh: https://github.com/
 
 
 Developer Docs
