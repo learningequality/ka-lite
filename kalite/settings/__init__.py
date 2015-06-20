@@ -2,7 +2,16 @@ import logging
 import os
 import sys
 import platform
+import warnings
 from kalite import version
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
+
+
+warnings.warn(
+    "Wrong settings module imported! Please do not import kalite.settings "
+    "directly. Instead, import kalite.project.settings.base",
+    RemovedInKALite_v015_Warning
+)
 
 
 ##############################
