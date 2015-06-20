@@ -1,12 +1,7 @@
-import hashlib
 import os
-import sys
-import tempfile
-import time
 import uuid
 
 from django.http import HttpRequest
-from kalite import version  # in danger of a circular import.  NEVER add settings stuff there--should all be hard-coded.
 
 
 try:
