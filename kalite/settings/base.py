@@ -252,13 +252,13 @@ KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
 if not os.path.exists(KHAN_ASSESSMENT_ITEM_ROOT):
     os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
 
+# Are assessment items distributed in the data directory?
+if os.path.isfile(os.path.join(_data_path, 'assessment', 'assessmentitems.version')):
+    KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(_data_path, 'assessment')
+
 KHAN_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.sqlite')
 KHAN_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.version')
 KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json')
-
-if not os.path.exists(KHAN_ASSESSMENT_ITEM_ROOT):
-    os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
-    
 
 # Necessary for Django compressor
 if not DEBUG:

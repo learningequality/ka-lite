@@ -290,8 +290,10 @@ class Command(BaseCommand):
 
         # Outdated location of assessment items
         # TODO(benjaoming) for 0.15, remove this
+        writable_assessment_items = os.access(settings.KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
         
         def _move_to_new_location(old, new):
+            if not writable_assessment_items
             if os.path.exists(old):
                 if os.access(settings.KHAN_CONTENT_PATH, os.W_OK):
                     os.rename(old, new)
@@ -307,9 +309,11 @@ class Command(BaseCommand):
             os.path.join(settings.USER_DATA_ROOT, "data", "khan", "assessmentitems.json"),
             settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
         )
-        if options['force-assessment-item-dl']:
+        if writable_assessment_items and options['force-assessment-item-dl']:
             call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
-        elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
+        elif options['force-assessment-item-dl']:
+            raise RuntimeError("Got force-assessment-item-dl but directory not writable")
+        elif writable_assessment_items and not settings.RUNNING_IN_TRAVIS and options['interactive']:
             print("\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
             print("If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
             print("If you have already downloaded the assessment items package, you can specify the file in the next step.")
@@ -326,9 +330,10 @@ class Command(BaseCommand):
                 logging.warning("No assessment items package file given. You will need to download and unpack it later.")
             else:
                 call_command("unpack_assessment_zip", ass_item_filename)
+        elif options['interactive']:
+            logging.warning("Assessment item directory not writable, skipping download.")
         else:
             logging.warning("No assessment items package file given. You will need to download and unpack it later.")
-
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
