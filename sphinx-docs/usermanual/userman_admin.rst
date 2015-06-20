@@ -637,7 +637,7 @@ __________________
 Most common settings
 ^^^^^^^^^^^^^^^^^^^^
 
-* DEBUG = True / False
+* DEBUG = <True or False> (default = False) -- Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
 * CONTENT_ROOT = "<path to desired content folder>" (default=ka-lite/content)
   This is the path that KA Lite will use to look for KA Lite video files to play.  Change the path to another local directory to get video files from that directory. NB! Directory has to be writable for the user running the server in order to download videos.
 * TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")
@@ -646,7 +646,7 @@ Most common settings
   You can set this to the desired language code for this installation (All choices can be found here).  If there are translations available, our web server will show them in KA Lite. Soon, we hope to provide support for internationalized content inside the KA Lite interface.
 * USE_I18N = <True or False> (default = True)
   If you set this to False, our web server will make some optimizations so as to avoid loading internationalization tools. Things might run a little faster, but you won't have support for translated content.
-* USE_L10N = True
+* USE_L10N = <True or False> (default = True)
   By default, this is set to False. If you set this to True, Django will format dates, numbers and calendars according to the current locale. For example, January 5, 2000 would be 1/5/2000 if locale = "en-us" and 5/1/2000 if locale = "en-gb"
 
 
