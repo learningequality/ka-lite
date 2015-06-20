@@ -1,11 +1,10 @@
-from .base import *
+from .base import *  # @UnusedWildImport
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False,
 # 1 if True)
-LOGGING_LEVEL = getattr()
 LOG = logging.getLogger("kalite")
 LOG.setLevel(logging.DEBUG)
 logging.basicConfig()
@@ -19,18 +18,22 @@ if DEBUG:
     warnings.simplefilter('error', DeprecationWarning)
 
 
-INSTALLED_APPS += ["django_snippets"]  # used in contact form and (debug) profiling middleware
-TEMPLATE_CONTEXT_PROCESSORS += ["django.core.context_processors.debug"]  # used in conjunction with toolbar to show query information
+INSTALLED_APPS += [
+    'django_snippets',  # used in contact form and (debug) profiling middleware
+    'debug_toolbar',
+]
+TEMPLATE_CONTEXT_PROCESSORS += [
+    'django.core.context_processors.debug',  # used in conjunction with toolbar to show query information
+]
+MIDDLEWARE_CLASSES += [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'fle_utils.django_utils.middleware.JsonAsHTML'
+]
 
 #######################################
 # DEBUG TOOLBAR
 #######################################
 
-INSTALLED_APPS += ['debug_toolbar']
-MIDDLEWARE_CLASSES += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'fle_utils.django_utils.middleware.JsonAsHTML'
-]
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
     'debug_toolbar.panels.timer.TimerDebugPanel',
@@ -45,7 +48,7 @@ DEBUG_TOOLBAR_PANELS = (
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
     'HIDE_DJANGO_SQL': False,
-    'ENABLE_STACKTRACES' : True,
+    'ENABLE_STACKTRACES': True,
 }
 # Debug toolbar must be set in conjunction with CACHE_TIME=0
 CACHE_TIME = 0
