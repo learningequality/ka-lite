@@ -7,6 +7,7 @@ import re
 import shutil
 import sys
 import tempfile
+import subprocess
 from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
@@ -19,7 +20,7 @@ from django.core.management.base import BaseCommand, CommandError
 import kalite
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
-from fle_utils.platforms import is_windows, system_script_extension
+from fle_utils.platforms import is_windows
 from kalite.version import VERSION
 from kalite.facility.models import Facility
 from securesync.models import Device
@@ -183,7 +184,7 @@ class Command(BaseCommand):
         print("         version %s" % VERSION)
         print("                                  ")
 
-        if sys.version_info >= (2,8) or sys.version_info < (2,6):
+        if sys.version_info >= (2, 8) or sys.version_info < (2, 6):
             raise CommandError("You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % str(sys.version_info))
         if sys.version_info < (2, 7, 9):
             logging.warning("It's recommended that you install Python version 2.7.9. Your version is: %s\n" % str(sys.version_info))
@@ -348,5 +349,11 @@ class Command(BaseCommand):
             call_command("videoscan")
 
             # done; notify the user.
-            print("CONGRATULATIONS! You've finished setting up the KA Lite server software.")
+            print("\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
             print("You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+            
+            if options['interactive']:
+                if raw_input_yn("Do you wish to start the server now?"):
+                    print("Running {0} start".format(start_script_path))
+                    p = subprocess.Popen([start_script_path, "start"], env=os.environ)
+                    p.wait()
