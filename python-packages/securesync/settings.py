@@ -3,14 +3,9 @@ try:
 except ImportError:
     local_settings = object()
 
-DEBUG = getattr(local_settings, "DEBUG", False)
-
-
 #######################
 # Set module settings
 #######################
-
-SECURESYNC_PROTOCOL   = getattr(local_settings, "SECURESYNC_PROTOCOL",   "https" if not DEBUG else "http")
 
 SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", None)  # default: don't throttle syncing
 

@@ -1,6 +1,7 @@
 import os
 import uuid
 
+
 from django.http import HttpRequest
 
 
@@ -9,7 +10,6 @@ try:
 except ImportError:
     local_settings = object()
 
-DEBUG = getattr(local_settings, "DEBUG", False)
 
 ########################
 # Functions, for support
@@ -51,8 +51,8 @@ ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
-SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "https" if not DEBUG else "http")
-CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", ("staging.%s" if DEBUG else "kalite.%s") % CENTRAL_SERVER_DOMAIN)
+SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "https")
+CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", "kalite.%s" % CENTRAL_SERVER_DOMAIN)
 CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
 CENTRAL_WIKI_URL = getattr(local_settings, "CENTRAL_WIKI_URL", "http://kalitewiki.%s/" % CENTRAL_SERVER_DOMAIN)
 

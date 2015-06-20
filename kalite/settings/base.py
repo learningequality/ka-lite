@@ -52,6 +52,10 @@ except ImportError:
 
 # Used everywhere, so ... set it up top.
 DEBUG = getattr(local_settings, "DEBUG", False)
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
+
+if DEBUG:
+    warnings.warn("Setting DEBUG=True in local_settings is no longer properly supported and will not yield a true develop environment, please use --settings=kalite.project.settings.dev")
 
 
 ##############################
@@ -62,14 +66,12 @@ DEBUG = getattr(local_settings, "DEBUG", False)
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False,
 # 1 if True)
-LOGGING_LEVEL = getattr(
-    local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
+LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.INFO)
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 logging.basicConfig()
 LOG.setLevel(LOGGING_LEVEL)
+
 logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
 
@@ -372,40 +374,6 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 ] + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', [])
 
 
-if DEBUG:
-    INSTALLED_APPS += ["django_snippets"]  # used in contact form and (debug) profiling middleware
-    TEMPLATE_CONTEXT_PROCESSORS += ["django.core.context_processors.debug"]  # used in conjunction with toolbar to show query information
-    
-
-# benjaoming: what's this!?
-USE_DEBUG_TOOLBAR = getattr(local_settings, "USE_DEBUG_TOOLBAR", False)
-
-if USE_DEBUG_TOOLBAR:
-    INSTALLED_APPS += ['debug_toolbar']
-    MIDDLEWARE_CLASSES += [
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-        'fle_utils.django_utils.middleware.JsonAsHTML'
-    ]
-    DEBUG_TOOLBAR_PANELS = (
-        'debug_toolbar.panels.version.VersionDebugPanel',
-        'debug_toolbar.panels.timer.TimerDebugPanel',
-        'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-        'debug_toolbar.panels.headers.HeaderDebugPanel',
-        'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-        'debug_toolbar.panels.template.TemplateDebugPanel',
-        'debug_toolbar.panels.sql.SQLDebugPanel',
-        'debug_toolbar.panels.signals.SignalDebugPanel',
-        'debug_toolbar.panels.logger.LoggingPanel',
-    )
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-        'HIDE_DJANGO_SQL': False,
-        'ENABLE_STACKTRACES' : True,
-    }
-    # Debug toolbar must be set in conjunction with CACHE_TIME=0
-    CACHE_TIME = 0
-
-
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 # libraries common to all apps
 built_docs_path = os.path.join(_data_path, "sphinx-docs", "_build")
@@ -424,10 +392,6 @@ DEFAULT_ENCODING = 'utf-8'
 # Due to a newer version of slimit being installed, allowing this causes an error:
 # https://github.com/ierror/django-js-reverse/issues/29
 JS_REVERSE_JS_MINIFY = False
-
-########################
-# Storage and caching
-########################
 
 ########################
 # Storage and caching

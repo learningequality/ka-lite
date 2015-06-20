@@ -98,11 +98,6 @@ if package_selected("Demo"):
     )
 
 
-# Force DeprecationWarning to show in DEBUG
-if DEBUG:
-    warnings.simplefilter('error', DeprecationWarning)
-
-
 # set the default encoding
 # OK, so why do we reload sys? Because apparently sys.setdefaultencoding
 # is deleted somewhere at startup. Reloading brings it back.
