@@ -40,7 +40,7 @@ CACHE_VARS = []
 from django.conf import settings; logging = settings.LOG
 
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.I18N_DATA_PATH, "dubbed_video_mappings.json")
-LOCALE_ROOT = settings.LOCALE_PATHS[0]
+LOCALE_ROOT = settings.USER_WRITABLE_LOCALE_DIR
 
 class LanguageNotFoundError(Exception):
     pass

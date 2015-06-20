@@ -67,11 +67,11 @@ class Command(BaseCommand):
 def should_upgrade_assessment_items():
     # if assessmentitems.version doesn't exist, then we assume
     # that they haven't got assessment items EVER
-    if not os.path.exists(settings.ASSESSMENT_ITEM_DATABASE_PATH) or not os.path.exists(settings.ASSESSMENT_ITEM_VERSION_PATH):
-        logging.debug("%s does not exist; downloading assessment items" % settings.ASSESSMENT_ITEM_DATABASE_PATH)
+    if not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH) or not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
+        logging.debug("%s does not exist; downloading assessment items" % settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH)
         return True
 
-    with open(settings.ASSESSMENT_ITEM_VERSION_PATH) as f:
+    with open(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH) as f:
         assessment_items_version = StrictVersion(f.read())
 
     software_version = StrictVersion(version.SHORTVERSION)

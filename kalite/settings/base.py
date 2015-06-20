@@ -183,7 +183,8 @@ USER_DATA_ROOT = os.environ.get(
 # Most of these data locations are messed up because of legacy
 if IS_SOURCE:
     USER_DATA_ROOT = SOURCE_DIR
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
+    USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR,))
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
     
     # This is the legacy location kalite/database/data.sqlite
@@ -200,10 +201,12 @@ else:
     if not os.path.exists(USER_DATA_ROOT):
         os.mkdir(USER_DATA_ROOT)
     
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
-    for path in LOCALE_PATHS:
-        if not os.path.exists(path):
-            os.mkdir(path)
+    USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+    KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+    
+    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR))
+    if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
+        os.mkdir(path)
     
     DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
     if not os.path.exists(DEFAULT_DATABASE_PATH):
@@ -223,10 +226,14 @@ else:
 # Content path-related settings
 CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content')))
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
+
+# Special setting for Khan Academy content
 KHAN_CONTENT_PATH = os.path.join(CONTENT_ROOT, "khan")
-ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.sqlite')
-ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.version')
-ASSESSMENT_ITEM_JSON_PATH = os.path.join(USER_DATA_ROOT, "data", "khan", "assessmentitems.json")
+
+# Special settings for Khan Academy assessment items
+KHAN_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.sqlite')
+KHAN_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.version')
+KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(USER_DATA_ROOT, "data", "khan", "assessmentitems.json")
 
 if not os.path.exists(CONTENT_ROOT):
     os.mkdir(CONTENT_ROOT)
