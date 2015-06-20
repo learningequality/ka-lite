@@ -66,7 +66,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
     if TOPICS.get(channel) is None:
         TOPICS[channel] = {}
     if annotate or TOPICS.get(channel, {}).get(language) is None:
-        TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+        topics = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
 
         # Just loaded from disk, so have to restamp.
         annotate = True
@@ -122,7 +122,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
 
             flat_topic_tree.append(node)
 
-        recurse_nodes(TOPICS[channel][language])
+        recurse_nodes(topics)
 
         TOPICS[channel][language] = flat_topic_tree
 
@@ -282,8 +282,8 @@ def get_content_cache(force=False, annotate=False, language=None):
         if os.path.exists(i18n.get_srt_path()):
             for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
                 # Only both looking at files that are inside a 'subtitles' directory
-                if dirpath.split("/")[-1] == "subtitles":
-                    lc = dirpath.split("/")[-2]
+                if os.path.basename(dirpath) == "subtitles":
+                    lc = os.path.basename(os.path.dirname(dirpath))
                     for filename in filenames:
                         if filename in subtitle_langs:
                             subtitle_langs[filename].append(lc)

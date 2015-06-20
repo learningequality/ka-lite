@@ -18,6 +18,9 @@ from random import choice
 
 FIND_ELEMENT_TIMEOUT = 3
 
+class KALiteTimeout(Exception):
+    pass
+
 class BrowserActionMixins(object):
 
     max_wait_time = 4
@@ -205,6 +208,8 @@ class BrowserActionMixins(object):
 
             time.sleep(step_time)
             total_wait_time += step_time
+            if total_wait_time >= max_wait_time:
+                raise KALiteTimeout("Timed out waiting for js condition {0}".format(condition))
             try:
                 if self.browser.execute_script(script):
                     break
@@ -362,7 +367,7 @@ class BrowserActionMixins(object):
     def browser_logout_user(self, browser=None):
         # Ensure that we're on the site, mainly so that "$" is imported
         self.browser.get(self.reverse("homepage"))
-        self.browser_wait_for_js_object_exists("$");
+        self.browser_wait_for_js_object_exists("$")
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
         self.browser.execute_script('window.FLAG=false;$.ajax({type: "GET", url: "%s", success: function(){window.FLAG=true}})' % url)
         self.browser_wait_for_js_condition("window.FLAG")
@@ -373,13 +378,13 @@ class BrowserActionMixins(object):
         browser = browser or self.browser
         # Ensure that we're on the site, mainly so that "$" is imported
         self.browser.get(self.reverse("homepage"))
-        self.browser_wait_for_js_object_exists("$");
+        self.browser_wait_for_js_object_exists("$")
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
-        request_script = "window.FLAG=false;$.ajax({url:'%s', type:'GET', success: function(data){window.FLAG=true; window.DATA=data;}})" % url
+        request_script = "window.FLAG=false;$.ajax({url:'%s', type:'GET', success: function(data){window.FLAG=true; window.DATA=data;}});" % url
         browser.execute_script(request_script)
         self.browser_wait_for_js_condition("window.FLAG")
         data = browser.execute_script("return window.DATA")
-        return data["is_logged_in"]
+        return data.get("is_logged_in", False)
 
 
     def fill_form(self, input_id_dict):
