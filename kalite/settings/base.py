@@ -485,22 +485,17 @@ LOGOUT_URL = "/securesync/api/user/logout/"
 
 from kalite.distributed.settings import *
 from kalite.django_cherrypy_wsgiserver.settings import *
-from kalite.coachreports.settings import *
 from securesync.settings import *
 from fle_utils.chronograph.settings import *
 from kalite.facility.settings import *
 from kalite.main.settings import *
-from kalite.contentload.settings import *
 from kalite.playlist.settings import *
 from kalite.student_testing.settings import *
-from kalite.remoteadmin.settings import *
 
 # Import from applications with problematic __init__.py files
 from kalite.legacy.i18n_settings import *
 from kalite.legacy.topic_tools_settings import *
-from kalite.legacy.caching_settings import *
 from kalite.legacy.updates_settings import *
 
-from kalite.testing.loadtesting.settings import *
 from kalite.testing.settings import *
 TEST_RUNNER = KALITE_TEST_RUNNER
