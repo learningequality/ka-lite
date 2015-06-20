@@ -287,6 +287,26 @@ class Command(BaseCommand):
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this is required for tests.
+
+        # Outdated location of assessment items
+        # TODO(benjaoming) for 0.15, remove this
+        
+        def _move_to_new_location(old, new):
+            if os.path.exists(old):
+                if os.access(settings.KHAN_CONTENT_PATH, os.W_OK):
+                    os.rename(old, new)
+        _move_to_new_location(
+            os.path.join(settings.KHAN_CONTENT_PATH, 'assessmentitems.sqlite'),
+            settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH
+        )
+        _move_to_new_location(
+            os.path.join(settings.KHAN_CONTENT_PATH, 'assessmentitems.version'),
+            settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
+        )
+        _move_to_new_location(
+            os.path.join(settings.USER_DATA_ROOT, "data", "khan", "assessmentitems.json"),
+            settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
+        )
         if options['force-assessment-item-dl']:
             call_command("unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
         elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
