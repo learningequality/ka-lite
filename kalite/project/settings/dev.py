@@ -1,3 +1,21 @@
+"""
+This module is for developing kalite!
+
+Use it like this for instance:
+
+   kalite manage runserver --settings=kalite.project.settings.dev
+
+You can also write you own settings module my_settings.py, example:
+
+from kalite.project.settings.dev import *
+
+ANOTHER_SETTING = "le blah"
+
+And then from the directory containing your settings module:
+
+   kalite manage runserver --settings=my_settings
+
+"""
 from .base import *  # @UnusedWildImport
 
 DEBUG = True
