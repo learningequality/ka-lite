@@ -1,6 +1,6 @@
 <div id="coach_report_wrapper">
 	<div id="summary_mainview">
-		<h1>{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}<button id="show_tabular_report" class="btn btn-success pull-right">{{_ "Show Tabular Report" }}</button></h1>
+		<h1 class="status_name">{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}{{#if data.learner_events }}<button id="show_tabular_report" class="btn btn-success pull-right">{{_ "Show Tabular Report" }}</button>{{/if}}</h1>
 		<div id="radial_chartblock">
 			<div id="chartcontainer">
 				<h3>{{_ "This week" }}</h3>
@@ -14,7 +14,7 @@
 				</div>
 				<div class="circlechart">
 					<div id="full_circle2">
-						<p>{{#if data.exercise_mastery }}{{data.exercise_mastery }}{{else}}{{_ "N/A" }}{{/if}}</p>
+						<p>{{#if data.exercise_mastery }}{{data.exercise_mastery }} %{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
 					<div class="charttext">
 						{{_ "Average progress in exercises" }}
@@ -30,7 +30,7 @@
 				</div>
 				<div class="circlechart">
 					<div id="full_circle4">
-						<p>{{#if data.content_time_spent }}{{ data.content_time_spent }}{{else}}{{_ "N/A" }}{{/if}}</p>
+						<p>{{#if data.content_time_spent }}{{ data.content_time_spent }} {{_ "Hours" }}{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
 					<div class="charttext">
 						{{_ "Total time spent on content" }}

@@ -28,13 +28,6 @@ Overview
 
 The overview will display the activity of the group: the total hours logged, the average progress in exercises, the total exercises attempted, and the total time spent on content.
 
-.. screenshot::
-    :user-role: coach
-    :url: /coachreports/
-    :navigation-steps: #show_tabular_report click
-    :focus: div#displaygrid
-    :class: screenshot
-
 Tabular Report
 ^^^^^^^^^^^^^^^
 A tabular report is a grid that can show how students are doing in specific subjects at a high level. As a coach, you can select which group of students you'd like to check progress for, and which subset of videos or exercises you'd like to see reports on. This allows you to easily identify which areas learners are struggling in, as well as which learners are doing well.
@@ -58,13 +51,6 @@ The color of the rectangles in the table indicate how that student is doing on a
 
 Detailed View
 ##################
-
-.. screenshot::
-    :user-role: coach
-    :url: /coachreports/teach
-    :navigation-steps: .status click
-    :focus: div.users-table
-    :class: screenshot
 
 1. Click on the colored cells.
 2. A panel should open up below the cell to reveal the number of questions attempted and the actions made on each exercise. 
