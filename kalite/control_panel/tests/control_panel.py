@@ -132,9 +132,8 @@ class FacilityControlTests(FacilityMixins,
                                    password=teacher_password,
                                    facility_name=self.teacher.facility.name)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
-
-        warning=self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
-        return self.assertTrue(len(warning) != 0)
+        #should raise NoSuchElementException if there is (incorrectly) no facility no with the warning class
+        self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
 
 
 class GroupControlTests(FacilityMixins,

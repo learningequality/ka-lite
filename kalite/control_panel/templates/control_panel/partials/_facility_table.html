@@ -10,13 +10,8 @@
             </small>
             {% if missing_meta %}
             <small>
-                <span class = "help‐tooltip glyphicon
-                               glyphicon‐exclamation‐sign text-warning" data‐toggle = "tooltip"
-                               data‐placement="right" title = '{% trans "The
-                               facilities highlighted below are missing
-                               metadata (e.g. location, contact
-                               information). Click the facility to edit or
-                               update this information" %}'></span>
+                <span class="help-tooltip glyphicon glyphicon-exclamation-sign
+                notice" data-toggle="tooltip" data-placement="right" title='{%trans "The facilities highlighted below are missing metadata (e.g. location, contact information). Click the pencil icon to edit or update this information." %}'></span>
             </small>
             {% endif %}
         </h2>
@@ -40,9 +35,10 @@
                         {% for id,facility in facilities.items %}
                             <tr {% if facility.meta_data_in_need %} class="warning" {% endif %}>
                                 <td>
-                                     <a class="facility-name" href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
-                                        {{ facility.name }}
-                                    </a>
+                                     <a class="facility-name" href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">{{ facility.name }}</a>
+ 					{% if facility.meta_data_in_need %} 
+						<a href="facility/{{ facility.id }}/edit" class="help-tooltip glyphicon glyphicon-pencil notice" data-toggle="tooltip" data-placement="right" title="{% trans "Edit/update information for this facility." %}"></a>
+ 					{% endif %}
                                 </td>
                                 <td>
                                     {{ facility.num_users }}
