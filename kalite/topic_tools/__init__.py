@@ -66,7 +66,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
     if TOPICS.get(channel) is None:
         TOPICS[channel] = {}
     if annotate or TOPICS.get(channel, {}).get(language) is None:
-        TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+        topics = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
 
         # Just loaded from disk, so have to restamp.
         annotate = True
@@ -122,7 +122,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
 
             flat_topic_tree.append(node)
 
-        recurse_nodes(TOPICS[channel][language])
+        recurse_nodes(topics)
 
         TOPICS[channel][language] = flat_topic_tree
 
