@@ -7,8 +7,9 @@ from django.core.urlresolvers import reverse
 
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
 
-from kalite.facility.models import FacilityUser, FacilityGroup
+from kalite.facility.models import FacilityGroup
 
 from kalite.main.models import ExerciseLog, AttemptLog
 
