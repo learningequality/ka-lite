@@ -126,6 +126,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # issues
         browser = webdriver.Firefox()
         print("Successfully setup Firefox {0}".format(browser.capabilities['version']))
+        browser.quit()
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
         bdd_labels = test_labels
