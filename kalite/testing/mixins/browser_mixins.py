@@ -421,6 +421,6 @@ class BrowserActionMixins(object):
         self.browser_wait_for_js_object_exists("window.statusModel");
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
         points_text = self.browser.execute_script("return $('#points').text();")
-        self.assertTrue(bool(points_text), "Failed fetching contents of #points element, got {0}".format(points_text))
+        self.assertTrue(bool(points_text), "Failed fetching contents of #points element, got {0}".format(repr(points_text)))
         return int(re.search(r"(\d+)", points_text).group(1))
-            
+
