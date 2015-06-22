@@ -1,41 +1,11 @@
-import random
-import datetime
-
 from behave import *
 from kalite.testing.behave_helpers import *
 
-from kalite.facility.models import FacilityUser
-from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools import get_exercise_cache, get_content_cache
+from kalite.topic_tools import get_content_cache
 
 @then(u'the resume card should be shown on the very left of the page')
 def impl(context):
     assert find_id_with_wait(context, "resume"), "Resume card not displayed!"
-
-@given(u'I have already made some progress on lessons')
-def impl(context):
-    user = FacilityUser.objects.get(username=context.user, facility=getattr(context, "facility", None))
-    exercises = random.sample(get_exercise_cache().keys(), 2)
-    for exercise in exercises:
-        log, created = ExerciseLog.objects.get_or_create(
-            exercise_id=exercise,
-            user=user,
-            streak_progress=50,
-            attempts=15,
-            latest_activity_timestamp=datetime.datetime.now()
-            )
-    context.exercises = exercises
-    videos = random.sample(get_content_cache().keys(), 2)
-    for video in videos:
-        log, created = VideoLog.objects.get_or_create(
-            youtube_id=video,
-            video_id=video,
-            user=user,
-            total_seconds_watched=100,
-            points=600,
-            latest_activity_timestamp=datetime.datetime.now()
-            )
-    context.videos = videos
 
 @then(u'the explore card should be shown on the very right of the page')
 def impl(context):
@@ -67,7 +37,8 @@ def impl(context):
 
 @then(u'the content recommendation cards should be shown')
 def impl(context):
-    assert find_id_with_wait(context, "content-rec-wrapper"), "Content Recommendation cards not displayed!"
+    # Note: First load from the content recommendation API endpoint is longer, as a cache item gets built.
+    assert find_id_with_wait(context, "content-rec-wrapper", wait_time=15), "Content Recommendation cards not displayed!"
 
 @when(u'the home page is loaded')
 def impl(context):
