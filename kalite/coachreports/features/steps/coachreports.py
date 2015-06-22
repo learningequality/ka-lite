@@ -27,6 +27,10 @@ colour_legend = {
 def step_impl(context):
     url = reverse("coach_reports")
     context.browser.get(build_url(context, url))
+    # TODO(benjaoming) : This takes an awful lot of time to load the first
+    # time it's built because of /api/coachreports/summary/?facility_id
+    # being super slow
+    context.browser.find_id_with_wait("summary_mainview", wait_time=15)
 
 @given("there is no data")
 def step_impl(context):
