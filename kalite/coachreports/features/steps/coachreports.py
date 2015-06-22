@@ -30,7 +30,7 @@ def step_impl(context):
     # TODO(benjaoming) : This takes an awful lot of time to load the first
     # time it's built because of /api/coachreports/summary/?facility_id
     # being super slow
-    find_id_with_wait(context, "summary_mainview", wait_time=15)
+    find_id_with_wait(context, "summary_mainview", wait_time=30)
 
 @given("there is no data")
 def step_impl(context):
@@ -142,7 +142,7 @@ def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    find_id_with_wait(context, "show_tabular_report", wait_time=15).click()
+    find_id_with_wait(context, "show_tabular_report", wait_time=30).click()
 
 @then(u"I should not see the tabular report anymore")
 def impl(context):
@@ -157,7 +157,7 @@ def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    find_id_with_wait(context, "show_tabular_report", wait_time=15).click()
+    find_id_with_wait(context, "show_tabular_report", wait_time=30).click()
 
 @then(u"I should see the list of two groups that I teach")
 def impl(context):
@@ -219,7 +219,7 @@ def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    tab_button = find_id_with_wait(context, "show_tabular_report", wait_time=15)
+    tab_button = find_id_with_wait(context, "show_tabular_report", wait_time=30)
     assert tab_button.text == "Hide Tabular Report"
 
 @then(u"I should see the tabular report")
