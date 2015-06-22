@@ -11,6 +11,7 @@ def step_impl(context):
         # order to see that some element doesn't appear!?
         # I've just set the wait_time to 1 second for now
         find_id_with_wait(context, modal_container, wait_time=1)
+        assert False, "Should not find a modal container"
     except TimeoutException:
         # All good
         pass
