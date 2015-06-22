@@ -7,6 +7,11 @@ window.HomepageWrapper = BaseView.extend({
     
     initialize: function() {
         _.bindAll(this);
+        this.set_collection();
+        this.listenTo(window.statusModel, "change:user_id", this.set_collection);
+    },
+
+    set_collection: function() {
         this.collection = new window.SuggestedContentCollection([], {
             resume: true,
             next: true,
