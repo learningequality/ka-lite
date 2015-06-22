@@ -23,8 +23,6 @@ class KALiteTimeout(Exception):
 
 class BrowserActionMixins(object):
 
-    max_wait_time = 4
-
     # not all act as tab stops, but ...
     HtmlFormElements = ["form", "input", "textarea", "label", "fieldset",
                         "legend", "select", "optgroup", "option", "button",
@@ -61,13 +59,11 @@ class BrowserActionMixins(object):
 
         browse_to(browser, *args, **kwargs)
 
-    def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
+    def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=40):
         """
         When testing, we have to make sure that the page has loaded before testing the resulting page.
         """
 
-        if not max_retries:
-            max_retries = int(self.max_wait_time/float(wait_time))
         return wait_for_page_change(self.browser, source_url, wait_time=wait_time, max_retries=max_retries)
 
     def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None, browser=None, css_class=None):
@@ -171,7 +167,7 @@ class BrowserActionMixins(object):
             self.browser_send_keys(keys, browser=browser)
         self.browser_next_form_element(browser=browser)
 
-    def browser_wait_for_element(self, css_selector, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_element(self, css_selector, max_wait_time=7, step_time=0.25):
         total_wait_time = 0
         element = None
         while total_wait_time < max_wait_time:
@@ -185,7 +181,7 @@ class BrowserActionMixins(object):
                 pass
         return element
 
-    def browser_wait_for_no_element(self, css_selector, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_no_element(self, css_selector, max_wait_time=7, step_time=0.25):
         total_wait_time = 0
         while total_wait_time < max_wait_time:
 
@@ -197,7 +193,7 @@ class BrowserActionMixins(object):
             except:
                 break
 
-    def browser_wait_for_js_condition(self, condition, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_js_condition(self, condition, max_wait_time=7, step_time=0.25):
         """
         Waits for the script in condition to return True.
         Warning: don't preface condition with "return"
@@ -220,9 +216,9 @@ class BrowserActionMixins(object):
                 # that doesn't yet exist, e.g. does_not_exist_yet.i_want_to_test_this_one
                 pass
 
-    def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=7, step_time=0.25):
         exists_condition = "typeof(%s) != 'undefined'" % obj_name
-        self.browser_wait_for_js_condition(exists_condition, max_wait_time, step_time)
+        self.browser_wait_for_js_condition(exists_condition, max_wait_time=max_wait_time, step_time=step_time)
 
     # Actual testing methods
     def empty_form_test(self, url, submission_element_id):
@@ -425,4 +421,6 @@ class BrowserActionMixins(object):
         self.browser_wait_for_js_object_exists("window.statusModel");
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
         points_text = self.browser.execute_script("return $('#points').text();")
+        self.assertTrue(bool(points_text), "Failed fetching contents of #points element, got {0}".format(points_text))
         return int(re.search(r"(\d+)", points_text).group(1))
+            
