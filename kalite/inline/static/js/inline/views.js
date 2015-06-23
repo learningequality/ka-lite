@@ -29,14 +29,23 @@ window.ButtonView = Backbone.View.extend({
 
                 //runs before-showing, if applicable (before-showing[] populated)
                 var i = 0;
+                console.log("OUR BEFORE_SHOWING ARRAY:");
+                console.log(before_showing);
                 if (before_showing.length !== 0) {
                     intro.onafterchange(function(target) {
-                        if (target == document.querySelector(before_showing[0]["element"]) ){ 
-                            console.log("an action should be performed on this element");
-                            $(target).trigger(before_showing[0]["action"]);
-                            i++;
+                        if (target == document.querySelector(before_showing[i]["element"]) ){ 
+                            console.log("inside onafterchange, going to set the click function on btn");
+
+                            //perform action after the "next" button is clicked on the tooltip
+                            $("a.introjs-button.introjs-nextbutton").click(function() {
+                                console.log("something should fire");
+                                console.log(before_showing[i]["action"]);
+                                $(target).trigger(before_showing[i]["action"]);
+                                // i++;
+                            }); 
                         }
                     });
+                    // $("a.introjs-button.introjs-nextbutton").off("click");
                 }
                 intro.start();
             },
