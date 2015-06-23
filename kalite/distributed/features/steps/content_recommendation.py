@@ -23,7 +23,7 @@ def impl(context):
 def impl(context):
     card = find_id_with_wait(context, "nextsteps")
     element = card.find_elements_by_tag_name("a")[1]
-    click_and_wait_for_page_load(context, element)
+    click_and_wait_for_page_load(context, element, wait_time=15)
 
 @then(u'I should be taken to that topic')
 def impl(context):
@@ -33,7 +33,7 @@ def impl(context):
 def impl(context):
     card = find_id_with_wait(context, "nextsteps")
     element = card.find_elements_by_tag_name("a")[0]
-    click_and_wait_for_page_load(context, element)
+    click_and_wait_for_page_load(context, element, wait_time=15)
 
 @then(u'the content recommendation cards should be shown')
 def impl(context):
