@@ -213,6 +213,9 @@ def ka_lite_is_using_port(host, port):
 
 def runcherrypyserver(argset=[], **kwargs):
     # Get the options
+    
+    warnings.warn("runcherrypyserver() is deprecated")
+    
     options = CPWSGI_OPTIONS.copy()
     options.update(kwargs)
     
