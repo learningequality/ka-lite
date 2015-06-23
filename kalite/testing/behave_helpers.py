@@ -160,7 +160,7 @@ def find_id_with_wait(context, id_str, **kwargs):
     id_str: A string with the id (no leading #)
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.ID, id_str), **kwargs)
 
@@ -201,14 +201,11 @@ def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     context: a behave context
     by: A tuple selector used by Selenium
     wait_time: The max time to wait in seconds
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
-    try:
-        return WebDriverWait(context.browser, wait_time).until(
-            EC.presence_of_element_located(by)
-        )
-    except TimeoutException:
-        return None
+    return WebDriverWait(context.browser, wait_time).until(
+        EC.presence_of_element_located(by)
+    )
 
 def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
