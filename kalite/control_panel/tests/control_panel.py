@@ -111,6 +111,10 @@ class FacilityControlTests(FacilityMixins,
     def test_facility_with_no_missing_metadata(self):
         facility_name = 'no-missing-metadata'
         self.fac = self.create_facility(name=facility_name)
+        for field in ['user_count', 'latitude', 'longitude', 'contact_phone']:
+            setattr(self.fac, field, 100)
+        for field in ['address', 'contact_name', 'contact_email']:
+            setattr(self.fac, field, 'Not Empty')
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
                                            password=teacher_password)
@@ -125,6 +129,25 @@ class FacilityControlTests(FacilityMixins,
     def test_facility_with_missing_metadata(self):
         facility_name = 'missing-metadata'
         self.fac = self.create_facility(name=facility_name)
+        teacher_username, teacher_password = 'teacher1', 'password'
+        self.teacher = self.create_teacher(username=teacher_username,
+                                           password=teacher_password)
+        self.browser_login_teacher(username=teacher_username,
+                                   password=teacher_password,
+                                   facility_name=self.teacher.facility.name)
+        self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
+        #should raise NoSuchElementException if there is (incorrectly) no facility no with the warning class
+        self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
+
+        
+    def test_facility_with_empty_string_metadata(self):
+        facility_name = 'empy-string-metadata'
+        self.fac = self.create_facility(name=facility_name)
+        for field in ['user_count', 'latitude', 'longitude', 'contact_phone']:
+            setattr(self.fac, field, 100)
+        for field in ['address', 'contact_name']:
+            setattr(self.fac, field, 'Not Empty')
+        self.fac.contact_email = ''
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
                                            password=teacher_password)

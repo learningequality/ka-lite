@@ -37,7 +37,7 @@
                                 <td>
                                      <a class="facility-name" href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">{{ facility.name }}</a>
  					{% if facility.meta_data_in_need %} 
-						<a href="facility/{{ facility.id }}/edit" class="help-tooltip glyphicon glyphicon-pencil notice" data-toggle="tooltip" data-placement="right" title="{% trans "Edit/update information for this facility." %}"></a>
+						<a href="{% url 'facility_form' facility_id=facility.id %}" class="help-tooltip glyphicon glyphicon-pencil notice" data-toggle="tooltip" data-placement="right" title="{% trans "Edit/update information for this facility." %}"></a>
  					{% endif %}
                                 </td>
                                 <td>

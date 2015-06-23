@@ -131,15 +131,6 @@ def zone_management(request, zone_id="None"):
 
         user_activity = UserLogSummary.objects.filter(user__facility=facility)
         exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
-        print ""
-        print ""
-        print ""
-        print ""
-        print check_meta_data(facility)
-        print ""
-        print ""
-        print ""
-        print ""
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
@@ -578,7 +569,7 @@ def check_meta_data(facility):
       bool: True if one or more metadata fields are missing'''
 
     check_fields = ['user_count', 'latitude', 'longitude', 'address', 'contact_name', 'contact_phone', 'contact_email']
-    return any([getattr(facility, field, None) is None for field in check_fields])
+    return any([ (getattr(facility, field, None) is None or getattr(facility, field)=='') for field in check_fields])
 
 
 # context functions
