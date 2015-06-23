@@ -83,7 +83,9 @@ def validate_username(username):
 
 
 def get_clean_default_username():
-    return (getpass.getuser() or "").replace("-", "_")
+    username = (getpass.getuser() or "").replace("-", "_")
+    username = re.sub(r"\W", r"", username)  # Make sure auto-username doesn't have illegal characters
+    return re.sub(r"^([^a-zA-Z])+", r"", username)  # Cut off non-alphabetic leading characters
 
 
 def get_username(username):
@@ -203,8 +205,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if not options["interactive"]:
-            options["username"] = options["username"] or getattr(
-                settings, "INSTALL_ADMIN_USERNAME", None) or get_clean_default_username()
             options["hostname"] = options["hostname"] or get_host_name()
 
         # blank allows ansible scripts to dump errors cleanly.
@@ -310,10 +310,10 @@ class Command(BaseCommand):
             (hostname, description) = get_hostname_and_description(
                 options["hostname"], options["description"])
         else:
-            username = options["username"] or getattr(
-                settings, "INSTALL_ADMIN_USERNAME", None)
-            password = options["password"] or getattr(
-                settings, "INSTALL_ADMIN_PASSWORD", None)
+            username = options["username"] = options["username"] or \
+                                             getattr(settings, "INSTALL_ADMIN_USERNAME", None) or \
+                                             get_clean_default_username()
+            password = options["password"] or getattr(settings, "INSTALL_ADMIN_PASSWORD", None)
             email = options["email"]  # default is non-empty
             hostname = options["hostname"]
             description = options["description"]
