@@ -4,16 +4,16 @@ from django.conf import settings; logging = settings.LOG
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from . import get_default_language, get_installed_language_packs, lcode_to_django_lang, lcode_to_ietf, select_best_available_language, set_default_language, set_request_language
-from fle_utils.internet import JsonResponse, api_handle_error_with_json
-from fle_utils.config.models import Settings
+from . import get_default_language, set_default_language, set_request_language
+from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
+from fle_utils.internet.decorators import api_handle_error_with_json
 
 
 @csrf_exempt
 @api_handle_error_with_json
 def set_server_or_user_default_language(request):
     if request.method == 'GET':
-        raise Exception(_("Can only handle default language changes through GET requests"))
+        return JsonResponseMessageError(_("Can only handle default language changes through POST requests"), status=405)
 
     elif request.method == 'POST':
         data = json.loads(request.raw_post_data) # POST is getting interpreted wrong again by Django

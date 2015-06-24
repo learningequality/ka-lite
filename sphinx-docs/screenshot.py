@@ -25,11 +25,11 @@ else:
 USER_ROLES = ["guest", "coach", "admin", "learner"]
 SS_DUMP_DIR = ".screenshot_dump"
 OUTPUT_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), SS_DUMP_DIR))
-MANAGE_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","kalite","manage.py"))
+KALITECTL_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kalitectl.py"))
 # Formatted from subprocess.Popen
 # Trying to import call_command to execute a Django mgmt command gets you
 # into a weird import hell, probably because of import_all_child_modules...
-SCREENSHOT_COMMAND = [sys.executable, MANAGE_PATH, "screenshots"]
+SCREENSHOT_COMMAND = [sys.executable, KALITECTL_PATH, "manage", "screenshots"]
 SCREENSHOT_COMMAND_OPTS = ["-v", "0", "--output-dir", OUTPUT_PATH]
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",
@@ -52,10 +52,20 @@ def purge_screenshots(app, env, docname):
 def process_screenshots(app, env):
     if not hasattr(env, 'screenshot_all_screenshots'):
         return
-
+    # Don't bother building screenshots if we're just collecting messages.
+    # Just checks if we invoked the build command with "gettext" in there somewhere
+    if "gettext" in sys.argv:
+        return
     all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
-    subprocess = Popen(SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str", json.dumps(all_args)])
+    # If building in a different language, start the server in a different language
+    command = SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str", json.dumps(all_args)]
+    language = env.config.language
+    if language:
+        command += ["--lang", language]
+    subprocess = Popen(command)
     subprocess.wait()
+    if subprocess.returncode:
+        raise Exception("Screenshot process had nonzero return code: {0}".format(subprocess.returncode))
     if display:
         display.stop()
 
@@ -219,7 +229,6 @@ class Screenshot(Image):
         Build language can be accessed from the BuildEnvironment.
         """
         self.env = self.state.document.settings.env
-        language = self.env.config.language
         return_nodes = []
         if not hasattr(self.env, 'screenshot_all_screenshots'):
             self.env.screenshot_all_screenshots = []
@@ -255,15 +264,16 @@ class Screenshot(Image):
     def _login_handler(self, username, password, submit):
         from_str_arg = { "users": ["guest"], # This will fail if not guest, because of a redirect
                          "slug": "",
-                         "start_url": "/securesync/login",
-                         "inputs": [{"#id_username": username},
+                         "start_url": "/",
+                         "inputs": [{"#nav_login": ""},
+                                    {"#id_username": username},
                                     {"#id_password": password},
                                    ],
                          "pages": [],
                          "notes": "",
                        }
         if submit:
-            from_str_arg["inputs"].append({"<submit>":""})
+            from_str_arg["inputs"].append({".login-btn":""})
         from_str_arg = self._common_arg_prep(from_str_arg)
         self.env.screenshot_all_screenshots.append({
             'docname':  self.env.docname,

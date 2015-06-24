@@ -8,22 +8,14 @@ from django.utils import unittest
 
 from .base import MainTestCase
 from ..models import *
-from fle_utils.testing import UnicodeModelsTest
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from securesync.models import Device
 
 
-class MainUnicodeModelsTest(MainTestCase, UnicodeModelsTest):
+class MainUnicodeModelsTest(MainTestCase):
 
-    @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
-    def test_unicode_class_coverage(self):
-        # Make sure we're testing all classes
-        self.check_unicode_class_coverage(
-            models_module="main.models",
-            known_classes = [ExerciseLog, UserLog, UserLogSummary, VideoLog],
-        )
-
-
+    korean_string = unichr(54392)
+    
     def test_unicode_string(self):
         # Dependencies
         dev = Device.get_own_device()

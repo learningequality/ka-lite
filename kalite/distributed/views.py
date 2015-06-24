@@ -9,22 +9,29 @@ import sys
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 
+from itertools import islice
+
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from fle_utils.internet import JsonResponseMessageError, get_ip_addresses, set_query_params, backend_cache_page
+from fle_utils.internet.classes import JsonResponseMessageError
+from fle_utils.internet.functions import get_ip_addresses, set_query_params
+from fle_utils.internet.webcache import backend_cache_page
+from fle_utils.django_utils.paginate import paginate_data
 from kalite import topic_tools
-from kalite.shared.decorators import require_admin
+from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
+from kalite.distributed.forms import SuperuserForm
+import json
 
 
 def check_setup_status(handler):
@@ -37,6 +44,11 @@ def check_setup_status(handler):
 
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
+
+        if User.objects.exists():
+            request.has_superuser = True
+            # next line is for testing
+            # User.objects.all().delete()
 
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
@@ -59,8 +71,8 @@ def check_setup_status(handler):
                 redirect_url = None
             if redirect_url:
                 messages.warning(request, mark_safe(
-                    "Please <a href='%s?next=%s'>login</a> with the account you created while running the installation script, \
-                    to complete the setup." % (reverse("login"), redirect_url)))
+                    "Please login with the account you created while running the installation script, \
+                    to complete the setup."))
 
         return handler(request, *args, **kwargs)
     return check_setup_status_wrapper_fn
@@ -78,18 +90,6 @@ def learn(request):
     }
     return context
 
-
-@backend_cache_page
-@render_to("knowledgemap/knowledgemap.html")
-def exercise_dashboard(request):
-    title = _("Your Knowledge Map")
-
-    context = {
-        "title": title,
-        "data_url": settings.CONTENT_DATA_URL + settings.CHANNEL,
-    }
-
-    return context
 
 @check_setup_status
 @render_to("distributed/homepage.html")
@@ -155,6 +155,7 @@ def device_redirect(request):
 @render_to('distributed/search_page.html')
 def search(request):
     # Inputs
+    page = int(request.GET.get('page', 1))
     query = request.GET.get('query')
     category = request.GET.get('category')
     max_results_per_category = request.GET.get('max_results', 25)
@@ -163,6 +164,13 @@ def search(request):
     query_error = None
     possible_matches = {}
     hit_max = {}
+
+
+    node_kinds = {
+        "Topic": ["Topic"],
+        "Exercise": ["Exercise"],
+        "Content": ["Video", "Audio", "Document"],
+    }
 
     if query is None:
         query_error = _("Error: query not specified.")
@@ -173,38 +181,86 @@ def search(request):
     else:
         query = query.lower()
         # search for topic, video or exercise with matching title
-        nodes = []
         for node_type, node_dict in topic_tools.get_node_cache().iteritems():
             if category and node_type != category:
                 # Skip categories that don't match (if specified)
                 continue
 
-            possible_matches[node_type] = []  # make dict only for non-skipped categories
-            for node in node_dict.values():
-                title = _(node['title']).lower()  # this could be done once and stored.
-                keywords = [x.lower() for x in node.get('keywords', [])]
-                tags = [x.lower() for x in node.get('tags', [])]
-                if title == query:
-                    # Redirect to an exact match
-                    return HttpResponseRedirect(reverse('learn') + node['path'])
+            exact_match = filter(lambda node: node["kind"] in node_kinds[node_type] and node["title"].lower() == query, node_dict.values())[:1]
 
-                elif (len(possible_matches[node_type]) < max_results_per_category and
-                    (query in title or query in keywords or query in tags)):
-                    # For efficiency, don't do substring matches when we've got lots of results
-                    possible_matches[node_type].append(node)
+            if exact_match:
+                # Redirect to an exact match
+                return HttpResponseRedirect(reverse('learn') + exact_match[0]['path'])
 
+            # For efficiency, don't do substring matches when we've got lots of results
+            match_generator = (node for node in node_dict.values()
+                if node["kind"] in node_kinds[node_type] and (query in node["title"].lower() or query in [x.lower() for x in node.get('keywords', [])] or
+                query in [x.lower() for x in node.get('tags', [])]))
 
-            hit_max[node_type] = len(possible_matches[node_type]) == max_results_per_category
+            # Only return max results
+            try:
+                possible_matches[node_type] = list(islice(match_generator, (page-1)*max_results_per_category, page*max_results_per_category))
+            except ValueError:
+                return HttpResponseNotFound("Page does not exist")
+
+            hit_max[node_type] = next(match_generator, False)
+
+    previous_params = request.GET.copy()
+    previous_params['page'] = page - 1
+
+    previous_url = "?" + previous_params.urlencode()
+
+    next_params = request.GET.copy()
+    next_params['page'] = page + 1
+
+    next_url = "?" + next_params.urlencode()
 
     return {
         'title': _("Search results for '%(query)s'") % {"query": (query if query else "")},
         'query_error': query_error,
         'results': possible_matches,
         'hit_max': hit_max,
+        'more': any(hit_max.values()),
+        'page': page,
+        'previous_url': previous_url,
+        'next_url': next_url,
         'query': query,
         'max_results': max_results_per_category,
         'category': category,
     }
+
+def add_superuser_form(request):
+    if request.method == 'POST':
+        form = SuperuserForm()
+        return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+        data = {'Status' : 'ShowModal', 'data' : return_html}
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+def create_superuser(request):
+    if request.method == 'POST':
+        form = SuperuserForm(request.POST)
+        if form.is_valid():
+            # security precaution
+            cd = form.cleaned_data
+            superusername = cd.get('superusername')
+            superpassword = cd.get('superpassword')
+            confirmsuperpassword = cd.get('confirmsuperpassword')
+            if superpassword != confirmsuperpassword:
+                form.errors['confirmsuperpassword'] = form.error_class([_("Passwords don't match!")])
+                return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+                data = {'Status' : 'Invalid', 'data' : return_html}
+            else:
+                superemail = "superuser@learningequality.org"
+                User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
+                data = {'Status' : 'Success'}
+        else:
+            cd = form.cleaned_data
+            if cd.get('confirmsuperpassword') != cd.get('superpassword'):
+                form.errors['confirmsuperpassword'] = form.error_class([_("Passwords don't match!")])
+            return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+            data = {'Status' : 'Invalid', 'data' : return_html}
+
+        return HttpResponse(json.dumps(data), content_type="application/json")
 
 def crypto_login(request):
     """
@@ -238,7 +294,7 @@ def handler_403(request, *args, **kwargs):
         return JsonResponseMessageError(_("You must be logged in with an account authorized to view this page (API)."), status=403)
     else:
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
-        return HttpResponseRedirect(set_query_params(reverse("login"), {"next": request.get_full_path()}))
+        return HttpResponseRedirect(set_query_params(reverse("homepage"), {"next": request.get_full_path(), "login": True}))
 
 @render_to("distributed/perseus.html")
 def perseus(request):

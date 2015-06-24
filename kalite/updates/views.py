@@ -1,35 +1,13 @@
-import copy
-import datetime
-import git
-import json
-import os
-import re
-import sys
 from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
 
-from django.conf import settings
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.urlresolvers import reverse
-from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseServerError
-from django.template import RequestContext
-from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _, ugettext_lazy
-from django.views.decorators.cache import cache_control
-from django.views.decorators.cache import cache_page
 from django.contrib import messages
 
 from .models import VideoFile
-from fle_utils.chronograph import force_job
-from fle_utils.internet import am_i_online, JsonResponse
-from kalite import topic_tools
-from kalite.control_panel.views import local_install_context
-from kalite.i18n import get_installed_language_packs, get_language_name
-from kalite.shared.decorators import require_admin
+from kalite.i18n import get_installed_language_packs
+from kalite.shared.decorators.auth import require_admin
 from securesync.models import Device
-from securesync.devices import require_registration
+from securesync.devices.decorators import require_registration
 
 
 def update_context(request):
@@ -68,26 +46,4 @@ def update_languages(request):
     context.update({
         "installed_languages": installed_languages.values(),
     })
-    return context
-
-
-@require_admin
-@render_to("updates/update_software.html")
-def update_software(request):
-    context = update_context(request)
-    context.update(local_install_context(request))
-
-    try:
-        repo = git.Repo(os.path.dirname(__file__))
-        software_version = repo.git.describe()
-        is_git_repo = bool(repo)
-    except git.exc.InvalidGitRepositoryError:
-        is_git_repo = False
-        software_version = None
-
-    context.update({
-        "is_git_repo": str(is_git_repo).lower(), # lower to make it look like JS syntax
-        "git_software_version": software_version,
-    })
-
     return context

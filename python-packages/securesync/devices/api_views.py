@@ -1,27 +1,18 @@
 """
 """
-import cgi
-import json
-import re
-import uuid
-from annoying.functions import get_object_or_None
-
-from django.conf import settings
-from django.contrib import messages
-from django.contrib.messages.api import get_messages
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models as db_models
 from django.http import HttpResponse
 from django.utils import simplejson
-from django.utils.safestring import SafeString, SafeUnicode, mark_safe
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
-from django.views.decorators.gzip import gzip_page
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import *
-from .. import engine
-from fle_utils.django_utils import get_request_ip
-from fle_utils.internet import allow_jsonp, api_handle_error_with_json, am_i_online, JsonResponse, JsonResponseMessageError
+from ..engine.utils import serialize, deserialize
+from fle_utils.django_utils.functions import get_request_ip
+from fle_utils.internet.decorators import allow_jsonp, api_handle_error_with_json
+from fle_utils.internet.functions import am_i_online
+from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 
 from securesync import ERROR_CODES as EC
 
@@ -34,7 +25,7 @@ def register_device(request):
     # attempt to load the client device data from the request data
     data = simplejson.loads(request.body or "{}")
     if "client_device" not in data:
-        return JsonResponseMessageError("Serialized client device must be provided.")
+        return JsonResponseMessageError("Serialized client device must be provided.", status=400)
     try:
         # When hand-shaking on the device models, since we don't yet know the version,
         #   we have to just TRY with our own version.
@@ -44,12 +35,12 @@ def register_device(request):
         #   is less than the version of a client--something that should never happen
         try:
             local_version = Device.get_own_device().get_version()
-            models = engine.deserialize(data["client_device"], src_version=local_version, dest_version=local_version)
+            models = deserialize(data["client_device"], src_version=local_version, dest_version=local_version)
         except db_models.FieldDoesNotExist as fdne:
             raise Exception("Central server version is lower than client version.  This is ... impossible!")
         client_device = models.next().object
     except Exception as e:
-        return JsonResponseMessageError("Could not decode the client device model: %s" % e, code=EC.CLIENT_DEVICE_CORRUPTED)
+        return JsonResponseMessageError("Could not decode the client device model: %s" % e, code=EC.CLIENT_DEVICE_CORRUPTED, status=400)
 
     # Validate the loaded data
     if not isinstance(client_device, Device):
@@ -81,7 +72,7 @@ def register_device(request):
             # But still, good to keep track of!
             UnregisteredDevicePing.record_ping(id=client_device.id, ip=get_request_ip(request))
 
-            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code=EC.CHAIN_OF_TRUST_INVALID)
+            return JsonResponseMessageError("Failed to validate the chain of trust (%s)." % e, code=EC.CHAIN_OF_TRUST_INVALID, status=500)
 
     if not zone: # old code-path
         try:
@@ -97,9 +88,9 @@ def register_device(request):
                 # A redirect loop here is also possible, if a Device exists in the central server database 
                 # corresponding to the client_device, but no corresponding RegisteredDevicePublicKey exists
                 device = Device.objects.get(public_key=client_device.public_key)
-                return JsonResponseMessageError("This device has already been registered", code=EC.DEVICE_ALREADY_REGISTERED)
+                return JsonResponseMessageError("This device has already been registered", code=EC.DEVICE_ALREADY_REGISTERED, status=409)
             except Device.DoesNotExist:
-                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code=EC.PUBLIC_KEY_UNREGISTERED)
+                return JsonResponseMessageError("Device registration with public key not found; login and register first?", code=EC.PUBLIC_KEY_UNREGISTERED, status=404)
 
     client_device.save(imported=True)
 
@@ -116,7 +107,7 @@ def register_device(request):
     # Addition: always back central server object--in case they didn't get it during install,
     #   they need it for software updating.
     return JsonResponse(
-        engine.serialize([Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
+        serialize([Device.get_central_server(), Device.get_own_device(), zone, device_zone], dest_version=client_device.version, ensure_ascii=False)
     )
 
 

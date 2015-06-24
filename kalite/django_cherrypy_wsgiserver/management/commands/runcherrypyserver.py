@@ -6,10 +6,8 @@ import signal
 import socket
 import sys
 import time
-from socket import gethostname
 from urllib import urlopen
 
-import django.contrib.admin
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
@@ -52,7 +50,7 @@ Examples:
 
 CPWSGI_OPTIONS = {
     'host': '127.0.0.1', # changed from localhost to avoid ip6 problem -clm
-    'port': getattr(settings, "CHERRYPY_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
+    'port': getattr(settings, "PRODUCTION_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
     'threads': getattr(settings, "CHERRPY_THREAD_COUNT", 50),
     'daemonize': False,
     'pidfile': None,
@@ -74,7 +72,7 @@ class Command(BaseCommand):
         runcherrypyserver(args)
 
 
-# TODO
+# TODO(benjaoming):
 # benjaoming: This doesn't work on Windows, but is replaced by functionality
 # inside kalitectl so can be removed
 def change_uid_gid(uid, gid=None):
@@ -91,7 +89,7 @@ def change_uid_gid(uid, gid=None):
     os.setuid(uid)
 
 
-# TODO
+# TODO(benjaoming)(benjaoming):
 # benjaoming: This doesn't work on Windows, but is replaced by functionality
 # inside kalitectl so can be removed
 def get_uid_gid(uid, gid=None):
@@ -112,7 +110,7 @@ def get_uid_gid(uid, gid=None):
     return (uid, gid)
 
 
-# TODO
+# TODO(benjaoming):
 # benjaoming: This doesn't work on Windows, but is replaced by functionality
 # inside kalitectl so can be removed
 def poll_process(pid):
@@ -232,7 +230,7 @@ def runcherrypyserver(argset=[], **kwargs):
         print CPWSGI_HELP
         return
     
-    # TODO: This is not in us anymore in `kalite stop` so can be deprecated
+    # TODO(benjaoming): This is not in use anymore in `kalite stop` so can be deprecated
     if "stop" in options:
         warnings.warn("Using runcherrypyserver stop is deprecated, use `kalite stop`", DeprecationWarning)
         if options['pidfile']:
@@ -248,7 +246,7 @@ def runcherrypyserver(argset=[], **kwargs):
     if port_is_available(options['host'], options['port']):
         pass
     else:
-        # TODO: Remove this
+        # TODO(benjaoming): Remove this
         # benjaoming: this is replaced by the stop command in kalitectl
         # existing_server_pid = ka_lite_is_using_port(options['host'], options['port'])
         # if existing_server_pid:
@@ -272,7 +270,7 @@ def runcherrypyserver(argset=[], **kwargs):
     if "stop" in options:
         #we are done, get out
         return True
-
+    
     cherrypyserver.run_cherrypy_server(**options)
 
 

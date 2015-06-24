@@ -2,6 +2,8 @@ import os, sys, warnings
 
 warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.path', append=True)
 
+warnings.warn("Using ka-lite.wsgi is deprecated, please use kalite/project/wsgi.py")
+
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 sys.path = [
