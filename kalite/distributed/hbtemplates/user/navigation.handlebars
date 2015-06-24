@@ -17,8 +17,9 @@
 
 {{!-- Farthest right nav is logged in user dropdown --}}
 {{#if is_logged_in}}
-  <li class="dropdown " id="user-name">
-    <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="user-name-a">
+  <li class="dropdown " id="user-name" tabindex="0">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="user-name-a" tabindex="0">
+        <span class="sr-only">{% trans 'Press Enter to open user options menu for ' %}</span>
         <span id="username">{{!-- Username injected here w/ js --}}</span>
       <span class="caret hidden-xs"></span>
     </a>
