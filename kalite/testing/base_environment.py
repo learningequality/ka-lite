@@ -22,7 +22,7 @@ def after_all(context):
 def before_feature(context, feature):
     browser = context.browser = webdriver.Firefox()
     # ensure the window is reasonably sized.
-    browser.set_window_size(1024, 768)
+    browser.set_window_size(2560, 1920)
 
     context.logged_in = False
     # A superuser now needs to exist or UI is blocked by a modal.
