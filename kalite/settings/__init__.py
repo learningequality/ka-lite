@@ -2,8 +2,16 @@ import logging
 import os
 import sys
 import platform
-from fle_utils.settingshelper import import_installed_app_settings
+import warnings
 from kalite import version
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
+
+
+warnings.warn(
+    "Wrong settings module imported! Please do not import kalite.settings "
+    "directly. Instead, import kalite.project.settings.base",
+    RemovedInKALite_v015_Warning
+)
 
 
 ##############################
@@ -17,20 +25,8 @@ def package_selected(package_name):
 
 from .base import *
 
-########################
-# After all settings, but before config packages,
-#   import settings from other apps.
-#
-# This allows app-specific settings to be localized and augment
-#   the settings here, while also allowing
-#   config packages to override settings.
-########################
 
-# Here is all the old magic crap that should go... /benjaoming
-
-import_installed_app_settings(INSTALLED_APPS, globals())
-
-TEST_RUNNER = KALITE_TEST_RUNNER
+CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 
 ########################
 # IMPORTANT: Do not add new settings below this line
@@ -91,18 +87,15 @@ if package_selected("Demo"):
 
     CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", "staging.learningequality.org")
     SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "http")
+    CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
-    MIDDLEWARE_CLASSES += ('kalite.distributed.demo_middleware.StopAdminAccess','kalite.distributed.demo_middleware.LinkUserManual','kalite.distributed.demo_middleware.ShowAdminLogin',)
-
-
-# Force DeprecationWarning to show in DEBUG
-if DEBUG:
-    import warnings
-    warnings.simplefilter('error', DeprecationWarning)
-
-CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
+    MIDDLEWARE_CLASSES += (
+        'kalite.distributed.demo_middleware.StopAdminAccess',
+        'kalite.distributed.demo_middleware.LinkUserManual',
+        'kalite.distributed.demo_middleware.ShowAdminLogin',
+    )
 
 
 # set the default encoding
@@ -116,7 +109,7 @@ CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
 try:
     DEFAULT_ENCODING = DEFAULT_ENCODING
 except NameError:
-    from django.conf.settings import DEFAULT_ENCODING
+    from django.conf.settings import DEFAULT_ENCODING  # @UnresolvedImport
 
 if sys.getdefaultencoding() != DEFAULT_ENCODING:
     reload(sys)
