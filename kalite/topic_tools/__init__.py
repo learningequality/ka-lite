@@ -171,7 +171,10 @@ def get_exercise_cache(force=False, language=None):
                 EXERCISES[language] = exercises
                 return EXERCISES[language]
         EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
-        exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+        if language == "en":  # English-language exercises live in application space, translations in user space
+            exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+        else:
+            exercise_root = os.path.join(settings.USER_DATA_ROOT, "exercises")
         if os.path.exists(exercise_root):
             exercise_path = os.path.join(exercise_root, language) if language != "en" else exercise_root
             try:
