@@ -17,5 +17,3 @@ test:
     - python python-packages/fle_utils/tests.py
     - kalite manage test
     - grunt jshint
-    - kalite manage bundleassets
-    - ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS
