@@ -28,7 +28,7 @@ def step_impl(context):
 
 @then("I should see a modal")
 def step_impl(context):
-    assert find_id_with_wait(context, modal_container).is_displayed(), "modal not displayed!"
+    assert find_id_with_wait(context, modal_container), "modal not displayed!"
 
 @given("the username is empty")
 def step_impl(context):
@@ -64,17 +64,13 @@ def impl(context):
 def step_impl(context):
     fill_password(context, "x" * 41)
 
-@given("I enter my email address incorrectly")
+@given("I enter an unmatched password")
 def step_impl(context):
-    fill_email(context, "incorrect")
+    reenter_password(context, "unmatched")
 
-@then("the email border will turn red")
+@then("the confirmsuperpassword border will turn red")
 def impl(context):
-    is_border_red(context, "id_superemail")
-
-@given("I enter a email address longer than 40 letters")
-def step_impl(context):
-    fill_email(context, "x" * 41 + "@toolong.com")
+    is_border_red(context, "id_confirmsuperpassword")
 
 @given("I enter username correctly")
 def step_impl(context):
@@ -84,17 +80,17 @@ def step_impl(context):
 def step_impl(context):
     fill_password(context, "correct_password")
 
-@given("I enter email correctly")
+@given("I re-enter password correctly")
 def step_impl(context):
-    fill_email(context, "correct@email.com")
+    reenter_password(context, "correct_password")
 
 @then("the modal will dismiss")
 def impl(context):
     assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=5), "modal not dismissed!"
 
 def fill_field(context, text, field_id):
-    assert find_id_with_wait(context, field_id), "field is None!"
-    field = find_id_with_wait(context, field_id)
+    assert find_id_with_wait(context, field_id, wait_time=5), "field is None!"
+    field = find_id_with_wait(context, field_id, wait_time=5)
     field.clear()
     field.send_keys(text)
 
@@ -104,8 +100,8 @@ def fill_username(context, text):
 def fill_password(context, text):
     fill_field(context, text, "id_superpassword")
 
-def fill_email(context, text):
-    fill_field(context, text, "id_superemail")
+def reenter_password(context, text):
+    fill_field(context, text, "id_confirmsuperpassword")
 
 def is_border_red(context, field_id):
     assert find_id_with_wait(context, field_id), "border field is None!"
