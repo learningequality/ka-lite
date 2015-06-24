@@ -50,7 +50,6 @@ class KALiteBrowserTestCase(KALiteTestCase, LiveServerTestCase):
 
     def setUp(self):
         self.browser = setup_browser(browser_type="Firefox")
-
         super(KALiteBrowserTestCase, self).setUp()
 
     def tearDown(self):
