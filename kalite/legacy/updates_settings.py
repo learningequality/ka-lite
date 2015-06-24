@@ -14,41 +14,10 @@ This will be cleaned up in KA Lite 0.14
 
 """
 
-import os
-
 try:
     from kalite import local_settings
 except ImportError:
     local_settings = object()
-
-
-########################
-# Django dependencies
-########################
-
-INSTALLED_APPS = (
-    "django.contrib.auth",  # only admins can access api views
-    "django.contrib.staticfiles",
-    "south",
-    "fle_utils.chronograph",  # updates uses chronograph for commands
-    "fle_utils.django_utils",  # templatetags
-    # Following line was commented out because it led to distributed app being imported by central server indirectly
-    # "kalite.distributed",  # to access caching
-    "kalite.i18n",  # language pack updates
-    "kalite.main",  # TODO: remove (MainTestCase should be KALiteTestCase)
-    "kalite.topic_tools",  # topic tools
-    "kalite.testing",
-    "securesync",  # Needed to verify zip files (via Device key) and to limit access via registration status
-)
-
-MIDDLEWARE_CLASSES = (
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",  # used by distributed to authenticate admin (django) user
-)
 
 
 #######################
