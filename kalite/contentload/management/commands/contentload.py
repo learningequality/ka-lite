@@ -2,7 +2,6 @@
 Utilities for downloading Khan Academy topic tree and
 massaging into data and files that we use in KA Lite.
 """
-import sys
 import json
 import os
 import importlib
@@ -14,12 +13,7 @@ from django.conf import settings; logging = settings.LOG
 from django.core.management.base import NoArgsCommand
 from django.utils.text import slugify
 
-from kalite import topic_tools
-
 from fle_utils.general import ensure_dir
-
-# get the path to an exercise file, so we can check, below, which ones exist
-EXERCISE_FILEPATH_TEMPLATE = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", "%s")
 
 def save_cache_file(cache_type, cache_object=None, node_cache=None, data_path=None):
 
