@@ -242,12 +242,21 @@ def create_superuser(request):
         if form.is_valid():
             # security precaution
             cd = form.cleaned_data
-            superusername = cd['superusername']
-            superpassword = cd['superpassword']
-            superemail = cd['superemail']
-            User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
-            data = {'Status' : 'Success'}
+            superusername = cd.get('superusername')
+            superpassword = cd.get('superpassword')
+            confirmsuperpassword = cd.get('confirmsuperpassword')
+            if superpassword != confirmsuperpassword:
+                form.errors['confirmsuperpassword'] = form.error_class([_("Passwords don't match!")])
+                return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+                data = {'Status' : 'Invalid', 'data' : return_html}
+            else:
+                superemail = "superuser@learningequality.org"
+                User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
+                data = {'Status' : 'Success'}
         else:
+            cd = form.cleaned_data
+            if cd.get('confirmsuperpassword') != cd.get('superpassword'):
+                form.errors['confirmsuperpassword'] = form.error_class([_("Passwords don't match!")])
             return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
             data = {'Status' : 'Invalid', 'data' : return_html}
 
