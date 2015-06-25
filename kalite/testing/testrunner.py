@@ -165,6 +165,10 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
                 extra_tests.append(self.make_bdd_test_suite(features_dir))
 
         suite = super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
+
+        # remove all django module tests
+        suite._tests = filter(lambda x: 'django.' not in x.__module__, suite._tests)
+
         if self._bdd_only:
             suite._tests = filter(lambda x: type(x).__name__ == "DjangoBehaveTestCase", suite._tests)
         return suite
