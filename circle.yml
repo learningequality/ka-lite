@@ -1,6 +1,8 @@
 machine:
   python:
-    version: 2.6.8
+# Currently we cannot test 2.6 because django-js-reverse installs django 1.8 through pip which breaks
+#    version: 2.6.8
+    version: 2.7
 
 dependencies:
   override:
