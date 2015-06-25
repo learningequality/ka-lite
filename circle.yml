@@ -14,5 +14,6 @@ test:
     - kalite start --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
-    - case $CIRCLE_NODE_INDEX in 0) kalite manage test --no-bdd ;; 1) kalite manage test --bdd-only; grunt jshint ;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) kalite manage test --no-bdd ;; 1) kalite manage test --bdd-only;; esac:
         parallel: true
+    - grunt jshint
