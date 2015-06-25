@@ -5,6 +5,5 @@ from distributed import *
 from knowledge_map import *
 from language_packs import *
 from nalanda import *
-from query_tests import *
 from quiz import *
 from student_testing import *

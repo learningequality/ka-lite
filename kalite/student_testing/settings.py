@@ -1,11 +1,4 @@
 import os
-
-try:
-    from kalite import local_settings
-except ImportError:
-    local_settings = object()
-
-
 #######################
 # Set module settings
 #######################
@@ -13,4 +6,5 @@ except ImportError:
 # This must be a string type.
 SETTINGS_KEY_EXAM_MODE = 'EXAM_MODE_ON'
 
+# TODO: This is not okay
 STUDENT_TESTING_DATA_PATH = os.path.join(os.path.dirname(__file__), "data")

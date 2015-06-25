@@ -7,8 +7,9 @@ from django.core.urlresolvers import reverse
 
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
 
-from kalite.facility.models import FacilityUser, FacilityGroup
+from kalite.facility.models import FacilityGroup
 
 from kalite.main.models import ExerciseLog, AttemptLog
 
@@ -27,6 +28,10 @@ colour_legend = {
 def step_impl(context):
     url = reverse("coach_reports")
     context.browser.get(build_url(context, url))
+    # TODO(benjaoming) : This takes an awful lot of time to load the first
+    # time it's built because of /api/coachreports/summary/?facility_id
+    # being super slow
+    find_id_with_wait(context, "summary_mainview", wait_time=30)
 
 @given("there is no data")
 def step_impl(context):
@@ -135,7 +140,13 @@ def impl(context):
 
 @when(u"I click on the Show Tabular Report button")
 def impl(context):
-    find_id_with_wait(context, "show_tabular_report").click()
+    # TODO(benjaoming): For whatever reason, we have to wait an awful lot
+    # of time for this to show up because
+    # /api/coachreports/summary/?facility_id=XXX is super slow
+    try:
+        find_id_with_wait(context, "show_tabular_report", wait_time=30).click()
+    except TimeoutException:
+        raise RuntimeError("Could not find element, this was the DOM:\n\n" + context.browser.execute_script("return document.documentElement.outerHTML"))
 
 @then(u"I should not see the tabular report anymore")
 def impl(context):
@@ -147,7 +158,10 @@ def impl(context):
 
 @when(u"I click on the Hide Tabular Report button")
 def impl(context):
-    find_id_with_wait(context, "show_tabular_report").click()
+    # TODO(benjaoming): For whatever reason, we have to wait an awful lot
+    # of time for this to show up because
+    # /api/coachreports/summary/?facility_id=XXX is super slow
+    find_id_with_wait(context, "show_tabular_report", wait_time=30).click()
 
 @then(u"I should see the list of two groups that I teach")
 def impl(context):
@@ -206,7 +220,10 @@ def impl(context):
 
 @then(u"I should see a Hide Tabular Report button")
 def impl(context):
-    tab_button = find_id_with_wait(context, "show_tabular_report")
+    # TODO(benjaoming): For whatever reason, we have to wait an awful lot
+    # of time for this to show up because
+    # /api/coachreports/summary/?facility_id=XXX is super slow
+    tab_button = find_id_with_wait(context, "show_tabular_report", wait_time=30)
     assert tab_button.text == "Hide Tabular Report"
 
 @then(u"I should see the tabular report")
