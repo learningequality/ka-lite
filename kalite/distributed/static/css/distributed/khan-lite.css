@@ -936,7 +936,7 @@ to items you want to have the icon appear with.
 
 /* Styling for SKIPTO links*/
 
-#skipto a {
+#skipto {
 	padding:6px;
 	position: absolute;
 	top:-40px;
@@ -951,7 +951,7 @@ to items you want to have the icon appear with.
     z-index: 100;
 }
 
-#skipto a:focus {
+#skipto:focus {
 	position:absolute;
 	left:0px;
 	top:0px;
