@@ -105,7 +105,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
 
         self._bdd_only = kwargs["bdd_only"]  # Extra options from our custom test management command are passed into
-                                             # the constructor, but not the build_suite function where we need them.
+        self._no_bdd = kwargs['no_bdd']      # the constructor, but not the build_suite function where we need them.
 
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
@@ -140,6 +140,9 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             # Get rid of the leading "kalite." characters
             bdd_labels = map(lambda s: s[7:], bdd_labels)
             bdd_labels = tuple(bdd_labels)
+
+        # if we don't want any bdd tests, empty out the bdd label list no matter what
+        bdd_labels = [] if self._no_bdd else bdd_labels
 
         for label in bdd_labels:
             if '.' in label:

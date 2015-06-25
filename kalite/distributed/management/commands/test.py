@@ -21,6 +21,13 @@ class Command(TestCommand):
             action='store_true',
             dest='bdd_only',
             default=False,
-            help="Only run the behave "
+            help="Only run the behave tests."
         ),
+        make_option(
+            '--no-bdd',
+            action='store_true',
+            dest='no_bdd',
+            default=False,
+            help="Don't run the behave tests."
+        )
     )
