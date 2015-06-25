@@ -48,9 +48,9 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 # Maximum time to wait when trying to find elements
-MAX_WAIT_TIME = 5
+MAX_WAIT_TIME = 10
 # Maximum time to wait for a page to load.
-MAX_PAGE_LOAD_TIME = 3
+MAX_PAGE_LOAD_TIME = 5
 
 def rgba_to_hex(rgba_string):
     """
