@@ -76,6 +76,13 @@ import httplib
 import re
 import subprocess
 
+# We do not understand --option value, only --option=value.
+# Match all patterns of "--option value" and fail if they exist
+__validate_cmd_options = re.compile(r"--[^\s-]+\s+[^-\s][^-\s]+")
+if __validate_cmd_options.search(" ".join(sys.argv[1:])):
+    sys.stderr.write("Please only use --option=value patterns. The option parser gets confused if you do otherwise.\n")
+    sys.exit(1)
+
 from threading import Thread
 from docopt import DocoptExit, printable_usage, parse_defaults,\
     parse_pattern, formal_usage, parse_argv, TokenStream, Option, AnyOptions,\
