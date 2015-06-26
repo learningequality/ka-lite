@@ -1,7 +1,21 @@
+.student-data:hover {
+	cursor: pointer;
+}
+
+#displaygrid {
+	overflow: auto;
+	border-right: 1px solid #bbb;
+}
+
 #displaygrid > .users-table {
     width: 11%;
     margin-right: 1px;
     float: left;
+    background: white;
+}
+
+.detailspanel{
+    overflow: auto;
 }
 
 .userstatus {
@@ -21,18 +35,36 @@
 
 .status {
     height: 34px;
+	color: #2a6496;
+	font-weight: bold;
+	text-align: center;
 }
 
-th.username {
-    font-size: 12px;
+th.username span {
+    position: absolute;
+    background: white;
+    color: #fff;
+    line-height: normal;
+    width: 97px;
+    height: 37px;
+    padding-top: 0px;
+    border: 1px solid #ddd;
+}
+
+table.tab_report th.username {
     height: 27px;
+    line-height: 0;
+    padding: 0;
+    color: transparent;
+    border: none;
     white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 th.headrow, th.headrow div {
     width: 80px;
+    table-layout: fixed;
     font-weight: bold;
+    word-wrap: break-word;
     background-color: white;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -41,25 +73,29 @@ th.headrow, th.headrow div {
 th.headrowuser {
     font-weight: bold;
     border-top: none;
+    border-right: 0px;
 }
 
 .partial {
-    background-color: #ACD289;
+    background-color: #C0E7F3;
 }
 
 .complete {
     background-color: #5AA685;
 }
 
-.struggle {
-    background-color: #CA4D4D;
+.struggling {
+    background-color: #FD795B;
 }
 
-#displaygrid td, #displaygrid th {
+.not-attempted {
+	background-color: #eee;
+}
+
+/* Make this specific to .status to prevent it overriding cells in the details panel table. */
+#displaygrid td.status, #displaygrid th {
     min-width: 60px;
-    max-width: 60px;
     overflow: hidden;
-    /*white-space: nowrap;*/
 }
 
 /*#legend a {
@@ -86,10 +122,18 @@ th.headrowuser {
     text-overflow: ellipsis;
 }
 
+
 #legend {
-    padding-left: 0;
-    padding-top: 20px;
-    margin-bottom: 50px;
+    padding: 6px 0 0 10px;
+	margin-top: 0;
+	margin-left: 15px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	text-align: center;	
+}
+
+#legendMargin {
+	margin-left: 15px;
 }
 
 .legend {
@@ -97,7 +141,6 @@ th.headrowuser {
     height: 20px;
     overflow: hidden;
     text-align: center;
-    width: 120px;
     padding-right: 10px;
 }
 
@@ -105,6 +148,10 @@ th.headrowuser {
     float: left;
     width: 35px;
     height: 21px;
+}
+
+.legend span {
+    padding-left: 10px;
 }
 
 .selection {

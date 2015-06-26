@@ -1,2 +1,9 @@
-from fle_utils.importing import import_all_child_modules
-import_all_child_modules()
+from base import *
+from coachreports import *
+from control_panel import *
+from distributed import *
+from knowledge_map import *
+from language_packs import *
+from nalanda import *
+from quiz import *
+from student_testing import *

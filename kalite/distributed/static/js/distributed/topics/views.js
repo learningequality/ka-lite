@@ -16,7 +16,7 @@ window.ContentAreaView = BaseView.extend({
 
     show_view: function(view) {
         // hide any messages being shown for the old view
-        clear_messages();        
+        clear_messages();
 
         this.close();
         // set the new view as the current view
@@ -50,12 +50,13 @@ window.SidebarView = BaseView.extend({
 
     events: {
         "click .sidebar-tab": "toggle_sidebar",
-        "click .fade": "check_external_click",
+        "click .sidebar-fade": "check_external_click",
         "click .sidebar-back": "sidebar_back_one_level"
     },
 
     initialize: function(options) {
         var self = this;
+        var navbarCollapsed = true;
 
         // Fancy algorithm to run a resize sidebar when window width 
         // changes significantly (100px steps) to avoid unnecessary computation
@@ -66,6 +67,27 @@ window.SidebarView = BaseView.extend({
                 self.resize_sidebar();
                 windowWidth = $(window).width();
             }
+
+            if ($(window).width() > 768) {
+                self.show_sidebar_tab();
+            }
+
+            else {
+                if (navbarCollapsed) {
+                    self.show_sidebar_tab();
+                }
+                else {
+                    self.hide_sidebar_tab();   
+                }
+            }
+        });
+
+        $(".navbar-collapse").on("show.bs.collapse", function() {
+            self.hide_sidebar_tab();
+            navbarCollapsed = false;
+        }).on("hide.bs.collapse", function() {
+            self.show_sidebar_tab();
+            navbarCollapsed = true;
         });
 
         this.entity_key = options.entity_key;
@@ -75,7 +97,8 @@ window.SidebarView = BaseView.extend({
 
         this.state_model = new Backbone.Model({
             open: false,
-            current_level: 0
+            current_level: 0,
+            channel: this.channel
         });
 
         this.render();
@@ -202,13 +225,11 @@ window.SidebarView = BaseView.extend({
             this.sidebar.css({left: 0});
             this.resize_sidebar();
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
-            this.$(".fade").show();
-        }
-
-        else {
+            this.$(".sidebar-fade").show();
+        } else {
             this.sidebar.css({left: - this.width});
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
-            this.$(".fade").hide();
+            this.$(".sidebar-fade").hide();
         }
 
         this.set_sidebar_back();
@@ -237,6 +258,21 @@ window.SidebarView = BaseView.extend({
         else {
             this.sidebarBack.offset({left: -(this.sidebarBack.width())});
         }
+
+        // Disable or enable the back button depending on whether it is visible or not.
+        if (this.sidebarBack.position().left <= 0) {
+            this.disable_back_button();
+        } else {
+            this.enable_back_button();
+        }
+    },
+
+    enable_back_button: function() {
+        this.sidebarBack.find("button").removeAttr("disabled");
+    },
+
+    disable_back_button: function() {
+        this.sidebarBack.find("button").attr("disabled", "disabled");
     },
 
     sidebar_back_one_level: function() {
@@ -249,6 +285,14 @@ window.SidebarView = BaseView.extend({
 
     hide_sidebar: function() {
         this.state_model.set("open", false);
+    },
+
+    show_sidebar_tab: function() {
+        this.sidebarTab.fadeIn(115);
+    },
+
+    hide_sidebar_tab: function() {
+        this.sidebarTab.fadeOut(115);
     },
 
     navigate_paths: function(paths, callback) {
@@ -264,6 +308,9 @@ window.TopicContainerInnerView = BaseView.extend({
     template: HB.template("topics/sidebar-content"),
 
     initialize: function(options) {
+
+        _.bindAll(this);
+
         var self = this;
 
         this.state_model = options.state_model;
@@ -273,15 +320,9 @@ window.TopicContainerInnerView = BaseView.extend({
         this._entry_views = [];
         this.has_parent = options.has_parent;
 
-        if (!(this.model.get(this.entity_key) instanceof this.entity_collection)) {
+        this.collection = new this.entity_collection({parent: this.model.get("id"), channel: this.state_model.get("channel")});
 
-            this.model.set(this.entity_key, new this.entity_collection(this.model.get(this.entity_key)));
-        }
-
-        this.listenTo(this.model.get(this.entity_key), 'add', this.add_new_entry);
-        this.listenTo(this.model.get(this.entity_key), 'reset', this.add_all_entries);
-
-        this.add_all_entries();
+        this.collection.fetch().then(this.add_all_entries);
 
         this.state_model.set("current_level", options.level);
 
@@ -340,7 +381,7 @@ window.TopicContainerInnerView = BaseView.extend({
 
     add_all_entries: function() {
         this.render();
-        this.model.get(this.entity_key).forEach(this.add_new_entry, this);
+        this.collection.forEach(this.add_new_entry, this);
     },
 
     show: function() {
@@ -359,13 +400,18 @@ window.TopicContainerInnerView = BaseView.extend({
         this.trigger("showSidebar");
     },
 
-    backToParent: function(ev) {
-        this.trigger('back_button_clicked', this.model);
+    deferred_node_by_slug: function(slug, callback) {
+        // Convenience method to return a node by a passed in slug
+        if (this.collection.loaded == true) {
+            this.node_by_slug(slug, callback);
+        } else {
+            var self = this;
+            this.listenToOnce(this.collection, "sync", function() {self.node_by_slug(slug, callback);});
+        }
     },
 
-    node_by_slug: function(slug) {
-        // Convenience method to return a node by a passed in slug
-        return _.find(this.model.get(this.entity_key).models, function(model) {return model.get("slug")==slug;});
+    node_by_slug: function(slug, callback) {
+        callback(this.collection.findWhere({slug: slug}));
     },
 
     close: function() {
@@ -448,7 +494,9 @@ window.SidebarEntryView = BaseView.extend({
 
     initialize: function() {
 
-        this.listenTo(this.model, "change:active", this.toggle_active);
+        _.bindAll(this);
+
+        this.listenTo(this.model, "change", this.render);
 
     },
 
@@ -465,10 +513,6 @@ window.SidebarEntryView = BaseView.extend({
             this.trigger("hideSidebar");
         }
         return false;
-    },
-
-    toggle_active: function() {
-        this.$(".sidebar-entry").toggleClass("active-entry", this.model.get("active"));
     }
 
 });
@@ -485,9 +529,10 @@ window.TopicContainerOuterView = BaseView.extend({
         this.entity_key = options.entity_key;
         this.entity_collection = options.entity_collection;
 
+        this.model = new TopicNode({"id": "root", "title": "Khan"});
+
         this.inner_views = [];
-        this.model = this.model || new TopicNode({channel: options.channel});
-        this.model.fetch().then(this.render);
+        this.render();
         this.content_view = new ContentAreaView({
             el: "#content-area"
         });
@@ -505,8 +550,9 @@ window.TopicContainerOuterView = BaseView.extend({
 
         this.$el.append(new_topic.el);
 
+        this.trigger("inner_view_added");
+
         // Listeners
-        this.listenTo(new_topic, 'back_button_clicked', this.back_to_parent);
         this.listenTo(new_topic, 'hideSidebar', this.hide_sidebar);
         this.listenTo(new_topic, 'showSidebar', this.show_sidebar);
     },
@@ -526,13 +572,9 @@ window.TopicContainerOuterView = BaseView.extend({
 
         var new_topic = new TopicContainerInnerView(data);
 
-        if (this.inner_views.length === 0){
-            new_topic.model.set("has_parent", false);
-            this.inner_views.unshift(new_topic);
-        } else if (this.inner_views.length >= 1) {
-            // this.inner_views[0].hide();
-            this.inner_views.unshift(new_topic);
-        }
+        this.inner_views.unshift(new_topic);
+
+        this.trigger("length_" + this.inner_views.length);
 
         return new_topic;
     },
@@ -547,6 +589,9 @@ window.TopicContainerOuterView = BaseView.extend({
     },
 
     navigate_paths: function(paths, callback) {
+
+        var self = this;
+
         var check_views = [];
         for (var i = this.inner_views.length - 2; i >=0; i--) {
             check_views.push(this.inner_views[i]);
@@ -567,15 +612,7 @@ window.TopicContainerOuterView = BaseView.extend({
                         }
                     }
                 }
-                var node = this.inner_views[0].node_by_slug(paths[i]);
-                if (node!==undefined) {
-                    if (node.get("kind")==="Topic") {
-                        this.show_new_topic(node);
-                    } else {
-                        this.entry_requested(node);
-                    }
-                    node.set("active", true);
-                }
+                this.defer_add_topic(paths[i], i);
             } else if (!pruned) {
                 if (check_view!==undefined) {
                     check_view.model.set("active", false);
@@ -584,8 +621,36 @@ window.TopicContainerOuterView = BaseView.extend({
             }
         }
         if (callback) {
-            callback(this.inner_views[0].model.get("title"));
+            this.stopListening(this, "inner_view_added");
+
+            this.listenTo(this, "inner_view_added", function() {
+                callback(self.inner_views[0].model.get("title"));
+            });
         }
+    },
+
+    defer_add_topic: function(path, view_length) {
+        var self = this;
+        if (this.inner_views.length==view_length + 1) {
+            this.add_topic_from_inner_view(path);
+        } else {
+            this.listenToOnce(this, "length_" + (view_length + 1), function() {self.add_topic_from_inner_view(path);});
+        }
+    },
+
+    add_topic_from_inner_view: function(path) {
+        var self = this;
+
+        this.inner_views[0].deferred_node_by_slug(path, function(node){
+            if (node!==undefined) {
+                if (node.get("kind")==="Topic") {
+                    self.show_new_topic(node);
+                } else {
+                    self.entry_requested(node);
+                }
+                node.set("active", true);
+            }
+        });
     },
 
     remove_topic_views: function(number) {
@@ -609,7 +674,6 @@ window.TopicContainerOuterView = BaseView.extend({
     },
 
     back_to_parent: function() {
-        this.remove_topic_views(1);
         window.channel_router.url_back();
     },
 
@@ -648,6 +712,7 @@ window.TopicContainerOuterView = BaseView.extend({
         }
         this.content_view.model = entry;
         this.inner_views.unshift(this.content_view);
+        this.trigger("inner_view_added");
         this.state_model.set("content_displayed", true);
         this.hide_sidebar();
     },

@@ -18,7 +18,7 @@ function version_comparison(v1, v2) {
 }
 
 function get_available_languages() {
-    return doRequest(AVAILABLE_LANGUAGEPACK_URL, null, {
+    return doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
@@ -31,7 +31,7 @@ function get_available_languages() {
 }
 
 function get_installed_languages() {
-    return doRequest(INSTALLED_LANGUAGES_URL, null, {
+    return doRequest(window.Urls.installed_language_packs(), null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
@@ -57,7 +57,7 @@ function display_languages() {
     installed.forEach(function(lang, index) {
         if (lang['name']) { // nonempty name
             var link_text;
-            if (lang['code'] !== defaultLanguage) {
+            if (lang['code'] !== window.sessionModel.get("DEFAULT_LANGUAGE")) {
                 link_text = sprintf("<span><a onclick='set_server_language(\"%(lang)s\")' class='set_server_language' value='%(lang)s' href='#'><button type='button' class='btn btn-default btn-sm'>%(link_text)s</button></a></span>", {
                     lang: lang.code,
                     link_text: gettext("Set as default")
@@ -108,12 +108,13 @@ function display_languages() {
                 }
             }
 
-            if ( lang_code != 'en')
+            if ( lang_code != 'en') {
                 lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete'));
-            else
-                if (lang['subtitle_count'] > 0) {
-                    lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete Subtitles'));
-                }
+            } else if (lang['subtitle_count'] > 0) {
+                lang_description += sprintf("<td class='delete-language-button'> <button class='btn btn-danger' value='%s' type='button'>%s</button></td>", lang_code, gettext('Delete Subtitles'));
+            } else {
+                lang_description += sprintf("<td class='delete-language-button'></td>"); // Ensure the number of <td>s is consistent
+            }
 
             lang_description += "<td class='clear'></td></tr>";
 
@@ -122,7 +123,7 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
-    doRequest(DELETE_LANGUAGEPACK_URL, {lang: lang_code})
+    doRequest(window.Urls.delete_language_pack(), {lang: lang_code})
         .success(function(resp) {
             get_installed_languages();
             display_languages(installables);
@@ -217,7 +218,7 @@ function start_languagepack_download(lang_code) {
     downloading = true;
     // tell server to start languagepackdownload job
     doRequest(
-        start_languagepackdownload_url,
+        Urls.start_languagepack_download(),
         { lang: lang_code }
     ).success(function(progress, status, req) {
         updatesStart(
@@ -272,7 +273,7 @@ function languagepack_reset_callback(progress, resp) {
 }
 
 function set_server_language(lang) {
-    doRequest(SET_DEFAULT_LANGUAGE_URL,
+    doRequest(Urls.set_default_language(),
               {lang: lang}
              ).success(function() {
                  window.location.reload();
@@ -287,7 +288,7 @@ function update_server_status() {
             updatesStart("languagepackdownload", 1000, languagepack_callbacks);
         } else {
             clear_messages();
-            show_message("error", gettext("The server does not have internet access; language packs cannot be downloaded at this time."));
+            show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));
         }
     });
 }

@@ -4,15 +4,13 @@ import copy
 import re
 
 from django import forms
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
-from securesync.devices.models import Zone
-from fle_utils.django_utils import verify_raw_password
+from fle_utils.django_utils.users import verify_raw_password
 from kalite.i18n import get_installed_language_packs, get_language_name, get_default_language
 
 
@@ -189,58 +187,3 @@ class FacilityGroupForm(forms.ModelForm):
 
         return name
 
-
-class LoginForm(forms.ModelForm):
-    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
-    callback_url = forms.CharField(widget=forms.HiddenInput, required=False)
-
-    class Meta:
-        model = FacilityUser
-        fields = ("facility", "username", "password")
-        widgets = {
-            "username": forms.TextInput(attrs={"autocomplete": "off"}),
-        }
-
-    def __init__(self, request=None, *args, **kwargs):
-        self.user_cache = None
-        super(LoginForm, self).__init__(*args, **kwargs)
-        self.fields['facility'].queryset = Facility.objects.all()
-        if self.fields["facility"].queryset.count() < 2:
-            self.fields["facility"].widget = forms.HiddenInput()
-
-    def clean(self):
-        # Don't call super; this isn't a proper form where the model (FacilityUser) is being fully completed.
-
-        username = self.cleaned_data.get('username', "")
-        facility = self.cleaned_data.get('facility', "")
-        password = self.cleaned_data.get('password', "")
-
-        # Find all matching users
-        users = FacilityUser.objects.filter(username=username, facility=facility)
-        # If no exact matches were found, try a case-insensitive search
-        if users.count() == 0:
-            users = FacilityUser.objects.filter(username__iexact=username, facility=facility)
-
-        if users.count() == 0:
-            if self.fields["facility"].queryset.count() > 1:
-                error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
-            else:
-                error_message = _("Username was not found. Did you type your username correctly?")
-            raise forms.ValidationError(error_message)
-
-        for user in users:
-            # if we find a user whose password matches, stop looking
-            if user.check_password(password):
-                break
-            else:
-                user = None
-
-        if not user and "password" not in self._errors:
-            self._errors["password"] = self.error_class([_("Password was incorrect. Please try again.")])
-
-        self.user_cache = user
-
-        return self.cleaned_data
-
-    def get_user(self):
-        return self.user_cache

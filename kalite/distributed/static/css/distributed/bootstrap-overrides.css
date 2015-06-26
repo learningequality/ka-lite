@@ -22,6 +22,7 @@ footer {
     width: 100%;
     bottom: 0;
     left: 0;
+    padding: 10px 0;
 }
 
 a:hover, a:focus {
@@ -105,7 +106,7 @@ input[type="submit"] {
 .nav-tabs li a:active {
     border: 0;
     border-radius: 5px 15px 0 0;
-    margin: 0;
+    margin: 0 0 6px 0;
     background-color: #5AA685;
     color: #5AA685;
     -webkit-transition: all 80ms ease-out;
@@ -134,10 +135,14 @@ input[type="submit"] {
 .top-nav li a:hover,
 .top-nav li a,
 .top-nav li.active a,
-.top-nav li a:active {
+.top-nav li a:active,
+a#user-name-a.dropdown-toggle {
     border-left: 2px solid #5AA685;
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
+}
+a#user-name-a.dropdown-toggle {
+    margin-bottom: 0px;
 }
 .navbar ul li.dropdown,
 .navbar ul li.dropdown.open {
@@ -148,11 +153,15 @@ input[type="submit"] {
 #points {
     text-align: left;
 }
+#points-tab {
+    padding: 10px 0px 5px 0px;
+}
 .navbar ul li.dropdown.open a {
     color: #5AA685;
 }
 .dropdown-menu {
     min-width: 0;
+    text-align: left;
 }
 .navbar ul li.dropdown.open ul.dropdown-menu li a,
 .navbar ul li.dropdown.open ul.dropdown-menu li span {
@@ -180,7 +189,13 @@ input[type="submit"] {
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
 }
-.nav li a:focus {
+
+.nav li a:hover,
+.nav li a:focus,
+.nav li.active a,
+.nav li.active a:hover,
+.nav li.active span,
+.nav li.active span:hover {
     background: #5AA685;
 }
 .dropdown-menu li a {
@@ -204,15 +219,12 @@ input[type="submit"] {
         left: 0;
     }
 }
-
 .glyphicon-search:hover, .glyphicon-search:focus {
     cursor: pointer;
 }
 form#search-box {
     margin-right: 25px;
     margin-top: 14px;
-    position: relative;
-    right: 30px;
 }
 input #search.ui-autocomplete-input {
     font-size: 12px;
@@ -226,10 +238,7 @@ form .input-group {
 #search-button {
     color: #fff !important;
     background: #5AA685 !important;
-    position: relative;
-    left: 188px;
-    top: -2px;
-    border-radius: 3px;
+    border-radius: 0px;
 }
 .source {
     margin-top: 2em;
@@ -253,13 +262,20 @@ form .input-group {
 }
 /* Navbar collapse styles for hamburger */
 .navbar-toggle {
-    background-color: #5AA685 !important;
+    background-color: #5AA685;
 }
 .navbar-toggle:hover {
     opacity: 0.7;
 }
+.navbar-toggle:active {
+    opacity: 1;
+    background-color: #40775F;
+}
 .navbar-toggle .icon-bar {
     background-color: #fff;
+}
+.display-none {
+    display: none !important;
 }
 /* ======= Logged in student only ======== */
 .relative-block{
@@ -344,6 +360,78 @@ form .input-group {
     margin: 0 auto;
 }
 
+/* ===================================
+    Content Recommendation
+=================================== */
+
+#resume, #nextsteps, #explore{
+  padding:3%;
+}
+
+.card{
+  border-radius: 5px;
+  box-shadow: 2px 2px lightslategray;
+  margin-left:-15px;
+  margin-right:-15px;
+  width: 100%;
+  border: solid 1px lightgray;
+}
+
+.card *:link{
+  color:inherit !important;
+}
+
+/*Temporary*/
+.ns_thumb{
+  vertical-align: text-top;
+  font-size: 4em;
+  margin: 20px;
+}
+/*Because bootstrap thinks we need a huge margin on top + bottom*/
+.module_divider{
+  margin:0;
+}
+/*
+
+#content-resume-thumbnail div.col-xs-12 {
+    color: black;
+}
+*/
+
+.content-nextsteps-lesson h4{
+  margin-top: 20px;
+}
+
+.ns_series_arrow{
+  color: inherit;
+  font-size:3em;
+  text-align: center;
+}
+
+#content-nextsteps-lesson h3 {
+    margin-top: 10px;
+}
+
+#exercise-icon {
+    font-size: 4em;
+}
+
+/*
+#content-explore-topic div.col-xs-6 {
+    color: black;
+}
+*/
+
+.suggested_topic_title{
+  vertical-align: middle; 
+}
+
+/*===================================
+    Landing Page
+=================================== */
+table td.title {
+    font-size: 36px;
+} 
 
 /* ===================================
     Coach Page
@@ -439,8 +527,7 @@ footer {
     margin: 0;
 }
 #fle-logo {
-    margin-top: 15px;
-    margin-bottom: 5px;
+    margin: 5px 0;
     height: 18px;
     width: 268px;
 }
@@ -460,17 +547,6 @@ footer {
     h3.suggested-action-title { font-size: 18px; }
 
 }
-@media only screen and (max-width: 767px) {
-    .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
-    form#search-box { margin-bottom: 10px; }
-    h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
-    .suggested-action .topic-list a { font-size: 1.25em; }
-    .language-select { text-align: center; margin: 10px 0px; height: 20px !important; }
-    .language-select select { top: 0 !important; }
-    .teacher-only.language-select { height: 20px !important; }
-    .navbar-nav .open .dropdown-menu { background: white; }
-    
-}
 @media only screen and (max-width: 469px) {
     h3.suggested-action-title { font-size: 18px; padding-top: 0; }
     #suggested-action-p { font-size: 14px; }
@@ -483,11 +559,14 @@ footer {
 }
 
 /* SMALLEST MOBILE SCREEN */
-@media (max-width: 454px) {
-    #search_box {
-        width: 75%;
-        margin-left: 15px;
+@media screen and (max-width: 342px) {
+    .manage-nav {
+        width: 320px !important;
+        margin-left: -17px;
+        text-align: center;
     }
+}
+@media screen and (max-width: 454px) {
     .navbar-nav {
         margin: 0px 0px;
     }
@@ -495,77 +574,122 @@ footer {
         overflow-y: hidden;
         overflow-x: hidden;
     }
+    .manage-nav ul li {
+        width: 100px;
+    }
+    .manage-nav ul li {
+        width: 100px;
+    }
 }
-@media (max-width: 480px) {
+@media screen and (max-width: 480px) {
     .manage-nav ul li {
         text-align: center;
         margin: 0 2px -10px -4px;
     }
 }
-
-/* SMALL TABLET */
-@media only screen and (min-width: 455px) and (max-width: 600px) {
-    #search_box {
-        width: 87%;
-        margin-left: 15px;
-
-    }
-    .navbar-nav {
-        margin: 0px 0px;
-    }
-
-}
-
-/* LARGER TABLETS */
-@media only screen and (min-width: 600px) and (max-width: 767px) {
-
-    #search_box{
-        width: 90%;
-        margin-left: 15px;
-    }
-
-    .navbar-nav {
-         margin: 0px 0px;
-    }
-}
-
+/* END SMALL MOBILE SCREENS */
 
 @media screen and (max-width: 767px) {
-    .navbar-form {
-        padding: 0px 0px;
-    }
-    form#search-box{
-        margin-left: 5px;
-    }
-    form#search-box, #language_selector {
+    /*** RESTYLING OF FIRST LEVEL DROPDOWN NAV ***/
+    .nav-tabs li a {
         margin-bottom: 0px;
+        background: transparent;
+        border-left: 0px !important;
+        border-top: 0px !important;
+        border-right: 0px !important;
+        border-radius: 0 0 0 0 !important;
+        font-weight: bold;
     }
-    .navbar-collapse{
-        margin-left: 10px;
+    .top-nav li {
+        width: 100% !important;
+        text-align: left !important;
     }
-    .nav-tabs li {
-        margin-bottom: 0;
+    .nav-tabs li.active a:hover,
+    .nav-tabs li.active a,
+    .nav-tabs li a:hover,
+    .nav-tabs li.active a,
+    .nav-tabs li a:active,
+    .navbar-nav .open .dropdown-menu,
+    .navbar-nav .open .dropdown-menu li a:hover {
+        border-left: 0px !important;
+        border-top: 0px !important;
+        border-right: 0px !important;
+        background: #76afd5 !important;
+        border-radius: 0 0 0 0;
     }
+    .navbar ul li.dropdown.open a,
+    #points {
+        color: #32739E !important;
+        font-weight: normal !important;
+    }
+    .navbar ul li.dropdown.open a:hover,
+    .top-nav li.active a,
+    .top-nav li.active a:hover,
+    .nav-tabs li a:hover {
+        color: white !important;
+        font-weight: bold !important;
+    }
+    .nav-tabs li a:active,
+    .navbar ul li.dropdown.open a,
+    li.dropdown.open.sub-active,
+    .navbar-nav .open .dropdown-menu,
+    #points, .dropdown-menu .divider {
+        background: transparent !important;
+    }
+    #username-divider {
+        margin: -5px 0 10px 0;
+        background: #a3ceea;
+        color: #a3ceea;
+    }
+    .dropdown-menu .divider {
+        margin: 6px 0px;
+    }
+    .nav-divider {
+        background: #a3ceea;
+    }
+    #username {
+        text-transform: uppercase !important;
+        font-weight: bold;
+        color: #32839E;
+    }
+    /*** END RESTYLE OF FIRST LEVEL DROPDOWN NAV ***/
+
+    .main-headline { font-size: 27px; margin-bottom: 0; margin-top: 0; }
+    h3.suggested-action-title { font-size: 24px; padding-top: 15px; }
+    .suggested-action .topic-list a { font-size: 1.25em; }
+    .language-select { text-align: center; margin: 10px 0px; height: 20px !important; }
+    .language-select select { top: 0 !important; }
+    .teacher-only.language-select { height: 20px !important; }
+    .navbar-nav .open .dropdown-menu { background: white; }
+    .navbar-nav { margin: 0px 0px; }
+    .navbar-form { padding: 0px 0px; }
+    .input-group { width: 100%; }
+    #search-box { margin: auto !important; }
+    #search-box input { width: 85% !important; float: none !important; }
+    form#search-box { margin-bottom: 10px; width: 100%; margin-right: 0 !important;}
+    form#search-box, #language_selector { margin-bottom: 0px; }
+    .navbar-collapse { margin-left: 10px; }
     #search_input{
         margin-bottom: 10px;
-    }
-    #search_btn {
-        color: #fff !important;
-        background: #5AA685 !important;
+        list-style-type: none;
     }
     .navbar-collapse.in {
         overflow-y: hidden;
         overflow-x: hidden;
     }
-    .mobile-nav, .mobile-manage-nav {
-        margin: 5px 0px;
-    }
     .teach-nav, .manage-nav {
         border-bottom: none !important;
         text-align: center;
     }
-    .teach-nav li, .manage-nav li {
+    .teach-nav li, .manage-nav ul li {
         border-top-left-radius: 0px !important; 
         border-top-right-radius: 0px !important;
+        margin: 2px 0px !important;
+        border-bottom: 3px solid #5AA685;
+    }
+}
+@media screen and (min-width: 767px) {
+    .nav-divider {
+        display: none !important;
     }
 }

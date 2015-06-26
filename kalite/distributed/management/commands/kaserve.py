@@ -3,7 +3,6 @@ This is a command-line tool to execute functions helpful to testing.
 """
 import os
 import sys
-import time
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
@@ -14,7 +13,7 @@ from django.db import DatabaseError
 from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
 from fle_utils.general import isnumeric
-from fle_utils.internet import get_ip_addresses
+from fle_utils.internet.functions import get_ip_addresses
 from kalite.caching import initialize_content_caches
 from securesync.models import Device
 
@@ -53,7 +52,7 @@ class Command(BaseCommand):
             '--pidfile',
             action='store',
             dest='pidfile',
-            default=os.path.join(settings.PROJECT_PATH, "runcherrypyserver.pid"),
+            default=os.path.join(settings.USER_DATA_ROOT, "runcherrypyserver.pid"),
             help="PID file"
         ),
         make_option(
@@ -98,8 +97,12 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        # Eliminate irrelevant settings
+        # Store base django settings and remove them from the options list
+        # because we are proxying one type of option list to another format
+        # where --foo=bar becomes foo=bar
+        base_django_settings = {}
         for opt in BaseCommand.option_list:
+            base_django_settings[opt.dest] = options[opt.dest]
             del options[opt.dest]
 
         # Parse the crappy way that runcherrypy takes args,
@@ -131,13 +134,12 @@ class Command(BaseCommand):
         # them to be started up again as needed.
         Job.objects.update(is_running=False)
 
+        # Copy static media, one reason for not symlinking: It is not cross-platform and can cause permission issues
+        # with many webservers
+        logging.info("Copying static media...")
+        call_command("collectstatic", interactive=False, verbosity=0)
 
-        call_command("collectstatic", interactive=False)
-
-        # set the BUILD_HASH to the current time, so assets get refreshed to their newest versions
-        build_hash = str(time.mktime(time.gmtime()))
-        logging.debug("Writing %s as BUILD_HASH" % build_hash)
-        Settings.set('BUILD_HASH', build_hash)
+        call_command("collectstatic_js_reverse", interactive=False)
 
         if options['startuplock']:
             os.unlink(options['startuplock'])
@@ -147,7 +149,11 @@ class Command(BaseCommand):
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
         else:
             del options["production"]
+            addresses = get_ip_addresses(include_loopback=False)
             sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
-            for addr in get_ip_addresses():
+            for addr in addresses:
                 sys.stdout.write("\thttp://%s:%s/\n" % (addr, settings.USER_FACING_PORT()))
-            call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()])
+            sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
+            sys.stdout.write("\thttp://127.0.0.1:%s/\n" % settings.USER_FACING_PORT())
+
+            call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()], **base_django_settings)

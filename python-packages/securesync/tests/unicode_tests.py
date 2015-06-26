@@ -1,24 +1,13 @@
 """
 """
-import sys
-
-from django.conf import settings
 from django.utils import unittest
 
 from ..models import *
-from fle_utils.testing.unicode import UnicodeModelsTest
 
 
-class SecuresyncUnicodeModelsTest(UnicodeModelsTest):
+class SecuresyncUnicodeModelsTest(unittest.TestCase):
 
-    @unittest.skipIf(sys.version_info < (2,7), "Test requires python version >= 2.7")
-    def test_unicode_class_coverage(self):
-        # Make sure we're testing all classes
-        self.check_unicode_class_coverage(
-            models_module="securesync.models",
-            known_classes = [DeferredSignSyncedModel, Device, DeviceMetadata, DeviceZone, RegisteredDevicePublicKey, SyncSession, SyncedLog, SyncedModel, Zone],
-        )
-
+    korean_string = unichr(54392)
 
     def test_unicode_string(self):
         # Stand-alone classes

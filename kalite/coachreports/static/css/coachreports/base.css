@@ -2,6 +2,26 @@
     margin-bottom: 50px;
 }
 
+.table.details-table {
+    width: inherit;
+}
+
+.detail-tab.correct,
+.detail-tab.correct a,
+.detail-tab.correct.active a {
+    color: #669966 !important;
+}
+
+.detail-tab.incorrect,
+.detail-tab.incorrect a,
+.detail-tab.incorrect.active a {
+    color: #FD795B !important; /*red*/
+}
+.detail-tab.incorrect a,
+.detail-tab.incorrect.active a {
+    font-weight: bold;
+}
+
 .coach-reports-row {
     border-bottom: 3px solid #5AA685;
     padding: 20px 0;
@@ -38,3 +58,14 @@
     font-size: 1.15em;
     font-weight: bold;
 }
+
+.mastered {
+	background-color: #669966; 
+	}
+.inprogress {
+	background-color: #B1DDF3; 
+	}
+.struggling {
+	background-color: #FD795B; 
+	}
+

@@ -1,11 +1,9 @@
 """
 """
-import re
-
 from django.conf import settings
 from django.utils import unittest
 
-from ..models import Facility, FacilityUser, FacilityGroup
+from ..models import FacilityUser
 
 
 class TestPasswordSetting(unittest.TestCase):
@@ -38,6 +36,7 @@ class TestPasswordSetting(unittest.TestCase):
         dbg_mode = settings.DEBUG; settings.DEBUG=True
         with self.assertRaises(AssertionError):
             fu.set_password()
+        settings.DEBUG = dbg_mode
 
     def test_set_password_hash_nodebug_bad(self):
         fu = FacilityUser(username="test_user")

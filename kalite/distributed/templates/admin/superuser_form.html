@@ -1,0 +1,39 @@
+{% load i18n %}
+<div class="panel panel-default">
+    <div class="panel-body text-center">
+        {% if form.errors %}
+            <p style="color: white;">
+                {% blocktrans count counter=form.errors.items|length %}This app requires a super user. Please correct the error below.{% plural %}This app requires a super user. Please correct the errors below.{% endblocktrans %}
+            </p>
+        {% endif %}
+        <form class="form-horizontal" id="superusercreate-box" method="post">
+            <div class="field">
+            <!--[if IE]>
+                <label for="id_superusername" style="float:left">{% trans 'Username' %}</label>
+            <![endif]-->
+                {{ form.superusername.errors }}
+                {{ form.superusername }}
+            </div>
+            </br>
+            <div class="field">
+            <!--[if IE]>
+                <label for="id_superpassword" style="float:left">{% trans 'Password' %}</label>
+            <![endif]-->
+                {{ form.superpassword.errors }}
+                {{ form.superpassword }}
+            </div>
+            </br>
+            <div class="field">
+            <!--[if IE]>
+                <label for="id_confirmsuperpassword" style="float:left">{% trans 'Re-enter Password' %}</label>
+            <![endif]-->
+                {{ form.confirmsuperpassword.errors }}
+                {{ form.confirmsuperpassword }}
+            </div>
+            </br>
+            </br>
+            {% csrf_token %}
+            <button class="create-btn login-btn btn btn-lg btn-primary" type="submit">{% trans 'Create' %}</button>
+        </form>
+    </div>
+</div>

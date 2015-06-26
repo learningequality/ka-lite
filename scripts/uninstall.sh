@@ -11,7 +11,7 @@ echo "http://kalite.learningequality.org"
 echo "                                  "
 
 SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
-if [ -e $SCRIPT_DIR/kalite ];; then
+if [ -e $SCRIPT_DIR/kalite ]; then
     BASE_DIR=$SCRIPT_DIR
 else
     BASE_DIR=$SCRIPT_DIR/..

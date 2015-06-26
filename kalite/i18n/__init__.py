@@ -1,17 +1,20 @@
 """
+
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other i18n.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that i18n.settings has been copied over to kalite.settings
+
 i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
-import json
 import os
 import re
 import requests
 import shutil
-from collections_local_copy import OrderedDict, defaultdict
-from fle_utils.internet import invalidate_web_cache
+from collections_local_copy import OrderedDict
+from fle_utils.internet.webcache import invalidate_web_cache
 
-from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
 from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
@@ -33,6 +36,9 @@ from kalite.version import VERSION
 
 CACHE_VARS = []
 
+
+from django.conf import settings; logging = settings.LOG
+
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.I18N_DATA_PATH, "dubbed_video_mappings.json")
 LOCALE_ROOT = settings.LOCALE_PATHS[0]
 
@@ -42,7 +48,7 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(os.path.dirname(__file__), settings.KHAN_EXERCISES_RELPATH, "exercises", ka_lang_code)
+    return os.path.join(settings.USER_DATA_ROOT, "exercises", ka_lang_code)  # Translations live in user data space
 
 
 def get_locale_path(lang_code=None):
@@ -157,12 +163,16 @@ def get_id2oklang_map(video_id, force=False):
         return ID2OKLANG_MAP
 
 
-def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
+def get_youtube_id(video_id, lang_code=None):
     """Given a video ID, return the youtube ID for the given language.
     If lang_code is None, return the base / default youtube_id for the given video_id.
     If youtube_id for the given lang_code is not found, function returns None.
     Accepts lang_code in ietf format
     """
+
+    if not lang_code:
+        lang_code = settings.LANGUAGE_CODE
+
     if not lang_code or lang_code == "en":  # looking for the base/default youtube_id
         return video_id
     return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
@@ -383,6 +393,10 @@ def update_jsi18n_file(code="en"):
         fp.write(output_js)
 
 
+# Cache for language selections
+__select_best_available_language = {}
+
+
 def select_best_available_language(target_code, available_codes=None):
     """
     Critical function for choosing the best available language for a resource,
@@ -395,9 +409,21 @@ def select_best_available_language(target_code, available_codes=None):
 
     # Scrub the input
     target_code = lcode_to_django_lang(target_code)
+
+    store_cache = False
+
+    # Only use cache when available_codes is trivial, i.e. not a set of
+    # language codes
     if available_codes is None:
-        available_codes = get_installed_language_packs().keys()
-    logging.debug("choosing best language among %s" % available_codes)
+        if target_code in __select_best_available_language:
+            return __select_best_available_language[target_code]
+        else:
+            store_cache = True
+            available_codes = get_installed_language_packs().keys()
+
+    # logging.debug("choosing best language among %s" % (available_codes))
+
+    # Make it a tuple so we can hash it
     available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
@@ -412,10 +438,15 @@ def select_best_available_language(target_code, available_codes=None):
     elif available_codes:
         actual_code = available_codes[0]
     else:
-        actual_code = None
+        raise RuntimeError("No languages found")
 
-    if actual_code != target_code:
-        logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    # if actual_code != target_code:
+    #    logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+
+    # Store in cache when available_codes are not set
+    if store_cache:
+        __select_best_available_language[target_code] = actual_code
+
     return actual_code
 
 
