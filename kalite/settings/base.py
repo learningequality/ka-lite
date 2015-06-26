@@ -367,10 +367,8 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     'kalite.i18n.custom_context_processors.languages',
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
-    'kalite.facility.custom_context_processors.custom',
     'kalite.distributed.custom_context_processors.custom',
     'django.contrib.messages.context_processors.messages',
-    'kalite.distributed.inline_context_processor.inline',
 ] + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', [])
 
 
