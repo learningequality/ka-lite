@@ -9,12 +9,12 @@ from .base import *
 # Currently, you need to specify kalite start --port=7007 to run KA Lite
 # on a different port.
 
-PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
-PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
+PRODUCTION_PORT = 7007
+PROXY_PORT = 8008
 
-PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", 2000)
-PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 500)
+PASSWORD_ITERATIONS_TEACHER = 2000
+PASSWORD_ITERATIONS_STUDENT = 500
 
-ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
+ENABLE_CLOCK_SET = True
 
 DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
