@@ -11,20 +11,19 @@ from selenium import webdriver
 from urlparse import urljoin
 from django.contrib.auth.models import User
 
-from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout
+from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
 
 def before_all(context):
+    pass
+
+def after_all(context):
+    pass
+
+def before_feature(context, feature):
     browser = context.browser = webdriver.Firefox()
     # ensure the window is reasonably sized.
     browser.set_window_size(1024, 768)
 
-def after_all(context):
-    try:
-        context.browser.quit()
-    except CannotSendRequest:
-        pass
-
-def before_feature(context, feature):
     context.logged_in = False
     # A superuser now needs to exist or UI is blocked by a modal.
     # https://github.com/learningequality/ka-lite/pull/3668
@@ -36,10 +35,17 @@ def before_feature(context, feature):
     elif "as_coach" in feature.tags:
         context.logged_in = True
         login_as_coach(context)
+    elif "as_learner" in feature.tags:
+        context.logged_in = True
+        login_as_learner(context)
 
 def after_feature(context, feature):
     if context.logged_in:
         logout(context)
+    try:
+        context.browser.quit()
+    except CannotSendRequest:
+        pass
 
 def before_scenario(context, scenario):
     pass
