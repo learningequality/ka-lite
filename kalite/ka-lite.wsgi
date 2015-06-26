@@ -17,5 +17,5 @@ sys.path = [
 
 from django.core.handlers.wsgi import WSGIHandler
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'kalite.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'kalite.project.settings.default'
 application = WSGIHandler()

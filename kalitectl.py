@@ -89,13 +89,14 @@ from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
 
 # Necessary for loading default settings from kalite
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.default")
 
 # Where to store user data
 KALITE_HOME = os.environ.get(
     "KALITE_HOME",
     os.path.join(os.path.expanduser("~"), ".kalite")
 )
+os.environ['KALITE_HOME'] = KALITE_HOME
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
