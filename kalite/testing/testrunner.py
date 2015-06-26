@@ -101,9 +101,12 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # If no liveserver specified, set some default.
         #   port range is the set of open ports that Django can use to
         #   start the server.  They may have multiple servers open at once.
-        if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS', ""):
-            os.environ[
-                'DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
+        if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS',""):
+            os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
+
+        self._bdd_only = kwargs["bdd_only"]  # Extra options from our custom test management command are passed into
+        self._no_bdd = kwargs['no_bdd']      # the constructor, but not the build_suite function where we need them.
+
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
     def run_tests(self, test_labels=None, extra_tests=None, **kwargs):
@@ -121,7 +124,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         :test_labels: a tuple of test labels specified from the command line, i.e. distributed
         """
         extra_tests = extra_tests or []
-        
+
         # Output Firefox version, needed to understand Selenium compatibility
         # issues
         browser = webdriver.Firefox()
@@ -137,6 +140,9 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             # Get rid of the leading "kalite." characters
             bdd_labels = map(lambda s: s[7:], bdd_labels)
             bdd_labels = tuple(bdd_labels)
+
+        # if we don't want any bdd tests, empty out the bdd label list no matter what
+        bdd_labels = [] if self._no_bdd else bdd_labels
 
         for label in bdd_labels:
             if '.' in label:
@@ -158,22 +164,11 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
                 # build a test suite for this directory
                 extra_tests.append(self.make_bdd_test_suite(features_dir))
 
-        suite = unittest.TestSuite()
+        suite = super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
 
-        if test_labels:
-            for label in test_labels:
-                if '.' in label:
-                    suite.addTest(build_test(label))
-                else:
-                    app = get_app(label)
-                    suite.addTest(build_suite(app))
-        else:
-            # Exclude Django tests from our test suite
-            for app in (app for app in get_apps() if not app.__name__.startswith("django")):
-                suite.addTest(build_suite(app))
+        # remove all django module tests
+        suite._tests = filter(lambda x: 'django.' not in x.__module__, suite._tests)
 
-        if extra_tests:
-            for test in extra_tests:
-                suite.addTest(test)
-
-        return reorder_suite(suite, (unittest.TestCase,))
+        if self._bdd_only:
+            suite._tests = filter(lambda x: type(x).__name__ == "DjangoBehaveTestCase", suite._tests)
+        return suite
