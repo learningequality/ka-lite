@@ -21,6 +21,8 @@ KA Lite is like a normal django project, if you have done Django before, you wil
        kalite manage runserver --settings=kalite.project.settings.dev
   
 
+You can also change your ``~/.kalite/settings.py`` to point to ``kalite.project.settings.dev`` by default, then you do not have to specify `--settings=...` every time you run kalite.
+
 Now, everytime you work on your development environment, just remember to switch on your virtual environment with `workon kalite`. This can be done automatically with _`oh-my-zsh`.
 
 .. _github: https://github.com/learningequality/ka-lite

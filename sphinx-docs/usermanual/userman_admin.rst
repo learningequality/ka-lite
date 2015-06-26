@@ -481,11 +481,11 @@ These are resized videos. All in all, this will take around 23 GB of space.
 
 
 #. Make sure all video files are located in a single directory, with .mp4 extensions (KA Lite expects this!)
-#. If it doesn't already exist, create a file named local_settings.py in the ka-lite/kalite folder (the one containing settings.py)
+#. In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``).
 #. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes.
     **For example, on Windows:** ``CONTENT_ROOT="C:\\torrented_videos_location\\"``
-
     **For example, on Linux:** ``CONTENT_ROOT="/home/me/torrented_videos_location/"``
+
 #. Restart your server. If you are unsure on how to do this, please see `Restarting Your Server`_ .
 
 .. _BitTorrent Sync: http://www.getsync.com/
@@ -618,16 +618,20 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 Running KA Lite with your own settings
 ______________________________________
 
-Create a new file, ``my_settings.py`` with the following content:
-  
+In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``). That file is where you should put your custom settings, and KA Lite will load them automatically.
+
+You can also run the ``kalite`` with a completely different Python settings module by specifying ``kalite <command> --settings=my_settings_module``.
+
+
+Changing base settings
+^^^^^^^^^^^^^^^^^^^^^^
+
+By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like:
+
   .. ::
-    from kalite.project.settings.base import *
+    from kalite.project.settings.raspberry_pi import *
     # Put your settings here, e.g.
     # MY_SETTING_VAR = 123
-
-That file is where you should put your custom settings!
-
-In order to make kalite run with your custom settings, any KA Lite command needs to append ``--settings=my_settings`` (notice there is no .py, we are pointing at a Python module, not a file). You would also have to run the `kalite` command from within the directory where the file is stored.
 
 
 Available settings
