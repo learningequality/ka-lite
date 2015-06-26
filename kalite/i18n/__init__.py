@@ -378,7 +378,7 @@ def update_jsi18n_file(code="en"):
     save to disk--it won't change until the next language pack update!
     """
     translation.activate(code)  # we switch the language of the whole thread
-    output_dir = os.path.join(os.path.dirname(__file__), 'static', 'js', 'i18n')
+    output_dir = os.path.join(settings.CONTENT_ROOT, 'locale', 'js', 'i18n')
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
 
@@ -394,6 +394,7 @@ def update_jsi18n_file(code="en"):
         except IOError:
             logging.warn("No {code}_icu.js file found in locale_path {path}".format(code=code, path=path))
     output_js = response.content + "\n" + icu_js
+    logging.info("Writing i18nized js file to {0}".format(output_file))
     with open(output_file, "w") as fp:
         fp.write(output_js)
 
