@@ -54,6 +54,11 @@ TOPICS          = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
 
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if language == "pt-BR":
+        language = "pt"
+
     if not channel:
         channel = settings.CHANNEL
 
@@ -520,7 +525,14 @@ def smart_translate_item_data(item_data):
 
 def get_content_data(request, content_id=None):
 
-    content_cache = get_content_cache(language=request.language)
+    language = request.language
+
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if language == "pt-BR":
+        language = "pt"
+
+    content_cache = get_content_cache(language=language)
     content = content_cache.get(content_id, None)
 
     if not content:
