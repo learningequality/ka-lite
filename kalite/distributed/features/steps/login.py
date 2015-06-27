@@ -48,7 +48,7 @@ def step_impl(context):
 
 @given('I have an account')
 def impl(context):
-    context.user = CreateStudentMixin.create_student()
+    context.user = CreateStudentMixin.create_student(facility=getattr(context, "facility", None))
     context.password = CreateStudentMixin.DEFAULTS["password"]
 
 @when('I enter my password incorrectly')

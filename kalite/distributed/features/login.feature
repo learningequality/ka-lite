@@ -14,7 +14,8 @@ Feature: Logging into KA Lite
         then there should be a facility drop down
 
     Scenario: Logging in with the incorrect password
-        Given I have an account
+        Given there is one facility
+        and I have an account
         and I am on the homepage
         when I click log in
         and I enter my username correctly
@@ -24,7 +25,8 @@ Feature: Logging into KA Lite
         and a tooltip should appear on the password box only
 
     Scenario: Logging in with the wrong username
-        Given I have an account
+        Given there is one facility
+        and I have an account
         and I am on the homepage
         when I click log in
         and I enter my username incorrectly
@@ -34,7 +36,8 @@ Feature: Logging into KA Lite
         and a tooltip should appear on the username box only
 
     Scenario: Logging in with correct username and password
-        Given I have an account
+        Given there is one facility
+        and I have an account
         and I am on the homepage
         when I click log in
         and I enter my username correctly
