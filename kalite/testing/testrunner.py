@@ -42,6 +42,18 @@ def get_options():
                     dest="browser",
                     help="Specify the browser to use for testing",
                     ),
+        make_option("--bdd_only",
+                    action="store_true",
+                    default=False,
+                    dest="bdd_only",
+                    help="Only run bdd tests",
+                    ),
+        make_option("--no_bdd",
+                    action="store_true",
+                    default=False,
+                    dest="no_bdd",
+                    help="Don't run bdd tests",
+                    ),
     )
 
     option_info = {"--behave_browser": True}
