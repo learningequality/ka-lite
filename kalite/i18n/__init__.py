@@ -48,7 +48,7 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(os.path.dirname(__file__), settings.KHAN_EXERCISES_RELPATH, "exercises", ka_lang_code)
+    return os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", ka_lang_code)
 
 
 def get_locale_path(lang_code=None):
