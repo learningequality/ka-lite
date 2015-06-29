@@ -8,7 +8,7 @@ class SuperuserForm(forms.Form):
         widget=forms.TextInput(attrs={'class':'form-control input-lg', 'placeholder':_('Username')}))
 
     superpassword = forms.CharField(max_length=40, min_length=1, label='Password', 
-        widget=forms.TextInput(attrs={'class':'form-control input-lg', 'placeholder':_('Password')}))
+        widget=forms.TextInput(attrs={'type':'password', 'class':'form-control input-lg', 'placeholder':_('Password')}))
 
-    superemail = forms.EmailField(max_length=40, label='E-mail', 
-        widget=forms.TextInput(attrs={'class':'form-control input-lg', 'placeholder':_('E-mail')}))
+    confirmsuperpassword = forms.CharField(max_length=40, min_length=1, label='Password', 
+        widget=forms.TextInput(attrs={'type':'password', 'class':'form-control input-lg', 'placeholder':_('Re-enter Password')}))

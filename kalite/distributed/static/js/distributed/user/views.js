@@ -5,7 +5,7 @@ window.SuperUserCreateModalView = BaseView.extend({
         "click .create-btn": "create_superuser_click",
         "keypress #id_superusername": "key_user",
         "keypress #id_superpassword": "key_pass",
-        "keypress #id_superemail": "key_email"
+        "keypress #id_confirmsuperpassword": "key_confirm"
     },
 
     template: HB.template("user/superusercreatemodal"),
@@ -66,10 +66,10 @@ window.SuperUserCreateModalView = BaseView.extend({
     },
 
     highlight_form: function(){
-        if (this.validate_email(this.$("#id_superemail").val())){
-            this.$("#id_superemail").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
+        if (this.$("#id_superpassword").val() == this.$("#id_confirmsuperpassword").val() && this.$("#id_confirmsuperpassword").val()){
+            this.$("#id_confirmsuperpassword").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
         }else{
-            this.$("#id_superemail").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
+            this.$("#id_confirmsuperpassword").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
         }
         if (this.$("#id_superpassword").val()){
             this.$("#id_superpassword").css({ 'box-shadow': '0 0 5px 3px rgba(0,171,0,0.75) inset', 'border-color':'#03B3FF'});
@@ -81,11 +81,6 @@ window.SuperUserCreateModalView = BaseView.extend({
         }else{
             this.$("#id_superusername").focus().css({ 'box-shadow': '0 0 5px 3px rgba(171,0,0,0.75) inset', 'border-color':'#a94442'});
         }
-    },
-
-    validate_email: function(email){
-        var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-        return re.test(email);
     },
 
     close_modal: function() {
@@ -106,11 +101,11 @@ window.SuperUserCreateModalView = BaseView.extend({
     key_pass: function(event) {
         if (event.which == ENTER_KEY) {
             event.preventDefault();
-            this.$("#id_superemail").focus().select();
+            this.$("#id_confirmsuperpassword").focus().select();
         }
     },
 
-    key_email: function(event) {
+    key_confirm: function(event) {
         if (event.which == ENTER_KEY) {
             event.preventDefault();
             this.$(".create-btn").focus().click();

@@ -138,7 +138,7 @@ def call_command_async(cmd, *args, **kwargs):
     # and have everyone else spawn threads.
     is_osx = sys.platform == 'darwin'
     in_proc = kwargs.pop('in_proc', not is_osx)
-    in_proc = kwargs.pop('in_proc', True)
+    #in_proc = kwargs.pop('in_proc', True)S
     
     if in_proc:
         return call_command_threaded(cmd, *args, **kwargs)

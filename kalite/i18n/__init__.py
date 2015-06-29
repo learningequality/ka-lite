@@ -48,7 +48,7 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(os.path.dirname(__file__), settings.KHAN_EXERCISES_RELPATH, "exercises", ka_lang_code)
+    return os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises", ka_lang_code)
 
 
 def get_locale_path(lang_code=None):
@@ -108,6 +108,11 @@ def get_dubbed_video_map(lang_code=None, force=False):
             if lang_name:
                 logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
                 DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
+
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if lang_code == "pt-BR":
+        lang_code = "pt"
 
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 

@@ -16,6 +16,8 @@ from fle_utils.general import isnumeric
 from fle_utils.internet.functions import get_ip_addresses
 from kalite.caching import initialize_content_caches
 from securesync.models import Device
+import warnings
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
 
 
 class Command(BaseCommand):
@@ -100,6 +102,12 @@ class Command(BaseCommand):
         # Store base django settings and remove them from the options list
         # because we are proxying one type of option list to another format
         # where --foo=bar becomes foo=bar
+        
+        warnings.warn(
+            "manage kaserve is deprecated, please use kalite start [--foreground] [...]",
+            RemovedInKALite_v015_Warning
+        )
+        
         base_django_settings = {}
         for opt in BaseCommand.option_list:
             base_django_settings[opt.dest] = options[opt.dest]
