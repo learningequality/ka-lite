@@ -332,6 +332,7 @@ INSTALLED_APPS = [
     'kalite.i18n',
     'kalite.ab_testing',
     'kalite.control_panel',
+    'kalite.benchmarking',
 ]
 
 if IS_SOURCE:
