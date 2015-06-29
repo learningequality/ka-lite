@@ -109,6 +109,11 @@ def get_dubbed_video_map(lang_code=None, force=False):
                 logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
                 DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
 
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if lang_code == "pt-BR":
+        lang_code = "pt"
+
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
 
