@@ -75,7 +75,6 @@ else:
 
 import httplib
 import re
-import subprocess
 import cherrypy
 
 from threading import Thread
@@ -99,6 +98,7 @@ os.environ.setdefault("KALITE_LISTEN_PORT", "8008")
 
 # Where to store user data
 KALITE_HOME = os.environ["KALITE_HOME"]
+SERVER_LOG = os.path.join(KALITE_HOME, "server.log")
 
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
@@ -453,12 +453,13 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     if daemonize:
         
         from django.utils.daemonize import become_daemon
-        logfile = os.path.join(KALITE_HOME, "kalite.log") if os.environ.get("NAIVE_LOGGING", False) else None
-        if logfile:
-            print("With logging...")
-            become_daemon(out_log=logfile, err_log=logfile)
-        else:
-            become_daemon()
+        kwargs = {}
+        # Truncate the file
+        open(SERVER_LOG, "w").truncate()
+        print("Going to daemon mode, logging to {0}".format(SERVER_LOG))
+        kwargs['out_log'] = SERVER_LOG
+        kwargs['err_log'] = SERVER_LOG
+        become_daemon(**kwargs)
         # Write the new PID
         with open(PID_FILE, 'w') as f:
             f.write("%d\n%d" % (os.getpid(), port))
@@ -548,7 +549,7 @@ status.codes = {
     STATUS_STOPPED: 'Stopped',
     STATUS_STARTING_UP: 'Starting up',
     STATUS_NOT_RESPONDING: 'Not responding',
-    STATUS_FAILED_TO_START: 'Failed to start (check logs)',
+    STATUS_FAILED_TO_START: 'Failed to start (check log file: {0})'.format(SERVER_LOG),
     STATUS_UNCLEAN_SHUTDOWN: 'Unclean shutdown',
     STATUS_UNKNOWN_INSTANCE: 'Unknown KA Lite running on port',
     STATUS_SERVER_CONFIGURATION_ERROR: 'KA Lite server configuration error',
