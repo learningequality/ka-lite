@@ -59,6 +59,25 @@ def raw_input_password():
     return password
 
 
+def clean_pyc(path):
+    """Delete all *pyc files recursively in a path"""
+    if not os.access(path, os.W_OK):
+        warnings.warn(
+            "{0} is not writable so cannot delete stale *pyc files".format(path))
+        return
+    print("Cleaning *pyc files (if writable) from: {0}".format(path))
+    for root, __dirs, files in os.walk(path):
+        pyc_files = filter(
+            lambda filename: filename.endswith(".pyc"), files)
+        py_files = set(
+            filter(lambda filename: filename.endswith(".py"), files))
+        excess_pyc_files = filter(
+            lambda pyc_filename: pyc_filename[:-1] not in py_files, pyc_files)
+        for excess_pyc_file in excess_pyc_files:
+            full_path = os.path.join(root, excess_pyc_file)
+            os.remove(full_path)
+
+
 def validate_username(username):
     return bool(username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'^.*[^a-zA-Z0-9_]+.*$', username)))
 
@@ -239,8 +258,12 @@ class Command(BaseCommand):
 
         if git_migrate_path:
             call_command("gitmigrate", path=git_migrate_path)
-
+        
+        # TODO(benjaoming): This is used very loosely, what does it mean?
+        # Does it mean that the installation path is clean or does it mean
+        # that we should remove (clean) items from a previous installation?
         install_clean = not kalite.is_installed()
+        
         database_kind = settings.DATABASES["default"]["ENGINE"]
         database_file = (
             "sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
@@ -304,28 +327,25 @@ class Command(BaseCommand):
         ########################
 
         # Clean *pyc files if we are in a git repo
-        if not install_clean and settings.IS_SOURCE:
-            if os.access(settings.SOURCE_DIR, os.W_OK):
-                for root, __dirs, files in os.walk(settings.SOURCE_DIR):
-                    pyc_files = filter(
-                        lambda filename: filename.endswith(".pyc"), files)
-                    py_files = set(
-                        filter(lambda filename: filename.endswith(".py"), files))
-                    excess_pyc_files = filter(
-                        lambda pyc_filename: pyc_filename[:-1] not in py_files, pyc_files)
-                    for excess_pyc_file in excess_pyc_files:
-                        full_path = os.path.join(root, excess_pyc_file)
-                        os.remove(full_path)
-            else:
-                warnings.warn(
-                    "{0} is not writable so cannot delete stale *pyc files".format(settings.SOURCE_DIR))
-
+        if settings.IS_SOURCE:
+            clean_pyc(settings.SOURCE_DIR)
+        else:
+            # Because we install dependencies as data_files, we run into problems,
+            # namely that the pyc files are left dangling.
+            distributed_packages = [
+                os.path.join(kalite.ROOT_DATA_PATH, 'dist-packages'),
+                os.path.join(kalite.ROOT_DATA_PATH, 'python-packages'),
+            ]
+            # Try locating django
+            for dir_to_clean in distributed_packages:
+                clean_pyc(dir_to_clean)
+            
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
             dest_file = tempfile.mkstemp()[1]
             print(
-                "(Re)moving database file to temp location, starting clean install.  Recovery location: %s" % dest_file)
+                "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
             shutil.move(database_file, dest_file)
 
         # benjaoming: Commented out, this hits the wrong directories currently
