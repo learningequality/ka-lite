@@ -15,7 +15,7 @@ KA Lite is like a normal django project, if you have done Django before, you wil
        pip install -e .
   1. Install additional development tools:
      .. ::
-       pip install -r requirements.txt
+       pip install -r requirements_dev.txt
   1. Run a development server and use development settings like this:
      .. ::
        kalite manage runserver --settings=kalite.project.settings.dev
@@ -23,10 +23,9 @@ KA Lite is like a normal django project, if you have done Django before, you wil
 
 You can also change your ``~/.kalite/settings.py`` to point to ``kalite.project.settings.dev`` by default, then you do not have to specify `--settings=...` every time you run kalite.
 
-Now, everytime you work on your development environment, just remember to switch on your virtual environment with `workon kalite`. This can be done automatically with _`oh-my-zsh`.
+Now, everytime you work on your development environment, just remember to switch on your virtual environment with `workon kalite`.
 
 .. _github: https://github.com/learningequality/ka-lite
-.. _oh-my-zsh: https://github.com/
 
 
 Developer Docs

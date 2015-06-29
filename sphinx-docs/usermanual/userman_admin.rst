@@ -650,7 +650,7 @@ Most common settings
   You can set this to the desired language code for this installation (All choices can be found here).  If there are translations available, our web server will show them in KA Lite. Soon, we hope to provide support for internationalized content inside the KA Lite interface.
 * USE_I18N = <True or False> (default = True)
   If you set this to False, our web server will make some optimizations so as to avoid loading internationalization tools. Things might run a little faster, but you won't have support for translated content.
-* USE_L10N = <True or False> (default = True)
+* USE_L10N = <True or False> (default = False)
   By default, this is set to False. If you set this to True, Django will format dates, numbers and calendars according to the current locale. For example, January 5, 2000 would be 1/5/2000 if locale = "en-us" and 5/1/2000 if locale = "en-gb"
 
 
