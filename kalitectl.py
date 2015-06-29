@@ -6,10 +6,10 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [options] [DJANGO_OPTIONS ...]
+  kalite start [--foreground] [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [DJANGO_OPTIONS ...]
-  kalite status [job-scheduler] [options]
+  kalite status [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
   kalite manage [options] COMMAND [DJANGO_OPTIONS ...]
@@ -41,9 +41,10 @@ Examples:
   kalite shell          Display a Django shell
   kalite manage help    Show the Django management usage dialogue
 
-Planned features:
   kalite start --foreground   Run kalite in the foreground and do not go to
                               daemon mode.
+
+Planned features:
   kalite diagnose             Outputs user and copy-paste friendly diagnostics
   kalite query [COMMAND ...]  A query method for external UIs etc. to send
                               commands and obtain data from kalite.
@@ -74,7 +75,14 @@ else:
 
 import httplib
 import re
-import subprocess
+import cherrypy
+
+# We do not understand --option value, only --option=value.
+# Match all patterns of "--option value" and fail if they exist
+__validate_cmd_options = re.compile(r"--[^\s-]+\s+[^-\s][^-\s]+")
+if __validate_cmd_options.search(" ".join(sys.argv[1:])):
+    sys.stderr.write("Please only use --option=value patterns. The option parser gets confused if you do otherwise.\n")
+    sys.exit(1)
 
 from threading import Thread
 from docopt import DocoptExit, printable_usage, parse_defaults,\
@@ -83,23 +91,25 @@ from docopt import DocoptExit, printable_usage, parse_defaults,\
 from urllib2 import URLError
 from socket import timeout
 
-from django.core.management import ManagementUtility
+from django.core.management import ManagementUtility, get_commands
 
+from kalite.django_cherrypy_wsgiserver.cherrypyserver import DjangoAppPlugin
 from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
+from fle_utils.internet.functions import get_ip_addresses
 
-# Necessary for loading default settings from kalite
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings")
+# Environment variables that are used by django+kalite
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.base")
+os.environ.setdefault("KALITE_HOME", os.path.join(os.path.expanduser("~"), ".kalite"))
+os.environ.setdefault("KALITE_LISTEN_PORT", "8008")
 
 # Where to store user data
-KALITE_HOME = os.environ.get(
-    "KALITE_HOME",
-    os.path.join(os.path.expanduser("~"), ".kalite")
-)
+KALITE_HOME = os.environ["KALITE_HOME"]
+SERVER_LOG = os.path.join(KALITE_HOME, "server.log")
+
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
-PID_FILE_JOB_SCHEDULER = os.path.join(KALITE_HOME, 'kalite_cronserver.pid')
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
 # if this environment variable is set, we activate the profiling machinery
@@ -109,7 +119,7 @@ PROFILE = os.environ.get("PROFILE")
 LISTEN_ADDRESS = "0.0.0.0"
 # TODO: Can be configured in django settings which is really odd because that's
 # run INSIDE the http server
-LISTEN_PORT = 8008
+DEFAULT_LISTEN_PORT = os.environ.get("KALITE_LISTEN_PORT")
 # TODO: Hard coded, not good. It's because we currently cannot load up the
 # django environment, see #2890
 PING_URL = '/api/cherrypy/getpid'
@@ -242,7 +252,10 @@ def read_pid_file(filename):
         pid, port = int(pid), int(port)
     except ValueError:
         # The file only had one line
-        pid, port = int(open(filename, "r").read()), None
+        try:
+            pid, port = int(open(filename, "r").read()), None
+        except ValueError:
+            pid, port = None, None
     return pid, port
 
 
@@ -271,28 +284,28 @@ def get_pid():
                 pid, port = read_pid_file(STARTUP_LOCK)
                 # Does the PID in there still exist?
                 if pid_exists(pid):
-                    raise NotRunning(4)
+                    raise NotRunning(STATUS_STARTING_UP)
                 # It's dead so assuming the startup went badly
                 else:
-                    raise NotRunning(6)
+                    raise NotRunning(STATUS_FAILED_TO_START)
             # Couldn't parse to int
             except TypeError:
-                raise NotRunning(1)
-        raise NotRunning(1)  # Stopped
+                raise NotRunning(STATUS_STOPPED)
+        raise NotRunning(STATUS_STOPPED)  # Stopped
 
     # PID file exists, check if it is running
     try:
         pid, port = read_pid_file(PID_FILE)
     except (ValueError, OSError):
-        raise NotRunning(100)  # Invalid PID file
+        raise NotRunning(STATUS_PID_FILE_INVALID)  # Invalid PID file
 
     # PID file exists, but process is dead
     if not pid_exists(pid):
         if os.path.isfile(STARTUP_LOCK):
-            raise NotRunning(6)  # Failed to start
-        raise NotRunning(7)  # Unclean shutdown
+            raise NotRunning(STATUS_FAILED_TO_START)  # Failed to start
+        raise NotRunning(STATUS_UNCLEAN_SHUTDOWN)  # Unclean shutdown
 
-    listen_port = port or LISTEN_PORT
+    listen_port = port or DEFAULT_LISTEN_PORT
 
     # Timeout is 1 second, we don't want the status command to be slow
     conn = httplib.HTTPConnection("127.0.0.1", listen_port, timeout=3)
@@ -300,31 +313,32 @@ def get_pid():
         conn.request("GET", PING_URL)
         response = conn.getresponse()
     except timeout:
-        raise NotRunning(5)
+        raise NotRunning(STATUS_NOT_RESPONDING)
     except (httplib.HTTPException, URLError):
         if os.path.isfile(STARTUP_LOCK):
-            raise NotRunning(4)  # Starting up
-        raise NotRunning(7)
+            raise NotRunning(STATUS_STARTING_UP)  # Starting up
+        raise NotRunning(STATUS_UNCLEAN_SHUTDOWN)
 
     if response.status == 404:
-        raise NotRunning(8)  # Unknown HTTP server
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)  # Unknown HTTP server
 
     if response.status != 200:
-        raise NotRunning(9)  # Probably a mis-configured KA Lite
+        # Probably a mis-configured KA Lite
+        raise NotRunning(STATUS_SERVER_CONFIGURATION_ERROR)
 
     try:
         pid = int(response.read())
     except ValueError:
         # Not a valid INT was returned, so probably not KA Lite
-        raise NotRunning(8)
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
     if pid == pid:
         return pid, LISTEN_ADDRESS, listen_port  # Correct PID !
     else:
         # Not the correct PID, maybe KA Lite is running from somewhere else!
-        raise NotRunning(8)
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
-    raise NotRunning(101)  # Could not determine
+    raise NotRunning(STATUS_UNKNOW)  # Could not determine
 
 
 class ManageThread(Thread):
@@ -347,16 +361,17 @@ class ManageThread(Thread):
         utility.execute()
 
 
-def manage(command, args=[], in_background=False):
+def manage(command, args=[], as_thread=False):
     """
     Run a django command on the kalite project
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param in_background: Creates a new process for the command
+    :param as_daemon: Creates a new process for the command
+    :param as_thread: Runs command in thread and returns immediately
     """
-
-    if not in_background:
+    
+    if not as_thread:
         if PROFILE:
             profile_memory()
 
@@ -366,39 +381,35 @@ def manage(command, args=[], in_background=False):
         utility.prog_name = 'kalite manage'
         utility.execute()
     else:
-        # Create a new subprocess, beware that it won't die with the parent
-        # so you have to kill it in another fashion
-
-        # If we're on windows, we need to create a new process group, otherwise
-        # the newborn will be murdered when the parent becomes a daemon
-        if os.name == "nt":
-            kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
-        else:
-            kwargs = {}
-        subprocess.Popen(
-            [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
-            env=os.environ,
-            **kwargs
-        )
+        get_commands()  # Needed to populate the available commands before issuing one in a thread
+        thread = ManageThread(command, args=args, name=" ".join([command] + args))
+        thread.start()
 
 
-def start(debug=False, args=[], skip_job_scheduler=False):
+def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon
 
     :param args: List of options to parse to the django management command
+    :param port: Non-default port to bind to. You cannot run kalite on
+                 multiple ports at the same time.
+    :param daemonize: Default True, will run in foreground if False
+    :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
-    # TODO: Check if PID_FILE exists and if it is still running. If it still
-    # runs then die.
-
-    # TODO: Make sure that we are not root!
-
-    # TODO: What does not the production=true actually do and how can we
-    # control the log level and which log files to write to
-
+    # TODO: Do we want to fail if running as root?
+    
+    port = int(port or DEFAULT_LISTEN_PORT)
+    
+    if not daemonize:
+        sys.stderr.write("Running 'kalite start' in foreground...\n")
+    else:
+        sys.stderr.write("Running 'kalite start' as daemon (system service)\n")
+    
+    sys.stderr.write("\nStand by while the server loads its data...\n\n")
+    
     if os.path.exists(STARTUP_LOCK):
         try:
-            pid, port = read_pid_file(STARTUP_LOCK)
+            pid, __ = read_pid_file(STARTUP_LOCK)
             # Does the PID in there still exist?
             if pid_exists(pid):
                 sys.stderr.write(
@@ -419,9 +430,9 @@ def start(debug=False, args=[], skip_job_scheduler=False):
 
     # Write current PID and optional port to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
-        f.write(str(os.getpid()))
-        if os.environ.get("KALITE_LISTEN_PORT", None):
-            f.write("\n" + os.environ["KALITE_LISTEN_PORT"])
+        f.write("%s\n%d" % (str(os.getpid()), port))
+    
+    manage('initialize_kalite')
 
     # Start the job scheduler (not Celery yet...)
     # This command is run before starting the server, in case the server
@@ -429,23 +440,56 @@ def start(debug=False, args=[], skip_job_scheduler=False):
     # server fails to go to daemon mode.
     if not skip_job_scheduler:
         manage(
-            'cronserver',
-            in_background=True,
-            args=update_default_args(
-                ['--daemon', '--pid-file={0000:s}'.format(PID_FILE_JOB_SCHEDULER)],
-                args
-            )
+            'cronserver_blocking',
+            args=[],
+            as_thread=True
         )
-    args = update_default_args(
-        [
-            "--host=%s" % LISTEN_ADDRESS,
-            "--daemonize",
-            "--pidfile=%s" % PID_FILE,
-            "--startup-lock-file=%s" % STARTUP_LOCK,
-        ] + (["--production"] if not debug else []),
-        args
-    )
-    manage('kaserve', args)
+
+    # Remove the startup lock at this point
+    if STARTUP_LOCK:
+        os.unlink(STARTUP_LOCK)
+    
+    # Print output to user about where to find the server
+    addresses = get_ip_addresses(include_loopback=False)
+    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
+    for addr in addresses:
+        sys.stdout.write("\thttp://%s:%s/\n" % (addr, port))
+    sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
+    sys.stdout.write("\thttp://127.0.0.1:%s/\n" % port)
+    
+    # Daemonize at this point, no more user output is needed
+    if daemonize:
+        
+        from django.utils.daemonize import become_daemon
+        kwargs = {}
+        # Truncate the file
+        open(SERVER_LOG, "w").truncate()
+        print("Going to daemon mode, logging to {0}".format(SERVER_LOG))
+        kwargs['out_log'] = SERVER_LOG
+        kwargs['err_log'] = SERVER_LOG
+        become_daemon(**kwargs)
+        # Write the new PID
+        with open(PID_FILE, 'w') as f:
+            f.write("%d\n%d" % (os.getpid(), port))
+    
+    # Start cherrypy service
+    cherrypy.config.update({
+        'server.socket_host': LISTEN_ADDRESS,
+        'server.socket_port': port,
+        'server.thread_pool': 18,
+        'checker.on': False,
+    })
+
+    DjangoAppPlugin(cherrypy.engine).subscribe()
+    if not debug:
+        # cherrypyserver automatically reloads if any modules change
+        # Switch-off that functionality here to save cpu cycles
+        # http://docs.cherrypy.org/stable/appendix/faq.html
+        cherrypy.engine.autoreload.unsubscribe()
+    
+    cherrypy.quickstart()
+
+    print("FINISHED serving HTTP")
 
 
 def stop(args=[], sys_exit=True):
@@ -471,7 +515,7 @@ def stop(args=[], sys_exit=True):
                 "Not responding, killing with force\n"
             )
             try:
-                pid, port = read_pid_file(PID_FILE)
+                pid, __ = read_pid_file(PID_FILE)
                 kill_pid(pid)
                 killed_with_force = True
             except ValueError:
@@ -482,19 +526,6 @@ def stop(args=[], sys_exit=True):
             if sys_exit:
                 sys.exit(-1)
             return  # Do not continue because error could not be handled
-
-    # If there's no PID for the job scheduler, just quit
-    if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
-        pass
-    else:
-        try:
-            pid = int(open(PID_FILE_JOB_SCHEDULER, 'r').read())
-            if pid_exists(pid):
-                kill_pid(pid)
-            os.unlink(PID_FILE_JOB_SCHEDULER)
-        except (ValueError, OSError):
-            sys.stderr.write(
-                "Invalid job scheduler PID file: {00:s}".format(PID_FILE_JOB_SCHEDULER))
 
     sys.stderr.write("kalite stopped\n")
     if sys_exit:
@@ -512,7 +543,6 @@ def status():
         __, __, port = get_pid()
         sys.stderr.write("{msg:s} (0)\n".format(msg=status.codes[0]))
         sys.stderr.write("KA Lite running on:\n\n")
-        from fle_utils.internet.functions import get_ip_addresses
         for addr in get_ip_addresses():
             sys.stderr.write("\thttp://%s:%s/\n" % (addr, port))
         return 0
@@ -527,7 +557,7 @@ status.codes = {
     STATUS_STOPPED: 'Stopped',
     STATUS_STARTING_UP: 'Starting up',
     STATUS_NOT_RESPONDING: 'Not responding',
-    STATUS_FAILED_TO_START: 'Failed to start (check logs)',
+    STATUS_FAILED_TO_START: 'Failed to start (check log file: {0})'.format(SERVER_LOG),
     STATUS_UNCLEAN_SHUTDOWN: 'Unclean shutdown',
     STATUS_UNKNOWN_INSTANCE: 'Unknown KA Lite running on port',
     STATUS_SERVER_CONFIGURATION_ERROR: 'KA Lite server configuration error',
@@ -556,31 +586,12 @@ def url():
     return status_code
 
 
-def status_job_scheduler():
-    """Returns the status of the cron server"""
-    if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
-        return 1
-    try:
-        pid_exists(int(open(PID_FILE_JOB_SCHEDULER, 'r').read()))
-        return 1
-    except ValueError:
-        return 100
-    except OSError:
-        return 99
-status_job_scheduler.codes = {
-    0: 'OK, running',
-    1: 'Stopped',
-    99: 'Could not read PID file',
-    100: 'Invalid PID file',
-}
-
-
 def profile_memory():
     print("activating profile infrastructure.")
 
     import atexit
     import csv
-    import resource
+    import resource  # @UnresolvedImport
     import signal
     import sparkline
     import time
@@ -598,7 +609,6 @@ def profile_memory():
         graph = sparkline.sparkify([m['mem_usage'] for m in mem_usage]).encode("utf-8")
 
         print("PID: {pid} Highest memory usage: {mem_usage}MB. Usage over time: {sparkline}".format(sparkline=graph, **highest_mem_usage))
-
 
     def write_profile_results(filename=None):
 
@@ -633,7 +643,7 @@ def profile_memory():
 
 # TODO(benjaoming): When this PR is merged, we can stop this crazyness
 # https://github.com/docopt/docopt/pull/283
-def docopt(doc, argv=None, help=True, version=None, options_first=False):
+def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @ReservedAssignment help
     """Re-implementation of docopt.docopt() function to parse ANYTHING at
     the end (for proxying django options)."""
     if argv is None:
@@ -649,7 +659,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
         doc_options = parse_defaults(doc)
         ao.children = list(set(doc_options) - pattern_options)
     extras(help, version, argv, doc)
-    matched, left, collected = pattern.fix().match(argv)
+    __matched, __left, collected = pattern.fix().match(argv)
     
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
@@ -676,13 +686,14 @@ if __name__ == "__main__":
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
     arguments = docopt(__doc__, version=str(VERSION), options_first=False)
+    
     if arguments['start']:
-        if arguments["--port"]:
-            os.environ["KALITE_LISTEN_PORT"] = arguments["--port"]
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
-            args=arguments['DJANGO_OPTIONS']
+            args=arguments['DJANGO_OPTIONS'],
+            daemonize=not arguments['--foreground'],
+            port=arguments["--port"]
         )
 
     elif arguments['stop']:
@@ -697,11 +708,7 @@ if __name__ == "__main__":
         )
 
     elif arguments['status']:
-        if arguments['job-scheduler']:
-            status_code = status_job_scheduler()
-            verbose_status = status_job_scheduler.codes[status_code]
-        else:
-            status_code = status()
+        status_code = status()
         sys.exit(status_code)
 
     elif arguments['shell']:

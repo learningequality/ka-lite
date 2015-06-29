@@ -405,7 +405,9 @@ def account_management(request):
             # Never report this error; don't want this logging to block other functionality.
             logging.error("Failed to update student userlog activity: %s" % e)
 
-    return student_view_context(request)
+    c = student_view_context(request)
+    c['restricted'] = settings.DISABLE_SELF_ADMIN
+    return c
 
 
 # data functions

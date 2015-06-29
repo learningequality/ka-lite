@@ -481,11 +481,11 @@ These are resized videos. All in all, this will take around 23 GB of space.
 
 
 #. Make sure all video files are located in a single directory, with .mp4 extensions (KA Lite expects this!)
-#. If it doesn't already exist, create a file named local_settings.py in the ka-lite/kalite folder (the one containing settings.py)
+#. In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``).
 #. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes.
     **For example, on Windows:** ``CONTENT_ROOT="C:\\torrented_videos_location\\"``
-
     **For example, on Linux:** ``CONTENT_ROOT="/home/me/torrented_videos_location/"``
+
 #. Restart your server. If you are unsure on how to do this, please see `Restarting Your Server`_ .
 
 .. _BitTorrent Sync: http://www.getsync.com/
@@ -615,24 +615,56 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 
 .. warning:: Please follow these instructions carefully! Customizing the server incorrectly can break your installation. It can be very hard to find and undo the error.
 
-A more advanced way to customize your installation's behavior is by adding a file called `local_settings.py` in the `kalite` folder (the same folder that has `version.py`). Below is a list of options that you can set in `local_settings.py`, and what they mean.
-As of version 0.9.3 (Dec, 2012):
+Running KA Lite with your own settings
+______________________________________
 
+In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``). That file is where you should put your custom settings, and KA Lite will load them automatically.
+
+You can also run the ``kalite`` with a completely different Python settings module by specifying ``kalite <command> --settings=my_settings_module``.
+
+
+Changing base settings
+^^^^^^^^^^^^^^^^^^^^^^
+
+By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like:
+
+  .. ::
+    from kalite.project.settings.raspberry_pi import *
+    # Put your settings here, e.g.
+    # MY_SETTING_VAR = 123
+
+
+Available settings
+__________________
+
+
+Most common settings
+^^^^^^^^^^^^^^^^^^^^
+
+* DEBUG = <True or False> (default = False) -- Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
 * CONTENT_ROOT = "<path to desired content folder>" (default=ka-lite/content)
-  This is the path that KA Lite will use to look for KA Lite video files to play.  Change the path to another local directory to get video files from that directory.
+  This is the path that KA Lite will use to look for KA Lite video files to play.  Change the path to another local directory to get video files from that directory. NB! Directory has to be writable for the user running the server in order to download videos.
 * TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")
   You can set this to be the local time zone for your installation. Choices can be found here.
 * LANGUAGE_CODE = "<desired ISO 639-1 Language Code>" (default = "en-us")
   You can set this to the desired language code for this installation (All choices can be found here).  If there are translations available, our web server will show them in KA Lite. Soon, we hope to provide support for internationalized content inside the KA Lite interface.
 * USE_I18N = <True or False> (default = True)
   If you set this to False, our web server will make some optimizations so as to avoid loading internationalization tools. Things might run a little faster, but you won't have support for translated content.
-* USE_L10N = True
+* USE_L10N = <True or False> (default = False)
   By default, this is set to False. If you set this to True, Django will format dates, numbers and calendars according to the current locale. For example, January 5, 2000 would be 1/5/2000 if locale = "en-us" and 5/1/2000 if locale = "en-gb"
 
-New in version 0.10.0 (August 26, 2013):
 
-* PRODUCTION_PORT = <desired port number> (default=8008)
-  This is the port that KA Lite will run on when started. Here is a list of available ports.
+User restrictions
+^^^^^^^^^^^^^^^^^
+
+* LOCKDOWN = <True or False> (default = False)
+  With this setting, users must be logged in order to access videos & exercises
+* DISABLE_SELF_ADMIN = <True or False> (default = False). Disables user sign ups.
+
+
+Online Synchronization
+^^^^^^^^^^^^^^^^^^^^^^
+
 * USER_LOG_MAX_RECORDS = <desired maxium for user log records> (default = 0)
   When this is set to any non-zero number, we will record (and sync for online tracking) user login activity, summarized for every month (which is configurable, see below).  Default is set to 0, for efficiency purposes--but if you want to record this, setting to 1 is enough!  The # of records kept are not "summary" records, but raw records of every login.  These "raw" data are not synced, but are kept on your local machine only--there's too many of them.  Currently, we have no specific report to view these data (though we may have for v0.10.1)
 * USER_LOG_SUMMARY_FREQUENCY = <desired frequency in the following format (number, amount of time)> (default = (1, "months")
@@ -643,6 +675,11 @@ New in version 0.10.0 (August 26, 2013):
   Every time your installation syncs data, we record the time of the sync, the # of successful logs that were uploaded and downloaded, and any failures.
   This setting is how many such records we keep on your local server, for display.
   When you log in to our online server, you will see a *full* history of these records.
+
+
+Optimization of storage and system load
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 * CRONSERVER_FREQUENCY = <desired frequency of cronserver to run in seconds> (default = 10 minutes)
   This is how frequently KA Lite tries to synchronize user data with other Devices on your Zone.  This can be changed to sync data more often (use a smaller #), or if you're never online (can be set to a large number)
 * CACHE_TIME = <desired length of cache time, in seconds> (default = 5*365*24*60*60) (that's 5 years!)
@@ -653,20 +690,12 @@ New in version 0.10.0 (August 26, 2013):
   Some operating systems will clear the temporary directories when the system is rebooted.  To retain the cache between reboots, an alternative location can be specified.  (for example on Linix, "/var/tmp/kalite_web_cache")
 * CHERRYPY_THREAD_COUNT = <number of threads> (default=50)
   The CherryPy Webserver can handle multiple page requests simultaneously.  The default is 50, but for slow or single CPU servers, performance will be improved if the number of threads is reduced.  Minimum number of threads is 10, optimum setting for Raspberry Pi is 18.
+
+
+Raspberry Pi
+^^^^^^^^^^^^
+
 * USE_MPLAYER = <True or False> (default = False)
   With this setting, if the browser is run from the same computer as the KA Lite server, then instead of playing the video in the browser, the video will be launched outside of the browser and played in mplayer - a light-weight video player that is included with the KA Lite software.
   This is intended for use only on the Raspberry Pi, where no other video player is available.
 
-New in version 0.11.1 (March 12, 2014):
-
-* LOCKDOWN = <True or False> (default = False)
-  With this setting, users must be logged in order to access videos & exercises
-* CONFIG_PACKAGE = “<Desired Config Package>”
-  Allows enabling of different config packages to enable commonly requested custom behaviors.
-  "UserRestricted" - Doesn't allow users to sign up themselves
-
-Finally, if you examine the various `settings.py` files in the app (there is more than one such file) you will frequently see variables set with the following syntax::
-
-    DEBUG = getattr(local_settings, "DEBUG", False)
-
-This is essentially checking first to see if DEBUG is set in local_settings. If it is, use that, if not, set it to False. Any variable set with this syntax in settings.py can be overwritten in local_settings.py. Again, don't change anything on a live installation that you aren't sure about, but for testing purposes, feel free to experiment!
