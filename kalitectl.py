@@ -9,7 +9,7 @@ Usage:
   kalite start [--foreground] [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [DJANGO_OPTIONS ...]
-  kalite status [job-scheduler] [options]
+  kalite status [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
   kalite manage [options] COMMAND [DJANGO_OPTIONS ...]
@@ -103,7 +103,6 @@ KALITE_HOME = os.environ["KALITE_HOME"]
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
-PID_FILE_JOB_SCHEDULER = os.path.join(KALITE_HOME, 'kalite_cronserver.pid')
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
 # if this environment variable is set, we activate the profiling machinery
@@ -545,19 +544,6 @@ def stop(args=[], sys_exit=True):
                 sys.exit(-1)
             return  # Do not continue because error could not be handled
 
-    # If there's no PID for the job scheduler, just quit
-    if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
-        pass
-    else:
-        try:
-            pid = int(open(PID_FILE_JOB_SCHEDULER, 'r').read())
-            if pid_exists(pid):
-                kill_pid(pid)
-            os.unlink(PID_FILE_JOB_SCHEDULER)
-        except (ValueError, OSError):
-            sys.stderr.write(
-                "Invalid job scheduler PID file: {00:s}".format(PID_FILE_JOB_SCHEDULER))
-
     sys.stderr.write("kalite stopped\n")
     if sys_exit:
         sys.exit(0)
@@ -615,25 +601,6 @@ def url():
     sys.stderr.write("{msg:s} ({code:d})\n".format(
         code=status_code, msg=verbose_status))
     return status_code
-
-
-def status_job_scheduler():
-    """Returns the status of the cron server"""
-    if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
-        return 1
-    try:
-        pid_exists(int(open(PID_FILE_JOB_SCHEDULER, 'r').read()))
-        return 1
-    except ValueError:
-        return 100
-    except OSError:
-        return 99
-status_job_scheduler.codes = {
-    0: 'OK, running',
-    1: 'Stopped',
-    99: 'Could not read PID file',
-    100: 'Invalid PID file',
-}
 
 
 def profile_memory():
@@ -758,11 +725,7 @@ if __name__ == "__main__":
         )
 
     elif arguments['status']:
-        if arguments['job-scheduler']:
-            status_code = status_job_scheduler()
-            verbose_status = status_job_scheduler.codes[status_code]
-        else:
-            status_code = status()
+        status_code = status()
         sys.exit(status_code)
 
     elif arguments['shell']:
