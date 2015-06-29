@@ -277,26 +277,26 @@ def get_pid():
                 pid, port = read_pid_file(STARTUP_LOCK)
                 # Does the PID in there still exist?
                 if pid_exists(pid):
-                    raise NotRunning(4)
+                    raise NotRunning(STATUS_STARTING_UP)
                 # It's dead so assuming the startup went badly
                 else:
-                    raise NotRunning(6)
+                    raise NotRunning(STATUS_FAILED_TO_START)
             # Couldn't parse to int
             except TypeError:
-                raise NotRunning(1)
-        raise NotRunning(1)  # Stopped
+                raise NotRunning(STATUS_STOPPED)
+        raise NotRunning(STATUS_STOPPED)  # Stopped
 
     # PID file exists, check if it is running
     try:
         pid, port = read_pid_file(PID_FILE)
     except (ValueError, OSError):
-        raise NotRunning(100)  # Invalid PID file
+        raise NotRunning(STATUS_PID_FILE_INVALID)  # Invalid PID file
 
     # PID file exists, but process is dead
     if not pid_exists(pid):
         if os.path.isfile(STARTUP_LOCK):
-            raise NotRunning(6)  # Failed to start
-        raise NotRunning(7)  # Unclean shutdown
+            raise NotRunning(STATUS_FAILED_TO_START)  # Failed to start
+        raise NotRunning(STATUS_UNCLEAN_SHUTDOWN)  # Unclean shutdown
 
     listen_port = port or DEFAULT_LISTEN_PORT
 
@@ -306,31 +306,32 @@ def get_pid():
         conn.request("GET", PING_URL)
         response = conn.getresponse()
     except timeout:
-        raise NotRunning(5)
+        raise NotRunning(STATUS_NOT_RESPONDING)
     except (httplib.HTTPException, URLError):
         if os.path.isfile(STARTUP_LOCK):
-            raise NotRunning(4)  # Starting up
-        raise NotRunning(7)
+            raise NotRunning(STATUS_STARTING_UP)  # Starting up
+        raise NotRunning(STATUS_UNCLEAN_SHUTDOWN)
 
     if response.status == 404:
-        raise NotRunning(8)  # Unknown HTTP server
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)  # Unknown HTTP server
 
     if response.status != 200:
-        raise NotRunning(9)  # Probably a mis-configured KA Lite
+        # Probably a mis-configured KA Lite
+        raise NotRunning(STATUS_SERVER_CONFIGURATION_ERROR)
 
     try:
         pid = int(response.read())
     except ValueError:
         # Not a valid INT was returned, so probably not KA Lite
-        raise NotRunning(8)
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
     if pid == pid:
         return pid, LISTEN_ADDRESS, listen_port  # Correct PID !
     else:
         # Not the correct PID, maybe KA Lite is running from somewhere else!
-        raise NotRunning(8)
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
-    raise NotRunning(101)  # Could not determine
+    raise NotRunning(STATUS_UNKNOW)  # Could not determine
 
 
 class ManageThread(Thread):
