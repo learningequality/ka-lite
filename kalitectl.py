@@ -353,7 +353,7 @@ class ManageThread(Thread):
         utility.execute()
 
 
-def manage(command, args=[], as_daemon=False, as_thread=False):
+def manage(command, args=[], as_thread=False):
     """
     Run a django command on the kalite project
 
@@ -363,9 +363,7 @@ def manage(command, args=[], as_daemon=False, as_thread=False):
     :param as_thread: Runs command in thread and returns immediately
     """
     
-    assert not (as_daemon and as_thread), "You cannot have a daemon and a thread"
-    
-    if not as_daemon and not as_thread:
+    if not as_thread:
         if PROFILE:
             profile_memory()
 
@@ -374,28 +372,10 @@ def manage(command, args=[], as_daemon=False, as_thread=False):
         # 'kalitectl.py' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite manage'
         utility.execute()
-    elif as_thread:
+    else:
         get_commands()  # Needed to populate the available commands before issuing one in a thread
         thread = ManageThread(command, args=args, name=" ".join([command] + args))
         thread.start()
-    else:
-        # Create a new subprocess, beware that it won't die with the parent
-        # so you have to kill it in another fashion
-
-        # If we're on windows, we need to create a new process group, otherwise
-        # the newborn will be murdered when the parent becomes a daemon
-        
-        # TODO: Don't make this a subprocess
-        print("Creating background process!?")
-        if os.name == "nt":
-            kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
-        else:
-            kwargs = {}
-        subprocess.Popen(
-            [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
-            env=os.environ,
-            **kwargs
-        )
 
 
 def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
@@ -408,13 +388,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     :param daemonize: Default True, will run in foreground if False
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
-    # TODO: Check if PID_FILE exists and if it is still running. If it still
-    # runs then die.
-
-    # TODO: Make sure that we are not root!
-
-    # TODO: What does not the production=true actually do and how can we
-    # control the log level and which log files to write to
+    # TODO: Do we want to fail if running as root?
     
     port = int(port or DEFAULT_LISTEN_PORT)
     
