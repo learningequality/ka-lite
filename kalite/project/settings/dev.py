@@ -64,11 +64,9 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.cache.CachePanel',
     'debug_toolbar.panels.signals.SignalsPanel',
     'debug_toolbar.panels.logging.LoggingPanel',
-#    'debug_toolbar.panels.redirects.RedirectsPanel',  # This one is very annoying
+    'debug_toolbar.panels.redirects.RedirectsPanel',  # This belongs to DISABLE_PANELS by default
 )
 DEBUG_TOOLBAR_CONFIG = {
-#    'INTERCEPT_REDIRECTS': False,  # Deprecated in recent django-debug-toolbar
-#    'HIDE_DJANGO_SQL': False,  # Removed
     'ENABLE_STACKTRACES': True,
 }
 # Debug toolbar must be set in conjunction with CACHE_TIME=0
