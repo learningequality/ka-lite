@@ -192,6 +192,7 @@ We are also developing RCTs to start in June for a deployment in India.
 
 Backing up data: is there any easy way to do it locally?
 --------------------------------------------------------
+
 Yes! Just copy the file::
 
     ka-lite/kalite/database/data.sqlite
@@ -202,3 +203,12 @@ to a secure location. To restore, simply copy the backup data file to the same l
 
 to guarantee your database is compatible with the current version of KA Lite you have installed!
 Note that online data back-ups occur if you "register" your KA Lite installation with an online account on our website.
+
+I skipped the step for downloading the assessment items during install, how can I do it now?
+--------------------------------------------------------------------------------------------
+
+Run the following command (beware it can take a while, the download size is over 500 MB):
+
+``kalite manage unpack_assessment_zip -f https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip``
+
+As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
