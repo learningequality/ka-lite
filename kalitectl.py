@@ -98,7 +98,7 @@ from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses
 
-# Necessary for loading default settings from kalite
+# Environment variables that are used by django+kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.base")
 os.environ.setdefault("KALITE_HOME", os.path.join(os.path.expanduser("~"), ".kalite"))
 os.environ.setdefault("KALITE_LISTEN_PORT", "8008")

@@ -1,6 +1,5 @@
 import copy
 import StringIO
-import json
 import os
 import requests
 import tempfile
@@ -25,15 +24,15 @@ MODIFIED_DB_SETTINGS = copy.deepcopy(settings.DATABASES)
 MODIFIED_DB_SETTINGS["assessment_items"]["NAME"] = TEMP_ASSESSMENT_ITEM_DATABASE_PATH
 
 @override_settings(KHAN_CONTENT_PATH=TEMP_KHAN_CONTENT_PATH)
-@override_settings(ASSESSMENT_ITEM_DATABASE_PATH=TEMP_ASSESSMENT_ITEM_DATABASE_PATH)
-@override_settings(ASSESSMENT_ITEM_VERSION_PATH=TEMP_ASSESSMENT_ITEM_VERSION_PATH)
+@override_settings(KHAN_ASSESSMENT_ITEM_DATABASE_PATH=TEMP_ASSESSMENT_ITEM_DATABASE_PATH)
+@override_settings(KHAN_ASSESSMENT_ITEM_VERSION_PATH=TEMP_ASSESSMENT_ITEM_VERSION_PATH)
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
     def setUp(self):
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
             zf = zipfile.ZipFile(f, "w")
-            zf.write(DUMMY_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH, "assessmentitems.sqlite")
+            zf.write(DUMMY_KHAN_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH, "assessmentitems.sqlite")
             zf.writestr("assessmentitems.version", version.SHORTVERSION)
             zf.close()
 
@@ -90,8 +89,8 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
 
 @override_settings(KHAN_CONTENT_PATH=TEMP_KHAN_CONTENT_PATH)
-@override_settings(ASSESSMENT_ITEM_DATABASE_PATH=TEMP_ASSESSMENT_ITEM_DATABASE_PATH)
-@override_settings(ASSESSMENT_ITEM_VERSION_PATH=TEMP_ASSESSMENT_ITEM_VERSION_PATH)
+@override_settings(KHAN_ASSESSMENT_ITEM_DATABASE_PATH=TEMP_ASSESSMENT_ITEM_DATABASE_PATH)
+@override_settings(KHAN_ASSESSMENT_ITEM_VERSION_PATH=TEMP_ASSESSMENT_ITEM_VERSION_PATH)
 class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
     def setUp(self):
@@ -148,7 +147,7 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
                 "We should've told our users to upgrade assessment items, as they have an old version!"
             )
             # we should've also opened the file atleast
-            mopen.assert_called_once_with(settings.ASSESSMENT_ITEM_VERSION_PATH)
+            mopen.assert_called_once_with(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH)
 
         # if the version in assessment items is equal to our current
         # version, then don't upgrade
@@ -159,7 +158,7 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
                 "We should not tell the user to upgrade when we have the same version as assessment items!"
             )
             # we should've also opened the file atleast
-            mopen.assert_called_once_with(settings.ASSESSMENT_ITEM_VERSION_PATH)
+            mopen.assert_called_once_with(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH)
 
     def test_is_valid_url_returns_true_for_valid_urls(self):
         valid_urls = [

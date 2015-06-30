@@ -69,6 +69,7 @@ writeup/
 /content/*.mp3
 /content/*.pdf
 /content/khan/
+/content/assessment
 /data/logs
 /data/i18n
 /data/subtitles
