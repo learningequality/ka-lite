@@ -183,7 +183,7 @@ TEST_RUNNER = KALITE_TEST_RUNNER
 #  to override the auto-detection, set CONFIG_PACKAGE=None in the local_settings
 ########################
 
-CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", "RPi" if (platform.uname()[0] == "Linux" and platform.uname()[4] == "armv6l") else [])
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", "RPi" if (platform.uname()[0] == "Linux" and (platform.uname()[4] == "armv6l" or platform.uname()[4] == "armv7l")) else [])
 
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
