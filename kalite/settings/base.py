@@ -406,10 +406,10 @@ if os.path.exists(built_docs_path):
         os.path.join(_data_path, 'static-libraries'),
         built_docs_path,
     )
-    _DOCS_EXIST = True
+    DOCS_EXIST = True
 else:
     STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
-    _DOCS_EXIST = False
+    DOCS_EXIST = False
 
 DEFAULT_ENCODING = 'utf-8'
 
