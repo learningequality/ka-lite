@@ -183,7 +183,7 @@ class FacilityUserResource(ModelResource):
             "version": version.VERSION,
             "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
-            "docs_exist": getattr(settings, "_DOCS_EXIST", False),
+            "docs_exist": getattr(settings, "DOCS_EXIST", False),
         }
 
         # Override properties using facility data
