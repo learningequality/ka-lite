@@ -9,7 +9,7 @@ Usage:
   kalite start [--foreground] [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [DJANGO_OPTIONS ...]
-  kalite status [job-scheduler] [options]
+  kalite status [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
   kalite manage [options] COMMAND [DJANGO_OPTIONS ...]
@@ -75,7 +75,6 @@ else:
 
 import httplib
 import re
-import subprocess
 import cherrypy
 
 from threading import Thread
@@ -99,11 +98,11 @@ os.environ.setdefault("KALITE_LISTEN_PORT", "8008")
 
 # Where to store user data
 KALITE_HOME = os.environ["KALITE_HOME"]
+SERVER_LOG = os.path.join(KALITE_HOME, "server.log")
 
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
-PID_FILE_JOB_SCHEDULER = os.path.join(KALITE_HOME, 'kalite_cronserver.pid')
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
 # if this environment variable is set, we activate the profiling machinery
@@ -278,26 +277,26 @@ def get_pid():
                 pid, port = read_pid_file(STARTUP_LOCK)
                 # Does the PID in there still exist?
                 if pid_exists(pid):
-                    raise NotRunning(4)
+                    raise NotRunning(STATUS_STARTING_UP)
                 # It's dead so assuming the startup went badly
                 else:
-                    raise NotRunning(6)
+                    raise NotRunning(STATUS_FAILED_TO_START)
             # Couldn't parse to int
             except TypeError:
-                raise NotRunning(1)
-        raise NotRunning(1)  # Stopped
+                raise NotRunning(STATUS_STOPPED)
+        raise NotRunning(STATUS_STOPPED)  # Stopped
 
     # PID file exists, check if it is running
     try:
         pid, port = read_pid_file(PID_FILE)
     except (ValueError, OSError):
-        raise NotRunning(100)  # Invalid PID file
+        raise NotRunning(STATUS_PID_FILE_INVALID)  # Invalid PID file
 
     # PID file exists, but process is dead
     if not pid_exists(pid):
         if os.path.isfile(STARTUP_LOCK):
-            raise NotRunning(6)  # Failed to start
-        raise NotRunning(7)  # Unclean shutdown
+            raise NotRunning(STATUS_FAILED_TO_START)  # Failed to start
+        raise NotRunning(STATUS_UNCLEAN_SHUTDOWN)  # Unclean shutdown
 
     listen_port = port or DEFAULT_LISTEN_PORT
 
@@ -307,31 +306,32 @@ def get_pid():
         conn.request("GET", PING_URL)
         response = conn.getresponse()
     except timeout:
-        raise NotRunning(5)
+        raise NotRunning(STATUS_NOT_RESPONDING)
     except (httplib.HTTPException, URLError):
         if os.path.isfile(STARTUP_LOCK):
-            raise NotRunning(4)  # Starting up
-        raise NotRunning(7)
+            raise NotRunning(STATUS_STARTING_UP)  # Starting up
+        raise NotRunning(STATUS_UNCLEAN_SHUTDOWN)
 
     if response.status == 404:
-        raise NotRunning(8)  # Unknown HTTP server
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)  # Unknown HTTP server
 
     if response.status != 200:
-        raise NotRunning(9)  # Probably a mis-configured KA Lite
+        # Probably a mis-configured KA Lite
+        raise NotRunning(STATUS_SERVER_CONFIGURATION_ERROR)
 
     try:
         pid = int(response.read())
     except ValueError:
         # Not a valid INT was returned, so probably not KA Lite
-        raise NotRunning(8)
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
     if pid == pid:
         return pid, LISTEN_ADDRESS, listen_port  # Correct PID !
     else:
         # Not the correct PID, maybe KA Lite is running from somewhere else!
-        raise NotRunning(8)
+        raise NotRunning(STATUS_UNKNOWN_INSTANCE)
 
-    raise NotRunning(101)  # Could not determine
+    raise NotRunning(STATUS_UNKNOW)  # Could not determine
 
 
 class ManageThread(Thread):
@@ -354,7 +354,7 @@ class ManageThread(Thread):
         utility.execute()
 
 
-def manage(command, args=[], as_daemon=False, as_thread=False):
+def manage(command, args=[], as_thread=False):
     """
     Run a django command on the kalite project
 
@@ -364,9 +364,7 @@ def manage(command, args=[], as_daemon=False, as_thread=False):
     :param as_thread: Runs command in thread and returns immediately
     """
     
-    assert not (as_daemon and as_thread), "You cannot have a daemon and a thread"
-    
-    if not as_daemon and not as_thread:
+    if not as_thread:
         if PROFILE:
             profile_memory()
 
@@ -375,28 +373,10 @@ def manage(command, args=[], as_daemon=False, as_thread=False):
         # 'kalitectl.py' (a part from the top most text in `kalite manage help`
         utility.prog_name = 'kalite manage'
         utility.execute()
-    elif as_thread:
+    else:
         get_commands()  # Needed to populate the available commands before issuing one in a thread
         thread = ManageThread(command, args=args, name=" ".join([command] + args))
         thread.start()
-    else:
-        # Create a new subprocess, beware that it won't die with the parent
-        # so you have to kill it in another fashion
-
-        # If we're on windows, we need to create a new process group, otherwise
-        # the newborn will be murdered when the parent becomes a daemon
-        
-        # TODO: Don't make this a subprocess
-        print("Creating background process!?")
-        if os.name == "nt":
-            kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
-        else:
-            kwargs = {}
-        subprocess.Popen(
-            [sys.executable, os.path.abspath(sys.argv[0]), "manage", command] + args,
-            env=os.environ,
-            **kwargs
-        )
 
 
 def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
@@ -409,13 +389,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     :param daemonize: Default True, will run in foreground if False
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
-    # TODO: Check if PID_FILE exists and if it is still running. If it still
-    # runs then die.
-
-    # TODO: Make sure that we are not root!
-
-    # TODO: What does not the production=true actually do and how can we
-    # control the log level and which log files to write to
+    # TODO: Do we want to fail if running as root?
     
     port = int(port or DEFAULT_LISTEN_PORT)
     
@@ -480,12 +454,13 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     if daemonize:
         
         from django.utils.daemonize import become_daemon
-        logfile = os.path.join(KALITE_HOME, "kalite.log") if os.environ.get("NAIVE_LOGGING", False) else None
-        if logfile:
-            print("With logging...")
-            become_daemon(out_log=logfile, err_log=logfile)
-        else:
-            become_daemon()
+        kwargs = {}
+        # Truncate the file
+        open(SERVER_LOG, "w").truncate()
+        print("Going to daemon mode, logging to {0}".format(SERVER_LOG))
+        kwargs['out_log'] = SERVER_LOG
+        kwargs['err_log'] = SERVER_LOG
+        become_daemon(**kwargs)
         # Write the new PID
         with open(PID_FILE, 'w') as f:
             f.write("%d\n%d" % (os.getpid(), port))
@@ -545,19 +520,6 @@ def stop(args=[], sys_exit=True):
                 sys.exit(-1)
             return  # Do not continue because error could not be handled
 
-    # If there's no PID for the job scheduler, just quit
-    if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
-        pass
-    else:
-        try:
-            pid = int(open(PID_FILE_JOB_SCHEDULER, 'r').read())
-            if pid_exists(pid):
-                kill_pid(pid)
-            os.unlink(PID_FILE_JOB_SCHEDULER)
-        except (ValueError, OSError):
-            sys.stderr.write(
-                "Invalid job scheduler PID file: {00:s}".format(PID_FILE_JOB_SCHEDULER))
-
     sys.stderr.write("kalite stopped\n")
     if sys_exit:
         sys.exit(0)
@@ -588,7 +550,7 @@ status.codes = {
     STATUS_STOPPED: 'Stopped',
     STATUS_STARTING_UP: 'Starting up',
     STATUS_NOT_RESPONDING: 'Not responding',
-    STATUS_FAILED_TO_START: 'Failed to start (check logs)',
+    STATUS_FAILED_TO_START: 'Failed to start (check log file: {0})'.format(SERVER_LOG),
     STATUS_UNCLEAN_SHUTDOWN: 'Unclean shutdown',
     STATUS_UNKNOWN_INSTANCE: 'Unknown KA Lite running on port',
     STATUS_SERVER_CONFIGURATION_ERROR: 'KA Lite server configuration error',
@@ -615,25 +577,6 @@ def url():
     sys.stderr.write("{msg:s} ({code:d})\n".format(
         code=status_code, msg=verbose_status))
     return status_code
-
-
-def status_job_scheduler():
-    """Returns the status of the cron server"""
-    if not os.path.isfile(PID_FILE_JOB_SCHEDULER):
-        return 1
-    try:
-        pid_exists(int(open(PID_FILE_JOB_SCHEDULER, 'r').read()))
-        return 1
-    except ValueError:
-        return 100
-    except OSError:
-        return 99
-status_job_scheduler.codes = {
-    0: 'OK, running',
-    1: 'Stopped',
-    99: 'Could not read PID file',
-    100: 'Invalid PID file',
-}
 
 
 def profile_memory():
@@ -758,11 +701,7 @@ if __name__ == "__main__":
         )
 
     elif arguments['status']:
-        if arguments['job-scheduler']:
-            status_code = status_job_scheduler()
-            verbose_status = status_job_scheduler.codes[status_code]
-        else:
-            status_code = status()
+        status_code = status()
         sys.exit(status_code)
 
     elif arguments['shell']:
