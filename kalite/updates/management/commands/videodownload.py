@@ -224,6 +224,14 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 "num_total_videos": len(handled_youtube_ids) + len(failed_youtube_ids),
             })
             caching.initialize_content_caches()
+            
+        except TypeError:
+            failed_youtube_ids.append(video.youtube_id)
+            logging.info("TypeError due to internet disconnect")
+            
+        except IOError:
+            failed_youtube_ids.append(video.youtube_id)
+            logging.info("Either file not found or Disk is Full")
 
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})
