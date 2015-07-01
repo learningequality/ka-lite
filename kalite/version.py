@@ -3,10 +3,12 @@ import os
 from kalite.shared.utils import open_json_or_yml
 
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
+# Must be PEP 440 compliant: https://www.python.org/dev/peps/pep-0440/
 MAJOR_VERSION = "0"
-MINOR_VERSION = "14"
-PATCH_VERSION = "alpha1"
-VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
+MINOR_VERSION = "14a1"
+PATCH_VERSION = ""
+VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION) \
+    if PATCH_VERSION else "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
 def VERSION_INFO():
