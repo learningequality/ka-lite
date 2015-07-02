@@ -14,10 +14,37 @@ Mac Installation
 Linux: Debian/Ubuntu Installation
 =================================
 
-1. Download `the deb file <http://overtag.dk/upload/ka-lite_0.14~dev9-1_all.deb>`_ and enjoy!
+Option 1, Ubuntu: Add a PPA
+___________________________
+
+  .. ::
+    sudo add-apt-repository ppa:benjaoming/ka-lite
+    sudo apt-get update
+    sudo apt-get install ka-lite
+
+
+.. _linux-deb-install:
+Option 2, Ubuntu / Debian, download a Debian package
+____________________________________________________
+
+Download the latest .deb manually from
+`Our Launchpad PPA <http://ppa.launchpad.net/benjaoming/ka-lite/ubuntu/pool/main/k/ka-lite-source/?C=M;O=D>`_.
+Look for the latest file with a ".deb" extension, download it and open it with
+Ubuntu Software Center, GDebi, Synaptic, or install it from command line
+with ``dpkg -i  ka-lite_0.x.x-0ubuntu1_all.deb``.
+
+The file may be named as if it was intended for Ubuntu but works just as well
+for any other Debian-based systems like Debian, Raspberry Pi, Linux Mint etc.
+
+Configuration after installing / updating
+_________________________________________
+
+Every time you install or update kalite, you should (re)run ``kalite manage setup``
+to setup the database and download assessment items (video descriptions,
+exercises etc.).
+
 
 .. _linux-pypi-install:
-
 Linux: Installing as a PyPI package
 ===================================
 
@@ -27,22 +54,44 @@ Alternatively, install with *pip* using the instructions below:
 
 .. note:: Type the following commands in a terminal.
 
-#. Install pip (*sudo apt-get install python-pip* or use your distro's package manager).
-#. (Recommended; essential on slower platforms like Raspberry Pi) Install M2Crypto (*sudo apt-get install python-m2crypto*).
-#. Run *sudo pip install ka-lite-static*.
-#. Run *kalite manage setup*. Follow the on-screen prompts to complete the setup.
-#. After completing the setup, follow the on-screen instructions to start KA Lite using the *kalite* command!
+#. Install pip (Ubuntu: ``sudo apt-get install python-pip``)
+#. (Recommended; essential on slower platforms like Raspberry Pi) Install M2Crypto (``sudo apt-get install python-m2crypto``).
+#. Run ``sudo pip install ka-lite-static`` (bundled dependencies) or ``sudo pip install ka-lite`` (normal pip behaviour, dependencies installed to host system).
+#. Run ``kalite manage setup``.
 
 For more tips see :ref:`advanced-installation`.
+
+Uninstalling
+============
+
+You can remove KA Lite (when installed from pip or source distribution) with
+`pip uninstall ka-lite` or `pip uninstall ka-lite-static` (static version).
+
+For Ubuntu, use ``apt-get remove ka-lite``.
+
+
+Removing user data
+------------------
+
+Downloaded videos and database files are in `~/.kalite`. Navigate to the
+home directory of the user who ran the KA Lite server and remove that directory
+to potentially reclaim lots of hard drive space.
+
+
+Configuration after installing / updating
+_________________________________________
+
+Every time you install or update kalite, you should (re)run ``kalite manage setup``
+to setup the database and download assessment items (video descriptions,
+exercises etc.).
+
 
 Raspberry Pi
 ============
 
-Please follow the steps for installing as a :ref:`PyPI packagae <linux-pypi-install>`.
+For a Raspberry Pi running a Debian system, you can install the Debian package.
 
-During setup you will be asked to optimize your installation for performance on the Raspberry Pi.
 
-Say **YES!** Make sure you have a stable Internet connection during the process, as you will be downloading a number of 3rd party open source libraries.
 
 Raspberry Pi Wi-Fi
 ------------------
@@ -54,8 +103,6 @@ Raspberry Pi Wi-Fi
 
 In our tests, we found that the WiPi adaptor supported a higher number tablet connections.
 
-Installation
-^^^^^^^^^^^^
 
 .. note:: The Raspberry Pi may crash if the USB adaptor is inserted or removed while the computer is switched on.
 
@@ -92,37 +139,26 @@ Installation
     * If the KA Lite server is started, browse to 1.1.1.1
 
 .. _advanced-installation:
-Advanced Installation
-=====================
+Advanced topics
+===============
 
-The "source distribution" of KA Lite does NOT involve compiling anything (since
-it's pure Python). You can install it very easily.
+Source code / development
+-------------------------
 
-Each stable release ships with an installer for Windows, Mac, and Debian/Ubuntu.
-If you only wish to install KA Lite for regular use and not development, see those relevant sections.
+KA Lite can also be run as a "source distribution" for development purposes.
+By this, we just mean a git checkout (from `our github<https://github.com/learningequality/ka-lite/>`_).
+
+.. note:: Running directly from source will also maintain all user data in that
+          same directory! This is convenient for having several versions of
+          kalite with different data on the same computer.
 
 If you are able to use pip and install conventional python packages from an
 online source, then the quickest option to install the latest stable release
 of KA Lite is `pip install ka-lite` or `pip install ka-lite-static`.
 
 
-Uninstalling
-------------
-
-You can remove KA Lite (when installed from pip or source distribution) with
-`pip uninstall ka-lite` or `pip uninstall ka-lite-static` (static version).
-
-
-Removing user data
-------------------
-
-Downloaded videos and database files are in `~/.kalite`. So navigate to the
-home directory of the user who used KA Lite and remove that directory to
-potentially reclaim lots of hard drive space.
-
-
 Static vs. Dynamic version
-==========================
+--------------------------
 
 Apart from Python itself, KA Lite depends on a couple of python applications,
 mainly from the Django ecology. These applications can be installed in two ways:
@@ -150,7 +186,7 @@ interfere with other Python software on your machine like this::
 
 
 Installing through PIP or with setup.py
-=======================================
+---------------------------------------
 
 This documentation is preliminary and will be moved and restructured.
 
@@ -160,7 +196,7 @@ For command line users with access to PIP, you can install the following version
 
 
 Static version
---------------
+______________
 
 If you need to run KA Lite with static dependencies bundled and isolated from
 the rest of your environment, you can run::
@@ -168,46 +204,104 @@ the rest of your environment, you can run::
     $> pip install ka-lite-static
 
 
-Installing tarballs / zip files with setup.py
----------------------------------------------
+Portable tarballs / zip files with setup.py
+___________________________________________
 
-You can also fetch a tarball directly from PyPi.
+You can also fetch a tarball directly from `PyPi <https://pypi.python.org/pypi/ka-lite-static>`.
+Do this for the sake of carrying KA Lite on an offline media. You can then
+unpack the tarball and run ``python setup.py install``.
 
 
 Developers
 ==========
 
 Developers should consider installing in "editable" mode. That means, create a
-git clone and from the git clone source dir (with setup.py), run::
+git clone and from the git cloned directory, run::
 
+    $> git clone git@github.com:learningequality/ka-lite.git
+    $> cd ka-lite
+    $> # You may wish to create and activate a virtual env here
     $> pip install -e .
 
 
 Testing installers
 ------------------
 
-Full range of installation testing possibilities:
+Here's an overview of the various ways of installing KA Lite as a reference
+to testers and package maintainers:
 
-* Straight up setuptools test: `python setup.py install`
-* Straight up setuptools test, static: `python setup.py install --static`
-* Straight up pip test: `pip install .`
-* Straight up pip test, static: N/A, the `--static` option can't be passed through pip.
-* Dynamic tarball testing: `python setup.py sdist --static` + `pip install dist/ka-lite-XXXX.tar.gz`.
-  * Removal: `pip remove ka-lite`.
-* Static tarball testing: `python setup.py sdist --static` + `pip install dist/ka-lite-static-XXXX.tar.gz`
-  * Removal: `pip remove ka-lite-static`.
+ * Source code setuptools test: ``python setup.py install``
+ * Source code setuptools test, static: ``python setup.py install --static``
+ * Source code pip test: ``pip install .``
+ * Source code pip test, static: N/A, the ``--static`` option can't be passed through pip.
+ * Dynamic tarball testing: ``python setup.py sdist --static`` + ``pip install dist/ka-lite-XXXX.tar.gz``.
+   * Removal: ``pip remove ka-lite``.
+ * Static tarball testing: ``python setup.py sdist --static`` + ``pip install dist/ka-lite-static-XXXX.tar.gz``
+   * Removal: ``pip remove ka-lite-static``.
+ * Wheel / whl: Not supported in 0.14.
 
 Those testing scenarios should be sufficient, but there may be small differences
 encountered that we need to look at once in a while with
-`pip install -e` (editable mode) or unzipping a source "ka-lite.XXX.zip" and
+``pip install -e`` (editable mode) or unzipping a source "ka-lite.XXX.zip" and
 run setup.py with setuptools instead of through pip.
 
-**Using `pip install` and `--static`**: Is not possible, so you cannot install
+Using ``pip install`` and ``--static``: Is not possible, so you cannot install
 the static version in "editable" mode. This is because pip commands do not
 pass our user-defined options to setup.py.
 
 
-Optional: Install and configure Apache/mod_wsgi
-===============================================
+Nginx / Apache setup
+====================
 
-KA Lite includes a web server implemented in pure Python for serving the website, capable of handling hundreds of simultaneous users while using very little memory. However, if for some reason you wish to serve the website through Apache and mod_wsgi, here are some [useful Apache setup tips](docs/INSTALL-APACHE.md).
+This section is written for the Django-knowledgable crowd.
+
+KA Lite includes a web server implemented in pure Python for serving the 
+website, capable of handling hundreds of simultaneous users while using very
+little memory. So you don't have to run Apache or Nginx for efficiency.
+
+Apache configuration, using mod_wsgi, example would work for an Ubuntu .deb
+installation:
+
+::
+    <VirtualHost *:80>
+        ServerName kalite.com
+        DocumentRoot /var/www/html/
+
+        Alias /static /var/www/.kalite/static
+        Alias /media /var/www/.kalite/media
+
+        WSGIScriptAlias / /usr/lib/python2.7/dist-packages/kalite/project/wsgi.py
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        ErrorLog ${APACHE_LOG_DIR}/kalite-error.log
+        CustomLog ${APACHE_LOG_DIR}/kalite-access.log combined
+    </VirtualHost>
+
+
+If you are using uwsgi+Nginx, this is the critical part of your uwsgi
+configuration, provided that you have installed kalite from PyPi or .deb:
+
+::
+    module = kalite.project.wsgi
+
+
+Remember that kalite runs in user space and creates data files in that user's
+home directory. A normal Debian/Ubuntu system has a www-data user for Apache
+which is the default user for mod_wsgi and will create database files, static
+files etc. for kalite in ``/var/www/.kalite/``. If you run it as another user,
+it may be located somewhere else.
+
+
+.. note:: Log in as the Django application server's user, e.g. www-data and
+    initialize the kalite static files and database before anything you can
+    run kalite with uwsgi / mod_wsgi !
+
+Example of setting up kalite for the www-data user:
+
+::
+    $> su -s /bin/bash www-data
+    $> kalite manage setup
+    $> exit
