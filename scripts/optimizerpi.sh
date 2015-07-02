@@ -11,7 +11,7 @@ mkdir -p ~/.kalite
 
 USER_CONFIG=~/.kalite/settings.py
 
-if [ ! grep -P "^# from kalite.project.settings.raspberry_pi" $USER_CONFIG ]
+if ! grep -Pq "^from kalite.project.settings.raspberry_pi" $USER_CONFIG
 then
     echo "Changing user config to use raspberry pi settings: $USER_CONFIG"
     echo "from kalite.project.settings.raspberry_pi import *" > $USER_CONFIG
@@ -19,9 +19,13 @@ fi
 
 if [ ! -f "/etc/init.d/kalite" ]
 then
-    kalite manage initdconfig > /etc/init.d/kalite
-    chmod 755 /etc/init.d/kalite
-    update-rc.d kalite defaults
+    read -p "Do you want to run ka-lite automatically at boot ? [Y/n] " yn
+    if [[ ! $yn == "n" ]]; then echo "skipping"
+    else
+        kalite manage initdconfig > /etc/init.d/kalite
+        chmod 755 /etc/init.d/kalite
+        update-rc.d kalite defaults
+    fi
 fi
 
 echo "Step 1 - Installing M2Crypto, psutil and nginx"
