@@ -1,18 +1,32 @@
 #!/bin/bash
 
-SCRIPT_DIR=`dirname "${BASH_SOURCE[0]}"`
-if [ -e "$SCRIPT_DIR/python.sh" ]; then
-    KALITE_DIR=$SCRIPT_DIR/../kalite
-else
-    KALITE_DIR=$SCRIPT_DIR/kalite
+if [ `whoami` == "root" ]
+then
+    echo "Cannot run as root!"
+    exit 1
 fi
 
-#we_are_rpi=`"$current_dir/get_setting.sh" package_selected\(\"RPi\"\)`
-#if [ $we_are_rpi != "True" ]; then
-#    echo "Error: we aren't configured as a Raspberry Pi, cannot continue"
-#    read WAITING
-#    exit
-#fi
+# Create configuration directory in case we never ran before
+mkdir -p ~/.kalite
+
+USER_CONFIG=~/.kalite/settings.py
+
+if ! grep -Pq "^from kalite.project.settings.raspberry_pi" $USER_CONFIG
+then
+    echo "Changing user config to use raspberry pi settings: $USER_CONFIG"
+    echo "from kalite.project.settings.raspberry_pi import *" > $USER_CONFIG
+fi
+
+if [ ! -f "/etc/init.d/kalite" ]
+then
+    read -p "Do you want to run ka-lite automatically at boot ? [Y/n] " yn
+    if [[ ! $yn == "n" ]]; then echo "skipping"
+    else
+        kalite manage initdconfig > /etc/init.d/kalite
+        chmod 755 /etc/init.d/kalite
+        update-rc.d kalite defaults
+    fi
+fi
 
 echo "Step 1 - Installing M2Crypto, psutil and nginx"
 
@@ -69,7 +83,7 @@ if [ -f /etc/nginx/sites-enabled/kalite ]; then
 fi
 
 sudo touch /etc/nginx/sites-available/kalite
-sudo sh -c "python $KALITE_DIR/../kalitectl.py manage nginxconfig > /etc/nginx/sites-available/kalite"
+sudo sh -c "kalite manage nginxconfig > /etc/nginx/sites-available/kalite"
 sudo ln -s /etc/nginx/sites-available/kalite /etc/nginx/sites-enabled/kalite
 
 echo "Step 3 - Optimize nginx configuration"
