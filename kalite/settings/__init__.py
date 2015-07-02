@@ -41,7 +41,7 @@ CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
 
 if CONFIG_PACKAGE:
     warnings.warn(
-        "CONFIG_PACKAGE is outdated for RPi settings, see docs (TODO MCGallaspy, URL)",
+        "CONFIG_PACKAGE is outdated, see docs (TODO MCGallaspy, URL ?)",
         RemovedInKALite_v015_Warning
     )
 
