@@ -17,10 +17,12 @@ warnings.warn(
 ##############################
 # Functions for querying settings
 ##############################
-
 def package_selected(package_name):
     global CONFIG_PACKAGE
     return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
+
+# for extracting assessment item resources
+ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/%s/content/assessment.zip" % version.SHORTVERSION
 
 
 from .base import *
@@ -34,6 +36,8 @@ CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 # Everything that follows is overriding default settings, depending on CONFIG_PACKAGE
 ########################
 
+# A deprecated setting that shouldn't be used
+CONFIG_PACKAGE = CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
@@ -74,9 +78,6 @@ if package_selected("nalanda"):
     FIXED_BLOCK_EXERCISES = 5
     QUIZ_REPEATS = 3
 UNIT_POINTS = 2000
-
-# for extracting assessment item resources
-ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/%s/content/assessment.zip" % version.SHORTVERSION
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
