@@ -13,6 +13,7 @@
                     </div>
 
                     {{#if dubs_available }}
+
                     <h3>
                         <select class="content-language-selector">
                             {{#each availability }}
@@ -24,7 +25,8 @@
                     </h3>
                     {{/if}}
 
-                    <span class="title">{{ title }}</span>
+                    {{!-- Title should go inside H1 element. TODO Radina - add proper CSS after browserify --}}
+                    <h1 class="title">{{ title }}</h1>
                     {{#if organization}}
                         <span class="organization">{{_ "by:" }} {{ organization }}</span>
                     {{/if}}

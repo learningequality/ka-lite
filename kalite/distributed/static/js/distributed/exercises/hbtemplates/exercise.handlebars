@@ -1,10 +1,11 @@
-<h3 class="row">
+ {{!-- Title should go inside H1 element. TODO Radina - add proper CSS after browserify --}}
+<h1 class="row">
     <div class="col-xs-12">
         <span class="exercise-title-prefix">{{#if test_id }}{{_ "Test" }}{{ else }}{{_ "Practicing" }}{{/if }}</span>
         <span class="exercise-title">{{ title }}</span>
     {{#if description }}<br/><span class="practice-exercise-description">{{ description }}</span>{{/if }}
     </div>
-</h3>
+</h1>
 
 <div class="row">
     <div class="exercises-body col-sm-12">
