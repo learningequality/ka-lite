@@ -30,7 +30,7 @@ KALITECTL_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(_
 # Trying to import call_command to execute a Django mgmt command gets you
 # into a weird import hell, probably because of import_all_child_modules...
 SCREENSHOT_COMMAND = [sys.executable, KALITECTL_PATH, "manage", "screenshots"]
-SCREENSHOT_COMMAND_OPTS = ["-v", "0", "--output-dir", OUTPUT_PATH]
+SCREENSHOT_COMMAND_OPTS = ["-v3", "--output-dir={0}".format(OUTPUT_PATH), "--settings=kalite.project.settings.screenshots"]
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",
                      "borderColor": "red",
