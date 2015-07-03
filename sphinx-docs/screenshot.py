@@ -1,6 +1,5 @@
 import json
 import os
-import uuid
 import sys
 from subprocess import Popen
 
@@ -257,7 +256,10 @@ class Screenshot(Image):
             self.url = self.options['url']
 
         if 'navigation-steps' in self.options:
-            self.filename = uuid.uuid4().__str__()
+            from hashlib import md5
+            self.filename = md5(
+                "".join(map(str, self.options.values()))
+            )
             runhandler = self.options['navigation-steps']['runhandler']
             args = self.options['navigation-steps']['args']
             return_nodes.append(getattr(self, runhandler)(**args))
