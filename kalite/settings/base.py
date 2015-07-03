@@ -321,6 +321,7 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
+<<<<<<< HEAD
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -357,6 +358,21 @@ INSTALLED_APPS = [
     'kalite.ab_testing',
     'kalite.control_panel',
 ]
+=======
+INSTALLED_APPS = (
+    # this and the following are needed to enable django admin.
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.messages",
+    "django.contrib.sessions",
+    "kalite.distributed",
+    "compressor",
+    "django_js_reverse",
+    "kalite.inline",
+    "dbbackup",
+)
+>>>>>>> Create backup app/ update INSTALLED_APPS
 
 if IS_SOURCE:
     INSTALLED_APPS += (
