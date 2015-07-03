@@ -178,3 +178,7 @@ th.headrowuser {
     select#topic { margin-left: 0 !important; }
     /* Moves "Select Topic" dropdown slightly to the right so that it lines up with "Select Topic" and "Select Report" */
 }
+
+.detail-panel-contents {
+    padding-top: 0.5em;
+}
