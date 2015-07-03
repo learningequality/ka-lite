@@ -71,8 +71,7 @@ def check_setup_status(handler):
                 redirect_url = None
             if redirect_url:
                 messages.warning(request, mark_safe(
-                    "Please login with the account you created while running the installation script, \
-                    to complete the setup."))
+                    "Please login with the admin account you created, then create your facility and register this device to complete the setup."))
 
         return handler(request, *args, **kwargs)
     return check_setup_status_wrapper_fn
