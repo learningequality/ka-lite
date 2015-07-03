@@ -1,4 +1,6 @@
-SessionModel = Backbone.Model.extend({
+var Backbone = require("../base/backbone");
+
+var SessionModel = Backbone.Model.extend({
     defaults: {
         USER_URL                    : "",
 
@@ -22,4 +24,4 @@ SessionModel = Backbone.Model.extend({
     }
 });
 
-window.sessionModel = new SessionModel();
+module.exports = SessionModel;

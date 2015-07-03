@@ -1,6 +1,6 @@
 TopicChannelRouter = Backbone.Router.extend({
     initialize: function(options) {
-        _.bindAll(this);
+        _.bindAll(this, "navigate_default_channel", "intercept_learn_nav", "navigate_channel", "add_slug", "url_back", "navigate_splat", "set_page_title", "trigger_navigation_callback");
         this.default_channel = options.default_channel;
         $("#nav_learn").click(this.intercept_learn_nav);
     },

@@ -20,7 +20,7 @@ window.SoftwareKeyboardView = Backbone.View.extend({
 
     initialize: function () {
 
-        _.bindAll(this);
+        _.bindAll(this, "set_input", "toggle_keypad", "key_pressed", "render", "hide", "show", "catch_keypress");
 
         this.touch = Modernizr.touch;
         this.enabled = true;

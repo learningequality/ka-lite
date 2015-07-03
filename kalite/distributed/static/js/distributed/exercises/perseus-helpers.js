@@ -1,3 +1,5 @@
+var _ = require("underscore");
+
 var KhanUtil = window.KhanUtil || {};
 
 var Khan = window.Khan || {

@@ -1,8 +1,10 @@
+var _ = require("underscore");
+
 window.ExtraFieldsBaseModel = Backbone.Model.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "parse", "toJSON");
 
     },
 
@@ -82,7 +84,7 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
     ],
 
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this, "urlRoot", "save", "saveNow", "set_complete");
     },
 
     urlRoot: function() {

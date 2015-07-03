@@ -1,8 +1,15 @@
-window.AutoCompleteView = BaseView.extend({
+var BaseView = require("../base/baseview");
+var Handlebars = require("../base/handlebars");
+var _ = require("underscore");
+var api = require("../utils/api");
 
-    template: HB.template("search/search-bar"),
+var SearchBarTemplate = require("./hbtemplates/search-bar.handlebars");
+var SearchBarItemTemplate = require("./hbtemplates/search-item.handlebars");
+var AutoCompleteView = BaseView.extend({
 
-    item_template: HB.template("search/search-item"),
+    template: SearchBarTemplate,
+
+    item_template: SearchBarItemTemplate,
 
     tagName: "li", 
 
@@ -14,7 +21,7 @@ window.AutoCompleteView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "fetch_topic_tree", "flatten_nodes", "render", "data_source", "select_item", "input_changed", "submit_form");
 
         this._titles = {};
         this._keywords = {};
@@ -28,7 +35,7 @@ window.AutoCompleteView = BaseView.extend({
     fetch_topic_tree: function () {
         var self = this;
         if (this._nodes===undefined) {
-            doRequest(window.Urls.topic_tree(window.sessionModel.get("CHANNEL")), null, {
+            api.doRequest(window.Urls.topic_tree(window.sessionModel.get("CHANNEL")), null, {
                 cache: true,
                 dataType: "json",
                 ifModified: true
@@ -184,3 +191,4 @@ window.AutoCompleteView = BaseView.extend({
     }
 });
 
+module.exports = AutoCompleteView;

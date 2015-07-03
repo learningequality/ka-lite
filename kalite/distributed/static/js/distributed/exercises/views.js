@@ -1,10 +1,12 @@
+var _ = require("underscore");
+
 window.ExerciseHintView = BaseView.extend({
 
     template: HB.template("exercise/exercise-hint"),
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "render");
 
         this.render();
 
@@ -23,12 +25,12 @@ window.ExerciseProgressView = BaseView.extend({
 
     initialize: function() {
 
-            _.bindAll(this);
+        _.bindAll(this, "render", "update_streak_bar", "update_attempt_display");
 
-            this.render();
+        this.render();
 
-            this.listenTo(this.model, "change", this.update_streak_bar);
-            this.listenTo(this.collection, "add", this.update_attempt_display);
+        this.listenTo(this.model, "change", this.update_streak_bar);
+        this.listenTo(this.collection, "add", this.update_attempt_display);
 
     },
 
@@ -102,7 +104,7 @@ window.ExerciseView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll.apply(_, [this].concat(_.functions(this)))
 
         // load the info about the exercise itself
         this.data_model = new ExerciseDataModel({exercise_id: this.options.exercise_id});
@@ -485,7 +487,7 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 
         var self = this;
 
-        _.bindAll(this);
+        _.bindAll.apply(_, [this].concat(_.functions(this)))
 
         window.statusModel.loaded.then(function() {
 

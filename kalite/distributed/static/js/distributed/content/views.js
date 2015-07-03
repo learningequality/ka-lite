@@ -1,3 +1,5 @@
+var _ = require("underscore");
+
 window.ContentWrapperView = BaseView.extend({
 
     events: {
@@ -8,7 +10,7 @@ window.ContentWrapperView = BaseView.extend({
 
     initialize: function(options) {
 
-        _.bindAll(this);
+        _.bindAll(this, "user_data_loaded", "set_full_progress", "render");
 
         var self = this;
 
@@ -104,7 +106,7 @@ window.ContentWrapperView = BaseView.extend({
 window.ContentBaseView = BaseView.extend({
     initialize: function(options) {
 
-        _.bindAll(this);
+        _.bindAll(this, "activate", "deactivate", "set_time_spent", "set_last_time", "set_progress", "update_progress", "content_specific_progress", "close");
 
         this.active = false;
 

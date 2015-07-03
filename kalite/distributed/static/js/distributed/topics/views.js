@@ -309,7 +309,7 @@ window.TopicContainerInnerView = BaseView.extend({
 
     initialize: function(options) {
 
-        _.bindAll(this);
+        _.bindAll.apply(_, [this].concat(_.functions(this)))
 
         var self = this;
 
@@ -494,7 +494,7 @@ window.SidebarEntryView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "render");
 
         this.listenTo(this.model, "change", this.render);
 

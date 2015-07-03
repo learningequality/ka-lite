@@ -1,3 +1,5 @@
+var _ = require("underscore");
+
 var ds = window.ds || {};
 
 window.ExerciseParams = {
@@ -25,10 +27,12 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "url", "update_if_needed_then", "as_user_exercise", "get_framework");
+
+        var self = this;
 
         // store the provided seed as an object attribute, so it will be available after a fetch
-        this.listenTo(this, "change:seed", function() { this.seed = this.get("seed") || this.seed; });
+        this.listenTo(this, "change:seed", function() { self.seed = self.get("seed") || self.seed; });
 
     },
 
@@ -98,7 +102,7 @@ window.ExerciseLogModel = Backbone.Model.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "save", "attempts_since_completion", "fixed_block_questions_remaining");
 
     },
 
@@ -314,7 +318,7 @@ window.TestLogModel = Backbone.Model.extend({
 
     init: function(options) {
 
-        _.bindAll(this);
+        _.bindAll(this, "get_item_data", "save");
 
         var self = this;
 
@@ -487,7 +491,7 @@ window.QuizLogModel = Backbone.Model.extend({
 
     init: function(options) {
 
-        _.bindAll(this);
+        _.bindAll(this, "get_item_data", "save", "add_response_log_item", "get_latest_response_log_item");
 
         var self = this;
 
