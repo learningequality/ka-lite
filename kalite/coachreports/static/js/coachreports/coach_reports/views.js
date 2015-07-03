@@ -299,8 +299,9 @@ var TabularReportView = BaseView.extend({
 
     template: HB.template("tabular_reports/tabular-view"),
 
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this);
+        this.complete_callback = options.complete;
         this.set_data_model();
         this.listenTo(this.model, "change", this.set_data_model);
     },
@@ -323,6 +324,10 @@ var TabularReportView = BaseView.extend({
         this.append_views(row_views, ".student-data");
         
         this.$('.headrowuser').css("min-width", this.$('.headrow.data').outerWidth());
+
+        if(this.complete_callback) {
+            this.complete_callback();
+        }
 
     },
 
@@ -424,9 +429,14 @@ var CoachSummaryView = BaseView.extend({
     },
 
     toggle_tabular_view: _.debounce(function() {
+        var self = this;
         if (!this.tabular_report_view) {
-            this.$("#show_tabular_report").text("Hide Tabular Report");
-            this.tabular_report_view = new TabularReportView({model: this.model});
+            this.$("#show_tabular_report").text("Loading");
+            this.$("#show_tabular_report").attr("disabled", "disabled");
+            this.tabular_report_view = new TabularReportView({model: this.model, complete: function() {
+                self.$("#show_tabular_report").text("Hide Tabular Report");
+                self.$("#show_tabular_report").removeAttr("disabled");
+            }});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         } else {
             this.$("#show_tabular_report").text("Show Tabular Report");
