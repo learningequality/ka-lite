@@ -305,6 +305,8 @@ INSTALLED_APPS = (
     "compressor",
     "django_js_reverse",
     "kalite.inline",
+    "dbbackup",
+    "backup",
 )
 
 if IS_SOURCE:
