@@ -80,12 +80,24 @@ th.headrowuser {
     background-color: #C0E7F3;
 }
 
+.partial.selected {
+    background-color: #749BA7;
+}
+
 .complete {
     background-color: #5AA685;
 }
 
+.complete.selected {
+    background-color: #0E5A39;
+}
+
 .struggling {
     background-color: #FD795B;
+}
+
+.struggling.selected {
+    background-color: #CA4628;
 }
 
 .not-attempted {
