@@ -47,6 +47,7 @@ sphinx-docs/images/*
 # oh-my-zsh convention for automatically
 # switching on a venv
 .venv
+venv/
 
 # Lacks documentation
 locale/
