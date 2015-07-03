@@ -80,7 +80,7 @@ th.headrowuser {
     background-color: #C0E7F3;
 }
 
-.partial.selected {
+.partial.selected, .partial:hover{
     background-color: #749BA7;
 }
 
@@ -88,7 +88,7 @@ th.headrowuser {
     background-color: #5AA685;
 }
 
-.complete.selected {
+.complete.selected, .complete:hover{
     background-color: #0E5A39;
 }
 
@@ -96,7 +96,7 @@ th.headrowuser {
     background-color: #FD795B;
 }
 
-.struggling.selected {
+.struggling.selected, .struggling:hover{
     background-color: #CA4628;
 }
 
