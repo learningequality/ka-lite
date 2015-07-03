@@ -9,6 +9,7 @@ from docutils.parsers.rst.directives.images import Image
 from docutils.parsers.rst import Directive
 import docutils.parsers.rst.directives as directives
 from exceptions import NotImplementedError
+print sys.path
 from selenium.webdriver.common.keys import Keys
 
 from errors import ActionError
@@ -40,6 +41,7 @@ FOCUS_CSS_STYLES = { "borderStyle": "solid",
 
 def setup(app):
     app.add_directive('screenshot', Screenshot)
+    app.add_config_value('screenshots_skip', False, False)
     app.connect('env-purge-doc', purge_screenshots)
     app.connect('env-updated', process_screenshots)
 
@@ -52,6 +54,10 @@ def purge_screenshots(app, env, docname):
 def process_screenshots(app, env):
     if not hasattr(env, 'screenshot_all_screenshots'):
         return
+
+    if app.config['screenshots_skip']:
+        return
+        
     # Don't bother building screenshots if we're just collecting messages.
     # Just checks if we invoked the build command with "gettext" in there somewhere
     if "gettext" in sys.argv:
@@ -232,7 +238,7 @@ class Screenshot(Image):
         return_nodes = []
         if not hasattr(self.env, 'screenshot_all_screenshots'):
             self.env.screenshot_all_screenshots = []
-
+        
         if not 'registered' in self.options:
             self.options['registered'] = False
         else:
