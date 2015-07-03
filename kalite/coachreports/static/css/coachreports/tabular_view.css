@@ -108,9 +108,9 @@ th.headrowuser {
     float:left; 
     display:none;
     overflow:hidden;
-    white-space:nowrap;
+    white-space:pre-line;
     width:100%;
-    margin:0px 5px 0px 0px;
+    margin:0px 5px 0px 3px;
     padding:0px;
     text-align:right;
     vertical-align:middle;
