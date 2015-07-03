@@ -24,9 +24,6 @@ import kalite.student_testing.urls
 import kalite.store.urls
 import securesync.urls
 
-import fle_utils.handlebars.urls
-
-
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -88,11 +85,6 @@ if "kalite.testing.loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns(__package__ + '.views',
         url(r'^loadtesting/', include('kalite.testing.loadtesting.urls')),
     )
-
-# Handlebars
-urlpatterns += patterns('',
-    url(r'^handlebars/', include(fle_utils.handlebars.urls)),
-)
 
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
