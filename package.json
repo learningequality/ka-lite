@@ -31,5 +31,14 @@
     "qunit": "~0.7.5",
     "qunitjs": "~1.16.0",
     "sinon": "~1.12.2"
+  },
+  "dependencies": {
+    "backbone": "~1.2.1",
+    "browserify": "~10.2.4",
+    "factor-bundle": "^2.4.1",
+    "handlebars": "~1.3.0",
+    "hbsfy": "~2.2.1",
+    "jquery": "~2.1.4",
+    "underscore": "~1.8.3"
   }
 }
