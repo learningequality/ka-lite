@@ -35,6 +35,8 @@ window.SuperUserCreateModalView = BaseView.extend({
                 }
             },
             error : function(e){
+                $('#superusercreate-container').html("<div class='alert alert-danger'>Cannot correctly load the admin creation form. " 
+                    + e.status + " (" + e.statusText + ")</div>");
                 console.log(e);
             }
         });
