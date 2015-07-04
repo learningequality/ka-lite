@@ -568,6 +568,10 @@ window.ExerciseWrapperBaseView = BaseView.extend({
                         context_type: self.options.context_type
                     });
 
+                    if (self.display_message) {
+                        self.display_message();
+                    }
+
                 } else { // use the seed already established for this attempt
                     self.exercise_view.load_question({
                         seed: self.current_attempt_log.get("seed"),
@@ -582,6 +586,10 @@ window.ExerciseWrapperBaseView = BaseView.extend({
         } else { // not logged in, but just load the next question, for kicks
 
             self.exercise_view.load_question();
+
+            if (self.display_message) {
+                self.display_message();
+            }
 
         }
 
@@ -741,8 +749,6 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
             });
         }
 
-        this.display_message();
-
     },
 
 
@@ -801,6 +807,7 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
         } else {
             msg = gettext("You have finished this exercise!");
         }
+        clear_messages();
         show_message("info", sprintf(msg, context));
     }
 
