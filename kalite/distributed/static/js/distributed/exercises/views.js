@@ -483,22 +483,24 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 
     initialize: function() {
 
-        var self = this;
-
         _.bindAll(this);
 
-        window.statusModel.loaded.then(function() {
+        window.statusModel.loaded.then(this.setup_exercise_environment);
+    },
 
-            if (self.initialize_subviews) {
-                self.initialize_subviews();
-            }
+    setup_exercise_environment: function() {
 
-            if (window.statusModel.get("is_logged_in")) {
+        if (this.initialize_subviews) {
+            this.initialize_subviews();
+        }
 
-                self.load_user_data();
+        if (window.statusModel.get("is_logged_in")) {
 
-            }
-        });
+            this.load_user_data();
+
+        }
+
+        this.listenToOnce(window.statusModel, "change:is_logged_in", this.setup_exercise_environment);
     },
 
     initialize_new_attempt_log: function(data) {
@@ -792,20 +794,21 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
             numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
             denominator: ExerciseParams.STREAK_WINDOW
         };
-
-        if (!this.log_model.get("complete")) {
-            if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
-                msg = "";
-            } else {
-                if (window.statusModel.is_student()) {
-                    msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
-                } else {
-                    // TODO (rtibbles): Display a meaningful message to admins and coaches here.
+        if (this.log_model) {
+            if (!this.log_model.get("complete")) {
+                if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
                     msg = "";
+                } else {
+                    if (window.statusModel.is_student()) {
+                        msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+                    } else {
+                        // TODO (rtibbles): Display a meaningful message to admins and coaches here.
+                        msg = "";
+                    }
                 }
+            } else {
+                msg = gettext("You have finished this exercise!");
             }
-        } else {
-            msg = gettext("You have finished this exercise!");
         }
         clear_messages();
         show_message("info", sprintf(msg, context));
