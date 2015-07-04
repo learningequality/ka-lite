@@ -791,7 +791,12 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
             if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
                 msg = "";
             } else {
-                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+                if (window.statusModel.is_student()) {
+                    msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+                } else {
+                    // TODO (rtibbles): Display a meaningful message to admins and coaches here.
+                    msg = "";
+                }
             }
         } else {
             msg = gettext("You have finished this exercise!");
