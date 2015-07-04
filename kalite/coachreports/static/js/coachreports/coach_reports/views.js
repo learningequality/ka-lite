@@ -478,7 +478,7 @@ var FacilitySelectView = Backbone.View.extend({
     },
 
     events: {
-        "#facility-select click": "facility_changed"
+        "change": "facility_changed"
     },
 
     facility_changed: function() {
@@ -522,7 +522,7 @@ var GroupSelectView = Backbone.View.extend({
     },
 
     events: {
-        "click": "group_changed"
+        "change": "group_changed"
     },
 
     group_changed: function() {
