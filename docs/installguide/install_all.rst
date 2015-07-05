@@ -17,8 +17,10 @@ Linux: Debian/Ubuntu Installation
 Option 1, Ubuntu: Add a PPA
 ___________________________
 
-  .. ::
-    sudo add-apt-repository ppa:benjaoming/ka-lite
+We maintain a `PPA on Launchpad <https://launchpad.net/~learningequality/+archive/ubuntu/ka-lite>`_
+and if you are connected to the internet, this will also give you automatic updates::
+
+    sudo add-apt-repository ppa:learningequality/ka-lite
     sudo apt-get update
     sudo apt-get install ka-lite
 
@@ -28,7 +30,7 @@ Option 2, Ubuntu / Debian, download a Debian package
 ____________________________________________________
 
 Download the latest .deb manually from
-`Our Launchpad PPA <http://ppa.launchpad.net/benjaoming/ka-lite/ubuntu/pool/main/k/ka-lite-source/?C=M;O=D>`_.
+`the Launchpad archive server <http://ppa.launchpad.net/learningequality/ka-lite/ubuntu/pool/main/k/ka-lite-source/?C=M;O=D>`_.
 Look for the latest file with a ".deb" extension, download it and open it with
 Ubuntu Software Center, GDebi, Synaptic, or install it from command line
 with ``dpkg -i  ka-lite_0.x.x-0ubuntu1_all.deb``.
@@ -61,6 +63,14 @@ Alternatively, install with *pip* using the instructions below:
 
 For more tips see :ref:`advanced-installation`.
 
+Configuration after installing / updating
+_________________________________________
+
+Every time you install or update kalite, you should (re)run ``kalite manage setup``
+to setup the database and download assessment items (video descriptions,
+exercises etc.).
+
+
 Uninstalling
 ============
 
@@ -77,13 +87,6 @@ Downloaded videos and database files are in `~/.kalite`. Navigate to the
 home directory of the user who ran the KA Lite server and remove that directory
 to potentially reclaim lots of hard drive space.
 
-
-Configuration after installing / updating
-_________________________________________
-
-Every time you install or update kalite, you should (re)run ``kalite manage setup``
-to setup the database and download assessment items (video descriptions,
-exercises etc.).
 
 
 Raspberry Pi
@@ -212,8 +215,8 @@ Do this for the sake of carrying KA Lite on an offline media. You can then
 unpack the tarball and run ``python setup.py install``.
 
 
-Developers
-==========
+Developer setup
+_______________
 
 Developers should consider installing in "editable" mode. That means, create a
 git clone and from the git cloned directory, run::
@@ -260,9 +263,8 @@ website, capable of handling hundreds of simultaneous users while using very
 little memory. So you don't have to run Apache or Nginx for efficiency.
 
 Apache configuration, using mod_wsgi, example would work for an Ubuntu .deb
-installation:
+installation: ::
 
-::
     <VirtualHost *:80>
         ServerName kalite.com
         DocumentRoot /var/www/html/
@@ -282,9 +284,8 @@ installation:
 
 
 If you are using uwsgi+Nginx, this is the critical part of your uwsgi
-configuration, provided that you have installed kalite from PyPi or .deb:
-
-::
+configuration, provided that you have installed kalite from PyPi or .deb: ::
+    
     module = kalite.project.wsgi
 
 
@@ -299,9 +300,8 @@ it may be located somewhere else.
     initialize the kalite static files and database before anything you can
     run kalite with uwsgi / mod_wsgi !
 
-Example of setting up kalite for the www-data user:
+Example of setting up kalite for the www-data user: ::
 
-::
     $> su -s /bin/bash www-data
     $> kalite manage setup
     $> exit

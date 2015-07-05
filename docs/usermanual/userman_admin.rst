@@ -439,12 +439,14 @@ In order for other users to be able to connect to the KA Lite server with a diff
 
 
 Downloading Videos
----------------------
+------------------
+
 Now that you've created a facility and user accounts, it's time to add video content to your local KA Lite installation! Since the videos can take up a large amount of space, you can choose to download only the videos that you need. If your device has enough space and you wish to download all of the videos, we recommend skipping to `Downloading Videos in Bulk`_ .
 
 
 Downloading Individual Videos
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 After registering your device:
 1. Click the "Manage" tab at the top of the page.
 2. Click on the "Videos" tab.
@@ -461,8 +463,10 @@ After registering your device:
 5. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 6. Once the download is completed, video content will be ready for Learners to watch!
 
+
 Downloading Videos in Bulk
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 If you want to download videos in bulk, your best option is to download the KA Lite videos through the `BitTorrent Sync`_ client. This will be a much faster process than using the KA Lite app to download all of the videos.
 
 We have made the full set of KA videos (in the format needed by KA Lite) available via `BitTorrent Sync`_ (btsync). Note that this is different from BitTorrent; btsync allows us to add new videos or fix problems without issuing a whole new torrent file, and then having seeders split between the old and new torrent files. Here are the steps to set this up:
@@ -490,20 +494,24 @@ These are resized videos. All in all, this will take around 23 GB of space.
 
 .. _BitTorrent Sync: http://www.getsync.com/
 
+
 Adding assessment items (exercises)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 If you skipped the step for adding assessment items during install, run the following command (beware it can take a while, the download size is over 500 MB):
 
 ``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip -f``
 
 As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
 
+
 Language Packs
 ---------------------------
+
 KA Lite supports internationalization. You can download language packs for your language if it is available. A language pack comes with all the available subtitles and user interface translations for that language. When it is installed, KA Lite will give you the option to download individual dubbed videos from the language's Khan Academy YouTube channel.
 
 Download Language Packs
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 To download language packs:
 
 1. From the "Manage" page, click on the "Language" tab.
@@ -538,7 +546,7 @@ To download language packs:
 4. Once the download finishes, you can see your language pack in the list of installed packs. Learners and coaches will now be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default".
 
 Delete Language Packs
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 To delete language packs:
 
 #. Log in as the administrator.
@@ -568,7 +576,7 @@ In the system tray, right click on the KA Lite icon. Click the "Stop Server" ite
 
 
 Restarting Your Server: Linux
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. For most Linux distributions, you can do this by going to **Menu -> Accessories -> Terminal** or **Applications menu -> System -> Terminal.**
 
 #. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
@@ -578,7 +586,7 @@ Restarting Your Server: Linux
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
 Restarting Your Server: Mac
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. You may do this by navigating to the magnifying glass |magglass| at the top right corner of your screen, and typing in "Terminal", then hitting "Enter" on your keyboard.
 
 .. |magglass| image:: magglass.png
@@ -623,7 +631,7 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 .. warning:: Please follow these instructions carefully! Customizing the server incorrectly can break your installation. It can be very hard to find and undo the error.
 
 Running KA Lite with your own settings
-______________________________________
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``). That file is where you should put your custom settings, and KA Lite will load them automatically.
 
@@ -641,8 +649,9 @@ By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base``
     # MY_SETTING_VAR = 123
 
 
+
 Available settings
-__________________
+------------------
 
 
 Most common settings
