@@ -6,6 +6,7 @@ from django.http import Http404
 
 from kalite.main.models import UserLog
 from kalite.shared.decorators.auth import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
+from kalite.facility.decorators import facility_from_request
 
 @require_authorized_access_to_student_data
 @render_to("coachreports/student_view.html")
@@ -33,12 +34,18 @@ def student_view_context(request):
     }
     return context
 
-
 @require_authorized_admin
+@facility_from_request
 @render_to("coachreports/coach.html")
-def coach_reports(request):
+def coach_reports(request, facility=None):
     """Landing page needs plotting context in order to generate the navbar"""
-    return {}
+    if facility:
+        facility_id = facility.id
+    else:
+        facility_id = None
+    return {
+        "facility_id": facility_id
+        }
 
 
 
