@@ -9,7 +9,7 @@
 
 {% block headjs %}{{ block.super }}
 
-    <script src="{% static 'js/distributed/homepage_bundle.js' %}"></script>
+    <script src="{% static 'js/distributed/bundles/bundle_homepage.js' %}"></script>
 
     {% if settings.AUTO_LOAD_TEST %}{# TODO(bcipolli): eliminate this, make the load testing app inherit from / override this page #}
     <script>

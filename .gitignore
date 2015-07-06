@@ -49,6 +49,9 @@ sphinx-docs/images/*
 .venv
 venv/
 
+# Ignore built javascript files
+/kalite/*/static/js/*/bundles
+
 # Lacks documentation
 locale/
 node_modules/

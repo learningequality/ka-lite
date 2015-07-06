@@ -22,8 +22,8 @@
         {% compress css file basecss %}
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/jquery-ui.min.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/events_view.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/bootstrap-overrides.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/events_view.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-site.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/khan-lite.css' %}">
         <link href="{% static "fonts/style.css" %}" rel="stylesheet" type="text/css">
@@ -77,16 +77,14 @@
             <script type="text/javascript" src="{{ settings.CONTENT_URL }}locale/js/i18n/{{ request.language }}.js"></script>
         {% endif %}
 
-        {% compress js file basejs %}
-
         <!-- JS translation file statically included as a back-up, so that if the saved file below isn't available, we don't choke. -->
         <script type="text/javascript" src="{% static 'js/i18n/en.js' %}"></script>
 
         {# Older versions of IE didn't have a JSON object, so this library adds it back in if needed #}
         <script type="text/javascript" src="{% static 'js/json2.js' %}"></script>
 
-        <script src="{% static 'js/distributed/common_bundle.js' %}"></script>
-        <script src="{% static 'js/distributed/base_bundle.js' %}"></script>
+        <script src="{% static 'js/distributed/bundles/bundle_common.js' %}"></script>
+        <script src="{% static 'js/distributed/bundles/bundle_base.js' %}"></script>
 
         <script type="text/javascript" src="{% static 'js/fastclick.js' %}"></script>
         <script>
