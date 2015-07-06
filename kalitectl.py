@@ -663,12 +663,17 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
     
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
+        
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
-        collected_django_options = len(result.get('DJANGO_OPTIONS', []))
-        result['DJANGO_OPTIONS'] = (
-            result.get('DJANGO_OPTIONS', []) +
-            sys.argv[len(collected) + (collected_django_options or 1):]
-        )
+        
+        # count the number of arguments that were not Django options, and then properly read in Django
+        # options from sys.argv (we can't get them from "DJANGO_OPTIONS", since that doesn't catch 
+        # long-form options like "--git-migrate")
+        kalite_command_arg_count = len(collected)
+        if "DJANGO_OPTIONS" in result:
+            kalite_command_arg_count -= 1
+        result['DJANGO_OPTIONS'] = sys.argv[kalite_command_arg_count+1:]
+        
         # If any of the collected arguments are also in the DJANGO_OPTIONS,
         # then exit because we don't want users to have put options for kalite
         # at the end of the command
