@@ -59,6 +59,8 @@ from __future__ import print_function
 # DO NOT IMPORT BEFORE THIS LIKE
 import sys
 import os
+import atexit
+import subprocess
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -110,6 +112,8 @@ SERVER_LOG = os.path.join(KALITE_HOME, "server.log")
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
+NODE_PID_FILE = os.path.join(KALITE_HOME, 'kalite_node.pid')
+
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
 # if this environment variable is set, we activate the profiling machinery
@@ -386,6 +390,41 @@ def manage(command, args=[], as_thread=False):
         thread.start()
 
 
+# Watchify running code modified from:
+# https://github.com/beaugunderson/django-gulp/blob/master/django_gulp/management/commands/runserver.py
+
+def start_watchify():
+    sys.stdout.write('Starting watchify')
+
+    watchify_process = subprocess.Popen(
+        ['node compile_javascript.js --debug --watch'],
+        shell=True,
+        stdin=subprocess.PIPE,
+        stdout=sys.stdout,
+        stderr=sys.stderr)
+
+    if watchify_process.poll() is not None:
+        raise CommandError('watchify failed to start')
+
+    sys.stdout.write('Started watchify process on pid {0}'
+                      .format(watchify_process.pid))
+
+    with open(NODE_PID_FILE, 'w') as f:
+        f.write("%d" % watchify_process.pid)
+
+    atexit.register(kill_watchify_process)
+
+def kill_watchify_process():
+    pid, port = read_pid_file(NODE_PID_FILE)
+    # PID file exists, but process is dead
+    if not pid_exists(pid):
+        sys.stdout.write('watchify process not running')
+    else:
+        kill_pid(pid)
+        os.unlink(NODE_PID_FILE)
+        sys.stdout.write('watchify process killed')
+
+
 def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon
@@ -431,6 +470,10 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     # Write current PID and optional port to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
         f.write("%s\n%d" % (str(os.getpid()), port))
+
+    if debug:
+        watchify_thread = Thread(target=start_watchify)
+        watchify_thread.start()
     
     manage('initialize_kalite')
 
@@ -720,3 +763,4 @@ if __name__ == "__main__":
     elif arguments['manage']:
         command = arguments['COMMAND']
         manage(command, args=arguments['DJANGO_OPTIONS'])
+

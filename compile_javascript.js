@@ -14,6 +14,21 @@ if (process.argv.indexOf("--debug") > -1 || process.argv.indexOf("-d") > -1) {
     debug = true;
 }
 
+var log = function(msg) {
+    console.log("Watchify: " + msg);
+}
+
+var create_bundles = function (b, bundles) {
+    b.transform(hbsfy);
+    b.plugin('factor-bundle', { outputs: _.map(bundles, function(item) {return item.target_file;}) });
+    // Don't use minifyify except in production.
+    if (!debug) {
+        b.plugin('minifyify', {map: false});
+    }
+    b.bundle().pipe(fs.createWriteStream('kalite/distributed/static/js/distributed/bundles/bundle_common.js'));
+    log(bundles.length + " Bundles written.");
+}
+
 fs.readdir("kalite", function(err, filenames) {
     var bundles = [];
     var module_paths = [];
@@ -39,7 +54,7 @@ fs.readdir("kalite", function(err, filenames) {
         }
     }
 
-    console.log("Found " + bundles.length + " bundle" + bundles.length !== 1 ? "s" : "" + ", compiling.");
+    log("Found " + bundles.length + " bundle" + (bundles.length !== 1 ? "s" : "") + ", compiling.");
 
     if (!fs.existsSync("kalite/distributed/static/js/distributed/bundles")) {
         fs.mkdirSync("kalite/distributed/static/js/distributed/bundles");
@@ -52,32 +67,19 @@ fs.readdir("kalite", function(err, filenames) {
         debug: true,
     });
 
-    b.transform(hbsfy);
-
-    b.plugin('factor-bundle', { outputs: _.map(bundles, function(item) {return item.target_file;}) });
-
     if (watch) {
         var watchify = require("watchify");
         b = watchify(b, {
             verbose: true
         });
-        console.log("Starting watcher");
+        log("Starting watcher");
         b.on('update', function (ids) {
-            console.log('files changed, bundle updated');
-            console.dir(ids);
-            b.transform(hbsfy);
-            b.plugin('factor-bundle', { outputs: _.map(bundles, function(item) {return item.target_file;}) });
-            b.bundle().pipe(fs.createWriteStream('kalite/distributed/static/js/distributed/bundles/bundle_common.js'));
+            log('files changed, bundle updated');
+            _.each(ids, function(id) {log(id + " changed");});
+            create_bundles(b, bundles);
         });
-        b.on('log', function(msg) {
-            console.log(msg);
-        });
+        b.on('log', log);
     }
 
-    // Don't use minifyify except in production.
-    if (!debug) {
-        b.plugin('minifyify', {map: false});
-    }
-    b.bundle().pipe(fs.createWriteStream('kalite/distributed/static/js/distributed/bundles/bundle_common.js'));
-    console.log("Bundles written.");
+    create_bundles(b, bundles);
 });
