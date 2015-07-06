@@ -58,6 +58,7 @@ from __future__ import print_function
 # Add distributed python-packages subfolder to current path
 # DO NOT IMPORT BEFORE THIS LIKE
 import os
+import socket
 import sys
 import time
 
@@ -344,15 +345,11 @@ def get_pid():
 
 class ManageThread(Thread):
 
-    """
-    Runs a command in the background
-    """
-    daemon = True
-
     def __init__(self, command, *args, **kwargs):
         self.command = command
         self.args = kwargs.pop('args', [])
-        return super(ManageThread, self).__init__(*args, **kwargs)
+        super(ManageThread, self).__init__(*args, **kwargs)
+        self.daemon = False  # Main process does NOT exit until thread dies
 
     def run(self):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
@@ -368,9 +365,10 @@ def manage(command, args=[], as_thread=False):
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param as_daemon: Creates a new process for the command
     :param as_thread: Runs command in thread and returns immediately
     """
+    
+    args = update_default_args(["--traceback"], args)
     
     if not as_thread:
         if PROFILE:
@@ -415,6 +413,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
             if pid_exists(pid):
                 sys.stderr.write(
                     "Refusing to start: Start up lock exists: {0:s}\n".format(STARTUP_LOCK))
+                sys.stderr.write("Remove the file and try again.\n")
                 sys.exit(1)
         # Couldn't parse to int
         except TypeError:
@@ -425,26 +424,27 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     try:
         if get_pid():
             sys.stderr.write("Refusing to start: Already running\n")
+            sys.stderr.write("Use 'kalite stop' to stop the instance.\n")
             sys.exit(1)
     except NotRunning:
         pass
-
+    
+    # Check that the port is available by creating a simple socket and see
+    # if it succeeds... if it does, the port is occupied.
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    connection_error = sock.connect_ex(('127.0.0.1', port))
+    if not connection_error:
+        sys.stderr.write(
+            "Port {0} is occupied. Please close the process that is using "
+            "it.".format(port)
+        )
+        sys.exit(1)
+   
     # Write current PID and optional port to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
         f.write("%s\n%d" % (str(os.getpid()), port))
     
     manage('initialize_kalite')
-
-    # Start the job scheduler (not Celery yet...)
-    # This command is run before starting the server, in case the server
-    # should be configured to not run in daemon mode or in case the
-    # server fails to go to daemon mode.
-    if not skip_job_scheduler:
-        manage(
-            'cronserver_blocking',
-            args=[],
-            as_thread=True
-        )
 
     # Remove the startup lock at this point
     if STARTUP_LOCK:
@@ -452,11 +452,11 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     
     # Print output to user about where to find the server
     addresses = get_ip_addresses(include_loopback=False)
-    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
+    print("To access KA Lite from another connected computer, try the following address(es):")
     for addr in addresses:
-        sys.stdout.write("\thttp://%s:%s/\n" % (addr, port))
-    sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
-    sys.stdout.write("\thttp://127.0.0.1:%s/\n" % port)
+        print("\thttp://%s:%s/" % (addr, port))
+    print("To access KA Lite from this machine, try the following address:")
+    print("\thttp://127.0.0.1:%s/\n" % port)
     
     # Daemonize at this point, no more user output is needed
     if daemonize:
@@ -472,7 +472,15 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         # Write the new PID
         with open(PID_FILE, 'w') as f:
             f.write("%d\n%d" % (os.getpid(), port))
-    
+
+    # Start the job scheduler (not Celery yet...)
+    if not skip_job_scheduler:
+        manage(
+            'cronserver_blocking',
+            args=[],
+            as_thread=True
+        )
+
     # Start cherrypy service
     cherrypy.config.update({
         'server.socket_host': LISTEN_ADDRESS,
@@ -489,8 +497,13 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         cherrypy.engine.autoreload.unsubscribe()
     
     cherrypy.quickstart()
-
+    
     print("FINISHED serving HTTP")
+    
+    if not skip_job_scheduler:
+        print("Asking KA Lite job scheduler to terminate...")
+        from fle_utils.chronograph.management.commands import cronserver_blocking
+        cronserver_blocking.shutdown = True
 
 
 def stop(args=[], sys_exit=True):
