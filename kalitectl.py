@@ -57,9 +57,10 @@ Planned features:
 from __future__ import print_function
 # Add distributed python-packages subfolder to current path
 # DO NOT IMPORT BEFORE THIS LIKE
-import sys
 import os
 import socket
+import sys
+import time
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -607,7 +608,6 @@ def profile_memory():
     import resource  # @UnresolvedImport
     import signal
     import sparkline
-    import time
 
     starttime = time.time()
 
@@ -714,6 +714,8 @@ if __name__ == "__main__":
 
     elif arguments['restart']:
         stop(args=arguments['DJANGO_OPTIONS'], sys_exit=False)
+        # add a short sleep to ensure port is freed before we try starting up again
+        time.sleep(1)
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
