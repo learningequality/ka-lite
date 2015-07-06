@@ -1,4 +1,10 @@
 """
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other caching.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that caching.settings has been copied over to kalite.settings
+
+
 Caching is a critical part of the KA Lite app, in order to speed up server response times.
 However, if the server state changes, the cache may need to be invalidated.
 
@@ -17,8 +23,6 @@ from django.test.client import Client
 
 from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
-from kalite.distributed.templatetags import kalite_staticfiles
-
 
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
@@ -49,7 +53,7 @@ def invalidate_inmemory_caches():
     """
     # TODO: loop through all modules and see if a module variable exists, using getattr,
     #   rather than hard-coding.
-    for module in (i18n, kalite_staticfiles, topic_tools):
+    for module in (i18n, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)

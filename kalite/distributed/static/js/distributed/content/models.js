@@ -77,15 +77,28 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
         "content_source",
         "content_kind",
         "progress",
-        "views"
+        "views",
+        "latest_activity_timestamp"
     ],
 
-    urlRoot: GET_CONTENT_LOGS_URL,
+    initialize: function() {
+        _.bindAll(this);
+    },
 
-    save: _.throttle(function(){this.saveNow();}, 30000),
+    urlRoot: function() {
+        return window.sessionModel.get("GET_CONTENT_LOGS_URL");
+    },
 
-    saveNow: function (){
-        Backbone.Model.prototype.save.call(this);
+    // We let the view call save whenever it feels like on this model - essentially on every
+    // change event that we can register on the content viewer (video playback updating, etc.)
+    // However, in order not to overwhelm the server with unnecessary saves, we throttle the save
+    // call here. On page exit, 'saveNow' is called to prevent data loss.
+
+    save: _.throttle(function(key, val, options){this.saveNow(key, val, options);}, 30000),
+
+    saveNow: function (key, val, options){
+        this.set("latest_activity_timestamp", window.statusModel.get_server_time(), {silent: true});
+        Backbone.Model.prototype.save.call(this, key, val, options);
     },
 
     set_complete: function() {
@@ -125,7 +138,7 @@ window.ContentLogCollection = Backbone.Collection.extend({
         } else if (typeof this.content_ids !== "undefined") {
             data[this.model_id_key + "__in"] = this.content_ids;
         }
-        return setGetParamDict(this.model.prototype.urlRoot, data);
+        return setGetParamDict(this.model.prototype.urlRoot(), data);
     },
 
     get_first_log_or_new_log: function() {

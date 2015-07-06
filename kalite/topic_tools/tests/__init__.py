@@ -1,2 +1,4 @@
-from fle_utils.importing import import_all_child_modules
-import_all_child_modules()
+from explore_tests import *
+from helper_tests import *
+from next_tests import *
+from resume_tests import *

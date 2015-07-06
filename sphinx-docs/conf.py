@@ -157,7 +157,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-html_last_updated_fmt = "%a, %d %b %Y %T %z"
+html_last_updated_fmt = "%a, %d %b %Y %H:%M:%S %z"
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -288,3 +288,6 @@ texinfo_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
 
+# sphinx-intl options
+locale_dirs = ['locale/']
+gettext_compact = False

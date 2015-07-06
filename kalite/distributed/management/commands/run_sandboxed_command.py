@@ -1,16 +1,9 @@
 """
 """
-import os
 import sys
-import subprocess
-from optparse import make_option
 
-from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
-
-from fle_utils.django_utils import call_outside_command_with_output
-from fle_utils.platforms import is_windows, system_script_extension, system_specific_unzipping
 
 
 class Command(BaseCommand):
@@ -40,8 +33,4 @@ class Command(BaseCommand):
             cmd_text = raw_input("Please enter the command text to run: ")
             cmd = cmd_text.split(" ")[0]
 
-        os.system('"%s" "%s" %s' % (
-            sys.executable,
-            os.path.join(settings.PROJECT_PATH, "manage.py"),
-            cmd_text,
-        ))
+        call_command(*cmd)

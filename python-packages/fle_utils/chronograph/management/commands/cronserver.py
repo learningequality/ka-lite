@@ -4,10 +4,6 @@ from threading import Thread
 from time import sleep
 from optparse import make_option
 import os
-try:
-    import memory_profiler
-except Exception as e:
-    pass
 import gc
 
 from django.conf import settings; logging = settings.LOG
@@ -22,18 +18,21 @@ class CronThread(Thread):
     daemon = True
     def __init__(self, gc=False, mp=False, *args, **kwargs):
         self.do_gc = gc
-
-        if mp and not "memory_profiler" in sys.modules.keys():
-            mp = False
-            warnings.warn("memory_profiling disabled.")
-        self.do_profile = mp
-
+        self.do_profile = True
 
         return super(CronThread, self).__init__(*args, **kwargs)
 
     def run(self):
         jobs = Job.objects.due()
-        prof_string = "" if not self.do_profile else "[%8.2f MB] " % memory_profiler.memory_usage()[0]
+        
+        if self.do_profile:
+            try:
+                import memory_profiler
+                prof_string = "[%8.2f MB] " % memory_profiler.memory_usage()[0]
+            except ImportError:
+                prof_string = "No profiler found"
+        else:
+            prof_string = ""
 
         if jobs:
             logging.info("%sRunning %d due jobs... (%s)" % (prof_string, jobs.count(), ", ".join(['"%s"' % job.name for job in jobs])))

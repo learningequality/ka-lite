@@ -42,7 +42,7 @@ After a successful installation of KA Lite, the terminal should give you a comma
 
     ``/PATH/TO/KALITE/bin/kalite start``
 
-The first string will vary depending on which folder you installed KA Lite in. Simply copy and paste the provided string back into the command prompt, and hit enter on your keyboard. You will be asked whether or not you wish to run the KA Lite server in the background automatically every time you start up the computer. Once you answer yes or no, success! The KA Lite server is now running on your computer. 
+The first string will vary depending on which folder you installed KA Lite in. Simply copy and paste the provided string back into the command prompt, and hit enter on your keyboard. You will be asked whether or not you wish to run the KA Lite server in the background automatically every time you start up the computer. Once you answer yes or no, success! The KA Lite server is now running on your computer.
 
 During the process, your operating system might prompt you to allow "Python.app" to accept incoming connections. The message dialogue may look like the following, depending on your operating system:
 
@@ -53,14 +53,14 @@ Please allow the app to run. This will make it possible for the KA Lite applicat
 
 Accessing KA Lite
 -------------------
-Once the server has been started, you will be given a few IP addresses. You can use these addresses to access KA Lite by copying and pasting them into a web browser of your choice. 
+Once the server has been started, you will be given a few IP addresses. You can use these addresses to access KA Lite by copying and pasting them into a web browser of your choice.
 
 In order to access KA Lite from another machine, please enter the IP address that does *not* start with http://127.0.0.1:8008 into the web browser on that machine.
 
 
 Setting up KA Lite
 -------------------
-Once you have successfully installed KA Lite, the installation script should give you a URL (http://127.0.0.1:8008/) to visit so that you can open KA Lite and login for the first time. 
+Once you have successfully installed KA Lite, the installation script should give you a URL (http://127.0.0.1:8008/) to visit so that you can open KA Lite and login for the first time.
 
 Copy and paste the URL into a web browser. The KA Lite application should show up. Then, login to KA Lite using the username and password you created during the installation process.
 
@@ -80,9 +80,9 @@ By registering your device with FLE, you can sync data back with our central dat
 
     #. a project administrator can manage user accounts and view usage data from afar, without needing to physically visit the offline device.
     #. usage data syncing back can inform the FLE team of multiple users in a certain geographic region, and we can connect people that might be able to help one another
-    #. it helps FLE and our partners understand where and how the software is being used, so we can keep adding features that support you! 
+    #. it helps FLE and our partners understand where and how the software is being used, so we can keep adding features that support you!
 
-You will have two options: 
+You will have two options:
 
     #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use. **Caution**: if you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, you can rerun the setup command by navigating to the folder KA Lite is in and rerunning the setup command). |first| |one-click|
 
@@ -114,15 +114,15 @@ How to register your device with online access to data
 ########################################################
 
 .. NOTE::
-    You will need Internet access in order to perform these steps. 
+    You will need Internet access in order to perform these steps.
 
 #. Log into KA Lite with the username and password that you set during set-up.
-#. If you have not already registered your device, you will be redirected to a page that shows you your options. Click the "Register with an online account now!" button to get started with the registration process. 
+#. If you have not already registered your device, you will be redirected to a page that shows you your options. Click the "Register with an online account now!" button to get started with the registration process.
 
 .. screenshot::
     :user-role: admin
     :url: /securesync/register/
-    :navigation-steps: 
+    :navigation-steps:
     :focus: #online-register
     :class: screenshot
 
@@ -137,7 +137,7 @@ You will be prompted to log in with your central server login credentials. Pleas
     :align: center
     :class: screenshot
 
-Once you have filled out the form and submitted it, you will be sent an activation link via the email address you supplied. 
+Once you have filled out the form and submitted it, you will be sent an activation link via the email address you supplied.
 
 
 Post Registration Setup
@@ -173,7 +173,7 @@ KA Lite assumes that you are going to be using the software primarily in one pla
 
 .. screenshot::
     :user-role: admin
-    :url: /securesync/zone/None/facility/new/
+    :url: /management/zone/None/facility/new/
     :navigation-steps: #id_name click | #id_name send_keys Your School | NEXT send_keys An optional description of your school...
     :focus: input.submit | Click here to create a new facility after filling in the form above.
     :class: screenshot
@@ -183,7 +183,7 @@ KA Lite assumes that you are going to be using the software primarily in one pla
 Delete a Facility
 -------------------------
 1. Log in to KA Lite.
-2. Click the "Manage" tab at the top of the page. 
+2. Click the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
 
 .. screenshot::
@@ -227,8 +227,8 @@ Adding Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: a.create-student
     :class: screenshot
 
@@ -237,8 +237,8 @@ Adding Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click | .create-student click
+    :url: /securesync/student/
+    :navigation-steps:
     :focus: input.submit
     :class: screenshot
 
@@ -253,8 +253,8 @@ Permanently Deleting Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students td input | You can check one or more of these checkboxes.
     :class: screenshot
 
@@ -262,8 +262,8 @@ Permanently Deleting Learners
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students .form-inline .form-group:last-child
     :class: screenshot
 
@@ -279,8 +279,8 @@ Adding Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches .add-new-table-item a
     :class: screenshot
 
@@ -306,8 +306,8 @@ Permanently Deleting Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches td input | Click a checkbox to select a coach.
     :class: screenshot
 
@@ -315,8 +315,8 @@ Permanently Deleting Coaches
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #coaches div.row div.col-md-2 button
     :class: screenshot
 
@@ -334,9 +334,9 @@ You can create groups within a facility. Each group can represent a classroom, a
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
-    :focus: #groups .add-new-table-item a 
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
+    :focus: #groups .add-new-table-item a
     :class: screenshot
 
 6. Fill out the name of the group, and provide a description.
@@ -362,8 +362,8 @@ Deleting a Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: .delete-group
     :class: screenshot
 
@@ -376,8 +376,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students td input :first | Click this checkbox.
     :class: screenshot
 
@@ -385,8 +385,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click | .movegrouplist click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps: .movegrouplist click
     :focus: .movegrouplist | Select one of these options!
     :class: screenshot
 
@@ -394,8 +394,8 @@ Moving a User to a New Group
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #students .movegroup
     :class: screenshot
 
@@ -409,22 +409,22 @@ If you'd like to remove a user from a group without permanently deleting the use
 
 Group Summary Statistics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-For each group, you should be able to view some statistics. 
+For each group, you should be able to view some statistics.
 
-1. Navigate to the Learner Groups section of the facility you wish to look at. 
+1. Navigate to the Learner Groups section of the facility you wish to look at.
 2. Click on the group that you wish to view.
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/None/
-    :navigation-steps: .facility-name click
+    :url: /management/zone/None/facility/None/management/
+    :navigation-steps:
     :focus: #groups td a :first | Click here to view group statistics!
     :class: screenshot
 
 3. The statistics for the group should be displayed at the top of the page.
 
 Edit User Information
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Navigate to the page for the facility that the user belongs in.
 #. Find the user you would like to edit.
 #. Click the blue pencil |bluepencil| icon next to the name of the user that you would like to edit.
@@ -435,12 +435,12 @@ Edit User Information
 
 Allowing Other Users to Connect
 --------------------------------
-In order for other users to be able to connect to the KA Lite server with a different machine, you will need to give them an IP address with which to access the software. This should be different from the IP address given to you during setup (127.0.0.1:8008). 
+In order for other users to be able to connect to the KA Lite server with a different machine, you will need to give them an IP address with which to access the software. This should be different from the IP address given to you during setup (127.0.0.1:8008).
 
 
 Downloading Videos
 ---------------------
-Now that you've created a facility and user accounts, it's time to add video content to your local KA Lite installation! Since the videos can take up a large amount of space, you can choose to download only the videos that you need. If your device has enough space and you wish to download all of the videos, we recommend skipping to `Downloading Videos in Bulk`_ . 
+Now that you've created a facility and user accounts, it's time to add video content to your local KA Lite installation! Since the videos can take up a large amount of space, you can choose to download only the videos that you need. If your device has enough space and you wish to download all of the videos, we recommend skipping to `Downloading Videos in Bulk`_ .
 
 
 Downloading Individual Videos
@@ -457,7 +457,7 @@ After registering your device:
     :class: screenshot
 
 3. View subtopics by clicking on the '+' symbol to the left of a subject of your choice. You can close them by clicking on the '-' symbol.
-4. Mark the content you wish to download by clicking the checkbox to the left of the content name. 
+4. Mark the content you wish to download by clicking the checkbox to the left of the content name.
 5. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 6. Once the download is completed, video content will be ready for Learners to watch!
 
@@ -469,20 +469,20 @@ We have made the full set of KA videos (in the format needed by KA Lite) availab
 
 #. Download and install `BitTorrent Sync`_.
 #. Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to type http://127.0.0.1:8888/ into the address bar of your browser to get the interface.
-#. Click the "Enter a key or link" button, and put in **https://link.getsync.com/#f=ka-lite-compressed&sz=25E9&q=-&s=TOQVB3LLGWCKEQ6NOCFBSEVWA74PRA6I&q=-&i=C4M3QMAVXE7RVXR7B3526TBD5V3KYV5V6&q=-&p=CCGAGLIJGFQFP2X2Z4QWQ3MLPJHTVV3A**
+#. Click the "Enter a key or link" button, and enter **BT7AOITNAIP3X3CSLE2EPQJFXJXMXVGQI**
 #. Select the "content" folder inside your KA Lite installation as the "location" (unless you want the videos to be located elsewhere).
 #. Allow the videos to sync in there from your peers! It may take a while for now, as we don't yet have many seeders on it. On that note -- please help seed by keeping it running even after you've got all the videos, if you have bandwidth to spare! This will make it easier for others to download the content as well.
 
-These are resized videos. All in all, this will take around 23 GB of space. 
+These are resized videos. All in all, this will take around 23 GB of space.
 
- 
-.. WARNING:: 
+
+.. WARNING::
     If you chose to download them to somewhere other than the content folder inside the ka-lite folder as recommended above, you need to tell KA Lite where to find them. If this is the case, follow the steps below:
 
 
 #. Make sure all video files are located in a single directory, with .mp4 extensions (KA Lite expects this!)
 #. If it doesn't already exist, create a file named local_settings.py in the ka-lite/kalite folder (the one containing settings.py)
-#. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes. 
+#. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes.
     **For example, on Windows:** ``CONTENT_ROOT="C:\\torrented_videos_location\\"``
 
     **For example, on Linux:** ``CONTENT_ROOT="/home/me/torrented_videos_location/"``
@@ -497,7 +497,7 @@ KA Lite supports internationalization. You can download language packs for your 
 
 Download Language Packs
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-To download language packs: 
+To download language packs:
 
 1. From the "Manage" page, click on the "Language" tab.
 
@@ -528,7 +528,7 @@ To download language packs:
     :class: screenshot
     :registered: true
 
-4. Once the download finishes, you can see your language pack in the list of installed packs. Learners and coaches will now be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default". 
+4. Once the download finishes, you can see your language pack in the list of installed packs. Learners and coaches will now be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default".
 
 Delete Language Packs
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -546,12 +546,13 @@ To delete language packs:
     :class: screenshot
     :registered: true
 
+.. _restarting-your-server:
 
 Restarting Your Server
 -----------------------
-If you have made some configuration changes (such as changing the filepath to your video content to your liking), or if you feel the need to reboot your KA Lite system, you may want to restart your server. Please note that this will cause KA Lite to become inaccessible to any users. However, this will not delete any user accounts or information that you have configured during set up. 
+If you have made some configuration changes (such as changing the filepath to your video content to your liking), or if you feel the need to reboot your KA Lite system, you may want to restart your server. Please note that this will cause KA Lite to become inaccessible to any users. However, this will not delete any user accounts or information that you have configured during set up.
 
-This process varies, depending on which OS you are running the KA Lite Server on. 
+This process varies, depending on which OS you are running the KA Lite Server on.
 
 Restarting Your Server: Windows
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -563,13 +564,13 @@ Restarting Your Server: Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. For most Linux distributions, you can do this by going to **Menu -> Accessories -> Terminal** or **Applications menu -> System -> Terminal.**
 
-#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine. 
+#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
 
-#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes. 
+#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
-Restarting Your Server: Mac 
+Restarting Your Server: Mac
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. You may do this by navigating to the magnifying glass |magglass| at the top right corner of your screen, and typing in "Terminal", then hitting "Enter" on your keyboard.
 
@@ -578,15 +579,15 @@ Restarting Your Server: Mac
 .. image:: search.png
     :align: center
     :width: 700
-        
-#. Your terminal should be opened up. It should look a little something like the following: 
 
-.. image:: terminal.png 
+#. Your terminal should be opened up. It should look a little something like the following:
+
+.. image:: terminal.png
     :align: center
 
-#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine. 
+#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
 
-#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes. 
+#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
@@ -599,13 +600,13 @@ Updating on Mac OS and Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 At this time, the only supported way to update is to grab the source and run the setup management command.
-Follow the instructions in the :doc:`installation guide <installguide/install_main>` to ensure you're using the latest version.
+Follow the instructions in the :doc:`installation guide </installguide/install_main>` to ensure you're using the latest version.
 
 Updating on Windows
 ^^^^^^^^^^^^^^^^^^^
 
 To update on Windows, simply use our Windows installer. You will have the option to update from a prior version.
-See the :doc:`Windows installation guide <installguide/install_windows>`.
+See the :doc:`Windows installation guide </installguide/install_windows>`.
 
 Configuration Settings
 ----------------------

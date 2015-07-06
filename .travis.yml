@@ -8,16 +8,17 @@ before_install:
 - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile
   --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
 install:
-- pushd $TRAVIS_BUILD_DIR; npm install; popd
-- pushd $TRAVIS_BUILD_DIR; npm install -g grunt-cli; popd
+-  npm install
+-  npm install -g grunt-cli
+-  pip install -r requirements_test.txt
+-  pip install coveralls
 script:
-- cd $TRAVIS_BUILD_DIR
-- bin/kalite start --traceback -v 2
+# Test that we can run from source directory
+- bin/kalite start --traceback -v2
 - bin/kalite status
-- bin/kalite stop --traceback -v 2
+- bin/kalite stop --traceback -v2
 - python python-packages/fle_utils/tests.py
-- bin/kalite manage syncdb --migrate --noinput --traceback
-- bin/kalite test --traceback -v 2
+- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" bin/kalite manage test --traceback -v2
 - grunt jshint
 notifications:
   email:
@@ -25,3 +26,6 @@ notifications:
   hipchat:
     rooms:
       secure: A4OlCFaETlLB20ATXrPmA+8F35AsjZZ9nO8dPUG9m5pAr1pD4CDiVrn/tmHbbk2rQaQLm3B8CifdNuQL6fLuEv2pJpfIdSESVqsqJcQPPpgogjvHRabOXgAmC5AWpQupe3DARIMDjOPhHaeRFN/GYjEnK8N+nqu/SQ2mPmAzOFQ=
+after_success:
+- coverage report
+- coveralls

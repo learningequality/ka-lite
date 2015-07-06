@@ -164,7 +164,7 @@ function update_server_status() {
             updatesStart("update", 1000, software_callbacks);
         } else {
             clear_messages();
-            show_message("error", gettext("The server does not have internet access; software cannot be updated at this time."));
+            show_message("error", gettext("Could not connect to the central server; software cannot be updated at this time."));
         }
     });
 }

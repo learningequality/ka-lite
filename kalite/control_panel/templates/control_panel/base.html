@@ -2,9 +2,16 @@
 {% load staticfiles %}
 {% load i18n %}
 
-{% block i18n_do_not_translate %}
-    {% block control_panel_active %}active{% endblock control_panel_active %}
-{% endblock i18n_do_not_translate %}
+{% block headjs %}{{ block.super }}
+<script type="text/javascript">
+    window.ZONE_ID = "{{ zone_id }}";
+    {% for id, device in devices.items %}
+        {% if device.is_own_device %}
+            window.DEVICE_ID = "{{ id }}";
+        {% endif %}
+    {% endfor %}
+</script>
+{% endblock headjs %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/control_panel/base.css' %}" />

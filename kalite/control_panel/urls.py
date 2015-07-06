@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 
 
 urlpatterns = patterns(__package__ + '.views',
@@ -11,6 +11,8 @@ urlpatterns = patterns(__package__ + '.views',
 
     # Facility
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/edit$', 'facility_form', {}, 'facility_form'),
+    url(r'zone/(?P<zone_id>\w+)/facility/new/$', 'facility_form', {"facility_id": "new"}, 'add_facility'),
+    url(r'facility/(?P<facility_id>\w+)/edit/$', 'facility_form', {}, 'facility_form'),
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/management/$', 'facility_management', {}, 'facility_management'),
     url(r'zone/(?P<zone_id>\w+)/facility/(?P<facility_id>\w+)/management/group/(?P<group_id>\w+)/$', 'facility_management', {}, 'group_management'),
 

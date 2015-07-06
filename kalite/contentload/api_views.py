@@ -19,26 +19,19 @@ Here's how it works:
 * The distributed server gets that data, loads it, saves it, and then redirects the user--to their account page.
 * The account page shows again, this time including the imported KA data
 """
-import datetime
 import json
-import oauth
-import os
-import requests
-import sys
-import time
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerError
-from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.translation import ugettext as _
+from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
-from fle_utils.internet import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, set_query_params
+from fle_utils.internet.classes import JsonResponseMessageError, JsonResponseMessageSuccess
+from fle_utils.internet.functions import set_query_params
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.shared.decorators import require_login
+from kalite.shared.decorators.auth import require_login
 from kalite.topic_tools import get_node_cache
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
@@ -91,7 +84,7 @@ def update_all_distributed_callback(request):
             logging.error("Could not save video log for data with missing values: %s" % video)
         except Exception as e:
             error_message = _("Unexpected error importing videos: %(err_msg)s") % {"err_msg": e}
-            return JsonResponseMessageError(error_message)
+            return JsonResponseMessageError(error_message, status=500)
 
     # Save exercises
     n_exercises_uploaded = 0
@@ -112,7 +105,7 @@ def update_all_distributed_callback(request):
             logging.error("Could not save exercise log for data with missing values: %s" % exercise)
         except Exception as e:
             error_message = _("Unexpected error importing exercises: %(err_msg)s") % {"err_msg": e}
-            return JsonResponseMessageError(error_message)
+            return JsonResponseMessageError(error_message, status=500)
 
     return JsonResponseMessageSuccess(_("Uploaded %(num_exercises)d exercises and %(num_videos)d videos") % {
         "num_exercises": n_exercises_uploaded,

@@ -4,10 +4,9 @@ import os
 
 from django.conf import settings
 from django.core.management import call_command
-from django.db import DatabaseError
 from django.utils import unittest
 
-from kalite.testing import KALiteTestCase
+from kalite.testing.base import KALiteTestCase
 
 
 class FixtureTestCases(KALiteTestCase):

@@ -11,6 +11,8 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 
+from django_js_reverse.views import urls_js
+
 from . import api_urls
 import kalite.dynamic_assets.urls
 import kalite.coachreports.urls
@@ -22,7 +24,7 @@ import kalite.student_testing.urls
 import kalite.store.urls
 import securesync.urls
 
-import fle_utils.handlebars
+import fle_utils.handlebars.urls
 
 
 admin.autodiscover()
@@ -38,6 +40,10 @@ urlpatterns += patterns('',
     url(r'^securesync/', include(securesync.urls)),
 )
 
+
+# TODO: This should only be in DEBUG settings and the HTTP server should be
+# serving it otherwise. Cherrypy is currently serving it through modifications
+# in kalite/django_cherrypy_wsgiserver/cherrypyserver.py
 urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
@@ -104,8 +110,12 @@ urlpatterns += patterns(__package__ + '.views',
 
     # the following has no "$", and thus catches anything starting with "learn/"
     url(r'^learn/', 'learn', {}, 'learn'),
-    url(r'^exercisedashboard/', 'exercise_dashboard', {}, 'exercise_dashboard'),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
+    )
 
 handler403 = __package__ + '.views.handler_403'
 handler404 = __package__ + '.views.handler_404'

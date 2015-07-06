@@ -17,7 +17,7 @@ window.AudioPlayerView = ContentBaseView.extend({
     initialize_sound_manager: function() {
         var self = this;
         window.soundManager.setup({
-          url: STATIC_URL + "soundmanager/",
+          url: window.sessionModel.get("STATIC_URL") + "soundmanager/",
           preferFlash: false,
           onready: self.create_audio_object
         });

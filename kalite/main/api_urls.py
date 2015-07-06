@@ -20,11 +20,10 @@ urlpatterns = patterns(__package__ + '.api_views',
     # Retrieve assessment item data to render front-end Perseus Exercises
     url(r'^', include(AssessmentItemResource().urls)),
     url(r'^', include(ContentResource().urls)),
+    
+    url(r'^content_recommender/?$', 'content_recommender', {}, 'content_recommender'),
 
-    # Data used by the client (browser) for doing search
-    url(r'^flat_topic_tree/(?P<lang_code>.*)/?$', 'flat_topic_tree', {}, 'flat_topic_tree'),
-
-    # For building a graphical knowledge map
+    # A flat data structure for building a graphical knowledge map
     url(r'^topic_tree/(?P<channel>.*)/?$', 'topic_tree', {}, 'topic_tree'),
 
 )
