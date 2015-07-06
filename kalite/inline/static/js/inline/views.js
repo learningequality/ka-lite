@@ -27,27 +27,39 @@ window.ButtonView = Backbone.View.extend({
                 intro.setOption('positionPrecedence', ['left', 'right', 'bottom', 'top']);
                 intro.setOptions(options);
 
+
                 //runs before-showing, if applicable (before-showing[] populated)
                 var i = 0;
-                console.log("OUR BEFORE_SHOWING ARRAY:");
-                console.log(before_showing);
+                var step = 0;
+
+                //set before-showing functions on elements if needed for page
+
                 if (before_showing.length !== 0) {
                     intro.onafterchange(function(target) {
+                        console.log("the before_showing object");
+                        console.log(before_showing[i]);
                         if (target == document.querySelector(before_showing[i]["element"]) ){ 
-                            console.log("inside onafterchange, going to set the click function on btn");
+                            console.log("inside onafterchange(), going to set the click function on btn");
 
                             //perform action after the "next" button is clicked on the tooltip
                             $("a.introjs-button.introjs-nextbutton").click(function() {
-                                console.log("something should fire");
+                                console.log(" 'NEXT' button has been clicked in modal!");
                                 console.log(before_showing[i]["action"]);
+
+                                //when user clicks on 'next' CHECK NEXT ELEMENT:
+                                //if null, wait for next element to load,
+                                //else if element exists, trigger action
                                 $(target).trigger(before_showing[i]["action"]);
-                                // i++;
+                                setTimeout(function(){
+                                    console.log("Waiting for next element to load");
+                                    }, 2000);
+                                i++;
                             }); 
                         }
+
                     });
-                    // $("a.introjs-button.introjs-nextbutton").off("click");
                 }
-                intro.start();
+                intro.start(); 
             },
 
             error: function(model, response, options) {
@@ -81,23 +93,25 @@ window.ButtonView = Backbone.View.extend({
                 key = key[0];
                 var value = attribute[key];
                 var newkey = null;
-                var newvalue = null;
+                // var newvalue = null;
 
                 if (key === "text") {
                     newkey = "intro";
-                    newvalue = value;
                 }
                 else if (key === "position") {
                     newkey = "position";
-                    newvalue = value;
+                }
+                else if (key === "step") {
+                    newkey = "step";
                 }
                 else if (key === "before-showing") {
                     //add the before-showing attribute to a separate
                     //"before-showing" array to be used in intro.onchange()
+                    console.log("inside before-showing building");
                     var before_showing_obj = {};
                     before_showing_obj["element"] = selectorKey;
                     before_showing_obj["action"] = value;
-                    before_showing.push(before_showing_obj);
+                    before_showing.push(before_showing_obj);                
                 }
                 step[newkey] = value;
             });

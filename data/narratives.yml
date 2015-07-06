@@ -32,13 +32,6 @@ update/videos:
     - step: 3
     - text: 'Simply toggle the "+" button to view see more subtopics under a topic....'
     - before-showing: 'click'
-  - 'span.dynatree-node.dynatree-folder.dynatree-expanded.dynatree-has-children.dynatree-active.unstarted.dynatree-exp-e.dynatree-ico-ef':
-    - step: 4
-    - text: '... or toggle "-" to collapse the menu!'
-    - before-showing: 'click'
-  - 'unattached':
-    - step: 5
-    - text: 'This is a test.'
 update/languages:
   - 'li.languages.active':
     - step: 1
