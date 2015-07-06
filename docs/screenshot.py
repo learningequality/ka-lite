@@ -31,7 +31,7 @@ FOCUS_CSS_STYLES = { "borderStyle": "solid",
 
 def setup(app):
     app.add_directive('screenshot', Screenshot)
-    app.add_config_value('screenshots_skip', True, False)
+    app.add_config_value('screenshots_create', False, False)
     app.connect('env-purge-doc', purge_screenshots)
     app.connect('env-updated', process_screenshots)
 
@@ -45,7 +45,7 @@ def process_screenshots(app, env):
     if not hasattr(env, 'screenshot_all_screenshots'):
         return
 
-    if app.config['screenshots_skip']:
+    if not app.config['screenshots_create']:
         print("Not doing screenshots on maggies farm no more")
         return
         
