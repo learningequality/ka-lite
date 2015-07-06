@@ -32,7 +32,8 @@ from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
 import json
-
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import requires_csrf_token
 
 def check_setup_status(handler):
     """
@@ -228,6 +229,8 @@ def search(request):
         'category': category,
     }
 
+@csrf_exempt
+@requires_csrf_token
 def add_superuser_form(request):
     if request.method == 'POST':
         form = SuperuserForm()
