@@ -24,6 +24,8 @@ class Command(BaseCommand):
         # them to be started up again as needed.
         Job.objects.update(is_running=False)
         
+        sleep_time = getattr(settings, "CRONSERVER_FREQUENCY", 60)
+        
         while not shutdown:
             jobs = Job.objects.due()
             
@@ -34,4 +36,8 @@ class Command(BaseCommand):
             else:
                 logging.debug("No jobs due to run.")
             
-            time.sleep(getattr(settings, "CRONSERVER_FREQUENCY", 60))
+            # Sleep a little bit at a time to discover if we have to shutdown
+            for __ in range(6):
+                time.sleep(sleep_time // 6)
+                if shutdown:
+                    break
