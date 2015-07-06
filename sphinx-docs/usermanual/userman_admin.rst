@@ -494,7 +494,11 @@ Adding assessment items (exercises)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If you skipped the step for adding assessment items during install, run the following command (beware it can take a while, the download size is over 500 MB):
 
+<<<<<<< HEAD
 ``kalite manage unpack_assessment_zip -f https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip``
+=======
+``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip -f``
+>>>>>>> upstream/develop
 
 As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
 
