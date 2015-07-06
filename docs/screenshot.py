@@ -63,10 +63,10 @@ def process_screenshots(app, env):
         return
     all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
     # If building in a different language, start the server in a different language
-    command = SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str", json.dumps(all_args)]
+    command = SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str={0}".format(json.dumps(all_args))]
     language = env.config.language
     if language:
-        command += ["--lang", language]
+        command += ["--lang={0}".format(language)]
     subprocess = Popen(command)
     subprocess.wait()
     if subprocess.returncode:
