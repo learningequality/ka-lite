@@ -192,7 +192,7 @@ def move_srts(lang_code):
     lang_code_ietf = lcode_to_ietf(lang_code)
     lang_code_django = lcode_to_django_dir(lang_code)
 
-    subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
+    subtitles_static_dir = os.path.join(settings.USER_STATIC_FILES, "subtitles")
     src_dir = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code_django, "subtitles")
     dest_dir = get_srt_path(lang_code_django)
     ensure_dir(dest_dir)
