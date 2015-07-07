@@ -1,6 +1,5 @@
 import json
 import os
-import uuid
 import re
 import sys
 from subprocess import Popen
@@ -10,18 +9,10 @@ from docutils.parsers.rst.directives.images import Image
 from docutils.parsers.rst import Directive
 import docutils.parsers.rst.directives as directives
 from exceptions import NotImplementedError
-from selenium.webdriver.common.keys import Keys
+print sys.path
 
 from errors import ActionError
 from errors import OptionError
-
-if 'SPHINX_SS_USE_PVD' in os.environ.keys() and os.environ['SPHINX_SS_USE_PVD'] == "true":
-    from pyvirtualdisplay import Display
-    # Start a virtual headless display
-    display = Display(visible=0, size=(1024, 768))
-    display.start()
-else:
-    display = None
 
 USER_ROLES = ["guest", "coach", "admin", "learner"]
 SS_DUMP_DIR = ".screenshot_dump"
@@ -31,7 +22,7 @@ KALITECTL_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(_
 # Trying to import call_command to execute a Django mgmt command gets you
 # into a weird import hell, probably because of import_all_child_modules...
 SCREENSHOT_COMMAND = [sys.executable, KALITECTL_PATH, "manage", "screenshots"]
-SCREENSHOT_COMMAND_OPTS = ["-v0", "--output-dir={0}".format(OUTPUT_PATH)]
+SCREENSHOT_COMMAND_OPTS = ["-v0", "--output-dir={0}".format(OUTPUT_PATH), "--settings=kalite.project.settings.screenshots"]
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",
                      "borderColor": "red",
@@ -41,6 +32,7 @@ FOCUS_CSS_STYLES = { "borderStyle": "solid",
 
 def setup(app):
     app.add_directive('screenshot', Screenshot)
+    app.add_config_value('screenshots_create', False, False)
     app.connect('env-purge-doc', purge_screenshots)
     app.connect('env-updated', process_screenshots)
 
@@ -53,6 +45,19 @@ def purge_screenshots(app, env, docname):
 def process_screenshots(app, env):
     if not hasattr(env, 'screenshot_all_screenshots'):
         return
+
+    if not app.config['screenshots_create']:
+        print("Not doing screenshots on maggies farm no more")
+        return
+        
+    if 'SPHINX_SS_USE_PVD' in os.environ.keys() and os.environ['SPHINX_SS_USE_PVD'] == "true":
+        from pyvirtualdisplay import Display
+        # Start a virtual headless display
+        display = Display(visible=0, size=(1024, 768))
+        display.start()
+    else:
+        display = None
+    
     # Don't bother building screenshots if we're just collecting messages.
     # Just checks if we invoked the build command with "gettext" in there somewhere
     if "gettext" in sys.argv:
@@ -234,7 +239,7 @@ class Screenshot(Image):
         return_nodes = []
         if not hasattr(self.env, 'screenshot_all_screenshots'):
             self.env.screenshot_all_screenshots = []
-
+        
         if not 'registered' in self.options:
             self.options['registered'] = False
         else:
@@ -253,7 +258,10 @@ class Screenshot(Image):
             self.url = self.options['url']
 
         if 'navigation-steps' in self.options:
-            self.filename = uuid.uuid4().__str__()
+            from hashlib import md5
+            self.filename = md5(
+                "".join(map(str, self.options.values()))
+            ).hexdigest()
             runhandler = self.options['navigation-steps']['runhandler']
             args = self.options['navigation-steps']['args']
             return_nodes.append(getattr(self, runhandler)(**args))
@@ -315,13 +323,20 @@ class Screenshot(Image):
     def _make_image_node(self):
         """Make an image node by safely calling Image.run (i.e. ensure the file exists)."""
         self.arguments.append(os.path.join("/", SS_DUMP_DIR, self.filename+".png"))
-        open(os.path.join(OUTPUT_PATH, self.filename+".png"), 'w').close()
+        
+        screenshot_file = os.path.join(OUTPUT_PATH, self.filename) + ".png"
+        
+        if not os.path.isfile(screenshot_file):
+            # Ensure empty file
+            open(screenshot_file, 'w').close()
+        
         (image_node,) = Image.run(self)
         return image_node
 
 
 # Implementation-specific functions for the screenshots management command
 def _specialkeys(k):
+    from selenium.webdriver.common.keys import Keys
     if k == "TAB":
         return Keys.TAB
     elif k == "ENTER":
@@ -332,6 +347,7 @@ def _specialkeys(k):
         return k
 
 def _cmd_to_inputs(cmd):
+    from selenium.webdriver.common.keys import Keys
     inputs = []
     if cmd['selector'] == 'NEXT':
         sel = ""

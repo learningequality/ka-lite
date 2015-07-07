@@ -1,8 +1,4 @@
 var StateModel = Backbone.Model.extend({
-    defaults: {
-        group: window.GROUP_ID || "",
-        facility: window.FACILITY_ID || ""
-    },
 
     initialize: function() {
         _.bindAll(this);

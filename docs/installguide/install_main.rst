@@ -6,7 +6,6 @@ Hello! If you know what OS you're installing on then click ahead.
     :maxdepth: 3
 
     Installation Guide <install_all>
-    Raspberry Pi Additional Instructions <install_rasp_pi>
     Release Notes <release_notes>
 
 Supported Browsers
