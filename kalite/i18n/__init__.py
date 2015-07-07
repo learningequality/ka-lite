@@ -336,7 +336,13 @@ def _get_installed_language_packs():
             continue
 
         # Loop through folders in each locale dir
+        # This is idiotic, it just assumes that every directory / file is
+        # a valid language code
         for django_disk_code in os.listdir(locale_dir):
+            
+            # Skip if it's a file
+            if not os.path.isdir(os.path.join(locale_dir, django_disk_code)):
+                continue
 
             # Inside each folder, read from the JSON file - language name, % UI trans, version number
             try:
