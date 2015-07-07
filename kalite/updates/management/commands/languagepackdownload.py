@@ -15,7 +15,6 @@ from optparse import make_option
 from StringIO import StringIO
 
 from django.conf import settings; logging = settings.LOG
-from django.conf.settings import DUBBED_VIDEOS_MAPPING_FILEPATH
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
@@ -136,13 +135,13 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
 def move_dubbed_video_map(lang_code):
     lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
     dubbed_video_dir = os.path.join(lang_pack_location, "dubbed_videos")
-    dvm_filepath = os.path.join(dubbed_video_dir, os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH))
+    dvm_filepath = os.path.join(dubbed_video_dir, os.path.basename(settings.DUBBED_VIDEOS_MAPPING_FILEPATH))
     if not os.path.exists(dvm_filepath):
         logging.error("Could not find downloaded dubbed video filepath: %s" % dvm_filepath)
     else:
-        logging.debug("Moving dubbed video map to %s" % DUBBED_VIDEOS_MAPPING_FILEPATH)
-        ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
-        shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
+        logging.debug("Moving dubbed video map to %s" % settings.DUBBED_VIDEOS_MAPPING_FILEPATH)
+        ensure_dir(os.path.dirname(settings.DUBBED_VIDEOS_MAPPING_FILEPATH))
+        shutil.move(dvm_filepath, settings.DUBBED_VIDEOS_MAPPING_FILEPATH)
 
         logging.debug("Removing empty directory")
         try:
