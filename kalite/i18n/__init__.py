@@ -349,6 +349,9 @@ def _get_installed_language_packs():
                 if isinstance(e, IOError) and e.errno == 2:
                     logging.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
                 else:
+                    logging.error(django_disk_code)
+                    logging.error(locale_dir)
+                    logging.error(lcode_to_ietf(django_disk_code))
                     logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))
                 continue
 
