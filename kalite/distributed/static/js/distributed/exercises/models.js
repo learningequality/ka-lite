@@ -1,15 +1,16 @@
+var Backbone = require("base/backbone");
 var _ = require("underscore");
 
 var ds = window.ds || {};
 
-window.ExerciseParams = {
+var ExerciseParams = {
     STREAK_CORRECT_NEEDED: (ds.distributed || {}).streak_correct_needed || 8,
     STREAK_WINDOW: 10,
     FIXED_BLOCK_EXERCISES: (ds.distributed || {}).fixed_block_exercises || 0
 };
 
 
-window.ExerciseDataModel = Backbone.Model.extend({
+var ExerciseDataModel = Backbone.Model.extend({
     /*
     Contains data about an exercise itself, with no user-specific data.
     */
@@ -77,7 +78,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
 });
 
-window.AssessmentItemModel = Backbone.Model.extend({
+var AssessmentItemModel = Backbone.Model.extend({
 
     urlRoot: function() {
         return window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL");
@@ -89,7 +90,7 @@ window.AssessmentItemModel = Backbone.Model.extend({
 
 });
 
-window.ExerciseLogModel = Backbone.Model.extend({
+var ExerciseLogModel = Backbone.Model.extend({
     /*
     Contains summary data about the user's history of interaction with the current exercise.
     */
@@ -147,7 +148,7 @@ window.ExerciseLogModel = Backbone.Model.extend({
 });
 
 
-window.ExerciseLogCollection = Backbone.Collection.extend({
+var ExerciseLogCollection = Backbone.Collection.extend({
 
     model: ExerciseLogModel,
 
@@ -183,7 +184,7 @@ window.ExerciseLogCollection = Backbone.Collection.extend({
 });
 
 
-window.AttemptLogModel = Backbone.Model.extend({
+var AttemptLogModel = Backbone.Model.extend({
     /*
     Contains data about the user's response to a particular exercise instance.
     */
@@ -234,7 +235,7 @@ window.AttemptLogModel = Backbone.Model.extend({
 });
 
 
-window.AttemptLogCollection = Backbone.Collection.extend({
+var AttemptLogCollection = Backbone.Collection.extend({
 
     model: AttemptLogModel,
 
@@ -294,7 +295,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 });
 
 
-window.TestDataModel = Backbone.Model.extend({
+var TestDataModel = Backbone.Model.extend({
     /*
     Contains data about a particular student test.
     */
@@ -305,7 +306,7 @@ window.TestDataModel = Backbone.Model.extend({
 });
 
 
-window.TestLogModel = Backbone.Model.extend({
+var TestLogModel = Backbone.Model.extend({
     /*
     Contains summary data about the user's history of interaction with the current test.
     */
@@ -319,8 +320,6 @@ window.TestLogModel = Backbone.Model.extend({
     init: function(options) {
 
         _.bindAll(this, "get_item_data", "save");
-
-        var self = this;
 
     },
 
@@ -420,7 +419,7 @@ window.TestLogModel = Backbone.Model.extend({
 });
 
 
-window.TestLogCollection = Backbone.Collection.extend({
+var TestLogCollection = Backbone.Collection.extend({
 
     model: TestLogModel,
 
@@ -477,7 +476,7 @@ var QuizDataModel = Backbone.Model.extend({
 });
 
 
-window.QuizLogModel = Backbone.Model.extend({
+var QuizLogModel = Backbone.Model.extend({
     /*
     Contains summary data about the user's history of interaction with the current test.
     */
@@ -619,7 +618,7 @@ window.QuizLogModel = Backbone.Model.extend({
 });
 
 
-window.QuizLogCollection = Backbone.Collection.extend({
+var QuizLogCollection = Backbone.Collection.extend({
 
     model: QuizLogModel,
 
@@ -646,3 +645,19 @@ window.QuizLogCollection = Backbone.Collection.extend({
     }
 
 });
+
+module.exports = {
+    ExerciseParams: ExerciseParams,
+    ExerciseDataModel: ExerciseDataModel,
+    ExerciseLogModel: ExerciseLogModel,
+    ExerciseLogCollection: ExerciseLogCollection,
+    AssessmentItemModel: AssessmentItemModel,
+    AttemptLogModel: AttemptLogModel,
+    AttemptLogCollection: AttemptLogCollection,
+    TestDataModel: TestDataModel,
+    TestLogModel: TestLogModel,
+    TestLogCollection: TestLogCollection,
+    QuizDataModel: QuizDataModel,
+    QuizLogModel: QuizLogModel,
+    QuizLogCollection: QuizLogCollection
+}
