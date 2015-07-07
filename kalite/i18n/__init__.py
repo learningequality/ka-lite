@@ -39,8 +39,6 @@ CACHE_VARS = []
 
 from django.conf import settings; logging = settings.LOG
 
-DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.I18N_DATA_PATH, "dubbed_video_mappings.json")
-LOCALE_ROOT = settings.USER_WRITABLE_LOCALE_DIR
 
 class LanguageNotFoundError(Exception):
     pass
@@ -75,20 +73,20 @@ def get_dubbed_video_map(lang_code=None, force=False):
     """
     Stores a key per language.  Value is a dictionary between video_id and (dubbed) youtube_id
     """
-    global DUBBED_VIDEO_MAP, DUBBED_VIDEO_MAP_RAW, DUBBED_VIDEOS_MAPPING_FILEPATH
+    global DUBBED_VIDEO_MAP, DUBBED_VIDEO_MAP_RAW
 
     if DUBBED_VIDEO_MAP is None or force:
         try:
-            if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
+            if not os.path.exists(settings.DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
                 try:
                     # Never call commands that could fail from the distributed server.
                     #   Always create a central server API to abstract things
                     response = requests.get("%s://%s/api/i18n/videos/dubbed_video_map" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST))
                     response.raise_for_status()
-                    with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
+                    with open(settings.DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
                         fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.
                 except Exception as e:
-                    if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
+                    if not os.path.exists(settings.DUBBED_VIDEOS_MAPPING_FILEPATH):
                         # Unrecoverable error, so raise
                         raise
                     elif DUBBED_VIDEO_MAP:
@@ -98,7 +96,7 @@ def get_dubbed_video_map(lang_code=None, force=False):
                         # We can recover by NOT forcing reload.
                         logging.warn("%s" % e)
 
-            DUBBED_VIDEO_MAP_RAW = softload_json(DUBBED_VIDEOS_MAPPING_FILEPATH, raises=True)
+            DUBBED_VIDEO_MAP_RAW = softload_json(settings.DUBBED_VIDEOS_MAPPING_FILEPATH, raises=True)
         except Exception as e:
             logging.info("Failed to get dubbed video mappings; defaulting to empty.")
             DUBBED_VIDEO_MAP_RAW = {}  # setting this will avoid triggering reload on every call
