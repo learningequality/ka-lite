@@ -397,7 +397,7 @@ def start_watchify():
     sys.stdout.write('Starting watchify')
 
     watchify_process = subprocess.Popen(
-        ['node compile_javascript.js --debug --watch'],
+        ['node compile_javascript.js --debug --watch --staticfiles'],
         shell=True,
         stdin=subprocess.PIPE,
         stdout=sys.stdout,

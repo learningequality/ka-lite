@@ -5,6 +5,7 @@ var _ = require("underscore");
 
 var watch = false;
 var debug = false;
+var staticfiles = false;
 
 if (process.argv.indexOf("--watch") > -1 || process.argv.indexOf("-w") > -1) {
     watch = true;
@@ -14,18 +15,32 @@ if (process.argv.indexOf("--debug") > -1 || process.argv.indexOf("-d") > -1) {
     debug = true;
 }
 
+if (process.argv.indexOf("--staticfiles") > -1 || process.argv.indexOf("-s") > -1) {
+    staticfiles = true;
+}
+
 var log = function(msg) {
     console.log("Watchify: " + msg);
 }
 
 var create_bundles = function (b, bundles) {
-    b.transform(hbsfy);
     b.plugin('factor-bundle', { outputs: _.map(bundles, function(item) {return item.target_file;}) });
     // Don't use minifyify except in production.
     if (!debug) {
         b.plugin('minifyify', {map: false});
     }
-    b.bundle().pipe(fs.createWriteStream('kalite/distributed/static/js/distributed/bundles/bundle_common.js'));
+    try {
+        b.bundle(function(err, buf){
+            if (err) {
+                log(err);
+            } else {
+                fs.createWriteStream('kalite' + (staticfiles ? '' : '/distributed') + '/static/js/distributed/bundles/bundle_common.js').write(buf);
+            }
+        });
+    }
+    catch (err) {
+        log(err);
+    }
     log(bundles.length + " Bundles written.");
 }
 
@@ -42,13 +57,13 @@ fs.readdir("kalite", function(err, filenames) {
             var dir_bundles = fs.readdirSync(bundle_path);
             for (var j = 0; j < dir_bundles.length; j++) {
                 bundles.push({
-                    target_file: "kalite/" + filenames[i] + "/static/js/" + filenames[i] + "/bundles/" + "bundle_" + dir_bundles[j],
+                    target_file: "kalite" + (staticfiles ? '' :  "/" + filenames[i]) + "/static/js/" + filenames[i] + "/bundles/" + "bundle_" + dir_bundles[j],
                     bundle: bundle_path + "/" + dir_bundles[j]
                 });
             }
             if (dir_bundles.length > 0) {
-                if (!fs.existsSync("kalite/" + filenames[i] + "/static/js/" + filenames[i] + "/bundles")) {
-                    fs.mkdirSync("kalite/" + filenames[i] + "/static/js/" + filenames[i] + "/bundles");
+                if (!fs.existsSync("kalite" + (staticfiles ? '' :  "/" + filenames[i]) + "/static/js/" + filenames[i] + "/bundles")) {
+                    fs.mkdirSync("kalite" + (staticfiles ? '' :  "/" + filenames[i]) + "/static/js/" + filenames[i] + "/bundles");
                 }
             }
         }
@@ -56,8 +71,8 @@ fs.readdir("kalite", function(err, filenames) {
 
     log("Found " + bundles.length + " bundle" + (bundles.length !== 1 ? "s" : "") + ", compiling.");
 
-    if (!fs.existsSync("kalite/distributed/static/js/distributed/bundles")) {
-        fs.mkdirSync("kalite/distributed/static/js/distributed/bundles");
+    if (!fs.existsSync('kalite' + (staticfiles ? '' : '/distributed') + '/static/js/distributed/bundles/')) {
+        fs.mkdirSync('kalite' + (staticfiles ? '' : '/distributed') + '/static/js/distributed/bundles/');
     }
 
     var b = browserify(_.map(bundles, function(item) {return item.bundle;}), {
@@ -66,6 +81,8 @@ fs.readdir("kalite", function(err, filenames) {
         packageCache: {},
         debug: true,
     });
+
+    b.transform(hbsfy);
 
     if (watch) {
         var watchify = require("watchify");
@@ -79,6 +96,10 @@ fs.readdir("kalite", function(err, filenames) {
             create_bundles(b, bundles);
         });
         b.on('log', log);
+        b.on('error', function(error) {
+            log(error);
+            this.emit("end");
+        });
     }
 
     create_bundles(b, bundles);
