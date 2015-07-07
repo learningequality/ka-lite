@@ -81,9 +81,9 @@ import cherrypy
 
 # We do not understand --option value, only --option=value.
 # Match all patterns of "--option value" and fail if they exist
-__validate_cmd_options = re.compile(r"--[^\s]+\s+(?:(?!--|-[\w]))")
+__validate_cmd_options = re.compile(r"--?[^\s]+\s+(?:(?!--|-[\w]))")
 if __validate_cmd_options.search(" ".join(sys.argv[1:])):
-    sys.stderr.write("Please only use --option=value patterns. The option parser gets confused if you do otherwise.\n")
+    sys.stderr.write("Please only use --option=value or -x123 patterns. No spaces allowed between option and value. The option parser gets confused if you do otherwise.\n\nWill be fixed for next version 0.15")
     sys.exit(1)
 
 from threading import Thread
