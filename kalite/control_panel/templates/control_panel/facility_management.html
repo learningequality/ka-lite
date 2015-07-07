@@ -16,7 +16,9 @@
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript" src="{% static 'js/jquery.sparkline.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/control_panel/bundles/bundle_facility_management.js' %}"></script>
     <script type="text/javascript">
+        var $ = require("facility_management").$
         var end_date = new Date("{{ date_range.1 }}");
         var start_date = new Date("{{ date_range.0 }}");
 
@@ -72,7 +74,6 @@
 
         });
     </script>
-    <script type="text/javascript" src="{% static 'js/control_panel/facility_management.js' %}"></script>
 {% endblock headjs %}
 
 {% block buttons %}{{ block.super }}

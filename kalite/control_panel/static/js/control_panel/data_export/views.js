@@ -1,36 +1,13 @@
-// Handles the data export functionality of the control panel
-// TODO-blocker(dylanjbarth) 0.13: limit requests and handle pagination
+var Handlebars = require("base/handlebars");
+var Backbone = require("base/backbone");
+var $ = require("base/jQuery");
 
-// Models
-var ZoneModel = Backbone.Model.extend();
-
-var FacilityModel = Backbone.Model.extend();
-
-var GroupModel = Backbone.Model.extend();
-
-var DataExportStateModel = Backbone.Model.extend();
-
-// Collections
-var ZoneCollection = Backbone.Collection.extend({
-    model: ZoneModel,
-    url: ALL_ZONES_URL
-});
-
-var FacilityCollection = Backbone.Collection.extend({
-    model: FacilityModel,
-    url: ALL_FACILITIES_URL
-});
-
-var GroupCollection = Backbone.Collection.extend({
-    model: GroupModel,
-    url: ALL_GROUPS_URL
-});
-
+var Models = require("./models");
 
 // Views
 var DataExportView = Backbone.View.extend({
     // the containing view
-    template: HB.template('data_export/data-export-container'),
+    template: require('./hbtemplates/data-export-container'),
 
     initialize: function() {
 
@@ -121,13 +98,13 @@ var DataExportView = Backbone.View.extend({
 });
 
 
-window.ZoneSelectView = Backbone.View.extend({
+var ZoneSelectView = Backbone.View.extend({
 
-    template: HB.template('data_export/zone-select'),
+    template: require('./hbtemplates/zone-select'),
 
     initialize: function() {
         // Create collections
-        this.zone_list = new ZoneCollection();
+        this.zone_list = new Models.ZoneCollection();
 
         // on central, this is a dynamic view
         // on distributed, this is a placeholder view,
@@ -175,13 +152,13 @@ window.ZoneSelectView = Backbone.View.extend({
     }
 });
 
-window.FacilitySelectView = Backbone.View.extend({
+var FacilitySelectView = Backbone.View.extend({
 
-    template: HB.template('data_export/facility-select'),
+    template: require('./hbtemplates/facility-select'),
 
     initialize: function() {
         // Create collections
-        this.facility_list = new FacilityCollection();
+        this.facility_list = new Models.FacilityCollection();
 
         // Re-render self when the fetch returns or state model changes
         this.listenTo(this.facility_list, 'sync', this.render);
@@ -281,13 +258,13 @@ window.FacilitySelectView = Backbone.View.extend({
     }
 });
 
-window.GroupSelectView = Backbone.View.extend({
+var GroupSelectView = Backbone.View.extend({
 
-    template: HB.template('data_export/group-select'),
+    template: require('./hbtemplates/group-select'),
 
     initialize: function() {
         // Create collections
-        this.group_list = new GroupCollection();
+        this.group_list = new Models.GroupCollection();
 
         this.fetch_by_facility();
         // Re-render self when the fetch returns or state model changes
@@ -358,3 +335,10 @@ window.GroupSelectView = Backbone.View.extend({
         }
     }
 });
+
+module.exports = {
+    DataExportView: DataExportView,
+    ZoneSelectView: ZoneSelectView,
+    FacilitySelectView: FacilitySelectView,
+    GroupSelectView: GroupSelectView
+}

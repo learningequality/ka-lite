@@ -1,15 +1,7 @@
-function force_sync(zone_id, device_id) {
-    // Simple function that calls the API endpoint to force a data sync,
-    //   then shows a message for success/failure
-    doRequest(window.Urls.api_force_sync())
-        .success(function() {
-            var msg = gettext("Successfully launched data syncing job.") + " ";
-            msg += sprintf(gettext("After syncing completes, visit the <a href='%(devman_url)s'>device management page</a> to view results."), {
-                devman_url: Urls.device_management(zone_id, device_id)
-            });
-            show_message("success", msg);
-        });
-}
+var $ = require("base/jQuery");
+var force_sync = require("utils/force_sync");
+var api = require("utils/api");
+var messages = require("utils/messages");
 
 $(function () {
     $("#force-sync").click(function(ev){
@@ -28,12 +20,12 @@ $(function () {
             var delete_facility_url = event.target.getAttribute("value");
             var data = {facility_id: null};
             // MUST: provide the data argument to make this a POST request
-            doRequest(delete_facility_url, data)
+            api.doRequest(delete_facility_url, data)
                 .success(function() {
                     window.location.reload();
                 });
         } else {
-            show_message("warning", gettext("The facility has not been deleted. Did you spell the facility name correctly?"));
+            messages.show_message("warning", gettext("The facility has not been deleted. Did you spell the facility name correctly?"));
         }
     });
 });

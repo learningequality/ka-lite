@@ -1,3 +1,8 @@
+var $ = require("base/jQuery");
+var _ = require("underscore");
+var get_params = require("utils/get_params");
+var api = require("utils/api");
+
 function getSelectedItems(select) {
     // Retrieve a list of selected users.
     // var items = $(select).find("tr.selected").map(function () {
@@ -40,7 +45,7 @@ $(function() {
     $("#group").change(function(){
         // Change the URL to the selected group.
         GetParams["group_id"] = $("#group option:selected").val();
-        window.location.href = setGetParamDict(window.location.href, GetParams);
+        window.location.href = get_params.setGetParamDict(window.location.href, GetParams);
     });
 
     $(".all").click(function(event){
@@ -69,7 +74,7 @@ $(function() {
         } else if(!confirm(gettext("You are about to move selected users to another group."))) {
             return;
         } else {
-            doRequest(window.Urls.move_to_group(), {users: users, group: group})
+            api.doRequest(window.Urls.move_to_group(), {users: users, group: group})
                 .success(function() {
                     location.reload();
                 });
@@ -108,7 +113,7 @@ $(function() {
         } else if (!confirm(gettext("You are about to delete selected users, they will be permanently deleted."))) {
             return;
         } else {
-            doRequest(window.Urls.delete_users(), {users: users})
+            api.doRequest(window.Urls.delete_users(), {users: users})
                 .success(function() {
                     location.reload();
                 });
@@ -124,7 +129,7 @@ $(function() {
         } else if (!confirm(gettext("You are about to permanently delete the selected group(s). Note that any learners currently in this group will now be characterized as 'Ungrouped' but their profiles will not be deleted."))) {
             return;
         } else {
-            doRequest(window.Urls.group_delete(), {groups: groups})
+            api.doRequest(window.Urls.group_delete(), {groups: groups})
                 .success(function() {
                     location.reload();
                 });
@@ -190,3 +195,7 @@ $(function() {
         return false;
     });
 });
+
+module.exports = {
+    $: $
+}

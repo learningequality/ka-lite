@@ -1,3 +1,6 @@
+var $ = require("base/jQuery");
+var api = require("utils/api");
+
 $(function() {
     $('#time_select').timepicker({
         disableFocus: true,
@@ -17,6 +20,6 @@ $(function() {
             var data = {
                 date_time: $('#standard-date').val() + " " + $('#time_select').val()
             };
-            doRequest(TIME_SET_URL, data);
+            api.doRequest(TIME_SET_URL, data);
         });
 });
