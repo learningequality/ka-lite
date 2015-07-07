@@ -21,6 +21,9 @@ dist-packages-temp/
 dist-packages-downloads/
 dist-packages/
 
+# Updates downloaded at runtime
+static-updates
+
 # MAC stuff
 .DS_Store
 
