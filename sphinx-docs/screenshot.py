@@ -1,6 +1,7 @@
 import json
 import os
 import uuid
+import re
 import sys
 from subprocess import Popen
 
@@ -30,7 +31,7 @@ KALITECTL_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(_
 # Trying to import call_command to execute a Django mgmt command gets you
 # into a weird import hell, probably because of import_all_child_modules...
 SCREENSHOT_COMMAND = [sys.executable, KALITECTL_PATH, "manage", "screenshots"]
-SCREENSHOT_COMMAND_OPTS = ["-v", "3", "--output-dir={0}".format(OUTPUT_PATH)]
+SCREENSHOT_COMMAND_OPTS = ["-v0", "--output-dir={0}".format(OUTPUT_PATH)]
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",
                      "borderColor": "red",
@@ -58,7 +59,8 @@ def process_screenshots(app, env):
         return
     all_args = map(lambda x: x['from_str_arg'], env.screenshot_all_screenshots)
     # If building in a different language, start the server in a different language
-    command = SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + ["--from-str={0}".format(json.dumps(all_args))]
+    command = SCREENSHOT_COMMAND + SCREENSHOT_COMMAND_OPTS + \
+              [re.sub(r"\s", r"", "--from-str={0}".format(json.dumps(all_args)))]
     language = env.config.language
     if language:
         command += ["--lang={0}".format(language)]
