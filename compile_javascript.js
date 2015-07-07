@@ -35,13 +35,13 @@ var create_bundles = function (b, bundles) {
                 log(err);
             } else {
                 fs.createWriteStream('kalite' + (staticfiles ? '' : '/distributed') + '/static/js/distributed/bundles/bundle_common.js').write(buf);
+                log(bundles.length + " Bundles written.");
             }
         });
     }
     catch (err) {
         log(err);
     }
-    log(bundles.length + " Bundles written.");
 }
 
 fs.readdir("kalite", function(err, filenames) {
@@ -58,7 +58,8 @@ fs.readdir("kalite", function(err, filenames) {
             for (var j = 0; j < dir_bundles.length; j++) {
                 bundles.push({
                     target_file: "kalite" + (staticfiles ? '' :  "/" + filenames[i]) + "/static/js/" + filenames[i] + "/bundles/" + "bundle_" + dir_bundles[j],
-                    bundle: bundle_path + "/" + dir_bundles[j]
+                    bundle: bundle_path + "/" + dir_bundles[j],
+                    alias: dir_bundles[j].split(".").slice(0,-1).join(".")
                 });
             }
             if (dir_bundles.length > 0) {
@@ -75,12 +76,14 @@ fs.readdir("kalite", function(err, filenames) {
         fs.mkdirSync('kalite' + (staticfiles ? '' : '/distributed') + '/static/js/distributed/bundles/');
     }
 
-    var b = browserify(_.map(bundles, function(item) {return item.bundle;}), {
+    var b = browserify({
         paths: module_paths,
         cache: {},
         packageCache: {},
         debug: true,
     });
+
+    _.each(bundles, function(item) {b.add(item.bundle, {expose: item.alias});})
 
     b.transform(hbsfy);
 
