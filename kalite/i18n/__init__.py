@@ -52,12 +52,11 @@ def get_localized_exercise_dirpath(lang_code):
 def get_locale_path(lang_code=None):
     """returns the location of the given language code, or the default locale root
     if none is provided."""
-    global LOCALE_ROOT
 
     if not lang_code:
-        return LOCALE_ROOT
+        return settings.USER_WRITABLE_LOCALE_DIR
     else:
-        return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
+        return os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lcode_to_django_dir(lang_code))
 
 def get_po_filepath(lang_code, filename=None):
     """Return the LC_MESSAGES directory for the language code, with an optional filename appended."""

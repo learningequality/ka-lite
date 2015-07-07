@@ -66,7 +66,7 @@ DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(USER_WRITABLE_LOCALE_DIR, "dubbed_
 
 # If user does not have this file in their own directory, create a new one as a
 # copy of the distributed one since user processes may write to it
-if not os.path.isfile(DUBBED_VIDEOS_MAPPING_FILEPATH) and os.path.isfile(__dubbed_video_mapping_source):
+if os.path.isfile(__dubbed_video_mapping_source) and not os.path.isfile(DUBBED_VIDEOS_MAPPING_FILEPATH):
     open(DUBBED_VIDEOS_MAPPING_FILEPATH, "w").write(
         file(__dubbed_video_mapping_source, "r").read()
     )
