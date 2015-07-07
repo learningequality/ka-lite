@@ -12,14 +12,24 @@ install:
 -  npm install -g grunt-cli
 -  pip install -r requirements_test.txt
 -  pip install coveralls
+
 script:
-# Test that we can run from source directory
-- bin/kalite start --traceback -v 2
+
+- bin/kalite start --traceback -v2
 - bin/kalite status
-- bin/kalite stop --traceback -v 2
+- bin/kalite stop --traceback -v2
+
+# Check that there are no processes remaining containing the string "kalite" after stopping
+- if [ ! `ps ax | grep kalite | wc -l` -eq 1 ]; then echo "Processes remain after stop"; ps ax | grep kalite; exit 1; fi
+
 - python python-packages/fle_utils/tests.py
-- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" manage.py test --traceback -v 2
+
+# KA Lite tests with coverage
+- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" bin/kalite manage test --traceback -v2
+
+# JavaScript tests
 - grunt jshint
+
 notifications:
   email:
     - aron@learningequality.org

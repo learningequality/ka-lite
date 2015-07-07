@@ -12,7 +12,7 @@ from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseRedirect, HttpResponseNotFound
+from django.http import Http404, HttpResponseRedirect, HttpResponseNotFound, HttpResponseForbidden
 from django.db.models import Max
 from django.db.models.query_utils import Q
 from django.shortcuts import get_object_or_404
@@ -33,10 +33,6 @@ from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
 from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
-
-# TODO(dylanjbarth): this looks awful
-if settings.CENTRAL_SERVER:
-    from central.models import Organization
 
 
 UNGROUPED = "Ungrouped"
@@ -175,6 +171,8 @@ def data_export(request):
         zone = ""
 
     if settings.CENTRAL_SERVER:
+        # TODO(dylanjbarth and benjaoming): this looks awful
+        from central.models import Organization
         all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
         if zone_id:
             org = Zone.objects.get(id=zone_id).get_org()
@@ -233,16 +231,30 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
 
     # If local (and, for security purposes, a distributed server), get device metadata
     if context["is_own_device"]:
-        context.update(local_install_context(request))
+        database_path = settings.DATABASES["default"]["NAME"]
+        current_version = request.GET.get("version", VERSION)  # allows easy development by passing a different version
+
+        context.update({
+            "software_version": current_version,
+            "software_release_date": VERSION_INFO().get(
+                current_version, {}
+            ).get("release_date", "Unknown"),
+            "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
+            "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
+            "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
+        })
 
     return context
 
 
-@facility_required
 @require_authorized_admin
-@render_to("control_panel/facility_form.html")
-def facility_form(request, facility, zone_id=None):
-    context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
+@render_to("control_panel/facility.html")
+@dynamic_settings
+def facility_form(request, ds, facility_id=None, zone_id=None):
+    if request.is_teacher and not ds["facility"].teacher_can_edit_facilities:
+        return HttpResponseForbidden()
+
+    context = control_panel_context(request, zone_id=zone_id, facility_id=facility_id)
 
     if request.method != "POST":
         form = FacilityForm(instance=context["facility"])
@@ -252,8 +264,13 @@ def facility_form(request, facility, zone_id=None):
         if not form.is_valid():
             messages.error(request, _("Failed to save the facility; please review errors below."))
         else:
-            form.instance.zone_fallback = get_object_or_404(Zone, pk=zone_id)
+            form.instance.zone_fallback = get_object_or_None(Zone, pk=zone_id)
+
+            if settings.CENTRAL_SERVER:
+                assert form.instance.zone_fallback is not None
+
             form.save()
+            messages.success(request, _("The facility '%(facility_name)s' has been successfully saved!") % {"facility_name": form.instance.name})
             return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone_id}))
 
     context.update({"form": form})
@@ -388,7 +405,9 @@ def account_management(request):
             # Never report this error; don't want this logging to block other functionality.
             logging.error("Failed to update student userlog activity: %s" % e)
 
-    return student_view_context(request)
+    c = student_view_context(request)
+    c['restricted'] = settings.DISABLE_SELF_ADMIN
+    return c
 
 
 # data functions
@@ -563,16 +582,3 @@ def control_panel_context(request, **kwargs):
         context["device"] = get_object_or_404(Device, pk=kwargs["device_id"])
         context["device_id"] = kwargs["device_id"] or "None"
     return context
-
-
-def local_install_context(request):
-    database_path = settings.DATABASES["default"]["NAME"]
-    current_version = request.GET.get("version", VERSION)  # allows easy development by passing a different version
-
-    return {
-        "software_version": current_version,
-        "software_release_date": VERSION_INFO()[current_version]["release_date"],
-        "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
-        "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
-        "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
-    }

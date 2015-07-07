@@ -18,6 +18,19 @@ Please follow the instructions on our `Github Wiki`_ for reporting bugs.
 
 .. _Github Wiki: https://github.com/learningequality/ka-lite/wiki/Report%20Bugs%20by%20Creating%20Issues
 
+How do I change KA Lite's content folder?
+-----------------------------------------
+
+If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), here are the steps you need to do:
+
+#. If it doesn't already exist, create a file named local_settings.py in the ka-lite/kalite folder (the one containing settings.py)
+#. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes.
+    **For example, on Windows:** ``CONTENT_ROOT="C:\\videos_location\\"``
+
+    **For example, on Linux:** ``CONTENT_ROOT="/home/me/videos_location/"``
+#. Restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
+
+
 Is there somewhere I can find Spanish language content organized by topic?
 --------------------------------------------------------------------------
 
@@ -32,15 +45,15 @@ We have made the full set of KA videos (in the format needed by KA Lite) availab
 
 * Download and install BitTorrent Sync
 * Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to load http://127.0.0.1:8888/ to get the interface.
-* Click the "Enter a key or link" button, and put in [#f1]_ ::
+* Click the "Enter a key or link" button, and enter  ::
 
-    https://link.getsync.com/#f=ka-lite-compressed&sz=25E9&q=-&s=TOQVB3LLGWCKEQ6NOCFBSEVWA74PRA6I&q=-&i=C4M3QMAVXE7RVXR7B3526TBD5V3KYV5V6&q=-&p=CCGAGLIJGFQFP2X2Z4QWQ3MLPJHTVV3A
+    BT7AOITNAIP3X3CSLE2EPQJFXJXMXVGQI
 
 * Then select the "content" folder inside your KA Lite installation as the "location" (unless you want the videos going somewhere else).
 * Allow the videos to sync in there from your peers! It may take a while for now, as we don't yet have many seeders on it. On that note -- please help seed by keeping it running even after you've got all the videos , if you have the bandwidth to spare! This to will make it easier for others to download the content as well.
 * Please note that these are resized videos. All in all, this will take around 23GB of space.
 
-.. [#f1] If you are running an old version of btsync, prior to version 1.4, you can use the secret "BT7AOITNAIP3X3CSLE2EPQJFXJXMXVGQI". But we recommend you install the latest version and use the instructions above.
+
 
 Once you have the videos, you need to tell KA Lite where to find them by following the instructions in the :doc:`user guide </usermanual/userman_main>` for your version.
 
@@ -179,6 +192,7 @@ We are also developing RCTs to start in June for a deployment in India.
 
 Backing up data: is there any easy way to do it locally?
 --------------------------------------------------------
+
 Yes! Just copy the file::
 
     ka-lite/kalite/database/data.sqlite
@@ -189,3 +203,12 @@ to a secure location. To restore, simply copy the backup data file to the same l
 
 to guarantee your database is compatible with the current version of KA Lite you have installed!
 Note that online data back-ups occur if you "register" your KA Lite installation with an online account on our website.
+
+I skipped the step for downloading the assessment items during install, how can I do it now?
+--------------------------------------------------------------------------------------------
+
+Run the following command (beware it can take a while, the download size is over 500 MB):
+
+``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip -f``
+
+As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.

@@ -40,7 +40,7 @@ CACHE_VARS = []
 from django.conf import settings; logging = settings.LOG
 
 DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.I18N_DATA_PATH, "dubbed_video_mappings.json")
-LOCALE_ROOT = settings.LOCALE_PATHS[0]
+LOCALE_ROOT = settings.USER_WRITABLE_LOCALE_DIR
 
 class LanguageNotFoundError(Exception):
     pass
@@ -48,7 +48,7 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(os.path.dirname(__file__), settings.KHAN_EXERCISES_RELPATH, "exercises", ka_lang_code)
+    return os.path.join(settings.USER_DATA_ROOT, "exercises", ka_lang_code)  # Translations live in user data space
 
 
 def get_locale_path(lang_code=None):
@@ -108,6 +108,11 @@ def get_dubbed_video_map(lang_code=None, force=False):
             if lang_name:
                 logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
                 DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
+
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if lang_code == "pt-BR":
+        lang_code = "pt"
 
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
@@ -373,7 +378,7 @@ def update_jsi18n_file(code="en"):
     save to disk--it won't change until the next language pack update!
     """
     translation.activate(code)  # we switch the language of the whole thread
-    output_dir = os.path.join(os.path.dirname(__file__), 'static', 'js', 'i18n')
+    output_dir = os.path.join(settings.CONTENT_ROOT, 'locale', 'js', 'i18n')
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
 
@@ -389,6 +394,7 @@ def update_jsi18n_file(code="en"):
         except IOError:
             logging.warn("No {code}_icu.js file found in locale_path {path}".format(code=code, path=path))
     output_js = response.content + "\n" + icu_js
+    logging.info("Writing i18nized js file to {0}".format(output_file))
     with open(output_file, "w") as fp:
         fp.write(output_js)
 

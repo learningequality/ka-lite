@@ -54,6 +54,11 @@ TOPICS          = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
 
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if language == "pt-BR":
+        language = "pt"
+
     if not channel:
         channel = settings.CHANNEL
 
@@ -66,7 +71,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
     if TOPICS.get(channel) is None:
         TOPICS[channel] = {}
     if annotate or TOPICS.get(channel, {}).get(language) is None:
-        TOPICS[channel][language] = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+        topics = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
 
         # Just loaded from disk, so have to restamp.
         annotate = True
@@ -122,7 +127,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
 
             flat_topic_tree.append(node)
 
-        recurse_nodes(TOPICS[channel][language])
+        recurse_nodes(topics)
 
         TOPICS[channel][language] = flat_topic_tree
 
@@ -171,7 +176,10 @@ def get_exercise_cache(force=False, language=None):
                 EXERCISES[language] = exercises
                 return EXERCISES[language]
         EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
-        exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+        if language == "en":  # English-language exercises live in application space, translations in user space
+            exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+        else:
+            exercise_root = os.path.join(settings.USER_DATA_ROOT, "exercises")
         if os.path.exists(exercise_root):
             exercise_path = os.path.join(exercise_root, language) if language != "en" else exercise_root
             try:
@@ -282,8 +290,8 @@ def get_content_cache(force=False, annotate=False, language=None):
         if os.path.exists(i18n.get_srt_path()):
             for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
                 # Only both looking at files that are inside a 'subtitles' directory
-                if dirpath.split("/")[-1] == "subtitles":
-                    lc = dirpath.split("/")[-2]
+                if os.path.basename(dirpath) == "subtitles":
+                    lc = os.path.basename(os.path.dirname(dirpath))
                     for filename in filenames:
                         if filename in subtitle_langs:
                             subtitle_langs[filename].append(lc)
@@ -520,7 +528,14 @@ def smart_translate_item_data(item_data):
 
 def get_content_data(request, content_id=None):
 
-    content_cache = get_content_cache(language=request.language)
+    language = request.language
+
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if language == "pt-BR":
+        language = "pt"
+
+    content_cache = get_content_cache(language=language)
     content = content_cache.get(content_id, None)
 
     if not content:

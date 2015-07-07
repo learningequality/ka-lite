@@ -52,7 +52,7 @@ class Command(NoArgsCommand):
         logging.info("fetching assessment items")
 
         # load the assessmentitems
-        assessment_items = json.load(open(settings.ASSESSMENT_ITEM_JSON_PATH))
+        assessment_items = json.load(open(settings.KHAN_ASSESSMENT_ITEM_JSON_PATH))
 
         image_urls = find_all_image_urls(assessment_items)
         graphie_urls = find_all_graphie_urls(assessment_items)
@@ -262,7 +262,7 @@ def _get_content_by_readable_id(readable_id):
 def _list_all_exercises_with_bad_links():
     """This is a standalone helper method used to provide KA with a list of exercises with bad URLs in them."""
     url_pattern = r"https?://www\.khanacademy\.org/[\/\w\-]*/./(?P<slug>[\w\-]+)"
-    assessment_items = json.load(open(settings.ASSESSMENT_ITEM_JSON_PATH))
+    assessment_items = json.load(open(settings.KHAN_ASSESSMENT_ITEM_JSON_PATH))
     for ex in get_exercise_cache().values():
         checked_urls = []
         displayed_title = False

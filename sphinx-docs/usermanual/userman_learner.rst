@@ -50,6 +50,21 @@ The icons to the left of the menu selections describe whether or not it is a vid
 
 Once you have found the video or exercise that you'd like to engage with, simply click on that selection.
 
+Content Recommendation
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+The content recommendations based off of your current progress are on the homepage and becomes visible after you have made some progress on at least one exercise. After you have made any form of progress, this is the first page you should see after logging in. If at any point you would like to get to your homepage, please click on the KA Lite logo in the top left hand corner.
+
+The homepage now provides you with three cards:
+
+**Resume:**
+This card allows you to navigate to the last exercise you were on. This includes both videos and written exercises.
+
+**Next Steps:**
+This card allows you to navigate to excercises you have begun; you can also to navigate to the over-arching topic to which that exercise belongs to.
+
+**Explore:**
+This card recommends content for you based on topics you have completed and begun. This card also recommends random content from our collection of topics to encourage learning from multiple fields.
+
 
 How to Practice Exercises
 --------------------------
@@ -59,7 +74,7 @@ To answer a question, enter the answer in the box on the top right of the module
 
 After answering a question, the exercise module will not advance to the next question until you click the "Next Question..." button on the right hand side of the module.
 
-The bar on the top right will display your progress as you go through the exercises. After 10 correct answers in a row, your points for the exercise will be added to our total and you will have mastered the exercise. If you get an answer wrong or ask for a hint, all the points you have earned for this exercise will be lost. 
+The bar on the top right will display your progress as you go through the exercises. After 8 correct answers out of the last 10 answered, your points for the exercise will be added to our total and you will have mastered the exercise. If you get an answer wrong or ask for a hint, you will be unable to earn points from that question until it is presented again.
 
 .. HINT:: 
 	If you are stuck on a problem, you can ask for a hint by clickin on the "Show hints" button! Use your hints wisely, for there are a limited number of them for every section. 

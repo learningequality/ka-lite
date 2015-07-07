@@ -18,9 +18,10 @@ from random import choice
 
 FIND_ELEMENT_TIMEOUT = 3
 
-class BrowserActionMixins(object):
+class KALiteTimeout(Exception):
+    pass
 
-    max_wait_time = 4
+class BrowserActionMixins(object):
 
     # not all act as tab stops, but ...
     HtmlFormElements = ["form", "input", "textarea", "label", "fieldset",
@@ -58,13 +59,11 @@ class BrowserActionMixins(object):
 
         browse_to(browser, *args, **kwargs)
 
-    def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=None):
+    def wait_for_page_change(self, source_url, wait_time=0.1, max_retries=40):
         """
         When testing, we have to make sure that the page has loaded before testing the resulting page.
         """
 
-        if not max_retries:
-            max_retries = int(self.max_wait_time/float(wait_time))
         return wait_for_page_change(self.browser, source_url, wait_time=wait_time, max_retries=max_retries)
 
     def browser_activate_element(self, elem=None, id=None, name=None, tag_name=None, browser=None, css_class=None):
@@ -168,7 +167,7 @@ class BrowserActionMixins(object):
             self.browser_send_keys(keys, browser=browser)
         self.browser_next_form_element(browser=browser)
 
-    def browser_wait_for_element(self, css_selector, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_element(self, css_selector, max_wait_time=7, step_time=0.25):
         total_wait_time = 0
         element = None
         while total_wait_time < max_wait_time:
@@ -182,7 +181,7 @@ class BrowserActionMixins(object):
                 pass
         return element
 
-    def browser_wait_for_no_element(self, css_selector, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_no_element(self, css_selector, max_wait_time=7, step_time=0.25):
         total_wait_time = 0
         while total_wait_time < max_wait_time:
 
@@ -194,7 +193,7 @@ class BrowserActionMixins(object):
             except:
                 break
 
-    def browser_wait_for_js_condition(self, condition, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_js_condition(self, condition, max_wait_time=7, step_time=0.25):
         """
         Waits for the script in condition to return True.
         Warning: don't preface condition with "return"
@@ -205,6 +204,8 @@ class BrowserActionMixins(object):
 
             time.sleep(step_time)
             total_wait_time += step_time
+            if total_wait_time >= max_wait_time:
+                raise KALiteTimeout("Timed out waiting for js condition {0}".format(condition))
             try:
                 if self.browser.execute_script(script):
                     break
@@ -215,9 +216,9 @@ class BrowserActionMixins(object):
                 # that doesn't yet exist, e.g. does_not_exist_yet.i_want_to_test_this_one
                 pass
 
-    def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=4, step_time=0.25):
+    def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=7, step_time=0.25):
         exists_condition = "typeof(%s) != 'undefined'" % obj_name
-        self.browser_wait_for_js_condition(exists_condition, max_wait_time, step_time)
+        self.browser_wait_for_js_condition(exists_condition, max_wait_time=max_wait_time, step_time=step_time)
 
     # Actual testing methods
     def empty_form_test(self, url, submission_element_id):
@@ -362,7 +363,7 @@ class BrowserActionMixins(object):
     def browser_logout_user(self, browser=None):
         # Ensure that we're on the site, mainly so that "$" is imported
         self.browser.get(self.reverse("homepage"))
-        self.browser_wait_for_js_object_exists("$");
+        self.browser_wait_for_js_object_exists("$")
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
         self.browser.execute_script('window.FLAG=false;$.ajax({type: "GET", url: "%s", success: function(){window.FLAG=true}})' % url)
         self.browser_wait_for_js_condition("window.FLAG")
@@ -373,13 +374,13 @@ class BrowserActionMixins(object):
         browser = browser or self.browser
         # Ensure that we're on the site, mainly so that "$" is imported
         self.browser.get(self.reverse("homepage"))
-        self.browser_wait_for_js_object_exists("$");
+        self.browser_wait_for_js_object_exists("$")
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
-        request_script = "window.FLAG=false;$.ajax({url:'%s', type:'GET', success: function(data){window.FLAG=true; window.DATA=data;}})" % url
+        request_script = "window.FLAG=false;$.ajax({url:'%s', type:'GET', success: function(data){window.FLAG=true; window.DATA=data;}});" % url
         browser.execute_script(request_script)
         self.browser_wait_for_js_condition("window.FLAG")
         data = browser.execute_script("return window.DATA")
-        return data["is_logged_in"]
+        return data.get("is_logged_in", False)
 
 
     def fill_form(self, input_id_dict):
@@ -420,4 +421,6 @@ class BrowserActionMixins(object):
         self.browser_wait_for_js_object_exists("window.statusModel");
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
         points_text = self.browser.execute_script("return $('#points').text();")
+        self.assertTrue(bool(points_text), "Failed fetching contents of #points element, got {0}".format(repr(points_text)))
         return int(re.search(r"(\d+)", points_text).group(1))
+

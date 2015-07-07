@@ -7,6 +7,11 @@ window.HomepageWrapper = BaseView.extend({
     
     initialize: function() {
         _.bindAll(this);
+        this.set_collection();
+        this.listenTo(window.statusModel, "change:user_id", this.set_collection);
+    },
+
+    set_collection: function() {
         this.collection = new window.SuggestedContentCollection([], {
             resume: true,
             next: true,
@@ -18,9 +23,18 @@ window.HomepageWrapper = BaseView.extend({
 
     render: function() {
         this.$el.html(this.template());
-        this.$("#resume").append(this.content_resume.el);
-        this.$("#nextsteps").append(this.content_nextsteps.el);
-        this.$("#explore").append(this.content_explore.el);
+
+        if (this.content_resume) {
+            this.$("#resume").append(this.content_resume.el);
+        }
+
+        if (this.content_nextsteps) {
+            this.$("#nextsteps").append(this.content_nextsteps.el);
+        }
+
+        if (this.content_explore) {
+            this.$("#explore").append(this.content_explore.el);
+        }
     },
 
     data_load: function() {
@@ -30,17 +44,23 @@ window.HomepageWrapper = BaseView.extend({
         
         var exploreCollection = new window.SuggestedContentCollection(this.collection.where({explore:true}));
         
-        this.content_resume = new ContentResumeView({
-            collection:resumeCollection
-        });
+        if (resumeCollection.length > 0) {
+            this.content_resume = new ContentResumeView({
+                collection:resumeCollection
+            });
+        }
 
-        this.content_nextsteps = new ContentNextStepsView({
-            collection:nextStepsCollection
-        });
+        if (nextStepsCollection.length > 0) {
+            this.content_nextsteps = new ContentNextStepsView({
+                collection:nextStepsCollection
+            });
+        }
 
-        this.content_explore = new ContentExploreView({
-            collection:exploreCollection
-        });
+        if (exploreCollection.length > 0) {
+            this.content_explore = new ContentExploreView({
+                collection:exploreCollection
+            });
+        }
                 
         this.render();
     }

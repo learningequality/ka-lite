@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 
 from ... import cherrypyserver
 import warnings
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
 
 
 CPWSGI_HELP = r"""
@@ -50,7 +51,7 @@ Examples:
 
 CPWSGI_OPTIONS = {
     'host': '127.0.0.1', # changed from localhost to avoid ip6 problem -clm
-    'port': getattr(settings, "CHERRYPY_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
+    'port': getattr(settings, "PRODUCTION_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
     'threads': getattr(settings, "CHERRPY_THREAD_COUNT", 50),
     'daemonize': False,
     'pidfile': None,
@@ -213,6 +214,9 @@ def ka_lite_is_using_port(host, port):
 
 def runcherrypyserver(argset=[], **kwargs):
     # Get the options
+    
+    warnings.warn("runcherrypyserver() is deprecated", RemovedInKALite_v015_Warning)
+    
     options = CPWSGI_OPTIONS.copy()
     options.update(kwargs)
     

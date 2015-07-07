@@ -31,7 +31,7 @@
       <li role="presentation" class="divider"></li>
       {{!-- Student account management --}}
       <li role="presentation" class="motivational-feature">
-        <a role="menuitem" tabindex="-1" id="nav_progress">
+        <a href="{{ url "student_view" }}" role="menuitem" tabindex="-1" id="nav_progress">
           {{_ "My Progress" }}
         </a>
       </li>
@@ -43,6 +43,13 @@
           {{_ "Logout" }}
         </a>
       </li>
+    {{#if docs_exist}}
+      <li role="presentation" id="documentation">
+        <a role="menuitem" id="documentation_a" href="/static/html/index.html">
+          {{_ "Documentation" }}
+        </a>
+      </li>
+    {{/if}}
     </ul>
   </li>
 {{/if}}

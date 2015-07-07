@@ -189,7 +189,13 @@ a#user-name-a.dropdown-toggle {
     border-top: 2px solid #5AA685;
     border-right: 2px solid #5AA685;
 }
-.nav li a:focus {
+
+.nav li a:hover,
+.nav li a:focus,
+.nav li.active a,
+.nav li.active a:hover,
+.nav li.active span,
+.nav li.active span:hover {
     background: #5AA685;
 }
 .dropdown-menu li a {
@@ -232,7 +238,7 @@ form .input-group {
 #search-button {
     color: #fff !important;
     background: #5AA685 !important;
-    border-radius: 3px;
+    border-radius: 0px;
 }
 .source {
     margin-top: 2em;

@@ -1,3 +1,8 @@
+import time
+import tempfile
+import getpass
+from kalite import version
+import hashlib
 import logging
 import os
 import json
@@ -25,7 +30,7 @@ try:
         "your installation is to rename your local_settings.py (keeping it in "
         "the same directory) and add an import statement in the very first "
         "line of the new file so it looks like this:\n\n"
-        "    from kalite.settings.base import *\n"
+        "    from kalite.project.settings.base import *\n"
         "    # Put custom settings here...\n"
         "    FOO = BAR\n\n"
         "and then call kalite start with an additional argument pointing to "
@@ -47,8 +52,11 @@ except ImportError:
 
 # Used everywhere, so ... set it up top.
 DEBUG = getattr(local_settings, "DEBUG", False)
+TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
-CENTRAL_SERVER = False  # Hopefully will be removed soon.
+if DEBUG:
+    warnings.warn("Setting DEBUG=True in local_settings is no longer properly supported and will not yield a true develop environment, please use --settings=kalite.project.settings.dev")
+
 
 ##############################
 # Basic setup of logging
@@ -58,20 +66,14 @@ CENTRAL_SERVER = False  # Hopefully will be removed soon.
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False,
 # 1 if True)
-LOGGING_LEVEL = getattr(
-    local_settings, "LOGGING_LEVEL", logging.DEBUG if DEBUG else logging.INFO)
+LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.INFO)
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
-
-TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 logging.basicConfig()
 LOG.setLevel(LOGGING_LEVEL)
+
 logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
-
-##############################
-# Basic Django settings
-##############################
 
 ###################################################
 # RUNNING FROM STATIC SOURCE DIR?
@@ -86,6 +88,7 @@ default_source_path = os.path.split(
 if not default_source_path:
     default_source_path = '.'
 
+# Indicates that we are in a git repo
 IS_SOURCE = (
     os.path.exists(os.path.join(default_source_path, '.KALITE_SOURCE_DIR')) and
     (
@@ -95,11 +98,6 @@ IS_SOURCE = (
 )
 SOURCE_DIR = None
 
-
-# Not sure if this is relevant anymore? /benjaoming
-BUILD_INDICATOR_FILE = os.path.join(default_source_path, "_built.touch")
-# whether this installation was processed by the build server
-BUILT = os.path.exists(BUILD_INDICATOR_FILE)
 
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
@@ -185,7 +183,8 @@ USER_DATA_ROOT = os.environ.get(
 # Most of these data locations are messed up because of legacy
 if IS_SOURCE:
     USER_DATA_ROOT = SOURCE_DIR
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
+    USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR,))
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
     
     # This is the legacy location kalite/database/data.sqlite
@@ -202,10 +201,12 @@ else:
     if not os.path.exists(USER_DATA_ROOT):
         os.mkdir(USER_DATA_ROOT)
     
-    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (os.path.join(USER_DATA_ROOT, 'locale'),))
-    for path in LOCALE_PATHS:
-        if not os.path.exists(path):
-            os.mkdir(path)
+    USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+    KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
+    
+    LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR))
+    if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
+        os.mkdir(USER_WRITABLE_LOCALE_DIR)
     
     DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
     if not os.path.exists(DEFAULT_DATABASE_PATH):
@@ -222,19 +223,42 @@ else:
     STATIC_ROOT = os.path.join(HTTPSRV_PATH, "static")
 
 
+#######################################
+# USER WRITABLE CONTENT
+#######################################
+
 # Content path-related settings
 CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content')))
-CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
-KHAN_CONTENT_PATH = os.path.join(CONTENT_ROOT, "khan")
-ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.sqlite')
-ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_CONTENT_PATH, 'assessmentitems.version')
-ASSESSMENT_ITEM_JSON_PATH = os.path.join(USER_DATA_ROOT, "data", "khan", "assessmentitems.json")
-
 if not os.path.exists(CONTENT_ROOT):
     os.mkdir(CONTENT_ROOT)
+CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
+# Special setting for Khan Academy content
+KHAN_CONTENT_PATH = os.path.join(CONTENT_ROOT, "khan")
 if not os.path.exists(KHAN_CONTENT_PATH):
     os.mkdir(KHAN_CONTENT_PATH)
+
+#######################################
+# ASSESSMENT ITEMS DATA
+#######################################
+
+# Special settings for Khan Academy assessment items
+ASSESSMENT_ITEM_ROOT = os.path.join(CONTENT_ROOT, 'assessment')
+
+if not os.path.exists(ASSESSMENT_ITEM_ROOT):
+    os.mkdir(ASSESSMENT_ITEM_ROOT)
+
+KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
+if not os.path.exists(KHAN_ASSESSMENT_ITEM_ROOT):
+    os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
+
+# Are assessment items distributed in the data directory?
+if os.path.isfile(os.path.join(_data_path, 'assessment', 'assessmentitems.version')):
+    KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(_data_path, 'assessment')
+
+KHAN_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.sqlite')
+KHAN_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.version')
+KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json')
 
 # Necessary for Django compressor
 if not DEBUG:
@@ -261,7 +285,7 @@ DATABASES = getattr(local_settings, "DATABASES", {
     },
     "assessment_items": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ASSESSMENT_ITEM_DATABASE_PATH,
+        "NAME": KHAN_ASSESSMENT_ITEM_DATABASE_PATH,
         "OPTIONS": {
         },
     }
@@ -298,45 +322,94 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
-INSTALLED_APPS = (
-    # this and the following are needed to enable django admin.
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.messages",
-    "django.contrib.sessions",
-    "kalite.distributed",
-    "compressor",
-    "django_js_reverse",
-    "kalite.inline",
-)
+INSTALLED_APPS = [
+    'django.contrib.auth',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.admin',
+    'django.contrib.staticfiles',
+    'django.contrib.contenttypes',
+    'tastypie',
+    'compressor',
+    'django_js_reverse',
+    'securesync',
+    'south',
+    'fle_utils.build',
+    'fle_utils.handlebars',
+    'fle_utils.django_utils',
+    'fle_utils.config',
+    'fle_utils.backbone',
+    'fle_utils.chronograph',
+    'kalite.django_cherrypy_wsgiserver',
+    'kalite.coachreports',
+    'kalite.distributed',
+    'kalite.main',
+    'kalite.playlist',
+    'kalite.caching',
+    'kalite.updates',
+    'kalite.facility',
+    'kalite.student_testing',
+    'kalite.store',
+    'kalite.topic_tools',
+    'kalite.contentload',
+    'kalite.dynamic_assets',
+    'kalite.remoteadmin',
+    'kalite.inline',
+    'kalite.i18n',
+    'kalite.ab_testing',
+    'kalite.control_panel',
+]
 
-if not BUILT:
+if IS_SOURCE:
     INSTALLED_APPS += (
-        "fle_utils.testing",
         "kalite.testing",
+        'kalite.testing.loadtesting',
         "kalite.basetests",
-    ) + getattr(local_settings, 'INSTALLED_APPS', tuple())
-else:
-    INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
+    )
 
-MIDDLEWARE_CLASSES = (
-    # gzip has to be placed at the top, before others
-    "django.middleware.gzip.GZipMiddleware",
-    # needed for django admin
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django_snippets.session_timeout_middleware.SessionIdleTimeout",
-) + getattr(local_settings, 'MIDDLEWARE_CLASSES', tuple())
+INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    # needed for django admin
-    "django.contrib.messages.context_processors.messages",
-    "kalite.distributed.inline_context_processor.inline",
-) + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', tuple())
+MIDDLEWARE_CLASSES = [
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'kalite.i18n.middleware.SessionLanguage',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'fle_utils.django_utils.middleware.GetNextParam',
+    'kalite.facility.middleware.AuthFlags',
+    'kalite.facility.middleware.FacilityCheck',
+    'securesync.middleware.RegisteredCheck',
+    'securesync.middleware.DBCheck',
+    'django.middleware.common.CommonMiddleware',
+    'kalite.distributed.middleware.LockdownCheck',
+    'kalite.student_testing.middleware.ExamModeCheck',
+    'django.middleware.gzip.GZipMiddleware',
+    'django_snippets.session_timeout_middleware.SessionIdleTimeout'
+] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
+
+TEMPLATE_CONTEXT_PROCESSORS = [
+    'django.core.context_processors.i18n',
+    'kalite.i18n.custom_context_processors.languages',
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.request',
+    'kalite.distributed.custom_context_processors.custom',
+    'django.contrib.messages.context_processors.messages',
+] + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', [])
+
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 # libraries common to all apps
-STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
+built_docs_path = os.path.join(_data_path, "sphinx-docs", "_build")
+if os.path.exists(built_docs_path):
+    STATICFILES_DIRS = (
+        os.path.join(_data_path, 'static-libraries'),
+        built_docs_path,
+    )
+    DOCS_EXIST = True
+else:
+    STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
+    DOCS_EXIST = False
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -348,12 +421,58 @@ JS_REVERSE_JS_MINIFY = False
 # Storage and caching
 ########################
 
+# Local memory cache is to expensive to use for the page cache.
+#   instead, use a file-based cache.
+# By default, cache for maximum possible time.
+#   Note: caching for 100 years can be too large a value
+#   sys.maxint also can be too large (causes ValueError), since it's added to the current time.
+#   Caching for the lesser of (100 years) or (5 years less than the max int) should work.
+_5_years = 5 * 365 * 24 * 60 * 60
+_100_years = 100 * 365 * 24 * 60 * 60
+_max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
+CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
+CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
+
 # Sessions use the default cache, and we want a local memory cache for that.
 CACHES = {
     "default": {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+# Cache is activated in every case,
+#   EXCEPT: if CACHE_TIME=0
+if CACHE_TIME != 0:  # None can mean infinite caching to some functions
+    # When we change versions, cache changes, too
+    KEY_PREFIX = ".".join(version.VERSION)
+
+    # File-based cache
+    install_location_hash = hashlib.sha1(".".join(version.VERSION)).hexdigest()
+    username = getpass.getuser() or "unknown_user"
+    cache_dir_name = "kalite_web_cache_%s" % (username)
+    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
+    CACHES["file_based_cache"] = {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
+
+    # Memory-based cache
+    CACHES["mem_cache"] = {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': CACHE_TIME, # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+        },
+    }
+
+    # The chosen cache
+    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
+
 
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(
@@ -374,21 +493,33 @@ API_LIMIT_PER_PAGE = 0
 SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 
 
-# DEPRECATED BEHAVIOURS
+# TODO(benjaoming): Use reverse_lazy for this sort of stuff
+LOGIN_URL = "/?login=true"
+LOGOUT_URL = "/securesync/api/user/logout/"
 
-# Copy INSTALLED_APPS to prevent any overwriting
-OLD_INSTALLED_APPS = INSTALLED_APPS[:]
 
-# NOW OVER WRITE EVERYTHING WITH ANY POSSIBLE LOCAL SETTINGS
-try:
-    from kalite.local_settings import *  # @UnusedWildImport
-except ImportError:
-    pass
+########################
+# After all settings, but before config packages,
+#   import settings from other apps.
+#
+# This allows app-specific settings to be localized and augment
+#   the settings here, while also allowing
+#   config packages to override settings.
+########################
 
-# Ensure that any INSTALLED_APPS mentioned in local_settings is concatenated
-# to previous INSTALLED_APPS because that was expected behaviour in 0.13
-try:
-    from kalite.local_settings import INSTALLED_APPS
-    INSTALLED_APPS = OLD_INSTALLED_APPS + INSTALLED_APPS
-except ImportError:
-    pass
+from kalite.distributed.settings import *
+from kalite.django_cherrypy_wsgiserver.settings import *
+from securesync.settings import *
+from fle_utils.chronograph.settings import *
+from kalite.facility.settings import *
+from kalite.main.settings import *
+from kalite.playlist.settings import *
+from kalite.student_testing.settings import *
+
+# Import from applications with problematic __init__.py files
+from kalite.legacy.i18n_settings import *
+from kalite.legacy.topic_tools_settings import *
+from kalite.legacy.updates_settings import *
+
+from kalite.testing.settings import *
+TEST_RUNNER = KALITE_TEST_RUNNER

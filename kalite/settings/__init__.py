@@ -2,8 +2,16 @@ import logging
 import os
 import sys
 import platform
-from fle_utils.settingshelper import import_installed_app_settings
+import warnings
 from kalite import version
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
+
+
+warnings.warn(
+    "Wrong settings module imported! Please do not import kalite.settings "
+    "directly. Instead, import kalite.project.settings.base",
+    RemovedInKALite_v015_Warning
+)
 
 
 ##############################
@@ -17,25 +25,8 @@ def package_selected(package_name):
 
 from .base import *
 
-########################
-# After all settings, but before config packages,
-#   import settings from other apps.
-#
-# This allows app-specific settings to be localized and augment
-#   the settings here, while also allowing
-#   config packages to override settings.
-########################
 
-# Here is all the old magic crap that should go... /benjaoming
-
-import_installed_app_settings(INSTALLED_APPS, globals())
-
-# TODO(benjaoming): Why on earth is there both a PRODUCTION_PORT and a CHERRYPY_PORT !?
-# Mesa confused!
-# TODO(benjaoming): Furthermore, this is dependent on kalite.distributed.settings
-# so there's no way that kalite.distributed was ever decoupled from kalite
 CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
-TEST_RUNNER = KALITE_TEST_RUNNER
 
 ########################
 # IMPORTANT: Do not add new settings below this line
@@ -62,7 +53,6 @@ if package_selected("RPi"):
     PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
     PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
     assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
-    CHERRYPY_PORT = PRODUCTION_PORT  # re-do above override AGAIN.
     #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
     #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
 
@@ -97,18 +87,15 @@ if package_selected("Demo"):
 
     CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", "staging.learningequality.org")
     SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "http")
+    CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
     DEMO_ADMIN_USERNAME = getattr(local_settings, "DEMO_ADMIN_USERNAME", "admin")
     DEMO_ADMIN_PASSWORD = getattr(local_settings, "DEMO_ADMIN_PASSWORD", "pass")
 
-    MIDDLEWARE_CLASSES += ('kalite.distributed.demo_middleware.StopAdminAccess','kalite.distributed.demo_middleware.LinkUserManual','kalite.distributed.demo_middleware.ShowAdminLogin',)
-
-
-# Force DeprecationWarning to show in DEBUG
-if DEBUG:
-    import warnings
-    warnings.simplefilter('error', DeprecationWarning)
-
-CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
+    MIDDLEWARE_CLASSES += (
+        'kalite.distributed.demo_middleware.StopAdminAccess',
+        'kalite.distributed.demo_middleware.LinkUserManual',
+        'kalite.distributed.demo_middleware.ShowAdminLogin',
+    )
 
 
 # set the default encoding
@@ -122,7 +109,7 @@ CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
 try:
     DEFAULT_ENCODING = DEFAULT_ENCODING
 except NameError:
-    from django.conf.settings import DEFAULT_ENCODING
+    from django.conf.settings import DEFAULT_ENCODING  # @UnresolvedImport
 
 if sys.getdefaultencoding() != DEFAULT_ENCODING:
     reload(sys)
@@ -136,9 +123,6 @@ if sys.getdefaultencoding() != DEFAULT_ENCODING:
 SCREENSHOTS_OUTPUT_PATH = os.path.join(USER_DATA_ROOT, "data", "screenshots")
 SCREENSHOTS_EXTENSION = ".png"
 
-SCREENSHOTS_DATABASE_NAME = "screenshot-data.sqlite"
-SCREENSHOTS_DATABASE_PATH = os.path.join(SCREENSHOTS_OUTPUT_PATH, SCREENSHOTS_DATABASE_NAME)
-
 SCREENSHOTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "data")
 SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_JSON_PATH, 'screenshots.json')
 SCREENSHOTS_ROUTER = 'default'
@@ -148,11 +132,12 @@ if 'screenshots' in sys.argv:
     # use another sqlite3 database for the screenshots
     DATABASES = {
         SCREENSHOTS_ROUTER: {
-            "ENGINE": getattr(local_settings, "DATABASE_TYPE", SQLITE3_ENGINE),
-            "NAME": SCREENSHOTS_DATABASE_PATH,
-            "OPTIONS": {
-                "timeout": 60,
-            },
-        }
+            "ENGINE": SQLITE3_ENGINE,
+            "NAME": ":memory:",
+        },
+        "assessment_items": {
+            "ENGINE": SQLITE3_ENGINE,
+            "NAME": ":memory:",
+        },
     }
 

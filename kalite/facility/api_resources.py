@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from tastypie import fields
 from tastypie.http import HttpUnauthorized
@@ -122,7 +123,12 @@ class FacilityUserResource(ModelResource):
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ")
                 + _("-- be sure to log out when you finish."))
 
-            return self.create_response(request, {'success': True})
+            extras = {'success': True}
+            if user.is_teacher:
+                extras.update({
+                    "redirect": reverse("coach_reports")
+                })
+            return self.create_response(request, extras)
 
 
     def logout(self, request, **kwargs):
@@ -177,6 +183,7 @@ class FacilityUserResource(ModelResource):
             "version": version.VERSION,
             "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
+            "docs_exist": getattr(settings, "DOCS_EXIST", False),
         }
 
         # Override properties using facility data

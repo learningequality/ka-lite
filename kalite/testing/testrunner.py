@@ -1,23 +1,21 @@
 """
 Test support harness to make setup.py test work.
 """
-import functools
 import os
-import pdb
-import sys
 
-from django.conf import settings; logging = settings.LOG
-from django.core import management
+from django.conf import settings
+logging = settings.LOG
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import get_app
-from django.test.simple import DjangoTestSuiteRunner
-from django.test.utils import override_settings
+from django.db.models import get_app, get_apps
+from django.test.simple import DjangoTestSuiteRunner, build_suite, build_test, reorder_suite
+from django.utils import unittest
 
 from behave.configuration import options
+from selenium import webdriver
 
 from optparse import make_option
 
-from kalite.testing.base import KALiteBrowserTestCase, DjangoBehaveTestCase
+from kalite.testing.base import DjangoBehaveTestCase
 
 
 def get_app_dir(app_module):
@@ -40,10 +38,10 @@ def get_features(app_module):
 def get_options():
     option_list = (
         make_option("--behave_browser",
-            action="store",
-            dest="browser",
-            help="Specify the browser to use for testing",
-        ),
+                    action="store",
+                    dest="browser",
+                    help="Specify the browser to use for testing",
+                    ),
     )
 
     option_info = {"--behave_browser": True}
@@ -97,38 +95,25 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         """
 
         self.failfast = kwargs.get("failfast", False)  # overload
-        self.verbosity = int(kwargs.get("verbosity")) # verbosity level, default 1
+        # verbosity level, default 1
+        self.verbosity = int(kwargs.get("verbosity"))
 
         # If no liveserver specified, set some default.
         #   port range is the set of open ports that Django can use to
         #   start the server.  They may have multiple servers open at once.
         if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS',""):
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
+
+        self._bdd_only = kwargs["bdd_only"]  # Extra options from our custom test management command are passed into
+        self._no_bdd = kwargs['no_bdd']      # the constructor, but not the build_suite function where we need them.
+
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
     def run_tests(self, test_labels=None, extra_tests=None, **kwargs):
         """By default, only run relevant app tests.  If you specify... you're on your own!"""
 
-        # benjaoming: Commented out clean_pyc, this hits the wrong directories currently
-        # and should not be necessary.
-        # If we have problems with pyc files, we're doing something else wrong.
-        # See https://github.com/learningequality/ka-lite/issues/3487
-
-        # Purge all .pyc files using the clean_pyc django extension.
-        # This prevents issues when py's have been renamed or moved but
-        #   the orphan pyc's are discovered and run during testing
-        # pyc's are not tracked by git, so orphans can happen when an
-        #   older branch has been checked out
-        # logging.info("Purging pyc files")
-        # import logging as orig_logging
-        # orig_logging.getLogger('django.request').setLevel('CRITICAL')
-        # orig_logging.getLogger('kalite').setLevel('INFO')
-        # management.call_command("clean_pyc", path=os.path.join(settings.PROJECT_PATH, ".."))
-
-        # orig_logging.disable(orig_logging.CRITICAL)
-
         def run_tests_wrapper_fn():
-            return super(KALiteTestRunner,self).run_tests(test_labels, extra_tests, **kwargs)
+            return super(KALiteTestRunner, self).run_tests(test_labels, extra_tests, **kwargs)
         return run_tests_wrapper_fn()
 
     def make_bdd_test_suite(self, features_dir):
@@ -140,15 +125,25 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         """
         extra_tests = extra_tests or []
 
+        # Output Firefox version, needed to understand Selenium compatibility
+        # issues
+        browser = webdriver.Firefox()
+        print("Successfully setup Firefox {0}".format(browser.capabilities['version']))
+        browser.quit()
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
         bdd_labels = test_labels
-        if not bdd_labels: # if e.g. we want to run ALL the tests and so didn't specify any labels
-            bdd_labels = reduce(lambda l, x: l + [x] if 'kalite' in x else l, settings.INSTALLED_APPS, [])
+        # if e.g. we want to run ALL the tests and so didn't specify any labels
+        if not bdd_labels:
+            bdd_labels = reduce(
+                lambda l, x: l + [x] if 'kalite' in x else l, settings.INSTALLED_APPS, [])
             # Get rid of the leading "kalite." characters
             bdd_labels = map(lambda s: s[7:], bdd_labels)
             bdd_labels = tuple(bdd_labels)
-                    
+
+        # if we don't want any bdd tests, empty out the bdd label list no matter what
+        bdd_labels = [] if self._no_bdd else bdd_labels
+
         for label in bdd_labels:
             if '.' in label:
                 print("Ignoring label with dot in: %s" % label)
@@ -169,4 +164,11 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
                 # build a test suite for this directory
                 extra_tests.append(self.make_bdd_test_suite(features_dir))
 
-        return super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
+        suite = super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
+
+        # remove all django module tests
+        suite._tests = filter(lambda x: 'django.' not in x.__module__, suite._tests)
+
+        if self._bdd_only:
+            suite._tests = filter(lambda x: type(x).__name__ == "DjangoBehaveTestCase", suite._tests)
+        return suite
