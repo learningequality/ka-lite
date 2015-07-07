@@ -25,7 +25,7 @@ window.SuperUserCreateModalView = BaseView.extend({
         this.show_modal();
         $.ajax({
             context: this,
-            type: 'post',
+            type: 'GET',
             url: 'api/django_user_form',
             dataType: 'json',
             success : function(e){
