@@ -1,11 +1,5 @@
 """
-Downloads a language pack, unzips the contents, then moves files accordingly:
-
-* Move 'LC_MESSAGES' and [lang_code]_metadata.json to ka-lite/locale/[lang_code]/
-* Move 'subtitles' directory to ka-lite/kalite/static/srt/[lang_code]/subtitles/
-* Move 'exercises` directory to ka-lite/kalite/static/khan-exercises/exercises/[lang_code]/
-* Move 'dubbed_videos/dubbed_video_mappings.json' to ka-lite/kalite/i18n/data/
-* Move `video_file_sizes.json' to ka-lite/kalite/updates/data/
+Downloads a language pack, unzips the contents, then moves files accordingly
 """
 import glob
 import os
