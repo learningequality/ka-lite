@@ -21,6 +21,9 @@ dist-packages-temp/
 dist-packages-downloads/
 dist-packages/
 
+# Updates downloaded at runtime
+static-updates
+
 # MAC stuff
 .DS_Store
 
@@ -41,8 +44,8 @@ dist-packages/
 *.zip
 
 # Documentation
-sphinx-docs/_build
-sphinx-docs/images/*
+docs/_build
+docs/images/*
 
 # oh-my-zsh convention for automatically
 # switching on a venv

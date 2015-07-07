@@ -536,10 +536,10 @@ def stop(args=[], sys_exit=True):
                 sys.stderr.write("Could not find PID in .pid file\n")
             except OSError:  # TODO: More specific exception handling
                 sys.stderr.write("Could not read .pid file\n")
-        if not killed_with_force:
-            if sys_exit:
-                sys.exit(-1)
-            return  # Do not continue because error could not be handled
+            if not killed_with_force:
+                if sys_exit:
+                    sys.exit(-1)
+                return  # Do not continue because error could not be handled
 
     sys.stderr.write("kalite stopped\n")
     if sys_exit:

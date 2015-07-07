@@ -221,6 +221,12 @@ var TabularReportRowCellView = BaseView.extend({
         if (_.isEmpty(this.model.attributes)) {
             return false;
         } else {
+            this.listenToOnce(this.model, "selected", function() {
+                this.$el.addClass("selected");
+            });
+            this.listenToOnce(this.model, "deselected", function() {
+                this.$el.removeClass("selected");
+            });
             this.trigger("detail_view", this.model);
         }
     }
@@ -275,7 +281,6 @@ var TabularReportRowView = BaseView.extend({
             this.detail_view.remove();
         }
 
-
         var model_id = model.get("exercise_id") || model.get("video_id") || model.get("content_id");
         var content_item = this.contents.find(function(item) {return item.get("id") === model_id;});
         this.detail_view = new DetailPanelInlineRowView({
@@ -286,7 +291,7 @@ var TabularReportRowView = BaseView.extend({
         });
         this.$el.after(this.detail_view.el);
 
-        this.trigger("detail_view", this.detail_view);
+        this.trigger("detail_view", this.detail_view, model);
 
     }
 
@@ -299,8 +304,9 @@ var TabularReportView = BaseView.extend({
 
     template: HB.template("tabular_reports/tabular-view"),
 
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this);
+        this.complete_callback = options.complete;
         this.set_data_model();
         this.listenTo(this.model, "change", this.set_data_model);
     },
@@ -323,6 +329,10 @@ var TabularReportView = BaseView.extend({
         this.append_views(row_views, ".student-data");
         
         this.$('.headrowuser').css("min-width", this.$('.headrow.data').outerWidth());
+
+        if(this.complete_callback) {
+            this.complete_callback();
+        }
 
     },
 
@@ -357,11 +367,13 @@ var TabularReportView = BaseView.extend({
         }
     },
 
-    set_detail_view: function(detail_view) {
+    set_detail_view: function(detail_view, model) {
         if (this.detail_view) {
+            this.detail_view.model.trigger("deselected");
             this.detail_view.remove();
         }
         if (detail_view) {
+            model.trigger("selected");
             this.detail_view = detail_view;
         }
     }
@@ -424,9 +436,14 @@ var CoachSummaryView = BaseView.extend({
     },
 
     toggle_tabular_view: _.debounce(function() {
+        var self = this;
         if (!this.tabular_report_view) {
-            this.$("#show_tabular_report").text("Hide Tabular Report");
-            this.tabular_report_view = new TabularReportView({model: this.model});
+            this.$("#show_tabular_report").text("Loading");
+            this.$("#show_tabular_report").attr("disabled", "disabled");
+            this.tabular_report_view = new TabularReportView({model: this.model, complete: function() {
+                self.$("#show_tabular_report").text("Hide Tabular Report");
+                self.$("#show_tabular_report").removeAttr("disabled");
+            }});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         } else {
             this.$("#show_tabular_report").text("Show Tabular Report");

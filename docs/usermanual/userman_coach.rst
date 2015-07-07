@@ -20,7 +20,7 @@ The Report Page displays an overview of the learners and a tabular report.
     :class: screenshot
 
 Overview
-^^^^^^^^^^^^^^^
+^^^^^^^^
 1. Select the "Teach" tab at the top of the page.
 2. Select the appropriate facility from the drop down menu to view reports for a specific facility.
 3. Select a group from the drop down menu to view the overivew for a specific group or leave the group as is.
@@ -29,25 +29,26 @@ Overview
 The overview will display the activity of the group: the total hours logged, the average progress in exercises, the total exercises attempted, and the total time spent on content.
 
 Tabular Report
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 A tabular report is a grid that can show how students are doing in specific subjects at a high level. As a coach, you can select which group of students you'd like to check progress for, and which subset of videos or exercises you'd like to see reports on. This allows you to easily identify which areas learners are struggling in, as well as which learners are doing well.
 
 Progress By Topic
 ##################
+
 1. Click on the "Show Tabular Report" button.
 2. A table should be generated with the data requested.
 
 The color of the rectangles in the table indicate how that student is doing on a particular exercise. The following key explains the color code of the table cells (this information will also be available on the Coach Report page):
 
-+---------------------+-------------------------------------------------------------+
-| .. image:: gray.png | Not Attempted: The student has not attempted the subtopic.  | 
-+---------------------+-------------------------------------------------------------+
-| .. image:: blue.png | In Progress: The student has completed a few questions.     |
-+---------------------+-------------------------------------------------------------+
-| .. image:: red.png | Struggling: The student is struggling on the subtopic.       |
-+---------------------+-------------------------------------------------------------+
-| .. image:: green.png | Completed: The student has completed the subtopic.         |
-+---------------------+-------------------------------------------------------------+
++----------------------+-------------------------------------------------------------+
+| .. image:: gray.png  | Not Attempted: The student has not attempted the subtopic.  | 
++----------------------+-------------------------------------------------------------+
+| .. image:: blue.png  | In Progress: The student has completed a few questions.     |
++----------------------+-------------------------------------------------------------+
+| .. image:: red.png   | Struggling: The student is struggling on the subtopic.      |
++----------------------+-------------------------------------------------------------+
+| .. image:: green.png | Completed: The student has completed the subtopic.          |
++----------------------+-------------------------------------------------------------+
 
 Detailed View
 ##################
