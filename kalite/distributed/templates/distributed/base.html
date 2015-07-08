@@ -185,6 +185,21 @@
             <div class="navbar kalite-navbar header-footer-bg" role="banner">
               <div class="container">
                   <div class="row">
+
+                          <a href="{%url 'learn' %}" id="skipto">{% trans "Jump to topics menu" %}</a>
+                          <!-- For some reason these two options for logged-in users do not work ever since I've put them inside skipto div -->
+                          {% if is_logged_in %}
+                              <a href="{%url 'homepage' %}#resume" class="sr-only">{% trans "Jump to where you left off" %}</a>
+                              <a href="{%url 'homepage' %}#user-name" class="sr-only">{% trans "Skip to user options" %}</a>
+                          {% endif %}
+
+
+                        <script type="text/JavaScript">
+                            $(function() { //equivalent to document.ready
+                              $(".sidebar-entry").focus();
+                            });
+                        </script>
+
                       <div class="navbar-header">
                           {# collapse entire menu #}
                           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" aria-hidden="true" id="navbar_toggle">
