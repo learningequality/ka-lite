@@ -16,6 +16,7 @@
     <script type="text/javascript">
         var FACILITY_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var GROUP_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var FACILITY_ID = {% if facility_id %}"{{ facility_id }}"{% else %}undefined{% endif %};
     </script>
     <script src="{% url 'handlebars_templates' module_name='coach_nav' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='tabular_reports' %}"></script>
@@ -25,7 +26,7 @@
     <script type="text/javascript" src="{% static 'js/coachreports/coach_reports/views.js' %}"></script>
     <script>
         $(function() {
-            window.coach_router = new CoachReportRouter();
+            window.coach_router = new CoachReportRouter({facility: FACILITY_ID});
             Backbone.history.start({pushState: true, root: "{% url 'coach_reports' %}"});
         });
     </script>
