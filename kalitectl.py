@@ -24,6 +24,8 @@ Options:
   --debug               Output debug messages (for development)
   --port=<arg>          Use a non-default port on which to start the HTTP server
                         or to query an existing server (stop/status)
+  --settings=<arg>      Specify Django's settings module. Must follow python's
+                        import syntax.
   --skip-job-scheduler  KA Lite runs a so-called "cronograph", it's own built-in
                         automatic job scheduler required for downloading videos
                         and sync'ing with online sources. If you don't need this
@@ -367,9 +369,9 @@ def manage(command, args=[], as_thread=False):
     :param args: List of options to parse to the django management command
     :param as_thread: Runs command in thread and returns immediately
     """
-    
+
     args = update_default_args(["--traceback"], args)
-    
+
     if not as_thread:
         if PROFILE:
             profile_memory()
@@ -396,16 +398,16 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
     # TODO: Do we want to fail if running as root?
-    
+
     port = int(port or DEFAULT_LISTEN_PORT)
-    
+
     if not daemonize:
         sys.stderr.write("Running 'kalite start' in foreground...\n")
     else:
         sys.stderr.write("Running 'kalite start' as daemon (system service)\n")
-    
+
     sys.stderr.write("\nStand by while the server loads its data...\n\n")
-    
+
     if os.path.exists(STARTUP_LOCK):
         try:
             pid, __ = read_pid_file(STARTUP_LOCK)
@@ -428,7 +430,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
             sys.exit(1)
     except NotRunning:
         pass
-    
+
     # Check that the port is available by creating a simple socket and see
     # if it succeeds... if it does, the port is occupied.
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -439,17 +441,17 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
             "it.".format(port)
         )
         sys.exit(1)
-   
+
     # Write current PID and optional port to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
         f.write("%s\n%d" % (str(os.getpid()), port))
-    
+
     manage('initialize_kalite')
 
     # Remove the startup lock at this point
     if STARTUP_LOCK:
         os.unlink(STARTUP_LOCK)
-    
+
     # Print output to user about where to find the server
     addresses = get_ip_addresses(include_loopback=False)
     print("To access KA Lite from another connected computer, try the following address(es):")
@@ -457,10 +459,10 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         print("\thttp://%s:%s/" % (addr, port))
     print("To access KA Lite from this machine, try the following address:")
     print("\thttp://127.0.0.1:%s/\n" % port)
-    
+
     # Daemonize at this point, no more user output is needed
     if daemonize:
-        
+
         from django.utils.daemonize import become_daemon
         kwargs = {}
         # Truncate the file
@@ -495,11 +497,11 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         # Switch-off that functionality here to save cpu cycles
         # http://docs.cherrypy.org/stable/appendix/faq.html
         cherrypy.engine.autoreload.unsubscribe()
-    
+
     cherrypy.quickstart()
-    
+
     print("FINISHED serving HTTP")
-    
+
     if not skip_job_scheduler:
         print("Asking KA Lite job scheduler to terminate...")
         from fle_utils.chronograph.management.commands import cronserver_blocking
@@ -673,7 +675,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
         ao.children = list(set(doc_options) - pattern_options)
     extras(help, version, argv, doc)
     __matched, __left, collected = pattern.fix().match(argv)
-    
+
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
@@ -699,7 +701,10 @@ if __name__ == "__main__":
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
     arguments = docopt(__doc__, version=str(VERSION), options_first=False)
-    
+
+    settings_module = arguments.pop('--settings', None)
+    os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
+
     if arguments['start']:
         start(
             debug=arguments['--debug'],
