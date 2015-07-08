@@ -33,7 +33,6 @@ from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
 import json
 
-
 def check_setup_status(handler):
     """
     Decorator for validating that KA Lite post-install setup has completed.
@@ -229,7 +228,7 @@ def search(request):
     }
 
 def add_superuser_form(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         form = SuperuserForm()
         return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
         data = {'Status' : 'ShowModal', 'data' : return_html}
