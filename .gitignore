@@ -80,6 +80,7 @@ writeup/
 /kalite/updates/data/video_file_sizes.json
 /kalite/kalite-*.zip
 /kalite/local_settings.py
+/kalite/my_settings.py
 /kalite/media
 /kalite/temp
 /data/*
