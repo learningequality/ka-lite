@@ -167,6 +167,7 @@ $(function() {
         numVideos = youtube_ids.length;
 
         // Do the request
+        show_message("warning", "Wait for the video download to start.");
         doRequest(window.Urls.start_video_download(), {youtube_ids: youtube_ids})
             .success(function() {
                 updatesStart("videodownload", 5000, video_callbacks);
