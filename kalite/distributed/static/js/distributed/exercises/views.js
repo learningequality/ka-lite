@@ -109,12 +109,12 @@ var ExerciseView = BaseView.extend({
 
     template: require("./hbtemplates/exercise.handlebars"),
 
-    initialize: function() {
+    initialize: function(options) {
 
         _.bindAll.apply(_, [this].concat(_.functions(this)))
 
         // load the info about the exercise itself
-        this.data_model = new Models.ExerciseDataModel({exercise_id: this.options.exercise_id});
+        this.data_model = new Models.ExerciseDataModel({exercise_id: options.exercise_id});
         if (this.data_model.exercise_id) {
             this.data_model.fetch();
         }
@@ -151,9 +151,7 @@ var ExerciseView = BaseView.extend({
 
     render: function() {
 
-        var data = $.extend(this.data_model.attributes, {test_id: this.options.test_id});
-
-        this.$el.html(this.template(data));
+        this.$el.html(this.template(this.data_model.attributes));
 
         this.initialize_listeners();
 
@@ -490,9 +488,11 @@ var ExerciseWrapperBaseView = BaseView.extend({
     * correct_updates - any updates to make if the question is answered correctly.
     */
 
-    initialize: function() {
+    initialize: function(options) {
 
         var self = this;
+
+        this.options = options;
 
         _.bindAll.apply(_, [this].concat(_.functions(this)))
 
@@ -936,7 +936,7 @@ var ExerciseQuizView = ExerciseWrapperBaseView.extend({
 
     load_user_data: function() {
 
-        this.quiz_model = options.quiz_model;
+        this.quiz_model = this.options.quiz_model;
 
         this.attempt_collection = new Models.AttemptLogCollection();
 
