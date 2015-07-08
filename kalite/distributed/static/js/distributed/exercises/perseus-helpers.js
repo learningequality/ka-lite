@@ -1,4 +1,6 @@
 var _ = require("underscore");
+var Backbone = require("base/backbone");
+var $ = require("base/jQuery");
 
 var KhanUtil = window.KhanUtil || {};
 
@@ -17,7 +19,7 @@ var Khan = window.Khan || {
     warnTimeout: function() {}
 };
 
-window.Exercises = _.extend({
+var Exercises = _.extend({
     localMode: true,
     embeddedMode: true,
     useKatex: true,
@@ -148,3 +150,9 @@ Exercises.PerseusBridge = {
     }
 
 };
+
+module.exports = {
+    KhanUtil: KhanUtil,
+    Khan: Khan,
+    Exercises: Exercises
+}

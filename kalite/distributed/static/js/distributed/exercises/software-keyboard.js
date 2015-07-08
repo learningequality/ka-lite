@@ -1,6 +1,11 @@
-window.SoftwareKeyboardView = Backbone.View.extend({
+var BaseView = require("base/baseview");
+var Handlebars = require("base/handlebars");
+var _ = require("underscore");
+var $ = require("base/jQuery");
 
-    template: HB.template("exercise/software-keyboard"),
+var SoftwareKeyboardView = BaseView.extend({
+
+    template: require("./hbtemplates/software-keyboard.handlebars"),
 
     events: {
        "click button.key" : "key_pressed",
@@ -141,3 +146,5 @@ window.SoftwareKeyboardView = Backbone.View.extend({
     }
 
 });
+
+module.exports = SoftwareKeyboardView;

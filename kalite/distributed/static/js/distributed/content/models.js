@@ -1,6 +1,7 @@
 var _ = require("underscore");
+var Backbone = require("base/backbone");
 
-window.ExtraFieldsBaseModel = Backbone.Model.extend({
+var ExtraFieldsBaseModel = Backbone.Model.extend({
 
     initialize: function() {
 
@@ -35,7 +36,7 @@ window.ExtraFieldsBaseModel = Backbone.Model.extend({
     }
 });
 
-window.ContentDataModel = ExtraFieldsBaseModel.extend({
+var ContentDataModel = ExtraFieldsBaseModel.extend({
     /*
     Contains data about a content resource itself, with no user-specific data.
     */
@@ -53,7 +54,7 @@ window.ContentDataModel = ExtraFieldsBaseModel.extend({
 
 });
 
-window.ContentLogModel = ExtraFieldsBaseModel.extend({
+var ContentLogModel = ExtraFieldsBaseModel.extend({
     /*
     Contains summary data about the user's history of interaction with the current exercise.
     */
@@ -119,7 +120,7 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
 });
 
 
-window.ContentLogCollection = Backbone.Collection.extend({
+var ContentLogCollection = Backbone.Collection.extend({
 
     model: ContentLogModel,
 
@@ -158,3 +159,9 @@ window.ContentLogCollection = Backbone.Collection.extend({
     }
 
 });
+
+module.exports = {
+    ExtraFieldsBaseModel: ExtraFieldsBaseModel,
+    ContentLogModel: ContentLogModel,
+    ContentLogCollection: ContentLogCollection
+}

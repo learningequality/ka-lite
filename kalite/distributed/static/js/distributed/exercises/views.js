@@ -1,8 +1,15 @@
 var _ = require("underscore");
+var BaseView = require("base/baseview");
+var Khan = require("./perseus-helpers").Khan;
+var KhanUtils = require("./perseus-helpers").KhanUtils;
+var Exercises = require("./perseus-helpers").Exercises;
+var SoftwareKeyboardView = require("./software-keyboard");
+var Models = require("./models");
+var messages = require("utils/messages");
 
-window.ExerciseHintView = BaseView.extend({
+var ExerciseHintView = BaseView.extend({
 
-    template: HB.template("exercise/exercise-hint"),
+    template: require("./hbtemplates/exercise-hint.handlebars"),
 
     initialize: function() {
 
@@ -19,9 +26,9 @@ window.ExerciseHintView = BaseView.extend({
 });
 
 
-window.ExerciseProgressView = BaseView.extend({
+var ExerciseProgressView = BaseView.extend({
 
-    template: HB.template("exercise/exercise-progress"),
+    template: require("./hbtemplates/exercise-progress.handlebars"),
 
     initialize: function() {
 
@@ -66,9 +73,9 @@ window.ExerciseProgressView = BaseView.extend({
 });
 
 
-window.ExerciseRelatedVideoView = BaseView.extend({
+var ExerciseRelatedVideoView = BaseView.extend({
 
-    template: HB.template("exercise/exercise-related-videos"),
+    template: require("./hbtemplates/exercise-related-videos.handlebars"),
 
     render: function(data) {
 
@@ -98,16 +105,16 @@ window.ExerciseRelatedVideoView = BaseView.extend({
 });
 
 
-window.ExerciseView = BaseView.extend({
+var ExerciseView = BaseView.extend({
 
-    template: HB.template("exercise/exercise"),
+    template: require("./hbtemplates/exercise.handlebars"),
 
     initialize: function() {
 
         _.bindAll.apply(_, [this].concat(_.functions(this)))
 
         // load the info about the exercise itself
-        this.data_model = new ExerciseDataModel({exercise_id: this.options.exercise_id});
+        this.data_model = new Models.ExerciseDataModel({exercise_id: this.options.exercise_id});
         if (this.data_model.exercise_id) {
             this.data_model.fetch();
         }
@@ -301,7 +308,7 @@ window.ExerciseView = BaseView.extend({
     },
 
     warn_exercise_not_available: function () {
-        show_message("warning", gettext("This content was not found! Please contact your coach or an admin to have it downloaded."));
+        messages.show_message("warning", gettext("This content was not found! Please contact your coach or an admin to have it downloaded."));
         this.$("#workarea").html("");
         return false;
     },
@@ -337,9 +344,9 @@ window.ExerciseView = BaseView.extend({
 
         $(Exercises).trigger("clearExistingProblem");
 
-        var item = new AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
+        var item = new Models.AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
 
-        clear_messages();
+        messages.clear_messages();
 
 
         // Do this in this way, so that if the view is closed prior to the fetch completing
@@ -453,7 +460,7 @@ window.ExerciseView = BaseView.extend({
 
 });
 
-window.ExerciseWrapperBaseView = BaseView.extend({
+var ExerciseWrapperBaseView = BaseView.extend({
 
     /**
     * This base class is intended to be extended by all wrappers for the ExerciseView defined above.
@@ -528,7 +535,7 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 
         data = $.extend(defaults, data);
 
-        this.current_attempt_log = new AttemptLogModel(data);
+        this.current_attempt_log = new Models.AttemptLogModel(data);
 
         this.attempt_collection.add(this.current_attempt_log);
 
@@ -669,7 +676,7 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 });
 
 
-window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
+var ExercisePracticeView = ExerciseWrapperBaseView.extend({
 
     initialize_subviews: function() {
         this.exercise_view = this.add_subview(ExerciseView, {
@@ -691,11 +698,11 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
     load_user_data: function() {
 
         // load the data about the user's overall progress on the exercise
-        this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
+        this.log_collection = new Models.ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
         var log_collection_deferred = this.log_collection.fetch();
 
         // load the last 10 (or however many) specific attempts the user made on this exercise
-        this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id, context_type__in: ["playlist", "exercise"]});
+        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.exercise_id, context_type__in: ["playlist", "exercise"]});
         var attempt_collection_deferred = this.attempt_collection.fetch();
 
         // wait until both the exercise and attempt logs have been loaded before continuing
@@ -798,28 +805,28 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
         } else {
             msg = gettext("You have finished this exercise!");
         }
-        show_message("info", sprintf(msg, context));
+        messages.show_message("info", sprintf(msg, context));
     }
 
 });
 
 
-window.ExerciseTestView = ExerciseWrapperBaseView.extend({
+var ExerciseTestView = ExerciseWrapperBaseView.extend({
 
-    start_template: HB.template("exercise/test-start"),
+    start_template: require("./hbtemplates/test-start.handlebars"),
 
-    stop_template: HB.template("exercise/test-stop"),
+    stop_template: require("./hbtemplates/test-stop.handlebars"),
 
     load_user_data: function() {
 
         // load the data about this particular test
-        this.test_model = new TestDataModel({test_id: this.options.test_id});
+        this.test_model = new Models.TestDataModel({test_id: this.options.test_id});
         var test_model_deferred = this.test_model.fetch();
 
-        this.attempt_collection = new AttemptLogCollection();
+        this.attempt_collection = new Models.AttemptLogCollection();
 
         // load the data about the user's overall progress on the test
-        this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
+        this.log_collection = new Models.TestLogCollection([], {test_id: this.options.test_id});
         var log_collection_deferred = this.log_collection.fetch();
 
         this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
@@ -923,18 +930,18 @@ window.ExerciseTestView = ExerciseWrapperBaseView.extend({
 });
 
 
-window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
+var ExerciseQuizView = ExerciseWrapperBaseView.extend({
 
-    stop_template: HB.template("exercise/quiz-stop"),
+    stop_template: require("./hbtemplates/quiz-stop.handlebars"),
 
     load_user_data: function() {
 
         this.quiz_model = options.quiz_model;
 
-        this.attempt_collection = new AttemptLogCollection();
+        this.attempt_collection = new Models.AttemptLogCollection();
 
         // load the data about the user's overall progress on the test
-        this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
+        this.log_collection = new Models.QuizLogCollection([], {quiz: this.options.context_id});
         var log_collection_deferred = this.log_collection.fetch();
 
         this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
@@ -1000,22 +1007,13 @@ window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
 
 });
 
-
-function seeded_shuffle(source_array, random) {
-    var array = source_array.slice(0);
-    var m = array.length, t, i;
-
-    // While there remain elements to shuffle…
-    while (m) {
-
-        // Pick a remaining element…
-        i = Math.floor(random() * m--);
-
-        // And swap it with the current element.
-        t = array[m];
-        array[m] = array[i];
-        array[i] = t;
-    }
-
-    return array;
+module.exports = {
+    ExerciseView: ExerciseView,
+    ExerciseHintView: ExerciseHintView,
+    ExerciseProgressView: ExerciseProgressView,
+    ExerciseQuizView: ExerciseQuizView,
+    ExerciseTestView: ExerciseTestView,
+    ExercisePracticeView: ExercisePracticeView,
+    ExerciseRelatedVideoView: ExerciseRelatedVideoView,
+    ExerciseWrapperBaseView: ExerciseWrapperBaseView
 }

@@ -1,5 +1,6 @@
 var Backbone = require("base/backbone");
 var _ = require("underscore");
+var seeded_shuffle = require("utils/shuffle");
 
 var ds = window.ds || {};
 

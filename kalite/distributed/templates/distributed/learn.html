@@ -53,18 +53,6 @@
 
 {% block headjs %}{{ block.super }}
 
-
-    {% comment %}
-    TODO: (rtibbles) Make handlebars templates precompile so that they can be accessed and cached
-    by the same mechanism as other static files.
-    {% endcomment %}
-
-    <script src="{% url 'handlebars_templates' module_name='exercise' %}"></script>
-    <script src="{% url 'handlebars_templates' module_name='content' %}"></script>
-    <script src="{% url 'handlebars_templates' module_name='video' %}"></script>
-    <script src="{% url 'handlebars_templates' module_name='audio' %}"></script>
-    <script src="{% url 'handlebars_templates' module_name='pdf' %}"></script>
-    <script src="{% url 'handlebars_templates' module_name='topics' %}"></script>
     <script>
         window.workerSrc = "{% static 'pdfjs/build/pdf.worker.js' %}";
         window.imageResourcesPath = "{% static 'pdfjs/web/images/' %}";
@@ -95,43 +83,11 @@
             });
             require(["seedrandom"], function(){});
         </script>
-        {% compress js file perseusjs_2 %}
-        <script src="{% static 'js/distributed/software-keyboard.js' %}"></script>
-        <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
-        <script src="{% static 'js/distributed/exercises/views.js' %}"></script>
-        <script src="{% static 'js/distributed/exercises/perseus-helpers.js' %}"></script>
         <script src="{% static 'perseus/ke/interface.js' %}"></script>
-        {% endcompress %}
         <!-- END PERSEUS STUFF -->
     {% endif %}
 
-    {% compress js file learnjs %}
-    <!--[if !IE]> -->
-    <script src="{% static "video-js/video.js" %}"></script>
-    <script src="{% static "video-js/video-speed.js" %}"></script>
-    <script>
-        _V_.options.flash.swf = window.flash_swf;
-    </script>
-    <!-- <![endif]-->
-    <script src="{% static "soundmanager/soundmanager2-nodebug-jsmin.js" %}"></script>
 
-    <script src="{% static 'js/distributed/content/models.js' %}"></script>
-    <script src="{% static 'js/distributed/content/views.js' %}"></script>
-
-    <script src="{% static 'js/distributed/video/models.js' %}"></script>
-    <script src="{% static 'js/distributed/video/views.js' %}"></script>
-    
-    <script src="{% static 'js/distributed/audio/views.js' %}"></script>
-
-    <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
-    <script src="{% static 'js/distributed/topics/models.js' %}"></script>
-    <script src="{% static 'js/distributed/topics/views.js' %}"></script>
-    <script src="{% static 'js/distributed/topics/router.js' %}"></script>
-
-    {% endcompress %}
-
-    {% if pdfjs %}
-    {% compress js file pdfjs %}
     <script src="{% static 'pdfjs/web/compatibility.js' %}"></script>
     <script src="{% static 'pdfjs/web/l10n.js' %}"></script>
     <script src="{% static 'pdfjs/build/pdf.js' %}"></script>
@@ -142,16 +98,16 @@
         PDFJS.cMapPacked = true;
         PDFJS.disableFontFace = true;
     </script>
+    <script src="{% static 'js/distributed/bundles/bundle_learn.js' %}"></script>
     <script src="{% static 'pdfjs/web/viewer.js' %}"></script>
-    <script src="{% static 'js/distributed/pdf/views.js' %}"></script>
-    {% endcompress %}
-    {% endif %}
+    <script src="{% static 'js/jquery.slimscroll.min.js' %}"></script>
 
 
     <script type="text/javascript">
-        $(function() {
-            window.channel_router = new TopicChannelRouter({default_channel: "{{ channel }}"})
-            Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
+        var bundle = require("learn");
+        bundle.$(function() {
+            window.channel_router = new bundle.TopicChannelRouter({default_channel: "{{ channel }}"})
+            bundle.Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
         });
     </script>
 
