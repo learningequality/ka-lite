@@ -2,6 +2,7 @@ var $ = require("base/jQuery");
 var _ = require("underscore");
 var get_params = require("utils/get_params");
 var api = require("utils/api");
+require("jquery-sparkline");
 
 function getSelectedItems(select) {
     // Retrieve a list of selected users.
@@ -194,6 +195,8 @@ $(function() {
         event.preventDefault();
         return false;
     });
+
+    $('.sparklines').sparkline('html', { enableTagOptions: true, disableInteraction: true });
 });
 
 module.exports = {

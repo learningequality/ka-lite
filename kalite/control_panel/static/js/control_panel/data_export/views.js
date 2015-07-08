@@ -7,7 +7,7 @@ var Models = require("./models");
 // Views
 var DataExportView = Backbone.View.extend({
     // the containing view
-    template: require('./hbtemplates/data-export-container'),
+    template: require('./hbtemplates/data-export-container.handlebars'),
 
     initialize: function() {
 
@@ -100,7 +100,7 @@ var DataExportView = Backbone.View.extend({
 
 var ZoneSelectView = Backbone.View.extend({
 
-    template: require('./hbtemplates/zone-select'),
+    template: require('./hbtemplates/zone-select.handlebars'),
 
     initialize: function() {
         // Create collections
@@ -154,7 +154,7 @@ var ZoneSelectView = Backbone.View.extend({
 
 var FacilitySelectView = Backbone.View.extend({
 
-    template: require('./hbtemplates/facility-select'),
+    template: require('./hbtemplates/facility-select.handlebars'),
 
     initialize: function() {
         // Create collections
@@ -260,7 +260,7 @@ var FacilitySelectView = Backbone.View.extend({
 
 var GroupSelectView = Backbone.View.extend({
 
-    template: require('./hbtemplates/group-select'),
+    template: require('./hbtemplates/group-select.handlebars'),
 
     initialize: function() {
         // Create collections

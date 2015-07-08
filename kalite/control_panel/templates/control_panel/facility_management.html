@@ -15,7 +15,6 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/jquery.sparkline.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/control_panel/bundles/bundle_facility_management.js' %}"></script>
     <script type="text/javascript">
         var $ = require("facility_management").$
@@ -69,8 +68,6 @@
 
                 $("#date_picker_form").submit()
             });
-
-            $('.sparklines').sparkline('html', { enableTagOptions: true, disableInteraction: true });
 
         });
     </script>
