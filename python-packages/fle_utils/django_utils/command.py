@@ -169,6 +169,7 @@ def call_outside_command_with_output(command, *args, **kwargs):
         kalite_bin = os.path.join(kalite_dir, "bin/kalite")
     else:
         kalite_bin = 'kalite'
+
     cmd = (kalite_bin, "manage", command)
     for arg in args:
         cmd += (arg,)
@@ -178,7 +179,10 @@ def call_outside_command_with_output(command, *args, **kwargs):
         if isinstance(val, bool):
             cmd += (u"%s%s" % (prefix, key),)
         else:
-            cmd += (u"%s%s=%s" % (prefix, key, unicode(val)),)
+            # TODO(jamalex): remove this replacement, after #4066 is fixed:
+            # https://github.com/learningequality/ka-lite/issues/4066
+            cleaned_val = unicode(val).replace(" ", "")
+            cmd += (u"%s%s=%s" % (prefix, key, cleaned_val),)
 
     # we also need to change the environment to point to the the local
     # kalite settings. This is especially important for when the

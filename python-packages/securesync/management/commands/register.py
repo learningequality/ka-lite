@@ -50,7 +50,7 @@ class Command(BaseCommand):
         assert client.test_connection() == "success", "Unable to connect to the central server!"
 
         # ensure a zone was specified
-        assert "zone" in options, "You must specify a zone."
+        assert options.get("zone", None), "You must specify a zone."
 
         # simulate browser-based reg process
         s = requests.session()
