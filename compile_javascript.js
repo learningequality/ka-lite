@@ -1,5 +1,6 @@
 var browserify = require('browserify');
 var hbsfy = require("hbsfy")
+var deamdify = require("deamdify");
 var fs = require("fs");
 var _ = require("underscore");
 
@@ -83,9 +84,33 @@ fs.readdir("kalite", function(err, filenames) {
         debug: true,
     });
 
+    // Special transform to turn all Khan Exercise utils files into CommonJS modules using deamdify
+
+
+
+    var kalite_utils_dir = "kalite/distributed/static/js/distributed/perseus/ke/utils";
+
+    var util_files = fs.readdirSync(kalite_utils_dir);
+
+    util_files = _.map(util_files, function(file_name){
+        return {
+            target_file: "kalite" + (staticfiles ? '' : '/distributed') + "/static/js/distributed/perseus/ke/utils" + "/" + file_name,
+            bundle: kalite_utils_dir + "/" + file_name,
+            alias: "khan_utils_" + file_name.split(".").slice(0,-1).join(".")
+        };});
+
+    _.each(util_files, function(item) {
+        var brow = browserify(item.bundle);
+        brow.transform(deamdify);
+        brow.bundle().pipe(fs.createWriteStream(item.target_file));
+        log("Writing " + item.alias);
+    });
+
+
     _.each(bundles, function(item) {b.add(item.bundle, {expose: item.alias});})
 
     b.transform(hbsfy);
+    b.transform(deamdify);
 
     if (watch) {
         var watchify = require("watchify");
