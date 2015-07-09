@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers word-problems math-format">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Equivalent fractions 2</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="A">randRange(1, 10)</var>
+            <var id="Bf">randRange(2, 9)</var>
+            <var id="B">Bf + (Bf &gt;= A ? 1 : 0)</var>
+            <var id="M">randRange(3, 9)</var>
+            <var id="C">A * M</var>
+            <var id="D">B * M</var>
+            <var id="N">ceil(A / B)</var>
+            <var id="SYMBOL">randVar()</var>
+            <var id="FILLED">1</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">What number could replace <code><var>SYMBOL</var></code> below?</p>
+                <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>SYMBOL</var>}</code></p>
+                <div class="solution" data-forms="integer"><var>D</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>
+                            The fraction on the left represents dividing some rectangular <var>pizza(1).plural(2)</var> into <var>B</var> slices,
+                            then taking <var>A</var> slices.
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+
+                            FILLED = A % B;
+                            if (FILLED === 0) {
+                                FILLED = B;
+                            }
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, B - FILLED], [RED, GRAY], i * 1.25);
+                                } else {
+                                    rectchart([B], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
+                            How many slices would we need to cut each <var>pizza(1)</var> into so that <var>C</var>
+                            slices would give us the same amount of <var>pizza(1)</var>?
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+                            FILLED *= M;
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, D - FILLED], [RED, _BACKGROUND], i * 1.25);
+                                } else {
+                                    rectchart([D], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
+                            Each of the original <var>A</var> slices must be divided into <var>M</var>
+                            slices to get <var>C</var> slices in total.
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, 1]], scale: [475, 25] });
+                            rectchart([M, M * B - M], [RED, _BACKGROUND]);
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
+                            If we divide all the original slices into <var>M</var> slices, then one
+                            <var>pizza(1)</var> will have a total of <var>D</var> slices.
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, 1]], scale: [475, 25] });
+                            rectchart([M, M * B - M], [RED, GRAY]);
+                        </div>
+                    </div>
+
+                    <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>D</var>}</code> and so the answer is <code><var>D</var></code>.</p>
+
+                    <div>
+                        <p>Another way to get the answer is to multiply by <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                        <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> so really we are multiplying by 1.</p>
+                    </div>
+
+                    <p>
+                        The final equation is: <code>\dfrac{<var>A</var>}{<var>B</var>} \times \dfrac{<var>M</var>}{<var>M</var>} =
+                        \dfrac{<var>C</var>}{<var>D</var>} </code> so our answer is <code><var>D</var></code>.
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <p class="question">What number could replace <code><var>SYMBOL</var></code> below?</p>
+                <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>SYMBOL</var>}{<var>D</var>}</code></p>
+                <div class="solution" data-forms="integer"><var>C</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>
+                            The fraction on the left represents dividing some rectangular <var>pizza(1).plural(2)</var> into <var>B</var> slices,
+                            then taking <var>A</var> slices.
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+
+                            FILLED = A % B;
+                            if (FILLED === 0) {
+                                FILLED = B;
+                            }
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, B - FILLED], [RED, GRAY], i * 1.25);
+                                } else {
+                                    rectchart([B], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>What if we cut each <var>pizza(1)</var> into <var>D</var> slices instead?</p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+                            FILLED *= M;
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, D - FILLED], [RED, GRAY], i * 1.25);
+                                } else {
+                                    rectchart([D], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
+                            In order to take the same amount of <var>pizza(1)</var> as before,
+                            we now need to take <var>C</var> slices.
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, D - FILLED], [RED, _BACKGROUND], i * 1.25);
+                                } else {
+                                    rectchart([D], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <p><code>\dfrac{<var>A</var>}{<var>B</var>} = \dfrac{<var>C</var>}{<var>D</var>}</code> and so the answer is <code><var>C</var></code>.</p>
+
+                    <div>
+                        <p>Another way to get the answer is to multiply by <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                        <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> so really we are multiplying by 1.</p>
+                    </div>
+
+                    <p>
+                        The final equation is: <code>\dfrac{<var>A</var>}{<var>B</var>} \times \dfrac{<var>M</var>}{<var>M</var>} =
+                        \dfrac{<var>C</var>}{<var>D</var>} </code> so our answer is <code><var>C</var></code>.
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <p class="question">What number could replace <code><var>SYMBOL</var></code> below?</p>
+                <p><code>\dfrac{<var>C</var>}{<var>D</var>} = \dfrac{<var>A</var>}{<var>SYMBOL</var>}</code></p>
+                <div class="solution" data-forms="integer"><var>B</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>
+                            The fraction on the left represents dividing some rectangular <var>pizza(1).plural(2)</var> into <var>D</var> slices,
+                            then taking <var>C</var> slices.
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+
+                            FILLED = C % D;
+                            if (FILLED === 0) {
+                                FILLED = D;
+                            }
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, D - FILLED], [RED, GRAY], i * 1.25);
+                                } else {
+                                    rectchart([D], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div>
+                        <p data-if="isSingular(A)">
+                            If we share those <var>C</var> slices equally between <var>A</var> person,
+                            how many slices does each person get?
+                        </p><p data-else="">
+                            If we share those <var>C</var> slices equally between <var>A</var> people,
+                            how many slices does each person get?
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+
+                            FILLED /= M;
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, B - FILLED], [RED, _BACKGROUND], i * 1.25);
+                                } else {
+                                    rectchart([B], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div>
+                        <p data-if="isSingular(A)">
+                            Sharing <var>C</var> slices equally between <var>A</var> person means each person gets <var>M</var> slices.
+                        </p><p data-else="">
+                            Sharing <var>C</var> slices equally between <var>A</var> people means each person gets <var>M</var> slices.
+                        </p>
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, 1]], scale: [475, 25] });
+                            rectchart([M, D - M], [RED, _BACKGROUND]);
+                        </div>
+                        <p>If we give each person <var>M</var> slices, how many people can we feed with one <var>pizza(1)</var>?</p>
+                    </div>
+
+                    <div>
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, 1]], scale: [475, 25] });
+                            var filled = A % B;
+                            rectchart([FILLED, B - FILLED], [RED, GRAY]);
+                        </div>
+
+                        <p>
+                            One <var>pizza(1)</var> has <var>D</var> slices, so if we give each person
+                            <var>M</var> slices, we could feed <var>B</var> people.
+                        </p>
+                    </div>
+
+                    <p><code>\dfrac{<var>C</var>}{<var>D</var>} = \dfrac{<var>A</var>}{<var>B</var>}</code> and so the answer is <code><var>B</var></code>.</p>
+
+                    <div>
+                        <p>Another way to get the answer is to divide by <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                        <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> so really we are dividing by 1.</p>
+                    </div>
+
+                    <p>
+                        The final equation is: <code>\dfrac{<var>C</var>}{<var>D</var>} \div \dfrac{<var>M</var>}{<var>M</var>} =
+                        \dfrac{<var>A</var>}{<var>B</var>}</code> so our answer is <code><var>B</var></code>.
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <p class="question">What number could replace <code><var>SYMBOL</var></code> below?</p>
+                <p><code>\dfrac{<var>C</var>}{<var>D</var>} = \dfrac{<var>SYMBOL</var>}{<var>B</var>}</code></p>
+                <div class="solution" data-forms="integer"><var>A</var></div>
+
+                <div class="hints">
+                    <div>
+                        <p>
+                            The fraction on the left represents dividing some rectangular <var>pizza(1).plural(2)</var> into <var>D</var> slices,
+                            then taking <var>C</var> slices.
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+
+                            FILLED = C % D;
+                            if (FILLED === 0) {
+                                FILLED = D;
+                            }
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, D - FILLED], [RED, GRAY], i * 1.25);
+                                } else {
+                                    rectchart([D], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>What if we cut each <var>pizza(1)</var> into <var>B</var> slices instead?</p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+                            FILLED /= M;
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, B - FILLED], [RED, GRAY], i * 1.25);
+                                } else {
+                                    rectchart([B], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>
+                            In order to take the same amount of <var>pizza(1)</var> as before,
+                            we now need to take only <var>A</var> slices.
+                        </p>
+
+                        <div class="graphie">
+                            init({ range: [[0, 1], [0, N * 1.25]], scale: [475, 25] });
+
+                            for (var i = 0; i &lt; N; i++) {
+                                if (i === 0) {
+                                    rectchart([FILLED, B - FILLED], [RED, _BACKGROUND], i * 1.25);
+                                } else {
+                                    rectchart([B], [RED], i * 1.25);
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <p><code>\dfrac{<var>C</var>}{<var>D</var>} = \dfrac{<var>A</var>}{<var>B</var>}</code> and so the answer is <code><var>A</var></code>.</p>
+
+                    <div>
+                        <p>Another way to get the answer is to divide by <code>\dfrac{<var>M</var>}{<var>M</var>}</code>.</p>
+                        <p><code>\dfrac{<var>M</var>}{<var>M</var>} = \dfrac{1}{1} = 1</code> so really we are dividing by 1.</p>
+                    </div>
+
+                    <p>
+                        The final equation is: <code>\dfrac{<var>C</var>}{<var>D</var>} \div \dfrac{<var>M</var>}{<var>M</var>} =
+                        \dfrac{<var>A</var>}{<var>B</var>}</code> so our answer is <code><var>A</var></code>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

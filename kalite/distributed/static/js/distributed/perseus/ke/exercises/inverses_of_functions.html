@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!-- TODO: label coloring -->
+<html data-require="math math-format graphie">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Inverses of functions</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <script type="text/javascript">
+        function labelPos(f) {
+            var x = 0;
+            while (x < 9 && f(x) > -10 && f(x) < 10) {
+                x += 0.1;
+            }
+            return [x - 1, f(x - 1)];
+        }
+    </script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <var id="M">randRangeNonZero(-3, 3)</var>
+            <var id="B">randRangeNonZero(-5, 5)</var>
+
+            <var id="M_X">coefficient(M) + "x"</var>
+            <var id="B_X">coefficient(B) + "x"</var>
+            <var id="X_OVER_M">fractionVariable(1, M, "x")</var>
+            <var id="X_OVER_NEG_M">fractionVariable(-1, M, "x")</var>
+            <var id="M_OVER_X">M &lt; 0 ? "-\\dfrac{" + (-M) + "}{x}" : "\\dfrac{" + M + "}{x}"</var>
+            <var id="Y_OVER_M">fractionVariable(1, M, "y")</var>
+            <var id="B_OVER_M">fractionReduce(B, M)</var>
+            <var id="M_OVER_B">fractionReduce(M, B)</var>
+
+            <var id="F">function( x ) { return M * x + B; }</var>
+            <var id="F_INV">function( x ) { return ( x - B ) / M; }</var>
+        </div>
+
+        <div class="problems">
+            <div id="multiple-choice">
+                <div class="problem">
+                    <p><code>f(x) = <var>M_X</var> + <var>B</var></code> for all real numbers.</p>
+                </div>
+                <p class="question">What is <code>f^{-1}(x)</code>, the inverse of <code>f(x)</code>?</p>
+
+                <div class="render-answer-area-here"></div>
+
+                <div class="graphie" id="G">
+                    graphInit({
+                        range: 10,
+                        scale: 20,
+                        tickStep: 1,
+                        labelStep: 2,
+                        axisArrows: "&lt;-&gt;"
+                    })
+
+                    // draw the function
+                    style({
+                        stroke: BLUE,
+                        strokeWidth: 2
+                    }, function() {
+                        plot( F, [ -10, 10 ] );
+                    });
+
+                </div>
+
+                <p class="solution"><code><var>X_OVER_M</var> - <var>B_OVER_M</var></code></p>
+                <ul class="choices" data-none="true" data-show="4">
+                    <li><code><var>M_X</var> - <var>B</var></code></li>
+                    <li><code><var>M_X</var> + <var>B</var></code></li>
+                    <li><code><var>B_X</var> + <var>M</var></code></li>
+                    <li><code><var>M_OVER_X</var> + <var>B</var></code></li>
+                    <li><code><var>X_OVER_M</var> + <var>B</var></code></li>
+                    <li><code><var>X_OVER_M</var> - <var>B</var></code></li>
+                    <li><code><var>X_OVER_M</var> - <var>M_OVER_B</var></code></li>
+                    <li><code><var>X_OVER_M</var> + <var>B_OVER_M</var></code></li>
+                    <li><code><var>X_OVER_NEG_M</var> - <var>B_OVER_M</var></code></li>
+                    <li><code><var>X_OVER_NEG_M</var> + <var>B_OVER_M</var></code></li>
+                </ul>
+            </div>
+
+            <div id="expression-editor">
+                <div class="problem">
+                    <p><code>f(x) = <var>M_X</var> + <var>B</var></code> for all real numbers.</p>
+                </div>
+                <p class="question">Write an expression for <code>f^{-1}(x)</code>, the inverse of <code>f(x)</code>.</p>
+
+                <div class="render-answer-area-here"></div>
+
+                <div class="graphie" id="G">
+                    graphInit({
+                        range: 10,
+                        scale: 20,
+                        tickStep: 1,
+                        labelStep: 2,
+                        axisArrows: "&lt;-&gt;"
+                    })
+
+                    // draw the function
+                    style({
+                        stroke: BLUE,
+                        strokeWidth: 2
+                    }, function() {
+                        plot( F, [ -10, 10 ] );
+                    });
+
+                </div>
+
+                <div class="solution" data-type="multiple">
+                    <p>
+                        <span><code>f^{-1} = </code></span>
+                        <span class="sol" data-type="expression">x / <var>M</var> - <var>B</var> / <var>M</var></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hints">
+            <p><code>y = f(x)</code>, so solving for <code>x</code> in terms of <code>y</code> gives <code>x=f^{-1}(y)</code></p>
+            <p><code>f(x) = y = <var>M_X</var> + <var>B</var></code></p>
+            <p><code>y + <var>-B</var> = <var>M_X</var></code></p>
+            <p data-if="M !== 1"><code><var>Y_OVER_M</var> - <var>B_OVER_M</var> = x</code></p>
+            <p><code>x = <var>Y_OVER_M</var> - <var>B_OVER_M</var></code></p>
+            <p>So we know: <code>f^{-1}(y) = <var>Y_OVER_M</var> - <var>B_OVER_M</var></code></p>
+            <div>
+                <div class="graphie" data-update="G">
+                    var pos = function( n ) {
+                            if ( n &gt;= 1 ) {
+                                return "below right";
+                            } else if ( n &gt; 0 ) {
+                                return "below";
+                            } else if ( n &gt; -1 ) {
+                                return "above";
+                            } else {
+                                return "above right";
+                            }
+                        },
+                        fPos = pos( M ),
+                        fInvPos = pos( 1 / M );
+
+
+                    // plot function inverse
+                    style({
+                        stroke: RED,
+                        strokeWidth: 2
+                    }, function() {
+                        plot( F_INV, [ -10, 10 ] );
+                    });
+
+                    if ( M !== -1 &amp;&amp; ( M !== 1 || B !== 0 ) ) {
+                        // label f
+                        style({
+                            color: BLUE,
+                            strokeWidth: 1
+                        }, function() {
+                            label( labelPos( F ), "f(x)", fPos );
+                        });
+
+                        // label f_inv
+                        style({
+                            color: RED,
+                            strokeWidth: 1
+                        }, function() {
+                            label( labelPos( F_INV ), "f^{-1}(x)", fInvPos );
+                        });
+
+                        // Show line of symmetry
+                        style({
+                            stroke: "#aaa",
+                            strokeWidth: 2,
+                            strokeDasharray: "- "
+                        }, function() {
+                            plot( function( x ) { return x; }, [ -10, 10 ] );
+                        });
+                    }
+                </div>
+                <p>Rename <code>y</code> to <code>x</code>: <code>f^{-1}(x) = <var>X_OVER_M</var> - <var>B_OVER_M</var></code></p>
+                <p>Notice that <code>f^{-1}(x)</code> is just <code>f(x)</code> reflected across the line <code>y = x</code>.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

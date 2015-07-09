@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers word-problems slice-clone">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Fractions cut and copy 1</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <!-- An integer will be a starting or ending quantity 1/3 of the time -->
+            <var id="D_PARENT">randRangeWeighted(3, 12, 1, 1 / 6)</var>
+            <var id="D_OFFSPRING">D_PARENT === 1 ? randRange(3, 12) : (rand(5) &gt; 0 ? D_PARENT : 1)</var>
+            <div data-ensure="getGCD( N_PARENT * ( D_PARENT === 1 ? D_OFFSPRING : 1 ), N_OFFSPRING * ( D_OFFSPRING === 1 ? D_PARENT : 1 ) ) === 1 &amp;&amp; N_PARENT / D_PARENT &gt; N_OFFSPRING / D_OFFSPRING">
+                <var id="N_PARENT">D_PARENT === 1 ? randRange(1, 4) : randRangeExclude(2, 2 * D_PARENT - 1, [D_PARENT])</var>
+                <var id="N_OFFSPRING">D_OFFSPRING === 1 ? randRange(1, 4) : randRangeExclude(2, 2 * D_OFFSPRING - 1, [D_OFFSPRING])</var>
+            </div>
+            <var id="CODE_PARENT">D_PARENT === 1 ? N_PARENT : mixedOrImproper(N_PARENT, D_PARENT)</var>
+            <var id="CODE_OFFSPRING">D_OFFSPRING === 1 ? N_OFFSPRING : mixedOrImproper(N_OFFSPRING, D_OFFSPRING)</var>
+            <var id="PARENT">N_PARENT / D_PARENT</var>
+            <var id="OFFSPRING">N_OFFSPRING / D_OFFSPRING</var>
+            <var id="ANSWER">OFFSPRING / PARENT</var>
+            <var id="D">D_PARENT === 1 ? D_OFFSPRING : D_PARENT</var>
+            <var id="N_PARENT_EXPANDED">N_PARENT * (D_PARENT === 1 ? D : 1)</var>
+            <var id="PARENT_EXPANSION">_(floor(N_PARENT / D_PARENT)).times(function() { return fraction(D, D);}).join("+")</var>
+            <var id="N_OFFSPRING_EXPANDED">N_OFFSPRING * (D_OFFSPRING === 1 ? D : 1)</var>
+            <var id="OFFSPRING_EXPANSION">_(floor(N_OFFSPRING / D_OFFSPRING)).times(function() { return fraction(D, D);}).join("+")</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="question">
+                    <span data-if="isSingular(CODE_PARENT)">
+                        The starting block below is <code><var>CODE_PARENT</var></code> unit long.
+                    </span><span data-else="">
+                        The starting block below is <code><var>CODE_PARENT</var></code> units long.
+                    </span>
+                    <span data-if="isSingular(CODE_OFFSPRING)">
+                        Use the tools below to convert the starting block into the goal block that is <code><var>CODE_OFFSPRING</var></code> unit long.
+                    </span><span data-else="">
+                        Use the tools below to convert the starting block into the goal block that is <code><var>CODE_OFFSPRING</var></code> units long.
+                    </span>
+                    The current block shows your progress.
+                </p>
+
+                <p class="render-answer-area-here"></p>
+
+                <p>Starting Block:</p>
+
+                <div class="graphie" id="parent_block">
+                    initSliceClone(["current_block"]);
+                    init({range: [[0, 1], [0, 1]], scale: [500, 25 ]});
+                    rectchart([1, 0], [RED, "#999"]);
+                </div>
+
+                <p>Current Block:</p>
+
+                <div class="graphie" id="current_block">
+                    init({ range: [[0, 1], [0, 1] ], scale: [500, 25]});
+                    rectchart([1, 0], [RED, "#999"]);
+                </div>
+
+                <p>Goal Block:</p>
+
+                <div class="graphie" id="goal_block">
+                    init({range: [[0, 1], [0, 1]], scale: [500 * ANSWER, 25]});
+                    rectchart([1, 0], [BLUE, "#999"]);
+                </div>
+
+                <div class="solution" data-type="custom">
+                    <div class="instruction" style="padding-bottom: 20px; width: 180px;">
+                        <div style="clear: both;">
+                            <div style="float: left;">Cut into: <span id="pieces">1 piece</span></div>
+                            <div style="float: right; margin-bottom: 4px;">
+                                <input class="simple-button mini-button" onclick="KhanUtil.changePieces(false)" type="button" value="-">
+                                <input class="simple-button mini-button" onclick="KhanUtil.changePieces(true)" type="button" value="+">
+                            </div>
+                        </div>
+                        <div style="clear: both;">
+                            <div style="float: left;">Copy: <span id="current_block_times">1 time</span></div>
+                            <div style="float: right; margin-bottom: 4px;">
+                                <input class="simple-button mini-button" onclick="KhanUtil.changeTimes(false, 'current_block')" type="button" value="-">
+                                <input class="simple-button mini-button" onclick="KhanUtil.changeTimes(true, 'current_block')" type="button" value="+">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="guess">
+                        [pieces, times['current_block']]
+                    </div>
+                    <div class="validator-function">
+                        return roundTo(3, guess[1] / guess[0]) === roundTo(3, ANSWER);
+                    </div>
+                    <div class="show-guess">
+                        pieces = guess[0];
+                        times['current_block'] = guess[1];
+                        updateGraphAndAnswer();
+                    </div>
+                    <div class="show-guess-solutionarea">
+                        $('#pieces').text(plural(guess[0], 'piece'));
+                        $('#current_block_times').text(plural(guess[1], 'time'));
+                    </div>
+                </div>
+
+                <div class="hints">
+                    <div data-if="CODE_PARENT !== fraction(N_PARENT, D)">
+                        <p>The starting block has a length of <code><var>CODE_PARENT</var></code>, which can be rewritten as:</p>
+                        <p><code>\qquad<var>PARENT_EXPANSION</var>
+                            <span data-if="N_PARENT > D"> + <var>fraction(N_PARENT - D, D_PARENT)</var></span> = 
+                            <var>fraction(N_PARENT_EXPANDED, D)</var></code>
+                        </p>
+                    </div>
+
+                    <div data-if="CODE_OFFSPRING !== fraction(N_OFFSPRING, D)">
+                        <p>The goal block has a length of <code><var>CODE_OFFSPRING</var></code>, which can be rewritten as:</p>
+                        <p><code>\qquad
+                            <span data-if="N_OFFSPRING !== D_OFFSPRING">
+                                <var>OFFSPRING_EXPANSION</var>
+                                <span data-if="N_OFFSPRING > D"> + <var>fraction(N_OFFSPRING - D, D_OFFSPRING)</var></span> = 
+                            </span>
+                            <var>fraction(N_OFFSPRING_EXPANDED, D)</var></code>
+                        </p>
+                    </div>
+
+                    <p>
+                        <code><var>fraction(N_PARENT_EXPANDED, D)</var></code> is the same thing as
+                        <code><var>N_PARENT_EXPANDED</var> \times <var>fraction(1, D)</var></code>.
+                    </p>
+
+                    <p>
+                        Therefore, if we cut the starting block into <code><var>N_PARENT_EXPANDED</var></code> equal pieces,
+                        each piece will have a length of <code><var>fraction(1, D)</var></code> units.
+                    </p>
+
+                    <p>
+                        If we copy a piece <code><var>N_OFFSPRING_EXPANDED</var></code> times, we will get a length of
+                        <code><var>N_OFFSPRING_EXPANDED</var> \times <var>fraction(1, D)</var> = <var>fraction(N_OFFSPRING_EXPANDED, D)</var></code> units.
+                    </p>
+
+                    <p>
+                        Therefore the solution is to cut the starting block into <code><var>N_PARENT_EXPANDED</var></code> pieces
+                        and copy the resulting block <code><var>N_OFFSPRING_EXPANDED</var></code> times.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

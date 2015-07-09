@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie graphie-helpers-arithmetic word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Multiplying decimals</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <div data-ensure="BIG_FACTOR_DECIMAL > SMALL_FACTOR_DECIMAL">
+                <div data-ensure="BIG_FACTOR_DECIMAL > 0 || SMALL_FACTOR_DECIMAL > 0">
+                    <var id="BIG_FACTOR_DECIMAL">randRange( 0, 2 )</var>
+                    <var id="SMALL_FACTOR_DECIMAL">randRange( 0, 2 )</var>
+                </div>
+                <!-- SMALL_FACTOR and BIG_FACTOR themselves are integers. The actual factor is e.g., SMALL_FACTOR / 10^SMALL_FACTOR_DECIMAL -->
+                <!-- We want the resulting factors to be < 10, but we also want some things to the hundredths place -->
+                <!-- Based on the position of the decimal, choose factors in the range [1,9], [1.0,9.9], or [1.00,9.99] -->
+                <var id="SMALL_FACTOR">randRange(100 / pow(10, 2 - SMALL_FACTOR_DECIMAL), 1000 / pow(10, 2 - SMALL_FACTOR_DECIMAL) - 1)</var>
+                <var id="BIG_FACTOR">randRange(100 / pow(10, 2 - BIG_FACTOR_DECIMAL), 1000 / pow(10, 2 - BIG_FACTOR_DECIMAL) - 1)</var>
+            </div>
+            <var id="PRODUCT">SMALL_FACTOR * BIG_FACTOR</var>
+            <var id="SMALL_FACTOR_DIGITS">padDigitsToNum( digits( SMALL_FACTOR ), SMALL_FACTOR_DECIMAL + 1 )</var>
+            <var id="BIG_FACTOR_DIGITS">padDigitsToNum( digits( BIG_FACTOR ), BIG_FACTOR_DECIMAL + 1 )</var>
+            <var id="ANSWER">PRODUCT / pow(10, BIG_FACTOR_DECIMAL + SMALL_FACTOR_DECIMAL)</var>
+            <var id="DUMMY">[]</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <p class="problem"><code>\Large{
+                    <var>localeToFixed(BIG_FACTOR * pow(10, -BIG_FACTOR_DECIMAL), BIG_FACTOR_DECIMAL)</var> \times
+                    <var>localeToFixed(SMALL_FACTOR * pow(10, -SMALL_FACTOR_DECIMAL), SMALL_FACTOR_DECIMAL)</var> = {?}}
+                </code></p>
+                <div class="render-answer-area-here"></div>
+                <div class="graphie" id="numbers">
+                    graph.multiplier = new Multiplier( BIG_FACTOR, SMALL_FACTOR, BIG_FACTOR_DIGITS, SMALL_FACTOR_DIGITS, BIG_FACTOR_DECIMAL, SMALL_FACTOR_DECIMAL );
+                    DUMMY = Array( graph.multiplier.getNumHints() );
+                </div>
+                <div class="solution" data-type="decimal"><var>ANSWER</var></div>
+            </div>
+        </div>
+        <div class="hints">
+            <div class="graphie" data-update="numbers">
+                graph.multiplier.show();
+                graph.multiplier.showDecimals();
+            </div>
+            <div class="graphie" data-each="DUMMY as dummy" data-update="numbers">
+                graph.multiplier.showHint();
+            </div>
+            <div class="graphie" data-update="numbers">
+                graph.multiplier.showDecimalsInProduct();
+            </div>
+            <p><code>\Large{
+                <var>localeToFixed(BIG_FACTOR * pow(10, -BIG_FACTOR_DECIMAL), BIG_FACTOR_DECIMAL)</var> \times
+                <var>localeToFixed(SMALL_FACTOR * pow(10, -SMALL_FACTOR_DECIMAL), SMALL_FACTOR_DECIMAL)</var> =
+                <var>localeToFixed(ANSWER, BIG_FACTOR_DECIMAL + SMALL_FACTOR_DECIMAL)</var>}
+            </code></p>
+        </div>
+    </div>
+</body>
+</html>

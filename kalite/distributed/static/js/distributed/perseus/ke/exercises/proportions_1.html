@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <title>Proportions 1</title>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div id="numerator">
+                <div class="vars">
+                    <var id="X">randVar()</var>
+                    <var id="ORDER">rand(2)</var>
+                    <var id="NUMERATOR2">randRange(3, 12)</var>
+                    <var id="DENOMINATOR1">randRange(3, 12)</var>
+                    <var id="DENOMINATOR2" data-ensure="DENOMINATOR1 !== DENOMINATOR2 && getGCD(NUMERATOR2, DENOMINATOR2) === 1">
+                        randRange(3, 12)
+                    </var>
+                    <var id="SOLUTION">DENOMINATOR1 * NUMERATOR2 / DENOMINATOR2</var>
+                </div>
+
+                <div class="question">
+                    <p>Solve for <code><var>X</var></code>.</p>
+                    <p data-if="ORDER === 0"><code>
+                        \dfrac{<var>X</var>}{<var>DENOMINATOR1</var>} = \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>}
+                    </code></p>
+                    <p data-else=""><code>
+                        \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} = \dfrac{<var>X</var>}{<var>DENOMINATOR1</var>}
+                    </code></p>
+                </div>
+
+                <div class="solution" data-type="multiple">
+                    <p>
+                        <code><var>X</var> =</code>
+                        <span class="sol" data-simplify="optional"><var>SOLUTION</var></span>
+                    </p>
+                </div>
+
+                <div class="hints">
+                    <div>
+                        <p>Multiply both sides by <code>\blue{<var>DENOMINATOR1</var>}</code>.</p>
+                        <p data-if="ORDER === 0"><code>
+                            \blue{<var>DENOMINATOR1</var>} \times \dfrac{<var>X</var>}{<var>DENOMINATOR1</var>} = 
+                            \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} \times \blue{<var>DENOMINATOR1</var>}
+                        </code></p>
+                        <p data-else=""><code>
+                            \blue{<var>DENOMINATOR1</var>} \times \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} =
+                            \dfrac{<var>X</var>}{<var>DENOMINATOR1</var>} \times \blue{<var>DENOMINATOR1</var>}
+                        </code></p>
+                    </div>
+                    <p data-if="ORDER === 0"><code>
+                        <var>X</var> = \dfrac{\blue{<var>DENOMINATOR1</var>} \times <var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>}
+                    </code></p>
+                    <p data-else=""><code>
+                        \dfrac{\blue{<var>DENOMINATOR1</var>} \times <var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} = <var>X</var>
+                    </code></p>
+                    <p><code><var>X</var> = \dfrac{<var>DENOMINATOR1 * NUMERATOR2</var>}{<var>DENOMINATOR2</var>}</code></p>
+                </div>
+            </div>
+            <div id="denominator">
+                <div class="vars">
+                    <var id="X">randVar()</var>
+                    <var id="ORDER">rand(2)</var>
+                    <var id="NUMERATOR1">randRange(3, 12)</var>
+                    <var id="NUMERATOR2" data-ensure="NUMERATOR1 !== NUMERATOR2">randRange(3, 12)</var>
+                    <var id="DENOMINATOR2" data-ensure="getGCD(NUMERATOR2, DENOMINATOR2) === 1">
+                        randRange(3, 12)
+                    </var>
+                    <var id="SOLUTION">DENOMINATOR2 * NUMERATOR1 / NUMERATOR2</var>
+                </div>
+
+                <div class="question">
+                    <p>Solve for <code><var>X</var></code>.</p>
+                    <p data-if="ORDER === 0"><code>
+                        \dfrac{<var>NUMERATOR1</var>}{<var>X</var>} = \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>}
+                    </code></p>
+                    <p data-else=""><code>
+                        \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} = \dfrac{<var>NUMERATOR1</var>}{<var>X</var>}
+                    </code></p>
+                </div>
+
+                <div class="solution" data-type="multiple">
+                    <p>
+                        <code><var>X</var> =</code>
+                        <span class="sol" data-simplify="optional"><var>SOLUTION</var></span>
+                    </p>
+                </div>
+
+                <div class="hints">
+                    <div data-if="ORDER === 0" data-unwrap="">
+                        <div>
+                            <p>Multiply both sides by <code>\blue{<var>X</var>}</code>.</p>
+                            <p><code>
+                                \blue{<var>X</var>} \times \dfrac{<var>NUMERATOR1</var>}{<var>X</var>} = 
+                                \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} \times \blue{<var>X</var>}
+                            </code></p>
+                        </div>
+                        <p><code>
+                            <var>NUMERATOR1</var> = \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>}\blue{<var>X</var>}
+                        </code></p>
+                        <div>
+                            <p>Multiply both sides by <code>\green{\dfrac{<var>DENOMINATOR2</var>}{<var>NUMERATOR2</var>}}</code>.</p>
+                            <p><code>
+                                <var>NUMERATOR1</var> \times \green{\dfrac{<var>DENOMINATOR2</var>}{<var>NUMERATOR2</var>}} = 
+                                \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} \blue{<var>X</var>} \times 
+                                \green{\dfrac{<var>DENOMINATOR2</var>}{<var>NUMERATOR2</var>}}
+                            </code></p>
+                        </div>
+                        <p><code>
+                            \dfrac{<var>NUMERATOR1</var> \times \green{<var>DENOMINATOR2</var>}}{\green{<var>NUMERATOR2</var>}} =
+                            \blue{<var>X</var>}
+                        </code></p>
+                    </div>
+                    <div data-else="" data-unwrap="">
+                        <div>
+                            <p>Multiply both sides by <code>\blue{<var>X</var>}</code>.</p>
+                            <p><code>
+                                \blue{<var>X</var>} \times \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} =
+                                \dfrac{<var>NUMERATOR1</var>}{<var>X</var>} \times \blue{<var>X</var>}
+                            </code></p>
+                        </div>
+                        <p><code>
+                            \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>}\blue{<var>X</var>} = <var>NUMERATOR1</var>
+                        </code></p>
+                        <div>
+                            <p>Multiply both sides by <code>\green{\dfrac{<var>DENOMINATOR2</var>}{<var>NUMERATOR2</var>}}</code>.</p>
+                            <p><code>
+                                \dfrac{<var>NUMERATOR2</var>}{<var>DENOMINATOR2</var>} \blue{<var>X</var>} \times 
+                                \green{\dfrac{<var>DENOMINATOR2</var>}{<var>NUMERATOR2</var>}} =
+                                <var>NUMERATOR1</var> \times \green{\dfrac{<var>DENOMINATOR2</var>}{<var>NUMERATOR2</var>}}
+                            </code></p>
+                        </div>
+                        <p><code>
+                            \blue{<var>X</var>} = 
+                            \dfrac{<var>NUMERATOR1</var> \times \green{<var>DENOMINATOR2</var>}}{\green{<var>NUMERATOR2</var>}}
+                        </code></p>
+                    </div>
+                    <p><code><var>X</var> = \dfrac{<var>DENOMINATOR2 * NUMERATOR1</var>}{<var>NUMERATOR2</var>}</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
