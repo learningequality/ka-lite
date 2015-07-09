@@ -16,8 +16,8 @@ var KhanUtil = window.KhanUtil || {};
 var Khan = window.Khan || {
     error: function() {},
     query: {debug: ""},
-    imageBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/images/",
-    urlBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/",
+    imageBase: window.sessionModel.get("STATIC_URL") + "js/distributed/perseus/ke/images/",
+    urlBase: window.sessionModel.get("STATIC_URL") + "js/distributed/perseus/ke/",
     scratchpad: {
         disable: function() {},
         enable: function() {},
@@ -109,7 +109,7 @@ Exercises.PerseusBridge = {
 
         // Load khan-exercises modules, then perseus
         require("../perseus/ke-deps.js");
-        var Perseus = require("../perseus/build/perseus-2.js")
+        var Perseus = require("../perseus/build/perseus-3.js")
         Exercises.PerseusBridge._initialize(Perseus);
 
         return Exercises.PerseusBridge._loaded;

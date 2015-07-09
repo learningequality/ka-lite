@@ -9,7 +9,7 @@ You can now update the repo with the following command:
 git subtree pull --squash --prefix=kalite/distributed/static/js/distributed/perseus perseus master
 ```
 
-To rebuild Perseus, you need to create a .gitmodule file in the root of the project and add these items:
+To rebuild Perseus, you need to create a .gitmodules file in the root of the project and add these items:
 [submodule "react-components"]
     path = kalite/distributed/static/js/distributed/perseus/react-components
     url = https://github.com/Khan/react-components.git
@@ -22,5 +22,8 @@ To rebuild Perseus, you need to create a .gitmodule file in the root of the proj
 [submodule "hubble"]
     path = kalite/distributed/static/js/distributed/perseus/hubble
     url = https://github.com/joelburget/hubble.git
+[submodule "qunit"]
+    path = kalite/distributed/static/js/distributed/perseus/ke/test/qunit
+    url = https://github.com/jquery/qunit
 
 Then run make build from within the Perseus directory.
