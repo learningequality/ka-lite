@@ -471,11 +471,11 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     with open(STARTUP_LOCK, "w") as f:
         f.write("%s\n%d" % (str(os.getpid()), port))
 
+    manage('initialize_kalite')
+
     if debug:
         watchify_thread = Thread(target=start_watchify)
         watchify_thread.start()
-    
-    manage('initialize_kalite')
 
     # Start the job scheduler (not Celery yet...)
     # This command is run before starting the server, in case the server

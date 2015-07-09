@@ -6,6 +6,9 @@ var Exercises = require("./perseus-helpers").Exercises;
 var SoftwareKeyboardView = require("./software-keyboard");
 var Models = require("./models");
 var messages = require("utils/messages");
+var $ = require("base/jQuery");
+var $script = require("scriptjs");
+var KhanExercises = require("../perseus/ke/khan-exercise");
 
 var ExerciseHintView = BaseView.extend({
 
@@ -111,15 +114,18 @@ var ExerciseView = BaseView.extend({
 
     initialize: function(options) {
 
-        _.bindAll.apply(_, [this].concat(_.functions(this)))
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         // load the info about the exercise itself
         this.data_model = new Models.ExerciseDataModel({exercise_id: options.exercise_id});
         if (this.data_model.exercise_id) {
             this.data_model.fetch();
         }
+
+        this.Khan = global.Khan;
+        this.Exercises = global.Exercises;
         // Solved the issue: https://github.com/learningequality/ka-lite/issues/2127.
-        Khan.query.debug = null;
+        this.Khan.query.debug = null;
         this.render();
 
         _.defer(this.initialize_khan_exercises_listeners);
@@ -178,8 +184,8 @@ var ExerciseView = BaseView.extend({
         var self = this;
 
         // TODO-BLOCKER(jamalex): does this need to wait on something, to avoid race conditions?
-        if(Khan.loaded) {
-            Khan.loaded.then(this.khan_loaded);
+        if(this.Khan.loaded) {
+            this.Khan.loaded.then(this.khan_loaded);
         } else {
             _.defer(this.khan_loaded);
         }
@@ -234,7 +240,8 @@ var ExerciseView = BaseView.extend({
 
     load_exercises_when_ready: function() {
         var self = this;
-        Khan.loaded.then(function() {
+
+        this.Khan.loaded.then(function() {
 
             var userExercise = self.data_model.as_user_exercise();
             $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
@@ -286,9 +293,8 @@ var ExerciseView = BaseView.extend({
 
             if (framework == "khan-exercises") {
 
-
-                if (Khan.loaded === undefined) {
-                    require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], self.load_exercises_when_ready);
+                if (self.Khan.loaded === undefined) {
+                    $script(window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL") + "khan-exercises.js", self.load_exercises_when_ready);
                 } else {
                     self.load_exercises_when_ready();
                 }
@@ -360,7 +366,7 @@ var ExerciseView = BaseView.extend({
 
     render_perseus_exercise: function(item) {
         var self = this;
-        require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], function() {
+        // $script(window.sessionModel.get("KHAN_EXERCISES_URL") + "khan-exercise.js", function() {
             // The exercise view can get closed before these loads finish happening, so check
             // that it is still open before proceeding - otherwise, errors can ensue.
             if (!self.closed) {
@@ -374,13 +380,13 @@ var ExerciseView = BaseView.extend({
                     }
                 });
             }
-        });
+        // });
     },
 
     check_answer: function() {
         var data;
         if (this.data_model.get_framework() == "khan-exercises") {
-            data = Khan.scoreInput();
+            data = this.Khan.scoreInput();
         } else {
             data = Exercises.PerseusBridge.scoreInput();
         }

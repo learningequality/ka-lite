@@ -1,11 +1,13 @@
 var ToggleNavbarView = require("../user/views");
 var $ = require("../base/jQuery");
+var _ = require("underscore");
 var messages = require("../utils/messages");
 var api = require("../utils/api");
 var SessionModel = require("../session/models");
 var StatusModel = require("../user/models").StatusModel
 
 global.$ = $;
+global._ = _;
 global.sessionModel = new SessionModel();
 
 // Related to showing elements on screen

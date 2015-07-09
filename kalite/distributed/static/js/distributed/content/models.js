@@ -162,6 +162,7 @@ var ContentLogCollection = Backbone.Collection.extend({
 
 module.exports = {
     ExtraFieldsBaseModel: ExtraFieldsBaseModel,
+    ContentDataModel: ContentDataModel,
     ContentLogModel: ContentLogModel,
     ContentLogCollection: ContentLogCollection
 }

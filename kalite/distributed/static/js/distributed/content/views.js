@@ -25,7 +25,7 @@ var ContentWrapperView = BaseView.extend({
 
         window.statusModel.loaded.then(function() {
             // load the info about the content itself
-            self.data_model = new ContentDataModel({id: options.id});
+            self.data_model = new Models.ContentDataModel({id: options.id});
             if (self.data_model.get("id")) {
                 self.data_model.fetch().then(function() {
 
