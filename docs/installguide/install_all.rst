@@ -58,8 +58,12 @@ Alternatively, install with *pip* using the instructions below:
 
 #. Install pip (Ubuntu: ``sudo apt-get install python-pip``)
 #. (Recommended; essential on slower platforms like Raspberry Pi) Install M2Crypto (``sudo apt-get install python-m2crypto``).
-#. Run ``sudo pip install ka-lite-static`` (bundled dependencies) or ``sudo pip install ka-lite`` (normal pip behaviour, dependencies installed to host system).
+#. Run ``sudo pip install ka-lite-static`` (bundled dependencies, see explanation below) or ``sudo pip install ka-lite`` (normal pip behaviour, see explanation below).
 #. Run ``kalite manage setup``.
+
+The module ``ka-lite-static`` includes all its dependencies, and is meant for offline distribution. If you have the tarball, you can install KA Lite offline.
+In contrast, the module ``ka-lite`` does not include its dependencies and is not meant for offline distribution.
+If the dependencies are not already present on the target system, they will be downloaded and installed.
 
 For more tips see :ref:`advanced-installation`.
 
