@@ -2,4 +2,5 @@
 werkzeug # Not sure about version
 django-debug-toolbar # Version was not described in previously bundled files, used by kalite.testing app
 pyyaml==3.11
-kaa=0.7.8
+# This one is just problematic
+# kaa=0.7.8
