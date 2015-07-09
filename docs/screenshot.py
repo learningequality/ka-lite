@@ -9,7 +9,6 @@ from docutils.parsers.rst.directives.images import Image
 from docutils.parsers.rst import Directive
 import docutils.parsers.rst.directives as directives
 from exceptions import NotImplementedError
-print sys.path
 
 from errors import ActionError
 from errors import OptionError
