@@ -506,7 +506,7 @@ As an alternative, you can download the zip file from https://learningequality.o
 
 
 Language Packs
----------------------------
+--------------
 
 KA Lite supports internationalization. You can download language packs for your language if it is available. A language pack comes with all the available subtitles and user interface translations for that language. When it is installed, KA Lite will give you the option to download individual dubbed videos from the language's Khan Academy YouTube channel.
 
