@@ -340,6 +340,7 @@ INSTALLED_APPS = [
     'fle_utils.config',
     'fle_utils.backbone',
     'fle_utils.chronograph',
+    'fle_utils.testing', # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.django_cherrypy_wsgiserver',
     'kalite.coachreports',
     'kalite.distributed',
