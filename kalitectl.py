@@ -475,6 +475,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
 
     if debug:
         watchify_thread = Thread(target=start_watchify)
+        watchify_thread.daemon = True
         watchify_thread.start()
 
     # Start the job scheduler (not Celery yet...)
