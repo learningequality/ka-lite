@@ -70,10 +70,12 @@ def process_screenshots(app, env):
         command += ["--lang={0}".format(language)]
     subprocess = Popen(command)
     subprocess.wait()
-    if subprocess.returncode:
-        raise Exception("Screenshot process had nonzero return code: {0}".format(subprocess.returncode))
-    if display:
-        display.stop()
+    try:
+        if subprocess.returncode:
+            raise Exception("Screenshot process had nonzero return code: {0}".format(subprocess.returncode))
+    finally:
+        if display:
+            display.stop()
 
 def _parse_focus(arg_str):
     """ Returns id and annotation after splitting input string.
