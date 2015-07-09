@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+    <meta charset="UTF-8">
+    <title>Dividing complex numbers</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+    <div class="vars" data-ensure="!(B_REAL === 0 &amp;&amp; B_IMAG === 1)  &amp;&amp; A_IMAG !== 0 &amp;&amp; A_REAL !== 0">
+        <var id="ANSWER_REAL">randRange(-5, 5)</var>
+        <var id="ANSWER_IMAG">randRange(-5, 5)</var>
+        <var id="B_REAL">randRange(-5, 5)</var>
+        <var id="B_IMAG">randRangeNonZero(-5, 5)</var>
+        <var id="A_REAL">ANSWER_REAL * B_REAL - ANSWER_IMAG * B_IMAG</var>
+        <var id="A_IMAG">ANSWER_REAL * B_IMAG + ANSWER_IMAG * B_REAL</var>
+        <var id="SIGN">A_IMAG &gt; 0 ? "+" : "-"</var>
+        <var id="DENOMINATOR">B_REAL * B_REAL + B_IMAG * B_IMAG</var>
+        <var id="REAL_NUMERATOR">(A_REAL * B_REAL) + (A_IMAG * B_IMAG)</var>
+        <var id="IMAG_NUMERATOR">(A_IMAG * B_REAL) - (A_REAL * B_IMAG)</var>
+        <var id="ANSWER_REP">complexNumber(ANSWER_REAL, ANSWER_IMAG)</var>
+        <var id="A_REP">complexNumber(A_REAL, A_IMAG)</var>
+        <var id="B_REP">complexNumber(B_REAL, B_IMAG)</var>
+        <var id="B_CONJUGATE_IMAG">-B_IMAG</var>
+        <var id="CONJUGATE">complexNumber(B_REAL, B_CONJUGATE_IMAG)</var>
+    </div>
+
+    <div class="problems">
+        <div>
+            <p class="question">Divide the following complex numbers.</p>
+            <p>
+                <code>\qquad \dfrac{<var>A_REP</var>}{<var>B_REP</var>}</code>
+            </p>
+            <div class="solution" data-type="expression" data-simplify><var>ANSWER_REAL</var> + <var>ANSWER_IMAG</var>i</div>
+            <div class="hints">
+                <div data-if="B_REAL === 0" data-unwrap="">
+                    <p>Since we're dividing by a single term, we can simply divide each term in the numerator separately.</p>
+                    <p><code>\qquad
+                        \dfrac{<var>A_REP</var>}{<var>B_REP</var>} = \dfrac{<var>A_REAL</var>}{<var>B_REP</var>}
+                        <var>SIGN</var> \dfrac{<var>coefficient(abs(A_IMAG))</var>i}{<var>B_REP</var>}
+                    </code></p>
+                    <div>
+                        <p>Factor out <code>\dfrac 1i</code>.</p>
+                        <p><code>
+                            \qquad = \dfrac 1i \left( \dfrac{<var>A_REAL</var>}{<var>B_IMAG</var>} <var>SIGN</var>
+                            \dfrac{<var>coefficient(abs(A_IMAG))</var>i}{<var>B_IMAG</var>} \right)
+                        </code></p>
+                        <p><code>
+                            \qquad = \dfrac 1i (<var>complexNumber(-ANSWER_IMAG, ANSWER_REAL)</var>)
+                        </code></p>
+                    </div>
+                    <p><code>\qquad \dfrac 1i = \dfrac 1i \cdot \dfrac ii = \dfrac{1 \cdot i}{i \cdot i} = \dfrac{i}{-1} = -i</code></p>
+                    <div>
+                        <p>Substitute <code>-i</code> for <code>\dfrac 1i</code>:</p>
+                        <p><code>\qquad \begin{eqnarray}
+                            &amp;=&amp; -i (<var>complexNumber(-ANSWER_IMAG, ANSWER_REAL)</var>) \\
+                            &amp;=&amp; <var>ANSWER_IMAG</var>i + <var>-ANSWER_REAL</var>i^2 \\
+                            &amp;=&amp; <var>ANSWER_REP</var>
+                            \end{eqnarray}
+                        </code></p>
+                    </div>
+                </div>
+                <div data-else="" data-unwrap="">
+                <p>
+                    We can divide complex numbers by multiplying both numerator and denominator by the denominator's <span class="hint_green">complex conjugate</span>, which is <code>\green{<var>CONJUGATE</var>}</code>.
+                </p>
+                <p>
+                    <code>\qquad \dfrac{<var>A_REP</var>}{<var>B_REP</var>} =
+                        \dfrac{<var>A_REP</var>}{<var>B_REP</var>} \cdot
+                        \dfrac{\green{<var>CONJUGATE</var>}}{\green{<var>CONJUGATE</var>}}
+                    </code>
+                </p>
+                <div>
+                    <p>
+                        We can simplify the denominator using the fact <code>(a + b) \cdot (a - b) = a^2 - b^2</code>.
+                    </p>
+                    <code>
+                        \qquad = \dfrac{(<var>A_REP</var>) \cdot (<var>CONJUGATE</var>)}
+                        {<var>negParens(B_REAL)</var>^2 - (<var>coefficient(B_IMAG)</var>i)^2}
+                    </code>
+                </div>
+                <div>
+                    <p>
+                        Evaluate the squares in the denominator and subtract them.
+                    </p>
+                    <p><code>
+                        \qquad = \dfrac{(<var>A_REP</var>) \cdot (<var>CONJUGATE</var>)}
+                        {(<var>B_REAL</var>)^2 - (<var>coefficient(B_IMAG)</var>i)^2}
+                    </code></p>
+                    <p><code>
+                        \qquad = \dfrac{(<var>A_REP</var>) \cdot (<var>CONJUGATE</var>)}
+                        {<var>B_REAL * B_REAL</var> + <var>B_IMAG * B_IMAG</var>}
+                    </code></p>
+                    <p><code>
+                        \qquad = \dfrac{(<var>A_REP</var>) \cdot (<var>CONJUGATE</var>)}
+                        {<var>B_REAL * B_REAL + B_IMAG * B_IMAG</var>}
+                    </code></p>
+                    <p>The denominator now doesn't contain any imaginary unit multiples, so it is a real number.</p>
+                    <p>
+                        Note that when a complex number, <code>a + bi</code> is multiplied by its conjugate,
+                        the product is always <code>a^2 + b^2</code>.
+                    </p>
+                </div>
+                <div>
+                    <p>
+                        Now, we can multiply out the two factors in the numerator.
+                    </p>
+                    <p><code>
+                        \qquad \dfrac{(\blue{<var>A_REP</var>}) \cdot (\red{<var>CONJUGATE</var>})}
+                        {<var>DENOMINATOR</var>}
+                    </code></p>
+                    <p><code>
+                        \qquad = \dfrac{\blue{<var>A_REAL</var>} \cdot \red{<var>negParens(B_REAL)</var>} + \blue{<var>A_IMAG</var>} \cdot \red{<var>negParens(B_REAL)</var> i} + \blue{<var>A_REAL</var>} \cdot \red{<var>B_CONJUGATE_IMAG</var> i} + \blue{<var>A_IMAG</var>} \cdot \red{<var>B_CONJUGATE_IMAG</var> i^2}}
+                        {<var>DENOMINATOR</var>}
+                    </code></p>
+                    <p><code>
+                        \qquad = \dfrac{<var>A_REAL * B_REAL</var> + <var>A_IMAG * B_REAL</var>i + <var>A_REAL * B_CONJUGATE_IMAG</var>i + <var>A_IMAG * B_CONJUGATE_IMAG</var> i^2}
+                        {<var>DENOMINATOR</var>}
+                    </code></p>
+                </div>
+                <div>
+                    <p>
+                        Finally, simplify the fraction.
+                    </p>
+                    <code>
+                        \qquad \dfrac{<var>A_REAL * B_REAL</var> + <var>A_IMAG * B_REAL</var>i + <var>A_REAL * B_CONJUGATE_IMAG</var>i - <var>A_IMAG * B_CONJUGATE_IMAG</var>}
+                        {<var>DENOMINATOR</var>} =
+                        \dfrac{<var>REAL_NUMERATOR</var> + <var>IMAG_NUMERATOR</var>i}
+                        {<var>DENOMINATOR</var>} =
+                        <var>ANSWER_REP</var>
+                    </code>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

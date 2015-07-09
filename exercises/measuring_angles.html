@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html data-require="math graphie angles interactive">
+<head>
+        <title>Measuring angles</title>
+        <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    </head>
+    <body>
+        <div class="exercise">
+            <div class="vars">
+                <var id="ANGLE_ONE">randRange(0, 359)</var>
+                <var id="DIFF">10 * randRange(1, 18)</var>
+            </div>
+
+            <div class="problems">
+                <div>
+                    <p class="question">
+                        Measure this angle in degrees.
+                    </p>
+                    <p class="render-answer-area-here"></p>
+                    <div class="problem">
+                        <div class="graphie" id="angle">
+                            var LENGTH = 9;
+                            var ANGLE_TWO = ANGLE_ONE + DIFF;
+                            var ANGLE_ONE_R = ANGLE_ONE * PI / 180;
+                            var ANGLE_TWO_R = ANGLE_TWO * PI / 180;
+
+                            init({
+                                range: [ [-11, 15], [-10, 10] ],
+                                scale: 20
+                            });
+
+                            style({ stroke: BLUE, arrows: "--&gt;" });
+                            line([0, 0], [LENGTH * cos(ANGLE_ONE_R), LENGTH * sin(ANGLE_ONE_R)]);
+                            line([0, 0], [LENGTH * cos(ANGLE_TWO_R), LENGTH * sin(ANGLE_TWO_R)]);
+                            style({ stroke: BLUE, arrows: null });
+                            arc([0, 0], 1, ANGLE_ONE, ANGLE_TWO);
+
+                            addMouseLayer();
+                            graph.protractor = protractor([14, -8]);
+
+                            graph.showOrigin = function() {
+                                graph.protractor.moveTo( 0, 0 );
+                            };
+
+                            graph.showCorrect = function() {
+                                graph.showOrigin();
+                                graph.protractor.rotateTo(540 - ANGLE_ONE - DIFF);
+                            };
+                        </div>
+                    </div>
+                    <div class="solution" data-type="multiple">
+                        <span class="sol" data-forms="integer" data-inexact="" data-max-error="5"><var>DIFF</var></span><code>{}^{\circ}</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hints">
+                <p>
+                    First, align the origin of the protractor with the vertex of the angle.
+                    <button onclick="javascript:
+                        KhanUtil.currentGraph.graph.showOrigin();
+                    ">Show me</button>
+                </p>
+                <p>
+                    Next, rotate the protractor so that the <code>0^{\circ}</code> mark lines up with one side of the angle.
+                    <button onclick="javascript:
+                        KhanUtil.currentGraph.graph.showCorrect();
+                    ">Show me</button>
+                </p>
+                <div>
+                    <div class="graphie" data-update="angle">
+                        graph.showCorrect();
+                        label([10 * cos(toRadians(ANGLE_ONE)), 10 * sin(toRadians(ANGLE_ONE))], "\\pink{" + DIFF + "^{\\circ}}" );
+                    </div>
+                    <p>The angle is <code><var>DIFF</var></code> degrees.</p>
+                </div>
+            </div>
+        </div>
+</body>
+</html>
