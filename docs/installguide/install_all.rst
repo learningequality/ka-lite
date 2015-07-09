@@ -78,18 +78,42 @@ exercises etc.).
 Uninstalling
 ============
 
-You can remove KA Lite (when installed from pip or source distribution) with
-`pip uninstall ka-lite` or `pip uninstall ka-lite-static` (static version).
+Windows
+-------
+
+Uninstall KA Lite from the Control Panel.
+In Windows XP, double-click the "Add or Remove Programs" icon, then choose KA Lite.
+In later version of Windows, click the "Programs and Features" icon, then choose KA Lite.
+
+Mac OSX
+-------
+
+.. note:: Dear maintainers, please put instructions here.
+
+Linux: Debian/Ubuntu Installation
+---------------------------------
 
 For Ubuntu, use ``apt-get remove ka-lite``.
+
+Installed with pip
+------------------
+
+You can remove KA Lite (when installed from pip or source distribution) with
+`pip uninstall ka-lite` or `pip uninstall ka-lite-static` (static version).
 
 
 Removing user data
 ------------------
 
-Downloaded videos and database files are in `~/.kalite`. Navigate to the
-home directory of the user who ran the KA Lite server and remove that directory
-to potentially reclaim lots of hard drive space.
+Some data (like videos and language packs) are downloaded into a location that depends on the user running the KA Lite server.
+Removing that directory can potentially reclaim lots of hard drive space.
+
+On Windows, the HOME and USERPROFILE registry values will be used if set, otherwise the combination ``%HOMEDRIVE%%HOMEPATH%`` will be used.
+You can check these values from the command prompt using the commands ``echo %HOME%``, ``echo $USERPROFILE%``, etc.
+Within that directory, the data is stored in the `.kalite` subdirectory.
+On most versions of Windows, this is `C:\Users\YourUsername\.kalite\`.
+
+On Linux and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
 
 
 
