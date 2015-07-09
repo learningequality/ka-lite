@@ -36,8 +36,7 @@
     
     {% compress css file learncss %}
     <!--[if !IE]> -->
-    <link href="{% static "video-js/video-js.css" %}" rel="stylesheet" type="text/css">
-    <link href="{% static "video-js/video-speed.css" %}" rel="stylesheet" type="text/css">
+    <link href="{% static "video-js-411/video-js.css" %}" rel="stylesheet" type="text/css">
     <!-- <![endif]-->
     <link href="{% static "css/distributed/sidebar.css" %}" rel="stylesheet" type="text/css">
     <link href="{% static "css/distributed/content.css" %}" rel="stylesheet" type="text/css">
@@ -69,7 +68,7 @@
         window.workerSrc = "{% static 'pdfjs/build/pdf.worker.js' %}";
         window.imageResourcesPath = "{% static 'pdfjs/web/images/' %}";
         window.cMapUrl = "{% static 'pdfjs/web/cmaps/' %}";
-        window.flash_swf = "{% static "video-js/video-js.swf" %}";
+        window.flash_swf = "{% static "video-js-411/video-js.swf" %}";
         window.ALL_TOPICS_URL = "{% url 'topic_tree' channel='%(channel_name)s' %}"; 
     </script>
     
@@ -107,8 +106,7 @@
 
     {% compress js file learnjs %}
     <!--[if !IE]> -->
-    <script src="{% static "video-js/video.js" %}"></script>
-    <script src="{% static "video-js/video-speed.js" %}"></script>
+    <script src="{% static "video-js-411/video.js" %}"></script>
     <script>
         _V_.options.flash.swf = window.flash_swf;
     </script>
