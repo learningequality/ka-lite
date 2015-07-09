@@ -4,8 +4,6 @@ var Handlebars = require("base/handlebars");
 var _V_ = require("video.js");
 var ContentBaseView = require("content/baseview");
 
-_V_.options.flash.swf = window.sessionModel.get("STATIC_URL") + "/js/distributed/video/video-js.swf";
-
 var VideoPlayerState = {
     UNSTARTED: -1,
     ENDED: 0,
@@ -22,8 +20,6 @@ var VideoPlayerView = ContentBaseView.extend({
     render: function() {
 
         var that = this;
-
-        _.bindAll(this, "on_resize");
 
         this.log_model.set("youtube_id", this.log_model.get("video_id"));
         this.data_model.set("random_id", "video-" + Math.random().toString().slice(2));

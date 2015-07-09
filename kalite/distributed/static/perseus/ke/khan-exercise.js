@@ -58,7 +58,6 @@
       shown in response, e.g. "We don't understand your answer."
 */
 define(function(require) {
-var $script = require("scriptjs");
 
 var crc32 = require("./utils/crc32.js");
 
@@ -1810,7 +1809,7 @@ function prepareSite() {
         $(".calculator-decimal").html(separator);
     }
 
-    require("./genfiles/calculator.js", initializeCalculator);
+    require(["./genfiles/calculator.js"], initializeCalculator);
     Khan.initReportIssueLink("#extras .report-issue-link");
 
     $("#answer_area").delegate("input.button, select", "keydown", function(e) {
@@ -2064,7 +2063,7 @@ function loadModule(moduleName) {
     debugLog("loadModule mod " + moduleName);
 
     // Load the module
-    $script(window.sessionModel.get("KHAN_EXERCISES_URL") + "utils/" + moduleName + ".js", function() {
+    require(["./utils/" + moduleName + ".js"], function() {
         selfPromise.resolve();
     });
 

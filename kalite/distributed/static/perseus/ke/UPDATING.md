@@ -6,5 +6,5 @@ git remote add -f khan-exercises https://github.com/learningequality/khan-exerci
 ```
 You can now update the repo with the following command:
 ```
-git subtree pull --squash --prefix=kalite/distributed/static/js/distributed/perseus/ke khan-exercises master
+git subtree pull --squash --prefix=kalite/distributed/static/perseus/ke khan-exercises master
 ```

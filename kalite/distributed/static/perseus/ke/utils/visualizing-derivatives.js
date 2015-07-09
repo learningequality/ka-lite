@@ -11,7 +11,7 @@ $.extend(KhanUtil, {
         }, options);
 
         $.extend(this, options);
-        _.bindAll.apply(_, [this].concat(_.functions(this)));
+        _.bindAll(this);
 
         this.length = function() {
             return this.fnArray.length;
