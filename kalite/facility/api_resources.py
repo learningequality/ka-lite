@@ -1,5 +1,6 @@
 import datetime
 import os
+from dateutil.tz import tzlocal
 
 from tastypie import fields
 from tastypie.http import HttpUnauthorized
@@ -179,7 +180,7 @@ class FacilityUserResource(ModelResource):
             "points": 0,
             "current_language": request.session.get(settings.LANGUAGE_COOKIE_NAME),
             "messages": message_dicts,
-            "status_timestamp": datetime.datetime.now(),
+            "status_timestamp": datetime.datetime.now(tzlocal()),
             "version": version.VERSION,
             "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
