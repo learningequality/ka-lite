@@ -213,7 +213,7 @@ var VideoPlayerView = ContentBaseView.extend({
 
     close: function() {
         if (this.intervalId) clearInterval(this.intervalId);
-        window.ContentBaseView.prototype.close.apply(this);
+        ContentBaseView.prototype.close.apply(this);
     }
 
 

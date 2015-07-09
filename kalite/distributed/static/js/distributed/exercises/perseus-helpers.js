@@ -3,7 +3,7 @@ var Backbone = require("base/backbone");
 var $ = require("base/jQuery");
 
 require("../perseus/lib/es5-shim.js");
-global.React = require("../perseus/lib/react-with-addons.js");
+global.React = require("react/addons");
 global.katex = require("../perseus/lib/katex/katex.min.js");
 require("../perseus/lib/mathquill/mathquill-basic.js");
 require("../perseus/lib/kas.js");
