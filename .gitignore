@@ -52,6 +52,9 @@ venv/
 # Ignore built javascript files
 /kalite/*/static/js/*/bundles
 
+# Ignore changes to Perseus and Khan Exercises that do not come from intentional edits
+/kalite/distributed/static/js/distributed/perseus
+
 # Lacks documentation
 locale/
 node_modules/
