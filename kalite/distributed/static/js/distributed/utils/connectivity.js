@@ -95,7 +95,15 @@ function with_online_status(server_or_client, callback) {
 
         deferred = _online_deferreds[server_or_client] = $.Deferred();
 
-        window["check_now_whether_" + server_or_client + "_is_online"](function(is_online) {
+        var check_function;
+
+        if (server_or_client==="server") {
+            check_function = check_now_whether_server_is_online;
+        } else if (server_or_client==="client") {
+            check_function = check_now_whether_client_is_online;
+        }
+
+        check_function(function(is_online) {
             if (is_online) {
                 deferred.resolve();
             } else {

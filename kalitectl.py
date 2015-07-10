@@ -6,7 +6,7 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [--foreground] [options] [DJANGO_OPTIONS ...]
+  kalite start [--foreground --watch] [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [DJANGO_OPTIONS ...]
   kalite status [options]

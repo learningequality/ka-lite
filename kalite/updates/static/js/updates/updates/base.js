@@ -1,3 +1,7 @@
+var $ = require("base/jQuery");
+var messages = require("utils/messages");
+var api = require("utils/api");
+
 // Storage variables for this app
 var process_names = {};  // (string) indices into all arrays
 var process_ids = {};    // ID of updated process information
@@ -57,7 +61,7 @@ function updatesStart_callback(process_name, start_time) {
         request_url += "&start_time=" + start_time.toISOString();
     }
 
-    doRequest(request_url)
+    api.doRequest(request_url)
         .success(function(progress_log, textStatus, request) {
             // Store the info
             if (!progress_log.process_name) {
@@ -112,7 +116,7 @@ function updatesCheck(process_name, interval) {
     // Get progress either generically (by the process_name, giving us the latest progress available),
     //    or by the process_id (connecting us to a specific process.)
     var path = "/api/updates/progress?process_" + (has_a_val(process_name, process_ids) ? ("id=" + process_ids[process_name]) : ("name=" + process_name));
-    doRequest(path)
+    api.doRequest(path)
         .success(function(progress_log) {
             // Reasons to exit
             if (!process_intervals[process_name]) {
@@ -137,14 +141,14 @@ function updatesCheck(process_name, interval) {
                 //
                 if (progress_log.process_percent == 1. && !progress_log.stage_status) {
                     message = progress_log.notes || (gettext("Completed update successfully.") + " [" + process_name + "]");
-                    clear_messages();
-                    show_message("success", message);
+                    messages.clear_messages();
+                    messages.show_message("success", message);
                     updatesReset(process_name);
                 } else if (progress_log.completed && progress_log.stage_status == "cancelled") {
-                    show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]");
+                    messages.show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]");
                     updatesReset(process_name);
                 } else if (progress_log.process_name) {
-                    show_message("error", sprintf(gettext("Error during update: %(progress_log_notes)s"), { progress_log_notes : progress_log.notes }));
+                    messages.show_message("error", sprintf(gettext("Error during update: %(progress_log_notes)s"), { progress_log_notes : progress_log.notes }));
                     updatesReset(process_name);
                 }
             }
@@ -156,7 +160,7 @@ function updatesCheck(process_name, interval) {
                 message = gettext("Could not connect to the server.");
             }
 
-            show_message("error", sprintf(gettext("Error while checking update status: %(message)s"), { message : message }));
+            messages.show_message("error", sprintf(gettext("Error while checking update status: %(message)s"), { message : message }));
 
             // Do callbacks
             if (process_callbacks[process_name] && "check" in process_callbacks[process_name]) {
@@ -234,4 +238,14 @@ function updatesReset(process_name) {
         delete process_names[process_name];
     }
 
+}
+
+module.exports = {
+    has_a_val: has_a_val,
+    updatesStart: updatesStart,
+    updatesStart_callback: updatesStart_callback,
+    updatesCheck: updatesCheck,
+    select_update_elements: select_update_elements,
+    updateDisplay: updateDisplay,
+    updatesReset: updatesReset
 }

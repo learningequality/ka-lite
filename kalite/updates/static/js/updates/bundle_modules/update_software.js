@@ -1,3 +1,10 @@
+var api = require("utils/api");
+var $ = require("base/jQuery");
+var messages = require("utils/messages");
+var base = require("updates/base");
+var connectivity = require("utils/connectivity");
+
+
 function software_check_callback(progress_log, resp) {
 
     // assume server is restarting if we fail to load progress (either
@@ -8,7 +15,7 @@ function software_check_callback(progress_log, resp) {
         // inform the user that their software may be up now
 
         // clear the messages too!
-        clear_messages();
+        messsages.clear_messages();
 
         refresh_countdown_dialog_box(15);  // update completed.
     }
@@ -100,13 +107,13 @@ function download_initiate_callback_generator(button_id) {
         button_behaviors[gettext("Yes")] = function() {
             // Start the download and updating process
             // Update the UI to reflect that we're waiting to start
-            doRequest(
-                UPDATE_SOFTWARE_URL,
+            api.doRequest(
+                global.UPDATE_SOFTWARE_URL,
                 { mechanism: $(button_id).attr("mechanism") }
             ).success(function() {
-                updatesStart_callback("update");
+                base.updatesStart_callback("update");
             }).fail(function(response) {
-                show_message("error", sprintf(gettext("Error starting update process %(status)s: %(responseText)s"), response));
+                messages.show_message("error", sprintf(gettext("Error starting update process %(status)s: %(responseText)s"), response));
             });
             // remove the dialog box
             $(this).remove();
@@ -133,18 +140,18 @@ $(function() {
     $("#refresh-page-dialog").hide();
 
     setTimeout(function() {
-        get_server_status({path: GET_SERVER_INFO_URL}, ["online"], function(status){
+        connectivity.get_server_status({path: GET_SERVER_INFO_URL}, ["online"], function(status){
             // We assume the distributed server is offline.
             //   if it's online, then we show all tools only usable when online.
             //
             // Best to assume offline, as online check returns much faster than offline check.
             if(false && (!status || !status["online"])){
-                show_message("error", gettext("Your installation is offline, and therefore cannot access updates."));
+                messages.show_message("error", gettext("Your installation is offline, and therefore cannot access updates."));
             } else {
                 $("#software_available").removeAttr("disabled");
                 $("#download-update-kalite").removeAttr("disabled");
                 $("#git-update-kalite").removeAttr("disabled");
-                clear_messages("id_offline_message");
+                messages.clear_messages("id_offline_message");
             }
         });
 
@@ -157,27 +164,27 @@ $(function() {
 
 
 function update_server_status() {
-    with_online_status("server", function(server_is_online) {
+    connectivity.with_online_status("server", function(server_is_online) {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
         // Best to assume offline, as online check returns much faster than offline check.
         if(server_is_online){
-            updatesStart("update", 1000, software_callbacks);
+            base.updatesStart("update", 1000, software_callbacks);
         } else {
-            clear_messages();
-            show_message("error", gettext("Could not connect to the central server; software cannot be updated at this time."));
+            messages.clear_messages();
+            messages.show_message("error", gettext("Could not connect to the central server; software cannot be updated at this time."));
         }
     });
 }
 
  $(function() {
-    doRequest(CENTRAL_KALITE_VERSION_URL, null, { dataType: "jsonp" })
+    api.doRequest(CENTRAL_KALITE_VERSION_URL, null, { dataType: "jsonp" })
         .success(function(data) {
             version_callback(data);
             update_server_status();
          })
          .fail( update_server_status );
 
-    doRequest(CENTRAL_KALITE_DOWNLOAD_URL, null, { dataType: "jsonp" })
+    api.doRequest(CENTRAL_KALITE_DOWNLOAD_URL, null, { dataType: "jsonp" })
         .success(function(data) {
             download_urls_callback(data);
             update_server_status();

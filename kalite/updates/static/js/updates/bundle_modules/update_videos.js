@@ -1,3 +1,9 @@
+var api = require("utils/api");
+var $ = require("base/jQuery");
+var messages = require("utils/messages");
+var base = require("updates/base");
+var connectivity = require("utils/connectivity");
+
 // Callback functions
 
 var lastKey = null;
@@ -49,7 +55,7 @@ function video_check_callback(progress_log, resp) {
                 // 100% done with ALL videos.
                 $(".progress-section, #cancel-download").hide();
                 $("#download-videos").removeAttr("disabled");
-                updatesReset(progress_log.process_name);
+                base.updatesReset(progress_log.process_name);
                 return;
 
             } else if (lastKey != currentKey) {
@@ -85,7 +91,7 @@ var video_callbacks = {
 
 $(function() {
 
-    doRequest(window.Urls.get_annotated_topic_tree(), {})
+    api.doRequest(window.Urls.get_annotated_topic_tree(), {})
         .success(function(treeData) {
             if ($.isEmptyObject(treeData)) {
                 $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
@@ -144,14 +150,14 @@ $(function() {
                     }
                 },
                 onPostInit: function() {
-                    with_online_status("server", function(server_is_online) {
+                    connectivity.with_online_status("server", function(server_is_online) {
                         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
                         // Best to assume offline, as online check returns much faster than offline check.
                         if(server_is_online){
                             $(".enable-when-server-online").removeAttr("disabled");
-                            updatesStart("videodownload", 5000, video_callbacks);
+                            base.updatesStart("videodownload", 5000, video_callbacks);
                         } else {
-                            show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
+                            messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
                         }
                     });
                 }
@@ -159,7 +165,7 @@ $(function() {
         });
 
     $("#download-videos").click(function() {
-        clear_messages();
+        messages.clear_messages();
 
         // Prep
         // Get all videos to download
@@ -167,9 +173,9 @@ $(function() {
         numVideos = youtube_ids.length;
 
         // Do the request
-        doRequest(window.Urls.start_video_download(), {youtube_ids: youtube_ids})
+        api.doRequest(window.Urls.start_video_download(), {youtube_ids: youtube_ids})
             .success(function() {
-                updatesStart("videodownload", 5000, video_callbacks);
+                base.updatesStart("videodownload", 5000, video_callbacks);
             })
             .fail(function(resp) {
                 $("#download-videos").removeAttr("disabled");
@@ -186,7 +192,7 @@ $(function() {
 
     // Delete existing videos
     $("#delete-videos").click(function() {
-        clear_messages();
+        messages.clear_messages();
 
         $("#modal_dialog").dialog({
             title: gettext("Are you sure you want to delete?"),
@@ -205,7 +211,7 @@ $(function() {
 
                     var youtube_ids = getSelectedStartedMetadata("youtube_id");
                     // Do the request
-                    doRequest(window.Urls.delete_videos(), {youtube_ids: youtube_ids})
+                    api.doRequest(window.Urls.delete_videos(), {youtube_ids: youtube_ids})
                         .success(function() {
                             $.each(youtube_ids, function(ind, id) {
                                 setNodeClass(id, "unstarted");
@@ -232,22 +238,22 @@ $(function() {
             }]
 
         });
-        jQuery("button.ui-dialog-titlebar-close").hide();
+        $("button.ui-dialog-titlebar-close").hide();
         $("#modal_dialog").text(gettext("Deleting the downloaded video(s) will lead to permanent loss of data"));
 
     });
 
     // Cancel current downloads
     $("#cancel-download").click(function() {
-        clear_messages();
+        messages.clear_messages();
 
         // Prep
 
         // Do the request
-        doRequest(window.Urls.cancel_video_download())
+        api.doRequest(window.Urls.cancel_video_download())
             .success(function() {
                 // Reset ALL of the progress tracking
-                updatesReset();
+                base.updatesReset();
 
                 // Update the UI
                 $("#download-videos").removeAttr("disabled");
@@ -265,7 +271,7 @@ $(function() {
         // Prep
 
         // Do the request
-        doRequest(window.Urls.start_video_download(), {});
+        api.doRequest(window.Urls.start_video_download(), {});
 
         // Update the UI
         $(this).attr("disabled", "disabled");

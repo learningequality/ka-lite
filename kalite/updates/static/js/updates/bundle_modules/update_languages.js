@@ -1,3 +1,9 @@
+var api = require("utils/api");
+var $ = require("base/jQuery");
+var messages = require("utils/messages");
+var base = require("updates/base");
+var connectivity = require("utils/connectivity");
+
 var installable_languages = [];
 var installed_languages = [];
 var downloading = false;
@@ -18,7 +24,7 @@ function version_comparison(v1, v2) {
 }
 
 function get_available_languages() {
-    return doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
+    return api.doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
         cache: false,
         dataType: "jsonp"
     }).success(function(languages) {
@@ -31,7 +37,7 @@ function get_available_languages() {
 }
 
 function get_installed_languages() {
-    return doRequest(window.Urls.installed_language_packs(), null, {
+    return api.doRequest(window.Urls.installed_language_packs(), null, {
         cache: false,
         datatype: "json"
     }).success(function(installed) {
@@ -123,7 +129,7 @@ function display_languages() {
     });
 
 function delete_languagepack(lang_code) {
-    doRequest(window.Urls.delete_language_pack(), {lang: lang_code})
+    api.doRequest(window.Urls.delete_language_pack(), {lang: lang_code})
         .success(function(resp) {
             get_installed_languages();
             display_languages(installables);
@@ -153,7 +159,7 @@ $(function () {
             });
         }
 
-        jQuery("button.ui-dialog-titlebar-close").hide();
+        $("button.ui-dialog-titlebar-close").hide();
 
     });
 });
@@ -213,15 +219,15 @@ var languagepack_callbacks = {
 };
 
 function start_languagepack_download(lang_code) {
-    clear_messages();  // get rid of any lingering messages before starting download
+    messages.clear_messages();  // get rid of any lingering messages before starting download
     $("#get-language-button").prop("disabled", true);
     downloading = true;
     // tell server to start languagepackdownload job
-    doRequest(
+    api.doRequest(
         Urls.start_languagepack_download(),
         { lang: lang_code }
     ).success(function(progress, status, req) {
-        updatesStart(
+        base.updatesStart(
             "languagepackdownload",
             2000, // 2 seconds
             languagepack_callbacks
@@ -273,7 +279,7 @@ function languagepack_reset_callback(progress, resp) {
 }
 
 function set_server_language(lang) {
-    doRequest(Urls.set_default_language(),
+    api.doRequest(Urls.set_default_language(),
               {lang: lang}
              ).success(function() {
                  window.location.reload();
@@ -281,14 +287,14 @@ function set_server_language(lang) {
 }
 
 function update_server_status() {
-    with_online_status("server", function(server_is_online) {
+    connectivity.with_online_status("server", function(server_is_online) {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
         // Best to assume offline, as online check returns much faster than offline check.
         if(server_is_online){
-            updatesStart("languagepackdownload", 1000, languagepack_callbacks);
+            base.updatesStart("languagepackdownload", 1000, languagepack_callbacks);
         } else {
-            clear_messages();
-            show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));
+            messages.clear_messages();
+            messages.show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));
         }
     });
 }
