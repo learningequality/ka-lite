@@ -24,6 +24,9 @@ from django.test.client import Client
 from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
 
+import os
+import glob
+
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
 
@@ -65,7 +68,11 @@ def invalidate_all_caches():
     call in here.
     """
     invalidate_inmemory_caches()
-    initialize_content_caches(force=True)
+    if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+        for filename in glob.glob(os.path.join(settings.CHANNEL_DATA_PATH, "*.cache")):
+            os.remove(filename)
+    else:
+        initialize_content_caches(force=True)
     if caching_is_enabled():
         invalidate_web_cache()
     logging.debug("Great success emptying all caches.")
