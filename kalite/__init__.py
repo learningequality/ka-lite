@@ -5,11 +5,11 @@ from version import *
 
 
 # ROOT_DATA_PATH should point to the directory where the source files live, including the "docs" dir
-if os.name == "nt":
-    # TODO-BLOCKER(MCGallaspy): Use setuptools in the windows installer to avoid this nonsense.
-    ROOT_DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-else:
-    ROOT_DATA_PATH = os.path.join(sys.prefix, 'share', 'kalite')
+# TODO-BLOCKER(MCGallaspy): Use setuptools in the windows installer to avoid this nonsense.
+ROOT_DATA_PATH = os.environ.get(
+    "KALITE_ROOT_DATA_PATH",
+    os.path.join(sys.prefix, 'share', 'kalite')
+)
 
 
 # TODO: Burn down this function, the name is weird, it just checks if a
