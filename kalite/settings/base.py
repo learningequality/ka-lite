@@ -212,7 +212,7 @@ else:
     if not os.path.exists(DEFAULT_DATABASE_PATH):
         os.mkdir(DEFAULT_DATABASE_PATH)
     
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'default.sqlite')
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'data.sqlite')
 
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security

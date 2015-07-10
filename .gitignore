@@ -44,8 +44,8 @@ static-updates
 *.zip
 
 # Documentation
-sphinx-docs/_build
-sphinx-docs/images/*
+docs/_build
+docs/images/*
 
 # oh-my-zsh convention for automatically
 # switching on a venv

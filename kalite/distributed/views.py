@@ -229,7 +229,7 @@ def search(request):
     }
 
 def add_superuser_form(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         form = SuperuserForm()
         return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
         data = {'Status' : 'ShowModal', 'data' : return_html}

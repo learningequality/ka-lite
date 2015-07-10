@@ -25,7 +25,7 @@ window.SuperUserCreateModalView = BaseView.extend({
         this.show_modal();
         $.ajax({
             context: this,
-            type: 'post',
+            type: 'GET',
             url: 'api/django_user_form',
             dataType: 'json',
             success : function(e){
@@ -35,6 +35,8 @@ window.SuperUserCreateModalView = BaseView.extend({
                 }
             },
             error : function(e){
+                $('#superusercreate-container').html("<div class='alert alert-danger'>Cannot correctly load the admin creation form. " 
+                    + e.status + " (" + e.statusText + ")</div>");
                 console.log(e);
             }
         });

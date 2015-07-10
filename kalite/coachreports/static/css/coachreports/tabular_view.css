@@ -80,12 +80,24 @@ th.headrowuser {
     background-color: #C0E7F3;
 }
 
+.partial.selected, .partial:hover{
+    background-color: #749BA7;
+}
+
 .complete {
     background-color: #5AA685;
 }
 
+.complete.selected, .complete:hover{
+    background-color: #0E5A39;
+}
+
 .struggling {
     background-color: #FD795B;
+}
+
+.struggling.selected, .struggling:hover{
+    background-color: #CA4628;
 }
 
 .not-attempted {
@@ -108,9 +120,9 @@ th.headrowuser {
     float:left; 
     display:none;
     overflow:hidden;
-    white-space:nowrap;
+    white-space:pre-line;
     width:100%;
-    margin:0px 5px 0px 0px;
+    margin:0px 5px 0px 3px;
     padding:0px;
     text-align:right;
     vertical-align:middle;
@@ -165,4 +177,8 @@ th.headrowuser {
 @media only screen and (max-width: 400px) {
     select#topic { margin-left: 0 !important; }
     /* Moves "Select Topic" dropdown slightly to the right so that it lines up with "Select Topic" and "Select Report" */
+}
+
+.detail-panel-contents {
+    padding-top: 0.5em;
 }
