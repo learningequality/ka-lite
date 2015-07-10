@@ -43,6 +43,8 @@ Examples:
 
   kalite start --foreground   Run kalite in the foreground and do not go to
                               daemon mode.
+  kalite start --watch      Set cherrypy to watch for changes to Django code and start
+                            the Watchify process to recompile Javascript dynamically.
 
 Planned features:
   kalite diagnose             Outputs user and copy-paste friendly diagnostics
@@ -425,7 +427,7 @@ def kill_watchify_process():
         sys.stdout.write('watchify process killed')
 
 
-def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
+def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon
 
@@ -473,7 +475,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
 
     manage('initialize_kalite')
 
-    if debug:
+    if watch:
         watchify_thread = Thread(target=start_watchify)
         watchify_thread.daemon = True
         watchify_thread.start()
@@ -525,7 +527,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     })
 
     DjangoAppPlugin(cherrypy.engine).subscribe()
-    if not debug:
+    if not watch:
         # cherrypyserver automatically reloads if any modules change
         # Switch-off that functionality here to save cpu cycles
         # http://docs.cherrypy.org/stable/appendix/faq.html
@@ -734,6 +736,7 @@ if __name__ == "__main__":
     if arguments['start']:
         start(
             debug=arguments['--debug'],
+            watch=arguments['--watch'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
             args=arguments['DJANGO_OPTIONS'],
             daemonize=not arguments['--foreground'],
