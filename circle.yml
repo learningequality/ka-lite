@@ -17,4 +17,4 @@ test:
     - node compile_javascript.js --staticfiles
     - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
         parallel: true
-    - grunt jshint --exclude kalite/distributed/static/js/distributed/perseus
+    - grunt jshint
