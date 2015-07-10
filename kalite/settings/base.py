@@ -400,7 +400,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 # libraries common to all apps
-built_docs_path = os.path.join(_data_path, "sphinx-docs", "_build")
+built_docs_path = os.path.join(_data_path, "docs", "_build")
 if os.path.exists(built_docs_path):
     STATICFILES_DIRS = (
         os.path.join(_data_path, 'static-libraries'),
