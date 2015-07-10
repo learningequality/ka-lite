@@ -703,7 +703,8 @@ if __name__ == "__main__":
     arguments = docopt(__doc__, version=str(VERSION), options_first=False)
 
     settings_module = arguments.pop('--settings', None)
-    os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
+    if settings_module:
+        os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
 
     if arguments['start']:
         start(
