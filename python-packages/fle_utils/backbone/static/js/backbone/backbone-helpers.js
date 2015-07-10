@@ -54,6 +54,7 @@ if (!Element.prototype.addEventListener) {
 
 window.BaseView = Backbone.View.extend({
 
+    _loading_overlay_count: 0,    // See show_loading_overlay and hide_loading_overlay
 
     /**
      * Add a subview to the view to allow for easy clean up on remove/close.
@@ -134,5 +135,31 @@ window.BaseView = Backbone.View.extend({
             }
         }
         Backbone.View.prototype.remove.call(this);
+    },
+
+    /**
+     * Adds a loading overlay to the element on the page using the plainOverlay library.
+     * Before calling, make sure that the element's dimensions are finalized, otherwise
+     * the overlay size may not behave properly until the window is resized a little.
+     * 
+     * Before using and/or customizing, see documentation at anseki.github.io/jquery-plainoverlay/
+     * TODO: Customize overlay, perhaps avoiding animation.
+     */
+    show_loading_overlay: function() {
+        this._loading_overlay_count++;
+        this.$el.addClass('is-loading');
+        this.$el.plainOverlay('show');
+    },
+
+    /**
+     * Removes plainOverlay from element. See show_loading_overlay above. Overlay only removed
+     * after this function is called the same number of times as show_loading_overlay.
+     */
+    hide_loading_overlay: function() {
+        this._loading_overlay_count--;
+        if (this._loading_overlay_count == 0) {
+            this.$el.removeClass('is-loading');
+            this.$el.plainOverlay('hide');
+        }
     }
 });

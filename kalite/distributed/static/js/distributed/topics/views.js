@@ -520,6 +520,8 @@ window.SidebarEntryView = BaseView.extend({
 
 window.TopicContainerOuterView = BaseView.extend({
 
+    className: "clearfix topic-container-outer",
+
     initialize: function(options) {
 
         this.render = _.bind(this.render, this);
