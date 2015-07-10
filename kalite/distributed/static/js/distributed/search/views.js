@@ -2,6 +2,7 @@ var BaseView = require("../base/baseview");
 var Handlebars = require("../base/handlebars");
 var _ = require("underscore");
 var api = require("../utils/api");
+var messages = require("utils/messages");
 
 var SearchBarTemplate = require("./hbtemplates/search-bar.handlebars");
 var SearchBarItemTemplate = require("./hbtemplates/search-item.handlebars");
@@ -100,7 +101,7 @@ var AutoCompleteView = BaseView.extend({
 
     data_source: function(request, response) {
         var self = this;
-        clear_messages();
+        messages.clear_messages();
 
         // Executed when we're requested to give a list of results
         var titles_filtered = $.ui.autocomplete.filter(_.keys(this._titles), request.term);
