@@ -208,25 +208,25 @@ class Command(BaseCommand):
             options["hostname"] = options["hostname"] or get_host_name()
 
         # blank allows ansible scripts to dump errors cleanly.
-        print("                                  ")
-        print("  _   __  ___    _     _ _        ")
-        print(" | | / / / _ \  | |   (_) |       ")
-        print(" | |/ / / /_\ \ | |    _| |_ ___  ")
-        print(" |    \ |  _  | | |   | | __/ _ \ ")
-        print(" | |\  \| | | | | |___| | ||  __/ ")
-        print(" \_| \_/\_| |_/ \_____/_|\__\___| ")
-        print("                                  ")
-        print("http://kalite.learningequality.org")
-        print("                                  ")
+        print("                                     ")
+        print("   _   __  ___    _     _ _          ")
+        print("  | | / / / _ \  | |   (_) |         ")
+        print("  | |/ / / /_\ \ | |    _| |_ ___    ")
+        print("  |    \ |  _  | | |   | | __/ _ \   ")
+        print("  | |\  \| | | | | |___| | ||  __/   ")
+        print("  \_| \_/\_| |_/ \_____/_|\__\___|   ")
+        print("                                     ")
+        print("https://learningequality.org/ka-lite/")
+        print("                                     ")
         print("         version %s" % VERSION)
-        print("                                  ")
+        print("                                     ")
 
         if sys.version_info >= (2, 8) or sys.version_info < (2, 6):
             raise CommandError(
-                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % str(sys.version_info))
+                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %d.%d.%d\n" % sys.version_info[:3])
         if sys.version_info < (2, 7, 9):
             logging.warning(
-                "It's recommended that you install Python version 2.7.9. Your version is: %s\n" % str(sys.version_info))
+                "It's recommended that you install Python version 2.7.9. Your version is: %d.%d.%d\n" % sys.version_info[:3])
 
         if options["interactive"]:
             print(
