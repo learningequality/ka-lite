@@ -173,7 +173,14 @@ def call_outside_command_with_output(command, *args, **kwargs):
     cmd = (kalite_bin, "manage", command)
     for arg in args:
         cmd += (arg,)
-    for key, val in kwargs.items():
+
+    kwargs_keys = kwargs.keys()
+    
+    # Ensure --settings occurs first, as otherwise docopt parsing barfs
+    kwargs_keys = sorted(kwargs_keys, cmp=lambda x,y: -1 if x=="settings" else 0)
+    
+    for key in kwargs_keys:
+        val = kwargs[key]
         key = key.replace(u"_",u"-")
         prefix = u"--" if command != "runcherrypyserver" else u""  # hack, but ... whatever!
         if isinstance(val, bool):
