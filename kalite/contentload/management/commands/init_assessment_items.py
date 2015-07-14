@@ -10,9 +10,6 @@ from optparse import make_option
 from kalite import settings; logging = settings.LOG
 from kalite.topic_tools.models import AssessmentItem
 
-# From topic_tools/__init__.py
-ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
-
 
 class Command(BaseCommand):
 
@@ -20,7 +17,7 @@ class Command(BaseCommand):
         make_option("-a", "--assessment-items-filepath",
                     action="store",
                     dest="assessment_items_filepath",
-                    default=ASSESSMENT_ITEMS_FILEPATH,
+                    default=settings.KHAN_ASSESSMENT_ITEM_JSON_PATH,
                     help="Override the JSON data source to import assessment items from"),
         make_option("-d", "--database-path",
                     action="store",
