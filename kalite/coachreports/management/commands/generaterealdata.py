@@ -278,6 +278,16 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
                 exercise_logs.append(elog)
 
+                ulog = UserLog(
+                    user=facility_user,
+                    activity_type=1,
+                    start_datetime = start_date,
+                    end_datetime = start_date + date_diff,
+                    last_active_datetime = start_date + date_diff,
+                )
+                ulog.save()
+                user_logs.append(ulog)
+
     return (exercise_logs, user_logs)
 
 

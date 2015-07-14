@@ -24,6 +24,8 @@ Options:
   --debug               Output debug messages (for development)
   --port=<arg>          Use a non-default port on which to start the HTTP server
                         or to query an existing server (stop/status)
+  --settings=<arg>      Specify Django's settings module. Must follow python's
+                        import syntax.
   --skip-job-scheduler  KA Lite runs a so-called "cronograph", it's own built-in
                         automatic job scheduler required for downloading videos
                         and sync'ing with online sources. If you don't need this
@@ -57,8 +59,10 @@ Planned features:
 from __future__ import print_function
 # Add distributed python-packages subfolder to current path
 # DO NOT IMPORT BEFORE THIS LIKE
-import sys
 import os
+import socket
+import sys
+import time
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -79,9 +83,9 @@ import cherrypy
 
 # We do not understand --option value, only --option=value.
 # Match all patterns of "--option value" and fail if they exist
-__validate_cmd_options = re.compile(r"--[^\s-]+\s+[^-\s][^-\s]+")
+__validate_cmd_options = re.compile(r"--?[^\s]+\s+(?:(?!--|-[\w]))")
 if __validate_cmd_options.search(" ".join(sys.argv[1:])):
-    sys.stderr.write("Please only use --option=value patterns. The option parser gets confused if you do otherwise.\n")
+    sys.stderr.write("Please only use --option=value or -x123 patterns. No spaces allowed between option and value. The option parser gets confused if you do otherwise.\n\nWill be fixed for next version 0.15")
     sys.exit(1)
 
 from threading import Thread
@@ -343,15 +347,11 @@ def get_pid():
 
 class ManageThread(Thread):
 
-    """
-    Runs a command in the background
-    """
-    daemon = True
-
     def __init__(self, command, *args, **kwargs):
         self.command = command
         self.args = kwargs.pop('args', [])
-        return super(ManageThread, self).__init__(*args, **kwargs)
+        super(ManageThread, self).__init__(*args, **kwargs)
+        self.daemon = False  # Main process does NOT exit until thread dies
 
     def run(self):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
@@ -367,10 +367,11 @@ def manage(command, args=[], as_thread=False):
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param as_daemon: Creates a new process for the command
     :param as_thread: Runs command in thread and returns immediately
     """
-    
+
+    args = update_default_args(["--traceback"], args)
+
     if not as_thread:
         if PROFILE:
             profile_memory()
@@ -397,16 +398,16 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
     # TODO: Do we want to fail if running as root?
-    
+
     port = int(port or DEFAULT_LISTEN_PORT)
-    
+
     if not daemonize:
         sys.stderr.write("Running 'kalite start' in foreground...\n")
     else:
         sys.stderr.write("Running 'kalite start' as daemon (system service)\n")
-    
+
     sys.stderr.write("\nStand by while the server loads its data...\n\n")
-    
+
     if os.path.exists(STARTUP_LOCK):
         try:
             pid, __ = read_pid_file(STARTUP_LOCK)
@@ -414,6 +415,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
             if pid_exists(pid):
                 sys.stderr.write(
                     "Refusing to start: Start up lock exists: {0:s}\n".format(STARTUP_LOCK))
+                sys.stderr.write("Remove the file and try again.\n")
                 sys.exit(1)
         # Couldn't parse to int
         except TypeError:
@@ -424,42 +426,43 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     try:
         if get_pid():
             sys.stderr.write("Refusing to start: Already running\n")
+            sys.stderr.write("Use 'kalite stop' to stop the instance.\n")
             sys.exit(1)
     except NotRunning:
         pass
 
+    # Check that the port is available by creating a simple socket and see
+    # if it succeeds... if it does, the port is occupied.
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    connection_error = sock.connect_ex(('127.0.0.1', port))
+    if not connection_error:
+        sys.stderr.write(
+            "Port {0} is occupied. Please close the process that is using "
+            "it.".format(port)
+        )
+        sys.exit(1)
+
     # Write current PID and optional port to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
         f.write("%s\n%d" % (str(os.getpid()), port))
-    
-    manage('initialize_kalite')
 
-    # Start the job scheduler (not Celery yet...)
-    # This command is run before starting the server, in case the server
-    # should be configured to not run in daemon mode or in case the
-    # server fails to go to daemon mode.
-    if not skip_job_scheduler:
-        manage(
-            'cronserver_blocking',
-            args=[],
-            as_thread=True
-        )
+    manage('initialize_kalite')
 
     # Remove the startup lock at this point
     if STARTUP_LOCK:
         os.unlink(STARTUP_LOCK)
-    
+
     # Print output to user about where to find the server
     addresses = get_ip_addresses(include_loopback=False)
-    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
+    print("To access KA Lite from another connected computer, try the following address(es):")
     for addr in addresses:
-        sys.stdout.write("\thttp://%s:%s/\n" % (addr, port))
-    sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
-    sys.stdout.write("\thttp://127.0.0.1:%s/\n" % port)
-    
+        print("\thttp://%s:%s/" % (addr, port))
+    print("To access KA Lite from this machine, try the following address:")
+    print("\thttp://127.0.0.1:%s/\n" % port)
+
     # Daemonize at this point, no more user output is needed
     if daemonize:
-        
+
         from django.utils.daemonize import become_daemon
         kwargs = {}
         # Truncate the file
@@ -471,7 +474,15 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         # Write the new PID
         with open(PID_FILE, 'w') as f:
             f.write("%d\n%d" % (os.getpid(), port))
-    
+
+    # Start the job scheduler (not Celery yet...)
+    if not skip_job_scheduler:
+        manage(
+            'cronserver_blocking',
+            args=[],
+            as_thread=True
+        )
+
     # Start cherrypy service
     cherrypy.config.update({
         'server.socket_host': LISTEN_ADDRESS,
@@ -486,10 +497,15 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         # Switch-off that functionality here to save cpu cycles
         # http://docs.cherrypy.org/stable/appendix/faq.html
         cherrypy.engine.autoreload.unsubscribe()
-    
+
     cherrypy.quickstart()
 
     print("FINISHED serving HTTP")
+
+    if not skip_job_scheduler:
+        print("Asking KA Lite job scheduler to terminate...")
+        from fle_utils.chronograph.management.commands import cronserver_blocking
+        cronserver_blocking.shutdown = True
 
 
 def stop(args=[], sys_exit=True):
@@ -522,10 +538,10 @@ def stop(args=[], sys_exit=True):
                 sys.stderr.write("Could not find PID in .pid file\n")
             except OSError:  # TODO: More specific exception handling
                 sys.stderr.write("Could not read .pid file\n")
-        if not killed_with_force:
-            if sys_exit:
-                sys.exit(-1)
-            return  # Do not continue because error could not be handled
+            if not killed_with_force:
+                if sys_exit:
+                    sys.exit(-1)
+                return  # Do not continue because error could not be handled
 
     sys.stderr.write("kalite stopped\n")
     if sys_exit:
@@ -594,7 +610,6 @@ def profile_memory():
     import resource  # @UnresolvedImport
     import signal
     import sparkline
-    import time
 
     starttime = time.time()
 
@@ -660,7 +675,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
         ao.children = list(set(doc_options) - pattern_options)
     extras(help, version, argv, doc)
     __matched, __left, collected = pattern.fix().match(argv)
-    
+
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
@@ -686,7 +701,11 @@ if __name__ == "__main__":
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
     arguments = docopt(__doc__, version=str(VERSION), options_first=False)
-    
+
+    settings_module = arguments.pop('--settings', None)
+    if settings_module:
+        os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
+
     if arguments['start']:
         start(
             debug=arguments['--debug'],
@@ -701,6 +720,8 @@ if __name__ == "__main__":
 
     elif arguments['restart']:
         stop(args=arguments['DJANGO_OPTIONS'], sys_exit=False)
+        # add a short sleep to ensure port is freed before we try starting up again
+        time.sleep(1)
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
