@@ -15,7 +15,6 @@ CoachReportView:
     - CoachSummaryView
 */
 
-
 var CoachSummaryView = BaseView.extend({
     /*
     This view displays summary stats for the currently selected facility (and optionally group)
@@ -72,9 +71,14 @@ var CoachSummaryView = BaseView.extend({
     },
 
     toggle_tabular_view: _.debounce(function() {
+        var self = this;
         if (!this.tabular_report_view) {
-            this.$("#show_tabular_report").text("Hide Tabular Report");
-            this.tabular_report_view = new TabularReportViews.TabularReportView({model: this.model});
+            this.$("#show_tabular_report").text("Loading");
+            this.$("#show_tabular_report").attr("disabled", "disabled");
+            this.tabular_report_view = new TabularReportViews.TabularReportView({model: this.model, complete: function() {
+                self.$("#show_tabular_report").text("Hide Tabular Report");
+                self.$("#show_tabular_report").removeAttr("disabled");
+            }});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         } else {
             this.$("#show_tabular_report").text("Show Tabular Report");

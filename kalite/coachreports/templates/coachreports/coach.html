@@ -16,6 +16,7 @@
     <script type="text/javascript">
         var FACILITY_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var GROUP_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var FACILITY_ID = {% if facility_id %}"{{ facility_id }}"{% else %}undefined{% endif %};
     </script>
     <script src="{% static 'js/coachreports/bundles/bundle_coach_report.js' %}"></script>
     <script>

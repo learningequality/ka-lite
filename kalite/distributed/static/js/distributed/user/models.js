@@ -40,8 +40,9 @@ var StatusModel = Backbone.Model.extend({
     },
 
     get_server_time: function () {
+        var regex = /(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s[0-9]{2}\s[0-9]{4}\s[0-9]{2}:[0-9]{2}:[0-9]{2}/;
         // Function to return time corrected to server clock based on status update.
-        return (new Date(new Date() - this.get("client_server_time_diff"))).toISOString().slice(0, -1);
+        return (new Date(new Date().getTime() - this.get("client_server_time_diff"))).toString().match(regex)[0];
     },
 
     login: function(username, password, facility, callback) {
@@ -136,7 +137,8 @@ var StatusModel = Backbone.Model.extend({
         // As the server sends its timestamp without a timezone (and we can't rely on timezones
         // being set correctly, we need to do some finagling with the offset to get it to work out.
         var time_stamp = new Date(this.get("status_timestamp"));
-        this.set("client_server_time_diff", new Date() - time_stamp.getTime());
+
+        this.set("client_server_time_diff", (new Date()).getTime() - time_stamp.getTime());
 
         $(function() {
             toggle_state("logged-in", self.get("is_logged_in"));

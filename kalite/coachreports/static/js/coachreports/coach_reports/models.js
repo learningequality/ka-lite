@@ -3,10 +3,6 @@ var _ = require("underscore");
 var setGetParamDict = require("utils/get_params").setGetParamDict
 
 var StateModel = Backbone.Model.extend({
-    defaults: {
-        group: window.GROUP_ID || "",
-        facility: window.FACILITY_ID || ""
-    },
 
     set: function(key, val, options) {
         if (key === "facility" || key.facility) {

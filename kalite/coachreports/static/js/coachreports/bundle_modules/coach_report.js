@@ -6,5 +6,5 @@ global.$ = $;
 global.Backbone = Backbone;
 
 $(function() {
-    window.coach_router = new CoachReportRouter();
+    window.coach_router = new CoachReportRouter({facility: global.FACILITY_ID});
 });

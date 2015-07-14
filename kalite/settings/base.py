@@ -212,7 +212,7 @@ else:
     if not os.path.exists(DEFAULT_DATABASE_PATH):
         os.mkdir(DEFAULT_DATABASE_PATH)
     
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'default.sqlite')
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'data.sqlite')
 
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security
@@ -338,6 +338,7 @@ INSTALLED_APPS = [
     'fle_utils.django_utils',
     'fle_utils.config',
     'fle_utils.chronograph',
+    'fle_utils.testing', # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.django_cherrypy_wsgiserver',
     'kalite.coachreports',
     'kalite.distributed',
@@ -398,7 +399,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 # libraries common to all apps
-built_docs_path = os.path.join(_data_path, "sphinx-docs", "_build")
+built_docs_path = os.path.join(_data_path, "docs", "_build")
 if os.path.exists(built_docs_path):
     STATICFILES_DIRS = (
         os.path.join(_data_path, 'static-libraries'),

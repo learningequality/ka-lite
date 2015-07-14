@@ -25,18 +25,20 @@ var HomepageWrapper = BaseView.extend({
     },
 
     render: function() {
-        this.$el.html(this.template());
+        if (this.collection.length > 0) {
+            this.$el.html(this.template());
 
-        if (this.content_resume) {
-            this.$("#resume").append(this.content_resume.el);
-        }
+            if (this.content_resume) {
+                this.$("#resume").append(this.content_resume.el);
+            }
 
-        if (this.content_nextsteps) {
-            this.$("#nextsteps").append(this.content_nextsteps.el);
-        }
+            if (this.content_nextsteps) {
+                this.$("#nextsteps").append(this.content_nextsteps.el);
+            }
 
-        if (this.content_explore) {
-            this.$("#explore").append(this.content_explore.el);
+            if (this.content_explore) {
+                this.$("#explore").append(this.content_explore.el);
+            }
         }
     },
 

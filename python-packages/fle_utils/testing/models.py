@@ -1,0 +1,2 @@
+# Prior to Django 1.7 (https://docs.djangoproject.com/en/1.7/releases/1.7/#app-loading-refactor), apps listed in the
+# INSTALLED_APPS setting need a models.py file, even if it's empty. That is why this file exists.
