@@ -519,7 +519,6 @@ from kalite.student_testing.settings import *
 
 # Import from applications with problematic __init__.py files
 from kalite.legacy.i18n_settings import *
-from kalite.legacy.topic_tools_settings import *
 from kalite.legacy.updates_settings import *
 
 from kalite.testing.settings import *
