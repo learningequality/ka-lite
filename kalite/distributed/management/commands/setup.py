@@ -200,7 +200,7 @@ class Command(BaseCommand):
                     action='store',
                     dest='git_migrate_path',
                     default=None,
-                    help='Runs the git migrate management command to migrate from previous installations of KA Lite using Git'),
+                    help='Runs the gitmigrate management command to import data and content from previous installations of KA Lite'),
     )
 
     def handle(self, *args, **options):
@@ -257,13 +257,13 @@ class Command(BaseCommand):
         git_migrate_path = options["git_migrate_path"]
 
         if git_migrate_path:
-            call_command("gitmigrate", path=git_migrate_path)
-        
+            call_command("gitmigrate", path=git_migrate_path, interactive=options["interactive"])
+
         # TODO(benjaoming): This is used very loosely, what does it mean?
         # Does it mean that the installation path is clean or does it mean
         # that we should remove (clean) items from a previous installation?
         install_clean = not kalite.is_installed()
-        
+
         database_kind = settings.DATABASES["default"]["ENGINE"]
         database_file = (
             "sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
@@ -339,7 +339,7 @@ class Command(BaseCommand):
             # Try locating django
             for dir_to_clean in distributed_packages:
                 clean_pyc(dir_to_clean)
-            
+
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db

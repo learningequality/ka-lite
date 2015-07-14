@@ -169,16 +169,27 @@ def call_outside_command_with_output(command, *args, **kwargs):
         kalite_bin = os.path.join(kalite_dir, "bin/kalite")
     else:
         kalite_bin = 'kalite'
+
     cmd = (kalite_bin, "manage", command)
     for arg in args:
         cmd += (arg,)
-    for key, val in kwargs.items():
+
+    kwargs_keys = kwargs.keys()
+    
+    # Ensure --settings occurs first, as otherwise docopt parsing barfs
+    kwargs_keys = sorted(kwargs_keys, cmp=lambda x,y: -1 if x=="settings" else 0)
+    
+    for key in kwargs_keys:
+        val = kwargs[key]
         key = key.replace(u"_",u"-")
         prefix = u"--" if command != "runcherrypyserver" else u""  # hack, but ... whatever!
         if isinstance(val, bool):
             cmd += (u"%s%s" % (prefix, key),)
         else:
-            cmd += (u"%s%s=%s" % (prefix, key, unicode(val)),)
+            # TODO(jamalex): remove this replacement, after #4066 is fixed:
+            # https://github.com/learningequality/ka-lite/issues/4066
+            cleaned_val = unicode(val).replace(" ", "")
+            cmd += (u"%s%s=%s" % (prefix, key, cleaned_val),)
 
     p = subprocess.Popen(
         cmd,
