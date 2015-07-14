@@ -33,7 +33,6 @@ class Command(BaseCommand):
         except (DatabaseError, AssertionError):
             logging.info("Setting up KA Lite; this may take a few minutes; please wait!\n")
             call_command("setup", interactive=False)
-            Settings.set("database_version", VERSION)
             # Double check the setup process worked ok.
             assert Settings.get("database_version") == VERSION, "There was an error configuring the server. Please report the output of this command to Learning Equality."
 

@@ -363,6 +363,7 @@ class Command(BaseCommand):
         # Create *.json and friends database
         call_command("syncdb", interactive=False, verbosity=options.get(
             "verbosity"), database="assessment_items")
+        Settings.set("database_version", VERSION)
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this
