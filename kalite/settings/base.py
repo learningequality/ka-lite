@@ -233,10 +233,6 @@ if not os.path.exists(CONTENT_ROOT):
     os.mkdir(CONTENT_ROOT)
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
-# Special setting for Khan Academy content
-KHAN_CONTENT_PATH = os.path.join(CONTENT_ROOT, "khan")
-if not os.path.exists(KHAN_CONTENT_PATH):
-    os.mkdir(KHAN_CONTENT_PATH)
 
 #######################################
 # ASSESSMENT ITEMS DATA

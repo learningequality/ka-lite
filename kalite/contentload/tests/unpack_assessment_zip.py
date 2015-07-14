@@ -14,16 +14,16 @@ from kalite.testing.base import KALiteTestCase
 from kalite.contentload.management.commands import unpack_assessment_zip as mod
 from kalite import version
 
-TEMP_KHAN_CONTENT_PATH = tempfile.mkdtemp()
-TEMP_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(TEMP_KHAN_CONTENT_PATH, 'assessmentitems.sqlite')
-TEMP_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(TEMP_KHAN_CONTENT_PATH, 'assessmentitems.version')
+TEMP_CONTENT_PATH = tempfile.mkdtemp()
+TEMP_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(TEMP_CONTENT_PATH, 'assessmentitems.sqlite')
+TEMP_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(TEMP_CONTENT_PATH, 'assessmentitems.version')
 TEMP_ASSESSMENT_ITEM_JSON_PATH = os.path.join(os.path.dirname(__file__), "fixtures", "assessmentitems.json")
 DUMMY_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH = os.path.join(os.path.dirname(__file__), "fixtures", "assessmentitems.dummydb")
 
 MODIFIED_DB_SETTINGS = copy.deepcopy(settings.DATABASES)
 MODIFIED_DB_SETTINGS["assessment_items"]["NAME"] = TEMP_ASSESSMENT_ITEM_DATABASE_PATH
 
-@override_settings(KHAN_CONTENT_PATH=TEMP_KHAN_CONTENT_PATH)
+@override_settings(CONTENT_PATH=TEMP_CONTENT_PATH)
 @override_settings(KHAN_ASSESSMENT_ITEM_DATABASE_PATH=TEMP_ASSESSMENT_ITEM_DATABASE_PATH)
 @override_settings(KHAN_ASSESSMENT_ITEM_VERSION_PATH=TEMP_ASSESSMENT_ITEM_VERSION_PATH)
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
@@ -32,7 +32,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
             zf = zipfile.ZipFile(f, "w")
-            zf.write(DUMMY_KHAN_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH, "assessmentitems.sqlite")
+            zf.write(DUMMY_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH, "assessmentitems.sqlite")
             zf.writestr("assessmentitems.version", version.SHORTVERSION)
             zf.close()
 
@@ -81,14 +81,14 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
                 if "assessmentitems" in filename:
                     continue
                 else:
-                    filename_path = os.path.join(mod.KHAN_CONTENT_PATH, filename)
-                    self.assertTrue(os.path.exists(filename_path), "%s wasn't extracted to %s" % (filename, mod.KHAN_CONTENT_PATH))
+                    filename_path = os.path.join(mod.CONTENT_PATH, filename)
+                    self.assertTrue(os.path.exists(filename_path), "%s wasn't extracted to %s" % (filename, mod.CONTENT_PATH))
 
     def test_command_with_local_path(self):
         pass
 
 
-@override_settings(KHAN_CONTENT_PATH=TEMP_KHAN_CONTENT_PATH)
+@override_settings(CONTENT_PATH=TEMP_CONTENT_PATH)
 @override_settings(KHAN_ASSESSMENT_ITEM_DATABASE_PATH=TEMP_ASSESSMENT_ITEM_DATABASE_PATH)
 @override_settings(KHAN_ASSESSMENT_ITEM_VERSION_PATH=TEMP_ASSESSMENT_ITEM_VERSION_PATH)
 class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
@@ -111,8 +111,9 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
     def test_unpack_zipfile_to_khan_content_extracts_to_content_dir(self):
         zipfile_instance = MagicMock()
-
-        extract_dir = settings.KHAN_CONTENT_PATH
+        
+        from kalite.contentload.settings import KHAN_CONTENT_PATH
+        extract_dir = KHAN_CONTENT_PATH
 
         mod.unpack_zipfile_to_khan_content(zipfile_instance)
 
@@ -122,12 +123,12 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         invalid_urls = [
             "/something.path",
             "/path/to/somewhere"
-            ]
+        ]
 
         for url in invalid_urls:
             self.assertFalse(mod.is_valid_url(url))
 
-    @patch.object(version, 'SHORTVERSION', '0.13')
+    @patch.object(version, 'SHORTVERSION', '0.14')
     def test_should_upgrade_assessment_items(self):
         # if assessmentitems.version doesn't exist, then return
         # true
@@ -146,7 +147,8 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
                 mod.should_upgrade_assessment_items(),
                 "We should've told our users to upgrade assessment items, as they have an old version!"
             )
-            # we should've also opened the file atleast
+            # we should've also opened the file at least
+            # from kalite.contentload import settings as contentload_settings
             mopen.assert_called_once_with(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH)
 
         # if the version in assessment items is equal to our current
