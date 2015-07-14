@@ -74,7 +74,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
         annotate = True
 
     if annotate:
-        if django_settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             topics = softload_json(settings.TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", logger=logging.debug, raises=False)
             if topics:
                 TOPICS[channel][language] = topics
@@ -128,7 +128,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
 
         TOPICS[channel][language] = flat_topic_tree
 
-        if django_settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
                 with open(settings.TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", "w") as f:
                     json.dump(TOPICS[channel][language], f)
@@ -167,7 +167,7 @@ def get_exercise_cache(force=False, language=None):
     if EXERCISES is None:
         EXERCISES = {}
     if EXERCISES.get(language) is None:
-        if django_settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             exercises = softload_json(settings.EXERCISES_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
             if exercises:
                 EXERCISES[language] = exercises
@@ -225,7 +225,7 @@ def get_exercise_cache(force=False, language=None):
                 exercise["title"] = _(exercise.get("title", ""))
                 exercise["description"] = _(exercise.get("description", "")) if exercise.get("description") else ""
 
-        if django_settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
                 with open(settings.EXERCISES_FILEPATH + "_" + language + ".cache", "w") as f:
                     json.dump(EXERCISES[language], f)
@@ -267,12 +267,12 @@ def get_content_cache(force=False, annotate=False, language=None):
     if CONTENT is None:
         CONTENT = {}
     if CONTENT.get(language) is None:
-        CONTENT[language] = softload_json(settings.settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+        CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
         annotate = True
 
     if annotate:
-        if django_settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(settings.settings.CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            content = softload_json(settings.CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
             if content:
                 CONTENT[language] = content
                 return CONTENT[language]
@@ -346,7 +346,7 @@ def get_content_cache(force=False, annotate=False, language=None):
                 content["title"] = _(content["title"])
                 content["description"] = _(content.get("description")) if content.get("description") else ""
 
-        if django_settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
                 with open(settings.CONTENT_FILEPATH + "_" + language + ".cache", "w") as f:
                     json.dump(CONTENT[language], f)
