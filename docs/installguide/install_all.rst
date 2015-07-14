@@ -58,8 +58,12 @@ Alternatively, install with *pip* using the instructions below:
 
 #. Install pip (Ubuntu: ``sudo apt-get install python-pip``)
 #. (Recommended; essential on slower platforms like Raspberry Pi) Install M2Crypto (``sudo apt-get install python-m2crypto``).
-#. Run ``sudo pip install ka-lite-static`` (bundled dependencies) or ``sudo pip install ka-lite`` (normal pip behaviour, dependencies installed to host system).
+#. Run ``sudo pip install ka-lite-static`` (bundled dependencies, see explanation below) or ``sudo pip install ka-lite`` (normal pip behaviour, see explanation below).
 #. Run ``kalite manage setup``.
+
+The module ``ka-lite-static`` includes all its dependencies, and is meant for offline distribution. If you have the tarball, you can install KA Lite offline.
+In contrast, the module ``ka-lite`` does not include its dependencies and is not meant for offline distribution.
+If the dependencies are not already present on the target system, they will be downloaded and installed.
 
 For more tips see :ref:`advanced-installation`.
 
@@ -74,18 +78,42 @@ exercises etc.).
 Uninstalling
 ============
 
-You can remove KA Lite (when installed from pip or source distribution) with
-`pip uninstall ka-lite` or `pip uninstall ka-lite-static` (static version).
+Windows
+_______
+
+Uninstall KA Lite from the Control Panel.
+In Windows XP, double-click the "Add or Remove Programs" icon, then choose KA Lite.
+In later version of Windows, click the "Programs and Features" icon, then choose KA Lite.
+
+Mac OSX
+_______
+
+.. note:: Dear maintainers, please put instructions here.
+
+Linux: Debian/Ubuntu Installation
+_________________________________
 
 For Ubuntu, use ``apt-get remove ka-lite``.
 
+Installed with pip
+__________________
+
+You can remove KA Lite (when installed from pip or source distribution) with
+`pip uninstall ka-lite` or `pip uninstall ka-lite-static` (static version).
+
 
 Removing user data
-------------------
+__________________
 
-Downloaded videos and database files are in `~/.kalite`. Navigate to the
-home directory of the user who ran the KA Lite server and remove that directory
-to potentially reclaim lots of hard drive space.
+Some data (like videos and language packs) are downloaded into a location that depends on the user running the KA Lite server.
+Removing that directory can potentially reclaim lots of hard drive space.
+
+On Windows, the HOME and USERPROFILE registry values will be used if set, otherwise the combination ``%HOMEDRIVE%%HOMEPATH%`` will be used.
+You can check these values from the command prompt using the commands ``echo %HOME%``, ``echo $USERPROFILE%``, etc.
+Within that directory, the data is stored in the `.kalite` subdirectory.
+On most versions of Windows, this is `C:\Users\YourUsername\.kalite\`.
+
+On Linux and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
 
 
 
@@ -97,7 +125,7 @@ For a Raspberry Pi running a Debian system, you can install the Debian package.
 
 
 Raspberry Pi Wi-Fi
-------------------
+__________________
 
 .. note:: Two Wi-Fi USB modules have been tested with KA Lite on the Raspberry Pi
 
@@ -146,7 +174,7 @@ Advanced topics
 ===============
 
 Source code / development
--------------------------
+_________________________
 
 KA Lite can also be run as a "source distribution" for development purposes.
 By this, we just mean a git checkout (from `our github<https://github.com/learningequality/ka-lite/>`_).
@@ -161,7 +189,7 @@ of KA Lite is `pip install ka-lite` or `pip install ka-lite-static`.
 
 
 Static vs. Dynamic version
---------------------------
+__________________________
 
 Apart from Python itself, KA Lite depends on a couple of python applications,
 mainly from the Django ecology. These applications can be installed in two ways:
@@ -177,7 +205,7 @@ mainly from the Django ecology. These applications can be installed in two ways:
 
 
 Virtualenv
-----------
+__________
 
 You can install KA Lite in its very own separate environment that does not
 interfere with other Python software on your machine like this::
@@ -189,7 +217,7 @@ interfere with other Python software on your machine like this::
 
 
 Installing through PIP or with setup.py
----------------------------------------
+_______________________________________
 
 This documentation is preliminary and will be moved and restructured.
 
@@ -228,7 +256,7 @@ git clone and from the git cloned directory, run::
 
 
 Testing installers
-------------------
+__________________
 
 Here's an overview of the various ways of installing KA Lite as a reference
 to testers and package maintainers:

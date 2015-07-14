@@ -1,7 +1,4 @@
-import logging
-import os
 import sys
-import platform
 import warnings
 from kalite import version
 from kalite.shared.warnings import RemovedInKALite_v015_Warning
@@ -37,7 +34,7 @@ CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
 ########################
 
 # A deprecated setting that shouldn't be used
-CONFIG_PACKAGE = CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
+CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
@@ -45,7 +42,7 @@ CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
 
 if CONFIG_PACKAGE:
     warnings.warn(
-        "CONFIG_PACKAGE is outdated, see docs (TODO MCGallaspy, URL ?)",
+        "CONFIG_PACKAGE is outdated, use a settings module from kalite.project.settings",
         RemovedInKALite_v015_Warning
     )
 
@@ -69,15 +66,11 @@ if package_selected("RPi"):
 
 
 if package_selected("nalanda"):
-    warnings.warn(
-        "CONFIG_PACKAGE is outdated, use a settings module from kalite.project.settings",
-        RemovedInKALite_v015_Warning
-    )
     TURN_OFF_MOTIVATIONAL_FEATURES = True
     RESTRICTED_TEACHER_PERMISSIONS = True
     FIXED_BLOCK_EXERCISES = 5
     QUIZ_REPEATS = 3
-UNIT_POINTS = 2000
+    UNIT_POINTS = 2000
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")

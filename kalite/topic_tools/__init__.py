@@ -194,7 +194,10 @@ def get_exercise_cache(force=False, language=None):
             exercise_template = exercise_file
             exercise_lang = "en"
 
-            if exercise.get("uses_assessment_items", False):
+            # The central server doesn't have an assessment item database
+            if settings.CENTRAL_SERVER:
+                available = False
+            elif exercise.get("uses_assessment_items", False):
                 available = False
                 items = []
                 for item in exercise.get("all_assessment_items","[]"):

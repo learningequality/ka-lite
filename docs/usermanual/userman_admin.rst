@@ -490,7 +490,7 @@ These are resized videos. All in all, this will take around 23 GB of space.
     **For example, on Windows:** ``CONTENT_ROOT="C:\\torrented_videos_location\\"``
     **For example, on Linux:** ``CONTENT_ROOT="/home/me/torrented_videos_location/"``
 
-#. Restart your server. If you are unsure on how to do this, please see `Restarting Your Server`_ .
+#. Restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server` .
 
 .. _BitTorrent Sync: http://www.getsync.com/
 
@@ -506,11 +506,11 @@ As an alternative, you can download the zip file from https://learningequality.o
 
 
 Language Packs
----------------------------
+--------------
 
 KA Lite supports internationalization. You can download language packs for your language if it is available. A language pack comes with all the available subtitles and user interface translations for that language. When it is installed, KA Lite will give you the option to download individual dubbed videos from the language's Khan Academy YouTube channel.
 
-.. warning:: Remember to `Restart Your Server`_ after every language pack download or update.
+.. warning:: Remember that you **MUST** restart your server after every language pack download or update. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
 
 Download Language Packs
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -545,7 +545,7 @@ To download language packs:
     :class: screenshot
     :registered: true
 
-4. Once the download finishes, you can see your language pack in the list of installed packs, but you **MUST** restart your server to make them available for your users. If you are unsure on how to do this, please see `Restarting Your Server`_ .
+4. Once the download finishes, you can see your language pack in the list of installed packs, but you **MUST** restart your server to make them available for your users. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
 
 5. After the server restart, learners and coaches will be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default".
 
