@@ -3,7 +3,7 @@ import datetime
 import os
 import sys
 import time
-
+from os.path import expanduser
 from django.core.management import call_command
 
 from fle_utils.chronograph.models import Job
@@ -24,7 +24,8 @@ def setup_backup():
     try:
         command = call_command('dbbackup')
         force_job(command, frequency="DAILY")
-    except KeyError
+    except KeyError:
+        pass
 
 def restore_list():
     file_list = os.listdir(backup_dirpath) #Retrieve the filenames present in the backup_dirpath
