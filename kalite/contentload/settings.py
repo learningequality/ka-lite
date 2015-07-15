@@ -37,7 +37,7 @@ if os.path.isfile(os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessment
     KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
 
 # This one respects the settings because it is part of settings.DATABASES
-KHAN_ASSESSMENT_ITEM_DATABASE_PATH = settings.ASSESSMENT_ITEMS_DATABASE_PATH
+KHAN_ASSESSMENT_ITEM_DATABASE_PATH = settings.DATABASES['assessment_items']['NAME']
 
 # Default locations of specific elements from the assessment items bundle.
 # Files will be forced into this location when running unpack_assessment_zip
