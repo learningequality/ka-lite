@@ -31,9 +31,10 @@ KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
 if not os.path.exists(KHAN_ASSESSMENT_ITEM_ROOT):
     os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
 
-# Are assessment items distributed in the data directory?
-if os.path.isfile(os.path.join(ROOT_DATA_PATH, 'assessment', 'assessmentitems.version')):
-    KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ROOT_DATA_PATH, 'assessment')
+# Are assessment items distributed in the system-wide data directory?
+if os.path.isfile(os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.version')):
+    ASSESSMENT_ITEM_ROOT = os.path.join(ROOT_DATA_PATH, 'assessment')
+    KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
 
 # This one respects the settings because it is part of settings.DATABASES
 KHAN_ASSESSMENT_ITEM_DATABASE_PATH = settings.ASSESSMENT_ITEMS_DATABASE_PATH
