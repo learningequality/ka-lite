@@ -16,7 +16,6 @@ logging = django_settings.LOG
 from kalite import version
 from kalite.contentload import settings
 
-logging = django_settings.LOG
 
 class Command(BaseCommand):
 
@@ -68,11 +67,11 @@ class Command(BaseCommand):
 def should_upgrade_assessment_items():
     # if assessmentitems.version doesn't exist, then we assume
     # that they haven't got assessment items EVER
-    if not os.path.exists(django_settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH) or not os.path.exists(django_settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
-        logging.debug("%s does not exist; downloading assessment items" % django_settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH)
+    if not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH) or not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
+        logging.debug("%s does not exist; downloading assessment items" % settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH)
         return True
 
-    with open(django_settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH) as f:
+    with open(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH) as f:
         assessment_items_version = StrictVersion(f.read())
 
     software_version = StrictVersion(version.SHORTVERSION)
@@ -80,22 +79,24 @@ def should_upgrade_assessment_items():
 
 
 def unpack_zipfile_to_khan_content(zf):
-    folder = settings.KHAN_CONTENT_PATH
+    folder = settings.KHAN_ASSESSMENT_ITEM_ROOT
     ensure_dir(folder)
     zf.extractall(folder)
-    # Move the version file to configured location
-    file(django_settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH, 'w').write(
-        open(
-            os.path.join(settings.KHAN_CONTENT_PATH, 'assessmentitems.version'),
-            'r'
-        ).read(),
+    # Ensure that special files are in their configured locations
+    os.rename(
+        os.path.join(settings.KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.version'),
+        settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
     )
-    file(django_settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH, 'w').write(
-        open(
-            os.path.join(settings.KHAN_CONTENT_PATH, 'assessmentitems.sqlite'),
-            'r'
-        ).read(),
+    os.rename(
+        os.path.join(settings.KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.sqlite'),
+        settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH
     )
+    # JSON file is apparrently not required (not in the test at least)
+    if os.path.isfile(os.path.join(settings.KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json')):
+        os.rename(
+            os.path.join(settings.KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json'),
+            settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
+        )
 
 
 def is_valid_url(url):

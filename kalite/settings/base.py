@@ -226,35 +226,20 @@ else:
 #######################################
 # USER WRITABLE CONTENT
 #######################################
+# The CONTENT_ROOT is served like MEDIA_ROOT and STATIC_ROOT. Other settings
+# are derived from it, see contentload.settings
+#
+# One of the objectives on the CONTENT_ROOT is to have an environment where data
+# is copied to from online sources. For instance, the CONTENT_ROOT does NOT
+# include a user's database, but it includes a lot of videos and a read-only
+# database with assessment items.
 
 # Content path-related settings
 CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content')))
 if not os.path.exists(CONTENT_ROOT):
-    os.mkdir(CONTENT_ROOT)
+    os.makedirs(CONTENT_ROOT)
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
-
-#######################################
-# ASSESSMENT ITEMS DATA
-#######################################
-
-# Special settings for Khan Academy assessment items
-ASSESSMENT_ITEM_ROOT = os.path.join(CONTENT_ROOT, 'assessment')
-
-if not os.path.exists(ASSESSMENT_ITEM_ROOT):
-    os.mkdir(ASSESSMENT_ITEM_ROOT)
-
-KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
-if not os.path.exists(KHAN_ASSESSMENT_ITEM_ROOT):
-    os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
-
-# Are assessment items distributed in the data directory?
-if os.path.isfile(os.path.join(_data_path, 'assessment', 'assessmentitems.version')):
-    KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(_data_path, 'assessment')
-
-KHAN_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.sqlite')
-KHAN_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.version')
-KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json')
 
 # Necessary for Django compressor
 if not DEBUG:
@@ -270,7 +255,14 @@ MEDIA_ROOT = getattr(local_settings, "MEDIA_ROOT", MEDIA_ROOT)
 STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
 MEDIA_URL = getattr(local_settings, "MEDIA_URL", "/media/")
 STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
+
+
 DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
+
+# This database is located in the content root because then it can be copied
+# together with the other media files located there.
+ASSESSMENT_ITEMS_DATABASE_PATH = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
+
 DATABASES = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
@@ -281,7 +273,7 @@ DATABASES = getattr(local_settings, "DATABASES", {
     },
     "assessment_items": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": KHAN_ASSESSMENT_ITEM_DATABASE_PATH,
+        "NAME": ASSESSMENT_ITEMS_DATABASE_PATH,
         "OPTIONS": {
         },
     }

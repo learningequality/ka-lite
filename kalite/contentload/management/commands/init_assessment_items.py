@@ -1,4 +1,3 @@
-import copy
 import os
 
 from django.core.management import call_command
@@ -7,8 +6,12 @@ from django.db import connections
 from fle_utils.general import softload_json
 from optparse import make_option
 
-from kalite import settings; logging = settings.LOG
+from django.conf import settings as django_settings
+logging = django_settings.LOG
+
 from kalite.topic_tools.models import AssessmentItem
+
+from kalite.contentload import settings
 
 
 class Command(BaseCommand):

@@ -26,6 +26,8 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import kalite
+from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
+
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
@@ -368,31 +370,19 @@ class Command(BaseCommand):
         # This can take a long time and lead to Travis stalling. None of this
         # is required for tests.
 
-        # Outdated location of assessment items
-        # TODO(benjaoming) for 0.15, remove this
-        writable_assessment_items = os.access(
-            settings.KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
+        # Outdated location of assessment items - move assessment items from their
+        # old location (CONTENT_ROOT/khan where they were mixed with other content
+        # items)
+        
+        # TODO(benjaoming) for 0.15, remove the "move assessment items"
+        # mechanism
+        writable_assessment_items = os.access(KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
 
-        def _move_to_new_location(old, new):
-            if not writable_assessment_items:
-                return
-            if os.path.exists(old):
-                if os.access(settings.KHAN_CONTENT_PATH, os.W_OK):
-                    os.rename(old, new)
-        _move_to_new_location(
-            os.path.join(settings.KHAN_CONTENT_PATH, 'assessmentitems.sqlite'),
-            settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH
-        )
-        _move_to_new_location(
-            os.path.join(
-                settings.KHAN_CONTENT_PATH, 'assessmentitems.version'),
-            settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
-        )
-        _move_to_new_location(
-            os.path.join(
-                settings.USER_DATA_ROOT, "data", "khan", "assessmentitems.json"),
-            settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
-        )
+        # Remove old assessment items
+        if os.access(OLD_ASSESSMENT_ITEMS_LOCATION, os.W_OK):
+            logging.info("Deleting old assessment items")
+            shutil.rmtree(OLD_ASSESSMENT_ITEMS_LOCATION)
+        
         if writable_assessment_items and options['force-assessment-item-dl']:
             call_command(
                 "unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
