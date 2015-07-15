@@ -438,7 +438,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     if not connection_error:
         sys.stderr.write(
             "Port {0} is occupied. Please close the process that is using "
-            "it.".format(port)
+            "it.\n".format(port)
         )
         sys.exit(1)
 
