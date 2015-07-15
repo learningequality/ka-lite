@@ -12,7 +12,7 @@ For templating on the front end, we use `Handlebars.js <http://handlebarsjs.com/
 Modularity
 ----------
 
-In order to maintain modular code and be explicit about our dependencies, we use Browserify to build Javascript code into bundles for use on the client side.
+In order to maintain modular code and be explicit about our dependencies, we use `Browserify <http://http://browserify.org/>`_ to build Javascript code into bundles for use on the client side.
 
 To specify a bundle to be imported into the page, you need to create a 'bundle module' - this will be automatically detected by our Javascript build script, and be built into a bundle that can then be included as a script tag in a Django template.
 
@@ -40,6 +40,8 @@ This is the 'learn' bundle module (a file called learn.js in the above directory
     </script>
 
 Here, we ``require`` the learn bundle (all bundles can be referenced by their name in this way), and are then able to access the objects defined in its ``module.exports``.
+
+For more information about using Browserify to handle dependencies, please refer to the `Browserify Handbook <https://github.com/substack/browserify-handbook>`_.
 
 Building Frontend Code
 ----------------------
