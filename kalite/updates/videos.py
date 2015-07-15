@@ -8,7 +8,7 @@ from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
 
-REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.UPDATES_DATA_PATH, "video_file_sizes.json")
+REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, "video_file_sizes.json")
 AVERAGE_VIDEO_SIZE = 14000000
 
 REMOTE_VIDEO_SIZES = None

@@ -388,17 +388,23 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
+
+# This directory is intended for the user to put their own static files in,
+# for instance if they download subtitle files.
+USER_STATIC_FILES = os.path.join(USER_DATA_ROOT, "static-updates")
+if not os.path.exists(USER_STATIC_FILES):
+    os.mkdir(USER_STATIC_FILES)
+
 # libraries common to all apps
+STATICFILES_DIRS = (
+    os.path.join(_data_path, 'static-libraries'),
+    USER_STATIC_FILES
+)
 built_docs_path = os.path.join(_data_path, "docs", "_build")
 if os.path.exists(built_docs_path):
-    STATICFILES_DIRS = (
-        os.path.join(_data_path, 'static-libraries'),
+    STATICFILES_DIRS += (
         built_docs_path,
     )
-    DOCS_EXIST = True
-else:
-    STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
-    DOCS_EXIST = False
 
 DEFAULT_ENCODING = 'utf-8'
 
