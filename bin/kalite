@@ -86,8 +86,8 @@ if not os.path.exists(kalite_path):
 env['KALITE_DIR'] = str(kalite_path)
 
 # TODO(benjaoming): Delegate responsibility to the .deb package
-if os.path.isfile("/etc/ka-lite/conf.d/username"):
-    username = open("/etc/ka-lite/conf.d/username", "r").read()
+if os.path.isfile("/etc/ka-lite/username"):
+    username = open("/etc/ka-lite/username", "r").read()
     if username:
         username = username.split("\n")[0]
         default_home = os.environ.get("KALITE_HOME", os.path.expanduser("~/.kalite"))
