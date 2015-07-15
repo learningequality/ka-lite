@@ -27,6 +27,8 @@ import securesync.urls
 import fle_utils.handlebars.urls
 
 
+from kalite.contentload import settings as contentload_settings
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -44,6 +46,13 @@ urlpatterns += patterns('',
 # TODO: This should only be in DEBUG settings and the HTTP server should be
 # serving it otherwise. Cherrypy is currently serving it through modifications
 # in kalite/django_cherrypy_wsgiserver/cherrypyserver.py
+if settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
+    urlpatterns += patterns('',
+        url(r'^%s/khan(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
+            'document_root': contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT,
+        }),
+    )
+
 urlpatterns += patterns('',
     url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': settings.CONTENT_ROOT,
