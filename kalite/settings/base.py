@@ -261,7 +261,18 @@ DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABAS
 
 # This database is located in the content root because then it can be copied
 # together with the other media files located there.
-ASSESSMENT_ITEMS_DATABASE_PATH = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
+# Users changing CONTENT_ROOT have to change DATABASES['assessment_items']['NAME']
+# to match
+__assessment_items_database_path = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
+
+# Are assessment items distributed in the system-wide data directory?
+# TODO: This is hard-coded as we do not expect users setting their own CONTENT_ROOT
+# to deviate from the system wide location
+ASSESSMENT_ITEMS_SYSTEM_WIDE = os.path.isfile(os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite'))
+
+if ASSESSMENT_ITEMS_SYSTEM_WIDE:
+    __assessment_items_database_path = os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite')
+
 
 DATABASES = getattr(local_settings, "DATABASES", {
     "default": {
@@ -273,7 +284,7 @@ DATABASES = getattr(local_settings, "DATABASES", {
     },
     "assessment_items": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ASSESSMENT_ITEMS_DATABASE_PATH,
+        "NAME": __assessment_items_database_path,
         "OPTIONS": {
         },
     }
