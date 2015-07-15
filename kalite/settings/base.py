@@ -265,6 +265,15 @@ DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABAS
 # to match
 __assessment_items_database_path = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
 
+# Are assessment items distributed in the system-wide data directory?
+# TODO: This is hard-coded as we do not expect users setting their own CONTENT_ROOT
+# to deviate from the system wide location
+ASSESSMENT_ITEMS_SYSTEM_WIDE = os.path.isfile(os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite'))
+
+if ASSESSMENT_ITEMS_SYSTEM_WIDE:
+    __assessment_items_database_path = os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite')
+
+
 DATABASES = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),

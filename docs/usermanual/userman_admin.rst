@@ -653,8 +653,9 @@ By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base``
 
 
 .. NOTE::
-    When changing ``CONTENT_ROOT``, you should also change your DATABASES if you
-    want to keep the read-only assessment_items database (~50 MB) together
+    When changing ``CONTENT_ROOT``, you should also change your ``DATABASES`` **if you
+    have downloaded your own assessment items** and you want to keep the
+    read-only assessment_items database (~50 MB) together
     with your other media contents (for portability). Example::
       
       from kalite.project.settings.base import *

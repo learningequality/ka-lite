@@ -387,7 +387,7 @@ class Command(BaseCommand):
             writable_assessment_items = os.access(KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
     
             # Remove old assessment items
-            if os.access(OLD_ASSESSMENT_ITEMS_LOCATION, os.W_OK):
+            if os.path.exists(OLD_ASSESSMENT_ITEMS_LOCATION) and os.access(OLD_ASSESSMENT_ITEMS_LOCATION, os.W_OK):
                 logging.info("Deleting old assessment items")
                 shutil.rmtree(OLD_ASSESSMENT_ITEMS_LOCATION)
             
@@ -397,7 +397,7 @@ class Command(BaseCommand):
             elif options['force-assessment-item-dl']:
                 raise RuntimeError(
                     "Got force-assessment-item-dl but directory not writable")
-            elif writable_assessment_items and not settings.RUNNING_IN_TRAVIS and options['interactive']:
+            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE and not settings.RUNNING_IN_TRAVIS and options['interactive']:
                 print(
                     "\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
                 print(
@@ -420,12 +420,14 @@ class Command(BaseCommand):
                 else:
                     call_command("unpack_assessment_zip", ass_item_filename)
             
-            elif options['interactive']:
+            elif options['interactive'] and not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
                 logging.warning(
                     "Assessment item directory not writable, skipping download.")
-            else:
+            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
                 logging.warning(
                     "No assessment items package file given. You will need to download and unpack it later.")
+            else:
+                print("Found bundled assessment items")
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
@@ -472,6 +474,6 @@ class Command(BaseCommand):
 
             # done; notify the user.
             print(
-                "CONGRATULATIONS! You've finished setting up the KA Lite server software.")
+                "\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
             print(
                 "You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
