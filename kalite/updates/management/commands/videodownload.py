@@ -223,7 +223,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 "num_handled_videos": len(handled_youtube_ids),
                 "num_total_videos": len(handled_youtube_ids) + len(failed_youtube_ids),
             })
-            caching.initialize_content_caches()
+            caching.invalidate_all_caches()
 
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})
