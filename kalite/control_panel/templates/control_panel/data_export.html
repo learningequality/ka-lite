@@ -10,7 +10,6 @@
 {% block title %}{{ zone.name }} - {% trans "Data Export" %} {{ block.super }}{% endblock title %}
 
 {% block headjs %}{{ block.super }}
-    <script src="{% url 'handlebars_templates' module_name='data_export' %}"></script>
     <script>
         // Pass in zones api endpoint from context because it is only applicable on central server
         var ALL_ZONES_URL = "{{ all_zones_url }}";
@@ -23,13 +22,14 @@
         var DEVICE_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='device_log_csv' %}";
         var STORE_LOG_CSV_URL = "{% url 'api_dispatch_list' resource_name='store_transaction_log_csv' %}";
     </script>
-    <script type="text/javascript" src="{% static 'js/control_panel/data_export.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/control_panel/bundles/bundle_data_export.js' %}"></script>
 
     <script>
-        $(function() {
-            window.container_view = new DataExportView({
+        var module = require("data_export");
+        module.$(function() {
+            window.container_view = new module.DataExportView({
                 el: $("#data-export-container"),
-                model: new DataExportStateModel({
+                model: new module.DataExportStateModel({
                     zone_id: "{{ zone_id }}",
                     group_id: "{{ group_id }}",
                     facility_id: "{{ facility_id }}", 

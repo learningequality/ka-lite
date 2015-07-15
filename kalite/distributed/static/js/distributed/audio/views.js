@@ -1,6 +1,11 @@
-window.AudioPlayerView = ContentBaseView.extend({
+var soundManager = require("soundmanager2");
+var ContentBaseView = require("content/baseview");
+var Handlebars = require("base/handlebars");
 
-    template: HB.template("audio/audio-player"),
+
+var AudioPlayerView = ContentBaseView.extend({
+
+    template: require("./hbtemplates/audio-player.handlebars"),
 
     events: {
         "click .play-pause": "play_pause_clicked",
@@ -143,3 +148,5 @@ window.AudioPlayerView = ContentBaseView.extend({
 
 
 });
+
+module.exports = AudioPlayerView;

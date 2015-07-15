@@ -1,8 +1,14 @@
-window.ButtonView = Backbone.View.extend({
-    template: HB.template("inline/inline"),
+var _ = require("underscore");
+var BaseView = require("base/baseview");
+var Handlebars = require("base/handlebars");
+
+var introJs = require("./intro");
+
+var ButtonView = BaseView.extend({
+    template: require("./hbtemplates/inline.handlebars"),
 
     initialize: function() {
-        _.bindAll(this);  
+        _.bindAll(this, "render");  
         this.render();
     },
 
@@ -88,8 +94,4 @@ window.ButtonView = Backbone.View.extend({
     }
 });
 
-// Only load button and narrative if there is one defined for page
-$(function() {
-    var narrative = new NarrativeModel ({id: window.location.pathname});
-    var buttonView = new ButtonView( {model: narrative});
-});
+module.exports = ButtonView;

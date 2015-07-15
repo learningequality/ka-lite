@@ -1,8 +1,8 @@
-var StateModel = Backbone.Model.extend({
+var Backbone = require("base/backbone");
+var _ = require("underscore");
+var setGetParamDict = require("utils/get_params").setGetParamDict
 
-    initialize: function() {
-        _.bindAll(this);
-    },
+var StateModel = Backbone.Model.extend({
 
     set: function(key, val, options) {
         if (key === "facility" || key.facility) {
@@ -21,11 +21,11 @@ var FacilityModel = Backbone.Model.extend();
 var GroupModel = Backbone.Model.extend();
 
 var FacilityCollection = Backbone.Collection.extend({
-    url: FACILITY_RESOURCE_URL
+    url: window.FACILITY_RESOURCE_URL
 });
 
 var GroupCollection = Backbone.Collection.extend({
-    url: GROUP_RESOURCE_URL
+    url: window.GROUP_RESOURCE_URL
 });
 
 var CoachReportModel = Backbone.Model.extend({
@@ -55,3 +55,13 @@ var CoachReportAggregateModel = Backbone.Model.extend({
         });
     }
 });
+
+module.exports = {
+    StateModel: StateModel,
+    FacilityModel: FacilityModel,
+    GroupModel: GroupModel,
+    FacilityCollection: FacilityCollection,
+    GroupCollection: GroupCollection,
+    CoachReportModel: CoachReportModel,
+    CoachReportAggregateModel: CoachReportAggregateModel
+}

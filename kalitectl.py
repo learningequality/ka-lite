@@ -6,7 +6,7 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [--foreground] [options] [DJANGO_OPTIONS ...]
+  kalite start [--foreground --watch] [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [DJANGO_OPTIONS ...]
   kalite status [options]
@@ -45,6 +45,8 @@ Examples:
 
   kalite start --foreground   Run kalite in the foreground and do not go to
                               daemon mode.
+  kalite start --watch      Set cherrypy to watch for changes to Django code and start
+                            the Watchify process to recompile Javascript dynamically.
 
 Planned features:
   kalite diagnose             Outputs user and copy-paste friendly diagnostics
@@ -60,6 +62,8 @@ from __future__ import print_function
 # Add distributed python-packages subfolder to current path
 # DO NOT IMPORT BEFORE THIS LIKE
 import os
+import atexit
+import subprocess
 import socket
 import sys
 import time
@@ -114,6 +118,8 @@ SERVER_LOG = os.path.join(KALITE_HOME, "server.log")
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
+NODE_PID_FILE = os.path.join(KALITE_HOME, 'kalite_node.pid')
+
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
 # if this environment variable is set, we activate the profiling machinery
@@ -387,7 +393,42 @@ def manage(command, args=[], as_thread=False):
         thread.start()
 
 
-def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
+# Watchify running code modified from:
+# https://github.com/beaugunderson/django-gulp/blob/master/django_gulp/management/commands/runserver.py
+
+def start_watchify():
+    sys.stdout.write('Starting watchify')
+
+    watchify_process = subprocess.Popen(
+        ['node compile_javascript.js --debug --watch --staticfiles'],
+        shell=True,
+        stdin=subprocess.PIPE,
+        stdout=sys.stdout,
+        stderr=sys.stderr)
+
+    if watchify_process.poll() is not None:
+        raise CommandError('watchify failed to start')
+
+    sys.stdout.write('Started watchify process on pid {0}'
+                      .format(watchify_process.pid))
+
+    with open(NODE_PID_FILE, 'w') as f:
+        f.write("%d" % watchify_process.pid)
+
+    atexit.register(kill_watchify_process)
+
+def kill_watchify_process():
+    pid, port = read_pid_file(NODE_PID_FILE)
+    # PID file exists, but process is dead
+    if not pid_exists(pid):
+        sys.stdout.write('watchify process not running')
+    else:
+        kill_pid(pid)
+        os.unlink(NODE_PID_FILE)
+        sys.stdout.write('watchify process killed')
+
+
+def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon
 
@@ -448,6 +489,11 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
 
     manage('initialize_kalite')
 
+    if watch:
+        watchify_thread = Thread(target=start_watchify)
+        watchify_thread.daemon = True
+        watchify_thread.start()
+
     # Remove the startup lock at this point
     if STARTUP_LOCK:
         os.unlink(STARTUP_LOCK)
@@ -492,7 +538,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     })
 
     DjangoAppPlugin(cherrypy.engine).subscribe()
-    if not debug:
+    if not watch:
         # cherrypyserver automatically reloads if any modules change
         # Switch-off that functionality here to save cpu cycles
         # http://docs.cherrypy.org/stable/appendix/faq.html
@@ -709,6 +755,7 @@ if __name__ == "__main__":
     if arguments['start']:
         start(
             debug=arguments['--debug'],
+            watch=arguments['--watch'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
             args=arguments['DJANGO_OPTIONS'],
             daemonize=not arguments['--foreground'],
@@ -741,3 +788,4 @@ if __name__ == "__main__":
     elif arguments['manage']:
         command = arguments['COMMAND']
         manage(command, args=arguments['DJANGO_OPTIONS'])
+

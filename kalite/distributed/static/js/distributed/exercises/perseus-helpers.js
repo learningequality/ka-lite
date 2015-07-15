@@ -1,10 +1,23 @@
+var _ = require("underscore");
+var Backbone = require("base/backbone");
+var $ = require("base/jQuery");
+
+require("../perseus/lib/es5-shim.js");
+global.React = require("react/addons");
+global.katex = require("../perseus/lib/katex/katex.min.js");
+require("../perseus/lib/mathquill/mathquill-basic.js");
+require("../perseus/lib/kas.js");
+global.Jed = require("../perseus/ke/local-only/jed.js");
+require("../perseus/ke/local-only/i18n.js");
+require("../perseus/ke/local-only/jquery.qtip.js");
+
 var KhanUtil = window.KhanUtil || {};
 
 var Khan = window.Khan || {
     error: function() {},
     query: {debug: ""},
-    imageBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/images/",
-    urlBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/",
+    imageBase: window.sessionModel.get("STATIC_URL") + "js/distributed/perseus/ke/images/",
+    urlBase: window.sessionModel.get("STATIC_URL") + "js/distributed/perseus/ke/",
     scratchpad: {
         disable: function() {},
         enable: function() {},
@@ -15,7 +28,7 @@ var Khan = window.Khan || {
     warnTimeout: function() {}
 };
 
-window.Exercises = _.extend({
+var Exercises = _.extend({
     localMode: true,
     embeddedMode: true,
     useKatex: true,
@@ -95,13 +108,9 @@ Exercises.PerseusBridge = {
         }
 
         // Load khan-exercises modules, then perseus
-        require([
-                window.sessionModel.get("STATIC_URL") + "perseus/ke-deps.js"
-                // STATIC_URL + "perseus/ke/main.js",
-            ], function() {
-                require([window.sessionModel.get("STATIC_URL") + "perseus/build/perseus-2.js"], Exercises.PerseusBridge._initialize);
-            }
-        );
+        require("../perseus/ke-deps.js");
+        var Perseus = require("../perseus/build/perseus-3.js")
+        Exercises.PerseusBridge._initialize(Perseus);
 
         return Exercises.PerseusBridge._loaded;
     },
@@ -146,3 +155,14 @@ Exercises.PerseusBridge = {
     }
 
 };
+
+global.Exercises = Exercises;
+global.Khan = Khan;
+
+require("../perseus/ke/interface.js");
+
+module.exports = {
+    KhanUtil: KhanUtil,
+    Khan: Khan,
+    Exercises: Exercises
+}

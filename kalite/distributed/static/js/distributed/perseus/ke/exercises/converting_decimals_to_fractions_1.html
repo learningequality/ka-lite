@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems">
+<head>
+    <title>Converting decimals to fractions 1</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+
+<body>
+    <div class="exercise">
+    <div class="problems">
+        <div id="to-the-tenth">
+            <div class="vars">
+                <var id="D">randRange( 1, 9 ) / 10</var>
+                <var id="T">floor( D * 10 )</var>
+            </div>
+            <p class="question">Express <code><var>localeToFixed(D, 1)</var></code> as a fraction.</p>
+            <p class="solution" data-simplify="optional" data-forms="proper"><var>D</var></p>
+            <div class="hints">
+                <p>
+                    The number <code><var>T</var></code> is in the tenths place,
+                    so we have <var>cardinalThrough20(T)</var> <var>plural_form(decimalPlaceNames[1], T)</var>.
+                </p>
+                <p>
+                    <var>CardinalThrough20(T)</var> <var>plural_form(decimalPlaceNames[1], T)</var>
+                    can be written as <code><var>fraction(T, 10)</var></code>.
+                </p>
+            </div>
+        </div>
+
+        <div id="to-the-hundredth" data-type="to-the-tenth" data-weight="3">
+            <div class="vars">
+                <var id="D">randRangeExclude(1, 99, [10,20,30,40,50,60,70,80,90]) / 100</var>
+                <var id="T">floor( D * 10 )</var>
+                <var id="H">round( D * 100 ) % 10</var>
+            </div>
+            <p class="question">Express <code><var>localeToFixed(D, 2 )</var></code> as a fraction.</p>
+            <p class="solution" data-simplify="optional" data-forms="proper"><var>D</var></p>
+            <div class="hints" data-apply="appendContents">
+                <p>
+                    The number <code><var>H</var></code> is in the hundredths place,
+                    so we have <var>cardinalThrough20(H)</var> <var>plural_form(decimalPlaceNames[2], H)</var>.</p>
+                <p>
+                    <var>CardinalThrough20(H)</var> <var>plural_form(decimalPlaceNames[2], H)</var>
+                    can be written as <code><var>fraction(H, 100)</var></code>.
+                </p>
+                <div>
+                    <p>Add the two parts together.</p>
+                    <p><code><var>fraction( T, 10 )</var> + <var>fraction( H, 100 )</var></code></p>
+                </div>
+                <div>
+                    <p><code>= <var>fraction( T * 10, 100 )</var> + <var>fraction( H, 100 )</var></code></p>
+                    <p><code>= <var>fraction( T * 10 + H, 100 )</var></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
