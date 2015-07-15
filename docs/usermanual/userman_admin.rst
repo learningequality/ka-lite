@@ -662,8 +662,10 @@ Most common settings
 ^^^^^^^^^^^^^^^^^^^^
 
 * DEBUG = <True or False> (default = False) -- Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
-* CONTENT_ROOT = "<path to desired content folder>" (default=ka-lite/content)
+* CONTENT_ROOT = "<path to desired content folder>" (default=~/.kalite/content)
   This is the path that KA Lite will use to look for KA Lite video files to play.  Change the path to another local directory to get video files from that directory. NB! Directory has to be writable for the user running the server in order to download videos.
+* ASSESSMENT_ITEMS_DATABASE_PATH = "<path to desired content folder>" (default=~/.kalite/content/assessmentitems.sqlite)
+  Exercise data is stored in this database. The database is by default available in your CONTENT_ROOT to preserve an easily-portable directory structure.
 * TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")
   You can set this to be the local time zone for your installation. Choices can be found here.
 * LANGUAGE_CODE = "<desired ISO 639-1 Language Code>" (default = "en-us")
