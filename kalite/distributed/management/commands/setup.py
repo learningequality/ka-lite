@@ -378,6 +378,11 @@ class Command(BaseCommand):
             call_command(
                 "syncdb", interactive=False, verbosity=options.get("verbosity"))
             call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+            # Create *.json and friends database
+            call_command("syncdb", interactive=False, verbosity=options.get(
+                "verbosity"), database="assessment_items")
+            Settings.set("database_version", VERSION)
+
             # Outdated location of assessment items - move assessment items from their
             # old location (CONTENT_ROOT/khan where they were mixed with other content
             # items)
