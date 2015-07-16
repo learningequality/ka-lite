@@ -6,7 +6,7 @@ You can propose changes to the docs directly on github (instructions below) or e
 To propose changes directly, you'll need to create an account on github and open a pull request. This document assumes you are somewhat familiar with that process, and will not explain all the steps in detail. For full instructions on how to make a pull request, see `Github's help section <https://help.github.com/articles/creating-a-pull-request/>`_. Some guidelines:
 
 * Work from the *develop* branch.
-* From the base directory, the documenation can be found in the *sphinx-docs* subdirectory. Specific pages of the docs are each associated with a different .rst file, potentially in a subdirectory of *sphinx-docs*.
+* From the base directory, the documentation can be found in the *sphinx-docs* subdirectory. Specific pages of the docs are each associated with a different .rst file, potentially in a subdirectory of *sphinx-docs*.
 * The documentation is written in `ReStructured Text <http://sphinx-doc.org/rest.html>`_ format, so please see the primer!
 * After making your changes, try to build the docs to review them. This process can take some time, as an instance of the server and a browser may need to be started. To build the docs (see *README.md* in the *sphinx-docs* directory for requirements):
 
