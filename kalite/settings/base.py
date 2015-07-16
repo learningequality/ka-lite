@@ -407,12 +407,6 @@ USER_STATIC_FILES = os.path.join(USER_DATA_ROOT, "static-updates")
 if not os.path.exists(USER_STATIC_FILES):
     os.mkdir(USER_STATIC_FILES)
 
-# This directory is intended for the user to put their own static files in,
-# for instance if they download subtitle files.
-USER_STATIC_FILES = os.path.join(USER_DATA_ROOT, "static-updates")
-if not os.path.exists(USER_STATIC_FILES):
-    os.mkdir(USER_STATIC_FILES)
-
 # libraries common to all apps
 STATICFILES_DIRS = (
     os.path.join(_data_path, 'static-libraries'),
