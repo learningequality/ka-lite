@@ -2,6 +2,7 @@ from annoying.decorators import render_to
 
 from django.utils.translation import ugettext as _, ugettext_lazy
 from django.contrib import messages
+from django.conf import settings
 
 from .models import VideoFile
 from kalite.i18n import get_installed_language_packs
