@@ -1,11 +1,5 @@
 """
-Downloads a language pack, unzips the contents, then moves files accordingly:
-
-* Move 'LC_MESSAGES' and [lang_code]_metadata.json to ka-lite/locale/[lang_code]/
-* Move 'subtitles' directory to ka-lite/kalite/static/srt/[lang_code]/subtitles/
-* Move 'exercises` directory to ka-lite/kalite/static/khan-exercises/exercises/[lang_code]/
-* Move 'dubbed_videos/dubbed_video_mappings.json' to ka-lite/kalite/i18n/data/
-* Move `video_file_sizes.json' to ka-lite/kalite/updates/data/
+Downloads a language pack, unzips the contents, then moves files accordingly
 """
 import glob
 import os
@@ -25,7 +19,6 @@ from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet.download import callback_percent_proxy, download_file
 from kalite import caching
-from kalite.i18n import LOCALE_ROOT, DUBBED_VIDEOS_MAPPING_FILEPATH
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath, get_language_pack_url, get_language_name
 from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.version import SHORTVERSION
@@ -131,18 +124,18 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
 
     ## Unpack into temp dir
     z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
-    z.extractall(os.path.join(LOCALE_ROOT, lang_code))
+    z.extractall(os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code))
 
 def move_dubbed_video_map(lang_code):
-    lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
+    lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
     dubbed_video_dir = os.path.join(lang_pack_location, "dubbed_videos")
-    dvm_filepath = os.path.join(dubbed_video_dir, os.path.basename(DUBBED_VIDEOS_MAPPING_FILEPATH))
+    dvm_filepath = os.path.join(dubbed_video_dir, os.path.basename(settings.DUBBED_VIDEOS_MAPPING_FILEPATH))
     if not os.path.exists(dvm_filepath):
         logging.error("Could not find downloaded dubbed video filepath: %s" % dvm_filepath)
     else:
-        logging.debug("Moving dubbed video map to %s" % DUBBED_VIDEOS_MAPPING_FILEPATH)
-        ensure_dir(os.path.dirname(DUBBED_VIDEOS_MAPPING_FILEPATH))
-        shutil.move(dvm_filepath, DUBBED_VIDEOS_MAPPING_FILEPATH)
+        logging.debug("Moving dubbed video map to %s" % settings.DUBBED_VIDEOS_MAPPING_FILEPATH)
+        ensure_dir(os.path.dirname(settings.DUBBED_VIDEOS_MAPPING_FILEPATH))
+        shutil.move(dvm_filepath, settings.DUBBED_VIDEOS_MAPPING_FILEPATH)
 
         logging.debug("Removing empty directory")
         try:
@@ -151,7 +144,7 @@ def move_dubbed_video_map(lang_code):
             logging.error("Error removing dubbed video directory (%s): %s" % (dubbed_video_dir, e))
 
 def move_video_sizes_file(lang_code):
-    lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
+    lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
     filename = os.path.basename(REMOTE_VIDEO_SIZE_FILEPATH)
     src_path = os.path.join(lang_pack_location, filename)
     dest_path = REMOTE_VIDEO_SIZE_FILEPATH
@@ -164,7 +157,7 @@ def move_video_sizes_file(lang_code):
         shutil.move(src_path, dest_path)
 
 def move_exercises(lang_code):
-    lang_pack_location = os.path.join(LOCALE_ROOT, lang_code)
+    lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
     src_exercise_dir = os.path.join(lang_pack_location, "exercises")
     dest_exercise_dir = get_localized_exercise_dirpath(lang_code)
 
@@ -193,8 +186,8 @@ def move_srts(lang_code):
     lang_code_ietf = lcode_to_ietf(lang_code)
     lang_code_django = lcode_to_django_dir(lang_code)
 
-    subtitles_static_dir = os.path.join(settings.STATIC_ROOT, "subtitles")
-    src_dir = os.path.join(LOCALE_ROOT, lang_code_django, "subtitles")
+    subtitles_static_dir = os.path.join(settings.USER_STATIC_FILES, "subtitles")
+    src_dir = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code_django, "subtitles")
     dest_dir = get_srt_path(lang_code_django)
     ensure_dir(dest_dir)
 
