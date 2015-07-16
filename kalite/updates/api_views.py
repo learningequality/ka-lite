@@ -28,7 +28,7 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, J
 from fle_utils.orderedset import OrderedSet
 from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools import TOPICS_FILEPATHS
+from kalite.topic_tools.settings import TOPICS_FILEPATHS
 from kalite.caching import initialize_content_caches
 
 
