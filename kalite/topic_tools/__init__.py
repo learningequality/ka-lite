@@ -25,7 +25,9 @@ import re
 import json
 import copy
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings as django_settings
+logging = django_settings.LOG
+
 from django.contrib import messages
 from django.db import DatabaseError
 from django.utils.translation import gettext as _
@@ -33,24 +35,19 @@ from django.utils.translation import gettext as _
 from fle_utils.general import softload_json, json_ascii_decoder
 from kalite import i18n
 
-from kalite.topic_tools import models as main_models
+from . import models as main_models
+from . import settings
 
-TOPICS_FILEPATHS = {
-    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
-}
-EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
-ASSESSMENT_ITEMS_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "assessmentitems.json")
-CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
 
 CACHE_VARS = []
 
 
-if not os.path.exists(settings.CHANNEL_DATA_PATH):
-    logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
+if not os.path.exists(django_settings.CHANNEL_DATA_PATH):
+    logging.warning("Channel {channel} does not exist.".format(channel=django_settings.CHANNEL))
 
 
 # Globals that can be filled
-TOPICS          = None
+TOPICS = None
 CACHE_VARS.append("TOPICS")
 def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
 
@@ -60,25 +57,25 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
         language = "pt"
 
     if not channel:
-        channel = settings.CHANNEL
+        channel = django_settings.CHANNEL
 
     if not language:
-        language = settings.LANGUAGE_CODE
+        language = django_settings.LANGUAGE_CODE
 
-    global TOPICS, TOPICS_FILEPATHS
+    global TOPICS
     if not TOPICS:
         TOPICS = {}
     if TOPICS.get(channel) is None:
         TOPICS[channel] = {}
     if annotate or TOPICS.get(channel, {}).get(language) is None:
-        topics = softload_json(TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+        topics = softload_json(settings.TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
 
         # Just loaded from disk, so have to restamp.
         annotate = True
 
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            topics = softload_json(TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", logger=logging.debug, raises=False)
+            topics = softload_json(settings.TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", logger=logging.debug, raises=False)
             if topics:
                 TOPICS[channel][language] = topics
                 return TOPICS[channel][language]
@@ -133,7 +130,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", "w") as f:
+                with open(settings.TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", "w") as f:
                     json.dump(TOPICS[channel][language], f)
             except IOError as e:
                 logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
@@ -149,7 +146,7 @@ CACHE_VARS.append("NODE_CACHE")
 def get_node_cache(node_type=None, force=False, language=None):
 
     if not language:
-        language = settings.LANGUAGE_CODE
+        language = django_settings.LANGUAGE_CODE
 
     global NODE_CACHE
     if NODE_CACHE is None or force:
@@ -164,22 +161,22 @@ CACHE_VARS.append("EXERCISES")
 def get_exercise_cache(force=False, language=None):
 
     if not language:
-        language = settings.LANGUAGE_CODE
+        language = django_settings.LANGUAGE_CODE
 
-    global EXERCISES, EXERCISES_FILEPATH
+    global EXERCISES
     if EXERCISES is None:
         EXERCISES = {}
     if EXERCISES.get(language) is None:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            exercises = softload_json(EXERCISES_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
+            exercises = softload_json(settings.EXERCISES_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
             if exercises:
                 EXERCISES[language] = exercises
                 return EXERCISES[language]
-        EXERCISES[language] = softload_json(EXERCISES_FILEPATH, logger=logging.debug, raises=False)
+        EXERCISES[language] = softload_json(settings.EXERCISES_FILEPATH, logger=logging.debug, raises=False)
         if language == "en":  # English-language exercises live in application space, translations in user space
             exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
         else:
-            exercise_root = os.path.join(settings.USER_DATA_ROOT, "exercises")
+            exercise_root = os.path.join(django_settings.USER_DATA_ROOT, "exercises")
         if os.path.exists(exercise_root):
             exercise_path = os.path.join(exercise_root, language) if language != "en" else exercise_root
             try:
@@ -195,7 +192,7 @@ def get_exercise_cache(force=False, language=None):
             exercise_lang = "en"
 
             # The central server doesn't have an assessment item database
-            if settings.CENTRAL_SERVER:
+            if django_settings.CENTRAL_SERVER:
                 available = False
             elif exercise.get("uses_assessment_items", False):
                 available = False
@@ -230,7 +227,7 @@ def get_exercise_cache(force=False, language=None):
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(EXERCISES_FILEPATH + "_" + language + ".cache", "w") as f:
+                with open(settings.EXERCISES_FILEPATH + "_" + language + ".cache", "w") as f:
                     json.dump(EXERCISES[language], f)
             except IOError as e:
                 logging.warn("Annotated exercise cache file failed in saving with error {e}".format(e=e))
@@ -243,7 +240,7 @@ CACHE_VARS.append("LEAFED_TOPICS")
 def get_leafed_topics(force=False, language=None):
 
     if not language:
-        language = settings.LANGUAGE_CODE
+        language = django_settings.LANGUAGE_CODE
 
     global LEAFED_TOPICS
     if LEAFED_TOPICS is None or force:
@@ -253,9 +250,9 @@ def get_leafed_topics(force=False, language=None):
 
 def create_thumbnail_url(thumbnail):
     if is_content_on_disk(thumbnail, "png"):
-        return settings.CONTENT_URL + thumbnail + ".png"
+        return django_settings.CONTENT_URL + thumbnail + ".png"
     elif is_content_on_disk(thumbnail, "jpg"):
-        return settings.CONTENT_URL + thumbnail + ".jpg"
+        return django_settings.CONTENT_URL + thumbnail + ".jpg"
     return None
 
 CONTENT          = None
@@ -263,19 +260,19 @@ CACHE_VARS.append("CONTENT")
 def get_content_cache(force=False, annotate=False, language=None):
 
     if not language:
-        language = settings.LANGUAGE_CODE
+        language = django_settings.LANGUAGE_CODE
 
-    global CONTENT, CONTENT_FILEPATH
+    global CONTENT
 
     if CONTENT is None:
         CONTENT = {}
     if CONTENT.get(language) is None:
-        CONTENT[language] = softload_json(CONTENT_FILEPATH, logger=logging.debug, raises=False)
+        CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
         annotate = True
 
     if annotate:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
+            content = softload_json(settings.CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
             if content:
                 CONTENT[language] = content
                 return CONTENT[language]
@@ -284,7 +281,7 @@ def get_content_cache(force=False, annotate=False, language=None):
         # and subtitle urls on the content dictionary, and list all languages
         # that the content is available in.
         try:
-            contents_folder = os.listdir(settings.CONTENT_ROOT)
+            contents_folder = os.listdir(django_settings.CONTENT_ROOT)
         except OSError:
             contents_folder = []
 
@@ -313,16 +310,16 @@ def get_content_cache(force=False, annotate=False, language=None):
                         content["available"] = True
                         thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
                         content["content_urls"] = {
-                            "stream": settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
+                            "stream": django_settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
                             "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
                             "thumbnail": thumbnail,
                         }
-                    elif settings.BACKUP_VIDEO_SOURCE:
+                    elif django_settings.BACKUP_VIDEO_SOURCE:
                         content["available"] = True
                         content["content_urls"] = {
-                            "stream": settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
+                            "stream": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
                             "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
-                            "thumbnail": settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
+                            "thumbnail": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
                         }
                     else:
                         content["available"] = False
@@ -337,7 +334,7 @@ def get_content_cache(force=False, annotate=False, language=None):
             # Generate subtitle URLs for any subtitles that do exist for this content item
             subtitle_urls = [{
                 "code": lc,
-                "url": settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
+                "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
                 "name": i18n.get_language_name(lc)
                 } for lc in subtitle_lang_codes]
 
@@ -351,7 +348,7 @@ def get_content_cache(force=False, annotate=False, language=None):
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(CONTENT_FILEPATH + "_" + language + ".cache", "w") as f:
+                with open(settings.CONTENT_FILEPATH + "_" + language + ".cache", "w") as f:
                     json.dump(CONTENT[language], f)
             except IOError as e:
                 logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
@@ -404,7 +401,7 @@ def generate_node_cache(topictree=None, language=None):
     """
 
     if not language:
-        language = settings.LANGUAGE_CODE
+        language = django_settings.LANGUAGE_CODE
 
     if not topictree:
         topictree = get_topic_tree(language=language)
@@ -587,6 +584,6 @@ def convert_leaf_url_to_id(leaf_url):
 
 
 def is_content_on_disk(content_id, format="mp4", content_path=None):
-    content_path = content_path or settings.CONTENT_ROOT
+    content_path = content_path or django_settings.CONTENT_ROOT
     content_file = os.path.join(content_path, content_id + ".%s" % format)
     return os.path.isfile(content_file)

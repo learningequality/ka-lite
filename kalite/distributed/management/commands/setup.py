@@ -26,6 +26,8 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import kalite
+from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
+
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
@@ -315,9 +317,11 @@ class Command(BaseCommand):
             (hostname, description) = get_hostname_and_description(
                 options["hostname"], options["description"])
         else:
-            username = options["username"] = options["username"] or \
-                                             getattr(settings, "INSTALL_ADMIN_USERNAME", None) or \
-                                             get_clean_default_username()
+            username = options["username"] = (
+                options["username"] or
+                getattr(settings, "INSTALL_ADMIN_USERNAME", None) or
+                get_clean_default_username()
+            )
             password = options["password"] or getattr(settings, "INSTALL_ADMIN_PASSWORD", None)
             email = options["email"]  # default is non-empty
             hostname = options["hostname"]
@@ -361,11 +365,6 @@ class Command(BaseCommand):
         # Should clean_pyc for (clean) reinstall purposes
         # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
-        # Migrate the database
-        call_command(
-            "syncdb", interactive=False, verbosity=options.get("verbosity"))
-        call_command("migrate", merge=True, verbosity=options.get("verbosity"))
-
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this
         # is required for tests, and does not apply to the central server.
@@ -374,52 +373,45 @@ class Command(BaseCommand):
             logging.warning("Skipping assessment item downloading and configuration.")
 
         else:
-
+    
+            # Migrate the database
+            call_command(
+                "syncdb", interactive=False, verbosity=options.get("verbosity"))
+            call_command("migrate", merge=True, verbosity=options.get("verbosity"))
             # Create *.json and friends database
             call_command("syncdb", interactive=False, verbosity=options.get(
                 "verbosity"), database="assessment_items")
+            Settings.set("database_version", VERSION)
 
-            # Outdated location of assessment items
-            # TODO(benjaoming) for 0.15, remove this
-            writable_assessment_items = os.access(
-                settings.KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
-
-            def _move_to_new_location(old, new):
-                if not writable_assessment_items:
-                    return
-                if os.path.exists(old):
-                    if os.access(settings.KHAN_CONTENT_PATH, os.W_OK):
-                        os.rename(old, new)
-            _move_to_new_location(
-                os.path.join(settings.KHAN_CONTENT_PATH, 'assessmentitems.sqlite'),
-                settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH
-            )
-            _move_to_new_location(
-                os.path.join(
-                    settings.KHAN_CONTENT_PATH, 'assessmentitems.version'),
-                settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
-            )
-            _move_to_new_location(
-                os.path.join(
-                    settings.USER_DATA_ROOT, "data", "khan", "assessmentitems.json"),
-                settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
-            )
+            # Outdated location of assessment items - move assessment items from their
+            # old location (CONTENT_ROOT/khan where they were mixed with other content
+            # items)
+            
+            # TODO(benjaoming) for 0.15, remove the "move assessment items"
+            # mechanism
+            writable_assessment_items = os.access(KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
+    
+            # Remove old assessment items
+            if os.path.exists(OLD_ASSESSMENT_ITEMS_LOCATION) and os.access(OLD_ASSESSMENT_ITEMS_LOCATION, os.W_OK):
+                logging.info("Deleting old assessment items")
+                shutil.rmtree(OLD_ASSESSMENT_ITEMS_LOCATION)
+            
             if writable_assessment_items and options['force-assessment-item-dl']:
                 call_command(
                     "unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
             elif options['force-assessment-item-dl']:
                 raise RuntimeError(
                     "Got force-assessment-item-dl but directory not writable")
-            elif writable_assessment_items and not settings.RUNNING_IN_TRAVIS and options['interactive']:
+            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE and not settings.RUNNING_IN_TRAVIS and options['interactive']:
                 print(
-                    "\nStarting in version 0.13, you need an assessment items package in order to access many of the available exercises.")
+                    "\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
                 print(
                     "If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
                 print(
                     "If you have already downloaded the assessment items package, you can specify the file in the next step.")
                 print("Otherwise, we will download it from {url}.".format(
                     url=settings.ASSESSMENT_ITEMS_ZIP_URL))
-
+    
                 if raw_input_yn("Do you wish to download the assessment items package now?"):
                     ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
                 elif raw_input_yn("Have you already downloaded the assessment items package?"):
@@ -432,12 +424,15 @@ class Command(BaseCommand):
                         "No assessment items package file given. You will need to download and unpack it later.")
                 else:
                     call_command("unpack_assessment_zip", ass_item_filename)
-            elif options['interactive']:
+            
+            elif options['interactive'] and not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
                 logging.warning(
                     "Assessment item directory not writable, skipping download.")
-            else:
+            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
                 logging.warning(
                     "No assessment items package file given. You will need to download and unpack it later.")
+            else:
+                print("Found bundled assessment items")
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
@@ -484,6 +479,6 @@ class Command(BaseCommand):
 
             # done; notify the user.
             print(
-                "CONGRATULATIONS! You've finished setting up the KA Lite server software.")
+                "\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
             print(
                 "You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
