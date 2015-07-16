@@ -395,6 +395,7 @@ var CoachSummaryView = BaseView.extend({
         _.bindAll(this);
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
+        this.set_data_model();
     },
 
     set_data_model: function (){
@@ -473,7 +474,10 @@ var FacilitySelectView = Backbone.View.extend({
             facilities: this.facility_list.toJSON(),
             selected: this.model.get("facility")
         }));
-        this.facility_changed();
+        var id = this.model.get("facility");
+        this.model.set({
+            "facility_name": this.facility_list.find(function(model){ return model.get("id") === id;}).get("name")
+        });
         return this;
     },
 
@@ -506,6 +510,19 @@ var GroupSelectView = Backbone.View.extend({
 
     render: function() {
         var self = this;
+
+        // Add in 'All' and 'Ungrouped' groups if appropriate
+        if (this.group_list.length > 0) {
+            this.group_list.add({
+                id: "",
+                name: gettext("All")
+            }, {at: 0, silent: true});
+            this.group_list.add({
+                id: "Ungrouped",
+                name: gettext("Ungrouped")
+            }, {silent: true});
+        }
+
         // Remove reference to groups from another facility
         if (!this.group_list.some(function(model){ return model.get("id") === self.model.get("group");})) {
             this.model.set({
@@ -513,10 +530,16 @@ var GroupSelectView = Backbone.View.extend({
                 "group_name": undefined
             }, {silent: true});
         }
+
         this.$el.html(this.template({
             groups: this.group_list.toJSON(),
             selected: this.model.get("group")
         }));
+
+        var id = this.model.get("group");
+        this.model.set({
+            "group_name": this.group_list.find(function(model){ return model.get("id") === id;}).get("name")
+        });
 
         return this;
     },
@@ -538,10 +561,7 @@ var GroupSelectView = Backbone.View.extend({
             // Get new facility ID and fetch
             this.group_list.fetch({
                 data: $.param({
-                    facility_id: this.model.get("facility"),
-                    // TODO(cpauya): Find a better way to set the kwargs argument of the tastypie endpoint
-                    // instead of using GET variables.  This will set it as False on the endpoint.
-                    groups_only: ""
+                    facility_id: this.model.get("facility")
                 })
             });
         }
