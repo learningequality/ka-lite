@@ -29,7 +29,7 @@ def update_context(request):
 def update_videos(request, max_to_show=4):
     context = update_context(request)
     messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download less than 25 videos at a time.'))
-    if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+    if getattr(settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False):
         messages.warning(request, _('After video download, the server must be restarted for them to be available to users.'))
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
