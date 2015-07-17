@@ -86,7 +86,9 @@ if not os.path.exists(kalite_path):
 env['KALITE_DIR'] = str(kalite_path)
 
 # TODO(benjaoming): Delegate responsibility to the .deb package
-if os.path.isfile("/etc/ka-lite/username"):
+# This always evaluates to False on Windows, so no problem with the
+# system-specific path
+if os.name == "posix" and os.path.isfile("/etc/ka-lite/username"):
     username = open("/etc/ka-lite/username", "r").read()
     username = username.split("\n")[0] if username else None
     if username and username != os.environ["USER"]:
