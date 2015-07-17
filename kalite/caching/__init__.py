@@ -17,15 +17,16 @@ For any app implementing cacheable data or writing to the web cache, the app sho
     across all apps, by calling invalidate_inmemory_caches
 * Call invalidate_web_cache (from fle_utils.internet.webcache)
 """
+import os
+import glob
+
 from django.conf import settings; logging = settings.LOG
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
 from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
-
-import os
-import glob
+from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP
 
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
@@ -68,7 +69,7 @@ def invalidate_all_caches():
     call in here.
     """
     invalidate_inmemory_caches()
-    if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+    if DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
         
         # The underlying assumption here is that if generating in memory caches is too onerous a task to conduct
         # at every system start up, then it is too onerous a task to conduct during server operation.
