@@ -725,7 +725,8 @@ if __name__ == "__main__":
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
-            args=arguments['DJANGO_OPTIONS']
+            args=arguments['DJANGO_OPTIONS'],
+            port=arguments["--port"]
         )
 
     elif arguments['status']:
