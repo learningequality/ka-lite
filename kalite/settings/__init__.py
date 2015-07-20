@@ -46,8 +46,6 @@ if CONFIG_PACKAGE:
         RemovedInKALite_v015_Warning
     )
 
-DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = getattr(local_settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False)
-
 # Config for Raspberry Pi distributed server
 if package_selected("RPi"):
 
