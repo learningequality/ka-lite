@@ -64,7 +64,7 @@ def backend_cache_page(handler, cache_time=None, cache_name=None):
         cache_time = settings.CACHE_TIME
 
     if not cache_name:
-        cache_name = settings.CACHE_NAME
+        cache_name = "default"
 
     if caching_is_enabled():
         @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
@@ -87,7 +87,7 @@ def caching_is_enabled():
     return settings.CACHE_TIME != 0
 
 def get_web_cache():
-    return get_cache(settings.CACHE_NAME) if caching_is_enabled() else None
+    return get_cache('default') if caching_is_enabled() else None
 
 
 def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):
