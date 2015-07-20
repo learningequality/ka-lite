@@ -9,12 +9,10 @@ from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 from django.core.urlresolvers import reverse
-from django.db.models.signals import post_save, pre_delete
-from django.dispatch import receiver
 from django.http import HttpRequest
 from django.test.client import Client
 from django.utils import translation
-from django.utils.cache import get_cache_key as django_get_cache_key, get_cache, _generate_cache_key
+from django.utils.cache import get_cache_key as django_get_cache_key, get_cache
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import condition
