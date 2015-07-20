@@ -13,7 +13,7 @@ Administrator Glossary
 For users that choose to register online, there are some important terms to familiarize yourself with so that you understand how the flow of data works between installations and the online data hub.
 
 **Sharing Network**
-	A sharing network is a group of devices that share data between one another. Data can mean video content, access software applications, and certain files.
+	A Sharing Network is a group of devices that share user data. This data is synced to the central server when an Internet connection is available, and then synced down onto other devices in the same Sharing Network.
 
 **Organization**
 	An organization is a group of people responsible for administering a set of Sharing Networks. An organization can have multiple administrators and manage multiple sharing networks.
@@ -26,15 +26,6 @@ For users that choose to register online, there are some important terms to fami
 
 **Web Browser**
     A program that retrieves and presents information resources on the World Wide Web. Popular web browsers include Internet Explorer, Google Chrome, Mozilla Firefox, and Safari.
-
-**Torrent**
-    A file or files sent using the BitTorrent protocol. It can be any type of file, such as a movie, song, game, or application. During the transmission, the file is incomplete and therefore referred to as a torrent. Torrent downloads that are incomplete cannot be opened as regular files, because they do not have all the necessary data.
-
-**Seeder**
-    Seeders are users who have a complete version of the file you wish to download. If there are no seeders for a particular file, you will not be able to download the file. Seeders are extremely important, for they help distribute the file.
-
-**Bandwidth**
-    The amount of data that an Internet connection can handle in a given time. An Internet connection with larger bandwidth can move a certain amount of data much faster than an Internet connection with a lower bandwidth.
 
 Running the KA Lite Server
 ---------------------------
