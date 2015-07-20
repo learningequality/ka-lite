@@ -38,9 +38,6 @@ class Command(BaseCommand):
 
     def reinitialize_server(self):
         """Reset the server state."""
-        logging.info("Invalidating the web cache.")
-        from fle_utils.internet.webcache import invalidate_web_cache
-        invalidate_web_cache()
 
         # Next, call videoscan.
         logging.info("Running videoscan.")
