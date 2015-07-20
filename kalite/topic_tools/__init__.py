@@ -79,24 +79,20 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
     if TOPICS.get(channel) is None:
         TOPICS[channel] = {}
 
-    if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-        cached_topics = softload_json(
-            cache_file_path("topic_{0}_{1}.json".format(channel, language)),
-            logger=logging.debug,
-            raises=False
-        )
+    if annotate or TOPICS.get(channel, {}).get(language) is None:
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            cached_topics = softload_json(
+                cache_file_path("topic_{0}_{1}.json".format(channel, language)),
+                logger=logging.debug,
+                raises=False
+            )
         if cached_topics:
             TOPICS[channel][language] = cached_topics
-            if parent:
-                return filter(lambda x: x.get("parent") == parent, cached_topics)
-            else:
-                return cached_topics
-    
-    if annotate or TOPICS.get(channel, {}).get(language) is None:
-        topics = softload_json(settings.TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
-
-        # Just loaded from disk, so have to restamp.
-        annotate = True
+            annotate = False
+        else:
+            topics = softload_json(settings.TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+            # Just loaded from disk, so have to restamp.
+            annotate = True
 
     if annotate:
         flat_topic_tree = []
