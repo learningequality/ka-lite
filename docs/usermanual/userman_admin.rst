@@ -466,6 +466,11 @@ is the ``.kalite/content/`` folder in the *home directory* of the user running K
 
 On Windows, navigate to ``X:\Documents and Settings\<username>\.kalite\content``.
 
+.. note:: If the drive where your ``.kalite/`` folder does not have enough free disk space,
+          you can change your `Configuration Settings`_, the one named ``CONTENT_ROOT`` and
+          define a folder where your videos are downloaded to. Remember that you may want
+          to move the contents of your old ``content/`` folder.
+
 .. note:: The ``.kalite`` folder is hidden on some systems, so if you are in a
           file browser, you have to enable showing hidden files and folders.
 
