@@ -447,11 +447,12 @@ CACHES = {
     }
 }
 
+KEY_PREFIX = version.VERSION
+
 # Cache is activated in every case,
 #   EXCEPT: if CACHE_TIME=0
 if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     # When we change versions, cache changes, too
-    KEY_PREFIX = ".".join(version.VERSION)
 
     # File-based cache
     install_location_hash = hashlib.sha1(".".join(version.VERSION)).hexdigest()
@@ -460,10 +461,10 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
     CACHES["file_based_cache"] = {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
-        'TIMEOUT': CACHE_TIME, # should be consistent
+        'LOCATION': CACHE_LOCATION,  # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME,  # should be consistent
         'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000)  # 2000 entries=~10,000 files
         },
     }
 
@@ -471,9 +472,9 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     CACHES["mem_cache"] = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
-        'TIMEOUT': CACHE_TIME, # should be consistent
+        'TIMEOUT': CACHE_TIME,  # should be consistent
         'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000)  # 2000 entries=~10,000 files
         },
     }
 
