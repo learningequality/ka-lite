@@ -24,9 +24,18 @@ class KALiteTestCase(CreateDeviceMixin, TestCase):
     """The base class for KA Lite test cases."""
 
     def setUp(self):
-        self.setup_fake_device()
-
+        self.setUpDatabase()
         super(KALiteTestCase, self).setUp()
+
+    @classmethod
+    def setUpDatabase(cls):
+        """ Prepares the database for test cases. Essentially serves the same purpose as loading fixtures.
+        Meant to be hijacked by the behave testing framework in "before_scenario", since behave scenarios are analogous
+        to TestCases, and behave features are analogous to test suites, but due to implementation details features are
+        run as TestCases. Therefore scenarios call this class method to simulate being TestCases.
+        """
+        # Do database setup stuff that's common to all test cases.
+        cls.setup_fake_device()
 
     def reverse(self, *args, **kwargs):
         """Regular Django reverse function."""
