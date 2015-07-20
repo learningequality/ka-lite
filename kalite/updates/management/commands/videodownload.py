@@ -15,7 +15,6 @@ from ... import download_video, DownloadCancelled, URLNotFound
 from ...models import VideoFile
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
-from fle_utils.general import ensure_dir
 from kalite import caching, i18n, topic_tools
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
@@ -150,7 +149,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
                 # Initiate the download process
                 try:
-                    ensure_dir(settings.CONTENT_ROOT)
 
                     progress_callback = partial(self.download_progress_callback, video)
                     try:
@@ -223,7 +221,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 "num_handled_videos": len(handled_youtube_ids),
                 "num_total_videos": len(handled_youtube_ids) + len(failed_youtube_ids),
             })
-            caching.initialize_content_caches()
+            caching.invalidate_all_caches()
 
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})

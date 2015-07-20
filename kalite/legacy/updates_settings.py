@@ -33,11 +33,6 @@ BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", Non
 # from pkgutil import get_data
 # I18N_DATA_PATH = get_data("kalite.i18n", "data")
 
-# Use resource_filename instead of get_data because it does not try to open
-# a file and does not complain that its a directory
-from pkg_resources import resource_filename
-UPDATES_DATA_PATH = resource_filename("kalite", "updates/data")
-
 # settings for when we're updating the server through Git
 GIT_UPDATE_REPO_URL = getattr(local_settings, "GIT_UPDATE_REPO_URL", "https://github.com/learningequality/ka-lite.git")
 GIT_UPDATE_BRANCH = getattr(local_settings, "GIT_UPDATE_BRANCH", "master")
