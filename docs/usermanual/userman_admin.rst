@@ -467,32 +467,16 @@ After registering your device:
 Downloading Videos in Bulk
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you want to download videos in bulk, your best option is to download the KA Lite videos through the `BitTorrent Sync`_ client. This will be a much faster process than using the KA Lite app to download all of the videos.
+If want to download all the videos, you'll need ~33 GB free space. To fetch all
+the videos, `download and open the according torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
 
-We have made the full set of KA videos (in the format needed by KA Lite) available via `BitTorrent Sync`_ (btsync). Note that this is different from BitTorrent; btsync allows us to add new videos or fix problems without issuing a whole new torrent file, and then having seeders split between the old and new torrent files. Here are the steps to set this up:
+Save the videos on the ``CONTENT_ROOT`` of your installation. By default, this
+is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
 
-#. Download and install `BitTorrent Sync`_.
-#. Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to type http://127.0.0.1:8888/ into the address bar of your browser to get the interface.
-#. Click the "Enter a key or link" button, and enter **BT7AOITNAIP3X3CSLE2EPQJFXJXMXVGQI**
-#. Select the "content" folder inside your KA Lite installation as the "location" (unless you want the videos to be located elsewhere).
-#. Allow the videos to sync in there from your peers! It may take a while for now, as we don't yet have many seeders on it. On that note -- please help seed by keeping it running even after you've got all the videos, if you have bandwidth to spare! This will make it easier for others to download the content as well.
+On Windows, navigate to ``X:\Documents and Settings\<username>\.kalite\content``.
 
-These are resized videos. All in all, this will take around 23 GB of space.
-
-
-.. WARNING::
-    If you chose to download them to somewhere other than the content folder inside the ka-lite folder as recommended above, you need to tell KA Lite where to find them. If this is the case, follow the steps below:
-
-
-#. Make sure all video files are located in a single directory, with .mp4 extensions (KA Lite expects this!)
-#. In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``).
-#. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes.
-    **For example, on Windows:** ``CONTENT_ROOT="C:\\torrented_videos_location\\"``
-    **For example, on Linux:** ``CONTENT_ROOT="/home/me/torrented_videos_location/"``
-
-#. Restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server` .
-
-.. _BitTorrent Sync: http://www.getsync.com/
+.. note:: The ``.kalite`` folder is hidden on some systems, so if you are in a
+          file browser, you have to enable showing hidden files and folders.
 
 
 Adding assessment items (exercises)
