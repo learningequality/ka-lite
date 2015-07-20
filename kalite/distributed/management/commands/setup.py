@@ -365,6 +365,15 @@ class Command(BaseCommand):
         # Should clean_pyc for (clean) reinstall purposes
         # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
+        # Migrate the database
+        call_command(
+            "syncdb", interactive=False, verbosity=options.get("verbosity"))
+        call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+        # Create *.json and friends database
+        call_command("syncdb", interactive=False, verbosity=options.get(
+            "verbosity"), database="assessment_items")
+        Settings.set("database_version", VERSION)
+
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this
         # is required for tests, and does not apply to the central server.
@@ -373,11 +382,7 @@ class Command(BaseCommand):
             logging.warning("Skipping assessment item downloading and configuration.")
 
         else:
-    
-            # Migrate the database
-            call_command(
-                "syncdb", interactive=False, verbosity=options.get("verbosity"))
-            call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+
             # Outdated location of assessment items - move assessment items from their
             # old location (CONTENT_ROOT/khan where they were mixed with other content
             # items)
