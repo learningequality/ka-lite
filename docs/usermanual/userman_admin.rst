@@ -637,9 +637,15 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 Running KA Lite with your own settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``). That file is where you should put your custom settings, and KA Lite will load them automatically.
+In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate 
+``X:\Documents and Settings\<username>\.kalite``). That file is where you should
+put your custom settings, and KA Lite will load them automatically.
 
-You can also run the ``kalite`` with a completely different Python settings module by specifying ``kalite <command> --settings=my_settings_module``.
+You can also run the ``kalite`` with a completely different Python settings
+module by specifying ``kalite <command> --settings=my_settings_module``.
+
+.. note:: The ``.kalite`` folder is hidden on some systems, so if you are in a
+          file browser, you have to enable showing hidden files and folders.
 
 
 Changing base settings
@@ -650,17 +656,6 @@ By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base``
   from kalite.project.settings.raspberry_pi import *
   # Put your settings here, e.g.
   # MY_SETTING_VAR = 123
-
-
-.. NOTE::
-    When changing ``CONTENT_ROOT``, you should also change your ``DATABASES`` **if you
-    have downloaded your own assessment items** and you want to keep the
-    read-only assessment_items database (~50 MB) together
-    with your other media contents (for portability). Example::
-      
-      from kalite.project.settings.base import *
-      CONTENT_ROOT = '/example'
-      DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
 
 
 Available settings
@@ -676,6 +671,17 @@ Most common settings
   This is the path that KA Lite will use to look for KA Lite video files to play.
   Change the path to another local directory to get video files from that directory.
   NB! Directory has to be writable for the user running the server in order to download videos.
+
+.. NOTE::
+    When changing ``CONTENT_ROOT``, you should also change your ``DATABASES`` **if you
+    have downloaded your own assessment items** and you want to keep the
+    read-only assessment_items database (~50 MB) together
+    with your other media contents (for portability). Example::
+      
+      from kalite.project.settings.base import *
+      CONTENT_ROOT = '/example'
+      DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
+
 * ``ASSESSMENT_ITEMS_ZIP_URL = "scheme://path/to/assessmentitems.zip"``
   ``(default=https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip)``
   This is useful if you need an auto-deployment to fetch assessment items (exercises) from a local source. You can use
@@ -712,27 +718,3 @@ Online Synchronization
   Every time your installation syncs data, we record the time of the sync, the # of successful logs that were uploaded and downloaded, and any failures.
   This setting is how many such records we keep on your local server, for display.
   When you log in to our online server, you will see a *full* history of these records.
-
-
-Optimization of storage and system load
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-* ``CRONSERVER_FREQUENCY = <desired frequency of cronserver to run in seconds> (default = 10 minutes)``
-  This is how frequently KA Lite tries to synchronize user data with other Devices on your Zone.  This can be changed to sync data more often (use a smaller #), or if you're never online (can be set to a large number)
-* ``CACHE_TIME = <desired length of cache time, in seconds> (default = 5*365*24*60*60) (that's 5 years!)``
-  Our basic topic pages, video pages, and exercise pages rarely change--only when you download new videos (changes made by user logins are made in a different way).  Therefore, we can "cache" copies of these pages, to avoid constantly regenerating them, and speed up KA Lite.  We have logic to delete the cached copies, and therefore generate new copies, if you download new videos or delete old videos through our interface.
-  If you would like to disable caching, set CACHE_TIME = 0 .
-  Read a little more about caching on Wikipedia.
-* ``CACHE_LOCATION = '<path to cache directory>' (default= dir named kalite_web_cache in the OS temporary dir)``
-  Some operating systems will clear the temporary directories when the system is rebooted.  To retain the cache between reboots, an alternative location can be specified.  (for example on Linix, "/var/tmp/kalite_web_cache")
-* ``CHERRYPY_THREAD_COUNT = <number of threads> (default=50)``
-  The CherryPy Webserver can handle multiple page requests simultaneously.  The default is 50, but for slow or single CPU servers, performance will be improved if the number of threads is reduced.  Minimum number of threads is 10, optimum setting for Raspberry Pi is 18.
-
-
-Raspberry Pi
-^^^^^^^^^^^^
-
-* ``USE_MPLAYER = <True or False> (default = False)``
-  With this setting, if the browser is run from the same computer as the KA Lite server, then instead of playing the video in the browser, the video will be launched outside of the browser and played in mplayer - a light-weight video player that is included with the KA Lite software.
-  This is intended for use only on the Raspberry Pi, where no other video player is available.
-
