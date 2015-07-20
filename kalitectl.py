@@ -351,7 +351,7 @@ class ManageThread(Thread):
         self.command = command
         self.args = kwargs.pop('args', [])
         super(ManageThread, self).__init__(*args, **kwargs)
-        self.daemon = False  # Main process does NOT exit until thread dies
+        self.setDaemon(True)
 
     def run(self):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
@@ -385,6 +385,7 @@ def manage(command, args=[], as_thread=False):
         get_commands()  # Needed to populate the available commands before issuing one in a thread
         thread = ManageThread(command, args=args, name=" ".join([command] + args))
         thread.start()
+        return thread
 
 
 def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
@@ -476,8 +477,9 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
             f.write("%d\n%d" % (os.getpid(), port))
 
     # Start the job scheduler (not Celery yet...)
+    cron_thread = None
     if not skip_job_scheduler:
-        manage(
+        cron_thread = manage(
             'cronserver_blocking',
             args=[],
             as_thread=True
@@ -498,14 +500,21 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         # http://docs.cherrypy.org/stable/appendix/faq.html
         cherrypy.engine.autoreload.unsubscribe()
 
-    cherrypy.quickstart()
+    try:
+        cherrypy.quickstart()
+    except KeyboardInterrupt:
+        # Handled in cherrypy by waiting for all threads to join
+        pass
 
     print("FINISHED serving HTTP")
 
-    if not skip_job_scheduler:
+    if cron_thread:
+        # Do not exit thread together with the main process, let it finish
+        # cleanly
         print("Asking KA Lite job scheduler to terminate...")
         from fle_utils.chronograph.management.commands import cronserver_blocking
         cronserver_blocking.shutdown = True
+        cron_thread.join()
 
 
 def stop(args=[], sys_exit=True):
