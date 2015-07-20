@@ -112,6 +112,6 @@ p = subprocess.Popen(
 try:
     p.communicate()
 except KeyboardInterrupt:
-    # We are not going to show this un-interesting trackeback!
+    # We are not going to show this un-interesting traceback!
     pass
 sys.exit(p.returncode)
