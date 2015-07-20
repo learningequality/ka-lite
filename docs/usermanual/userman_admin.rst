@@ -596,7 +596,7 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 Running KA Lite with your own settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate 
+In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate 
 ``X:\Documents and Settings\<username>\.kalite``). That file is where you should
 put your custom settings, and KA Lite will load them automatically.
 
@@ -610,7 +610,7 @@ module by specifying ``kalite <command> --settings=my_settings_module``.
 Changing base settings
 ^^^^^^^^^^^^^^^^^^^^^^
 
-By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like::
+By default, ``/home/user/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like::
 
   from kalite.project.settings.raspberry_pi import *
   # Put your settings here, e.g.
@@ -626,12 +626,12 @@ Most common settings
 
 * ``DEBUG = <True or False> (default = False)``
   Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
-* ``CONTENT_ROOT = "<path to desired content folder>" (default=~/.kalite/content)``
+* ``CONTENT_ROOT = "<path to desired content folder>" (default=/home/user/.kalite/content)``
   This is the path that KA Lite will use to look for KA Lite video files to play.
   Change the path to another local directory to get video files from that directory.
   NB! Directory has to be writable for the user running the server in order to download videos.
 
-.. NOTE::
+.. warning::
     When changing ``CONTENT_ROOT``, you should also change your ``DATABASES`` **if you
     have downloaded your own assessment items** and you want to keep the
     read-only assessment_items database (~50 MB) together
@@ -669,7 +669,8 @@ Online Synchronization
 
 * ``USER_LOG_MAX_RECORDS = <desired maxium for user log records> (default = 0)``
   When this is set to any non-zero number, we will record (and sync for online tracking) user login activity, summarized for every month (which is configurable, see below).  Default is set to 0, for efficiency purposes--but if you want to record this, setting to 1 is enough!  The # of records kept are not "summary" records, but raw records of every login.  These "raw" data are not synced, but are kept on your local machine only--there's too many of them.  Currently, we have no specific report to view these data (though we may have for v0.10.1)
-* ``USER_LOG_SUMMARY_FREQUENCY = <desired frequency in the following format (number, amount of time)> (default = (1, "months")``
+* ``USER_LOG_SUMMARY_FREQUENCY = <desired frequency (number, amount of time)>``
+  ``(default = (1, "months")``
   This determines the granularity of how we summarize and store user log data.  One database row is kept for each student, on each KA Lite installation, for the defined time period.  Acceptable values are:
   (1, "months"), (2, "months"), (3, "months"), (6, "months") - separate logged data for every month, 2 months, 3 months, or 6 months, respectively
   (1, "weeks") - separate logged data for every week ** NOTE THIS MAY PRODUCE A LOT OF DATA **
