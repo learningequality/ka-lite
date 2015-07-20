@@ -21,6 +21,9 @@ dist-packages-temp/
 dist-packages-downloads/
 dist-packages/
 
+# User cache data generated at runtime
+cache/
+
 # Updates downloaded at runtime
 static-updates
 
