@@ -610,22 +610,6 @@ Restarting Your Server: Mac
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
-Updating KA Lite
-----------------
-
-If a new version of KA Lite comes out, you can update to the latest version by following the instructions below.
-
-Updating on Mac OS and Linux
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-At this time, the only supported way to update is to grab the source and run the setup management command.
-Follow the instructions in the :doc:`installation guide </installguide/install_main>` to ensure you're using the latest version.
-
-Updating on Windows
-^^^^^^^^^^^^^^^^^^^
-
-To update on Windows, simply use our Windows installer. You will have the option to update from a prior version.
-See the :doc:`Windows installation guide </installguide/install_windows>`.
 
 Configuration Settings
 ----------------------
