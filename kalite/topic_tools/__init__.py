@@ -80,6 +80,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
         TOPICS[channel] = {}
 
     if annotate or TOPICS.get(channel, {}).get(language) is None:
+        cached_topics = None
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             cached_topics = softload_json(
                 cache_file_path("topic_{0}_{1}.json".format(channel, language)),
