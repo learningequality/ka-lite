@@ -197,7 +197,7 @@ def update_default_args(defaults, updates):
 
 
 def get_size(start_path):
-    """Utility function"""
+    """Utility function, returns the size (bytes) of a folder"""
     total_size = 0
     for dirpath, __, filenames in os.walk(start_path):
         for f in filenames:
@@ -607,11 +607,15 @@ status.codes = {
 
 def diagnose():
     """
-    This command diagnoses a running instance of KA Lite
+    This command diagnoses an installation of KA Lite
     
     It has to be able to work with instances of KA Lite that users do not
     actually own, however it's assumed that the path and the 'kalite' commands
     are configured and work.
+    
+    The function is currently non-robust, meaning that not all aspects of
+    diagnose data collection is guaranteed to succeed, thus the command could
+    potentially fail :(
     
     Example: KALITE_HOME=/home/otheruser/.kalite kalite diagnose --port=7007
     """
@@ -620,6 +624,8 @@ def diagnose():
     print("KA Lite diagnostics")
     print("")
     
+    # Tell users we are calculating, because checking the size of the
+    # content directory is slow. Flush immediately after.
     print("Calculating diagnostics...")
     sys.stdout.flush()
     print("")
