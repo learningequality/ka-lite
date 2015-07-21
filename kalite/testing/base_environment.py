@@ -39,13 +39,13 @@ def before_scenario(context, scenario):
     # https://github.com/learningequality/ka-lite/pull/3668
     if not User.objects.exists():
         User.objects.create_superuser(username='superusername', password='superpassword', email='super@email.com')
-    if "as_admin" in scenario.tags:
+    if "as_admin" in context.tags:
         context.logged_in = True
         login_as_admin(context)
-    elif "as_coach" in scenario.tags:
+    elif "as_coach" in context.tags:
         context.logged_in = True
         login_as_coach(context)
-    elif "as_learner" in scenario.tags:
+    elif "as_learner" in context.tags:
         context.logged_in = True
         login_as_learner(context)
 
