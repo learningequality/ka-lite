@@ -289,19 +289,19 @@ def get_content_cache(force=False, annotate=False, language=None):
     if CONTENT is None:
         CONTENT = {}
 
-    if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-        content = softload_json(
-            cache_file_path("content_{0}.json".format(language)),
-            logger=logging.debug,
-            raises=False
-        )
-        if content:
-            CONTENT[language] = content
-            return CONTENT[language]
-
     if CONTENT.get(language) is None:
-        CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
-        annotate = True
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            content = softload_json(
+                cache_file_path("content_{0}.json".format(language)),
+                logger=logging.debug,
+                raises=False
+            )
+            if content:
+                CONTENT[language] = content
+                return CONTENT[language]
+        else:
+            CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+            annotate = True
 
     if annotate:
 
