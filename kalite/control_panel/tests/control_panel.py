@@ -120,7 +120,7 @@ class FacilityControlTests(FacilityMixins,
                                            password=teacher_password)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
-                                   facility_name=self.teacher.facility.name)
+                                   facility_name=facility_name)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
 
         with self.assertRaises(NoSuchElementException):
@@ -134,7 +134,7 @@ class FacilityControlTests(FacilityMixins,
                                            password=teacher_password)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
-                                   facility_name=self.teacher.facility.name)
+                                   facility_name=facility_name)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
         #should raise NoSuchElementException if there is (incorrectly) no facility no with the warning class
         self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
@@ -153,7 +153,7 @@ class FacilityControlTests(FacilityMixins,
                                            password=teacher_password)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
-                                   facility_name=self.teacher.facility.name)
+                                   facility_name=facility_name)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
         #should raise NoSuchElementException if there is (incorrectly) no facility no with the warning class
         self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
