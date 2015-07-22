@@ -120,7 +120,10 @@ On Linux and other Unix-like systems, downloaded videos and database files are i
 Raspberry Pi
 ============
 
-For a Raspberry Pi running a Debian system, you can install the Debian package.
+For a Raspberry Pi running a Debian system, you can install the special Debian
+package, 'ka-lite-raspberry-pi'.
+
+You can find here (TODO)
 
 
 
@@ -141,30 +144,26 @@ In our tests, we found that the WiPi adaptor supported a higher number tablet co
     * Afterwards, insert the wireless USB adaptor.
     * Lastly, switch the Raspberry Pi on.
 
-#. Make sure the Raspberry Pi operating system is up-to-date.
-    * Login with the account used to install KA Lite
-    * Update the Raspberry Pi operating system by:
-        * *sudo apt-get update*
-        * *sudo apt-get upgrade*
-#. Get the installation scripts.
-    * *cd /opt*
-    * *sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git*
+#. Install the .deb package: ``dpkg -i /path/to/ka-lite-raspberry-pi.deb``
+#. Get the network configuration scripts.
+    * ``cd /opt``
+    * ``sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git``
 #. Install and configure the access point.
-    * *cd /opt/ka-lite-pi-scripts*
-    * *sudo ./configure.sh*
+    * ``cd /opt/ka-lite-pi-scripts``
+    * ``sudo ./configure.sh``
     .. note:: If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
 #. Install the USB adaptor software.
 	* If using the WiPi, run this command:
-        * *cd /opt/ka-lite-pi-scripts*
-        * *sudo ./use_wipi.sh*
+        * ``cd /opt/ka-lite-pi-scripts``
+        * ``sudo ./use_wipi.sh``
     * If using the Edimax EW-7811Un, run this command:
-        * *cd /opt/ka-lite-pi-scripts*
-        * *sudo ./use_edimax.sh*
+        * ``cd /opt/ka-lite-pi-scripts``
+        * ``sudo ./use_edimax.sh``
 #. Complete the access point configuration
-    * *sudo python ./configure_network_interfaces.py*
-    * *sudo insserv hostapd*
+    * ``sudo python ./configure_network_interfaces.py``
+    * ``sudo insserv hostapd``
 #. Finally
-    * *sudo reboot*
+    * ``sudo reboot``
     * A wireless network named "kalite" should be available.
     * Connect to this network
     * If the KA Lite server is started, browse to 1.1.1.1
