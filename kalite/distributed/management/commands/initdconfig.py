@@ -1,11 +1,14 @@
 """
 """
+import getpass
 import os
 import sys
+import warnings
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-import getpass
+
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
 
 script_template = """#!/bin/sh
 
@@ -80,13 +83,17 @@ class Command(BaseCommand):
     help = "Print init.d startup script for the server daemon."
 
     def handle(self, *args, **options):
+
+        warnings.warn("Use of the initdconfig command will be removed in 0.15,"
+                      "in favor of having the run-at-boot functionality implemented by the installers.", DeprecationWarning)
+
         if settings.IS_SOURCE:
             executable_path = os.path.abspath(os.path.join(settings.PROJECT_PATH, "..", "bin", "kalite"))
             cwd = settings.PROJECT_PATH
         else:
             executable_path = "kalite"
             cwd = "/"
-        
+
         self.stdout.write(
             script_template % {
                 "executable_path": executable_path,
