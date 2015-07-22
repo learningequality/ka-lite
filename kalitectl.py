@@ -667,11 +667,14 @@ def diagnose():
         try:
             from securesync.models import Device
             device = Device.get_own_device()
+            sync_sessions = device.client_sessions.all()
+            zone = device.get_zone()
             diag("device name", str(device.name))
-            diag("device UUID", str(device.get_uuid()))
+            diag("device ID", str(device.id))
             diag("device registered", str(device.is_registered()))
-            diag("device synced", str(device.client_sessions.all().count()) + " times")
-            diag("zone", device.get_zone())
+            diag("synced", str(sync_sessions.latest('timestamp').timestamp if sync_sessions.exists() else "Never"))
+            diag("sync result", ("OK" if sync_sessions.latest('timestamp').errors == 0 else "Error") if sync_sessions.exists() else "-")
+            diag("zone ID", str(zone.id) if zone else "Unset")
         except:
             diag("Device failure", traceback.format_exc())
     
