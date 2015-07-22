@@ -230,7 +230,7 @@ class my_install_scripts(install_scripts):
 if STATIC_BUILD:
     
     manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
-    manifest_content += "\n" + "recursive-include dist-packages *"
+    manifest_content += "\n" + "recursive-include dist-packages *\nrecursive-exclude dist-packages *pyc"
     file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
     
     sys.stderr.write(
