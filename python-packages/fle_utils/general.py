@@ -250,6 +250,9 @@ def json_ascii_decoder(data):
 
 
 def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
+    # TODO(benjaoming): What's this? No comment for crazy statement for
+    # reference value'ed kwarg :/ default=X is only used in kalite/basetests/tests.py
+    # so can easily be removed anyways.
     if default == {}:
         default = {}
     try:

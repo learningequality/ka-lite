@@ -46,11 +46,22 @@ if not os.path.exists(django_settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=django_settings.CHANNEL))
 
 
+def cache_file_path(basename):
+    """Consistently return path for a cache filename. This path has to be
+    writable for the user running kalite."""
+    assert "/" not in basename, "Please use a valid filename"
+    cache_dir = os.path.join(django_settings.USER_DATA_ROOT, 'cache')
+    if not os.path.exists(cache_dir):
+        os.makedirs(cache_dir)
+    return os.path.join(cache_dir, basename)
+
+
 # Globals that can be filled
 TOPICS = None
 CACHE_VARS.append("TOPICS")
+CNT=0
 def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
-
+    
     # Hardcode the Brazilian Portuguese mapping that only the central server knows about
     # TODO(jamalex): BURN IT ALL DOWN!
     if language == "pt-BR":
@@ -67,19 +78,24 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
         TOPICS = {}
     if TOPICS.get(channel) is None:
         TOPICS[channel] = {}
-    if annotate or TOPICS.get(channel, {}).get(language) is None:
-        topics = softload_json(settings.TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
 
-        # Just loaded from disk, so have to restamp.
-        annotate = True
+    if annotate or TOPICS.get(channel, {}).get(language) is None:
+        cached_topics = None
+        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
+            cached_topics = softload_json(
+                cache_file_path("topic_{0}_{1}.json".format(channel, language)),
+                logger=logging.debug,
+                raises=False
+            )
+        if cached_topics:
+            TOPICS[channel][language] = cached_topics
+            annotate = False
+        else:
+            topics = softload_json(settings.TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
+            # Just loaded from disk, so have to restamp.
+            annotate = True
 
     if annotate:
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            topics = softload_json(settings.TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", logger=logging.debug, raises=False)
-            if topics:
-                TOPICS[channel][language] = topics
-                return TOPICS[channel][language]
-
         flat_topic_tree = []
 
         # Loop through all the nodes in the topic tree
@@ -130,7 +146,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(settings.TOPICS_FILEPATHS.get(channel) + "_" + language + ".cache", "w") as f:
+                with open(cache_file_path("topic_{0}_{1}.json".format(channel, language)), "w") as f:
                     json.dump(TOPICS[channel][language], f)
             except IOError as e:
                 logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
@@ -168,12 +184,18 @@ def get_exercise_cache(force=False, language=None):
         EXERCISES = {}
     if EXERCISES.get(language) is None:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            exercises = softload_json(settings.EXERCISES_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
+            exercises = softload_json(
+                cache_file_path("exercises_{0}.json".format(language)),
+                logger=logging.debug,
+                raises=False
+            )
             if exercises:
                 EXERCISES[language] = exercises
                 return EXERCISES[language]
         EXERCISES[language] = softload_json(settings.EXERCISES_FILEPATH, logger=logging.debug, raises=False)
-        if language == "en":  # English-language exercises live in application space, translations in user space
+        
+        # English-language exercises live in application space, translations in user space
+        if language == "en":
             exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
         else:
             exercise_root = os.path.join(django_settings.USER_DATA_ROOT, "exercises")
@@ -197,7 +219,7 @@ def get_exercise_cache(force=False, language=None):
             elif exercise.get("uses_assessment_items", False):
                 available = False
                 items = []
-                for item in exercise.get("all_assessment_items","[]"):
+                for item in exercise.get("all_assessment_items", "[]"):
                     item = json.loads(item)
                     if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
                         items.append(item)
@@ -227,7 +249,7 @@ def get_exercise_cache(force=False, language=None):
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(settings.EXERCISES_FILEPATH + "_" + language + ".cache", "w") as f:
+                with open(cache_file_path("exercises_{0}.json".format(language)), "w") as f:
                     json.dump(EXERCISES[language], f)
             except IOError as e:
                 logging.warn("Annotated exercise cache file failed in saving with error {e}".format(e=e))
@@ -266,16 +288,22 @@ def get_content_cache(force=False, annotate=False, language=None):
 
     if CONTENT is None:
         CONTENT = {}
-    if CONTENT.get(language) is None:
-        CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
-        annotate = True
 
-    if annotate:
+    if CONTENT.get(language) is None:
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(settings.CONTENT_FILEPATH + "_" + language + ".cache", logger=logging.debug, raises=False)
+            content = softload_json(
+                cache_file_path("content_{0}.json".format(language)),
+                logger=logging.debug,
+                raises=False
+            )
             if content:
                 CONTENT[language] = content
                 return CONTENT[language]
+        else:
+            CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+            annotate = True
+
+    if annotate:
 
         # Loop through all content items and put thumbnail urls, content urls,
         # and subtitle urls on the content dictionary, and list all languages
@@ -348,7 +376,7 @@ def get_content_cache(force=False, annotate=False, language=None):
 
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(settings.CONTENT_FILEPATH + "_" + language + ".cache", "w") as f:
+                with open(cache_file_path("content_{0}.json".format(language)), "w") as f:
                     json.dump(CONTENT[language], f)
             except IOError as e:
                 logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
