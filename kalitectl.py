@@ -62,6 +62,7 @@ from __future__ import print_function
 # Add distributed python-packages subfolder to current path
 # DO NOT IMPORT BEFORE THIS LIKE
 import os
+import platform
 import socket
 import sys
 import time
@@ -638,7 +639,7 @@ def diagnose():
     
     diag("KA Lite version", kalite.__version__)
     diag("python", sys.version)
-    diag("platform", "\n".join(os.uname()))
+    diag("platform", platform.platform())
     
     try:
         __, __, port = get_pid()
