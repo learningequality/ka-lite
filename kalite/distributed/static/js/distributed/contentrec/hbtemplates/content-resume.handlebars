@@ -5,7 +5,7 @@
       <h1>{{_ "Resume" }}</h1>
     </div>
     <div class="col-xs-3">
-      <h1 class="glyphicon glyphicon-play-circle" aria-hidden="true"></h1>
+      <span class="glyphicon glyphicon-play-circle gly-h1" aria-hidden="true" role="presentation"></span>
     </div>
     <hr class="module_divider" />
   </div>
@@ -16,21 +16,27 @@
       <div class="row">
         <center>
           <div class="col-xs-12">
-            <h4>{{ title }}</h4>
+            <h2 class="h4">{{ title }}</h2>
           </div>
         </center>
       </div>
       <div class="row">
         <div class="col-xs-12">
           <center>
-            <img src="{{content_urls.thumbnail}}" class="img-responsive" alt="{{ truncate description 100 }}">
+          <!--ALT for image gets read from 'description' so it doesn't need to be read twice-->
+            <img src="{{content_urls.thumbnail}}" class="img-responsive"
+                 {{#if description }}
+                     aria-hidden="true" role="presentation"
+                 {{else}}
+                     alt="{{ truncate description 150 }}"
+                 {{/if}}>
           </center>
         </div>
       </div>
         {{#if description }}
         <div class="row">
           <div class="col-xs-12">
-            <h3>{{_ "Description" }}:</h3>
+            <p class="h3">{{_ "Description" }}:</p>
           </div>
         </div>
         <div class="row">
@@ -43,13 +49,13 @@
       <div class="row">
         <div class="col-xs-3">
           <center>
-            <h1 id="exercise-icon" class="icon-{{kind}} glyphicon-expand"></h1>
+            <span id="exercise-icon" class="icon-{{kind}} glyphicon glyphicon-pencil gly-h1" aria-hidden="true" role="presentation"></span>
           </center>
         </div> 
         
         <div class="col-xs-9">
-          <h4><small>{{_ "Exercise" }}:</small></h4>
-          <h4>{{ title }}</h4>
+          <h2 class="h4">{{_ "Exercise" }}:<br />
+          {{ title }}</h2>
         </div>
         
 <!-- NO descriptions for excercise? Is it necessary?
