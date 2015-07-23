@@ -9,6 +9,8 @@ var ExerciseModels = require("exercises/models");
 var ContentViews = require("content/views");
 var Models = require("./models");
 
+var RatingView = require("rating/views");
+
 // Views
 
 var ContentAreaView = BaseView.extend({
@@ -34,6 +36,7 @@ var ContentAreaView = BaseView.extend({
         this.currently_shown_view = view;
         // show the view
         this.$(".content").html("").append(view.$el);
+        this.rating_view = this.add_subview(RatingView, {el: this.$("#rating-container-wrapper")});
     },
 
     close: function() {
