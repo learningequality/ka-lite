@@ -309,7 +309,7 @@ var TabularReportView = BaseView.extend({
 
     template: require("./hbtemplates/tabular-view.handlebars"),
 
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this, "set_data_model");
         this.complete_callback = options.complete;
         this.set_data_model();
