@@ -18,6 +18,9 @@
         </div>
         <div class="col-xs-10">
             <div class="progress playlist-progress-bar">
+                {{#unless vid_pct_started}}
+                    <span class="sr-only">{{_ "You haven't started to watch videos! " }}</span>
+                {{/unless}}
                 {{#if vid_pct_complete}}
                     <div class="progress-bar progress-bar-success" title="% Completed" style="width: {{vid_pct_complete}}%">
                         <span class="sr-only">{{_ "Of those you have completed " }}</span>
@@ -44,6 +47,9 @@
         </div>
         <div class="col-xs-10">
             <div class="progress playlist-progress-bar">
+                {{#if ex_status.notstarted}}
+                    <span class="sr-only">{{_ "You haven't started to work on exercises! " }}</span>
+                {{/if}}
                 {{#if ex_pct_mastered}}
                     <div class="progress-bar progress-bar-success" title="% Mastered" style="width: {{ex_pct_mastered}}%">
                         <span class="sr-only">{{_ "Of those you have mastered " }}</span>
@@ -70,13 +76,17 @@
     <div class="row progress-block">
         <div class="col-xs-2">
             <div class="progress-indicator progress-indicator-lg center-block {{quiz_status}}">
+                <span class="sr-only">{{_ "There are " }}</span>
                 <span class="sidebar-icon icon-Quiz icon-label icon-label-lg"></span>
+                <span class="sr-only">{{_ " quizes." }}</span>
             </div>
         </div>
         <div class="col-xs-10">
             <div class="progress playlist-progress-bar">
                 {{#if quiz_pct_score}}
                 <div class="progress-bar {{quiz_status}}" title="% Score" style="width: {{quiz_pct_score}}%">
+                    {{!-- Radina: TODO - revise once quizzes are operational --}}
+                    <span class="sr-only">{{_ "And your score is " }}</span>
                     <span>{{quiz_pct_score}}%</span>
                 </div>
                 {{/if}}
@@ -91,7 +101,7 @@
     </div>
     <div class="row playlist-progress-details">
         <div class="col-xs-12">
-            <img class="center-block" src="/static/images/loading.gif"/>    
+            <img class="center-block" src="/static/images/loading.gif" aria-hidden="true" role="presentation"/>
         </div>
     </div>
 </div>
