@@ -98,6 +98,7 @@ def impl(context):
 
 def fill_field(context, text, field_id):
     field = find_id_with_wait(context, field_id)
+    field.send_keys("")  # Send empty string to ensure focus is on element.
     field.send_keys(text)
 
 def fill_username(context, text):

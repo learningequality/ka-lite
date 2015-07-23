@@ -18,9 +18,9 @@ def step_impl(context):
 
 @given("superuser is deleted")
 def step_impl(context):
-    if User.objects.exists():
+    if User.objects.all().exists():
         User.objects.all().delete()
-    assert not User.objects.exists(), "superuser not deleted successfully!"
+    assert not User.objects.all().exists(), "superuser not deleted successfully!"
 
 @then("refresh homepage")
 def step_impl(context):
