@@ -14,7 +14,7 @@ from kalite.topic_tools import get_exercise_cache, get_content_cache
 def before_scenario(context, scenario):
     base_before_scenario(context, scenario)
 
-    if "with_progress" in scenario.tags:
+    if "with_progress" in context.tags:
         user = FacilityUser.objects.get(username=context.user, facility=getattr(context, "facility", None))
         exercises = random.sample(get_exercise_cache().keys(), 2)
         for exercise in exercises:
