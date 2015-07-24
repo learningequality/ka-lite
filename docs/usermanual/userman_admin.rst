@@ -645,13 +645,22 @@ You can also run the ``kalite`` with a completely different Python settings modu
 Changing base settings
 ^^^^^^^^^^^^^^^^^^^^^^
 
-By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like:
+By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like::
 
-  .. ::
-    from kalite.project.settings.raspberry_pi import *
-    # Put your settings here, e.g.
-    # MY_SETTING_VAR = 123
+  from kalite.project.settings.raspberry_pi import *
+  # Put your settings here, e.g.
+  # MY_SETTING_VAR = 123
 
+
+.. NOTE::
+    When changing ``CONTENT_ROOT``, you should also change your ``DATABASES`` **if you
+    have downloaded your own assessment items** and you want to keep the
+    read-only assessment_items database (~50 MB) together
+    with your other media contents (for portability). Example::
+      
+      from kalite.project.settings.base import *
+      CONTENT_ROOT = '/example'
+      DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
 
 
 Available settings
@@ -661,37 +670,45 @@ Available settings
 Most common settings
 ^^^^^^^^^^^^^^^^^^^^
 
-* DEBUG = <True or False> (default = False) -- Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
-* CONTENT_ROOT = "<path to desired content folder>" (default=ka-lite/content)
-  This is the path that KA Lite will use to look for KA Lite video files to play.  Change the path to another local directory to get video files from that directory. NB! Directory has to be writable for the user running the server in order to download videos.
-* TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")
+* ``DEBUG = <True or False> (default = False)``
+  Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
+* ``CONTENT_ROOT = "<path to desired content folder>" (default=~/.kalite/content)``
+  This is the path that KA Lite will use to look for KA Lite video files to play.
+  Change the path to another local directory to get video files from that directory.
+  NB! Directory has to be writable for the user running the server in order to download videos.
+* ``ASSESSMENT_ITEMS_ZIP_URL = "scheme://path/to/assessmentitems.zip"``
+  ``(default=https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip)``
+  This is useful if you need an auto-deployment to fetch assessment items (exercises) from a local source. You can use
+  ``kalite manage setup --dl-assessment-items`` to automatically download assessment items.
+* ``TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")``
   You can set this to be the local time zone for your installation. Choices can be found here.
-* LANGUAGE_CODE = "<desired ISO 639-1 Language Code>" (default = "en-us")
+* ``LANGUAGE_CODE = "<desired ISO 639-1 Language Code>" (default = "en-us")``
   You can set this to the desired language code for this installation (All choices can be found here).  If there are translations available, our web server will show them in KA Lite. Soon, we hope to provide support for internationalized content inside the KA Lite interface.
-* USE_I18N = <True or False> (default = True)
+* ``USE_I18N = <True or False> (default = True)``
   If you set this to False, our web server will make some optimizations so as to avoid loading internationalization tools. Things might run a little faster, but you won't have support for translated content.
-* USE_L10N = <True or False> (default = False)
+* ``USE_L10N = <True or False> (default = False)``
   By default, this is set to False. If you set this to True, Django will format dates, numbers and calendars according to the current locale. For example, January 5, 2000 would be 1/5/2000 if locale = "en-us" and 5/1/2000 if locale = "en-gb"
 
 
 User restrictions
 ^^^^^^^^^^^^^^^^^
 
-* LOCKDOWN = <True or False> (default = False)
+* ``LOCKDOWN = <True or False> (default = False)``
   With this setting, users must be logged in order to access videos & exercises
-* DISABLE_SELF_ADMIN = <True or False> (default = False). Disables user sign ups.
+* ``DISABLE_SELF_ADMIN = <True or False> (default = False)``
+  Disables user sign ups.
 
 
 Online Synchronization
 ^^^^^^^^^^^^^^^^^^^^^^
 
-* USER_LOG_MAX_RECORDS = <desired maxium for user log records> (default = 0)
+* ``USER_LOG_MAX_RECORDS = <desired maxium for user log records> (default = 0)``
   When this is set to any non-zero number, we will record (and sync for online tracking) user login activity, summarized for every month (which is configurable, see below).  Default is set to 0, for efficiency purposes--but if you want to record this, setting to 1 is enough!  The # of records kept are not "summary" records, but raw records of every login.  These "raw" data are not synced, but are kept on your local machine only--there's too many of them.  Currently, we have no specific report to view these data (though we may have for v0.10.1)
-* USER_LOG_SUMMARY_FREQUENCY = <desired frequency in the following format (number, amount of time)> (default = (1, "months")
+* ``USER_LOG_SUMMARY_FREQUENCY = <desired frequency in the following format (number, amount of time)> (default = (1, "months")``
   This determines the granularity of how we summarize and store user log data.  One database row is kept for each student, on each KA Lite installation, for the defined time period.  Acceptable values are:
   (1, "months"), (2, "months"), (3, "months"), (6, "months") - separate logged data for every month, 2 months, 3 months, or 6 months, respectively
   (1, "weeks") - separate logged data for every week ** NOTE THIS MAY PRODUCE A LOT OF DATA **
-* SYNC_SESSIONS_MAX_RECORDS = <desired max records of sync sessions> (default = 10)
+* ``SYNC_SESSIONS_MAX_RECORDS = <desired max records of sync sessions> (default = 10)``
   Every time your installation syncs data, we record the time of the sync, the # of successful logs that were uploaded and downloaded, and any failures.
   This setting is how many such records we keep on your local server, for display.
   When you log in to our online server, you will see a *full* history of these records.
@@ -700,22 +717,22 @@ Online Synchronization
 Optimization of storage and system load
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* CRONSERVER_FREQUENCY = <desired frequency of cronserver to run in seconds> (default = 10 minutes)
+* ``CRONSERVER_FREQUENCY = <desired frequency of cronserver to run in seconds> (default = 10 minutes)``
   This is how frequently KA Lite tries to synchronize user data with other Devices on your Zone.  This can be changed to sync data more often (use a smaller #), or if you're never online (can be set to a large number)
-* CACHE_TIME = <desired length of cache time, in seconds> (default = 5*365*24*60*60) (that's 5 years!)
+* ``CACHE_TIME = <desired length of cache time, in seconds> (default = 5*365*24*60*60) (that's 5 years!)``
   Our basic topic pages, video pages, and exercise pages rarely change--only when you download new videos (changes made by user logins are made in a different way).  Therefore, we can "cache" copies of these pages, to avoid constantly regenerating them, and speed up KA Lite.  We have logic to delete the cached copies, and therefore generate new copies, if you download new videos or delete old videos through our interface.
   If you would like to disable caching, set CACHE_TIME = 0 .
   Read a little more about caching on Wikipedia.
-* CACHE_LOCATION = '<path to cache directory>' (default= dir named kalite_web_cache in the OS temporary dir)
+* ``CACHE_LOCATION = '<path to cache directory>' (default= dir named kalite_web_cache in the OS temporary dir)``
   Some operating systems will clear the temporary directories when the system is rebooted.  To retain the cache between reboots, an alternative location can be specified.  (for example on Linix, "/var/tmp/kalite_web_cache")
-* CHERRYPY_THREAD_COUNT = <number of threads> (default=50)
+* ``CHERRYPY_THREAD_COUNT = <number of threads> (default=50)``
   The CherryPy Webserver can handle multiple page requests simultaneously.  The default is 50, but for slow or single CPU servers, performance will be improved if the number of threads is reduced.  Minimum number of threads is 10, optimum setting for Raspberry Pi is 18.
 
 
 Raspberry Pi
 ^^^^^^^^^^^^
 
-* USE_MPLAYER = <True or False> (default = False)
+* ``USE_MPLAYER = <True or False> (default = False)``
   With this setting, if the browser is run from the same computer as the KA Lite server, then instead of playing the video in the browser, the video will be launched outside of the browser and played in mplayer - a light-weight video player that is included with the KA Lite software.
   This is intended for use only on the Raspberry Pi, where no other video player is available.
 

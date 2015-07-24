@@ -23,7 +23,10 @@ def get_learners_from_GET(request):
     if learner_ids:
         learner_filter = Q(pk__in=learner_ids)
     elif group_ids:
-        learner_filter = Q(group__pk__in=group_ids)
+        if "Ungrouped" in group_ids:
+            learner_filter = Q(group__pk__in=group_ids) | Q(group__isnull=True)
+        else:
+            learner_filter = Q(group__pk__in=group_ids)
     else:
         # Do this to ensure that we never return more than one facility's worth of anything.
         learner_filter = Q(facility__pk__in=facility_ids)

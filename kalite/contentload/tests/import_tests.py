@@ -12,6 +12,7 @@ from kalite.main.tests.base import MainTestCase
 from kalite.contentload.management.commands.channels import import_channel, base
 
 from fle_utils.general import ensure_dir
+import unittest
 
 
 class TestContentImportTopicTree(MainTestCase):
@@ -95,6 +96,7 @@ class TestContentImportTopicTree(MainTestCase):
             for child in node["children"]:
                 self.recursively_find_nodes(child, key, value, cache)
 
+    @unittest.skip("Skipping until kaa package is replaced")
     def test_create_topic_tree(self):
         slug = os.path.basename(self.tempdir)
         topic_tree = {
