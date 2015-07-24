@@ -14,7 +14,7 @@ Documentation development
 -------------------------
 
 #. Work from the *develop* branch.
-#. From the base directory, the documenation can be found in the ``docs/``
+#. From the base directory, the documentation can be found in the ``docs/``
    subdirectory. Specific pages of the docs are each associated with a different
    .rst file, potentially in a subdirectory of ``docs/``.
 #. The documentation is written in
