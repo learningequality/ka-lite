@@ -24,7 +24,10 @@ Most Views also have an associated Handlebars template, which defines the HTML a
 
 Often the data contained in a Backbone Model can change while the user is still on the same page (for example, a student's total points can change while they are interacting with an exercise, so we want their displayed points to update whenever the 'points' attribute of the model updates too).
 
-Here is an example of a Backbone View in KA Lite that does just that::
+Here is an example of a Backbone View in KA Lite that does just that:
+
+
+.. code-block:: js
 
     var TotalPointView = Backbone.View.extend({
 
@@ -69,7 +72,9 @@ The part of the page that the view is scoped to can be refered to by ``this.$el`
 Creating Your Own Backbone View
 -------------------------------
 
-To create a new Backbone View, you will either add to an existing Javascript file in the project, or create a new file. For example if you were to add a new View to the coachreports app you could create a file under ``kalite/coachreports/static/js/coachreports/hexagon_report.js``. Some boilerplate to start off with might look something like this::
+To create a new Backbone View, you will either add to an existing Javascript file in the project, or create a new file. For example if you were to add a new View to the coachreports app you could create a file under ``kalite/coachreports/static/js/coachreports/hexagon_report.js``. Some boilerplate to start off with might look something like this:
+
+.. code-block:: js
 
     var HexagonReportView = BaseView.extend({
 
@@ -89,21 +94,27 @@ To create a new Backbone View, you will either add to an existing Javascript fil
 
 ``this.$el.html(this.template(this.model.attributes));`` this line will insert all the attributes of the model into the template for rendering, and then set the HTML of the subsection of the DOM for the view to the resulting HTML.
 
-For this to work, there must be a file ``kalite/coachreports/hbtemplates/reports/hexagon-counting.handlebars`` that contains the Handlebars.js template for this view. For a simple report, the template might look something like this::
+For this to work, there must be a file ``kalite/coachreports/hbtemplates/reports/hexagon-counting.handlebars`` that contains the Handlebars.js template for this view. For a simple report, the template might look something like this:
+
+.. code-block:: html
 
     <div class="hexagon-report">
         <h3>{{_ "Hexagon Report" }}</h3>
         <p>{{_ "Current number of hexagons:" }}{{number_of_hexagons}}</p>
     </div>
 
-To have this render in a particular Django template, both of the above files would need to be imported through ``<script>`` tags in the Django template. The relevant tags to add in this case would be::
+To have this render in a particular Django template, both of the above files would need to be imported through ``<script>`` tags in the Django template. The relevant tags to add in this case would be:
+
+.. code-block:: html
 
     <script src="{% url 'handlebars_templates' module_name='reports' %}"></script>
     <script type="text/javascript" src="{% static 'js/coachreports/hexagon_report.js' %}"></script>
 
 Note that for the Handlebars importing, only the folder name is necessary to be imported, not each individual template. It is also important that you do not place this script tag inside a Django-Compressor compress block.
 
-Finally, to actually have this render on the page, we would need to have a Backbone Model that is able to fetch the data from an API endpoint on the server, and when the fetch is successfully completed, prompt the view to be created. Assuming we have a HexagonReportModel already defined, we could insert the following code into the template to initialize this report::
+Finally, to actually have this render on the page, we would need to have a Backbone Model that is able to fetch the data from an API endpoint on the server, and when the fetch is successfully completed, prompt the view to be created. Assuming we have a HexagonReportModel already defined, we could insert the following code into the template to initialize this report:
+
+.. code-block:: html
 
     <script>
         $(function(){
@@ -121,7 +132,7 @@ Line by line this means - ``$(function(){<code here>});`` wait for the browser t
 ``window.hexagonReportModel = new window.HexagonReportModel();`` make a new instance of the HexagonReportModel.
 ``hexagonReportModel.fetch().then(function(){<code here>});`` get the data for this particular model from the server, and when that has finished, then execute the code inside the function.
 
-::
+.. code-block:: js
 
     window.hexagonView = new HexagonReportView({
         el: $("#student-report-container"),
