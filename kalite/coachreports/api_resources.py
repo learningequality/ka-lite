@@ -4,7 +4,7 @@ from tastypie.resources import Resource
 
 from django.utils.translation import ugettext as _
 
-from kalite.shared.decorators.auth import get_user_from_request
+from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from .models import PlaylistProgress, PlaylistProgressDetail
 
 class CoachReportBaseResource(Resource):
