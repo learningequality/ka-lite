@@ -475,6 +475,7 @@ var FacilitySelectView = Backbone.View.extend({
             selected: this.model.get("facility")
         }));
         var id = this.model.get("facility");
+        // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         this.model.set({
             "facility_name": this.facility_list.find(function(model){ return model.get("id") === id;}).get("name")
         });
@@ -487,6 +488,7 @@ var FacilitySelectView = Backbone.View.extend({
 
     facility_changed: function() {
         var id = this.$(":selected").val();
+        // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         this.model.set({
             "facility": id,
             "facility_name": this.facility_list.find(function(model){ return model.get("id") === id;}).get("name")
@@ -512,6 +514,7 @@ var GroupSelectView = Backbone.View.extend({
         var self = this;
 
         // Add in 'All' and 'Ungrouped' groups if appropriate
+        // Might be better to add in to the parse method of the collection
         if (this.group_list.length > 0) {
             this.group_list.add({
                 id: "",
@@ -524,6 +527,7 @@ var GroupSelectView = Backbone.View.extend({
         }
 
         // Remove reference to groups from another facility
+        // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         if (!this.group_list.some(function(model){ return model.get("id") === self.model.get("group");})) {
             this.model.set({
                 "group": undefined,
@@ -537,6 +541,7 @@ var GroupSelectView = Backbone.View.extend({
         }));
 
         var id = this.model.get("group");
+        // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         this.model.set({
             "group_name": this.group_list.find(function(model){ return model.get("id") === id;}).get("name")
         });
@@ -550,6 +555,7 @@ var GroupSelectView = Backbone.View.extend({
 
     group_changed: function() {
         var id = this.$(":selected").val();
+        // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         this.model.set({
             "group": id,
             "group_name": this.group_list.find(function(model){ return model.get("id") === id;}).get("name")
