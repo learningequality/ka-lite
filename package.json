@@ -46,7 +46,7 @@
     "scriptjs": "^2.5.7",
     "soundmanager2": "^2.97.20150601",
     "underscore": "~1.8.3",
-    "video.js": "^4.12.10",
+    "video.js": "^4.11.4",
     "watchify": "^3.2.3"
   }
 }
