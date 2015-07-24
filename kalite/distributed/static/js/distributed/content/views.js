@@ -17,7 +17,7 @@ window.ContentWrapperView = BaseView.extend({
         if (this.data_model.get("id")) {
             this.data_model.fetch().then(function() {
                 window.statusModel.loaded.then(self.setup_content_environment);
-            })
+            });
         }
 
         
