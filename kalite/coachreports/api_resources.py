@@ -26,7 +26,6 @@ class CoachReportBaseResource(Resource):
         return kwargs
 
     def obj_get_list(self, bundle, **kwargs):
-        self.permission_check(bundle.request)
         return self.get_object_list(bundle.request)
 
 
