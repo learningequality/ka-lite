@@ -36,18 +36,13 @@ import json
 def check_setup_status(handler):
     """
     Decorator for validating that KA Lite post-install setup has completed.
-    NOTE that this decorator must appear before the backend_cache_page decorator,
+    NOTE that this decorator must appear before  the backend_cache_page decorator,
     so that it is run even when there is a cache hit.
     """
     def check_setup_status_wrapper_fn(request, *args, **kwargs):
 
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
-
-        if User.objects.exists():
-            request.has_superuser = True
-            # next line is for testing
-            # User.objects.all().delete()
 
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?

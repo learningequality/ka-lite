@@ -14,6 +14,7 @@ from django.conf import settings; logging = settings.LOG
 from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
@@ -185,6 +186,7 @@ class FacilityUserResource(ModelResource):
             "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
             "docs_exist": getattr(settings, "DOCS_EXIST", False),
+            "has_superuser": User.objects.filter(is_superuser=True).exists(),
         }
 
         # Override properties using facility data

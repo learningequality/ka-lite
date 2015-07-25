@@ -1,4 +1,4 @@
-var ToggleNavbarView = require("../user/views");
+var user = require("../user/views");
 var $ = require("../base/jQuery");
 var _ = require("underscore");
 var messages = require("../utils/messages");
@@ -15,7 +15,7 @@ $(function(){
 
     global.statusModel = new StatusModel();
     global.statusModel.fetch_data();
-    global.toggleNavbarView = new ToggleNavbarView({model: statusModel, el: "#topnav"});
+    global.toggleNavbarView = new user.ToggleNavbarView({model: statusModel, el: "#topnav"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
