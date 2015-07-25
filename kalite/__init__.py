@@ -4,6 +4,9 @@ import sys
 from version import *
 
 
+__version__ = VERSION
+
+
 # ROOT_DATA_PATH should point to the directory where the source files live, including the "docs" dir
 # TODO-BLOCKER(MCGallaspy): Use setuptools in the windows installer to avoid this nonsense.
 ROOT_DATA_PATH = os.environ.get(

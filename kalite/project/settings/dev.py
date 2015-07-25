@@ -66,8 +66,13 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',  # This belongs to DISABLE_PANELS by default
 )
+
 DEBUG_TOOLBAR_CONFIG = {
     'ENABLE_STACKTRACES': True,
 }
-# Debug toolbar must be set in conjunction with CACHE_TIME=0
-CACHE_TIME = 0
+
+CACHES["default"] = {
+    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    'LOCATION': 'unique-snowflake',
+    'TIMEOUT': 24 * 60 * 60  # = 24 hours
+}
