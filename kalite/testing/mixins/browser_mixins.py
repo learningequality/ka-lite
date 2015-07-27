@@ -119,12 +119,6 @@ class BrowserActionMixins(object):
             if exac is not None:
                 self.assertEqual(exac, message.text, "Make sure message = '%s'" % exac)
 
-    def browser_wait_for_ajax_calls_to_finish(self):
-            num_ajax_calls = 1 # to ensure at least one loop
-            while num_ajax_calls > 0:
-                num_ajax_calls = int(self.browser.execute_script('return jQuery.active;'))
-                time.sleep(1)
-
     def browser_next_form_element(self, num_expected_links=None, max_tabs=10, browser=None):
         """
         Use keyboard navigation to traverse form elements.
