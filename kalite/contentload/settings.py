@@ -37,7 +37,7 @@ else:
         os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
 
 # This one should always the settings because it is part of settings.DATABASES
-KHAN_ASSESSMENT_ITEM_DATABASE_PATH = settings.DATABASES['assessment_items']['NAME']
+KHAN_ASSESSMENT_ITEM_DATABASE_PATH = settings.DATABASES.get('assessment_items', {}).get('NAME', '')
 
 # Default locations of specific elements from the assessment items bundle.
 # Files will be forced into this location when running unpack_assessment_zip
