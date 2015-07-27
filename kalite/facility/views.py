@@ -120,7 +120,11 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
             # New user created by admin
             elif request.is_admin or request.is_django_user:
                 messages.success(request, _("You successfully created user '%(username)s'") % {"username": form.instance.get_name()})
-                return HttpResponseRedirect(reverse("facility_management", kwargs={"zone_id": None, "facility_id": facility.id}))
+                if request.next:
+                    return HttpResponseRedirect(next)
+                else:
+                    zone_id = facility.get_zone().getattr(id, None)
+                    return HttpResponseRedirect(reverse("facility_management", kwargs={"zone_id": zone_id, "facility_id": facility.id}))
 
             # New student signed up
             else:

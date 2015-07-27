@@ -22,4 +22,3 @@ recursive-include static-libraries *
 recursive-include data *
 
 recursive-exclude python-packages *pyc
-recursive-exclude dist-packages *pyc

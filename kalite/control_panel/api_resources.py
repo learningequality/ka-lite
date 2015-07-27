@@ -87,23 +87,7 @@ class FacilityGroupResource(ModelResource):
             else:
                 qs = FacilityGroup.objects.filter(facility__id__in=facility_ids)
 
-        # Flag to return only the FacilityGroup objects and not including the "All" and "Ungrouped" options.
-        # TODO(cpauya): how to convert this into a kwargs above instead of a request.GET?
-        groups_only = bundle.request.GET.get("groups_only", True)
-        if groups_only:
-            group_list = list(qs)
-        else:
-            default_list = []
-            if qs or ungrouped_available:
-                # add the "All" option
-                default_list = [FacilityGroup(id=ALL_KEY, name=_("All"))]
-
-                # add the "Ungrouped" option
-                if ungrouped_available:
-                    fg = FacilityGroup(id=UNGROUPED_KEY, name=_("Ungrouped"))
-                    default_list.append(fg)
-            # add all the facility group options for the user
-            group_list = default_list + list(qs)
+        group_list = list(qs)
 
         # call super to trigger auth
         return super(FacilityGroupResource, self).authorized_read_list(group_list, bundle)
