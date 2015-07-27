@@ -217,7 +217,7 @@ class BrowserActionMixins(object):
                 pass
 
     def browser_wait_for_js_object_exists(self, obj_name, max_wait_time=7, step_time=0.25):
-        exists_condition = "typeof(%s) != 'undefined'" % obj_name
+        exists_condition = "typeof(%s) !== 'undefined'" % obj_name
         self.browser_wait_for_js_condition(exists_condition, max_wait_time=max_wait_time, step_time=step_time)
 
     # Actual testing methods
@@ -329,12 +329,8 @@ class BrowserActionMixins(object):
             "password": password,
             "facility": facility.id if facility else "",
         })
-        # Ensure that we're on the site, mainly so that "$" is imported
-        self.browser.get(self.reverse("homepage"))
-        self.browser_wait_for_js_object_exists("$");
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
-        self.browser.execute_script('window.FLAG=false;$.ajax({type: "POST", url: "%s", data: \'%s\', contentType: "application/json", success: function(){window.FLAG=true}})' % (url, data))
-        self.browser_wait_for_js_condition("window.FLAG")
+        self.__request(method="POST", url=url, data=data, browser=browser)
         self.browser.refresh()
 
 
@@ -361,25 +357,34 @@ class BrowserActionMixins(object):
         )
 
     def browser_logout_user(self, browser=None):
-        # Ensure that we're on the site, mainly so that "$" is imported
-        self.browser.get(self.reverse("homepage"))
-        self.browser_wait_for_js_object_exists("$")
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "logout/"
-        self.browser.execute_script('window.FLAG=false;$.ajax({type: "GET", url: "%s", success: function(){window.FLAG=true}})' % url)
-        self.browser_wait_for_js_condition("window.FLAG")
+        self.__request(method="GET", url=url, data="")
         self.browser.refresh()
 
 
-    def browser_is_logged_in(self, expected_username=None, browser=None):
+    def __request(self, method, url, data, browser=None):
         browser = browser or self.browser
-        # Ensure that we're on the site, mainly so that "$" is imported
-        self.browser.get(self.reverse("homepage"))
-        self.browser_wait_for_js_object_exists("$")
-        url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
-        request_script = "window.FLAG=false;$.ajax({url:'%s', type:'GET', success: function(data){window.FLAG=true; window.DATA=data;}});" % url
-        browser.execute_script(request_script)
+        browser.get(self.reverse("homepage"))  # Send requests from the same domain
+        browser.execute_script("""
+                var req = new XMLHttpRequest();
+                req.open("{method}", "{url}", true);
+                req.setRequestHeader("Content-Type", "application/json");
+                req.onreadystatechange = function () {{
+                    if( req.readyState === 4 ) {{
+                        window.FLAG = true;
+                        window.DATA = JSON.parse(req.responseText);
+                    }}
+                }};
+                req.send('{data}');
+            """.format(method=method, url=url, data=data)  # One must escape '{' and '}' by doubling them
+        )
         self.browser_wait_for_js_condition("window.FLAG")
-        data = browser.execute_script("return window.DATA")
+        return browser.execute_script("return window.DATA")
+
+
+    def browser_is_logged_in(self, expected_username=None, browser=None):
+        url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
+        data = self.__request(method="GET", url=url, data="", browser=browser)
         return data.get("is_logged_in", False)
 
 
