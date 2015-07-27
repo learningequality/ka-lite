@@ -8,17 +8,18 @@ import zipfile
 from multiprocessing.dummy import Pool as ThreadPool
 from threading import Lock
 
-from django.conf import settings
+from django.conf import settings as django_settings
 from django.core.management import call_command
 from django.core.management.base import NoArgsCommand
 
 import kalite.version as version
 
 from kalite.topic_tools import get_content_cache, get_exercise_cache
+from kalite.contentload import settings
 
-logging = settings.LOG
+logging = django_settings.LOG
 
-ZIP_FILE_PATH = os.path.join(settings.USER_DATA_ROOT, "assessment.zip")
+ZIP_FILE_PATH = os.path.join(django_settings.USER_DATA_ROOT, "assessment.zip")
 
 IMAGE_URL_REGEX = re.compile('https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-\%]+\.(png|gif|jpg|jpeg|svg))', flags=re.IGNORECASE)
 
