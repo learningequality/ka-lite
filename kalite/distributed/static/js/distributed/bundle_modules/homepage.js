@@ -15,7 +15,11 @@ $(function() {
     }
     window.statusModel.listenTo(window.statusModel, "change", content_rec_load);
 
-    if (!window.statusModel.get("has_superuser")) { // "has_superuser" is true if an admin user exists.
-        window.super_user_create_modal = new user.SuperUserCreateModalView();
-    }
+    window.statusModel.listenTo(window.statusModel, "change:has_superuser", function () {
+        if (!window.statusModel.get("has_superuser")) { // "has_superuser" is true if an admin user exists.
+            window.super_user_create_modal = new user.SuperUserCreateModalView();
+        } else if ( typeof window.super_user_create_modal !== "undefined" ) {
+            window.super_user_create_modal.remove();
+        }
+    });
 });

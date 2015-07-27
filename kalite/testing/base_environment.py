@@ -37,8 +37,12 @@ def before_scenario(context, scenario):
     context.logged_in = False
     # A superuser now needs to exist or UI is blocked by a modal.
     # https://github.com/learningequality/ka-lite/pull/3668
-    if not User.objects.exists():
-        User.objects.create_superuser(username='superusername', password='superpassword', email='super@email.com')
+    if not User.objects.filter(is_superuser=True).exists():
+        assert User.objects.create_superuser(
+            username='superusername',
+            password='superpassword',
+            email='super@email.com'
+        ), "Didn't create an admin user"
     if "as_admin" in context.tags:
         context.logged_in = True
         login_as_admin(context)
