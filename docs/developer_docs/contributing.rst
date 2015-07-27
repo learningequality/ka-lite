@@ -1,4 +1,4 @@
-Contributing and Development
+Contributing to KA Lite
 ============================
 
 Want to contribute? You can check us out on `github <https://github.com/learningequality/ka-lite/>`_, or browse the link(s) below.
