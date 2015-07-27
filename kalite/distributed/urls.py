@@ -98,8 +98,6 @@ urlpatterns += patterns(__package__ + '.views',
     # Allows remote admin of the distributed server
     url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 
-    url(r'^perseus/$', 'perseus', {}, 'perseus'),
-
     # the following has no "$", and thus catches anything starting with "learn/"
     url(r'^learn/', 'learn', {}, 'learn'),
 )
