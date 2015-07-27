@@ -5,10 +5,15 @@ from kalite.shared.utils import open_json_or_yml
 # THIS IS USED BY settings.py.  NEVER import settings.py here; hard-codes only!
 # Must be PEP 440 compliant: https://www.python.org/dev/peps/pep-0440/
 # Must also be of the form N.N.N for internal use, where N is a non-negative integer
-MAJOR_VERSION = "0"
-MINOR_VERSION = "14"
-PATCH_VERSION = "0"
-VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
+
+from django.utils.version import get_version
+
+VERSION_TUPLE = (0, 14, 0, "alpha", 0)
+
+MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION = map(str, VERSION_TUPLE[:3])
+
+__version__ = VERSION = get_version(VERSION_TUPLE)
+
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
 def VERSION_INFO():
