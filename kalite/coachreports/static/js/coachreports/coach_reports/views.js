@@ -327,7 +327,7 @@ var TabularReportView = BaseView.extend({
         });
 
         this.append_views(row_views, ".student-data");
-        
+
         this.$('.headrowuser').css("min-width", this.$('.headrow.data').outerWidth());
 
         if(this.complete_callback) {
@@ -429,7 +429,7 @@ var CoachSummaryView = BaseView.extend({
         var ref, ref1;
 
         if ((this.data_model != null ? this.data_model.get("learner_events") != null ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
-          show_message("warning", "No recent learner data for this group is available.");
+            show_message("warning", gettext("No recent learner data for this group is available."));
         }
 
         delete this.tabular_report_view;
@@ -442,12 +442,12 @@ var CoachSummaryView = BaseView.extend({
             this.$("#show_tabular_report").text("Loading");
             this.$("#show_tabular_report").attr("disabled", "disabled");
             this.tabular_report_view = new TabularReportView({model: this.model, complete: function() {
-                self.$("#show_tabular_report").text("Hide Tabular Report");
+                self.$("#show_tabular_report").text(gettext("Hide Tabular Report"));
                 self.$("#show_tabular_report").removeAttr("disabled");
             }});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         } else {
-            this.$("#show_tabular_report").text("Show Tabular Report");
+            this.$("#show_tabular_report").text(gettext("Show Tabular Report"));
             this.tabular_report_view.remove();
             delete this.tabular_report_view;
         }
