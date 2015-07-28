@@ -234,7 +234,7 @@ class BrowserActionMixins(object):
         """
         alert = None
 
-        WebDriverWait(self.browser, 5).until(EC.alert_is_present())
+        WebDriverWait(self.browser, 30).until(EC.alert_is_present())
         alert = self.browser.switch_to_alert()
         try:
             if not self.is_phantomjs:
