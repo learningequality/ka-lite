@@ -45,8 +45,12 @@ If you wish to view output from the server, you have a few options:
 
 
 
-How can I contribute to...
+Special Topics
 --------------------------
 .. toctree::
 
+    Front End Code <front_end_code>
     Documentation <documentation>
+    Javascript Unit Tests <javascript_testing>
+    Behavior-Driven Integration Tests <behave_testing>
+    Developer Utility Commands <utility>
