@@ -9,7 +9,6 @@ from django.core.management import call_command
 from django.core.management.base import NoArgsCommand
 from fle_utils.general import ensure_dir
 
-from kalite.i18n import LOCALE_ROOT
 from kalite.version import SHORTVERSION
 
 
@@ -48,7 +47,7 @@ class Command(NoArgsCommand):
         zf_po_file_name = "versioned/{version}-django.po".format(version=SHORTVERSION)
         zf_js_po_file_name = "versioned/{version}-djangojs.po".format(version=SHORTVERSION)
 
-        po_file_dir = os.path.join(LOCALE_ROOT, "en", "LC_MESSAGES")
+        po_file_dir = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, "en", "LC_MESSAGES")
         ensure_dir(po_file_dir)
 
         zf_po_file = zf.read(zf_po_file_name)

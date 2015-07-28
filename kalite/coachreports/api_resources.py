@@ -4,7 +4,7 @@ from tastypie.resources import Resource
 
 from django.utils.translation import ugettext as _
 
-from kalite.shared.decorators.auth import get_user_from_request
+from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from .models import PlaylistProgress, PlaylistProgressDetail
 
 class CoachReportBaseResource(Resource):
@@ -13,25 +13,8 @@ class CoachReportBaseResource(Resource):
     in the API
     """
 
-    @classmethod
-    def permission_check(self, request):
-        """
-        Require that the users are logged in, and that the user is the same student 
-        whose data is being requested, an admin, or a teacher in that facility
-        """
-        if getattr(request, "is_logged_in", False):  
-            pass
-        else:
-            raise Unauthorized(_("You must be logged in to access this page."))
-
-        if getattr(request, "is_admin", False):
-            pass
-        else:
-            user = get_user_from_request(request=request)
-            if request.GET.get("user_id") == user.id:
-                pass
-            else:
-                raise Unauthorized(_("You requested information for a user that you are not authorized to view."))
+    class Meta:
+        authorization = UserObjectsOnlyAuthorization()
 
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}
@@ -43,7 +26,6 @@ class CoachReportBaseResource(Resource):
         return kwargs
 
     def obj_get_list(self, bundle, **kwargs):
-        self.permission_check(bundle.request)
         return self.get_object_list(bundle.request)
 
 

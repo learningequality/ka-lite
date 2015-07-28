@@ -13,7 +13,7 @@ Administrator Glossary
 For users that choose to register online, there are some important terms to familiarize yourself with so that you understand how the flow of data works between installations and the online data hub.
 
 **Sharing Network**
-	A sharing network is a group of devices that share data between one another. Data can mean video content, access software applications, and certain files.
+	A Sharing Network is a group of devices that share user data. This data is synced to the central server when an Internet connection is available, and then synced down onto other devices in the same Sharing Network.
 
 **Organization**
 	An organization is a group of people responsible for administering a set of Sharing Networks. An organization can have multiple administrators and manage multiple sharing networks.
@@ -26,15 +26,6 @@ For users that choose to register online, there are some important terms to fami
 
 **Web Browser**
     A program that retrieves and presents information resources on the World Wide Web. Popular web browsers include Internet Explorer, Google Chrome, Mozilla Firefox, and Safari.
-
-**Torrent**
-    A file or files sent using the BitTorrent protocol. It can be any type of file, such as a movie, song, game, or application. During the transmission, the file is incomplete and therefore referred to as a torrent. Torrent downloads that are incomplete cannot be opened as regular files, because they do not have all the necessary data.
-
-**Seeder**
-    Seeders are users who have a complete version of the file you wish to download. If there are no seeders for a particular file, you will not be able to download the file. Seeders are extremely important, for they help distribute the file.
-
-**Bandwidth**
-    The amount of data that an Internet connection can handle in a given time. An Internet connection with larger bandwidth can move a certain amount of data much faster than an Internet connection with a lower bandwidth.
 
 Running the KA Lite Server
 ---------------------------
@@ -467,32 +458,21 @@ After registering your device:
 Downloading Videos in Bulk
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you want to download videos in bulk, your best option is to download the KA Lite videos through the `BitTorrent Sync`_ client. This will be a much faster process than using the KA Lite app to download all of the videos.
+If want to download all the videos, you'll need ~33 GB free space. To fetch all
+the videos, `download and open the according torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
 
-We have made the full set of KA videos (in the format needed by KA Lite) available via `BitTorrent Sync`_ (btsync). Note that this is different from BitTorrent; btsync allows us to add new videos or fix problems without issuing a whole new torrent file, and then having seeders split between the old and new torrent files. Here are the steps to set this up:
+Save the videos on the ``CONTENT_ROOT`` of your installation. By default, this
+is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
 
-#. Download and install `BitTorrent Sync`_.
-#. Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to type http://127.0.0.1:8888/ into the address bar of your browser to get the interface.
-#. Click the "Enter a key or link" button, and enter **BT7AOITNAIP3X3CSLE2EPQJFXJXMXVGQI**
-#. Select the "content" folder inside your KA Lite installation as the "location" (unless you want the videos to be located elsewhere).
-#. Allow the videos to sync in there from your peers! It may take a while for now, as we don't yet have many seeders on it. On that note -- please help seed by keeping it running even after you've got all the videos, if you have bandwidth to spare! This will make it easier for others to download the content as well.
+On Windows, navigate to ``X:\Documents and Settings\<username>\.kalite\content``.
 
-These are resized videos. All in all, this will take around 23 GB of space.
+.. note:: If the drive where your ``.kalite/`` folder does not have enough free disk space,
+          you can change your `Configuration Settings`_, the one named ``CONTENT_ROOT`` and
+          define a folder where your videos are downloaded to. Remember that you may want
+          to move the contents of your old ``content/`` folder.
 
-
-.. WARNING::
-    If you chose to download them to somewhere other than the content folder inside the ka-lite folder as recommended above, you need to tell KA Lite where to find them. If this is the case, follow the steps below:
-
-
-#. Make sure all video files are located in a single directory, with .mp4 extensions (KA Lite expects this!)
-#. In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``).
-#. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes.
-    **For example, on Windows:** ``CONTENT_ROOT="C:\\torrented_videos_location\\"``
-    **For example, on Linux:** ``CONTENT_ROOT="/home/me/torrented_videos_location/"``
-
-#. Restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server` .
-
-.. _BitTorrent Sync: http://www.getsync.com/
+.. note:: The ``.kalite`` folder is hidden on some systems, so if you are in a
+          file browser, you have to enable showing hidden files and folders.
 
 
 Adding assessment items (exercises)
@@ -610,22 +590,6 @@ Restarting Your Server: Mac
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
-Updating KA Lite
-----------------
-
-If a new version of KA Lite comes out, you can update to the latest version by following the instructions below.
-
-Updating on Mac OS and Linux
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-At this time, the only supported way to update is to grab the source and run the setup management command.
-Follow the instructions in the :doc:`installation guide </installguide/install_main>` to ensure you're using the latest version.
-
-Updating on Windows
-^^^^^^^^^^^^^^^^^^^
-
-To update on Windows, simply use our Windows installer. You will have the option to update from a prior version.
-See the :doc:`Windows installation guide </installguide/install_windows>`.
 
 Configuration Settings
 ----------------------
@@ -637,21 +601,25 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 Running KA Lite with your own settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In a text editor, open up ``~/.kalite/settings.py`` (on Windows, locate ``C:\Users\<username>\.kalite``). That file is where you should put your custom settings, and KA Lite will load them automatically.
+In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate 
+``X:\Documents and Settings\<username>\.kalite``). That file is where you should
+put your custom settings, and KA Lite will load them automatically.
 
-You can also run the ``kalite`` with a completely different Python settings module by specifying ``kalite <command> --settings=my_settings_module``.
+You can also run the ``kalite`` with a completely different Python settings
+module by specifying ``kalite <command> --settings=my_settings_module``.
+
+.. note:: The ``.kalite`` folder is hidden on some systems, so if you are in a
+          file browser, you have to enable showing hidden files and folders.
 
 
 Changing base settings
 ^^^^^^^^^^^^^^^^^^^^^^
 
-By default, ``~/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like:
+By default, ``/home/user/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like::
 
-  .. ::
-    from kalite.project.settings.raspberry_pi import *
-    # Put your settings here, e.g.
-    # MY_SETTING_VAR = 123
-
+  from kalite.project.settings.raspberry_pi import *
+  # Put your settings here, e.g.
+  # MY_SETTING_VAR = 123
 
 
 Available settings
@@ -661,61 +629,57 @@ Available settings
 Most common settings
 ^^^^^^^^^^^^^^^^^^^^
 
-* DEBUG = <True or False> (default = False) -- Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
-* CONTENT_ROOT = "<path to desired content folder>" (default=ka-lite/content)
-  This is the path that KA Lite will use to look for KA Lite video files to play.  Change the path to another local directory to get video files from that directory. NB! Directory has to be writable for the user running the server in order to download videos.
-* TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")
+* ``DEBUG = <True or False> (default = False)``
+  Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
+* ``CONTENT_ROOT = "<path to desired content folder>" (default=/home/user/.kalite/content)``
+  This is the path that KA Lite will use to look for KA Lite video files to play.
+  Change the path to another local directory to get video files from that directory.
+  NB! Directory has to be writable for the user running the server in order to download videos.
+
+.. warning::
+    When changing ``CONTENT_ROOT``, you should also change your ``DATABASES`` **if you
+    have downloaded your own assessment items** and you want to keep the
+    read-only assessment_items database (~50 MB) together
+    with your other media contents (for portability). Example::
+      
+      from kalite.project.settings.base import *
+      CONTENT_ROOT = '/example'
+      DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
+
+* ``ASSESSMENT_ITEMS_ZIP_URL = "scheme://path/to/assessmentitems.zip"``
+  ``(default=https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip)``
+  This is useful if you need an auto-deployment to fetch assessment items (exercises) from a local source. You can use
+  ``kalite manage setup --dl-assessment-items`` to automatically download assessment items.
+* ``TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")``
   You can set this to be the local time zone for your installation. Choices can be found here.
-* LANGUAGE_CODE = "<desired ISO 639-1 Language Code>" (default = "en-us")
+* ``LANGUAGE_CODE = "<desired ISO 639-1 Language Code>" (default = "en-us")``
   You can set this to the desired language code for this installation (All choices can be found here).  If there are translations available, our web server will show them in KA Lite. Soon, we hope to provide support for internationalized content inside the KA Lite interface.
-* USE_I18N = <True or False> (default = True)
+* ``USE_I18N = <True or False> (default = True)``
   If you set this to False, our web server will make some optimizations so as to avoid loading internationalization tools. Things might run a little faster, but you won't have support for translated content.
-* USE_L10N = <True or False> (default = False)
+* ``USE_L10N = <True or False> (default = False)``
   By default, this is set to False. If you set this to True, Django will format dates, numbers and calendars according to the current locale. For example, January 5, 2000 would be 1/5/2000 if locale = "en-us" and 5/1/2000 if locale = "en-gb"
 
 
 User restrictions
 ^^^^^^^^^^^^^^^^^
 
-* LOCKDOWN = <True or False> (default = False)
+* ``LOCKDOWN = <True or False> (default = False)``
   With this setting, users must be logged in order to access videos & exercises
-* DISABLE_SELF_ADMIN = <True or False> (default = False). Disables user sign ups.
+* ``DISABLE_SELF_ADMIN = <True or False> (default = False)``
+  Disables user sign ups.
 
 
 Online Synchronization
 ^^^^^^^^^^^^^^^^^^^^^^
 
-* USER_LOG_MAX_RECORDS = <desired maxium for user log records> (default = 0)
+* ``USER_LOG_MAX_RECORDS = <desired maxium for user log records> (default = 0)``
   When this is set to any non-zero number, we will record (and sync for online tracking) user login activity, summarized for every month (which is configurable, see below).  Default is set to 0, for efficiency purposes--but if you want to record this, setting to 1 is enough!  The # of records kept are not "summary" records, but raw records of every login.  These "raw" data are not synced, but are kept on your local machine only--there's too many of them.  Currently, we have no specific report to view these data (though we may have for v0.10.1)
-* USER_LOG_SUMMARY_FREQUENCY = <desired frequency in the following format (number, amount of time)> (default = (1, "months")
+* ``USER_LOG_SUMMARY_FREQUENCY = <desired frequency (number, amount of time)>``
+  ``(default = (1, "months")``
   This determines the granularity of how we summarize and store user log data.  One database row is kept for each student, on each KA Lite installation, for the defined time period.  Acceptable values are:
   (1, "months"), (2, "months"), (3, "months"), (6, "months") - separate logged data for every month, 2 months, 3 months, or 6 months, respectively
   (1, "weeks") - separate logged data for every week ** NOTE THIS MAY PRODUCE A LOT OF DATA **
-* SYNC_SESSIONS_MAX_RECORDS = <desired max records of sync sessions> (default = 10)
+* ``SYNC_SESSIONS_MAX_RECORDS = <desired max records of sync sessions> (default = 10)``
   Every time your installation syncs data, we record the time of the sync, the # of successful logs that were uploaded and downloaded, and any failures.
   This setting is how many such records we keep on your local server, for display.
   When you log in to our online server, you will see a *full* history of these records.
-
-
-Optimization of storage and system load
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-* CRONSERVER_FREQUENCY = <desired frequency of cronserver to run in seconds> (default = 10 minutes)
-  This is how frequently KA Lite tries to synchronize user data with other Devices on your Zone.  This can be changed to sync data more often (use a smaller #), or if you're never online (can be set to a large number)
-* CACHE_TIME = <desired length of cache time, in seconds> (default = 5*365*24*60*60) (that's 5 years!)
-  Our basic topic pages, video pages, and exercise pages rarely change--only when you download new videos (changes made by user logins are made in a different way).  Therefore, we can "cache" copies of these pages, to avoid constantly regenerating them, and speed up KA Lite.  We have logic to delete the cached copies, and therefore generate new copies, if you download new videos or delete old videos through our interface.
-  If you would like to disable caching, set CACHE_TIME = 0 .
-  Read a little more about caching on Wikipedia.
-* CACHE_LOCATION = '<path to cache directory>' (default= dir named kalite_web_cache in the OS temporary dir)
-  Some operating systems will clear the temporary directories when the system is rebooted.  To retain the cache between reboots, an alternative location can be specified.  (for example on Linix, "/var/tmp/kalite_web_cache")
-* CHERRYPY_THREAD_COUNT = <number of threads> (default=50)
-  The CherryPy Webserver can handle multiple page requests simultaneously.  The default is 50, but for slow or single CPU servers, performance will be improved if the number of threads is reduced.  Minimum number of threads is 10, optimum setting for Raspberry Pi is 18.
-
-
-Raspberry Pi
-^^^^^^^^^^^^
-
-* USE_MPLAYER = <True or False> (default = False)
-  With this setting, if the browser is run from the same computer as the KA Lite server, then instead of playing the video in the browser, the video will be launched outside of the browser and played in mplayer - a light-weight video player that is included with the KA Lite software.
-  This is intended for use only on the Raspberry Pi, where no other video player is available.
-
