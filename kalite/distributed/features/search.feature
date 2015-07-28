@@ -12,3 +12,8 @@ Feature: Search Autocomplete on Homepage
         When I click on the first option
         Then I should navigate to a content page
 
+    Scenario: Search button is disabled with no input
+        Given I am on the homepage
+        And I enter nothing in the search bar
+        Then The search button is disabled
+
