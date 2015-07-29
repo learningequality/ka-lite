@@ -18,17 +18,13 @@ def step_impl(context):
 
 @given("superuser is deleted")
 def step_impl(context):
-    if User.objects.exists():
+    if User.objects.all().exists():
         User.objects.all().delete()
-    assert not User.objects.exists(), "superuser not deleted successfully!"
-
-@then("refresh homepage")
-def step_impl(context):
-    context.browser.refresh()
+    assert not User.objects.all().exists(), "superuser not deleted successfully!"
 
 @then("I should see a modal")
 def step_impl(context):
-    assert find_id_with_wait(context, modal_container), "modal not displayed!"
+    assert find_id_with_wait(context, modal_container, wait_time=120), "modal not displayed!"
 
 @given("the username is empty")
 def step_impl(context):
@@ -86,11 +82,10 @@ def step_impl(context):
 
 @then("the modal will dismiss")
 def impl(context):
-    assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=5), "modal not dismissed!"
+    assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=60), "modal not dismissed!"
 
 def fill_field(context, text, field_id):
-    assert find_id_with_wait(context, field_id, wait_time=5), "field is None!"
-    field = find_id_with_wait(context, field_id, wait_time=5)
+    field = find_id_with_wait(context, field_id, wait_time=180)
     field.clear()
     field.send_keys(text)
 

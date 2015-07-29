@@ -14,6 +14,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -509,10 +510,8 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
         self.browser_login_admin(**self.admin_data)
         self.browse_to(self.distributed_data_export_url)
 
-        self.browser_wait_for_ajax_calls_to_finish()
-
         # Check that group is disabled until facility is selected
-        group_select = self.browser.find_element_by_id("group-name")
+        group_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "group-name")))
         self.assertFalse(group_select.is_enabled(), "UI error")
 
         # Select facility, wait, and ensure group is enabled
@@ -525,10 +524,8 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
                 option.click() # select() in earlier versions of webdriver
                 break
 
-        self.browser_wait_for_ajax_calls_to_finish()
-
         # Check that group is enabled now
-        group_select = self.browser.find_element_by_id("group-name")
+        group_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "group-name")))
         self.assertTrue(group_select.is_enabled(), "UI error")
 
         # Click and make sure something happens
@@ -545,10 +542,7 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
                                    facility_name=self.teacher.facility.name)
         self.browse_to(self.distributed_data_export_url)
 
-        # Why is this here? Is the intention to wait for the page to load?
-        #self.browser_wait_for_ajax_calls_to_finish()
-
-        facility_select = self.browser.find_element_by_id("facility-name")
+        facility_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "facility-name")))
         self.assertFalse(facility_select.is_enabled(), "UI error")
 
         for option in facility_select.find_elements_by_tag_name('option'):
@@ -556,10 +550,8 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
                 self.assertTrue(option.is_selected(), "Invalid Facility Selected")
                 break
 
-        # self.browser_wait_for_ajax_calls_to_finish()
-
         # Check that group is enabled now
-        group_select = self.browser.find_element_by_id("group-name")
+        group_select = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.ID, "group-name")))
         self.assertTrue(group_select.is_enabled(), "UI error")
 
         # Click and make sure something happens

@@ -32,7 +32,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
             zf = zipfile.ZipFile(f, "w")
-            zf.write(DUMMY_KHAN_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH, "assessmentitems.sqlite")
+            zf.write(DUMMY_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH, "assessmentitems.sqlite")
             zf.writestr("assessmentitems.version", version.SHORTVERSION)
             zf.close()
 
