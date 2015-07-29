@@ -1,23 +1,57 @@
 management/zone/.*:
-  - 'a#manage.admin-only':
+  - 'li.manage.active':
     - step: 1
     - text: 'Welcome! This is the landing page for admins. If at any point you would like to navigate back to this page, click on this tab!'
   - 'li.facility':
     - step: 2
-    - text: 'Clicking on this tab will show you a quick overview of all facilities and devices'
+    - text: 'Clicking on this tab will show you a quick overview of all facilities and devices you have set up.'
     - position: right
-  - 'a.create-facility':
+  - 'div.col-xs-12':
     - step: 3
-    - text: 'To add new facilities, click on this link.'
-  - 'div.row:nth-child(3)':
+    - text: "An overview of all facilities will be shown here"
+  - 'a.create-facility':
     - step: 4
-    - text: 'Information on your device status will be shown here'
-  - '#not-registered':
+    - text: 'To add new facilities, click on this link.'
+  - 'a.facility-name':
     - step: 5
-    - text: 'By registering your device with our central hub, you can sync your data. This allows you to manage user accounts and view usage data remotely!'
-  - '#not-registered':
+    - text: 'To view more detailed information such as learner groups, learners, and coaches belonging to a facility, click on the facility name.'
+  - 'div.row:nth-child(3)':
     - step: 6
-    - text: 'If you decide to register your device to our central hub, click this button!'
+    - text: 'Information on your device status will be shown here'
   - 'unattached':
     - step: 7
     - text: 'Any more questions? Be sure to consult the FAQ and Documentation!'
+update/videos:
+  - 'li.video.active':
+    - step: 1
+    - text: 'Selecting this "Videos" tab will lead you to the place where you can download new videos for all topics!'
+  - '#content_tree':
+    - step: 2
+    - text: 'Downloadable content will be organized in this topic tree.'
+  - 'span.dynatree-node.dynatree-folder.dynatree-has-children.unstarted.dynatree-exp-c.dynatree-ico-cf':
+    - step: 3
+    - text: 'Simply toggle the "+" button to view see more subtopics under a topic....'
+    - before-showing: 'click'
+update/languages:
+  - 'li.languages.active':
+    - step: 1
+    - text: 'Selecting the "Language" tab will take you to the place where you can download or update language packs!'
+  - '#language-packs-selection':
+    - step: 2
+    - text: 'Click on this drop down menu to view the available language packs...'
+    - before-showing: 'click'
+  - '#option-bg':
+    - step: 3
+    - text: '...select the language of your choice...'
+    - before-showing: 'click'
+  - '#langpack-details':
+    - step: 4
+    - text: '...and details such as the number of subtitles, translation completion, and total download size will be displayed for the chosen language pack!'
+  - '#get-language-button':
+    - step: 5
+    - text: 'Just click this button to start your download!'
+  - '#installed-languages-div':
+    - step: 6
+    - text: 'Any language packs already installed on your device will be shown in this section'
+    
+
