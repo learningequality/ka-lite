@@ -11,14 +11,15 @@ import collections
 
 from django.db.models import Count
 
-# TODO(benjaoming) this wildcard is crazy, needs to be burned
-from kalite.topic_tools import *
+from kalite.topic_tools import get_content_data, get_exercise_data, get_topic_data, get_topic_exercises, get_topic_tree, get_exercise_cache
 
 from . import settings
 
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
 from kalite.facility.models import FacilityUser
+
+CACHE_VARS = []
 
 def get_resume_recommendations(user, request):
     """Get the recommendation for the Resume section.
