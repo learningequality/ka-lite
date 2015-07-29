@@ -75,9 +75,6 @@ if package_selected("nalanda"):
 
 if package_selected("UserRestricted"):
     LOG.info("UserRestricted package selected.")
-
-    if CACHE_TIME != 0 and not hasattr(local_settings, KEY_PREFIX):
-        KEY_PREFIX += "|restricted"  # this option changes templates
     DISABLE_SELF_ADMIN = True  # hard-code facility app setting.
 
 
