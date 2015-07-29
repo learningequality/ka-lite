@@ -54,9 +54,22 @@ def allow_all_languages_alist(langlookupfile):
 
 # Use resource_filename instead of get_data because it does not try to open
 # a file and does not complain that its a directory
+
+from kalite.settings.base import USER_WRITABLE_LOCALE_DIR
+
 from pkg_resources import resource_filename
 I18N_DATA_PATH = resource_filename("kalite", "i18n/data")
 LANG_LOOKUP_FILEPATH = os.path.join(I18N_DATA_PATH, "languagelookup.json")
+
+__dubbed_video_mapping_source = os.path.join(I18N_DATA_PATH, "dubbed_video_mappings.json")
+DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(USER_WRITABLE_LOCALE_DIR, "dubbed_video_mappings.json")
+
+# If user does not have this file in their own directory, create a new one as a
+# copy of the distributed one since user processes may write to it
+if os.path.isfile(__dubbed_video_mapping_source) and not os.path.isfile(DUBBED_VIDEOS_MAPPING_FILEPATH):
+    open(DUBBED_VIDEOS_MAPPING_FILEPATH, "w").write(
+        file(__dubbed_video_mapping_source, "r").read()
+    )
 
 # Whether to turn on crowdin's in-context localization feature
 IN_CONTEXT_LOCALIZED = getattr(local_settings, "IN_CONTEXT_LOCALIZED", False)

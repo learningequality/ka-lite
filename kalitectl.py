@@ -13,6 +13,7 @@ Usage:
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
   kalite manage [options] COMMAND [DJANGO_OPTIONS ...]
+  kalite diagnose [options]
   kalite -h | --help
   kalite --version
 
@@ -42,6 +43,7 @@ Examples:
   kalite stop           Stop KA Lite
   kalite shell          Display a Django shell
   kalite manage help    Show the Django management usage dialogue
+  kalite diagnose       Show system information for debugging
 
   kalite start --foreground   Run kalite in the foreground and do not go to
                               daemon mode.
@@ -61,12 +63,14 @@ Planned features:
 from __future__ import print_function
 # Add distributed python-packages subfolder to current path
 # DO NOT IMPORT BEFORE THIS LIKE
-import os
 import atexit
 import subprocess
+import platform
+import os
 import socket
 import sys
 import time
+import traceback
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -93,21 +97,21 @@ if __validate_cmd_options.search(" ".join(sys.argv[1:])):
     sys.exit(1)
 
 from threading import Thread
-from docopt import DocoptExit, printable_usage, parse_defaults,\
-    parse_pattern, formal_usage, parse_argv, TokenStream, Option, AnyOptions,\
+from docopt import DocoptExit, printable_usage, parse_defaults, \
+    parse_pattern, formal_usage, parse_argv, TokenStream, Option, AnyOptions, \
     extras, Dict
 from urllib2 import URLError
 from socket import timeout
 
 from django.core.management import ManagementUtility, get_commands
 
+import kalite
 from kalite.django_cherrypy_wsgiserver.cherrypyserver import DjangoAppPlugin
-from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses
 
 # Environment variables that are used by django+kalite
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.base")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.default")
 os.environ.setdefault("KALITE_HOME", os.path.join(os.path.expanduser("~"), ".kalite"))
 os.environ.setdefault("KALITE_LISTEN_PORT", "8008")
 
@@ -197,6 +201,16 @@ def update_default_args(defaults, updates):
         defined_updates[elm[0]] = elm[1]
     defined_defaults.update(defined_updates)
     return defined_defaults.values()
+
+
+def get_size(start_path):
+    """Utility function, returns the size (bytes) of a folder"""
+    total_size = 0
+    for dirpath, __, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
 
 
 # Utility functions for pinging or killing PIDs
@@ -357,7 +371,7 @@ class ManageThread(Thread):
         self.command = command
         self.args = kwargs.pop('args', [])
         super(ManageThread, self).__init__(*args, **kwargs)
-        self.daemon = False  # Main process does NOT exit until thread dies
+        self.setDaemon(True)
 
     def run(self):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
@@ -391,6 +405,7 @@ def manage(command, args=[], as_thread=False):
         get_commands()  # Needed to populate the available commands before issuing one in a thread
         thread = ManageThread(command, args=args, name=" ".join([command] + args))
         thread.start()
+        return thread
 
 
 # Watchify running code modified from:
@@ -407,10 +422,10 @@ def start_watchify():
         stderr=sys.stderr)
 
     if watchify_process.poll() is not None:
-        raise CommandError('watchify failed to start')
+        raise RuntimeError('watchify failed to start')
 
-    sys.stdout.write('Started watchify process on pid {0}'
-                      .format(watchify_process.pid))
+    print('Started watchify process on pid {0}'.format(
+        watchify_process.pid))
 
     with open(NODE_PID_FILE, 'w') as f:
         f.write("%d" % watchify_process.pid)
@@ -418,10 +433,10 @@ def start_watchify():
     atexit.register(kill_watchify_process)
 
 def kill_watchify_process():
-    pid, port = read_pid_file(NODE_PID_FILE)
+    pid, __ = read_pid_file(NODE_PID_FILE)
     # PID file exists, but process is dead
     if not pid_exists(pid):
-        sys.stdout.write('watchify process not running')
+        print('watchify process not running')
     else:
         kill_pid(pid)
         os.unlink(NODE_PID_FILE)
@@ -479,7 +494,7 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
     if not connection_error:
         sys.stderr.write(
             "Port {0} is occupied. Please close the process that is using "
-            "it.".format(port)
+            "it.\n".format(port)
         )
         sys.exit(1)
 
@@ -522,8 +537,9 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
             f.write("%d\n%d" % (os.getpid(), port))
 
     # Start the job scheduler (not Celery yet...)
+    cron_thread = None
     if not skip_job_scheduler:
-        manage(
+        cron_thread = manage(
             'cronserver_blocking',
             args=[],
             as_thread=True
@@ -544,14 +560,21 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
         # http://docs.cherrypy.org/stable/appendix/faq.html
         cherrypy.engine.autoreload.unsubscribe()
 
-    cherrypy.quickstart()
+    try:
+        cherrypy.quickstart()
+    except KeyboardInterrupt:
+        # Handled in cherrypy by waiting for all threads to join
+        pass
 
     print("FINISHED serving HTTP")
 
-    if not skip_job_scheduler:
+    if cron_thread:
+        # Do not exit thread together with the main process, let it finish
+        # cleanly
         print("Asking KA Lite job scheduler to terminate...")
         from fle_utils.chronograph.management.commands import cronserver_blocking
         cronserver_blocking.shutdown = True
+        cron_thread.join()
 
 
 def stop(args=[], sys_exit=True):
@@ -607,7 +630,7 @@ def status():
         sys.stderr.write("KA Lite running on:\n\n")
         for addr in get_ip_addresses():
             sys.stderr.write("\thttp://%s:%s/\n" % (addr, port))
-        return 0
+        return STATUS_RUNNING
     except NotRunning as e:
         status_code = e.status_code
         verbose_status = status.codes[status_code]
@@ -627,6 +650,88 @@ status.codes = {
     STATUS_PID_FILE_INVALID: 'Invalid PID file',
     STATUS_UNKNOW: 'Could not determine status',
 }
+
+
+def diagnose():
+    """
+    This command diagnoses an installation of KA Lite
+
+    It has to be able to work with instances of KA Lite that users do not
+    actually own, however it's assumed that the path and the 'kalite' commands
+    are configured and work.
+
+    The function is currently non-robust, meaning that not all aspects of
+    diagnose data collection is guaranteed to succeed, thus the command could
+    potentially fail :(
+
+    Example: KALITE_HOME=/home/otheruser/.kalite kalite diagnose --port=7007
+    """
+
+    print("")
+    print("KA Lite diagnostics")
+    print("")
+
+    # Tell users we are calculating, because checking the size of the
+    # content directory is slow. Flush immediately after.
+    print("Calculating diagnostics...")
+    sys.stdout.flush()
+    print("")
+
+    # Key, value store for diagnostics
+    # Not using OrderedDict because of python 2.6
+    diagnostics = []
+
+    diag = lambda x, y: diagnostics.append((x, y))
+
+    diag("KA Lite version", kalite.__version__)
+    diag("python", sys.version)
+    diag("platform", platform.platform())
+
+    try:
+        __, __, port = get_pid()
+        for addr in get_ip_addresses():
+            diag("server address", "http://%s:%s/" % (addr, port))
+        status_code = STATUS_RUNNING
+    except NotRunning as e:
+        status_code = e.status_code
+
+    diag("server status", status.codes[status_code])
+
+    settings_imported = True  # Diagnostics from settings
+    try:
+        from django.conf import settings
+        from django.template.defaultfilters import filesizeformat
+    except:
+        settings_imported = False
+        diag("Settings failure", traceback.format_exc())
+
+    if settings_imported:
+        diag("installed in", os.path.dirname(kalite.__file__))
+        diag("content root", settings.CONTENT_ROOT)
+        diag("content size", filesizeformat(get_size(settings.CONTENT_ROOT)))
+        diag("user database", settings.DATABASES['default']['NAME'])
+        diag("assessment database", settings.DATABASES['assessment_items']['NAME'])
+        try:
+            from securesync.models import Device
+            device = Device.get_own_device()
+            sync_sessions = device.client_sessions.all()
+            zone = device.get_zone()
+            diag("device name", str(device.name))
+            diag("device ID", str(device.id))
+            diag("device registered", str(device.is_registered()))
+            diag("synced", str(sync_sessions.latest('timestamp').timestamp if sync_sessions.exists() else "Never"))
+            diag("sync result", ("OK" if sync_sessions.latest('timestamp').errors == 0 else "Error") if sync_sessions.exists() else "-")
+            diag("zone ID", str(zone.id) if zone else "Unset")
+        except:
+            diag("Device failure", traceback.format_exc())
+
+    for k, v in diagnostics:
+
+        # Pad all the values to match the key column
+        values = str(v).split("\n")
+        values = "\n".join([values[0]] + map(lambda x: (" " * 22) + x, values[1:]))
+
+        print((k.upper() + ": ").ljust(21), values)
 
 
 def url():
@@ -651,7 +756,6 @@ def url():
 def profile_memory():
     print("activating profile infrastructure.")
 
-    import atexit
     import csv
     import resource  # @UnresolvedImport
     import signal
@@ -746,7 +850,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
 if __name__ == "__main__":
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
-    arguments = docopt(__doc__, version=str(VERSION), options_first=False)
+    arguments = docopt(__doc__, version=str(kalite.__version__), options_first=False)
 
     settings_module = arguments.pop('--settings', None)
     if settings_module:
@@ -772,12 +876,16 @@ if __name__ == "__main__":
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
-            args=arguments['DJANGO_OPTIONS']
+            args=arguments['DJANGO_OPTIONS'],
+            port=arguments["--port"]
         )
 
     elif arguments['status']:
         status_code = status()
         sys.exit(status_code)
+
+    elif arguments['diagnose']:
+        diagnose()
 
     elif arguments['shell']:
         manage('shell', args=arguments['DJANGO_OPTIONS'])
@@ -788,4 +896,3 @@ if __name__ == "__main__":
     elif arguments['manage']:
         command = arguments['COMMAND']
         manage(command, args=arguments['DJANGO_OPTIONS'])
-

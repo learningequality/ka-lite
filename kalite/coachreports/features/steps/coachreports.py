@@ -197,7 +197,7 @@ def impl(context):
 @then(u"I should see the list of two groups that I teach")
 def impl(context):
     dropdown = Select(find_id_with_wait(context, "group-select"))
-    assert len(dropdown.options) == 3, "Only {n} displayed".format(n=len(dropdown.options))
+    assert len(dropdown.options) == 4, "Only {n} displayed".format(n=len(dropdown.options))
 
 @then(u"there should be ten exercise columns displayed")
 def impl(context):

@@ -1,1 +1,1 @@
-from control_panel import *
+from .control_panel import *

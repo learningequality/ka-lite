@@ -193,13 +193,14 @@ We are also developing RCTs to start in June for a deployment in India.
 Backing up data: is there any easy way to do it locally?
 --------------------------------------------------------
 
-Yes! Just copy the file::
+Yes! Just copy the ``.kalite`` folder, typically located in ``/home/user/.kalite``.
+To restore, simply copy the backup data file to the same location. If you have
+changed versions, please run::
 
-    ka-lite/kalite/database/data.sqlite
+    kalite manage setup
 
-to a secure location. To restore, simply copy the backup data file to the same location. If you have changed versions, please run::
-
-    python kalite/manage.py migrate --merge
+If you only want to backup the database, locate the ``.kalite/database/`` folder
+and copy and restore that one.
 
 to guarantee your database is compatible with the current version of KA Lite you have installed!
 Note that online data back-ups occur if you "register" your KA Lite installation with an online account on our website.
