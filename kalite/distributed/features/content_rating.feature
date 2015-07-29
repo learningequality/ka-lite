@@ -7,17 +7,23 @@ Feature: Content Rating
         When I fill out the form
         Then my feedback is displayed
 
-    Scenario: User alters a rating
+    Scenario: User alters a star rating
         Given I have filled out a feedback form
-        Then I see an edit button
-        When I edit my feedback
-        Then my edited feedback is displayed
+        When I alter a star rating
+        Then the altered rating is displayed
+
+    Scenario: User alters text feedback
+        Given I have filled out a feedback form
+        When I click the edit button
+        And I change the text
+        And I submit it
+        Then the altered text is displayed
 
     Scenario: User deletes a rating
         Given I have filled out a feedback form
         Then I see a delete button
         When I delete my feedback
-        Then I see a blank form
+        Then I see a new form
 
     @as_admin
     Scenario: Admin exports user ratings
