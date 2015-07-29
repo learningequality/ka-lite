@@ -92,8 +92,10 @@ var StudentProgressContainerView = Backbone.View.extend({
         this.collection.fetch({
             success: function() {
                  if (self.collection.length == 0) {       //if the student visits the my progress page before attempting any quizes/videos
-                          messages.show_message("info", gettext("Click on the LEARN button above to get started on your learning journey."));
-                          self.$el.html("");             //this is done to remove the 'Progress Report' header 
+                              if (window.statusModel.is_student()) {
+                                  show_message("info", gettext("Click on the LEARN button above to get started on your learning journey."));
+                              }
+                              self.$el.html("");             //this is done to remove the 'Progress Report' header
                       }
                    }
                });
