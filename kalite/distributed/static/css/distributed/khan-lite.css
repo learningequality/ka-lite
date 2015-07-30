@@ -546,21 +546,6 @@ li .progress-circle {
     display: none;
 }
 
-#content_tree .complete span.dynatree-icon {
-    margin-top: 2px;
-    background: url(/static/images/distributed/circle-complete.png) no-repeat;
-}
-
-#content_tree .partial span.dynatree-icon {
-    margin-top: 2px;
-    background: url(/static/images/distributed/circle-partial.png) no-repeat;
-}
-
-#content_tree .unstarted span.dynatree-icon {
-    margin-top: 2px;
-    background: url(/static/images/distributed/circle-empty.png) no-repeat;
-}
-
 .message {
     width: 75%;
     padding: 4px;

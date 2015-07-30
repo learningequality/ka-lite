@@ -82,8 +82,8 @@ function version_callback(data) {
             if (! version_info[version]["bugs_fixed"]) {
                 $("#bugs_fixed").append(gettext("<li>(%s)</li>", gettext("None")));
             } else {
-                for (var fi in version_info[version]["bugs_fixed"]) {
-                    $("#bugs_fixed").append("<li>" + version_info[version]["bugs_fixed"][fi] + "</li>");
+                for (var fo in version_info[version]["bugs_fixed"]) {
+                    $("#bugs_fixed").append("<li>" + version_info[version]["bugs_fixed"][fo] + "</li>");
                 }
             }
         }

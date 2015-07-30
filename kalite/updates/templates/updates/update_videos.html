@@ -9,14 +9,7 @@
     {% block video_active %}active{% endblock video_active %}
 {% endblock i18n_do_not_translate %}
 
-{% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui/plugins/ui.dynatree.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_videos.css' %}" />
-{% endblock headcss %}
-
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/jquery.dynatree.min.js' %}"></script>
-
     <script type="text/javascript" src="{% static 'js/updates/bundles/bundle_update_videos.js' %}"></script>
 {% endblock headjs %}
 
