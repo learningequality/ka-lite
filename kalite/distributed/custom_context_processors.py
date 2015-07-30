@@ -34,5 +34,4 @@ def custom(request):
         "True": True,
         "False": False,
         "is_config_package_nalanda": "nalanda" in settings.CONFIG_PACKAGE,
-        "inline_help": getattr(settings, "INLINE_HELP", False)
     }
