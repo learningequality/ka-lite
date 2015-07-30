@@ -5,6 +5,7 @@ var messages = require("../utils/messages");
 var api = require("../utils/api");
 var SessionModel = require("../session/models");
 var StatusModel = require("../user/models").StatusModel
+var attachfastclick = require("fastclick");
 
 global.$ = $;
 global._ = _;
@@ -12,6 +13,8 @@ global.sessionModel = new SessionModel();
 
 // Related to showing elements on screen
 $(function(){
+
+    attachfastclick(document.body);
 
     global.statusModel = new StatusModel();
     global.statusModel.fetch_data();
