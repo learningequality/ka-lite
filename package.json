@@ -35,6 +35,7 @@
   "dependencies": {
     "backbone": "~1.2.1",
     "browserify": "~10.2.4",
+    "browsernizr": "^1.0.2",
     "deamdify": "^0.1.1",
     "factor-bundle": "^2.4.1",
     "fastclick": "^1.0.6",
@@ -42,8 +43,9 @@
     "hbsfy": "~2.2.1",
     "jquery": "~2.1.4",
     "jquery-sparkline": "^2.3.0",
+    "jquery-ui": "^1.10.5",
+    "jquery-ui-touch-punch": "^0.2.3",
     "minifyify": "^7.0.2",
-    "modernizr": "^3.0.0-alpha.4",
     "react": "^0.13.3",
     "scriptjs": "^2.5.7",
     "seedrandom": "^2.4.2",

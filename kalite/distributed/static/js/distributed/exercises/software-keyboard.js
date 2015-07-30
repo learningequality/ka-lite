@@ -2,7 +2,8 @@ var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 var _ = require("underscore");
 var $ = require("base/jQuery");
-var Modernizr = require("modernizr");
+require("browsernizr/test/touchevents");
+var Modernizr = require("browsernizr");
 
 var SoftwareKeyboardView = BaseView.extend({
 

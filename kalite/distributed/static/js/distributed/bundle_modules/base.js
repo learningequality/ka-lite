@@ -1,5 +1,8 @@
 var user = require("../user/views");
 var $ = require("../base/jQuery");
+require('jquery-ui/tooltip');
+require('jquery-ui-touch-punch');
+
 var _ = require("underscore");
 var messages = require("../utils/messages");
 var api = require("../utils/api");
@@ -15,6 +18,11 @@ global.sessionModel = new SessionModel();
 $(function(){
 
     attachfastclick(document.body);
+
+    // Trigger tooltips for help icons
+    $('.help-tooltip').tooltip({
+        trigger: "hover click"
+    });
 
     global.statusModel = new StatusModel();
     global.statusModel.fetch_data();
