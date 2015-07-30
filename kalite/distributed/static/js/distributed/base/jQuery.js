@@ -2,6 +2,11 @@
 
 var jQuery = require("jquery");
 
+global.$ = global.jQuery = jQuery;
+
+require("jquery-ui");
+require("jquery-ui-touch-punch");
+
 var get_cookie = require("../utils/get_cookie");
 
 var csrftoken = get_cookie("csrftoken") || "";
@@ -27,7 +32,5 @@ jQuery.ajaxSetup({
         return data;
     }
 });
-
-window.$ = window.jQuery = jQuery;
 
 module.exports = jQuery;

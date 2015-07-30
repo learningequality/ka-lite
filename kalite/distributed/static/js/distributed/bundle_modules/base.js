@@ -7,7 +7,7 @@ var _ = require("underscore");
 var messages = require("../utils/messages");
 var api = require("../utils/api");
 var SessionModel = require("../session/models");
-var StatusModel = require("../user/models").StatusModel
+var StatusModel = require("../user/models").StatusModel;
 var attachfastclick = require("fastclick");
 
 global.$ = $;
@@ -42,7 +42,7 @@ $(function(){
     // If new language is selected, redirect after adding django_language session key
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();
-        if (lang_code != "") {
+        if (lang_code !== "") {
             api.doRequest(global.Urls.set_default_language(),
                       {lang: lang_code}
                      ).success(function() {

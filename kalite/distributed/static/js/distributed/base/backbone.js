@@ -6,7 +6,7 @@ require("./backbone-tastypie.js");
 
 var api = require("../utils/api");
 
-Backbone.$ = require("./jQuery")
+Backbone.$ = require("./jQuery");
 
 // Customize the Backbone.js ajax method to call our success and fail handlers for error display
 Backbone.ajax = function() {
