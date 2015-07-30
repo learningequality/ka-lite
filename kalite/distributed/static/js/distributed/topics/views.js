@@ -263,7 +263,7 @@ var SidebarView = BaseView.extend({
 
         // Used to get left value in number form
         var sidebarPanelPosition = this.sidebar.position();
-        if (sidebarPanelPosition.left != 0) {
+        if (sidebarPanelPosition.left !== 0) {
             this.sidebarBack.offset({left: 0});
         }
         else {
@@ -320,7 +320,7 @@ var TopicContainerInnerView = BaseView.extend({
 
     initialize: function(options) {
 
-        _.bindAll.apply(_, [this].concat(_.functions(this)))
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         var self = this;
 
@@ -413,7 +413,7 @@ var TopicContainerInnerView = BaseView.extend({
 
     deferred_node_by_slug: function(slug, callback) {
         // Convenience method to return a node by a passed in slug
-        if (this.collection.loaded == true) {
+        if (this.collection.loaded === true) {
             this.node_by_slug(slug, callback);
         } else {
             var self = this;
@@ -743,4 +743,4 @@ module.exports = {
     TopicContainerInnerView: TopicContainerInnerView,
     TopicContainerOuterView: TopicContainerOuterView,
     ContentAreaView: ContentAreaView
-}
+};

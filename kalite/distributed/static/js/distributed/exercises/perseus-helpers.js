@@ -109,7 +109,7 @@ Exercises.PerseusBridge = {
 
         // Load khan-exercises modules, then perseus
         require("../perseus/ke-deps.js");
-        var Perseus = require("../perseus/build/perseus-3.js")
+        var Perseus = require("../perseus/build/perseus-3.js");
         Exercises.PerseusBridge._initialize(Perseus);
 
         return Exercises.PerseusBridge._loaded;
@@ -165,4 +165,4 @@ module.exports = {
     KhanUtil: KhanUtil,
     Khan: Khan,
     Exercises: Exercises
-}
+};

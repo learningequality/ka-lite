@@ -23,15 +23,15 @@ function handleSuccessAPI(obj) {
         }
     } else if (obj.hasOwnProperty("messages")) {
         // Got messages embedded in the object
-        messages = {}
-        for (idx in obj.messages) {
+        messages = {};
+        for (var idx in obj.messages) {
             messages = obj.messages[idx];
         }
     } else {
         // Got messages at the top level of the object; grab them.
         messages = {};
-        for (idx in msg_types) {
-            var msg_type = msg_types[idx];
+        for (var idy in msg_types) {
+            var msg_type = msg_types[idy];
             if (msg_type in obj) {
                 messages[msg_type] = obj[msg_type];
                 console.log(messages[msg_type]);
@@ -65,7 +65,7 @@ function handleFailedAPI(resp, error_prefix) {
             if (window.statusModel) {
                 window.statusModel.fetch().success(function() {
                     window.userView.login_start_open = true;
-                })
+                });
             }
             break;
 
@@ -103,7 +103,7 @@ function doRequest(url, data, opts) {
     };
     var error_prefix = "";
 
-    for (opt_key in opts) {
+    for (var opt_key in opts) {
         switch (opt_key) {
             case "error_prefix":  // Set the error prefix on a failure.
                 error_prefix = opts[opt_key];

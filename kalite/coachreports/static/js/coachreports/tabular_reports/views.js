@@ -392,4 +392,4 @@ module.exports = {
     DetailPanelInlineRowView: DetailPanelInlineRowView,
     DetailPanelView: DetailPanelView,
     DetailPanelBodyView: DetailPanelBodyView
-}
+};

@@ -63,7 +63,7 @@ var CoachSummaryView = BaseView.extend({
         // If no user data at all, then show a warning to the user
         var ref, ref1;
 
-        if ((this.data_model != null ? this.data_model.get("learner_events") != null ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
+        if ((this.data_model !== null ? this.data_model.get("learner_events") !== null ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
           messages.show_message("warning", "No recent learner data for this group is available.");
         }
 
@@ -181,7 +181,7 @@ var GroupSelectView = Backbone.View.extend({
         // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         output = (ref = this.group_list.find(function(model) {
           return model.get("id") === id;
-        })) != null ? ref.get("name") : void 0;
+        })) !== null ? ref.get("name") : void 0;
 
         if (output) {
             this.model.set({
@@ -246,4 +246,4 @@ module.exports = {
     CoachSummaryView: CoachSummaryView,
     FacilitySelectView: FacilitySelectView,
     GroupSelectView: GroupSelectView
-}
+};

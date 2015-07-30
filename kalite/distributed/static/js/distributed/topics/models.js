@@ -35,4 +35,4 @@ var TopicCollection = Backbone.Collection.extend({
 module.exports = {
     TopicNode: TopicNode,
     TopicCollection: TopicCollection
-}
+};

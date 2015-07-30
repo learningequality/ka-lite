@@ -189,7 +189,7 @@ var LoginView = BaseView.extend({
     template: LoginTemplate,
 
     initialize: function(options) {
-        _.bindAll(this, "handle_login")
+        _.bindAll(this, "handle_login");
         this.next = options.next;
         this.facility = (this.model.get("facilities")[0] || {id:""}).id;
         this.admin = false;
@@ -388,7 +388,7 @@ var TotalPointView = Backbone.View.extend({
 var UsernameView = Backbone.View.extend({
 
     initialize: function() {
-        _.bindAll(this, "render")
+        _.bindAll(this, "render");
         this.listenTo(this.model, "change:username", this.render);
         this.render();
     },

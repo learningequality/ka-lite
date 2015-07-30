@@ -180,7 +180,7 @@ var AutoCompleteView = BaseView.extend({
     },
 
     input_changed: function() {
-        if (this.$("#search").val() != "") {
+        if (this.$("#search").val() !== "") {
            this.$("#search-button").removeAttr("disabled");
         }else {
            this.$("#search-button").attr('disabled', 'disabled');

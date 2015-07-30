@@ -36,4 +36,4 @@ module.exports = {
     PlaylistProgressDetailModel: PlaylistProgressDetailModel,
     PlaylistProgressCollection: PlaylistProgressCollection,
     PlaylistProgressDetailCollection: PlaylistProgressDetailCollection
-}
+};

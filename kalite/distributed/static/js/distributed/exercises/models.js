@@ -662,4 +662,4 @@ module.exports = {
     QuizDataModel: QuizDataModel,
     QuizLogModel: QuizLogModel,
     QuizLogCollection: QuizLogCollection
-}
+};

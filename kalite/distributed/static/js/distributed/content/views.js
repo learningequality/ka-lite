@@ -136,4 +136,4 @@ var ContentPointsView = BaseView.extend({
 module.exports = {
     ContentWrapperView: ContentWrapperView,
     ContentPointsView: ContentPointsView
-}
+};

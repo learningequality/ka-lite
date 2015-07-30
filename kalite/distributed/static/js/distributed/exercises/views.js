@@ -498,7 +498,7 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.options = options;
 
-        _.bindAll.apply(_, [this].concat(_.functions(this)))
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         window.statusModel.loaded.then(this.setup_exercise_environment);
     },
@@ -1037,4 +1037,4 @@ module.exports = {
     ExercisePracticeView: ExercisePracticeView,
     ExerciseRelatedVideoView: ExerciseRelatedVideoView,
     ExerciseWrapperBaseView: ExerciseWrapperBaseView
-}
+};
