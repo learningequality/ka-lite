@@ -138,10 +138,7 @@
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
 
-        {% if inline_help %}
-        <!-- inline help, introjs -->
-        <script type="text/javascript" src="{% static 'js/inline/bundle_modules/inline_help.js' %}"></script>
-        {% endif %}
+        <script type="text/javascript" src="{% static 'js/inline/bundles/bundle_inline_help.js' %}"></script>
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}">
