@@ -42,6 +42,7 @@
     "jquery": "~2.1.4",
     "jquery-sparkline": "^2.3.0",
     "minifyify": "^7.0.2",
+    "modernizr": "^3.0.0-alpha.4",
     "react": "^0.13.3",
     "scriptjs": "^2.5.7",
     "seedrandom": "^2.4.2",

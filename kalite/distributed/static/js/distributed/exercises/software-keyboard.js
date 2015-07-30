@@ -2,6 +2,7 @@ var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 var _ = require("underscore");
 var $ = require("base/jQuery");
+var Modernizr = require("modernizr");
 
 var SoftwareKeyboardView = BaseView.extend({
 
