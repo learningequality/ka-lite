@@ -4,7 +4,7 @@ var $ = require("base/jQuery");
 
 require("es5-shim");
 global.React = require("react/addons");
-global.katex = require("../perseus/lib/katex/katex.min.js");
+global.katex = require("katex");
 require("../perseus/lib/mathquill/mathquill-basic.js");
 require("../perseus/lib/kas.js");
 global.Jed = require("jed");
