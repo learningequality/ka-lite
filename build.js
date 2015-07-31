@@ -1,11 +1,12 @@
 var browserify = require('browserify');
 var lessify = require('node-lessify');
 var hbsfy = require("hbsfy")
-var deamdify = require("deamdify");
+var deamdify = require("./javascript_build/deamdify");
 var fs = require("fs");
 var _ = require("underscore");
 var hintify = require("hintify");
 var colors = require("colors");
+var async = require("async");
 
 var watch = false;
 var debug = false;
@@ -112,21 +113,56 @@ fs.readdir("kalite", function(err, filenames) {
 
     var kalite_utils_dir = "kalite/distributed/static/js/distributed/perseus/ke/utils";
 
-    var util_files = fs.readdirSync(kalite_utils_dir);
+    if (!fs.existsSync(kalite_utils_dir + "/../backuputils")) {
 
-    util_files = _.map(util_files, function(file_name){
-        return {
-            target_file: "kalite" + (staticfiles ? '' : '/distributed') + "/static/js/distributed/perseus/ke/utils" + "/" + file_name,
-            bundle: kalite_utils_dir + "/" + file_name,
-            alias: "khan_utils_" + file_name.split(".").slice(0,-1).join(".")
-        };});
+        // Assume if the backup exists then we don't need to do this
 
-    _.each(util_files, function(item) {
-        var brow = browserify(item.bundle);
-        brow.transform(deamdify);
-        brow.bundle().pipe(fs.createWriteStream(item.target_file));
-        logging.info("Writing " + item.alias);
-    });
+        logging.warn("DeAMDifying Khan Exercise Util Files");
+
+        var util_files = fs.readdirSync(kalite_utils_dir);
+
+        if (!staticfiles) {
+
+            fs.mkdirSync(kalite_utils_dir + "/../backuputils");
+
+        }
+
+        util_files = _.map(util_files, function(file_name){
+            return {
+                target_file: "kalite" + (staticfiles ? '' : '/distributed') + "/static/js/distributed/perseus/ke/utils" + "/" + file_name,
+                bundle: kalite_utils_dir + "/" + file_name,
+                alias: "khan_utils_" + file_name.split(".").slice(0,-1).join("."),
+                backup_file: kalite_utils_dir + "/../backuputils/" + file_name
+            };});
+
+        var redefine = function(err) {
+            if (!err) {
+                async.each(util_files, function(item, callback) {
+                    var brow = browserify(staticfiles ? item.bundle : item.backup_file);
+                    brow.transform(deamdify);
+                    var out = brow.bundle()
+                    out.pipe(fs.createWriteStream(item.target_file));
+                    logging.info("Writing " + item.alias);
+                    out.on('end', callback);
+                });
+            } else {
+                logging.error(err);
+            }
+        }
+
+        if (!staticfiles) {
+            async.each(util_files, function(item, callback) {
+                    var out = fs.createReadStream(item.bundle)
+                    out.pipe(fs.createWriteStream(item.backup_file));
+                    out.on('end', callback);
+                }, redefine);
+        } else {
+            redefine();
+        }
+
+    } else {
+        logging.warn("Assuming that Khan Util files are already deAMDified");
+    }
 
 
     _.each(bundles, function(item) {b.add(item.bundle, {expose: item.alias});})
@@ -135,7 +171,7 @@ fs.readdir("kalite", function(err, filenames) {
     b.transform(hintify);
     b.transform(hbsfy);
     
-    // b.transform(deamdify);
+    b.transform(deamdify);
     b.transform(lessify, {global: true});
 
     if (watch) {

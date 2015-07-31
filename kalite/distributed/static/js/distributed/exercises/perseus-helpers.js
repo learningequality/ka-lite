@@ -2,14 +2,14 @@ var _ = require("underscore");
 var Backbone = require("base/backbone");
 var $ = require("base/jQuery");
 
-require("../perseus/lib/es5-shim.js");
+require("es5-shim");
 global.React = require("react/addons");
 global.katex = require("../perseus/lib/katex/katex.min.js");
 require("../perseus/lib/mathquill/mathquill-basic.js");
 require("../perseus/lib/kas.js");
-global.Jed = require("../perseus/ke/local-only/jed.js");
+global.Jed = require("jed");
 require("../perseus/ke/local-only/i18n.js");
-require("../perseus/ke/local-only/jquery.qtip.js");
+require("qtip2");
 
 var KhanUtil = window.KhanUtil || {};
 
