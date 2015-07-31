@@ -26,11 +26,10 @@ window.onerror=function(msg){
 };
 
 require("jquery-ui/themes/base/jquery-ui.css");
-require("bootstrap/less/bootstrap.less");
-require("../../../css/distributed/bootstrap-overrides.css");
+
 require("bootstrap/dist/js/npm.js");
 
-require("../../../css/distributed/khan-lite.css");
+require("../../../css/distributed/khan-lite.less");
 
 // Related to showing elements on screen
 $(function(){
