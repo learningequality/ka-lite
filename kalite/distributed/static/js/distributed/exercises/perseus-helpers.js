@@ -86,6 +86,10 @@ Exercises.PerseusBridge = {
         return Exercises.PerseusBridge.itemRenderer.scoreInput();
     },
 
+    getSeedInfo: function() {
+        return Exercises.PerseusBridge.itemRenderer.props.item;
+    },
+
     // this one needs to be here for khan-exercises
     cleanupProblem: function(data) {
         if (Exercises.PerseusBridge.itemMountNode) {
