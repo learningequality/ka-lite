@@ -9,13 +9,32 @@ var api = require("../utils/api");
 var SessionModel = require("../session/models");
 var StatusModel = require("../user/models").StatusModel;
 var attachfastclick = require("fastclick");
+var $script = require("scriptjs");
+require("browsernizr/test/canvas");
+var Modernizr = require("browsernizr");
 
 global.$ = $;
 global._ = _;
 global.sessionModel = new SessionModel();
 
+window.onerror=function(msg){
+    window.js_errors = window.js_errors || [];
+    window.js_errors.push(msg);
+}
+
+require("jquery-ui/themes/base/jquery-ui.css");
+require("bootstrap/less/bootstrap.less");
+require("../../../css/distributed/bootstrap-overrides.css");
+require("bootstrap/dist/js/npm.js");
+
+require("../../../css/distributed/khan-lite.css");
+
 // Related to showing elements on screen
 $(function(){
+
+    if (!Modernizr.canvas) {
+        $script(window.sessionModel.get("STATIC_URL") + "/js/distributed/bundles/bundle_compatilibity.js");
+    }
 
     attachfastclick(document.body);
 

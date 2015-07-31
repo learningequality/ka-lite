@@ -3,6 +3,9 @@ var Handlebars = require("../base/handlebars");
 var _ = require("underscore");
 var api = require("../utils/api");
 var messages = require("utils/messages");
+var sprintf = require("sprintf-js");
+
+require("../../../css/distributed/search_autocomplete.css");
 
 var SearchBarTemplate = require("./hbtemplates/search-bar.handlebars");
 var SearchBarItemTemplate = require("./hbtemplates/search-item.handlebars");

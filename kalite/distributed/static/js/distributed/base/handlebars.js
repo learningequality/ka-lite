@@ -1,5 +1,6 @@
 var Handlebars = require("hbsfy/runtime");
 var _ = require("underscore");
+var sprintf = require("sprintf-js");
 
 Handlebars.registerHelper("ifcond", function(v1, operator, v2, options) {
     switch (operator)

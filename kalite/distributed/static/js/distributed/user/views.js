@@ -8,6 +8,7 @@ var Handlebars = require("../base/handlebars");
 var AutoCompleteView = require("../search/views");
 var api = require("../utils/api");
 var get_params = require("../utils/get_params");
+var sprintf = require("sprintf-js");
 
 
 var SuperUserCreateModalTemplate = require("./hbtemplates/superusercreatemodal.handlebars");

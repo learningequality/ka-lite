@@ -1,6 +1,7 @@
 var get_params = require("./get_params");
 var $ = require("../base/jQuery");
 var messages_utils = require("./messages");
+var sprintf = require("sprintf-js");
 
 function handleSuccessAPI(obj) {
 
