@@ -2,10 +2,15 @@
 This module contains all tests for the functions invoked to
 get the "Explore" recommendations.
 '''
+import datetime
 
 from django.test.client import RequestFactory
-from kalite.topic_tools.content_recommendation import *
+
+from django.conf import settings
+from kalite.topic_tools.content_recommendation import get_explore_recommendations
 from kalite.testing.base import KALiteTestCase
+from kalite.facility.models import Facility, FacilityUser
+from kalite.main.models import ExerciseLog
 
 class TestExploreMethods(KALiteTestCase):
 
