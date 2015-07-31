@@ -4,9 +4,8 @@ var $ = require("base/jQuery");
 require("jquery-slimscroll/jquery.slimscroll");
 var Backbone = require("base/backbone");
 var messages = require("utils/messages");
+var $script = require("scriptjs");
 
-var ExerciseViews = require("exercises/views");
-var ExerciseModels = require("exercises/models");
 var ContentViews = require("content/views");
 var Models = require("./models");
 
@@ -695,23 +694,33 @@ var TopicContainerOuterView = BaseView.extend({
 
         var view;
 
+        var self = this;
+
+        var external = require;
+
         switch(kind) {
 
             case "Exercise":
-                view = new ExerciseViews.ExercisePracticeView({
-                    exercise_id: id,
-                    context_type: "playlist",
-                    context_id: this.model.get("id")
+                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
+                    var ExerciseViews = external("exercise");
+                    view = new ExerciseViews.ExercisePracticeView({
+                        exercise_id: id,
+                        context_type: "playlist",
+                        context_id: self.model.get("id")
+                    });
+                    self.content_view.show_view(view);
                 });
-                this.content_view.show_view(view);
                 break;
 
             case "Quiz":
-                view = new ExerciseViews.ExerciseQuizView({
-                    quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
-                    context_id: this.model.get("id") // for now, just use the playlist ID as the quiz context_id
+                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
+                    var ExerciseViews = external("exercise");
+                    view = new ExerciseViews.ExerciseQuizView({
+                        quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
+                        context_id: self.model.get("id") // for now, just use the playlist ID as the quiz context_id
+                    });
+                    self.content_view.show_view(view);
                 });
-                this.content_view.show_view(view);
                 break;
 
             default:
