@@ -1,7 +1,8 @@
 var get_params = require("./get_params");
 var $ = require("../base/jQuery");
 var messages_utils = require("./messages");
-var sprintf = require("sprintf-js");
+var sprintf = require("sprintf-js").sprintf;
+var url = require("url");
 
 function handleSuccessAPI(obj) {
 
@@ -89,7 +90,13 @@ function handleFailedAPI(resp, error_prefix) {
 
 function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
-    if ($.url(url).param("lang") === undefined && data !== null && data !== undefined) {
+    var query;
+
+    if ((query = url.parse(url).query) === null) {
+      query = {};
+    }
+
+    if (query.lang === undefined && data !== null && data !== undefined) {
         if (!data.hasOwnProperty('lang')) {
             url = get_params.setGetParam(url, "lang", window.sessionModel.get("CURRENT_LANGUAGE"));
         }

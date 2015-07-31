@@ -2,7 +2,7 @@ var $ = require("base/jQuery");
 var force_sync = require("utils/force_sync");
 var api = require("utils/api");
 var messages = require("utils/messages");
-var sprintf = require("sprintf-js");
+var sprintf = require("sprintf-js").sprintf;
 
 $(function () {
     $("#force-sync").click(function(ev){

@@ -1,5 +1,5 @@
 var Backbone = require("base/backbone");
-var sprintf = require("sprintf-js");
+var sprintf = require("sprintf-js").sprintf;
 
 var PlaylistProgressModel = Backbone.Model.extend();
 

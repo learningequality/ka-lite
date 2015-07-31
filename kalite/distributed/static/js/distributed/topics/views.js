@@ -1,6 +1,7 @@
 var BaseView = require("base/baseview");
 var _ = require("underscore");
 var $ = require("base/jQuery");
+require("jquery-slimscroll/jquery.slimscroll");
 var Backbone = require("base/backbone");
 var messages = require("utils/messages");
 
@@ -362,7 +363,7 @@ var TopicContainerInnerView = BaseView.extend({
 
         this.$el.html(this.template(this.model.attributes));
 
-        this.$(".sidebar").slimScroll({
+        $(this.$(".sidebar")).slimScroll({
             color: "#083505",
             opacity: 0.2,
             size: "6px",

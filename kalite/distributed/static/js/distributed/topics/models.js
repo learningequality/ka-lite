@@ -1,5 +1,6 @@
 var Backbone = require("base/backbone");
 var get_params = require("utils/get_params");
+var sprintf = require("sprintf-js").sprintf;
 
 // Models
 var TopicNode = Backbone.Model.extend({

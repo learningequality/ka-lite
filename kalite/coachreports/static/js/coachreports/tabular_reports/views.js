@@ -2,7 +2,7 @@ var BaseView = require("base/baseview");
 var _ = require("underscore");
 var Backbone = require("base/backbone");
 var Handlebars = require("base/handlebars");
-var sprintf = require("sprintf-js");
+var sprintf = require("sprintf-js").sprintf;
 
 var ExerciseModels = require("exercises/models");
 var Models = require("../coach_reports/models");

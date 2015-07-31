@@ -9,7 +9,7 @@ var messages = require("utils/messages");
 var $ = require("base/jQuery");
 var $script = require("scriptjs");
 var KhanExercises = require("../perseus/ke/khan-exercise");
-var sprintf = require("sprintf-js");
+var sprintf = require("sprintf-js").sprintf;
 
 require("qtip2");
 

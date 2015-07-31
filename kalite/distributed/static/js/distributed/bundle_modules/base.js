@@ -11,16 +11,19 @@ var StatusModel = require("../user/models").StatusModel;
 var attachfastclick = require("fastclick");
 var $script = require("scriptjs");
 require("browsernizr/test/canvas");
+require("browsernizr/test/touchevents");
 var Modernizr = require("browsernizr");
 
 global.$ = $;
 global._ = _;
 global.sessionModel = new SessionModel();
 
+var url = require("url");
+
 window.onerror=function(msg){
     window.js_errors = window.js_errors || [];
     window.js_errors.push(msg);
-}
+};
 
 require("jquery-ui/themes/base/jquery-ui.css");
 require("bootstrap/less/bootstrap.less");
@@ -33,7 +36,7 @@ require("../../../css/distributed/khan-lite.css");
 $(function(){
 
     if (!Modernizr.canvas) {
-        $script(window.sessionModel.get("STATIC_URL") + "/js/distributed/bundles/bundle_compatilibity.js");
+        $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_compatilibity.js");
     }
 
     attachfastclick(document.body);
@@ -48,13 +51,17 @@ $(function(){
     global.toggleNavbarView = new user.ToggleNavbarView({model: statusModel, el: "#topnav"});
 
     // Process any direct messages, from the url querystring
-    if ($.url().param('message')) {
+    if (url.parse(window.location.href).query) {
 
-        var message_type = sanitize_string($.url().param('message_type') || "info");
-        var message = sanitize_string($.url().param('message'));
-        var message_id = sanitize_string($.url().param('message_id') || "");
+        if (url.parse(window.location.href).query.message){
 
-        messages.show_message(message_type, message, message_id);
+            var message_type = sanitize_string(url.parse(window.location.href).query.message_type || "info");
+            var message = sanitize_string(url.parse(window.location.href).query.message);
+            var message_id = sanitize_string(url.parse(window.location.href).query.message_id || "");
+
+            messages.show_message(message_type, message, message_id);
+
+        }
 
     }
 

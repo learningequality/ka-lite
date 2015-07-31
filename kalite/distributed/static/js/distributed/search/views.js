@@ -3,7 +3,7 @@ var Handlebars = require("../base/handlebars");
 var _ = require("underscore");
 var api = require("../utils/api");
 var messages = require("utils/messages");
-var sprintf = require("sprintf-js");
+var sprintf = require("sprintf-js").sprintf;
 
 require("../../../css/distributed/search_autocomplete.css");
 
