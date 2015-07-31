@@ -1,51 +1,33 @@
-define(function(require) {
-
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 $.extend(KhanUtil, {
-    spin: function(content) {
-        // First find all top-level blocks and spin them
+    spin: function (content) {
         var startingBracePos = -1;
         var nestingLevel = 0;
-
         for (var i = 0; i < content.length; i++) {
-            if (content.charAt(i) === "{") {
-
-                // We encounter our first "{"
+            if (content.charAt(i) === '{') {
                 if (startingBracePos === -1) {
                     startingBracePos = i;
-
-                // We are already inside a top-level block, this starts a nested block
                 } else {
                     nestingLevel++;
                 }
-
-            // We encounter a "}" and have seen a "{" before
-            } else if (content.charAt(i) === "}" && startingBracePos !== -1) {
-
-                // This is the closing brace for a top-level block
+            } else if (content.charAt(i) === '}' && startingBracePos !== -1) {
                 if (nestingLevel === 0) {
-                    // Spin the top-level block
                     var spun = KhanUtil.spin(content.substring(startingBracePos + 1, i));
                     content = content.substring(0, startingBracePos) + spun + content.substring(i + 1);
-                    i -= (i - startingBracePos) - spun.length + 1;
+                    i -= i - startingBracePos - spun.length + 1;
                     startingBracePos = -1;
-
-                // This brace closes a nested block
                 } else {
                     nestingLevel--;
                 }
             }
         }
-
-        return KhanUtil.randFromArray(content.split("|"));
+        return KhanUtil.randFromArray(content.split('|'));
     }
 });
-
-
-$.fn.spin = function() {
-    this.find(".spin").each(function() {
+$.fn.spin = function () {
+    this.find('.spin').each(function () {
         var spun = KhanUtil.spin($(this).html());
         $(this).html(spun);
     });
 };
-
-});
+},{}]},{},[1]);

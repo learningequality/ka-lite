@@ -1,22 +1,91 @@
-/*
- * Vector Utils 
- * A vector is an array of numbers e.g. [0, 3, 4].
- */
-define(function(require) {
-
-var knumber = require("./knumber.js");
-
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var DEFAULT_TOLERANCE = 1e-9;
+var EPSILON = Math.pow(2, -42);
+var knumber = KhanUtil.knumber = {
+    DEFAULT_TOLERANCE: DEFAULT_TOLERANCE,
+    EPSILON: EPSILON,
+    is: function (x) {
+        return _.isNumber(x) && !_.isNaN(x);
+    },
+    equal: function (x, y, tolerance) {
+        if (x == null || y == null) {
+            return x === y;
+        }
+        if (tolerance == null) {
+            tolerance = DEFAULT_TOLERANCE;
+        }
+        return Math.abs(x - y) < tolerance;
+    },
+    sign: function (x, tolerance) {
+        return knumber.equal(x, 0, tolerance) ? 0 : Math.abs(x) / x;
+    },
+    round: function (num, precision) {
+        var factor = Math.pow(10, precision);
+        return Math.round(num * factor) / factor;
+    },
+    roundTo: function (num, increment) {
+        return Math.round(num / increment) * increment;
+    },
+    floorTo: function (num, increment) {
+        return Math.floor(num / increment) * increment;
+    },
+    ceilTo: function (num, increment) {
+        return Math.ceil(num / increment) * increment;
+    },
+    isInteger: function (num, tolerance) {
+        return knumber.equal(Math.round(num), num, tolerance);
+    },
+    toFraction: function (decimal, tolerance, max_denominator) {
+        max_denominator = max_denominator || 1000;
+        tolerance = tolerance || EPSILON;
+        var n = [
+                1,
+                0
+            ], d = [
+                0,
+                1
+            ];
+        var a = Math.floor(decimal);
+        var rem = decimal - a;
+        while (d[0] <= max_denominator) {
+            if (knumber.equal(n[0] / d[0], decimal, tolerance)) {
+                return [
+                    n[0],
+                    d[0]
+                ];
+            }
+            n = [
+                a * n[0] + n[1],
+                n[0]
+            ];
+            d = [
+                a * d[0] + d[1],
+                d[0]
+            ];
+            a = Math.floor(1 / rem);
+            rem = 1 / rem - a;
+        }
+        return [
+            decimal,
+            1
+        ];
+    }
+};
+module.exports = knumber;
+},{}],2:[function(require,module,exports){
+var knumber = require('./knumber.js');
 function arraySum(array) {
-    return _.reduce(array, function(memo, arg) { return memo + arg; }, 0);
+    return _.reduce(array, function (memo, arg) {
+        return memo + arg;
+    }, 0);
 }
-
 function arrayProduct(array) {
-    return _.reduce(array, function(memo, arg) { return memo * arg; }, 1);
+    return _.reduce(array, function (memo, arg) {
+        return memo * arg;
+    }, 1);
 }
-
 var kvector = KhanUtil.kvector = {
-
-    is: function(vec, length) {
+    is: function (vec, length) {
         if (!_.isArray(vec)) {
             return false;
         }
@@ -25,189 +94,129 @@ var kvector = KhanUtil.kvector = {
         }
         return _.all(vec, knumber.is);
     },
-
-    // Normalize to a unit vector
-    normalize: function(v) {
+    normalize: function (v) {
         return kvector.scale(v, 1 / kvector.length(v));
     },
-
-    // Length/magnitude of a vector
-    length: function(v) {
+    length: function (v) {
         return Math.sqrt(kvector.dot(v, v));
     },
-
-    // Dot product of two vectors
-    dot: function(a, b) {
+    dot: function (a, b) {
         var vecs = _.toArray(arguments);
         var zipped = _.zip.apply(_, vecs);
         var multiplied = _.map(zipped, arrayProduct);
         return arraySum(multiplied);
     },
-
-    /* vector-add multiple [x, y] coords/vectors
-     *
-     * kvector.add([1, 2], [3, 4]) -> [4, 6]
-     */
-    add: function() {
+    add: function () {
         var points = _.toArray(arguments);
         var zipped = _.zip.apply(_, points);
         return _.map(zipped, arraySum);
     },
-
-    subtract: function(v1, v2) {
-        return _.map(_.zip(v1, v2), function(dim) {
+    subtract: function (v1, v2) {
+        return _.map(_.zip(v1, v2), function (dim) {
             return dim[0] - dim[1];
         });
     },
-
-    negate: function(v) {
-        return _.map(v, function(x) {
+    negate: function (v) {
+        return _.map(v, function (x) {
             return -x;
         });
     },
-
-    // Scale a vector
-    scale: function(v1, scalar) {
-        return _.map(v1, function(x) {
+    scale: function (v1, scalar) {
+        return _.map(v1, function (x) {
             return x * scalar;
         });
     },
-
-    equal: function(v1, v2, tolerance) {
-        // _.zip will nicely deal with the lengths, going through
-        // the length of the longest vector. knumber.equal then
-        // returns false for any number compared to the undefined
-        // passed in if one of the vectors is shorter.
-        return _.all(_.zip(v1, v2), function(pair) {
+    equal: function (v1, v2, tolerance) {
+        return _.all(_.zip(v1, v2), function (pair) {
             return knumber.equal(pair[0], pair[1], tolerance);
         });
     },
-
-    codirectional: function(v1, v2, tolerance) {
-        // The origin is trivially codirectional with all other vectors.
-        // This gives nice semantics for codirectionality between points when
-        // comparing their difference vectors.
-        if (knumber.equal(kvector.length(v1), 0, tolerance) ||
-                knumber.equal(kvector.length(v2), 0, tolerance)) {
+    codirectional: function (v1, v2, tolerance) {
+        if (knumber.equal(kvector.length(v1), 0, tolerance) || knumber.equal(kvector.length(v2), 0, tolerance)) {
             return true;
         }
-
         v1 = kvector.normalize(v1);
         v2 = kvector.normalize(v2);
-
         return kvector.equal(v1, v2, tolerance);
     },
-
-    collinear: function(v1, v2, tolerance) {
-        return kvector.codirectional(v1, v2, tolerance) ||
-                kvector.codirectional(v1, kvector.negate(v2), tolerance);
+    collinear: function (v1, v2, tolerance) {
+        return kvector.codirectional(v1, v2, tolerance) || kvector.codirectional(v1, kvector.negate(v2), tolerance);
     },
-
-    // Convert a cartesian coordinate into a radian polar coordinate
-    polarRadFromCart: function(v) {
+    polarRadFromCart: function (v) {
         var radius = kvector.length(v);
         var theta = Math.atan2(v[1], v[0]);
-
-        // Convert angle range from [-pi, pi] to [0, 2pi]
         if (theta < 0) {
             theta += 2 * Math.PI;
         }
-
-        return [radius, theta];
+        return [
+            radius,
+            theta
+        ];
     },
-
-    // Converts a cartesian coordinate into a degree polar coordinate
-    polarDegFromCart: function(v) {
+    polarDegFromCart: function (v) {
         var polar = kvector.polarRadFromCart(v);
-        return [polar[0], polar[1] * 180 / Math.PI];
+        return [
+            polar[0],
+            polar[1] * 180 / Math.PI
+        ];
     },
-
-    /* Convert a polar coordinate into a cartesian coordinate
-     *
-     * Examples:
-     * cartFromPolarRad(5, Math.PI)
-     * cartFromPolarRad([5, Math.PI])
-     */
-    cartFromPolarRad: function(radius, theta) {
+    cartFromPolarRad: function (radius, theta) {
         if (_.isUndefined(theta)) {
             theta = radius[1];
             radius = radius[0];
         }
-
-        return [radius * Math.cos(theta), radius * Math.sin(theta)];
+        return [
+            radius * Math.cos(theta),
+            radius * Math.sin(theta)
+        ];
     },
-
-    /* Convert a polar coordinate into a cartesian coordinate
-     *
-     * Examples:
-     * cartFromPolarDeg(5, 30)
-     * cartFromPolarDeg([5, 30])
-     */
-    cartFromPolarDeg: function(radius, theta) {
+    cartFromPolarDeg: function (radius, theta) {
         if (_.isUndefined(theta)) {
             theta = radius[1];
             radius = radius[0];
         }
-
         return kvector.cartFromPolarRad(radius, theta * Math.PI / 180);
     },
-
-    // Rotate vector
-    rotateRad: function(v, theta) {
+    rotateRad: function (v, theta) {
         var polar = kvector.polarRadFromCart(v);
         var angle = polar[1] + theta;
         return kvector.cartFromPolarRad(polar[0], angle);
     },
-
-    rotateDeg: function(v, theta) {
+    rotateDeg: function (v, theta) {
         var polar = kvector.polarDegFromCart(v);
         var angle = polar[1] + theta;
         return kvector.cartFromPolarDeg(polar[0], angle);
     },
-
-    // Angle between two vectors
-    angleRad: function(v1, v2) {
-        return Math.acos(kvector.dot(v1, v2) /
-            (kvector.length(v1) * kvector.length(v2)));
+    angleRad: function (v1, v2) {
+        return Math.acos(kvector.dot(v1, v2) / (kvector.length(v1) * kvector.length(v2)));
     },
-
-    angleDeg: function(v1, v2) {
+    angleDeg: function (v1, v2) {
         return kvector.angleRad(v1, v2) * 180 / Math.PI;
     },
-
-    // Vector projection of v1 onto v2
-    projection: function(v1, v2) {
+    projection: function (v1, v2) {
         var scalar = kvector.dot(v1, v2) / kvector.dot(v2, v2);
         return kvector.scale(v2, scalar);
     },
-
-    // Round each number to a certain number of decimal places
-    round: function(vec, precision) {
-        return _.map(vec, function(elem, i) {
+    round: function (vec, precision) {
+        return _.map(vec, function (elem, i) {
             return knumber.round(elem, precision[i] || precision);
         });
     },
-
-    // Round each number to the nearest increment
-    roundTo: function(vec, increment) {
-        return _.map(vec, function(elem, i) {
+    roundTo: function (vec, increment) {
+        return _.map(vec, function (elem, i) {
             return knumber.roundTo(elem, increment[i] || increment);
         });
     },
-
-    floorTo: function(vec, increment) {
-        return _.map(vec, function(elem, i) {
+    floorTo: function (vec, increment) {
+        return _.map(vec, function (elem, i) {
             return knumber.floorTo(elem, increment[i] || increment);
         });
     },
-
-    ceilTo: function(vec, increment) {
-        return _.map(vec, function(elem, i) {
+    ceilTo: function (vec, increment) {
+        return _.map(vec, function (elem, i) {
             return knumber.ceilTo(elem, increment[i] || increment);
         });
     }
 };
-
-return kvector;
-
-});
+module.exports = kvector;
+},{"./knumber.js":1}]},{},[2]);
