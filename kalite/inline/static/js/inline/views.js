@@ -18,54 +18,26 @@ var ButtonView = BaseView.extend({
 
     clickCallback: function() {
         var self = this;
-        this.model.fetch({ 
+        this.model.fetch({
             success: function(model, response, options) {
                 //obtain narrative, JSON obj of elements and their attributes
                 var narr = self.model.attributes;
 
                 //translate narrative into build options for introjs
-                var before_showing = [];
-                var options = self.parseNarrative(narr, before_showing);
+                var parsedNarr = self.parseNarrative(narr);
+                var options = parsedNarr["options"];
+                var before_showing = parsedNarr["before_showing"];
 
-                //set the options on introjs object
-                var intro = introJs();
+                var intro = introJs.introJs();
+
                 intro.setOption('tooltipPosition', 'auto');
                 intro.setOption('positionPrecedence', ['left', 'right', 'bottom', 'top']);
                 intro.setOptions(options);
+                intro.onbeforechange( function(targetElement) {
+                    console.log(targetElement);
+                });
 
-
-                //runs before-showing, if applicable (before-showing[] populated)
-                var i = 0;
-                var step = 0;
-
-                //set before-showing functions on elements if needed for page
-
-                if (before_showing.length !== 0) {
-                    intro.onafterchange(function(target) {
-                        console.log("the before_showing object");
-                        console.log(before_showing[i]);
-                        if (target == document.querySelector(before_showing[i]["element"]) ){ 
-                            console.log("inside onafterchange(), going to set the click function on btn");
-
-                            //perform action after the "next" button is clicked on the tooltip
-                            $("a.introjs-button.introjs-nextbutton").click(function() {
-                                console.log(" 'NEXT' button has been clicked in modal!");
-                                console.log(before_showing[i]["action"]);
-
-                                //when user clicks on 'next' CHECK NEXT ELEMENT:
-                                //if null, wait for next element to load,
-                                //else if element exists, trigger action
-                                $(target).trigger(before_showing[i]["action"]);
-                                setTimeout(function(){
-                                    console.log("Waiting for next element to load");
-                                    }, 2000);
-                                i++;
-                            }); 
-                        }
-
-                    });
-                }
-                intro.start(); 
+                intro.start();
             },
 
             error: function(model, response, options) {
@@ -76,56 +48,43 @@ var ButtonView = BaseView.extend({
 
     //Translate narrative into JSON obj used to set introjs options
     parseNarrative: function(narr, before_showing) {
-        var options = {};
         var steps = [];
+        var before_showing = [];
 
-        var key = Object.keys(narr);
-        key = key[1];
+        var key = Object.keys(narr)[1];
 
         // Parse narrative into obj using attribute keywords for intro framework
-        var newselectors = _.map(narr[key], function(element) {
+        _.each(narr[key], function(element, el_index, el_list) {
             var step = {};
             var selectorKey = String(Object.keys(element));
-            var attributes = [];
-            attributes = element[selectorKey];
+            var attributes = element[selectorKey];
 
             if (selectorKey != "unattached") {
                 step["element"] = selectorKey;
             }
 
             //Set {key: value} pairs that define modal for each intro step
-            var parsed = _.map(attributes, function(attribute) {
-                var key = Object.keys(attribute);
-                key = key[0];
+            _.each(attributes, function(attribute, att_index, att_list) {
+                var key = Object.keys(attribute)[0];
                 var value = attribute[key];
-                var newkey = null;
-                // var newvalue = null;
 
                 if (key === "text") {
-                    newkey = "intro";
+                    step["intro"] = value;
+                } else if (key === "position") {
+                    step["position"] = value;
+                } else if (key === "step") {
+                    step["step"] = value;
+                } else if (key === "before-showing") {
+                    before_showing[el_index] = value;
                 }
-                else if (key === "position") {
-                    newkey = "position";
-                }
-                else if (key === "step") {
-                    newkey = "step";
-                }
-                else if (key === "before-showing") {
-                    //add the before-showing attribute to a separate
-                    //"before-showing" array to be used in intro.onchange()
-                    console.log("inside before-showing building");
-                    var before_showing_obj = {};
-                    before_showing_obj["element"] = selectorKey;
-                    before_showing_obj["action"] = value;
-                    before_showing.push(before_showing_obj);                
-                }
-                step[newkey] = value;
             });
             steps.push(step);
         });
 
-        options["steps"] = steps;
-        return options;
+        return {
+            "options": {"steps": steps},
+            "before_showing": before_showing
+        };
     },
 
     render: function() {
