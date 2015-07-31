@@ -8,6 +8,8 @@ We also use:
 
 * ke-deps.js
 * lib/mathquill/*
+* lib/katex/katex.css
+* lib/katex/fonts/*
 * lib/kas.js
 * fonts/*
 * ke/**

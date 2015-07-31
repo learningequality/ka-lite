@@ -4,10 +4,9 @@ var Handlebars = require("base/handlebars");
 var Models = require("./models");
 var VideoModels = require("video/models");
 
-var AudioPlayerView = require("audio/views");
-var VideoPlayerView = require("video/views");
-var PDFViewerView = require("pdf/views");
 var ContentBaseView = require("./baseview");
+
+require("../../../css/distributed/content.css");
 
 var ContentWrapperView = BaseView.extend({
 
@@ -19,7 +18,7 @@ var ContentWrapperView = BaseView.extend({
 
     initialize: function(options) {
 
-        _.bindAll(this, "user_data_loaded", "set_full_progress", "render");
+        _.bindAll(this, "user_data_loaded", "set_full_progress", "render", "add_content_view");
 
         var self = this;
 
@@ -74,26 +73,38 @@ var ContentWrapperView = BaseView.extend({
 
         this.$el.html(this.template(this.data_model.attributes));
 
-        var ContentView;
+        // Do this to prevent browserify from bundling what we want to be external dependencies.
+        var external = require;
+
+        var self = this;
 
         switch(this.data_model.get("kind")) {
 
             case "Audio":
-                ContentView = AudioPlayerView;
+                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_audio.js", function(){
+                    self.add_content_view(external("audio").AudioPlayerView);
+                });
                 break;
 
             case "Document":
                 if ("PDFJS" in window) {
-                    ContentView = PDFViewerView;
+                    $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_document.js", function(){
+                        self.add_content_view(external("document").PDFViewerView);
+                    });
                 } else {
-                    ContentView = ContentBaseView;
+                    self.add_content_view(ContentBaseView);
                 }
                 break;
 
             case "Video":
-                ContentView = VideoPlayerView;
+                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_video.js", function(){
+                    self.add_content_view(external("document").VideoPlayerView);
+                });
                 break;
         }
+    },
+
+    add_content_view: function(ContentView) {
 
         this.content_view = this.add_subview(ContentView, {
             data_model: this.data_model,

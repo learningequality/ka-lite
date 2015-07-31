@@ -6,6 +6,8 @@ var Backbone = require("base/backbone");
 var messages = require("utils/messages");
 var $script = require("scriptjs");
 
+require("../../../css/distributed/sidebar.css");
+
 var ContentViews = require("content/views");
 var Models = require("./models");
 
@@ -696,6 +698,7 @@ var TopicContainerOuterView = BaseView.extend({
 
         var self = this;
 
+        // Do this to prevent browserify from bundling what we want to be external dependencies.
         var external = require;
 
         switch(kind) {

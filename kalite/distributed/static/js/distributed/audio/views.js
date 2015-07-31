@@ -2,6 +2,7 @@ var soundManager = require("soundmanager2");
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 
+require("../../../css/distributed/audio.css");
 
 var AudioPlayerView = ContentBaseView.extend({
 
@@ -149,4 +150,6 @@ var AudioPlayerView = ContentBaseView.extend({
 
 });
 
-module.exports = AudioPlayerView;
+module.exports = {
+    AudioPlayerView: AudioPlayerView
+};
