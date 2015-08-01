@@ -98,7 +98,7 @@ var ContentWrapperView = BaseView.extend({
 
             case "Video":
                 $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_video.js", function(){
-                    self.add_content_view(external("document").VideoPlayerView);
+                    self.add_content_view(external("video").VideoPlayerView);
                 });
                 break;
         }

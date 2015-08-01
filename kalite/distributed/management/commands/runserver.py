@@ -75,4 +75,3 @@ class Command(RunserverCommand):
                 Browserify exited unexpectedly - Javascript code will not be properly built.
                 ****************************************************************************
                 """)
-            os._exit(1)
