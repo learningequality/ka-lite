@@ -4,6 +4,19 @@ var Handlebars = require("base/handlebars");
 
 var introJs = require("./intro");
 
+/*
+    Force the bootstrap script to be reloaded. This is meant to be run after the bootstrap API has been disabled.
+    We might wish to disable the API, for example, to keep dropdown menus expanded.
+*/
+function reload_bootstrap() {
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    // window.bootstrap_src is defined by a template context variable
+    script.src = window.bootstrap_src;
+    head.appendChild(script);
+}
+
 var ButtonView = BaseView.extend({
     template: require("./hbtemplates/inline.handlebars"),
 
@@ -33,8 +46,33 @@ var ButtonView = BaseView.extend({
                 intro.setOption('tooltipPosition', 'auto');
                 intro.setOption('positionPrecedence', ['left', 'right', 'bottom', 'top']);
                 intro.setOptions(options);
+
                 intro.onbeforechange( function(targetElement) {
-                    console.log(targetElement);
+                    if( typeof before_showing[intro._currentStep] !== "undefined" ) {
+                        _.each(before_showing[intro._currentStep], function(element, a_index, a_list) {
+                            var action = Object.keys(element)[0];
+                            var target = element[action];
+                            if (action === "click") {
+                                $(target).click();
+                                if( $(targetElement).parents().hasClass("dropdown") ) {
+                                    /* Imperfect solution. If a dropdown menu (or a child element) is clicked, then
+                                        disable the bootstrap dropdown api, so that the dropdown remains expanded.
+                                        Will be re-enabled by the introJs.onexit or introJs.oncomplete callbacks. */
+                                    $(document).off(".dropdown.data-api");
+                                }
+                            } else if(action === "scroll-to") {
+                                $(window).scrollTop(target);
+                            }
+                        });
+                    }
+                });
+
+                // onexit and oncomplete are not both called, it's either one or the other
+                intro.onexit(function(){
+                    reload_bootstrap(); // In case we disabled it, for the dropdown menu
+                });
+                intro.oncomplete(function(){
+                    reload_bootstrap(); // In case we disabled it, for the dropdown menu
                 });
 
                 intro.start();
