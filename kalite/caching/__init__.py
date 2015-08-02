@@ -21,7 +21,7 @@ import os
 import glob
 
 from django.conf import settings
-logging = settings.LOG
+
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
@@ -29,6 +29,7 @@ from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
 from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP
 
+logging = settings.LOG
 
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
