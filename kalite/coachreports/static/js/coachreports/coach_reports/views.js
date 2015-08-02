@@ -12,6 +12,12 @@ CoachReportView:
                         - DetailPanelBodyView
 */
 
+var date_string = function(date) {
+    if (date) {
+        return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+    }
+};
+
 var DetailsPanelBodyView = BaseView.extend({
     /*
     This view displays details of individual attempt logs
@@ -344,7 +350,9 @@ var TabularReportView = BaseView.extend({
         var self = this;
         this.data_model = new CoachReportModel({
             facility: this.model.get("facility"),
-            group: this.model.get("group")
+            group: this.model.get("group"),
+            start_date: date_string(this.model.get("start_date")),
+            end_date: date_string(this.model.get("end_date"))
         });
         if (this.model.get("facility")) {
             this.data_model.fetch().then(function() {
@@ -380,6 +388,57 @@ var TabularReportView = BaseView.extend({
 
 });
 
+var TimeSetView = BaseView.extend({
+    template: HB.template("coach_nav/datepicker"),
+
+    events: {
+        "click .setrange": "set_range"
+    },
+
+    initialize: function () {
+        var server_date_now = new Date(new Date().getTime() - window.statusModel.get("client_server_time_diff"));
+        var default_start_date = new Date(server_date_now.getTime())
+        default_start_date = new Date(default_start_date.setDate(default_start_date.getDate()-ds.coachreports.default_coach_report_day_range));
+
+        this.model.set({
+            "start_date": default_start_date,
+            "end_date": server_date_now
+        });
+        this.render();
+    },
+
+    render: function() {
+        this.$el.html(this.template({
+            start_date: icu.getDateFormat("SHORT").format(this.model.get("start_date")),
+            end_date: icu.getDateFormat("SHORT").format(this.model.get("end_date"))
+        }));
+
+        var format = icu.getDateFormatSymbols().order_short;
+
+        format = format[0] + "/" + format[1] + "/" + format[2];
+
+        format = format.toLowerCase().replace("y", "yy");
+
+        this.datepicker = this.$('.date-range').each(function(){
+            $(this).datepicker({
+                format: format,
+                endDate: "0d",
+                todayBtn: "linked",
+                todayHighlight: true
+            });
+        });
+    },
+
+    set_range: function() {
+        this.model.set({
+            start_date: this.$("#start").datepicker("getDate"),
+            end_date: this.$("#end").datepicker("getDate")
+        });
+        this.model.trigger("set_time");
+        return false;
+    }
+});
+
 var CoachSummaryView = BaseView.extend({
     /*
     This view displays summary stats for the currently selected facility (and optionally group)
@@ -395,12 +454,16 @@ var CoachSummaryView = BaseView.extend({
         _.bindAll(this);
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
+        this.listenTo(this.model, "set_time", this.set_data_model);
         this.set_data_model();
     },
 
     set_data_model: function (){
         if (this.data_model) {
-            if (this.data_model.get("facility") !== this.model.get("facility") || this.data_model.get("group") !== this.model.get("group")) {
+            var check_fields = ["facility", "group", "start_date", "end_date"];
+            var data_fields = _.pick(this.data_model.attributes, check_fields);
+            var status_fields = _.pick(this.model.attributes, check_fields);
+            if (!_.isEqual(data_fields, status_fields)) {
                 delete this.data_model;
             }
         }
@@ -408,7 +471,9 @@ var CoachSummaryView = BaseView.extend({
         if (!this.data_model) {
             this.data_model = new CoachReportAggregateModel({
                 facility: this.model.get("facility"),
-                group: this.model.get("group")
+                group: this.model.get("group"),
+                start_date: date_string(this.model.get("start_date")),
+                end_date: date_string(this.model.get("end_date"))
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
@@ -420,7 +485,9 @@ var CoachSummaryView = BaseView.extend({
     render: function() {
         this.$el.html(this.template({
             status:this.model.attributes,
-            data: this.data_model.attributes
+            data: this.data_model.attributes,
+            start_date: icu.getDateFormat("SHORT").format(this.model.get("start_date")),
+            end_date: icu.getDateFormat("SHORT").format(this.model.get("end_date"))
         }));
 
         clear_messages();
@@ -593,6 +660,7 @@ var CoachReportView = BaseView.extend({
         this.facility_select_view = new FacilitySelectView({model: this.model});
         this.group_select_view = new GroupSelectView({model: this.model});
         this.coach_summary_view = new CoachSummaryView({model: this.model});
+        this.time_set_view = new TimeSetView({model: this.model});
 
         this.render();
     },
@@ -601,6 +669,7 @@ var CoachReportView = BaseView.extend({
         this.$el.html(this.template());
         this.$('#group-select-container').append(this.group_select_view.el);
         this.$('#facility-select-container').append(this.facility_select_view.el);
+        this.$("#time-set-container").append(this.time_set_view.el);
         this.$("#student_report_container").append(this.coach_summary_view.el);
     }
 });
