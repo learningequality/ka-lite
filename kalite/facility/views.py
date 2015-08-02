@@ -2,9 +2,11 @@
 """
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from securesync.devices.views import *  # ARGH! TODO(aron): figure out what things are imported here, and import them specifically
+# ARGH! TODO(aron): figure out what things are imported here, and import them specifically
+from securesync.devices.views import *
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -119,7 +121,8 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
 
             # New user created by admin
             elif request.is_admin or request.is_django_user:
-                messages.success(request, _("You successfully created user '%(username)s'") % {"username": form.instance.get_name()})
+                messages.success(request, _("You successfully created user '%(username)s'") %
+                                 {"username": form.instance.get_name()})
                 if request.next:
                     return HttpResponseRedirect(next)
                 else:
@@ -181,4 +184,3 @@ def group_edit(request, facility, group_id):
         "singlefacility": request.session["facility_count"] == 1,
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
-

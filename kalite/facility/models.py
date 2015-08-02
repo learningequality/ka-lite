@@ -5,7 +5,8 @@ from __future__ import absolute_import
 from annoying.functions import get_object_or_None
 from pbkdf2 import crypt
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.contrib.auth.models import check_password
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
@@ -18,17 +19,21 @@ from securesync.engine.models import DeferredCountSyncedModel
 
 
 class Facility(DeferredCountSyncedModel):
-    name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that learners/coaches will see when choosing their facility; it can be in the local language.)"), max_length=100)
+    name = models.CharField(verbose_name=_("Name"), help_text=_(
+        "(This is the name that learners/coaches will see when choosing their facility; it can be in the local language.)"), max_length=100)
     description = models.TextField(blank=True, verbose_name=_("Description"))
-    address = models.CharField(verbose_name=_("Address"), help_text=_("(Please provide as detailed an address as possible.)"), max_length=400, blank=True)
+    address = models.CharField(verbose_name=_("Address"), help_text=_(
+        "(Please provide as detailed an address as possible.)"), max_length=400, blank=True)
     address_normalized = models.CharField(max_length=400, blank=True)
     latitude = models.FloatField(blank=True, verbose_name=_("Latitude"), null=True)
     longitude = models.FloatField(blank=True, verbose_name=_("Longitude"), null=True)
     zoom = models.FloatField(blank=True, verbose_name=_("Zoom"), null=True)
-    contact_name = models.CharField(verbose_name=_("Contact Name"), help_text=_("(Who should we contact with any questions about this facility?)"), max_length=60, blank=True)
+    contact_name = models.CharField(verbose_name=_("Contact Name"), help_text=_(
+        "(Who should we contact with any questions about this facility?)"), max_length=60, blank=True)
     contact_phone = models.CharField(max_length=60, verbose_name=_("Contact Phone"), blank=True)
     contact_email = models.EmailField(max_length=60, verbose_name=_("Contact Email"), blank=True)
-    user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_("(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
+    user_count = models.IntegerField(verbose_name=_("User Count"), help_text=_(
+        "(How many potential users do you estimate there are at this facility?)"), blank=True, null=True)
 
     class Meta:
         verbose_name_plural = _("Facilities")
@@ -81,11 +86,13 @@ class Facility(DeferredCountSyncedModel):
 class FacilityGroup(DeferredCountSyncedModel):
     facility = models.ForeignKey(Facility, verbose_name=_("Facility"))
     name = models.CharField(max_length=30, verbose_name=_("Name"))
-    description = models.TextField(blank=True, verbose_name=_("Description")); description.minversion = "0.13.0"
+    description = models.TextField(blank=True, verbose_name=_("Description"))
+    description.minversion = "0.13.0"
 
     def __init__(self, *args, **kwargs):
         super(FacilityGroup, self).__init__(*args, **kwargs)
-        self._unhashable_fields += ("description",) # since it's being stripped out by minversion, we can't include it in the signature
+        # since it's being stripped out by minversion, we can't include it in the signature
+        self._unhashable_fields += ("description",)
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
@@ -144,7 +151,8 @@ class FacilityUser(DeferredCountSyncedModel):
     is_teacher = models.BooleanField(default=False, help_text=_("(whether this user should have coach permissions)"))
     notes = models.TextField(blank=True)
     password = models.CharField(max_length=128)
-    default_language = models.CharField(max_length=8, blank=True, null=True); default_language.minversion="0.11.1"
+    default_language = models.CharField(max_length=8, blank=True, null=True)
+    default_language.minversion = "0.11.1"
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons

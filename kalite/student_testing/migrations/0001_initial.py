@@ -19,11 +19,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('student_testing', ['TestLog'])
 
-
     def backwards(self, orm):
         # Deleting model 'TestLog'
         db.delete_table('student_testing_testlog')
-
 
     models = {
         'securesync.device': {

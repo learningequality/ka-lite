@@ -11,7 +11,6 @@ class Migration(SchemaMigration):
         # Deleting model 'TestLog'
         db.delete_table(u'student_testing_testlog')
 
-
     def backwards(self, orm):
         # Adding model 'TestLog'
         db.create_table(u'student_testing_testlog', (
@@ -24,9 +23,8 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'student_testing', ['TestLog'])
 
-
     models = {
-        
+
     }
 
     complete_apps = ['student_testing']

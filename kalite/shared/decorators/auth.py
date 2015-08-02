@@ -21,10 +21,12 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
         handler = lambda request, user, *args, **kwargs: user
 
     def get_user_from_request_wrapper_fn(request, *args, **kwargs):
-        user = get_object_or_None(FacilityUser, id=request.REQUEST["user"]) if "user" in request.REQUEST else None  # don't hit DB if we don't have to
+        user = get_object_or_None(FacilityUser, id=request.REQUEST[
+                                  "user"]) if "user" in request.REQUEST else None  # don't hit DB if we don't have to
         user = user or request.session.get("facility_user", None)
         return handler(request, *args, user=user, **kwargs)
     return get_user_from_request_wrapper_fn if not request else get_user_from_request_wrapper_fn(request=request, *args, **kwargs)
+
 
 def require_login(handler):
     """
@@ -54,7 +56,7 @@ def require_admin(handler):
         if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
 
-        # Allow users to edit themselves 
+        # Allow users to edit themselves
         facility_user_id = kwargs.get("facility_user_id", None)
         if facility_user_id == request.session.get('facility_user').id:
             return handler(request, *args, **kwargs)
@@ -64,8 +66,6 @@ def require_admin(handler):
         raise PermissionDenied(_("You must be logged in as an admin to access this page."))
 
     return require_admin_wrapper_fn
-
-
 
 
 def require_authorized_access_to_student_data(handler):
@@ -129,12 +129,14 @@ def require_authorized_admin(handler):
         if logged_in_user.is_superuser:
             return handler(request, *args, **kwargs)
 
-
         # Objects we're looking to verify
-        org = None; org_id      = kwargs.get("org_id", None)
-        zone = None; zone_id     = kwargs.get("zone_id", None)
+        org = None
+        org_id = kwargs.get("org_id", None)
+        zone = None
+        zone_id = kwargs.get("zone_id", None)
         facility = facility_from_request(request=request, *args, **kwargs)
-        device = None; device_id   = kwargs.get("device_id", None)
+        device = None
+        device_id = kwargs.get("device_id", None)
         user = get_user_from_request(request=request, *args, **kwargs)
 
         # Validate user through facility
@@ -148,7 +150,8 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = device.get_zone()
                 if not zone:
-                    raise PermissionDenied(_("You requested device information for a device without a sharing network.  Only super users can do this!"))
+                    raise PermissionDenied(
+                        _("You requested device information for a device without a sharing network.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate device through zone
@@ -156,7 +159,8 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = facility.get_zone()
                 if not zone:
-                    raise PermissionDenied(_("You requested facility information for a facility with no sharing network.  Only super users can do this!"))
+                    raise PermissionDenied(
+                        _("You requested facility information for a facility with no sharing network.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate zone through org

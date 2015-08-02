@@ -29,6 +29,7 @@ USER_TYPE_STUDENT = "learner"
 
 log = settings.LOG
 
+
 class Command(BaseCommand):
     """
     This will generate screenshots based on the selenium firefox webdriver to be used for the user guide document.
@@ -43,26 +44,26 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('--from-str',
-            action='store',
-            dest='cl_str',
-            default=None,
-            help='Takes a JSON string instead of reading from the default file location.'),
+                    action='store',
+                    dest='cl_str',
+                    default=None,
+                    help='Takes a JSON string instead of reading from the default file location.'),
         make_option('--output-dir',
-            action='store',
-            dest='output_dir',
-            default=None,
-            help='Specify the output directory relative to the project base directory.'),
+                    action='store',
+                    dest='output_dir',
+                    default=None,
+                    help='Specify the output directory relative to the project base directory.'),
         make_option('--no-del',
-            action='store_true',
-            dest='no_del',
-            default=None,
-            help='Don\'t delete existing screenshots.'),
+                    action='store_true',
+                    dest='no_del',
+                    default=None,
+                    help='Don\'t delete existing screenshots.'),
         make_option('--lang',
-            action='store',
-            dest='language',
-            default=None,
-            help='Specify the language of the session, set by the "set_default_language" api endpoint.'),
-        )
+                    action='store',
+                    dest='language',
+                    default=None,
+                    help='Specify the language of the session, set by the "set_default_language" api endpoint.'),
+    )
 
     def handle(self, *args, **options):
         sc = Screenshot(**options)
@@ -95,7 +96,8 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None,
         call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
         call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity, database="assessment_items")
         call_command("migrate", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
-        call_command("generaterealdata", interactive=False, stdout=new_io, router=router, verbosity=verbosity)  # For coachreports pages
+        call_command("generaterealdata", interactive=False, stdout=new_io,
+                     router=router, verbosity=verbosity)  # For coachreports pages
         if username and email and password:
             log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,)) if int(verbosity) > 0 else None
             call_command("createsuperuser", username=username, email=email,
@@ -181,8 +183,8 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
         # make sure output path exists and is empty
         if kwargs['output_dir']:
-            self.output_path = os.path.join( os.path.realpath(os.path.join(settings.PROJECT_PATH, '..')),
-                                        kwargs['output_dir'])
+            self.output_path = os.path.join(os.path.realpath(os.path.join(settings.PROJECT_PATH, '..')),
+                                            kwargs['output_dir'])
         else:
             self.output_path = settings.SCREENSHOTS_OUTPUT_PATH
         ensure_dir(self.output_path)
@@ -197,12 +199,14 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
         # setup database to use and auto-create admin user
         self.loginfo("==> Setting-up database ...")
-        self.admin_user = reset_sqlite_database(self.admin_username, self.admin_email, self.default_password, verbosity=self.verbosity)
+        self.admin_user = reset_sqlite_database(self.admin_username, self.admin_email,
+                                                self.default_password, verbosity=self.verbosity)
         self.admin_pass = self.default_password
         if not self.admin_user:
             raise Exception("==> Did not successfully setup database!")
 
-        Facility.initialize_default_facility("Silly Facility")  # Default facility required to avoid pernicious facility selection page
+        # Default facility required to avoid pernicious facility selection page
+        Facility.initialize_default_facility("Silly Facility")
         facility = self.facility = Facility.objects.get(name="Silly Facility")
         self.create_student(username=self.student_username, password=self.default_password, facility=facility)
         self.create_teacher(username=self.coach_username, password=self.default_password, facility=facility)
@@ -222,7 +226,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.set_session_language(kwargs['language'])
 
         self.loginfo("==> Browser %s successfully setup with live_server_url %s." %
-                 (self.browser.name, self.live_server_url,))
+                     (self.browser.name, self.live_server_url,))
         self.loginfo("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
 
     def set_session_language(self, lang_code):
@@ -237,9 +241,10 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.browser.get(self.live_server_url + reverse("homepage"))
         self.browser_wait_for_js_object_exists("$")
         data = json.dumps({"lang": lang_code})
-        self.browser.execute_script("window.SUCCESS=false; $.ajax({type: \"POST\", url: \"%s\", data: '%s', contentType: \"application/json\", success: function(){window.SUCCESS=true}})" % (reverse("set_default_language"), data))
-        self.browser_wait_for_js_condition("window.SUCCESS")    
-        # Ensure the changes are loaded 
+        self.browser.execute_script(
+            "window.SUCCESS=false; $.ajax({type: \"POST\", url: \"%s\", data: '%s', contentType: \"application/json\", success: function(){window.SUCCESS=true}})" % (reverse("set_default_language"), data))
+        self.browser_wait_for_js_condition("window.SUCCESS")
+        # Ensure the changes are loaded
         self.browser.get(self.live_server_url + reverse("homepage"))
 
     def validate_json_keys(self, shot):
@@ -255,7 +260,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
     def snap(self, slug, focus, note):
         filename = self.make_filename(slug=slug)
         self.loginfo('====> Snapping %s --titled-- "%s" --> %s%s ...' %
-                 (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
+                     (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
 
         if focus:
             self.browser_wait_for_js_object_exists("$")
@@ -265,7 +270,8 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
                 for key, value in styles.iteritems():
                     self.browser.execute_script('$("%s").css("%s", "%s");' % (selector, key, value))
                 if note:
-                    self.browser.execute_script("$('%s').qtip({content:{text:\"%s\"},show:{ready:true,delay:0,effect:false}})" % (selector, note))
+                    self.browser.execute_script(
+                        "$('%s').qtip({content:{text:\"%s\"},show:{ready:true,delay:0,effect:false}})" % (selector, note))
             except WebDriverException as e:
                 log.error("Error taking screenshot:")
                 log.error(str(e))
@@ -353,6 +359,6 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         device = Device.get_own_device()
         deviceZone = DeviceZone(device=device, zone=zone)
         deviceZone.save()
-    
+
     def _undo_fake_registration(self):
         unregister_distributed_server()

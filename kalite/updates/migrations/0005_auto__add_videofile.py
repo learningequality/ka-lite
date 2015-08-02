@@ -19,11 +19,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('updates', ['VideoFile'])
 
-
     def backwards(self, orm):
         # Deleting model 'VideoFile'
         db.delete_table('updates_videofile')
-
 
     models = {
         'updates.updateprogresslog': {

@@ -2,7 +2,8 @@
 """
 import os
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 
 from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
@@ -12,17 +13,21 @@ REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, "vi
 AVERAGE_VIDEO_SIZE = 14000000
 
 REMOTE_VIDEO_SIZES = None
+
+
 def get_remote_video_size(youtube_id, default=AVERAGE_VIDEO_SIZE, force=False):
     global REMOTE_VIDEO_SIZES
     if REMOTE_VIDEO_SIZES is None:
         REMOTE_VIDEO_SIZES = softload_json(REMOTE_VIDEO_SIZE_FILEPATH, logger=logging.debug)
     return REMOTE_VIDEO_SIZES.get(youtube_id, default)
 
+
 def get_all_remote_video_sizes():
     global REMOTE_VIDEO_SIZES
     if REMOTE_VIDEO_SIZES is None:
         REMOTE_VIDEO_SIZES = softload_json(REMOTE_VIDEO_SIZE_FILEPATH, logger=logging.debug)
     return REMOTE_VIDEO_SIZES
+
 
 def get_local_video_size(youtube_id, default=None):
     try:
@@ -46,4 +51,3 @@ def get_downloaded_youtube_ids(videos_path=None, format="mp4"):
 
 def delete_downloaded_files(youtube_id):
     return videos.delete_downloaded_files(youtube_id, settings.CONTENT_ROOT)
-

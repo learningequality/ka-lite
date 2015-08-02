@@ -13,11 +13,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'UserLogSummary.last_activity_datetime'
         db.delete_column('main_userlogsummary', 'last_activity_datetime')
-
 
     models = {
         'main.exerciselog': {

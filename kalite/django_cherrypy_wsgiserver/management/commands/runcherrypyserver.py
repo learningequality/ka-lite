@@ -50,13 +50,14 @@ Examples:
 """
 
 CPWSGI_OPTIONS = {
-    'host': '127.0.0.1', # changed from localhost to avoid ip6 problem -clm
+    'host': '127.0.0.1',  # changed from localhost to avoid ip6 problem -clm
     'port': getattr(settings, "PRODUCTION_PORT", 8008),   # changed from 8088 to 8000 to follow django devserver default
     'threads': getattr(settings, "CHERRPY_THREAD_COUNT", 50),
     'daemonize': False,
     'pidfile': None,
     'autoreload': False,
 }
+
 
 class Command(BaseCommand):
     help = "CherryPy Server for project. Requires CherryPy."
@@ -99,7 +100,8 @@ def get_uid_gid(uid, gid=None):
 
     Src: http://mail.mems-exchange.org/durusmail/quixote-users/4940/1/
     """
-    import pwd, grp
+    import pwd
+    import grp
     uid, default_grp = pwd.getpwnam(uid)[2:4]
     if gid is None:
         gid = default_grp
@@ -160,12 +162,12 @@ def stop_server_using_pid(pid):
     logging.info("attempting to stop process %s" % pid)
     try:
         os.kill(pid, signal.SIGTERM)
-    except OSError: #process does not exist
+    except OSError:  # process does not exist
         return
     if poll_process(pid):
-        #process didn't exit cleanly, make one last effort to kill it
+        # process didn't exit cleanly, make one last effort to kill it
         os.kill(pid, signal.SIGKILL)
-        #if still_alive(pid):
+        # if still_alive(pid):
         if poll_process(pid):
             raise OSError, "Process %s did not stop."
 
@@ -202,7 +204,7 @@ def ka_lite_is_using_port(host, port):
     try:
         pid = int(urlopen("http://%s:%s%s" % (host, port, reverse('getpid'))).read())
     except:
-        try: # also try the old URL for getpid, since the running server may not be recent
+        try:  # also try the old URL for getpid, since the running server may not be recent
             pid = int(urlopen("http://%s:%s%s" % (host, port, "/api/getpid")).read())
         except:
             pass
@@ -214,26 +216,26 @@ def ka_lite_is_using_port(host, port):
 
 def runcherrypyserver(argset=[], **kwargs):
     # Get the options
-    
+
     warnings.warn("runcherrypyserver() is deprecated", RemovedInKALite_v015_Warning)
-    
+
     options = CPWSGI_OPTIONS.copy()
     options.update(kwargs)
-    
+
     # TODO: What's going on here!? Care to comment, anonymous author? :)
     for x in argset:
         if "=" in x:
             k, v = x.split('=', 1)
         else:
             k, v = x, True
-        if v=='False' or v=='false':
+        if v == 'False' or v == 'false':
             v = False
         options[k.lower()] = v
 
     if "help" in options:
         print CPWSGI_HELP
         return
-    
+
     # TODO(benjaoming): This is not in use anymore in `kalite stop` so can be deprecated
     if "stop" in options:
         warnings.warn("Using runcherrypyserver stop is deprecated, use `kalite stop`", DeprecationWarning)
@@ -272,9 +274,9 @@ def runcherrypyserver(argset=[], **kwargs):
         #     raise Exception("Port %s is currently in use by another process, cannot continue" % options['port'])
 
     if "stop" in options:
-        #we are done, get out
+        # we are done, get out
         return True
-    
+
     cherrypyserver.run_cherrypy_server(**options)
 
 

@@ -48,7 +48,7 @@ class Command(BaseCommand):
             f = tempfile.TemporaryFile("r+")
             r.raise_for_status()
             for cnt, chunk in enumerate(r.iter_content(chunk_size=1024)):
-                if chunk: # filter out keep-alive new chunks
+                if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
                     if cnt % 1000 == 0:
                         sys.stdout.write(".")

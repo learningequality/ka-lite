@@ -6,6 +6,7 @@ from .data.conditions import CONDITION_SETTINGS
 from kalite.student_testing.utils import get_current_unit_settings_value
 from kalite.dynamic_assets import DynamicSettingsBase, fields
 
+
 class DynamicSettings(DynamicSettingsBase):
     student_grade_level = fields.IntegerField(default=0)
     unit = fields.IntegerField(default=1)
@@ -30,7 +31,7 @@ def modify_dynamic_settings(ds, request=None, user=None):
         # TODO (richard): (doge) Much hardcode. Such hack. So get rid. Wow.
         ds["ab_testing"].student_grade_level = get_grade_by_facility(facility)
         ds["ab_testing"].unit = unit
-        
+
         # load the settings associated with the user's current condition
         new_settings = CONDITION_SETTINGS.get(condition, {})
 
@@ -38,7 +39,9 @@ def modify_dynamic_settings(ds, request=None, user=None):
         for key, value in new_settings.items():
             namespace, setting = key.split(".")
             if namespace not in ds:
-                raise Exception("Could not modify setting '%s': the '%s' app has not defined a dynamic_assets.py file containing DynamicSettings." % (key, namespace))
+                raise Exception(
+                    "Could not modify setting '%s': the '%s' app has not defined a dynamic_assets.py file containing DynamicSettings." % (key, namespace))
             if not hasattr(ds[namespace], setting):
-                raise Exception("Could not modify setting '%s': no such setting defined in the '%s' app's DynamicSettings." % (key, namespace))
+                raise Exception(
+                    "Could not modify setting '%s': no such setting defined in the '%s' app's DynamicSettings." % (key, namespace))
             setattr(ds[namespace], setting, value)

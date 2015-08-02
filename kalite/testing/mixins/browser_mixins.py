@@ -18,8 +18,10 @@ from random import choice
 
 FIND_ELEMENT_TIMEOUT = 3
 
+
 class KALiteTimeout(Exception):
     pass
+
 
 class BrowserActionMixins(object):
 
@@ -79,9 +81,11 @@ class BrowserActionMixins(object):
             elif name:
                 elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(EC.presence_of_element_located((By.NAME, name)))
             elif tag_name:
-                elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(EC.presence_of_element_located((By.TAG_NAME, tag_name)))
+                elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(
+                    EC.presence_of_element_located((By.TAG_NAME, tag_name)))
             elif css_class:
-                elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(EC.presence_of_element_located((By.CLASS_NAME, css_class)))
+                elem = WebDriverWait(browser, FIND_ELEMENT_TIMEOUT).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, css_class)))
         elem.click()
 
     def browser_send_keys(self, keys, browser=None):
@@ -281,7 +285,6 @@ class BrowserActionMixins(object):
         alert = self.browser_accept_alert(sleep=sleep, text=text)
         return alert
 
-
     def browser_register_user(self, username, password, first_name="firstname",
                               last_name="lastname", facility_name=None,
                               stay_logged_in=False):
@@ -327,7 +330,6 @@ class BrowserActionMixins(object):
         self.__request(method="POST", url=url, data=data, browser=browser)
         self.browser.refresh()
 
-
     def browser_login_admin(self, username=None, password=None, browser=None):
         self.browser_login_user(username=username, password=password, browser=browser)
 
@@ -355,7 +357,6 @@ class BrowserActionMixins(object):
         self.__request(method="GET", url=url, data="")
         self.browser.refresh()
 
-
     def __request(self, method, url, data, browser=None):
         browser = browser or self.browser
         browser.get(self.reverse("homepage"))  # Send requests from the same domain
@@ -375,12 +376,10 @@ class BrowserActionMixins(object):
         self.browser_wait_for_js_condition("window.FLAG")
         return browser.execute_script("return window.DATA")
 
-
     def browser_is_logged_in(self, expected_username=None, browser=None):
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
         data = self.__request(method="GET", url=url, data="", browser=browser)
         return data.get("is_logged_in", False)
-
 
     def fill_form(self, input_id_dict):
         """
@@ -417,9 +416,8 @@ class BrowserActionMixins(object):
         # possibly due to a race condition, hence querying the element with js which "just works"
         #points_elem = self.browser.find_element_by_id("points")
         # Ensure the element has been populated by triggering an event
-        self.browser_wait_for_js_object_exists("window.statusModel");
+        self.browser_wait_for_js_object_exists("window.statusModel")
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
         points_text = self.browser.execute_script("return $('#points').text();")
         self.assertTrue(bool(points_text), "Failed fetching contents of #points element, got {0}".format(repr(points_text)))
         return int(re.search(r"(\d+)", points_text).group(1))
-

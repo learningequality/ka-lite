@@ -11,11 +11,9 @@ class Migration(SchemaMigration):
         # Adding index on 'AttemptLog', fields ['user', 'exercise_id', 'context_type']
         db.create_index(u'main_attemptlog', ['user_id', 'exercise_id', 'context_type'])
 
-
     def backwards(self, orm):
         # Removing index on 'AttemptLog', fields ['user', 'exercise_id', 'context_type']
         db.delete_index(u'main_attemptlog', ['user_id', 'exercise_id', 'context_type'])
-
 
     models = {
         u'main.attemptlog': {

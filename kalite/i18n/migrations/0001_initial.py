@@ -21,11 +21,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('i18n', ['LanguagePack'])
 
-
     def backwards(self, orm):
         # Deleting model 'LanguagePack'
         db.delete_table('i18n_languagepack')
-
 
     models = {
         'i18n.languagepack': {

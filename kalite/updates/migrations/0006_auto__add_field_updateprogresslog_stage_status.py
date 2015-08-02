@@ -13,11 +13,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(max_length=16, null=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'UpdateProgressLog.stage_status'
         db.delete_column('updates_updateprogresslog', 'stage_status')
-
 
     models = {
         'updates.updateprogresslog': {

@@ -4,6 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
     """This is a dummy migration, left here as an empty shell as the original was broken (sometimes causing circular imports),
     but had been released to master. A working version of this migration has been implemented in 0029_set_video_id_for_realz.py

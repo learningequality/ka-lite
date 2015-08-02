@@ -16,7 +16,7 @@ def main():
     arg_parser = argparse.ArgumentParser(
         description='Clean up HTML exercise files.')
     arg_parser.add_argument('html_files', nargs='+',
-        help='The HTML exercise files to clean up.')
+                            help='The HTML exercise files to clean up.')
 
     args = arg_parser.parse_args()
 

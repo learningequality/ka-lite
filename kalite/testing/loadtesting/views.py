@@ -4,6 +4,7 @@ from annoying.decorators import render_to
 
 from kalite.facility.models import Facility, FacilityUser
 
+
 @render_to("distributed/loadtesting/load_test.html")
 def load_test(request, nusers=None):
     """

@@ -84,10 +84,10 @@ class KALiteBrowserTestCase(KALiteTestCase, LiveServerTestCase):
 # it's options
 def parse_argv(argv, option_info):
     behave_options = option_info.keys()
-    new_argv = ["behave",]
+    new_argv = ["behave", ]
     our_opts = {"browser": None}
 
-    for index in xrange(len(argv)): #using range to have compatybility with Py3
+    for index in xrange(len(argv)):  # using range to have compatybility with Py3
         # If it's a behave option AND is the long version (starts with '--'),
         # then proceed to save the information.  If it's not a behave option
         # (which means it's most likely a Django test option), we ignore it.
@@ -101,7 +101,7 @@ def parse_argv(argv, option_info):
 
                 # Add option argument if there is one
                 if option_info[argv[index]] == True:
-                    new_argv.append(argv[index+1])
+                    new_argv.append(argv[index + 1])
                     index += 1  # Skip past option arg
 
     return (new_argv, our_opts)
@@ -110,6 +110,7 @@ def parse_argv(argv, option_info):
 # From the (unlicensed?) django-behave project
 # see https://github.com/django-behave/django-behave
 class DjangoBehaveTestCase(LiveServerTestCase):
+
     def __init__(self, **kwargs):
         self.features_dir = kwargs.pop('features_dir')
         self.option_info = kwargs.pop('option_info')

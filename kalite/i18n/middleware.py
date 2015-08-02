@@ -16,7 +16,8 @@ Other values set here:
   request.session["django_language"] - (via settings.LANGUAGE_COOKIE_NAME) used by Django, it's what it uses as the request language.
   request.language - proxy for request.session["django_language"] / request.session[settings.LANGUAGE_COOKIE_NAME]
 """
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 
 from . import get_default_language, set_request_language, select_best_available_language
 
@@ -31,8 +32,8 @@ def set_language_data_from_request(request):
         #   facility user's individual setting
         #   config.Settings object's value
         #   settings' value
-        request.session["default_language"] = select_best_available_language( \
-            getattr(request.session.get("facility_user"), "default_language", None) \
+        request.session["default_language"] = select_best_available_language(
+            getattr(request.session.get("facility_user"), "default_language", None)
             or get_default_language()
         )
 
@@ -44,6 +45,7 @@ def set_language_data_from_request(request):
 
 
 class SessionLanguage:
+
     def process_request(self, request):
         request.in_context_localized = settings.IN_CONTEXT_LOCALIZED  # also set whether to turn on in-context localization
         return set_language_data_from_request(request)

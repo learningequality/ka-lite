@@ -9,11 +9,13 @@ import hashlib
 
 from optparse import make_option
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import NoArgsCommand
 from django.utils.text import slugify
 
 from fle_utils.general import ensure_dir
+
 
 def save_cache_file(cache_type, cache_object=None, node_cache=None, data_path=None):
 
@@ -48,19 +50,19 @@ class Command(NoArgsCommand):
     option_list = NoArgsCommand.option_list + (
         # Basic options
         make_option('-c', '--channel',
-            dest='channel',
-            default="khan",
-            help='Create content files for a channel'),
+                    dest='channel',
+                    default="khan",
+                    help='Create content files for a channel'),
         make_option('-i', '--import',
-            action='store',
-            dest='import_files',
-            default=None,
-            help="Import a file structure as a topic tree and move over the appropriate content"),
+                    action='store',
+                    dest='import_files',
+                    default=None,
+                    help="Import a file structure as a topic tree and move over the appropriate content"),
         make_option('-d', '--data',
-            action='store',
-            dest='channel_data',
-            default=None,
-            help="Add custom path to channel data files"),
+                    action='store',
+                    dest='channel_data',
+                    default=None,
+                    help="Add custom path to channel data files"),
     )
 
     def handle(self, *args, **options):
@@ -70,11 +72,12 @@ class Command(NoArgsCommand):
         if options["import_files"]:
             channel = "import_channel"
 
-        channel_tools = importlib.import_module("kalite.contentload.management.commands.channels.{channel}".format(channel=channel))
+        channel_tools = importlib.import_module(
+            "kalite.contentload.management.commands.channels.{channel}".format(channel=channel))
 
         if options["import_files"]:
             channel_tools.path = options["import_files"]
-            if not channel_name or channel_name=="khan":
+            if not channel_name or channel_name == "khan":
                 channel_name = os.path.basename(options["import_files"])
 
         if options["channel_data"]:
@@ -120,7 +123,8 @@ class Command(NoArgsCommand):
 
         except Exception as e:
 
-            import IPython; IPython.embed()
+            import IPython
+            IPython.embed()
 
         if hasattr(channel_tools, "channel_data_files"):
             channel_tools.channel_data_files(dest=channel_path)
@@ -131,7 +135,7 @@ class Command(NoArgsCommand):
             {contents} content files
             {assessments} assessment items
             """.format(
-            exercises=len(node_cache["Exercise"]),
-            contents=len(node_cache["Content"]),
-            assessments=len(node_cache["AssessmentItem"]),
-        ))
+                exercises=len(node_cache["Exercise"]),
+                contents=len(node_cache["Content"]),
+                assessments=len(node_cache["AssessmentItem"]),
+            ))

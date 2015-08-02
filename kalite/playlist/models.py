@@ -145,13 +145,14 @@ class VanillaPlaylist:
         if not language:
             language = settings.LANGUAGE_CODE
 
-        unprepared = filter(lambda e: e["entity_kind"]==entry_type, playlist.entries)
+        unprepared = filter(lambda e: e["entity_kind"] == entry_type, playlist.entries)
         prepared = []
         for entry in unprepared:
             new_item = get_node_cache(language=language)[entry_type].get(entry['entity_id'], None)
             if new_item:
                 prepared.append(new_item)
         return prepared
+
 
 class VanillaPlaylistEntry:
     """

@@ -28,89 +28,92 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
-    url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images/distributed/" + request.path)),
-)
+                       url(r'^admin/', include(admin.site.urls)),
+                       url(r'^images/.*$', lambda request: HttpResponseRedirect(settings.STATIC_URL[:-1] + request.path)),
+                       url(r'^favico.ico/?$', lambda request: HttpResponseRedirect(settings.STATIC_URL + "images/distributed/" + request.path)),
+                       )
 
 
 urlpatterns += patterns('',
-    url(r'^securesync/', include(kalite.facility.urls)),  # for backwards compat
-    url(r'^securesync/', include(securesync.urls)),
-)
+                        url(r'^securesync/', include(kalite.facility.urls)),  # for backwards compat
+                        url(r'^securesync/', include(securesync.urls)),
+                        )
 
 
 # TODO: This should only be in DEBUG settings and the HTTP server should be
 # serving it otherwise. Cherrypy is currently serving it through modifications
 # in kalite/django_cherrypy_wsgiserver/cherrypyserver.py
 urlpatterns += patterns('',
-    url(r'^%skhan/(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
-        'document_root': contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.CONTENT_ROOT,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.CONTENT_DATA_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.CONTENT_DATA_PATH,
-    }),
-    url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
-        'document_root': settings.MEDIA_ROOT,
-    }),
-)
+                        url(r'^%skhan/(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
+                            'document_root': contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT,
+                        }),
+                        url(r'^%s(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
+                            'document_root': settings.CONTENT_ROOT,
+                        }),
+                        url(r'^%s(?P<path>.*)$' % settings.CONTENT_DATA_URL[1:], 'django.views.static.serve', {
+                            'document_root': settings.CONTENT_DATA_PATH,
+                        }),
+                        url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'django.views.static.serve', {
+                            'document_root': settings.MEDIA_ROOT,
+                        }),
+                        )
 
 # Teaching / admin patterns
 urlpatterns += patterns(__package__ + '.views',
-    # For teachers
-    url(r'^coachreports/', include(kalite.coachreports.urls)),
+                        # For teachers
+                        url(r'^coachreports/', include(kalite.coachreports.urls)),
 
-    # For playlists
-    url(r'^playlists/', include(kalite.playlist.urls)),
+                        # For playlists
+                        url(r'^playlists/', include(kalite.playlist.urls)),
 
-    # For admins
-    url(r'^update/', include(kalite.updates.urls)),
+                        # For admins
+                        url(r'^update/', include(kalite.updates.urls)),
 
-    url(r'^help/$', 'help', {}, 'help'),
+                        url(r'^help/$', 'help', {}, 'help'),
 
-    # API
-    url(r'^api/', include(api_urls)),
+                        # API
+                        url(r'^api/', include(api_urls)),
 
-    # Management: Zone, facility, device
-    url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'),  # only one zone, so make an easy way to access it
-    url(r'^management/device/$', 'device_redirect', {}, 'device_redirect'),  # only one device, so make an easy way to access it
-    url(r'^management/', include(kalite.control_panel.urls)),  # no org_id, but parameter needed for reverse url look-up
-)
+                        # Management: Zone, facility, device
+                        # only one zone, so make an easy way to access it
+                        url(r'^management/zone/$', 'zone_redirect', {}, 'zone_redirect'),
+                        # only one device, so make an easy way to access it
+                        url(r'^management/device/$', 'device_redirect', {}, 'device_redirect'),
+                        # no org_id, but parameter needed for reverse url look-up
+                        url(r'^management/', include(kalite.control_panel.urls)),
+                        )
 
 # Dynamic assets
 urlpatterns += patterns('',
-    url(r'^_generated/', include(kalite.dynamic_assets.urls)),
-)
+                        url(r'^_generated/', include(kalite.dynamic_assets.urls)),
+                        )
 
 # Testing
 if "kalite.testing.loadtesting" in settings.INSTALLED_APPS:
     urlpatterns += patterns(__package__ + '.views',
-        url(r'^loadtesting/', include('kalite.testing.loadtesting.urls')),
-    )
+                            url(r'^loadtesting/', include('kalite.testing.loadtesting.urls')),
+                            )
 
 # Front-end
 urlpatterns += patterns(__package__ + '.views',
-    url(r'^$', 'homepage', {}, 'homepage'),
-    url(r'^search/$', 'search', {}, 'search'),
-    url(r'^test/', include(kalite.student_testing.urls)),
+                        url(r'^$', 'homepage', {}, 'homepage'),
+                        url(r'^search/$', 'search', {}, 'search'),
+                        url(r'^test/', include(kalite.student_testing.urls)),
 
-    url(r'^store/', include(kalite.store.urls)),
-    # the following pattern is a catch-all, so keep it last:
+                        url(r'^store/', include(kalite.store.urls)),
+                        # the following pattern is a catch-all, so keep it last:
 
-    # Allows remote admin of the distributed server
-    url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
+                        # Allows remote admin of the distributed server
+                        url(r'^cryptologin/$', 'crypto_login', {}, 'crypto_login'),
 
-    # the following has no "$", and thus catches anything starting with "learn/"
-    url(r'^learn/', 'learn', {}, 'learn'),
-)
+                        # the following has no "$", and thus catches anything starting with "learn/"
+                        url(r'^learn/', 'learn', {}, 'learn'),
+                        )
 
 if settings.DEBUG:
     urlpatterns += patterns('',
-        url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
-    )
+                            url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
+                            )
 
 handler403 = __package__ + '.views.handler_403'
 handler404 = __package__ + '.views.handler_404'

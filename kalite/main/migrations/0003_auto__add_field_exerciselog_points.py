@@ -4,19 +4,19 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Adding field 'ExerciseLog.points'
-        db.add_column('main_exerciselog', 'points', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
+        # Adding field 'ExerciseLog.points'
+        db.add_column('main_exerciselog', 'points', self.gf(
+            'django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
     def backwards(self, orm):
-        
+
         # Deleting field 'ExerciseLog.points'
         db.delete_column('main_exerciselog', 'points')
-
 
     models = {
         'main.exerciselog': {

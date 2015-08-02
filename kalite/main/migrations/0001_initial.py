@@ -4,18 +4,21 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'VideoLog'
         db.create_table('main_videolog', (
             ('id', self.gf('django.db.models.fields.CharField')(max_length=32, primary_key=True)),
             ('counter', self.gf('django.db.models.fields.IntegerField')()),
             ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, blank=True)),
             ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'], null=True, blank=True)),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')
+             (blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(
+                to=orm['securesync.FacilityUser'], null=True, blank=True)),
             ('youtube_id', self.gf('django.db.models.fields.CharField')(max_length=11, db_index=True)),
             ('total_seconds_watched', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('points', self.gf('django.db.models.fields.IntegerField')(default=0)),
@@ -29,8 +32,10 @@ class Migration(SchemaMigration):
             ('counter', self.gf('django.db.models.fields.IntegerField')()),
             ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, blank=True)),
             ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'], null=True, blank=True)),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')
+             (blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(
+                to=orm['securesync.FacilityUser'], null=True, blank=True)),
             ('exercise_id', self.gf('django.db.models.fields.CharField')(max_length=50, db_index=True)),
             ('streak_progress', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('attempts', self.gf('django.db.models.fields.IntegerField')(default=0)),
@@ -38,15 +43,13 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('main', ['ExerciseLog'])
 
-
     def backwards(self, orm):
-        
+
         # Deleting model 'VideoLog'
         db.delete_table('main_videolog')
 
         # Deleting model 'ExerciseLog'
         db.delete_table('main_exerciselog')
-
 
     models = {
         'main.exerciselog': {

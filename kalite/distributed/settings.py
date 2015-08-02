@@ -47,7 +47,8 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 ##############################
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
-ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
+# print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
+ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
@@ -77,11 +78,11 @@ PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", None)
 if not PRODUCTION_PORT:
     PRODUCTION_PORT = os.environ.get("KALITE_LISTEN_PORT", 8008)
 
-#proxy port is used by nginx and is used by Raspberry Pi optimizations
+# proxy port is used by nginx and is used by Raspberry Pi optimizations
 PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
 
-HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", None)
-HTTPS_PROXY     = getattr(local_settings, "HTTPS_PROXY", None)
+HTTP_PROXY = getattr(local_settings, "HTTP_PROXY", None)
+HTTPS_PROXY = getattr(local_settings, "HTTPS_PROXY", None)
 
 
 ########################
@@ -97,7 +98,7 @@ ENABLE_CLOCK_SET = False
 # Zero-config options
 ########################
 
-ZERO_CONFIG   = getattr(local_settings, "ZERO_CONFIG", False)
+ZERO_CONFIG = getattr(local_settings, "ZERO_CONFIG", False)
 
 # With zero config, no admin (by default)
 INSTALL_ADMIN_USERNAME = getattr(local_settings, "INSTALL_ADMIN_USERNAME", None)

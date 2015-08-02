@@ -5,7 +5,8 @@ import os
 import sys
 from optparse import make_option
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
@@ -76,13 +77,14 @@ class Command(BaseCommand):
     def setup_server_if_needed(self):
         """Run the setup command, if necessary."""
 
-        try: # Ensure that the database has been synced and a Device has been created
+        try:  # Ensure that the database has been synced and a Device has been created
             assert Settings.get("private_key") and Device.objects.count()
-        except (DatabaseError, AssertionError): # Otherwise, run the setup command
+        except (DatabaseError, AssertionError):  # Otherwise, run the setup command
             self.stdout.write("Setting up KA Lite; this may take a few minutes; please wait!\n")
             call_command("setup", interactive=False)
         # Double check that the setup process successfully created a Device
-        assert Settings.get("private_key") and Device.objects.count(), "There was an error configuring the server. Please report the output of this command to Learning Equality."
+        assert Settings.get("private_key") and Device.objects.count(
+        ), "There was an error configuring the server. Please report the output of this command to Learning Equality."
 
     def reinitialize_server(self):
         """Reset the server state."""
@@ -97,17 +99,16 @@ class Command(BaseCommand):
         # Finally, pre-load global data
         initialize_content_caches()
 
-
     def handle(self, *args, **options):
         # Store base django settings and remove them from the options list
         # because we are proxying one type of option list to another format
         # where --foo=bar becomes foo=bar
-        
+
         warnings.warn(
             "manage kaserve is deprecated, please use kalite start [--foreground] [...]",
             RemovedInKALite_v015_Warning
         )
-        
+
         base_django_settings = {}
         for opt in BaseCommand.option_list:
             base_django_settings[opt.dest] = options[opt.dest]
@@ -117,7 +118,7 @@ class Command(BaseCommand):
         #   or the host/port
         for arg in args:
             if "=" in arg:
-                (key,val) = arg.split("=")
+                (key, val) = arg.split("=")
                 options[key] = val
             elif ":" in arg:
                 (options["host"], options["port"]) = arg.split(":")
@@ -151,7 +152,7 @@ class Command(BaseCommand):
 
         if options['startuplock']:
             os.unlink(options['startuplock'])
-        
+
         # Now call the proper command
         if not options["production"]:
             call_command("runserver", "%s:%s" % (options["host"], options["port"]))
@@ -164,4 +165,5 @@ class Command(BaseCommand):
             sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
             sys.stdout.write("\thttp://127.0.0.1:%s/\n" % settings.USER_FACING_PORT())
 
-            call_command("runcherrypyserver", *["%s=%s" % (key,val) for key, val in options.iteritems()], **base_django_settings)
+            call_command("runcherrypyserver", *["%s=%s" % (key, val)
+                                                for key, val in options.iteritems()], **base_django_settings)

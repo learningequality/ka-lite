@@ -5,7 +5,8 @@ import random
 import requests
 import urllib
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.test.client import Client
 from django.utils import unittest
 

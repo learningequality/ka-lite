@@ -10,7 +10,8 @@ from tastypie.utils import trailing_slash
 from .api_authorizations import TeacherOrAdminCanReadWrite
 from .models import Facility, FacilityGroup, FacilityUser
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -27,12 +28,15 @@ from kalite.main.models import UserLog
 
 
 class FacilityResource(ModelResource):
+
     class Meta:
         queryset = Facility.objects.all()
         resource_name = 'facility'
         authorization = TeacherOrAdminCanReadWrite()
 
+
 class FacilityGroupResource(ModelResource):
+
     class Meta:
         queryset = FacilityGroup.objects.all()
         resource_name = 'group'
@@ -84,20 +88,21 @@ class FacilityUserResource(ModelResource):
                 return self.create_response(request, {
                     'success': True,
                     'redirect': reverse("zone_redirect")
-                    })
+                })
 
         # Find all matching users
         users = FacilityUser.objects.filter(username=username, facility=facility)
 
         if users.count() == 0:
             if Facility.objects.count() > 1:
-                error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
+                error_message = _(
+                    "Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
             else:
                 error_message = _("Username was not found. Did you type your username correctly?")
             return self.create_response(request, {
                 'messages': {'error': error_message},
                 'error_highlight': "username"
-                }, HttpUnauthorized )
+            }, HttpUnauthorized)
 
         for user in users:
             if settings.SIMPLIFIED_LOGIN and not user.is_teacher:
@@ -114,16 +119,17 @@ class FacilityUserResource(ModelResource):
                 'messages': {'error': _("Password was incorrect. Please try again.")},
                 # Specify which field to highlight as in error.
                 'error_highlight': "password"
-                }, HttpUnauthorized )
+            }, HttpUnauthorized)
         else:
             try:
-                UserLog.begin_user_activity(user, activity_type="login", language=lcode_to_django_lang(request.language))  # Success! Log the event (ignoring validation failures)
+                UserLog.begin_user_activity(user, activity_type="login", language=lcode_to_django_lang(
+                    request.language))  # Success! Log the event (ignoring validation failures)
             except ValidationError as e:
                 logging.error("Failed to begin_user_activity upon login: %s" % e)
 
             request.session["facility_user"] = user
             messages.success(request, _("You've been logged in! We hope you enjoy your time with KA Lite ")
-                + _("-- be sure to log out when you finish."))
+                             + _("-- be sure to log out when you finish."))
 
             extras = {'success': True}
             if user.is_teacher:
@@ -132,14 +138,13 @@ class FacilityUserResource(ModelResource):
                 })
             return self.create_response(request, extras)
 
-
     def logout(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         logout(request)
         return self.create_response(request, {
             'success': True,
             'redirect': reverse("homepage")
-            })
+        })
 
     def status(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
@@ -164,9 +169,8 @@ class FacilityUserResource(ModelResource):
 
         return self.create_response(request, self.generate_status(request))
 
-
     def generate_status(self, request, **kwargs):
-        #Build a list of messages to pass to the user.
+        # Build a list of messages to pass to the user.
         #   Iterating over the messages removes them from the
         #   session storage, thus they only appear once.
 
@@ -208,4 +212,3 @@ class FacilityUserResource(ModelResource):
             data["username"] = request.user.username
 
         return data
-

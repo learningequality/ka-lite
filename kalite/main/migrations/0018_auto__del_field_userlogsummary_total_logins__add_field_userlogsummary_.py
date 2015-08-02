@@ -16,7 +16,6 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(default=0),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Adding field 'UserLogSummary.total_logins'
         db.add_column('main_userlogsummary', 'total_logins',
@@ -25,7 +24,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'UserLogSummary.count'
         db.delete_column('main_userlogsummary', 'count')
-
 
     models = {
         'main.exerciselog': {

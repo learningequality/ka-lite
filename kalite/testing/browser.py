@@ -18,6 +18,7 @@ def setup_browser(browser_type="Firefox"):
 
     return browser
 
+
 def hacks_for_phantomjs(browser):
     """
     HACK: If using PhantomJS, override the window.alert()/confirm()/prompt() functions to return true because

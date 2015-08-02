@@ -69,6 +69,7 @@ server {
 
 """
 
+
 class Command(BaseCommand):
     help = "Print recommended Nginx frontend proxy configuration file contents."
 
@@ -76,5 +77,3 @@ class Command(BaseCommand):
         self.stdout.write(config_template % {"root_path": os.path.realpath(settings.PROJECT_PATH + "/../"),
                                              "production_port": settings.PRODUCTION_PORT,
                                              "proxy_port": settings.PROXY_PORT})
-
-

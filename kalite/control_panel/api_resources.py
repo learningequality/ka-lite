@@ -132,12 +132,15 @@ class ParentFacilityUserResource(ModelResource):
         return facility_user_dict
 
     def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
-        response = super(ParentFacilityUserResource, self).create_response(request, data, response_class=response_class, **response_kwargs)
+        response = super(ParentFacilityUserResource, self).create_response(
+            request, data, response_class=response_class, **response_kwargs)
         # add a suggested download filename if we're replying with a CSV file
         if response["Content-Type"].startswith("text/csv"):
-            params = ["%s-%s" % (k,str(v)[0:8]) for (k,v) in request.GET.items() if v and k not in ["format", "limit"]]
-            response["Content-Disposition"] = "filename=%s__%s__exported_at-%s.csv" % (request.path.strip("/").split("/")[-1], "__".join(params), datetime.now().strftime("%Y%m%d_%H%M%S"))
+            params = ["%s-%s" % (k, str(v)[0:8]) for (k, v) in request.GET.items() if v and k not in ["format", "limit"]]
+            response["Content-Disposition"] = "filename=%s__%s__exported_at-%s.csv" % (
+                request.path.strip("/").split("/")[-1], "__".join(params), datetime.now().strftime("%Y%m%d_%H%M%S"))
         return response
+
 
 class FacilityUserResource(ParentFacilityUserResource):
 
@@ -200,8 +203,10 @@ class TestLogResource(ParentFacilityUserResource):
             bundle.data["facility_id"] = user.facility.id
             bundle.data["is_teacher"] = user.is_teacher
             attempt_logs = AttemptLog.objects.filter(user=user, context_id=bundle.data["test"], context_type="test")
-            bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
-            bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
+            bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))[
+                'timestamp__min'] or None
+            bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))[
+                'timestamp__max'] or None
             bundle.data.pop("user")
 
         return to_be_serialized
@@ -276,13 +281,20 @@ class ExerciseLogResource(ParentFacilityUserResource):
             bundle.data["facility_name"] = user.facility.name
             bundle.data["facility_id"] = user.facility.id
             bundle.data["is_teacher"] = user.is_teacher
-            attempt_logs = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"])
-            bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))['timestamp__min'] or None
-            bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))['timestamp__max'] or None
-            bundle.data["part1_answered"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"]).count()
-            bundle.data["part1_correct"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], correct=True, context_type__in=["playlist", "exercise"]).count()
-            bundle.data["part2_attempted"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["exercise_fixedblock", "playlist_fixedblock"]).count()
-            bundle.data["part2_correct"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], correct=True, context_type__in=["exercise_fixedblock", "playlist_fixedblock"]).count()
+            attempt_logs = AttemptLog.objects.filter(user=user, exercise_id=bundle.data[
+                                                     "exercise_id"], context_type__in=["playlist", "exercise"])
+            bundle.data["timestamp_first"] = attempt_logs.count() and attempt_logs.aggregate(Min('timestamp'))[
+                'timestamp__min'] or None
+            bundle.data["timestamp_last"] = attempt_logs.count() and attempt_logs.aggregate(Max('timestamp'))[
+                'timestamp__max'] or None
+            bundle.data["part1_answered"] = AttemptLog.objects.filter(
+                user=user, exercise_id=bundle.data["exercise_id"], context_type__in=["playlist", "exercise"]).count()
+            bundle.data["part1_correct"] = AttemptLog.objects.filter(
+                user=user, exercise_id=bundle.data["exercise_id"], correct=True, context_type__in=["playlist", "exercise"]).count()
+            bundle.data["part2_attempted"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data["exercise_id"], context_type__in=[
+                                                                       "exercise_fixedblock", "playlist_fixedblock"]).count()
+            bundle.data["part2_correct"] = AttemptLog.objects.filter(user=user, exercise_id=bundle.data[
+                                                                     "exercise_id"], correct=True, context_type__in=["exercise_fixedblock", "playlist_fixedblock"]).count()
             bundle.data.pop("user")
 
         return to_be_serialized
@@ -336,7 +348,8 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
-        store_logs = StoreTransactionLog.objects.filter(user__id__in=self._facility_users.keys()).exclude(context_type="unit_points_reset")
+        store_logs = StoreTransactionLog.objects.filter(
+            user__id__in=self._facility_users.keys()).exclude(context_type="unit_points_reset")
         return super(StoreTransactionLogResource, self).authorized_read_list(store_logs, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):

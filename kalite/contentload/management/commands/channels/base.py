@@ -2,11 +2,14 @@ import copy
 
 from math import ceil, log, exp  # needed for basepoints calculation
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 
 from django.utils.text import slugify
 
 # For specification of channel_data dictionary, please see CHANNELDATA.md
+
+
 def retrieve_API_data(channel=None):
 
     topic_tree = {}
@@ -87,7 +90,7 @@ def rebuild_topictree(
     Denorms content data to reduce the bulk of the topic tree.
     Adds position data to every node in the topic tree.
     """
-    
+
     topic_tree, exercises, assessment_items, contents = retrieve_API_data(channel=channel)
 
     exercise_lookup = dict((exercise["id"], exercise) for exercise in exercises)

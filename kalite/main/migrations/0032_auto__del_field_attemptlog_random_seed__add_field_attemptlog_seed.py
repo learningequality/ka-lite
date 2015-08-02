@@ -16,7 +16,6 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(default=0),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Adding field 'AttemptLog.random_seed'
         db.add_column(u'main_attemptlog', 'random_seed',
@@ -25,7 +24,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'AttemptLog.seed'
         db.delete_column(u'main_attemptlog', 'seed')
-
 
     models = {
         u'main.attemptlog': {

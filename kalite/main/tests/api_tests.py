@@ -6,6 +6,7 @@ from kalite.facility.models import Facility, FacilityUser
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
 
+
 class TestSaveExerciseLog(KALiteTestCase):
 
     ORIGINAL_POINTS = 37
@@ -67,8 +68,10 @@ class TestSaveExerciseLog(KALiteTestCase):
 
         # make sure the ExerciseLog was properly created
         self.assertEqual(exerciselog.points, self.NEW_POINTS_LARGER, "The ExerciseLog's points were not saved correctly.")
-        self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_LARGER, "The ExerciseLog's streak progress was not saved correctly.")
-        self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS, "The ExerciseLog did not have the correct number of attempts (%d)." % self.NEW_ATTEMPTS)
+        self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_LARGER,
+                         "The ExerciseLog's streak progress was not saved correctly.")
+        self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS,
+                         "The ExerciseLog did not have the correct number of attempts (%d)." % self.NEW_ATTEMPTS)
 
     def test_update_exerciselog(self):
 
@@ -77,7 +80,8 @@ class TestSaveExerciseLog(KALiteTestCase):
 
         # make sure the ExerciseLog hasn't already been changed
         self.assertEqual(exerciselog.points, self.ORIGINAL_POINTS, "The ExerciseLog's points have already changed.")
-        self.assertEqual(exerciselog.streak_progress, self.ORIGINAL_STREAK_PROGRESS, "The ExerciseLog's streak progress already changed.")
+        self.assertEqual(exerciselog.streak_progress, self.ORIGINAL_STREAK_PROGRESS,
+                         "The ExerciseLog's streak progress already changed.")
         self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS, "The ExerciseLog's attempts have already changed.")
 
         c = KALiteClient()
@@ -101,8 +105,10 @@ class TestSaveExerciseLog(KALiteTestCase):
 
         # make sure the ExerciseLog was properly updated
         self.assertEqual(exerciselog.points, self.NEW_POINTS_LARGER, "The ExerciseLog's points were not updated correctly.")
-        self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_LARGER, "The ExerciseLog's streak progress was not updated correctly.")
-        self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS, "The ExerciseLog did not have the correct number of attempts (%d)." % self.NEW_ATTEMPTS)
+        self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_LARGER,
+                         "The ExerciseLog's streak progress was not updated correctly.")
+        self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS,
+                         "The ExerciseLog did not have the correct number of attempts (%d)." % self.NEW_ATTEMPTS)
 
         # save a new record onto the exercise log, with an incorrect answer (decreasing the points and streak)
         result = c.save_exercise_log(
@@ -119,9 +125,10 @@ class TestSaveExerciseLog(KALiteTestCase):
 
         # make sure the ExerciseLog was properly updated
         self.assertEqual(exerciselog.points, self.NEW_POINTS_SMALLER, "The ExerciseLog's points were not saved correctly.")
-        self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_SMALLER, "The ExerciseLog's streak progress was not saved correctly.")
-        self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS + 1, "The ExerciseLog did not have the correct number of attempts.")
-
+        self.assertEqual(exerciselog.streak_progress, self.NEW_STREAK_PROGRESS_SMALLER,
+                         "The ExerciseLog's streak progress was not saved correctly.")
+        self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS + 1,
+                         "The ExerciseLog did not have the correct number of attempts.")
 
 
 class TestSaveVideoLog(KALiteTestCase):
@@ -179,7 +186,8 @@ class TestSaveVideoLog(KALiteTestCase):
 
         # make sure the VideoLog was properly created
         self.assertEqual(videolog.points, self.NEW_POINTS, "The VideoLog's points were not saved correctly.")
-        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED, "The VideoLog's seconds watched was not saved correctly.")
+        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED,
+                         "The VideoLog's seconds watched was not saved correctly.")
 
     def test_update_videolog(self):
 
@@ -188,7 +196,8 @@ class TestSaveVideoLog(KALiteTestCase):
 
         # make sure the VideoLog hasn't already been changed
         self.assertEqual(videolog.points, self.ORIGINAL_POINTS, "The VideoLog's points have already changed.")
-        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED, "The VideoLog's seconds watched already changed.")
+        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED,
+                         "The VideoLog's seconds watched already changed.")
 
         c = KALiteClient()
 
@@ -210,5 +219,7 @@ class TestSaveVideoLog(KALiteTestCase):
         videolog = VideoLog.objects.get(video_id=self.VIDEO_ID, user__username=self.USERNAME)
 
         # make sure the VideoLog was properly updated
-        self.assertEqual(videolog.points, self.ORIGINAL_POINTS + self.NEW_POINTS, "The VideoLog's points were not updated correctly.")
-        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED + self.NEW_SECONDS_WATCHED, "The VideoLog's seconds watched was not updated correctly.")
+        self.assertEqual(videolog.points, self.ORIGINAL_POINTS + self.NEW_POINTS,
+                         "The VideoLog's points were not updated correctly.")
+        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED +
+                         self.NEW_SECONDS_WATCHED, "The VideoLog's seconds watched was not updated correctly.")

@@ -4,6 +4,7 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
@@ -15,14 +16,12 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(default='foo', max_length=100, db_index=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Adding index on 'VideoLog', fields ['youtube_id']
         db.create_index('main_videolog', ['youtube_id'])
 
         # Deleting field 'VideoLog.video_id'
         db.delete_column('main_videolog', 'video_id')
-
 
     models = {
         'main.exerciselog': {

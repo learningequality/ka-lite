@@ -28,7 +28,6 @@ from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 from kalite.shared.decorators.auth import require_admin
 
 
-
 @require_admin
 @api_handle_error_with_json
 def time_set(request):

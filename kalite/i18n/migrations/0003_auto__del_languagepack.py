@@ -11,7 +11,6 @@ class Migration(SchemaMigration):
         # Deleting model 'LanguagePack'
         db.delete_table('i18n_languagepack')
 
-
     def backwards(self, orm):
         # Adding model 'LanguagePack'
         db.create_table('i18n_languagepack', (
@@ -26,9 +25,8 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('i18n', ['LanguagePack'])
 
-
     models = {
-        
+
     }
 
     complete_apps = ['i18n']

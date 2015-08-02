@@ -13,7 +13,8 @@ class Migration(SchemaMigration):
         db.alter_column('main_videolog', 'youtube_id', self.gf('django.db.models.fields.CharField')(max_length=20))
 
         # Changing field 'VideoFile.youtube_id'
-        db.alter_column('main_videofile', 'youtube_id', self.gf('django.db.models.fields.CharField')(max_length=20, primary_key=True))
+        db.alter_column('main_videofile', 'youtube_id', self.gf(
+            'django.db.models.fields.CharField')(max_length=20, primary_key=True))
 
         # Changing field 'ExerciseLog.exercise_id'
         db.alter_column('main_exerciselog', 'exercise_id', self.gf('django.db.models.fields.CharField')(max_length=100))
@@ -24,7 +25,8 @@ class Migration(SchemaMigration):
         db.alter_column('main_videolog', 'youtube_id', self.gf('django.db.models.fields.CharField')(max_length=11))
 
         # Changing field 'VideoFile.youtube_id'
-        db.alter_column('main_videofile', 'youtube_id', self.gf('django.db.models.fields.CharField')(max_length=11, primary_key=True))
+        db.alter_column('main_videofile', 'youtube_id', self.gf(
+            'django.db.models.fields.CharField')(max_length=11, primary_key=True))
 
         # Changing field 'ExerciseLog.exercise_id'
         db.alter_column('main_exerciselog', 'exercise_id', self.gf('django.db.models.fields.CharField')(max_length=50))

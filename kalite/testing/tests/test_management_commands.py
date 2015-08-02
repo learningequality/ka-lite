@@ -10,6 +10,7 @@ from kalite.testing.mixins.securesync_mixins import CreateDeviceMixin
 
 
 class ModelCreationCommandTests(CreateDeviceMixin, unittest.TestCase):
+
     def setUp(self):
         self.setup_fake_device()
 
@@ -43,6 +44,7 @@ class ModelCreationCommandTests(CreateDeviceMixin, unittest.TestCase):
 
 
 class ReadModelCommandTests(CreateDeviceMixin, unittest.TestCase):
+
     def setUp(self):
         self.setup_fake_device()
 

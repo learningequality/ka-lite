@@ -14,7 +14,6 @@ from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
 
-
 class ExerciseLogResource(ModelResource):
 
     user = fields.ForeignKey(FacilityUserResource, 'user')
@@ -167,6 +166,7 @@ class ExerciseResource(Resource):
 
 
 class AssessmentItemResource(ModelResource):
+
     class Meta:
         resource_name = 'assessment_item'
         queryset = AssessmentItem.objects.all()
@@ -185,7 +185,6 @@ class AssessmentItemResource(ModelResource):
         else:
             kwargs['pk'] = bundle_or_obj.id
         return kwargs
-
 
     def obj_create(self, bundle, **kwargs):
         raise NotImplemented("Operation not implemented yet for assessment_items.")

@@ -6,7 +6,8 @@ import sys
 import tempfile
 import time
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import gettext as _
 
@@ -24,13 +25,11 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + tuple()
 
-
     def _initial_port_mapping(self, device_id=None):
         if not device_id:
             device_id = Device.get_own_device().id
 
         return int(device_id[-4:], 16) % (65535 / 2) + (65535 / 2)
-
 
     def _check_internet_connection(self):
         print "Checking if we have an internet connection"
@@ -45,7 +44,6 @@ class Command(BaseCommand):
                     raise CommandError(_("Can't connect to %(server)s at port %(port)s." % {"server": server, "port": port}))
                 else:
                     time.sleep(5)
-
 
     def checklockfile(func):
         def checklockfile_wrapper_fn(self, *args, **kwargs):
@@ -63,7 +61,6 @@ class Command(BaseCommand):
                         os.remove(self.lockfile)
         return checklockfile_wrapper_fn
 
-
     def on_exit_delete_lock_file(self):
         def on_exit_callback(*args):
             print "killed ungracefully; deleting lockfile"
@@ -77,7 +74,6 @@ class Command(BaseCommand):
             except:
                 print "Skipping handling of %s" % sig
 
-
     @checklockfile
     def handle(self, *args, **options):
         remote_port_mapping = self._initial_port_mapping()
@@ -90,18 +86,19 @@ class Command(BaseCommand):
             print 'trying to open port %s' % remote_port_mapping
             p = subprocess.Popen([
                 'ssh',
-                '-p', '6060', # remote ssh port
-                "-o", "ExitOnForwardFailure yes", # exit immediately if we cant forward from the given remote port
-                '%s@troy.learningequality.org' % self.username, # username and host
-                '-R', '%s:127.0.0.1:22' % remote_port_mapping, # remote port to local port mapping
+                '-p', '6060',  # remote ssh port
+                "-o", "ExitOnForwardFailure yes",  # exit immediately if we cant forward from the given remote port
+                '%s@troy.learningequality.org' % self.username,  # username and host
+                '-R', '%s:127.0.0.1:22' % remote_port_mapping,  # remote port to local port mapping
                 '-N',       # dont get a remote shell, just establish the remote port forwarding
             ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
             stdout, _stderr = p.communicate()
 
             if stdout:
-                if "remote port forwarding failed for listen port" in stdout: # remote port already occupied
+                if "remote port forwarding failed for listen port" in stdout:  # remote port already occupied
                     remote_port_mapping += 1
                     continue
                 else:
-                    raise CommandError(_("Connection refused by %(server)s. Stdout: %(stdout)s" % {"server": self.server, "stdout": stdout}))
+                    raise CommandError(_("Connection refused by %(server)s. Stdout: %(stdout)s" %
+                                         {"server": self.server, "stdout": stdout}))

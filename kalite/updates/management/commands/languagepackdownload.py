@@ -8,7 +8,8 @@ import zipfile
 from optparse import make_option
 from StringIO import StringIO
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
@@ -84,7 +85,6 @@ class Command(UpdatesStaticCommand, CronCommand):
             self.next_stage(_("Creating static files for language pack '%(lang_code)s'") % {"lang_code": lang_code})
             update_jsi18n_file(lang_code)
 
-
             self.next_stage(_("Moving files to their appropriate local disk locations."))
             move_dubbed_video_map(lang_code)
             move_exercises(lang_code)
@@ -103,7 +103,8 @@ class Command(UpdatesStaticCommand, CronCommand):
             raise
 
     def cb(self, percent):
-        self.update_stage(stage_percent=percent/100.)
+        self.update_stage(stage_percent=percent / 100.)
+
 
 def get_language_pack(lang_code, software_version, callback):
     """Download language pack for specified language"""
@@ -115,6 +116,7 @@ def get_language_pack(lang_code, software_version, callback):
     path, response = download_file(request_url, callback=callback_percent_proxy(callback))
     return path
 
+
 def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     """Unpack zipped language pack into locale directory"""
     lang_code = lcode_to_django_dir(lang_code)
@@ -122,9 +124,10 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     logging.info("Unpacking new translations")
     ensure_dir(get_po_filepath(lang_code=lang_code))
 
-    ## Unpack into temp dir
+    # Unpack into temp dir
     z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
     z.extractall(os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code))
+
 
 def move_dubbed_video_map(lang_code):
     lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
@@ -143,6 +146,7 @@ def move_dubbed_video_map(lang_code):
         except Exception as e:
             logging.error("Error removing dubbed video directory (%s): %s" % (dubbed_video_dir, e))
 
+
 def move_video_sizes_file(lang_code):
     lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
     filename = os.path.basename(REMOTE_VIDEO_SIZE_FILEPATH)
@@ -155,6 +159,7 @@ def move_video_sizes_file(lang_code):
     else:
         logging.debug('Moving %s to %s' % (src_path, dest_path))
         shutil.move(src_path, dest_path)
+
 
 def move_exercises(lang_code):
     lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
@@ -177,6 +182,7 @@ def move_exercises(lang_code):
             shutil.rmtree(src_exercise_dir)
         except Exception as e:
             logging.error("Error removing dubbed video directory (%s): %s" % (src_exercise_dir, e))
+
 
 def move_srts(lang_code):
     """

@@ -11,11 +11,9 @@ class Migration(SchemaMigration):
         # Adding index on 'PlaylistToGroupMapping', fields ['playlist']
         db.create_index(u'playlist_playlisttogroupmapping', ['playlist'])
 
-
     def backwards(self, orm):
         # Removing index on 'PlaylistToGroupMapping', fields ['playlist']
         db.delete_index(u'playlist_playlisttogroupmapping', ['playlist'])
-
 
     models = {
         u'playlist.playlist': {

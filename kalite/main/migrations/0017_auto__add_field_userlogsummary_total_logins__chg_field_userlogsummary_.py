@@ -13,14 +13,12 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(default=0),
                       keep_default=False)
 
-
         # Changing field 'UserLogSummary.total_seconds'
         db.alter_column('main_userlogsummary', 'total_seconds', self.gf('django.db.models.fields.IntegerField')())
 
     def backwards(self, orm):
         # Deleting field 'UserLogSummary.total_logins'
         db.delete_column('main_userlogsummary', 'total_logins')
-
 
         # Changing field 'UserLogSummary.total_seconds'
         db.alter_column('main_userlogsummary', 'total_seconds', self.gf('django.db.models.fields.IntegerField')(null=True))

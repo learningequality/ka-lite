@@ -16,7 +16,6 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Adding field 'TestLog.test_sequence'
         db.add_column(u'student_testing_testlog', 'test_sequence',
@@ -25,7 +24,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'TestLog.started'
         db.delete_column(u'student_testing_testlog', 'started')
-
 
     models = {
         'securesync.device': {
