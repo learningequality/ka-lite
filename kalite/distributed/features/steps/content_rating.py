@@ -1,13 +1,20 @@
 from behave import *
 from kalite.testing.behave_helpers import *
 
-from kalite.topic_tools import get_content_cache
-
 RATING_CONTAINER_ID = "rating-container"
 TEXT_CONTAINER_ID = "text-container"
+STAR_CONTAINER_IDS = (
+    "star-container-1",
+    "star-container-2",
+    "star-container-3",
+)
+SUBMIT_ID = "rating-submit"
 
 @then(u'my feedback is displayed')
 def impl(context):
+    for star_id in STAR_CONTAINER_IDS:
+        star_el = find_id_with_wait(context, star_id)
+        assert elem_is_visible_with_wait(context, star_el), "Star rating form with id '{0}' not visible".format(star_id)
     actual = get_text_feedback(context)
     expected = context.text_feedback
     assert actual == expected, "Expected:\n\t '{expected}'\n but saw\n\t '{actual}'\n in feedback form".format(
@@ -36,6 +43,7 @@ def impl(context):
 
 @when(u'I fill out the form')
 def impl(context):
+    enter_star_ratings(context)
     text_feedback = context.text_feedback = "This stuff is great, A+++"
     enter_text_feedback(context, text_feedback)
     submit_feedback(context)
@@ -69,6 +77,36 @@ def impl(context):
     assert False
 
 
+def enter_star_ratings(context):
+    """
+    Enters a value for all three star rating forms, on a new form
+    :param context: behave context
+    :return: nothing
+    """
+    for id_ in STAR_CONTAINER_IDS:
+        rate_id(context, id_)
+
+
+def rate_id(context, id, val=3):
+    """
+    Enter a star rating given the id of the container
+    :param context: behave context
+    :param id: id of the container element
+    :return: nothing
+    """
+    container = find_id_with_wait(context, id)
+    rating_val_class = "rating-val-{0}".format(val)
+
+    def get_rating_el(driver):
+        try:
+            return container.find_element_by_class_name(rating_val_class)
+        except NoSuchElementException:
+            return False
+
+    rating_el = WebDriverWait(context.browser, 10).until(get_rating_el)
+    rating_el.click()
+
+
 def enter_text_feedback(context, text_feedback):
     """
     Enter text feedback into feedback form
@@ -87,7 +125,8 @@ def submit_feedback(context):
     :param context: behave context
     :return: nothing
     """
-    pass
+    submit_btn = find_id_with_wait(context, SUBMIT_ID)
+    submit_btn.click()
 
 
 def get_text_feedback(context):
@@ -96,4 +135,5 @@ def get_text_feedback(context):
     :param context: behave context
     :return: a str with the text feedback displayed.
     """
-    return "abc123"
+    text_el = find_id_with_wait(context, TEXT_CONTAINER_ID)
+    return text_el.text
