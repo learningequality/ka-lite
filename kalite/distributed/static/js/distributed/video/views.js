@@ -68,6 +68,7 @@ var VideoPlayerView = ContentBaseView.extend({
 
     },
 
+    /* Jessica TODO: Use Modernizr to detect when a user is on a tablet, and then apply appropriate CSS changes */
     on_resize: _.throttle(function() {
         var available_width = $(".content-player-container").width();
         var available_height = $(window).height() * 0.9;
