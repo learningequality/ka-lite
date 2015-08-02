@@ -27,7 +27,7 @@ def main(files_to_lint):
     for f in files_to_lint:
         # We only lint .html files in exercises/
         if (not f.endswith('.html') or
-            os.path.basename(os.path.dirname(f)) != 'exercises'):
+                os.path.basename(os.path.dirname(f)) != 'exercises'):
             continue
 
         (errors, num_fixes) = lint_i18n_strings.lint_file(

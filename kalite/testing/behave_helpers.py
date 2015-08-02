@@ -52,11 +52,13 @@ MAX_WAIT_TIME = 10
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 5
 
+
 def rgba_to_hex(rgba_string):
     """
     Returns an uppercase HEX representation of an rgba(xxx, yyy, zzz, a) string
     """
     return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
+
 
 def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     try:
@@ -68,6 +70,7 @@ def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIM
         pass
     with context._runner.test_case.assertRaises(NoSuchElementException):
         context.browser.find_element_by_css_selector(elem)
+
 
 def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     """ Click an element and then wait for the page to load. Does this by
@@ -96,7 +99,6 @@ def click_and_wait_for_id_to_appear(context, elem_click, elem_wait, wait_time=MA
     """
     elem_click.click()
     return id_shown_with_wait(context, elem_wait, wait_time=wait_time)
-
 
 
 def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
@@ -131,7 +133,8 @@ def elem_is_visible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     """
     def _visiblity_of():
         # elem.location returns a dict: {"x": 42, "y": 42}
-        context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
+        context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" %
+                                       (elem.location['x'], elem.location['y']))
         return elem.is_displayed()
 
     try:
@@ -164,6 +167,7 @@ def find_id_with_wait(context, id_str, **kwargs):
     """
     return _find_elem_with_wait(context, (By.ID, id_str), **kwargs)
 
+
 def id_shown_with_wait(context, id_str, **kwargs):
     """ Tries to find an element with given id with an explicit timeout.
     context: a behave context
@@ -185,6 +189,7 @@ def find_xpath_with_wait(context, id_str, **kwargs):
     """
     return _find_elem_with_wait(context, (By.XPATH, id_str), **kwargs)
 
+
 def find_css_with_wait(context, id_str, **kwargs):
     """ Tries to find an element with given css selector with an explicit timeout.
     context: a behave context
@@ -194,6 +199,7 @@ def find_css_with_wait(context, id_str, **kwargs):
     Returns the element if found or None
     """
     return _find_elem_with_wait(context, (By.CSS_SELECTOR, id_str), **kwargs)
+
 
 def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
@@ -206,6 +212,7 @@ def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     return WebDriverWait(context.browser, wait_time).until(
         EC.presence_of_element_located(by)
     )
+
 
 def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
@@ -220,7 +227,8 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
         # Try to scroll to the element and determine visibility
         try:
             elem = context.browser.find_element(by[0], by[1])
-            context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
+            context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" %
+                                           (elem.location['x'], elem.location['y']))
             return elem.is_displayed()
         except NoSuchElementException:
             return False
@@ -234,6 +242,7 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
 
 def build_url(context, url):
     return urljoin(context.config.server_url, url)
+
 
 def go_to_homepage(context):
     url = reverse("homepage")
@@ -254,6 +263,7 @@ def _login_user(context, username, password, facility=None):
     context.user = username
     assert resp, "Login failed. url: %s\ndata: %s" % (url, data)
 
+
 def login_as_learner(context, learner_name="mrpibb", learner_pass="abc123"):
     """ Log in as a learner specified by the optional arguments, or create
     such a user and log in if it doesn't exist.
@@ -263,13 +273,13 @@ def login_as_learner(context, learner_name="mrpibb", learner_pass="abc123"):
     """
     if not FacilityUser.objects.filter(username=learner_name):
         class ContextWithMixin(FacilityMixins):
+
             def __init__(self):
                 self.browser = context.browser
         context_wm = ContextWithMixin()
         context_wm.create_student(username=learner_name, password=learner_pass)
     facility = FacilityUser.objects.get(username=learner_name).facility.id
     _login_user(context, learner_name, learner_pass, facility=facility)
-
 
 
 def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
@@ -281,6 +291,7 @@ def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
     """
     if not FacilityUser.objects.filter(username=coach_name):
         class ContextWithMixin(FacilityMixins):
+
             def __init__(self):
                 self.browser = context.browser
         context_wm = ContextWithMixin()
@@ -300,6 +311,7 @@ def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
         # TODO(MCGallaspy): Get rid of old integration tests and refactor the mixin methods
         # as functions here.
         class ContextWithMixin(CreateAdminMixin):
+
             def __init__(self):
                 self.browser = context.browser
         context_wm = ContextWithMixin()
@@ -352,12 +364,14 @@ def request(context, url, method="GET", data=""):
     # TODO(MCGallaspy): Get rid of old integration tests and refactor the mixin methods
     # as functions here.
     class ContextWithMixin(BrowserActionMixins):
+
         def __init__(self):
             self.browser = context.browser
 
     context_wm = ContextWithMixin()
 
-    context.browser.get(build_url(context, reverse("homepage")))  # Avoid x-site scripting error by sending request from same domain
+    # Avoid x-site scripting error by sending request from same domain
+    context.browser.get(build_url(context, reverse("homepage")))
     context.browser.execute_script("""
             var req = new XMLHttpRequest();
             req.open("{method}", "{url}", true);

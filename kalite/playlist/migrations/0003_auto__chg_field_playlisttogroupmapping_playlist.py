@@ -10,7 +10,8 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
 
         # Changing field 'PlaylistToGroupMapping.playlist'
-        db.alter_column(u'playlist_playlisttogroupmapping', 'playlist', self.gf('django.db.models.fields.CharField')(max_length=15))
+        db.alter_column(u'playlist_playlisttogroupmapping', 'playlist',
+                        self.gf('django.db.models.fields.CharField')(max_length=15))
 
     def backwards(self, orm):
 

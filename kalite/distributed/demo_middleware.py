@@ -34,20 +34,24 @@ def is_static_file(path):
 
     return False
 
+
 class LinkUserManual:
     """Shows a message with a link to the user's manual, from the homepage."""
+
     def process_request(self, request):
         if is_static_file(request.path):
             return
         if request.path == reverse("homepage"):
             messages.info(request, mark_safe(_("Welcome to our demo server!"
-                "  Please visit our <a href='%(um_url)s'>user's manual</a> or <a href='%(home_url)s'>homepage</a> for more information.") % {
-                    "um_url": "https://learningequality.org/docs/usermanual/userman_main.html",
-                    "home_url": "https://learningequality.org/ka-lite/",
+                                               "  Please visit our <a href='%(um_url)s'>user's manual</a> or <a href='%(home_url)s'>homepage</a> for more information.") % {
+                "um_url": "https://learningequality.org/docs/usermanual/userman_main.html",
+                "home_url": "https://learningequality.org/ka-lite/",
             }))
+
 
 class ShowAdminLogin:
     """Shows a message with the admin username/password"""
+
     def process_request(self, request):
         if is_static_file(request.path):
             return
@@ -58,8 +62,10 @@ class ShowAdminLogin:
                 "passwd": settings.DEMO_ADMIN_PASSWORD,
             })))
 
+
 class StopAdminAccess:
     """Prevents access to the Django admin"""
+
     def process_request(self, request):
         if request.path.startswith(reverse("admin:index")):
             msg = _("The admin interface is disabled in the demo server.")

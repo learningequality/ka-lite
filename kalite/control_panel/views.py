@@ -8,7 +8,8 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from collections_local_copy import OrderedDict
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -43,6 +44,7 @@ def set_clock_context(request):
         "clock_set": getattr(settings, "ENABLE_CLOCK_SET", False),
     }
 
+
 def sync_now_context(request):
     return {
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
@@ -54,9 +56,10 @@ def sync_now_context(request):
 def zone_form(request, zone_id):
     context = process_zone_form(request, zone_id)
     if request.method == "POST" and context["form"].is_valid():
-        return HttpResponseRedirect(reverse("zone_management", kwargs={ "zone_id": zone_id }))
+        return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone_id}))
     else:
         return context
+
 
 def process_zone_form(request, zone_id):
     context = control_panel_context(request, zone_id=zone_id)
@@ -201,19 +204,21 @@ def data_export(request):
 
     return context
 
+
 @require_authorized_admin
 @render_to("control_panel/device_management.html")
 def device_management(request, device_id, zone_id=None, per_page=None, cur_page=None):
     context = control_panel_context(request, zone_id=zone_id, device_id=device_id)
 
-    #Get pagination details
+    # Get pagination details
     cur_page = cur_page or request.REQUEST.get("cur_page", "1")
     per_page = per_page or request.REQUEST.get("per_page", "10")
 
     # Retrieve sync sessions
     all_sessions = SyncSession.objects.filter(client_device=context["device"])
     total_sessions = all_sessions.count()
-    shown_sessions = list(all_sessions.order_by("-timestamp").values("timestamp", "ip", "models_uploaded", "models_downloaded", "errors"))
+    shown_sessions = list(all_sessions.order_by("-timestamp").values("timestamp",
+                                                                     "ip", "models_uploaded", "models_downloaded", "errors"))
 
     session_pages, page_urls = paginate_data(request, shown_sessions, page=cur_page, per_page=per_page)
 
@@ -270,7 +275,8 @@ def facility_form(request, ds, facility_id=None, zone_id=None):
                 assert form.instance.zone_fallback is not None
 
             form.save()
-            messages.success(request, _("The facility '%(facility_name)s' has been successfully saved!") % {"facility_name": form.instance.name})
+            messages.success(request, _("The facility '%(facility_name)s' has been successfully saved!") %
+                             {"facility_name": form.instance.name})
             return HttpResponseRedirect(reverse("zone_management", kwargs={"zone_id": zone_id}))
 
     context.update({"form": form})
@@ -288,11 +294,10 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
     if not form.is_valid():
         raise Exception(_("Error parsing date range: %(error_msg)s.  Please review and re-submit.") % form.errors.as_data())
 
-    frequency = frequency or request.GET.get ("frequency", "months")
+    frequency = frequency or request.GET.get("frequency", "months")
     period_start = period_start or form.data["period_start"]
     period_end = period_end or form.data["period_end"]
     (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
-
 
     # Basic data
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
@@ -301,7 +306,8 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
     # coaches = get_users_from_group(user_type="coaches", group_id=group_id, facility=facility)
     students = get_users_from_group(user_type="students", group_id=group_id, facility=facility)
 
-    (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id, period_start=period_start, period_end=period_end)
+    (student_data, group_data) = _get_user_usage_data(students, groups,
+                                                      group_id=group_id, period_start=period_start, period_end=period_end)
     # (coach_data, coach_group_data) = _get_user_usage_data(coaches, period_start=period_start, period_end=period_end)
 
     context.update({
@@ -327,7 +333,7 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
 
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
 
-    #Get pagination details
+    # Get pagination details
     coach_page = request.REQUEST.get("coaches_page", "1")
     coach_per_page = request.REQUEST.get("coaches_per_page", "5")
     student_page = request.REQUEST.get("students_page", "1")
@@ -342,8 +348,10 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
     (student_data, group_data) = _get_user_usage_data(students, groups, group_id=group_id)
     (coach_data, coach_group_data) = _get_user_usage_data(coaches)
 
-    coach_pages, coach_urls = paginate_data(request, coach_data.values(), data_type="coaches", page=coach_page, per_page=coach_per_page)
-    student_pages, student_urls = paginate_data(request, student_data.values(), data_type="students", page=student_page, per_page=student_per_page)
+    coach_pages, coach_urls = paginate_data(request, coach_data.values(
+    ), data_type="coaches", page=coach_page, per_page=coach_per_page)
+    student_pages, student_urls = paginate_data(request, student_data.values(
+    ), data_type="students", page=student_page, per_page=student_per_page)
 
     # Now prep the CSV form (even though we won't process it)
     form = DateRangeForm(data=request.POST) if request.method == "POST" else DateRangeForm()
@@ -371,7 +379,7 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
         "group": group,
         "group_id": group_id,
         "group_data": group_data,
-        "groups": groups, # sends dict if group page, list of group data otherwise
+        "groups": groups,  # sends dict if group page, list of group data otherwise
         "student_pages": student_pages,  # paginated data
         "coach_pages": coach_pages,  # paginated data
         "ds": ds,
@@ -492,9 +500,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         user_data[user.pk]["username"] = user.username
         user_data[user.pk]["group"] = user.group
 
-        user_data[user.pk]["total_report_views"] = 0#report_stats["count__sum"] or 0
-        user_data[user.pk]["total_logins"] =0# login_stats["count__sum"] or 0
-        user_data[user.pk]["total_hours"] = 0#login_stats["total_seconds__sum"] or 0)/3600.
+        user_data[user.pk]["total_report_views"] = 0  # report_stats["count__sum"] or 0
+        user_data[user.pk]["total_logins"] = 0  # login_stats["count__sum"] or 0
+        user_data[user.pk]["total_hours"] = 0  # login_stats["total_seconds__sum"] or 0)/3600.
 
         user_data[user.pk]["total_exercises"] = 0
         user_data[user.pk]["pct_mastery"] = 0.
@@ -502,7 +510,6 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
         user_data[user.pk]["total_videos"] = 0
         user_data[user.pk]["videos_watched"] = []
-
 
     for elog in exercise_logs:
         user_data[elog["user__pk"]]["total_exercises"] += 1
@@ -520,7 +527,8 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]*(group_id==None or group_id==UNGROUPED):  # None for ungrouped, if no group_id passed.
+    # None for ungrouped, if no group_id passed.
+    for group in list(groups) + [None] * (group_id == None or group_id == UNGROUPED):
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _(UNGROUPED))
         group_title = getattr(group, "title", _(UNGROUPED))
@@ -548,8 +556,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         group_data[group_pk]["total_videos"] += user_data[user.pk]["total_videos"]
         group_data[group_pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
 
-        total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
-        group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
+        total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]
+                                                                       ["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
+        group_data[group_pk]["pct_mastery"] = total_mastery_so_far / group_data[group_pk]["total_users"]
 
     if len(group_data) == 1 and group_data.has_key(None):
         if not group_data[None]["total_users"]:

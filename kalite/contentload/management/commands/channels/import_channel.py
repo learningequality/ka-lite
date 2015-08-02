@@ -4,7 +4,8 @@ import hashlib
 import shutil
 import copy
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.utils.text import slugify
 
 from functools import partial
@@ -73,6 +74,7 @@ channel_data = {
 
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)
 
+
 def build_full_cache(items, id_key="id"):
     return dict((item["id"], item) for item in items)
 
@@ -104,6 +106,7 @@ file_meta_data_map = {
     "codec": lambda x: getattr(x, "codec", None),
 }
 
+
 def file_md5(namespace, file_path):
     m = hashlib.md5()
     m.update(namespace)
@@ -114,6 +117,7 @@ def file_md5(namespace, file_path):
                 break
             m.update(chunk)
     return m.hexdigest()
+
 
 def construct_node(location, parent_path, node_cache, channel):
     """Return list of dictionaries of subdirectories and/or files in the location"""
@@ -220,6 +224,7 @@ path = ""
 
 channel_data_path = None
 
+
 def annotate_related_content(node_cache):
 
     slug_cache = {}
@@ -276,14 +281,17 @@ def retrieve_API_data(channel=None):
 
     return topic_tree, exercises, assessment_items, content
 
-rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
+rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data,
+                            retrieve_API_data=retrieve_API_data, channel_data=channel_data)
+
 
 def channel_data_files(dest=None):
     channel_data_filename = "channel_data.json"
     if dest:
         if not channel_data_path:
             sourcedir = os.path.dirname(path)
-            sourcefile = os.path.basename(path) + ".json" if os.path.exists(os.path.basename(path) + ".json") else channel_data_filename
+            sourcefile = os.path.basename(path) + ".json" if os.path.exists(os.path.basename(path) +
+                                                                            ".json") else channel_data_filename
         else:
             sourcedir = channel_data_path
             sourcefile = channel_data_filename

@@ -69,8 +69,10 @@ class TestExerciseLogs(KALiteTestCase):
         exerciselog2 = ExerciseLog.objects.get(id=self.original_exerciselog.id)
 
         # make sure the ExerciseLog has been properly merged
-        self.assertEqual(exerciselog.points, max(self.ORIGINAL_POINTS, self.NEW_POINTS), "The ExerciseLog's points were not properly merged.")
-        self.assertEqual(exerciselog.attempts, max(self.ORIGINAL_ATTEMPTS, self.NEW_ATTEMPTS), "The ExerciseLog's attempts have already changed.")
+        self.assertEqual(exerciselog.points, max(self.ORIGINAL_POINTS, self.NEW_POINTS),
+                         "The ExerciseLog's points were not properly merged.")
+        self.assertEqual(exerciselog.attempts, max(self.ORIGINAL_ATTEMPTS, self.NEW_ATTEMPTS),
+                         "The ExerciseLog's attempts have already changed.")
 
 
 class TestVideoLogs(KALiteTestCase):
@@ -102,7 +104,8 @@ class TestVideoLogs(KALiteTestCase):
 
         # make sure the VideoLog was created correctly
         self.assertEqual(videolog.points, self.ORIGINAL_POINTS, "The VideoLog's points have already changed.")
-        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED, "The VideoLog's total seconds watched have already changed.")
+        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED,
+                         "The VideoLog's total seconds watched have already changed.")
 
     def test_videolog_update(self):
 
@@ -119,7 +122,8 @@ class TestVideoLogs(KALiteTestCase):
 
         # make sure the VideoLog was updated
         self.assertEqual(videolog2.points, self.NEW_POINTS, "The VideoLog's points were not updated.")
-        self.assertEqual(videolog2.total_seconds_watched, self.NEW_SECONDS_WATCHED, "The VideoLog's total seconds watched were not updated.")
+        self.assertEqual(videolog2.total_seconds_watched, self.NEW_SECONDS_WATCHED,
+                         "The VideoLog's total seconds watched were not updated.")
 
     @unittest.skip("Auto-merging is not yet automatic, so skip this")
     def test_videolog_collision(self):
@@ -136,5 +140,7 @@ class TestVideoLogs(KALiteTestCase):
         videolog2 = VideoLog.objects.get(id=self.original_videolog.id)
 
         # make sure the VideoLog has been properly merged
-        self.assertEqual(videolog.points, max(self.ORIGINAL_POINTS, self.NEW_POINTS), "The VideoLog's points were not properly merged.")
-        self.assertEqual(videolog.total_seconds_watched, max(self.ORIGINAL_ATTEMPTS, self.NEW_SECONDS_WATCHED), "The VideoLog's total seconds watched have already changed.")
+        self.assertEqual(videolog.points, max(self.ORIGINAL_POINTS, self.NEW_POINTS),
+                         "The VideoLog's points were not properly merged.")
+        self.assertEqual(videolog.total_seconds_watched, max(self.ORIGINAL_ATTEMPTS, self.NEW_SECONDS_WATCHED),
+                         "The VideoLog's total seconds watched have already changed.")

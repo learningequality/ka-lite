@@ -13,7 +13,8 @@ class Migration(SchemaMigration):
         db.alter_column('main_videolog', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
 
         # Changing field 'UserLogSummary.signature'
-        db.alter_column('main_userlogsummary', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
+        db.alter_column('main_userlogsummary', 'signature', self.gf(
+            'django.db.models.fields.CharField')(max_length=360, null=True))
 
         # Changing field 'ExerciseLog.signature'
         db.alter_column('main_exerciselog', 'signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True))
@@ -24,10 +25,12 @@ class Migration(SchemaMigration):
         db.alter_column('main_videolog', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
 
         # Changing field 'UserLogSummary.signature'
-        db.alter_column('main_userlogsummary', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
+        db.alter_column('main_userlogsummary', 'signature', self.gf(
+            'django.db.models.fields.CharField')(default='', max_length=360))
 
         # Changing field 'ExerciseLog.signature'
-        db.alter_column('main_exerciselog', 'signature', self.gf('django.db.models.fields.CharField')(default='', max_length=360))
+        db.alter_column('main_exerciselog', 'signature', self.gf(
+            'django.db.models.fields.CharField')(default='', max_length=360))
 
     models = {
         'main.exerciselog': {

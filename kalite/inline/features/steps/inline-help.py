@@ -114,5 +114,5 @@ def go_to_manage_page(context):
 
 
 def start_intro(context):
-    sp_elem = find_id_with_wait(context, STARTING_POINT_ID) #WebElement
+    sp_elem = find_id_with_wait(context, STARTING_POINT_ID)  # WebElement
     sp_elem.click()

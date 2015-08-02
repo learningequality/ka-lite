@@ -14,12 +14,10 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(default='', max_length=100, blank=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
 
         # Deleting field 'AttemptLog.assessment_item_id'
         db.delete_column(u'main_attemptlog', 'assessment_item_id')
-
 
     models = {
         u'main.attemptlog': {

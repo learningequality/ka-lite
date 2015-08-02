@@ -20,13 +20,15 @@ For any app implementing cacheable data or writing to the web cache, the app sho
 import os
 import glob
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
 from fle_utils.internet.webcache import *
 from kalite import i18n, topic_tools
 from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP
+
 
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
@@ -70,13 +72,13 @@ def invalidate_all_caches():
     """
     invalidate_inmemory_caches()
     if DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
-        
+
         # The underlying assumption here is that if generating in memory caches is too onerous a task to conduct
         # at every system start up, then it is too onerous a task to conduct during server operation.
         # We defer the regeneration of these caches to next system startup, by deleting the existing disk based
         # copies of these caches.
         # This will prompt the caches to be recreated at next system start up, and the disk based copies to be rewritten.
-        
+
         for filename in glob.glob(os.path.join(settings.CHANNEL_DATA_PATH, "*.cache")):
             os.remove(filename)
     else:
@@ -84,6 +86,7 @@ def invalidate_all_caches():
     if caching_is_enabled():
         invalidate_web_cache()
     logging.debug("Great success emptying all caches.")
+
 
 def initialize_content_caches(force=False):
     """

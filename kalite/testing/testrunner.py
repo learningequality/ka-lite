@@ -101,7 +101,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # If no liveserver specified, set some default.
         #   port range is the set of open ports that Django can use to
         #   start the server.  They may have multiple servers open at once.
-        if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS',""):
+        if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS', ""):
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
 
         self._bdd_only = kwargs["bdd_only"]  # Extra options from our custom test management command are passed into

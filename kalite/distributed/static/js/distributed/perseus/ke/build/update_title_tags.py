@@ -28,7 +28,7 @@ def fix_title(filename, title):
             for line in f.readlines():
                 if '<title>' in line:
                     line = u"%s<title>%s</title>\n" % (
-                            line.split('<title>', 1)[0], title)
+                        line.split('<title>', 1)[0], title)
                     title_lines += 1
                 lines.append(line)
     except IOError, e:

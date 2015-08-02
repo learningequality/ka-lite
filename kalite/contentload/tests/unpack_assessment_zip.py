@@ -42,7 +42,7 @@ contentload_settings.KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(TEMP_CONTENT_
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
     def setUp(self):
-        
+
         # Create a dummy assessment item zip
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
@@ -123,7 +123,7 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
 
     def test_unpack_zipfile_to_khan_content_extracts_to_content_dir(self):
         zipfile_instance = MagicMock()
-        
+
         from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT
         extract_dir = KHAN_ASSESSMENT_ITEM_ROOT
 

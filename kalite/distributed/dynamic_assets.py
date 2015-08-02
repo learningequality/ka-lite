@@ -2,6 +2,7 @@ from django.conf import settings
 
 from kalite.dynamic_assets import DynamicSettingsBase, fields
 
+
 class DynamicSettings(DynamicSettingsBase):
     fixed_block_exercises = fields.IntegerField(default=getattr(settings, "FIXED_BLOCK_EXERCISES", 0), minimum=0, maximum=10)
     quiz_repeats = fields.IntegerField(default=getattr(settings, "QUIZ_REPEATS", 0), minimum=1, maximum=10)

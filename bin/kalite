@@ -107,7 +107,7 @@ if os.name == "posix" and os.path.isfile("/etc/ka-lite/username"):
             cont = input("Do you wish to continue? [y/N] ")
             if not cont.lower() == "y":
                 sys.exit(0)
-            
+
 
 if 'KALITE_PYTHON' in os.environ:
     python_executable = os.environ['KALITE_PYTHON']
@@ -122,12 +122,12 @@ else:
 
     # Set full path of executable - returns None if it's not found
     python_executable = spawn.find_executable(python_executable)
-    
+
     # Check that the executable exists
     if not python_executable:
         python_executable = sys.executable
         warnings.warn("Could not determine Python in your path, defaulting to {0:s}".format(python_executable), RuntimeWarning)
-    
+
 # Path for manage.py
 manage_py = os.path.join(kalite_path, 'kalitectl.py')
 

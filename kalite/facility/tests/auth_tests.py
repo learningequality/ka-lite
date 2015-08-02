@@ -48,7 +48,8 @@ class FacilityUserPermissionsTests(CreateAdminMixin,
     def add_student(self):
         self.browse_to(self.add_student_url)
         self.fill_form(self.student_form_data)
-        self.assertFalse(self.browser.find_element_by_id("id_is_teacher").get_attribute('value') == 'True', "While creating student, 'is_teacher' checkbox selected.")
+        self.assertFalse(self.browser.find_element_by_id("id_is_teacher").get_attribute(
+            'value') == 'True', "While creating student, 'is_teacher' checkbox selected.")
         self.submit_and_wait(self.add_student_url, "success", "You successfully created")
 
     def edit_student(self, message_contains="Changes saved for"):
@@ -56,12 +57,14 @@ class FacilityUserPermissionsTests(CreateAdminMixin,
         edit_data = self.student_form_data.copy()
         edit_data['id_username'] = 'changed_student'
         self.fill_form(edit_data)
-        self.submit_and_wait(self.reverse('facility_management', kwargs={'zone_id': 'None', 'facility_id': self.facility.id}), "success", message_contains)
+        self.submit_and_wait(self.reverse('facility_management', kwargs={
+                             'zone_id': 'None', 'facility_id': self.facility.id}), "success", message_contains)
 
     def add_teacher(self):
         self.browse_to(self.add_teacher_url)
         self.fill_form(self.teacher_form_data)
-        self.assertTrue(self.browser.find_element_by_id("id_is_teacher").get_attribute('value') == 'True', "While creating teacher, 'is_teacher' checkbox not selected.")
+        self.assertTrue(self.browser.find_element_by_id("id_is_teacher").get_attribute('value')
+                        == 'True', "While creating teacher, 'is_teacher' checkbox not selected.")
         self.submit_and_wait(self.add_student_url, "success", "You successfully created")
 
     def edit_teacher(self, message_contains="Changes saved for"):
@@ -69,7 +72,8 @@ class FacilityUserPermissionsTests(CreateAdminMixin,
         edit_data = self.teacher_form_data.copy()
         edit_data['id_username'] = 'changed_teacher'
         self.fill_form(edit_data)
-        self.submit_and_wait(self.reverse('facility_management', kwargs={'zone_id': 'None', 'facility_id': self.facility.id}), "success", message_contains)
+        self.submit_and_wait(self.reverse('facility_management', kwargs={
+                             'zone_id': 'None', 'facility_id': self.facility.id}), "success", message_contains)
 
     def test_admin_permissions(self):
         self.browser_login_admin(**self.admin_data)

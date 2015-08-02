@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'VideoFile'
         db.create_table('main_videofile', (
             ('youtube_id', self.gf('django.db.models.fields.CharField')(max_length=11, primary_key=True)),
@@ -17,12 +18,10 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('main', ['VideoFile'])
 
-
     def backwards(self, orm):
-        
+
         # Deleting model 'VideoFile'
         db.delete_table('main_videofile')
-
 
     models = {
         'main.exerciselog': {

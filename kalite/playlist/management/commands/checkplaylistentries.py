@@ -1,13 +1,15 @@
 import json
 import os
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import BaseCommand
 
 from kalite.topic_tools import video_dict_by_video_id, get_node_cache
 
 
 MALFORMED_IDS = []
+
 
 class Command(BaseCommand):
     help = "Check for playlist entries that are invalid and print them to stdout"
@@ -27,11 +29,13 @@ class Command(BaseCommand):
             entries = pl.get("entries")
 
             # Find video ids in the playlists that are not in the topic tree
-            video_entry_slugs = [enforce_and_strip_slug(pl.get("id"), e['entity_id']) for e in entries if e['entity_kind'] == 'Video']
+            video_entry_slugs = [enforce_and_strip_slug(pl.get("id"), e['entity_id'])
+                                 for e in entries if e['entity_kind'] == 'Video']
             nonexistent_video_slugs = set(filter(None, video_entry_slugs)) - video_slugs
 
             # Find exercise ids in the playlists that are not in the topic tree
-            ex_entry_slugs = [enforce_and_strip_slug(pl.get("id"), e['entity_id']) for e in entries if e['entity_kind'] == 'Exercise']
+            ex_entry_slugs = [enforce_and_strip_slug(pl.get("id"), e['entity_id'])
+                              for e in entries if e['entity_kind'] == 'Exercise']
             nonexistent_ex_slugs = set(filter(None, ex_entry_slugs)) - exercise_slugs
 
             # Print malformed videos
@@ -53,9 +57,10 @@ class Command(BaseCommand):
                 print errormsg.format(pl.get("id"), m)
             MALFORMED_IDS = []
 
+
 def enforce_and_strip_slug(playlist_id, slug):
-        split_slug = [x for x in slug.split("/") if len(x) > 1]
-        if len(split_slug) != 1:
-            print "Malformed slug in playlist %s, slug: %s" % (playlist_id, slug)
-        else:
-            return split_slug[0]
+    split_slug = [x for x in slug.split("/") if len(x) > 1]
+    if len(split_slug) != 1:
+        print "Malformed slug in playlist %s, slug: %s" % (playlist_id, slug)
+    else:
+        return split_slug[0]

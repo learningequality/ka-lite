@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 
 
 class BaseField(object):
+
     def __init__(self, *args, **kwargs):
         if self.__class__ == BaseField:
             raise NotImplementedError("A BaseField cannot be instantiated directly, only subclasses can.")

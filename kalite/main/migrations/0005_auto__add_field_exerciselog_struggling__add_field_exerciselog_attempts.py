@@ -4,25 +4,26 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'ExerciseLog.struggling'
-        db.add_column('main_exerciselog', 'struggling', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+        db.add_column('main_exerciselog', 'struggling', self.gf(
+            'django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
         # Adding field 'ExerciseLog.attempts_before_completion'
-        db.add_column('main_exerciselog', 'attempts_before_completion', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True), keep_default=False)
-
+        db.add_column('main_exerciselog', 'attempts_before_completion', self.gf(
+            'django.db.models.fields.IntegerField')(null=True, blank=True), keep_default=False)
 
     def backwards(self, orm):
-        
+
         # Deleting field 'ExerciseLog.struggling'
         db.delete_column('main_exerciselog', 'struggling')
 
         # Deleting field 'ExerciseLog.attempts_before_completion'
         db.delete_column('main_exerciselog', 'attempts_before_completion')
-
 
     models = {
         'main.exerciselog': {

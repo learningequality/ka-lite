@@ -22,8 +22,8 @@ class Command(NoArgsCommand):
             for f in files:
                 full_name = os.path.join(root, f)
                 if (full_name.endswith(".yml") and
-                    "node_modules" not in root and
-                    f not in BLACKLISTED_YAML_FILES):
+                        "node_modules" not in root and
+                        f not in BLACKLISTED_YAML_FILES):
                     print(full_name)
                     yml_to_json(full_name)
 

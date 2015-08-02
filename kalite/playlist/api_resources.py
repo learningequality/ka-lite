@@ -50,7 +50,8 @@ class PlaylistResource(Resource):
                 facility_id = request.session['facility_user'].facility.id
                 unit = get_current_unit_settings_value(facility_id)
                 facility = request.session['facility_user'].facility
-                playlists = [pl for pl in playlists if (pl.unit <= unit and int((pl.tag).split()[-1]) == get_grade_by_facility(facility))]
+                playlists = [pl for pl in playlists if (pl.unit <= unit and int(
+                    (pl.tag).split()[-1]) == get_grade_by_facility(facility))]
 
         elif request.is_logged_in and not request.is_admin:  # user is a student
             # only allow them to access playlists that they're assigned to
@@ -75,7 +76,8 @@ class PlaylistResource(Resource):
         for playlist in playlists:
             if str(playlist.id) == pk:
                 # Add the full titles onto the playlist entries
-                playlist.entries = [PlaylistEntry.add_full_title_from_topic_tree(entry, content_dict) for entry in playlist.entries]
+                playlist.entries = [PlaylistEntry.add_full_title_from_topic_tree(
+                    entry, content_dict) for entry in playlist.entries]
 
                 for entry in playlist.entries:
                     if entry["entity_kind"] == "Video":

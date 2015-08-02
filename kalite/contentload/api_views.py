@@ -21,7 +21,8 @@ Here's how it works:
 """
 import json
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -75,7 +76,7 @@ def update_all_distributed_callback(request):
 
         try:
             (vl, _) = VideoLog.get_or_initialize(user=user, video_id=video_id)  # has to be that video_id, could be any youtube_id
-            for key,val in video.iteritems():
+            for key, val in video.iteritems():
                 setattr(vl, key, val)
             logging.debug("Saving video log for %s: %s" % (video_id, vl))
             vl.save()
@@ -96,7 +97,7 @@ def update_all_distributed_callback(request):
 
         try:
             (el, _) = ExerciseLog.get_or_initialize(user=user, exercise_id=exercise["exercise_id"])
-            for key,val in exercise.iteritems():
+            for key, val in exercise.iteritems():
                 setattr(el, key, val)
             logging.debug("Saving exercise log for %s: %s" % (exercise['exercise_id'], el))
             el.save()

@@ -17,7 +17,6 @@ class Migration(SchemaMigration):
         # Deleting field 'VideoFile.subtitles_downloaded'
         db.delete_column('main_videofile', 'subtitles_downloaded')
 
-
     def backwards(self, orm):
         # Adding field 'VideoFile.subtitle_download_in_progress'
         db.add_column('main_videofile', 'subtitle_download_in_progress',
@@ -33,7 +32,6 @@ class Migration(SchemaMigration):
         db.add_column('main_videofile', 'subtitles_downloaded',
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
-
 
     models = {
         'main.exerciselog': {

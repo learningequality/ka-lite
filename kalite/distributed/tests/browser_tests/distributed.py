@@ -47,7 +47,7 @@ class TestAddFacility(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCa
         add_facility_url = self.reverse("add_facility", kwargs=params)
         self.browse_to(add_facility_url)
 
-        self.browser_activate_element(id="id_name") # explicitly set the focus, to start
+        self.browser_activate_element(id="id_name")  # explicitly set the focus, to start
         self.browser_send_keys(facility_name)
         self.browser.find_elements_by_class_name("submit")[0].click()
         self.wait_for_page_change(add_facility_url)
@@ -75,7 +75,7 @@ class DeviceUnregisteredTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowse
         home_url = self.reverse("homepage")
 
         # First, get the homepage without any automated information.
-        self.browse_to(home_url) # Load page
+        self.browse_to(home_url)  # Load page
         self.browser_check_django_message(message_type="warning", contains="complete the setup.")
         self.assertFalse(self.browser_is_logged_in(), "Not (yet) logged in")
 
@@ -86,7 +86,7 @@ class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase, Creat
     password = "password"
 
     def setUp(self):
-        super(UserRegistrationCaseTest, self).setUp();
+        super(UserRegistrationCaseTest, self).setUp()
         self.create_admin()
         self.create_facility()
 
@@ -107,7 +107,7 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
     Test exercises.
     """
     student_username = 'test_student'
-    student_password =  'socrates'
+    student_password = 'socrates'
     EXERCISE_SLUG = 'addition_1'
     MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG]["basepoints"]
     MAX_POINTS = 2 * MIN_POINTS
@@ -154,7 +154,8 @@ class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTest
             ui.WebDriverWait(self.browser, 10).until(
                 expected_conditions.visibility_of_element_located((By.ID, 'next-question-button'))
             )
-            correct = self.browser.find_element_by_id('next-question-button').get_attribute("value")=="Correct! Next question..."
+            correct = self.browser.find_element_by_id(
+                'next-question-button').get_attribute("value") == "Correct! Next question..."
         except TimeoutException:
             correct = False
         return correct
@@ -249,6 +250,7 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
         for el in teacher_only_elements:
             self.assertTrue(el.is_displayed(), "Elements with `teacher-only` class should be displayed!")
 
+
 class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin, KALiteBrowserTestCase):
 
     def setUp(self):
@@ -261,14 +263,14 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
         self.browser_login_student(username="johnduck", password="superpassword")
         try:
             self.assertTrue(WebDriverWait(self.browser, 3).until(
-                expected_conditions.presence_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+                expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "div.alert-dismissible"))
             ))
         except TimeoutException:
             self.fail("No alert present on page after login.")
         self.browse_to(self.reverse("learn"))
         try:
             self.assertTrue(WebDriverWait(self.browser, 3).until(
-                expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+                expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR, "div.alert-dismissible"))
             ))
         except TimeoutException:
             self.fail("Alert present on page after navigation event. Expected no alerts.")

@@ -13,11 +13,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(default=0),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'QuizLog.total_number'
         db.delete_column(u'playlist_quizlog', 'total_number')
-
 
     models = {
         u'playlist.playlist': {

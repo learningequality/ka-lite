@@ -18,14 +18,12 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'VideoLog.deleted'
         db.delete_column('main_videolog', 'deleted')
 
         # Deleting field 'ExerciseLog.deleted'
         db.delete_column('main_exerciselog', 'deleted')
-
 
     models = {
         'main.exerciselog': {

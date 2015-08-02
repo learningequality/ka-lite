@@ -18,14 +18,12 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(null=True, blank=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'ExerciseLog.completion_timestamp'
         db.delete_column('main_exerciselog', 'completion_timestamp')
 
         # Deleting field 'ExerciseLog.completion_counter'
         db.delete_column('main_exerciselog', 'completion_counter')
-
 
     models = {
         'main.exerciselog': {

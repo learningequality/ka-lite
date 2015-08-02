@@ -13,11 +13,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(default='en', max_length=8),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'VideoFile.language'
         db.delete_column('updates_videofile', 'language')
-
 
     models = {
         'updates.updateprogresslog': {

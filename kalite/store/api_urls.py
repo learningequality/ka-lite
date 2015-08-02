@@ -10,6 +10,6 @@ from .api_resources import StoreItemResource, StoreTransactionLogResource
 
 
 urlpatterns = patterns('',
-    url(r'^', include(StoreItemResource().urls)),
-    url(r'^', include(StoreTransactionLogResource().urls)),
-)
+                       url(r'^', include(StoreItemResource().urls)),
+                       url(r'^', include(StoreTransactionLogResource().urls)),
+                       )

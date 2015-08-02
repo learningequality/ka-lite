@@ -11,6 +11,8 @@ from kalite.facility.api_resources import FacilityUserResource
 logging = settings.LOG
 
 # TODO(aronasorman): this is pretty confusing (e.g. student_data is defined here and on the test object)
+
+
 class KALiteClient(Client):
     facility = None
     teacher = None

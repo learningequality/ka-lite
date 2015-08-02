@@ -56,13 +56,16 @@ denormed_attribute_list = {
 
 kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 
-slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"] # not relevant
-slug_blacklist += ["cs", "towers-of-hanoi"] # not (yet) compatible
-slug_blacklist += ["cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math"] # common core
-slug_blacklist += ["MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "hour-of-code", "metropolitan-museum", "bitcoin", "tate", "crash-course1", "crash-course-bio-ecology", "british-museum", "aspeninstitute", "asian-art-museum", "amnh"] # partner content
+slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"]  # not relevant
+slug_blacklist += ["cs", "towers-of-hanoi"]  # not (yet) compatible
+slug_blacklist += ["cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math",
+                   "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math"]  # common core
+slug_blacklist += ["MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "hour-of-code", "metropolitan-museum", "bitcoin",
+                   "tate", "crash-course1", "crash-course-bio-ecology", "british-museum", "aspeninstitute", "asian-art-museum", "amnh"]  # partner content
 
 # TODO(jamalex): re-check these videos later and remove them from here if they've recovered
-slug_blacklist += ["mortgage-interest-rates", "factor-polynomials-using-the-gcf", "inflation-overview", "time-value-of-money", "changing-a-mixed-number-to-an-improper-fraction", "applying-the-metric-system"] # errors on video downloads
+slug_blacklist += ["mortgage-interest-rates", "factor-polynomials-using-the-gcf", "inflation-overview", "time-value-of-money",
+                   "changing-a-mixed-number-to-an-improper-fraction", "applying-the-metric-system"]  # errors on video downloads
 # 'Mortgage interest rates' at http://s3.amazonaws.com/KA-youtube-converted/vy_pvstdBhg.mp4/vy_pvstdBhg.mp4...
 # 'Inflation overview' at http://s3.amazonaws.com/KA-youtube-converted/-Z5kkfrEc8I.mp4/-Z5kkfrEc8I.mp4...
 # 'Factor expressions using the GCF' at http://s3.amazonaws.com/KA-youtube-converted/_sIuZHYrdWM.mp4/_sIuZHYrdWM.mp4...
@@ -90,6 +93,7 @@ channel_data = {
 
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)
 
+
 def denorm_data(node):
     if node:
         kind = node.get("kind", "")
@@ -109,7 +113,8 @@ def build_full_cache(items, id_key="id"):
 
     for item in items:
         for attribute in item._API_attributes:
-            logging.info("Fetching item information for {id}, attribute: {attribute}".format(id=item.get(id_key, "Unknown"), attribute=attribute))
+            logging.info("Fetching item information for {id}, attribute: {attribute}".format(
+                id=item.get(id_key, "Unknown"), attribute=attribute))
             try:
                 dummy_variable_to_force_fetch = item.__getattr__(attribute)
                 if isinstance(item[attribute], list):
@@ -143,6 +148,7 @@ def build_full_cache(items, id_key="id"):
 
     return output
 
+
 def retrieve_API_data(channel=None):
 
     # TODO(jamalex): See how much of what we do here can be replaced by KA's new projection-based API
@@ -175,7 +181,7 @@ def retrieve_API_data(channel=None):
             old_sizes = json.load(fp)
     except:
         old_sizes = {}
-    blacklist = [key for key, val in old_sizes.items() if val > 0] # exclude any we already know about
+    blacklist = [key for key, val in old_sizes.items() if val > 0]  # exclude any we already know about
     sizes_by_id, sizes = query_remote_content_file_sizes(content, blacklist=blacklist)
     ensure_dir(os.path.dirname(REMOTE_VIDEO_SIZE_FILEPATH))
     old_sizes.update(sizes_by_id)
@@ -204,17 +210,19 @@ def retrieve_API_data(channel=None):
                         wait = 0
                         assessment_items.append(assessment_data)
                     else:
-                        logging.info("Fetching assessment item {assessment} failed retrying in {wait}".format(assessment=assessment_item["id"], wait=wait))
+                        logging.info("Fetching assessment item {assessment} failed retrying in {wait}".format(
+                            assessment=assessment_item["id"], wait=wait))
                         time.sleep(wait)
-                        wait = wait*2
+                        wait = wait * 2
                         counter += 1
                 except (requests.ConnectionError, requests.Timeout):
                     semaphore.release()
                     time.sleep(wait)
-                    wait = wait*2
+                    wait = wait * 2
                     counter += 1
                 if counter > 5:
-                    logging.info("Fetching assessment item {assessment} failed more than 5 times, aborting".format(assessment=assessment_item["id"]))
+                    logging.info("Fetching assessment item {assessment} failed more than 5 times, aborting".format(
+                        assessment=assessment_item["id"]))
                     break
 
     threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises_dummy]
@@ -225,6 +233,7 @@ def retrieve_API_data(channel=None):
         thread.join()
 
     return topic_tree, exercises, assessment_items, content
+
 
 def query_remote_content_file_sizes(content_items, threads=10, blacklist=[]):
     """
@@ -237,7 +246,8 @@ def query_remote_content_file_sizes(content_items, threads=10, blacklist=[]):
     if isinstance(content_items, dict):
         content_items = content_items.values()
 
-    content_items = [content for content in content_items if content["format"] in content.get("download_urls", {}) and content["youtube_id"] not in blacklist]
+    content_items = [content for content in content_items if content["format"] in content.get("download_urls", {}) and content[
+        "youtube_id"] not in blacklist]
 
     pool = ThreadPool(threads)
     sizes = pool.map(get_content_length, content_items)
@@ -251,7 +261,8 @@ def query_remote_content_file_sizes(content_items, threads=10, blacklist=[]):
 
 
 def get_content_length(content):
-    url = content["download_urls"][content["format"]].replace("http://fastly.kastatic.org/", "http://s3.amazonaws.com/") # because fastly is SLOWLY
+    url = content["download_urls"][content["format"]].replace(
+        "http://fastly.kastatic.org/", "http://s3.amazonaws.com/")  # because fastly is SLOWLY
     logging.info("Checking remote file size for content '{title}' at {url}...".format(title=content.get("title"), url=url))
     size = 0
     for i in range(5):
@@ -259,9 +270,11 @@ def get_content_length(content):
             size = int(requests.head(url, timeout=60).headers["content-length"])
             break
         except requests.Timeout:
-            logging.warning("Timed out on try {i} while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
+            logging.warning("Timed out on try {i} while checking remote file size for '{title}'!".format(
+                title=content.get("title"), i=i))
         except TypeError:
-            logging.warning("No numeric content-length returned while checking remote file size for '{title}' ({readable_id})!".format(**content))
+            logging.warning(
+                "No numeric content-length returned while checking remote file size for '{title}' ({readable_id})!".format(**content))
             break
     if size:
         logging.info("Finished checking remote file size for content '{title}'!".format(title=content.get("title")))
@@ -270,4 +283,5 @@ def get_content_length(content):
     return size
 
 
-rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
+rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data,
+                            retrieve_API_data=retrieve_API_data, channel_data=channel_data)

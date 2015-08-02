@@ -4,5 +4,5 @@ from . import api_urls
 
 
 urlpatterns = patterns(__package__ + '.views',
-    url(r'^$', 'store', {},'store'),
-)
+                       url(r'^$', 'store', {}, 'store'),
+                       )

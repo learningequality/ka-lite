@@ -17,11 +17,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('main', ['LanguagePack'])
 
-
     def backwards(self, orm):
         # Deleting model 'LanguagePack'
         db.delete_table('main_languagepack')
-
 
     models = {
         'main.exerciselog': {

@@ -7,6 +7,7 @@ from django.dispatch import receiver
 
 from compressor.signals import post_compress
 
+
 class Command(NoArgsCommand):
     """
     This command wraps the django compressor 'compress' command in order to allow us to

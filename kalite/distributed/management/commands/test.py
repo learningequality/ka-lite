@@ -9,6 +9,7 @@ try:
 except ImportError:
     from django.core.management.commands.test import Command as TestCommand
 
+
 class Command(TestCommand):
     """
     We just want to add an extra option to the builtin test command.

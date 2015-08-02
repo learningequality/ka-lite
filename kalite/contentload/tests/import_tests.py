@@ -33,7 +33,6 @@ class TestContentImportTopicTree(MainTestCase):
             "name": os.path.basename(self.tempdir),
         }
 
-
     def tearDown(self, *args, **kwargs):
         """
         Remove temporary directory.
@@ -69,7 +68,7 @@ class TestContentImportTopicTree(MainTestCase):
     def recursively_create_nodes(self, node):
         self.recursion_depth += 1
         if node["kind"] == "Topic":
-            for i in range(0,5):
+            for i in range(0, 5):
                 child = self.create_node(node["path"])
                 node["children"].append(child)
                 if self.recursion_depth < 6:
@@ -82,7 +81,8 @@ class TestContentImportTopicTree(MainTestCase):
             if key != "children":
                 if key == "slug" or key == "path":
                     value = unicode(value.lower())
-                self.assertEqual(value, generated.get(key, ""), "{key} not equal to generated {key}, {value} not equal {genvalue}".format(key=key, value=value, genvalue=generated.get(key, "")))
+                self.assertEqual(value, generated.get(key, ""), "{key} not equal to generated {key}, {value} not equal {genvalue}".format(
+                    key=key, value=value, genvalue=generated.get(key, "")))
             else:
                 generated["children"] = sorted(generated["children"], key=operator.itemgetter("slug"))
                 for i, node in enumerate(value):
@@ -124,7 +124,8 @@ class TestContentImportTopicTree(MainTestCase):
 
         retrieve_API_data = lambda channel: (topic_tree, [], [], [])
 
-        topic_tree, exercises, assessment_items, contents = base.rebuild_topictree(whitewash_node_data=import_channel.whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=import_channel.channel_data)
+        topic_tree, exercises, assessment_items, contents = base.rebuild_topictree(
+            whitewash_node_data=import_channel.whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=import_channel.channel_data)
 
         new_node_cache = []
         self.recursively_find_nodes(topic_tree, "kind", "Video", new_node_cache)

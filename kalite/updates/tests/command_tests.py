@@ -25,7 +25,6 @@ class VideoScanTests(MainTestCase):
         if os.path.exists(self.fake_video_file):
             os.remove(self.fake_video_file)
 
-
     def test_video_added_no_cache(self):
         """
         Add a video in the filesystem, then call videoscan to create videofile objects
@@ -37,8 +36,8 @@ class VideoScanTests(MainTestCase):
         self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.youtube_id, "Make sure the video is the one we created.")
         self.assertTrue(self.is_cache_empty(), "Check that cache is empty.")
 
-
-    @unittest.skipIf(True, "Failing test that I'm tired of debugging.")  # TODO(bcipolli): re-enable when we need to be able to auto-cache
+    # TODO(bcipolli): re-enable when we need to be able to auto-cache
+    @unittest.skipIf(True, "Failing test that I'm tired of debugging.")
     def test_video_added_with_cache(self):
         """
         Add a video in the filesystem, call videoscan to create the videofile object and cache items
@@ -48,7 +47,6 @@ class VideoScanTests(MainTestCase):
         self.assertEqual(VideoFile.objects.all().count(), 1, "Make sure there is now one VideoFile object.")
         self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.youtube_id, "Make sure the video is the one we created.")
         self.assertTrue(self.get_num_cache_entries() > 0, "Check that cache is not empty.")
-
 
     def test_video_deleted_no_cache(self):
         """
@@ -67,8 +65,6 @@ class VideoScanTests(MainTestCase):
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are now no VideoFile objects.")
         self.assertTrue(self.is_cache_empty(), "Check that cache is empty.")
 
-
-
     def test_video_deleted_with_cache(self):
         """
         Run videoscan to create cache items, then re-run to verify that the cache is cleared.
@@ -83,5 +79,3 @@ class VideoScanTests(MainTestCase):
         # Call videoscan, and validate.
         out = call_command("videoscan")
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are now no VideoFile objects.")
-
-

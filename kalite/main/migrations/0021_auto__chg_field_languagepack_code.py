@@ -10,12 +10,14 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
 
         # Changing field 'LanguagePack.code'
-        db.alter_column('main_languagepack', 'code', self.gf('django.db.models.fields.CharField')(max_length=8, primary_key=True))
+        db.alter_column('main_languagepack', 'code', self.gf(
+            'django.db.models.fields.CharField')(max_length=8, primary_key=True))
 
     def backwards(self, orm):
 
         # Changing field 'LanguagePack.code'
-        db.alter_column('main_languagepack', 'code', self.gf('django.db.models.fields.CharField')(max_length=5, primary_key=True))
+        db.alter_column('main_languagepack', 'code', self.gf(
+            'django.db.models.fields.CharField')(max_length=5, primary_key=True))
 
     models = {
         'main.exerciselog': {

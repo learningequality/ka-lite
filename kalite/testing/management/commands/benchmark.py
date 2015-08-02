@@ -12,6 +12,7 @@ from ...benchmark.test_cases import *
 
 
 class BenchmarkThread(threading.Thread):
+
     def __init__(self, fn, threadID, outfile):
         super(BenchmarkThread, self).__init__()
         self.fn = fn
@@ -129,7 +130,6 @@ class Command(BaseCommand):
             cls = self.class_map[args[0]]
         else:
             raise CommandError("Unknown test case: %s;\nSelect from %s" % (args[0], self.class_map.keys()))
-
 
         # Now, use the class to make a lambda function
         good_keys = list(set(options.keys()) - set(["niters", "nclients", 'settings', 'pythonpath', 'traceback']))

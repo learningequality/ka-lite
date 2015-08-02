@@ -7,7 +7,8 @@ from functools import partial
 from optparse import make_option
 from youtube_dl.utils import DownloadError
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.utils.translation import ugettext as _
 
 from .classes import UpdatesDynamicCommand
@@ -17,6 +18,7 @@ from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
 from kalite import caching, i18n, topic_tools
 
+
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
     Assumes it's in the path; if not, we try to download & install.
@@ -24,7 +26,7 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
     Callback will be called back with a dictionary as the first arg with a bunch of
     youtube-dl info in it, as specified in the youtube-dl docs.
     """
-    video_filename =  "%(id)s.%(ext)s" % { 'id': youtube_id, 'ext': format }
+    video_filename = "%(id)s.%(ext)s" % {'id': youtube_id, 'ext': format}
     video_file_download_path = os.path.join(settings.CONTENT_ROOT, video_filename)
     if os.path.exists(video_file_download_path) and not force:
         return
@@ -47,15 +49,14 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
     unique_option_list = (
         make_option('-c', '--cache',
-            action='store_true',
-            dest='auto_cache',
-            default=False,
-            help=_('Create cached files'),
-            metavar="AUTO_CACHE"),
+                    action='store_true',
+                    dest='auto_cache',
+                    default=False,
+                    help=_('Create cached files'),
+                    metavar="AUTO_CACHE"),
     )
 
     option_list = UpdatesDynamicCommand.option_list + CronCommand.unique_option_list + unique_option_list
-
 
     def download_progress_callback(self, videofile, percent):
 
@@ -95,7 +96,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 video_title = (video_node and _(video_node["title"])) or self.video.youtube_id
 
                 # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.
-                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%(video_title)s'") % {"video_title": _(video_title)})
+                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent / 100.,
+                                  notes=_("Downloading '%(video_title)s'") % {"video_title": _(video_title)})
 
                 if percent == 100:
                     self.video = None
@@ -114,7 +116,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
             # Progress info will be updated when this exception is caught.
             raise
 
-
     def handle(self, *args, **options):
         self.video = None
 
@@ -124,7 +125,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
         set_process_priority.lowest(logging=settings.LOG)
 
         try:
-            while True: # loop until the method is aborted
+            while True:  # loop until the method is aborted
                 # Grab any video that hasn't been tried yet
                 videos = VideoFile.objects \
                     .filter(flagged_for_download=True, download_in_progress=False) \
@@ -143,7 +144,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 self.stdout.write((_("Downloading video '%(youtube_id)s'...") + "\n") % {"youtube_id": video.youtube_id})
 
                 # Update the progress logging
-                self.set_stages(num_stages=video_count + len(handled_youtube_ids) + len(failed_youtube_ids) + int(options["auto_cache"]))
+                self.set_stages(num_stages=video_count + len(handled_youtube_ids) +
+                                len(failed_youtube_ids) + int(options["auto_cache"]))
                 if not self.started():
                     self.start(stage_name=video.youtube_id)
 
@@ -161,7 +163,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                         #   that it's a dubbed video.
                         #
                         # We can use youtube-dl to get that video!!
-                        logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.youtube_id})
+                        logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") %
+                                      {"youtube_id": video.youtube_id})
 
                         def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
                             if stats['status'] == "finished":
@@ -171,7 +174,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                             else:
                                 percent = 0.
                             progress_callback(percent=percent)
-                        scrape_video(video.youtube_id, quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
+                        scrape_video(video.youtube_id, quiet=not settings.DEBUG, callback=partial(
+                            youtube_dl_cb, progress_callback=progress_callback))
 
                     except IOError as e:
                         logging.exception(e)
@@ -196,7 +200,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 except Exception as e:
                     # On error, report the error, mark the video as not downloaded,
                     #   and allow the loop to try other videos.
-                    msg = _("Error in downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.youtube_id, "error_msg": unicode(e)}
+                    msg = _("Error in downloading %(youtube_id)s: %(error_msg)s") % {
+                        "youtube_id": video.youtube_id, "error_msg": unicode(e)}
                     self.stderr.write("%s\n" % msg)
 
                     # If a connection error, we should retry.
@@ -212,7 +217,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     video.save()
 
                     # Rather than getting stuck on one video, continue to the next video.
-                    self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
+                    self.update_stage(stage_status="error", notes=_(
+                        "%(error_msg)s; continuing to next video.") % {"error_msg": msg})
                     failed_youtube_ids.append(video.youtube_id)
                     continue
 

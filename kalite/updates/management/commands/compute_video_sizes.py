@@ -7,7 +7,8 @@ import os
 from collections_local_copy import OrderedDict
 from optparse import make_option
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 
 from ... import REMOTE_VIDEO_SIZE_FILEPATH
@@ -17,8 +18,8 @@ from fle_utils.general import ensure_dir, softload_json
 class Command(BaseCommand):
     help = "KA Lite test help"
     option_list = BaseCommand.option_list + (
-    make_option('--noinput', action='store_false', dest='interactive', default=True,
-            help='Tells Django to NOT prompt the user for input of any kind.'),)
+        make_option('--noinput', action='store_false', dest='interactive', default=True,
+                    help='Tells Django to NOT prompt the user for input of any kind.'),)
 
     def handle(self, *args, **options):
         if settings.CENTRAL_SERVER:

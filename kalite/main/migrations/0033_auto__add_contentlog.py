@@ -14,10 +14,13 @@ class Migration(SchemaMigration):
             ('counter', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, blank=True)),
             ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True, blank=True)),
             ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
-            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')
+             (blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')
+             (blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
             ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'], null=True, blank=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(
+                to=orm['securesync.FacilityUser'], null=True, blank=True)),
             ('content_id', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
             ('points', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('language', self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True)),
@@ -33,11 +36,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'main', ['ContentLog'])
 
-
     def backwards(self, orm):
         # Deleting model 'ContentLog'
         db.delete_table(u'main_contentlog')
-
 
     models = {
         u'main.attemptlog': {

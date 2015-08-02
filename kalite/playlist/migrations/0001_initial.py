@@ -23,7 +23,8 @@ class Migration(SchemaMigration):
             ('entity_id', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('sort_order', self.gf('django.db.models.fields.IntegerField')()),
             ('description', self.gf('django.db.models.fields.TextField')()),
-            ('playlist', self.gf('django.db.models.fields.related.ForeignKey')(related_name='entries', to=orm['playlist.Playlist'])),
+            ('playlist', self.gf('django.db.models.fields.related.ForeignKey')(
+                related_name='entries', to=orm['playlist.Playlist'])),
         ))
         db.send_create_signal(u'playlist', ['PlaylistEntry'])
 
@@ -31,10 +32,10 @@ class Migration(SchemaMigration):
         db.create_table(u'playlist_playlisttogroupmapping', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('playlist', self.gf('django.db.models.fields.IntegerField')()),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(related_name='playlists', to=orm['securesync.FacilityGroup'])),
+            ('group', self.gf('django.db.models.fields.related.ForeignKey')
+             (related_name='playlists', to=orm['securesync.FacilityGroup'])),
         ))
         db.send_create_signal(u'playlist', ['PlaylistToGroupMapping'])
-
 
     def backwards(self, orm):
         # Deleting model 'Playlist'
@@ -45,7 +46,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'PlaylistToGroupMapping'
         db.delete_table(u'playlist_playlisttogroupmapping')
-
 
     models = {
         u'playlist.playlist': {

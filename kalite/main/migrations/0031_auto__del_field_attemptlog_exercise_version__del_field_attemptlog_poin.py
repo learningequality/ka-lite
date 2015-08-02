@@ -39,7 +39,6 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(default=0),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Adding field 'AttemptLog.exercise_version'
         db.add_column(u'main_attemptlog', 'exercise_version',
@@ -65,7 +64,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'AttemptLog.response_count'
         db.delete_column(u'main_attemptlog', 'response_count')
-
 
     models = {
         u'main.attemptlog': {
