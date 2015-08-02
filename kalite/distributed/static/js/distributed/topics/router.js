@@ -1,6 +1,12 @@
+var _ = require("underscore");
+var Backbone = require("base/backbone");
+var $ = require("base/jQuery");
+var Models = require("./models");
+var Views = require("./views");
+
 TopicChannelRouter = Backbone.Router.extend({
     initialize: function(options) {
-        _.bindAll(this);
+        _.bindAll(this, "navigate_default_channel", "intercept_learn_nav", "navigate_channel", "add_slug", "url_back", "navigate_splat", "set_page_title", "trigger_navigation_callback");
         this.default_channel = options.default_channel;
         $("#nav_learn").click(this.intercept_learn_nav);
     },
@@ -31,10 +37,10 @@ TopicChannelRouter = Backbone.Router.extend({
 
     navigate_channel: function(channel, splat) {
         if (this.channel!==channel) {
-            this.control_view = new SidebarView({
+            this.control_view = new Views.SidebarView({
                 channel: channel,
                 entity_key: "children",
-                entity_collection: TopicCollection
+                entity_collection: Models.TopicCollection
             });
             this.channel = channel;
         }
@@ -71,3 +77,4 @@ TopicChannelRouter = Backbone.Router.extend({
     }
 });
 
+module.exports = TopicChannelRouter;

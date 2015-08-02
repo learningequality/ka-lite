@@ -111,6 +111,7 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
                 fullname = (prefix + ":" + name) if prefix else name
                 if not skip:
                     url = reverse(fullname, kwargs=params)
+                    print("testing url: {0}".format(url))
                     response = self.client.get(url)
                     self.assertIn(response.status_code, allowed_http_codes,
                         "{url} gave status code {status_code}".format(

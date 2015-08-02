@@ -14,7 +14,6 @@ from django.utils import translation
 from django.utils.translation import ugettext as _
 
 
-
 def call_command_with_output(cmd, *args, **kwargs):
     """
     Run call_command while capturing stdout/stderr and calls to sys.exit
@@ -51,36 +50,6 @@ def call_command_with_output(cmd, *args, **kwargs):
         sys.exit   = backups[2]
 
 
-def call_command_subprocess(cmd, *args, **kwargs):
-    assert "manage_py_dir" in kwargs, "don't forget to specify the manage_py_dir"
-
-    manage_py_dir = kwargs["manage_py_dir"]
-    del kwargs["manage_py_dir"]
-    wait_for_exit = kwargs.get("wait_for_exit", True)
-    if "wait_for_exit" in kwargs: del kwargs["wait_for_exit"]
-
-    # Use sys to get the same executable running as is running this process.
-    # Make sure to call the manage.py from this project.
-    call_args = [sys.executable, os.path.join(manage_py_dir, "manage.py"), cmd]
-    call_args += list(args)
-    for key,val in kwargs.iteritems():
-        if isinstance(val, bool):
-            call_args.append("--%s" % key)
-        else:
-            call_args.append("--%s=%s" % (key, val))
-
-    # We don't need to hold onto the process handle.
-    #    we expect all commands to return eventually, on their own--
-    #    we have no way to deal with a rogue process.
-    # But, because they're subprocesses of this process, when the
-    #    server stops, so do these processes.
-    # Note that this is also OK because chronograph does all "stopping"
-    #    using messaging through the database
-    p = subprocess.Popen(call_args)
-    if wait_for_exit:
-        p.communicate()
-    return p
-
 class CommandProcess(multiprocessing.Process):
     def __init__(self, cmd, *args, **kwargs):
         super(CommandProcess, self).__init__()
@@ -90,6 +59,7 @@ class CommandProcess(multiprocessing.Process):
 
     def run(self):
         call_command(self.cmd, *self.args, **self.kwargs)
+
 
 class CommandThread(threading.Thread):
     def __init__(self, cmd, *args, **kwargs):
@@ -101,6 +71,7 @@ class CommandThread(threading.Thread):
     def run(self):
         #logging.debug("Starting command %s with parameters %s, %s)" % (self.cmd, self.args, self.kwargs))
         call_command(self.cmd, *self.args, **self.kwargs)
+
 
 JOB_THREADS = {}
 def call_command_subprocess(cmd, *args, **kwargs):
@@ -138,11 +109,27 @@ def call_command_async(cmd, *args, **kwargs):
     # and have everyone else spawn threads.
     is_osx = sys.platform == 'darwin'
     in_proc = kwargs.pop('in_proc', not is_osx)
-    in_proc = kwargs.pop('in_proc', True)
     
     if in_proc:
         return call_command_threaded(cmd, *args, **kwargs)
     else:
+        # MUST: Check if running on PyRun to prevent crashing the server since it doesn't have
+        # the `multiprocessing` module by default.
+        if hasattr(sys, 'pyrun'):
+            # MUST: Do this since PyRun doesn't include the `multiprocessing` module
+            # by default so let's call `call_outside_command_with_output` which uses
+            # the `subprocess` module.
+
+            if settings.IS_SOURCE and 'kalite_dir' not in kwargs:
+                kwargs['kalite_dir'] = settings.SOURCE_DIR
+
+            if 'wait' not in kwargs:
+                # We are supposed to be an async call so let's not wait.
+                kwargs['wait'] = False
+
+            return call_outside_command_with_output(cmd, *args, **kwargs)
+
+        # Let's use the OS's python interpreter.
         return call_command_subprocess(cmd, *args, **kwargs)
 
 
@@ -169,16 +156,27 @@ def call_outside_command_with_output(command, *args, **kwargs):
         kalite_bin = os.path.join(kalite_dir, "bin/kalite")
     else:
         kalite_bin = 'kalite'
+
     cmd = (kalite_bin, "manage", command)
     for arg in args:
         cmd += (arg,)
-    for key, val in kwargs.items():
+
+    kwargs_keys = kwargs.keys()
+    
+    # Ensure --settings occurs first, as otherwise docopt parsing barfs
+    kwargs_keys = sorted(kwargs_keys, cmp=lambda x,y: -1 if x=="settings" else 0)
+    
+    for key in kwargs_keys:
+        val = kwargs[key]
         key = key.replace(u"_",u"-")
         prefix = u"--" if command != "runcherrypyserver" else u""  # hack, but ... whatever!
         if isinstance(val, bool):
             cmd += (u"%s%s" % (prefix, key),)
         else:
-            cmd += (u"%s%s=%s" % (prefix, key, unicode(val)),)
+            # TODO(jamalex): remove this replacement, after #4066 is fixed:
+            # https://github.com/learningequality/ka-lite/issues/4066
+            cleaned_val = unicode(val).replace(" ", "")
+            cmd += (u"%s%s=%s" % (prefix, key, cleaned_val),)
 
     p = subprocess.Popen(
         cmd,

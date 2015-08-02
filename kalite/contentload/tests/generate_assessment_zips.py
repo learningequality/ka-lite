@@ -1,6 +1,5 @@
 import json
 import os
-import re
 import requests
 import shutil
 import tempfile
@@ -8,9 +7,7 @@ import zipfile
 from fle_utils.general import ensure_dir
 from mock import patch, MagicMock
 
-from django.core.management import call_command
 from django.test import TestCase
-from django.test.utils import override_settings
 
 import kalite.version as version
 from kalite.testing.base import KALiteTestCase

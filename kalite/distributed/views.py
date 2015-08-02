@@ -33,22 +33,16 @@ from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
 import json
 
-
 def check_setup_status(handler):
     """
     Decorator for validating that KA Lite post-install setup has completed.
-    NOTE that this decorator must appear before the backend_cache_page decorator,
+    NOTE that this decorator must appear before  the backend_cache_page decorator,
     so that it is run even when there is a cache hit.
     """
     def check_setup_status_wrapper_fn(request, *args, **kwargs):
 
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
-
-        if User.objects.exists():
-            request.has_superuser = True
-            # next line is for testing
-            # User.objects.all().delete()
 
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
@@ -71,8 +65,7 @@ def check_setup_status(handler):
                 redirect_url = None
             if redirect_url:
                 messages.warning(request, mark_safe(
-                    "Please login with the account you created while running the installation script, \
-                    to complete the setup."))
+                    "Please login with the admin account you created, then create your facility and register this device to complete the setup."))
 
         return handler(request, *args, **kwargs)
     return check_setup_status_wrapper_fn
@@ -230,7 +223,7 @@ def search(request):
     }
 
 def add_superuser_form(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
         form = SuperuserForm()
         return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
         data = {'Status' : 'ShowModal', 'data' : return_html}
@@ -242,12 +235,21 @@ def create_superuser(request):
         if form.is_valid():
             # security precaution
             cd = form.cleaned_data
-            superusername = cd['superusername']
-            superpassword = cd['superpassword']
-            superemail = cd['superemail']
-            User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
-            data = {'Status' : 'Success'}
+            superusername = cd.get('superusername')
+            superpassword = cd.get('superpassword')
+            confirmsuperpassword = cd.get('confirmsuperpassword')
+            if superpassword != confirmsuperpassword:
+                form.errors['confirmsuperpassword'] = form.error_class([_("Passwords don't match!")])
+                return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
+                data = {'Status' : 'Invalid', 'data' : return_html}
+            else:
+                superemail = "superuser@learningequality.org"
+                User.objects.create_superuser(username=superusername, password=superpassword, email=superemail)
+                data = {'Status' : 'Success'}
         else:
+            cd = form.cleaned_data
+            if cd.get('confirmsuperpassword') != cd.get('superpassword'):
+                form.errors['confirmsuperpassword'] = form.error_class([_("Passwords don't match!")])
             return_html = render_to_string('admin/superuser_form.html', {'form': form}, context_instance=RequestContext(request))
             data = {'Status' : 'Invalid', 'data' : return_html}
 
@@ -287,9 +289,6 @@ def handler_403(request, *args, **kwargs):
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(set_query_params(reverse("homepage"), {"next": request.get_full_path(), "login": True}))
 
-@render_to("distributed/perseus.html")
-def perseus(request):
-    return {}
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("distributed/404.html", {}, context_instance=RequestContext(request)))

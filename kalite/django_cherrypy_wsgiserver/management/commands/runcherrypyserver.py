@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 
 from ... import cherrypyserver
 import warnings
+from kalite.shared.warnings import RemovedInKALite_v015_Warning
 
 
 CPWSGI_HELP = r"""
@@ -213,6 +214,9 @@ def ka_lite_is_using_port(host, port):
 
 def runcherrypyserver(argset=[], **kwargs):
     # Get the options
+    
+    warnings.warn("runcherrypyserver() is deprecated", RemovedInKALite_v015_Warning)
+    
     options = CPWSGI_OPTIONS.copy()
     options.update(kwargs)
     

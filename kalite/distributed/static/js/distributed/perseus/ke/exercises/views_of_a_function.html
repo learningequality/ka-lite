@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Views of a function</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+    <script type="text/javascript">
+        chooseXValues = function(func, scale) {
+            var xs = [];
+            _.each(_.range(-9, 10), function(x) {
+                var y = func(x);
+                if (Math.abs(y) > 9) {
+                    return;
+                }
+                if (Math.abs(y - Math.round(y * scale) / scale) < 0.1) {
+                    xs.push(x);
+                }
+            });
+            return xs;
+        };
+        generatePiecemealFunction = function() {
+            var n = KhanUtil.randRange(2, 3);
+
+            var xs = [-11];
+            for (var i = 0; i < n; i++) {
+                xs.push(KhanUtil.randRange(xs[i] + 3, 11 - (n - i) * 3));
+            }
+            xs.push(11);
+ 
+            var ys = [];
+            for (var i = 0; i < xs.length; i++) {
+                ys.push(KhanUtil.randRange(-9, 9));
+            }
+
+            var grads = [];
+            for (var i = 1; i < xs.length; i++) {
+                grads.push((ys[i] - ys[i - 1]) / (xs[i] - xs[i - 1]));
+            }
+
+            return function(x) {
+                for (var i = 0; i < grads.length; i++) {
+                    if (x <= xs[i + 1]) {
+                        return (x - xs[i]) * grads[i] + ys[i];
+                    }
+                }
+            };
+        };
+    </script>
+    <style type="text/css">
+        .ttable {
+            text-align: right;
+        }
+
+        .ttable tr {
+            height: 23px;
+        }
+
+        .ttable .label {
+            text-align: left;
+        }
+
+        .ttable td {
+            padding: 5px 10px;
+        }
+
+        .ttable .first-row {
+            border-top: 2px solid #ccc;
+            background-color: #ededed;
+        }
+
+        #answer_area .ttable input {
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
+<div class="exercise">
+    <div class="vars" data-ensure="X_EXAMPLES.length === 3">
+        <var id="A">randRangeNonZero(-3, 3)</var>
+        <var id="B">randRangeNonZero(-3, 3)</var>
+        <var id="C">randRangeNonZero(-3, 3)</var>
+        <var id="F">randFromArray(["f", "g", "h"])</var>
+        <var id="X,Y">randFromArray([["t", "u"], ["v", "w"], ["x", "y"]])</var>
+        <var id="N">rand(5)</var>
+        <var id="FUNC">[
+            generatePiecemealFunction(),
+            function(x) { return B * x + C; },
+            function(x) { return B / 2 * x * x + A * x + C; },
+            function(x) { return B * sin(C * x / Math.PI) + A; },
+            function(x) { return B * pow(Math.E, C * x / 3) + A; }
+        ][N]</var>
+        <var id="X_EXAMPLES">(function() {
+            var xs = chooseXValues(FUNC, 1);
+            if (xs.length &gt;= 3) {
+                return sortNumbers(shuffle(xs, 3));
+            } else {
+                xs = chooseXValues(FUNC, 2);
+                return sortNumbers(shuffle(xs, 3));
+            }
+        })()</var>
+        <var id="Y_EXAMPLES">_.map(X_EXAMPLES, FUNC)</var>
+        <var id="Y_EXAMPLES_R">_.map(Y_EXAMPLES, function(y) { return round(2 * y) / 2; })</var>
+    </div>
+
+    <div class="problems">
+        <div id="graph-to-table">
+            <div class="vars">
+                <var id="CORRECTOFFSET">0.5</var>
+            </div>
+            <p class="question">
+                Choose any three points on the following graph of <code><var>Y</var> = <var>F</var>(<var>X</var>)</code>,
+                and fill the table so each column represents a point.
+            </p>
+
+            <p>
+                <em>If necessary, round your answers to the nearest <code><var>CORRECTOFFSET</var></code>.</em>
+            </p>
+
+            <div class="problem">
+                <p class="render-answer-area-here"></p>
+
+                <div class="graphie" id="main">
+                    graphInit({
+                        range: 10,
+                        scale: 20,
+                        tickStep: 1,
+                        labelStep: 1,
+                        unityLabels: false,
+                        labelFormat: function(s) {
+                            return "\\small{" + s + "}";
+                        },
+                        axisArrows: "&lt;-&gt;",
+                        axisLabels: [X, Y]
+                    });
+
+                    plot(FUNC, [-10, 10], { stroke: BLUE });
+                </div>
+            </div>
+
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <table class="ttable">
+                        <tbody>
+                            <tr class="first-row">
+                                <td class="label"><code><var>X</var></code></td>
+                                <td><input type="text"></td>
+                                <td><input type="text"></td>
+                                <td><input type="text"></td>
+                            </tr>
+                            <tr>
+                                <td class="label"><code><var>F</var>(<var>X</var>)</code></td>
+                                <td><input type="text"></td>
+                                <td><input type="text"></td>
+                                <td><input type="text"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="guess">
+                    (function(){
+                        var guess = [];
+                        var rows = $(".ttable tr");
+
+                        for (var i = 1; i &lt; 4; i++) {
+                            var x = $(rows[0].children[i]).find("input").val();
+                            var y = $(rows[1].children[i]).find("input").val();
+                            guess.push([x, y]);
+                        }
+
+                        return guess;
+                    })()
+                </div>
+                <div class="validator-function">
+                    var attempted = 0;
+                    var correct = 0;
+                    var xs = [];
+
+                    var i = 0;
+                    var validatePoint = Khan.answerTypes.predicate.createValidatorFunctional(function(x, maxError) {
+                        var validateY = Khan.answerTypes.predicate.createValidatorFunctional(function(y, maxError) {
+                            if (abs(FUNC(x) - y) &lt; maxError) {
+                                correct += 1;
+                                xs.push(x);
+                                return true;
+                            }
+                        }, {forms: 'decimal', inexact: true, maxError: maxError});
+                        var result = validateY(guess[i][1]);
+                        return result.correct;
+                    }, {forms: 'decimal', inexact: true, maxError: CORRECTOFFSET});
+
+                    for (i = 0; i &lt; 3; ++i) {
+                        if ($.trim(guess[i][0]) !== "" &amp;&amp;
+                            $.trim(guess[i][1]) !== "") {
+                            attempted += 1;
+                            validatePoint(guess[i][0]);
+                        }
+                    }
+
+                    if (attempted === 0) {
+                        return "";
+                    }
+
+                    if (attempted &lt; 3) {
+                        return $._("You must enter three points");
+                    }
+
+                    xs = KhanUtil.sortNumbers(xs);
+                    var different = 1;
+                    for (var i = 0; i &lt; correct - 1; ++i) {
+                        if (xs[i + 1] - xs[i] &gt;= 0.5) {
+                            different += 1;
+                        }
+                    }
+                    return different === attempted;
+                </div>
+            </div>
+
+            <div class="hints">
+                <div>
+                    <p>
+                        We can start by choosing three <em>input</em> values.
+                        For example, let's use the input values <code><var>X_EXAMPLES[0]</var></code>,
+                        <code><var>X_EXAMPLES[1]</var></code>, and <code><var>X_EXAMPLES[2]</var></code>.</p>
+                    <p>
+                    <p>
+                        Now we can find the corresponding <em>output</em> values to the input values we chose,
+                        using the graph: The coordinates of every point on the graph of <code><var>Y</var> = f(<var>X</var>)</code>
+                        can be written as <code>(<var>X</var>, <var>Y</var>)</code>, where the <code><var>X</var></code>-coordinate represents
+                        the input value and the <code><var>Y</var></code>-coordinate represents the corresponding output value.
+                    </p>
+                </div>
+
+                <div>
+                    <p>
+                        As we can see on the graph, the point with an
+                        <code>\blue{x}</code>-coordinate of <code>\blue{<var>X_EXAMPLES[0]</var>}</code> has a
+                        <code>\pink{y}</code>-coordinate of <code>\pink{<var>Y_EXAMPLES_R[0]</var>}</code>.
+                        In other words, <code><var>F</var>(\blue{<var>X_EXAMPLES[0]</var>}) = \pink{<var>Y_EXAMPLES_R[0]</var>}</code>.
+                    </p>
+                    <div class="graphie" data-update="main">
+                        line([X_EXAMPLES[0], -11], [X_EXAMPLES[0], 11], { strokeWidth: 1, stroke: PINK });
+                        circle([X_EXAMPLES[0], Y_EXAMPLES[0]], 0.2, { stroke: PINK, fill: PINK });
+                    </div>
+                    <p>
+                        To record this in our table, we put
+                        <code>\blue{<var>X_EXAMPLES[0]</var>}</code> in the <code>x</code>-row and
+                        <code>\pink{<var>Y_EXAMPLES_R[0]</var>}</code> in the <code><var>F</var>(<var>X</var>)</code>-row
+                        below it.
+                    </p>
+                </div>
+
+                <div>
+                    <p>We can do the same for the other two input values we chose.</p>
+                    <p><code>\quad
+                        \begin{align}
+                        <code><var>F</var>(\blue{<var>X_EXAMPLES[1]</var>}) &amp;= \pink{<var>Y_EXAMPLES_R[1]</var>}</code> \\
+                        <code><var>F</var>(\blue{<var>X_EXAMPLES[2]</var>}) &amp;= \pink{<var>Y_EXAMPLES_R[2]</var>}</code>
+                        \end{align}
+                    </code></p>
+                    <div class="graphie" data-update="main">
+                        line([X_EXAMPLES[1], -11], [X_EXAMPLES[1], 11], { strokeWidth: 1, stroke: PINK });
+                        circle([X_EXAMPLES[1], Y_EXAMPLES[1]], 0.2, { stroke: PINK, fill: PINK });
+                        line([X_EXAMPLES[2], -11], [X_EXAMPLES[2], 11], { strokeWidth: 1, stroke: PINK });
+                        circle([X_EXAMPLES[2], Y_EXAMPLES[2]], 0.2, { stroke: PINK, fill: PINK });
+                    </div>
+                </div>
+
+                <div>
+                    <p>This is a possible complete table:</p>
+                    <table class="ttable">
+                        <tbody>
+                            <tr class="first-row">
+                                <td class="label"><code><var>X</var></code></td>
+                                <td><code><var>X_EXAMPLES[0]</var></code></td>
+                                <td><code><var>X_EXAMPLES[1]</var></code></td>
+                                <td><code><var>X_EXAMPLES[2]</var></code></td>
+                            </tr>
+                            <tr>
+                                <td class="label"><code><var>F</var>(<var>X</var>)</code></td>
+                                <td><code><var>Y_EXAMPLES_R[0]</var></code></td>
+                                <td><code><var>Y_EXAMPLES_R[1]</var></code></td>
+                                <td><code><var>Y_EXAMPLES_R[2]</var></code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>Note: There can be other correct tables that contain different points.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="equation-to-table" data-type="graph-to-table">
+            <div class="vars">
+                <var id="N">rand(3)</var>
+                <var id="FUNC">[
+                    function(x) { return B * x + C; },
+                    function(x) { return A * x + A * B + C; },
+                    function(x) { return abs(B) * x * x + C; }
+                ][N]</var>
+                <var id="FUNCSHOW">[
+                    coefficient(B) + X + " + " + C,
+                    coefficient(A) + "(" + X  + B + ") + " + C,
+                    coefficient(abs(B)) + X + "^2 + " + C
+                ][N]</var>
+                <var id="X_EXAMPLES">(function() {
+                    var xs = chooseXValues(FUNC, 1);
+                    if (xs.length &gt;= 3) {
+                        return sortNumbers(shuffle(xs, 3));
+                    } else {
+                        xs = chooseXValues(FUNC, 2);
+                        return sortNumbers(shuffle(xs, 3));
+                    }
+                })()</var>
+                <var id="HINT">[
+                    coefficient(B) + "\\blue{" + X_EXAMPLES[0] + "} + " + C,
+                    coefficient(A) + "(\\blue{" + X_EXAMPLES[0] + "}" + B + ") + " + C,
+                    coefficient(abs(B)) + "\\blue{" + X_EXAMPLES[0] + "}^2 + " + C
+                ][N]</var>
+                <var id="Y_EXAMPLES">_.map(X_EXAMPLES, FUNC)</var>
+                <var id="Y_EXAMPLES_R">_.map(Y_EXAMPLES, function(y) { return "" + round(10 * y) / 10; })</var>
+                <var id="CORRECTOFFSET">0.1</var>
+            </div>
+            <p class="question">
+                Pick any three pairs of corresponding input and output values
+                of the following function, and fill the table accordingly.
+            </p>
+            <p class="problem"><code><var>F</var>(<var>X</var>) = <var>FUNCSHOW</var></code></p>
+            <p class="render-answer-area-here"></p>
+            <div class="hints">
+                <div>
+                    <p>
+                        We can start by choosing three <em>input</em> values.
+                        For example, let's use the input values <code><var>X_EXAMPLES[0]</var></code>,
+                        <code><var>X_EXAMPLES[1]</var></code>, and <code><var>X_EXAMPLES[2]</var></code>.
+                    </p>
+                    <p>
+                        Now we can find the corresponding <em>output</em> values to the input values we chose, using the function's formula:
+                        For any input value <code>a</code>, we can find its corresponding output value by substituting <code><var>X</var> = a</code>
+                        into the formula for <code><var>F</var>(<var>X</var>)</code>.
+                    </p>
+                </div>
+
+                <div>
+                    <p>Now find the output value that corresponds to <code>\blue{x}=\blue{<var>X_EXAMPLES[0]</var>}</code>.</p>
+                    <p><code>\quad <var>F</var>(\blue{<var>X_EXAMPLES[0]</var>}) = <var>HINT</var></code>
+                    <p><code>\quad <var>F</var>(\blue{<var>X_EXAMPLES[0]</var>}) = \pink{<var>Y_EXAMPLES_R[0]</var>}</code>
+                    <p>
+                        To record this in the table, we put <code>\blue{<var>X_EXAMPLES[0]</var>}</code> in the <code><var>X</var></code>-row
+                        and <code>\pink{<var>Y_EXAMPLES_R[0]</var>}</code> in the <code><var>F</var>(<var>X</var>)</code>-row located directly below it.
+                    </p>
+                    <p>We can do the same for the other two input values we chose.</p>
+                </div>
+
+                <div>
+                    <p>We can do the same for the other two input values we chose.</p>
+                    <p><code>
+                        \quad \begin{align}
+                        <code><var>F</var>(\blue{<var>X_EXAMPLES[1]</var>}) &amp;= \pink{<var>Y_EXAMPLES_R[1]</var>}</code> \\
+                        <code><var>F</var>(\blue{<var>X_EXAMPLES[2]</var>}) &amp;= \pink{<var>Y_EXAMPLES_R[2]</var>}</code>
+                        \end{align}
+                    </code></p>
+                </div>
+
+                <div>
+                    <p>This is a possible complete table:</p>
+                    <table class="ttable">
+                        <tbody>
+                            <tr class="first-row">
+                                <td class="label"><code><var>X</var></code></td>
+                                <td><code><var>X_EXAMPLES[0]</var></code></td>
+                                <td><code><var>X_EXAMPLES[1]</var></code></td>
+                                <td><code><var>X_EXAMPLES[2]</var></code></td>
+                            </tr>
+                            <tr>
+                                <td class="label"><code><var>F</var>(<var>X</var>)</code></td>
+                                <td><code><var>Y_EXAMPLES_R[0]</var></code></td>
+                                <td><code><var>Y_EXAMPLES_R[1]</var></code></td>
+                                <td><code><var>Y_EXAMPLES_R[2]</var></code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>Note: There can be other correct tables that contain different points.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

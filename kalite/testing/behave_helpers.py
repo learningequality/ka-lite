@@ -48,9 +48,9 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 # Maximum time to wait when trying to find elements
-MAX_WAIT_TIME = 5
+MAX_WAIT_TIME = 10
 # Maximum time to wait for a page to load.
-MAX_PAGE_LOAD_TIME = 3
+MAX_PAGE_LOAD_TIME = 5
 
 def rgba_to_hex(rgba_string):
     """
@@ -160,7 +160,7 @@ def find_id_with_wait(context, id_str, **kwargs):
     id_str: A string with the id (no leading #)
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.ID, id_str), **kwargs)
 
@@ -201,14 +201,11 @@ def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     context: a behave context
     by: A tuple selector used by Selenium
     wait_time: The max time to wait in seconds
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
-    try:
-        return WebDriverWait(context.browser, wait_time).until(
-            EC.presence_of_element_located(by)
-        )
-    except TimeoutException:
-        return None
+    return WebDriverWait(context.browser, wait_time).until(
+        EC.presence_of_element_located(by)
+    )
 
 def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
@@ -250,10 +247,29 @@ def _login_user(context, username, password, facility=None):
     data = {"username": username, "password": password}
     if facility:
         data['facility'] = facility
+        context.facility = facility
     data = json.dumps(data)
     url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "login/"
     resp = post(context, url, data)
+    context.user = username
     assert resp, "Login failed. url: %s\ndata: %s" % (url, data)
+
+def login_as_learner(context, learner_name="mrpibb", learner_pass="abc123"):
+    """ Log in as a learner specified by the optional arguments, or create
+    such a user and log in if it doesn't exist.
+    :context: a behave context, used for its browser
+    :learner_name: optional. username of the learner.
+    :learner_pass: optional. password of the learner.
+    """
+    if not FacilityUser.objects.filter(username=learner_name):
+        class ContextWithMixin(FacilityMixins):
+            def __init__(self):
+                self.browser = context.browser
+        context_wm = ContextWithMixin()
+        context_wm.create_student(username=learner_name, password=learner_pass)
+    facility = FacilityUser.objects.get(username=learner_name).facility.id
+    _login_user(context, learner_name, learner_pass, facility=facility)
+
 
 
 def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
@@ -341,10 +357,20 @@ def request(context, url, method="GET", data=""):
 
     context_wm = ContextWithMixin()
 
-    context.browser.get(build_url(context, reverse("homepage")))
-    context_wm.browser_wait_for_js_object_exists("$")
-    context.browser.execute_script('window.FLAG=false; $.ajax({type: "%s", url: "%s", data: \'%s\', contentType: "application/json", success: function(data){window.FLAG=true; window.DATA=data}})' % (method, url, data))
+    context.browser.get(build_url(context, reverse("homepage")))  # Avoid x-site scripting error by sending request from same domain
+    context.browser.execute_script("""
+            var req = new XMLHttpRequest();
+            req.open("{method}", "{url}", true);
+            req.setRequestHeader("Content-Type", "application/json");
+            req.onreadystatechange = function () {{
+                if( req.readyState === 4 ) {{
+                    window.FLAG = true;
+                    window.DATA = JSON.parse(req.responseText);
+                }}
+            }};
+            req.send('{data}');
+        """.format(method=method, url=url, data=data)  # One must escape '{' and '}' by doubling them
+    )
     context_wm.browser_wait_for_js_condition("window.FLAG")
     resp = context.browser.execute_script("return window.DATA")
-
     return resp

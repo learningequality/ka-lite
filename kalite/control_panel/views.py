@@ -34,10 +34,6 @@ from kalite.shared.decorators.auth import require_authorized_admin, require_auth
 from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 
-# TODO(dylanjbarth): this looks awful
-if settings.CENTRAL_SERVER:
-    from central.models import Organization
-
 
 UNGROUPED = "Ungrouped"
 
@@ -175,6 +171,8 @@ def data_export(request):
         zone = ""
 
     if settings.CENTRAL_SERVER:
+        # TODO(dylanjbarth and benjaoming): this looks awful
+        from central.models import Organization
         all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
         if zone_id:
             org = Zone.objects.get(id=zone_id).get_org()
@@ -407,7 +405,9 @@ def account_management(request):
             # Never report this error; don't want this logging to block other functionality.
             logging.error("Failed to update student userlog activity: %s" % e)
 
-    return student_view_context(request)
+    c = student_view_context(request)
+    c['restricted'] = settings.DISABLE_SELF_ADMIN
+    return c
 
 
 # data functions

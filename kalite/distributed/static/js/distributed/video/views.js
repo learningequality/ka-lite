@@ -1,4 +1,10 @@
-window.VideoPlayerState = {
+var _ = require("underscore");
+var BaseView = require("base/baseview");
+var Handlebars = require("base/handlebars");
+var _V_ = require("video.js");
+var ContentBaseView = require("content/baseview");
+
+var VideoPlayerState = {
     UNSTARTED: -1,
     ENDED: 0,
     PLAYING: 1,
@@ -7,9 +13,9 @@ window.VideoPlayerState = {
     VIDEO_CUED: 5
 };
 
-window.VideoPlayerView = ContentBaseView.extend({
+var VideoPlayerView = ContentBaseView.extend({
 
-    template: HB.template("video/video-player"),
+    template: require("./hbtemplates/video-player.handlebars"),
 
     render: function() {
 
@@ -62,6 +68,7 @@ window.VideoPlayerView = ContentBaseView.extend({
 
     },
 
+    /* Jessica TODO: Use Modernizr to detect when a user is on a tablet, and then apply appropriate CSS changes */
     on_resize: _.throttle(function() {
         var available_width = $(".content-player-container").width();
         var available_height = $(window).height() * 0.9;
@@ -207,8 +214,10 @@ window.VideoPlayerView = ContentBaseView.extend({
 
     close: function() {
         if (this.intervalId) clearInterval(this.intervalId);
-        window.ContentBaseView.prototype.close.apply(this);
+        ContentBaseView.prototype.close.apply(this);
     }
 
 
 });
+
+module.exports = VideoPlayerView;

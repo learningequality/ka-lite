@@ -4,9 +4,15 @@ import sys
 from version import *
 
 
-# Where all data is stored in a kalite installation, relative to sys.prefix
-# If running kalite from source dir, you can disregard it.
-ROOT_DATA_PATH = os.path.join(sys.prefix, 'share/kalite')
+__version__ = VERSION
+
+
+# ROOT_DATA_PATH should point to the directory where the source files live, including the "docs" dir
+# TODO-BLOCKER(MCGallaspy): Use setuptools in the windows installer to avoid this nonsense.
+ROOT_DATA_PATH = os.environ.get(
+    "KALITE_ROOT_DATA_PATH",
+    os.path.join(sys.prefix, 'share', 'kalite')
+)
 
 
 # TODO: Burn down this function, the name is weird, it just checks if a

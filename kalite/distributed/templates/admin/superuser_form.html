@@ -8,18 +8,27 @@
         {% endif %}
         <form class="form-horizontal" id="superusercreate-box" method="post">
             <div class="field">
+            <!--[if IE]>
+                <label for="id_superusername" style="float:left">{% trans 'Username' %}</label>
+            <![endif]-->
                 {{ form.superusername.errors }}
                 {{ form.superusername }}
             </div>
             </br>
             <div class="field">
+            <!--[if IE]>
+                <label for="id_superpassword" style="float:left">{% trans 'Password' %}</label>
+            <![endif]-->
                 {{ form.superpassword.errors }}
                 {{ form.superpassword }}
             </div>
             </br>
             <div class="field">
-                {{ form.superemail.errors }}
-                {{ form.superemail }}
+            <!--[if IE]>
+                <label for="id_confirmsuperpassword" style="float:left">{% trans 'Re-enter Password' %}</label>
+            <![endif]-->
+                {{ form.confirmsuperpassword.errors }}
+                {{ form.confirmsuperpassword }}
             </div>
             </br>
             </br>

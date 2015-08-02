@@ -30,6 +30,16 @@ def step_impl(context):
 def step_impl(context):
     assert "/learn/" in context.browser.current_url, "Assertion failed. '/learn/' not in %s" % context.browser.current_url
 
+@given("I enter nothing in the search bar")
+def step_impl(context):
+    search_field = find_id_with_wait(context, "search")
+    search_field.clear()
+
+@then("The search button is disabled")
+def step_impl(context):
+    search_btn = find_id_with_wait(context, "search-button")
+    assert not search_btn.is_enabled(), "Search button is not disabled."
+
 def search_for(context, text):
     search_field = find_id_with_wait(context, "search")
     search_field.send_keys(text)

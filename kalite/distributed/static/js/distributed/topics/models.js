@@ -1,5 +1,8 @@
+var Backbone = require("base/backbone");
+var get_params = require("utils/get_params");
+
 // Models
-window.TopicNode = Backbone.Model.extend({
+var TopicNode = Backbone.Model.extend({
 
     initialize: function(options) {
         
@@ -10,7 +13,7 @@ window.TopicNode = Backbone.Model.extend({
 });
 
 // Collections
-window.TopicCollection = Backbone.Collection.extend({
+var TopicCollection = Backbone.Collection.extend({
     model: TopicNode,
 
     initialize: function(options) {
@@ -25,6 +28,11 @@ window.TopicCollection = Backbone.Collection.extend({
     },
 
     url: function() {
-        return ("ALL_TOPICS_URL" in window)? setGetParam(sprintf(ALL_TOPICS_URL, {channel_name: this.channel}), "parent", this.parent) : null;
+        return ("ALL_TOPICS_URL" in window)? get_params.setGetParam(sprintf(ALL_TOPICS_URL, {channel_name: this.channel}), "parent", this.parent) : null;
     }
 });
+
+module.exports = {
+    TopicNode: TopicNode,
+    TopicCollection: TopicCollection
+}

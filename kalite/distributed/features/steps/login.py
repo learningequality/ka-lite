@@ -33,7 +33,14 @@ def step_impl(context):
 
 @then("there should be no facility drop down")
 def step_impl(context):
-    assert not find_id_with_wait(context, "id_facility-container")
+    try:
+        # TODO(benjaoming): This is a crazy test... waiting for a timeout in
+        # order to see that some element doesn't appear!?
+        # I've just set the wait_time to 1 second for now
+        find_id_with_wait(context, "id_facility-container", wait_time=1)
+        assert False, "Should not find a facility container"
+    except TimeoutException:
+        pass
 
 @then("there should be a facility drop down")
 def step_impl(context):
@@ -91,6 +98,7 @@ def impl(context):
 
 def fill_field(context, text, field_id):
     field = find_id_with_wait(context, field_id)
+    field.send_keys("")  # Send empty string to ensure focus is on element.
     field.send_keys(text)
 
 def fill_username(context, text):

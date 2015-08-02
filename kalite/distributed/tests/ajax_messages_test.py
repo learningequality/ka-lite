@@ -18,7 +18,7 @@ class TestShowAjaxMessages(BrowserActionMixins, FacilityMixins, KALiteBrowserTes
             self.reverse("learn") + "khan/math/algebra/introduction-to-algebra/overview_hist_alg/origins-of-algebra/")
         try:
             warning = "This content was not found! You must login as an admin/coach to download the content."
-            element = WebDriverWait(self.browser, 3).until(EC.presence_of_element_located((By.CSS_SELECTOR,"div.alert-warning")))
+            element = WebDriverWait(self.browser, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR,"div.alert-warning")))
             self.assertTrue(warning in element.text)
         except TimeoutException:
             self.fail("Error: The element may not exist.")

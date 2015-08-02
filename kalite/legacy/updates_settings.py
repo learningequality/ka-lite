@@ -14,41 +14,10 @@ This will be cleaned up in KA Lite 0.14
 
 """
 
-import os
-
 try:
     from kalite import local_settings
 except ImportError:
     local_settings = object()
-
-
-########################
-# Django dependencies
-########################
-
-INSTALLED_APPS = (
-    "django.contrib.auth",  # only admins can access api views
-    "django.contrib.staticfiles",
-    "south",
-    "fle_utils.chronograph",  # updates uses chronograph for commands
-    "fle_utils.django_utils",  # templatetags
-    # Following line was commented out because it led to distributed app being imported by central server indirectly
-    # "kalite.distributed",  # to access caching
-    "kalite.i18n",  # language pack updates
-    "kalite.main",  # TODO: remove (MainTestCase should be KALiteTestCase)
-    "kalite.topic_tools",  # topic tools
-    "kalite.testing",
-    "securesync",  # Needed to verify zip files (via Device key) and to limit access via registration status
-)
-
-MIDDLEWARE_CLASSES = (
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",  # used by distributed to authenticate admin (django) user
-)
 
 
 #######################
@@ -63,11 +32,6 @@ BACKUP_THUMBNAIL_SOURCE = getattr(local_settings, "BACKUP_THUMBNAIL_SOURCE", Non
 # kalite.i18n while loading settings because of its __init__.py
 # from pkgutil import get_data
 # I18N_DATA_PATH = get_data("kalite.i18n", "data")
-
-# Use resource_filename instead of get_data because it does not try to open
-# a file and does not complain that its a directory
-from pkg_resources import resource_filename
-UPDATES_DATA_PATH = resource_filename("kalite", "updates/data")
 
 # settings for when we're updating the server through Git
 GIT_UPDATE_REPO_URL = getattr(local_settings, "GIT_UPDATE_REPO_URL", "https://github.com/learningequality/ka-lite.git")

@@ -1,42 +1,26 @@
 """
 
+New settings pattern
 
+See:
+https://github.com/learningequality/ka-lite/issues/4054
+https://github.com/learningequality/ka-lite/issues/3757
 
-
-
-DO NOT MODIFY THIS FILE OR LOAD THIS MODULE.
-
-
-Because of i18n.__init__.py, we cannot load this module independently of its
-own child module's preconditions.
-
-I.e. i18n.__init__.py expects the django.conf.settings to have loaded, but
-i18n.settings is a precondition for loading the project's settings module
-kalite.settings
-
-Nasty stuff.
-
-Will be cleaned up in 0.14.
-
-
-
+All settings for the topic_tools app should be defined here, they can
+only on django.conf.settings
 """
-########################
-# Django dependencies
-########################
 import os
+from django.conf import settings
 
-INSTALLED_APPS = (
-    "kalite.i18n",  # get_video_id
-    "kalite.contentload",  # because we have KA path weirdness in our topic tree.  TODO: remove for LEX
-    "kalite.testing",
-)
 
-#######################
-# Set module settings
-#######################
-DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = getattr(local_settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False)
+DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = getattr(settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False)
 
-KHAN_EXERCISES_RELPATH = os.path.join("static", "perseus", "ke")
+KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "perseus", "ke")
 
-KHAN_EXERCISES_DIRPATH = os.path.join(os.path.dirname(__file__), "..", KHAN_EXERCISES_RELPATH)
+TOPICS_FILEPATHS = {
+    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
+}
+EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
+CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
+
+TOPIC_RECOMMENDATION_DEPTH = 3
