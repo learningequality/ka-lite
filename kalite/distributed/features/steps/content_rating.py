@@ -9,6 +9,7 @@ STAR_CONTAINER_IDS = (
     "star-container-3",
 )
 SUBMIT_ID = "rating-submit"
+STAR_RATING_OPTION_CLASS = "star-rating-option"
 
 @then(u'my feedback is displayed')
 def impl(context):
@@ -95,11 +96,11 @@ def rate_id(context, id, val=3):
     :return: nothing
     """
     container = find_id_with_wait(context, id)
-    rating_val_class = "rating-val-{0}".format(val)
 
     def get_rating_el(driver):
         try:
-            return container.find_element_by_class_name(rating_val_class)
+            els = container.find_elements_by_class_name(STAR_RATING_OPTION_CLASS)
+            return [el for el in els if int(el.get_attribute("data-val")) == val].pop()
         except NoSuchElementException:
             return False
 

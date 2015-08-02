@@ -24,7 +24,9 @@ module.exports = BaseView.extend({
             Renders itself, then attaches (rendered) subviews.
         */
         this.$el.html(this.template());
-        this.star_view = this.add_subview(StarView, {el: this.$("#star-container")});
+        this.star_view_1 = this.add_subview(StarView, {el: this.$("#star-container-1")});
+        this.star_view_2 = this.add_subview(StarView, {el: this.$("#star-container-2")});
+        this.star_view_3 = this.add_subview(StarView, {el: this.$("#star-container-3")});
         this.text_view = this.add_subview(TextView, {el: this.$("#text-container")});
     }
 
@@ -38,14 +40,36 @@ var StarView = BaseView.extend({
 
     template: require("./hbtemplates/star.handlebars"),
 
-    initialize: function() {
+    events: {
+        "click .star-rating-option": "rate_value_callback"
+    },
+
+    initialize: function(options) {
+        this.model = options.model || new Backbone.Model();
+        this.rating_attr = options.rating_attr || "rating";
+        _.bindAll(this, "rate_value_callback", "rating_change")
+
+        this.model.on("change:"+this.rating_attr, this.rating_change);
+
         this.render();
     },
 
     render: function() {
-        this.$el.html(this.template());
-    }
+        this.$el.html(this.template(this.model.attributes));
+    },
 
+    rate_value_callback: function(ev) {
+        var val = $(ev.target).attr("data-val");
+        this.model.set(this.rating_attr, val);
+    },
+
+    rating_change: function() {
+        opts = this.$(".star-rating-option");
+        _.each(opts, function(opt, index, list) {
+            $opt = $(opt);
+            $opt.toggleClass("activated", $opt.attr("data-val") <= this.model.get(this.rating_attr));
+        }, this);
+    }
 });
 
 
