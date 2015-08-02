@@ -3,6 +3,7 @@ var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 var Models = require("./models");
 var VideoModels = require("video/models");
+var $script = require("scriptjs");
 
 var ContentBaseView = require("./baseview");
 
