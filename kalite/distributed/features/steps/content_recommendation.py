@@ -31,7 +31,7 @@ def impl(context):
 
 @when(u'I click in the middle of an exercise suggestion on the next steps card')
 def impl(context):
-    element = find_id_with_wait(context, "content-nextsteps-lesson-link")
+    element = find_css_class_with_wait(context, "content-nextsteps-lesson-link")
     click_and_wait_for_page_load(context, element, wait_time=15)
 
 @then(u'the content recommendation cards should be shown')
