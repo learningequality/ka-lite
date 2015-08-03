@@ -1,26 +1,28 @@
 <div class="well">
     <div class="row">
         <div class="col-xs-12">
-            <span class="sr-only">{{_ "In topic " }}</span>
             <h2 class="h3 playlist-title center-block">
                 <a href="{{this.url}}">{{title}}</a>
             </h2>
+            <div class="sr-only">{{_ "In this topic " }}</div>
         </div>
     </div>
     {{!-- Videos --}}
     <div class="row progress-block">
         <div class="col-xs-2">
             <div class="progress-indicator progress-indicator-lg center-block {{vid_status}}">
-                <span class="sr-only">{{_ "There are " }}</span>
-                <div class="sidebar-icon icon-Video icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary">{{#if n_pl_videos}}{{n_pl_videos}}{{/if}}</span></div>
+                <span class="sr-only">{{_ "there are " }}</span>
+                <div class="sidebar-icon icon-Video icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary"><div class="sr-only">{{#unless n_pl_videos}}no{{/unless}}</div>{{#if n_pl_videos}}{{n_pl_videos}}{{/if}}</span></div>
                 <span class="sr-only">{{_ " videos." }}</span>
             </div>
         </div>
         <div class="col-xs-10">
             <div class="progress playlist-progress-bar">
-                {{#unless vid_pct_started}}
-                    <span class="sr-only">{{_ "You haven't started to watch videos! " }}</span>
-                {{/unless}}
+                {{#if n_pl_videos}}
+                    {{#unless vid_pct_started}}
+                        <span class="sr-only">{{_ "You haven't started to watch videos! " }}</span>
+                    {{/unless}}
+                {{/if}}
                 {{#if vid_pct_complete}}
                     <div class="progress-bar progress-bar-success" title="% Completed" style="width: {{vid_pct_complete}}%">
                         <span class="sr-only">{{_ "Of those you have completed " }}</span>
@@ -41,14 +43,16 @@
         <div class="col-xs-2">
             <div class="progress-indicator progress-indicator-lg center-block {{ex_status}}">
                 <span class="sr-only">{{_ "There are " }}</span>
-                <div class="sidebar-icon icon-Exercise icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary">{{#if n_pl_exercises}}{{n_pl_exercises}}{{/if}}</span></div>
+                <div class="sidebar-icon icon-Exercise icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary"><div class="sr-only">{{#unless n_pl_exercises}}no{{/unless}}</div>{{#if n_pl_exercises}}{{n_pl_exercises}}{{/if}}</span></div>
                 <span class="sr-only">{{_ " exercises." }}</span>
             </div>
         </div>
         <div class="col-xs-10">
             <div class="progress playlist-progress-bar">
-                {{#if ex_status.notstarted}}
-                    <span class="sr-only">{{_ "You haven't started to work on exercises! " }}</span>
+                {{#if n_pl_exercises}}
+                    {{#if ex_status.notstarted}}
+                        <span class="sr-only">{{_ "You haven't started to work on exercises! " }}</span>
+                    {{/if}}
                 {{/if}}
                 {{#if ex_pct_mastered}}
                     <div class="progress-bar progress-bar-success" title="% Mastered" style="width: {{ex_pct_mastered}}%">
