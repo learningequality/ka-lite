@@ -934,28 +934,3 @@ to items you want to have the icon appear with.
     margin-top:30px
 }
 
-/*!
-Video.js overrides for improved focus states in keyboard navigation
-Video.js version 4.11.4
-*/
-
-/* Slider - used for Volume bar and Seek bar */
-.vjs-default-skin .vjs-slider:focus {
-  border: 0.5em solid #FFBF00;
-  /* box-shadow */
-  -webkit-box-shadow: 0 0 2em #FFD24C;
-  -moz-box-shadow: 0 0 2em #FFD24C;
-  box-shadow: 0 0 2em #FFD24C;
-}
-/* Replacement for focus outline */
-.vjs-default-skin .vjs-control:focus:before,
-.vjs-default-skin .vjs-control:hover:before {
-  text-shadow: 0em 0em 1em #FFFF00;
-}
-.vjs-default-skin .vjs-control:focus {
-  /*  outline: 0; */
-  /* keyboard-only users cannot see the focus on several of the UI elements when
-  this is set to 0 */
-  border: 0.1em dashed #FFBF00;
-}
-
