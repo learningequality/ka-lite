@@ -31,8 +31,14 @@
                 {{/if}}
                 {{#if vid_pct_started}}
                     <div class="progress-bar inprogress" title="% In-Progress" style="width: {{vid_pct_started}}%">
-                        <span class="sr-only">{{_ "And you are still working on " }}</span>
+                    {{#ifcond vid_pct_started "<" 100}}
+                        <span class="sr-only">{{_ "You are still working on " }}</span>
                         <span>{{vid_pct_started}}%</span>
+                    {{/ifcond}}
+                    {{#ifcond vid_pct_started "===" 100}}
+                        <span class="sr-only">{{_ "You are still working on all of them." }}</span>
+                        <span aria-hidden="true" role="presentation">{{vid_pct_started}}%</span>
+                    {{/ifcond}}
                     </div>
                 {{/if}}
             </div>
@@ -62,8 +68,14 @@
                 {{/if}}
                 {{#if ex_pct_incomplete}}
                     <div class="progress-bar inprogress" title="% In-Progress" style="width: {{ex_pct_incomplete}}%">
+                    {{#ifcond ex_pct_incomplete "<" 100}}
                         <span class="sr-only">{{_ "You are still working on " }}</span>
                         <span>{{ex_pct_incomplete}}%</span>
+                    {{/ifcond}}
+                    {{#ifcond ex_pct_incomplete "===" 100}}
+                        <span class="sr-only">{{_ "You are still working on all of them." }}</span>
+                        <span aria-hidden="true" role="presentation">{{ex_pct_incomplete}}%</span>
+                    {{/ifcond}}
                     </div>
                 {{/if}}
                 {{#if ex_pct_struggling}}
@@ -82,7 +94,7 @@
             <div class="progress-indicator progress-indicator-lg center-block {{quiz_status}}">
                 <span class="sr-only">{{_ "There are " }}</span>
                 <span class="sidebar-icon icon-Quiz icon-label icon-label-lg"></span>
-                <span class="sr-only">{{_ " quizes." }}</span>
+                <span class="sr-only">{{_ " quizzes." }}</span>
             </div>
         </div>
         <div class="col-xs-10">

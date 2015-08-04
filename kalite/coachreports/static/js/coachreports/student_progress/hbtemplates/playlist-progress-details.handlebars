@@ -2,26 +2,25 @@
     {{!-- Whole section is only for screen readers --}}
 <div class="sr-only">
         <a href="/learn/{{attributes.path}}"><h3>{{attributes.title}}</h3></a>
-        <div> 
-            <span>{{_ " Status: " }}
-            {{!-- Status info for sr-user. --}}
+        <div>{{!-- Status info for sr-user. --}}
+            {{_ " Status: " }}
             {{#ifcond attributes.status "===" "complete"}}
-                {{_ " Completed " }}
+                {{_ " Completed. " }}
             {{/ifcond}}
 
             {{#ifcond attributes.status "===" "inprogress"}}
-                {{_ " In progress " }}
+                {{_ " In progress. " }}
             {{/ifcond}}
 
             {{#ifcond attributes.status "===" "struggling"}}
-                {{_ " Struggling " }}
+                {{_ " Struggling. " }}
             {{/ifcond}}
             
             {{#ifcond attributes.status "===" "notstarted"}}
-                {{_ " Not started " }}
+                {{_ " Not started. " }}
             {{/ifcond}}                
-               
-            </span>
+        </div>
+        <div>
             {{!-- Score info for sr-user. --}}
             {{!-- Video --}}
             {{#ifcond attributes.kind "===" "Video"}}
@@ -37,7 +36,6 @@
             {{#ifcond attributes.kind "===" "Quiz"}}
                 <span>{{_ " For this quiz your score is " }}{{attributes.score}}%.</span>
             {{/ifcond}}
-            
         </div>
 </div>
 {{!-- Whole section is rendered invisible to screen readers --}}
