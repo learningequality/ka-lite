@@ -8,8 +8,9 @@ STAR_CONTAINER_IDS = (
     "star-container-2",
     "star-container-3",
 )
-SUBMIT_ID = "rating-submit"
+SUBMIT_CLASS = "rating-submit"
 STAR_RATING_OPTION_CLASS = "star-rating-option"
+TEXT_INPUT_CLASS = "rating-text-feedback"
 
 @then(u'my feedback is displayed')
 def impl(context):
@@ -23,7 +24,7 @@ def impl(context):
 
 @then(u'I see a feedback form')
 def impl(context):
-    feedback_form_container = find_id_with_wait(context, RATING_CONTAINER_ID)
+    feedback_form_container = find_id_with_wait(context, RATING_CONTAINER_ID, wait_time=60)
     assert elem_is_visible_with_wait(context, feedback_form_container), "Rating form is not visible."
 
 @given(u'some user feedback exists')
@@ -115,8 +116,7 @@ def enter_text_feedback(context, text_feedback):
     :param text_feedback: str, the feedback to be entered
     :return: nothing
     """
-    text_container = find_id_with_wait(context, TEXT_CONTAINER_ID)
-    input_field = text_container.find_element_by_class_name("rating-text-feedback")
+    input_field = find_css_class_with_wait(context, TEXT_INPUT_CLASS)
     input_field.send_keys(text_feedback)
 
 
@@ -126,7 +126,7 @@ def submit_feedback(context):
     :param context: behave context
     :return: nothing
     """
-    submit_btn = find_id_with_wait(context, SUBMIT_ID)
+    submit_btn = find_css_class_with_wait(context, SUBMIT_CLASS)
     submit_btn.click()
 
 
@@ -136,5 +136,6 @@ def get_text_feedback(context):
     :param context: behave context
     :return: a str with the text feedback displayed.
     """
-    text_el = find_id_with_wait(context, TEXT_CONTAINER_ID)
-    return text_el.text
+    return context.browser.execute_script("""
+        return $(".{text_input_class}")[0].value;
+    """.format(text_input_class=TEXT_INPUT_CLASS))

@@ -74,7 +74,9 @@ function handleFailedAPI(resp, error_prefix) {
             try {
                 messages = $.parseJSON(resp.responseText || "{}").messages || $.parseJSON(resp.responseText || "{}");
             } catch (e) {
-                var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
+                // Replacing resp.responseText with "blah blah blah" is just a workaround... this should be fixed.
+                // See https://github.com/learningequality/ka-lite/issues/4203
+                var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, "blah blah blah", resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
                 console.log("Response text: " + resp.responseText);
                 console.log(e);
