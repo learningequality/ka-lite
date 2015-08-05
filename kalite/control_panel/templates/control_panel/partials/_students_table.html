@@ -10,6 +10,7 @@
             {% trans "Learners" %}
             <small>
                 <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "This report contains information about recent learner activity." %}'></span>
+                <!---TODO - Radina: implement accessible tooltip. -->
             </small>
         </h2>
     </div>
@@ -67,7 +68,8 @@
                                 </td>
                                 <td>
                                     <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit learner {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        <span aria-hidden="true"><i class="glyphicon glyphicon-pencil"></i></span>
+                                        <span class="sr-only">{% blocktrans with studentname=student|format_name:"last_first" %}Edit learner {{ studentname }}{% endblocktrans %}</span>
                                     </a>
                                 </td>
 
@@ -113,7 +115,7 @@
     <div class="col-sm-4 col-xs-12">
         <p class="add-new-table-item">
             <a class="create-student" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
-                <span class="glyphicon glyphicon-plus-sign"></span> {% trans 'Add a new learner.' %}
+                <span aria-hidden="true"><i class="glyphicon glyphicon-plus-sign"></i></span> {% trans 'Add a new learner.' %}
             </a>
         </p>
     </div>

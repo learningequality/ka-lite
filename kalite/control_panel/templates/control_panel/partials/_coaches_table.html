@@ -9,7 +9,8 @@
             <div class="col-md-12">
                 <h2>{% trans "Coaches" %} 
                 <small>
-                    <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "Coaches assist learners to learn, and can be teachers, parents, or fellow students." %}'></span>
+                    <span class="help-tooltip glyphicon glyphicon-question-sign" aria-hidden="true" data-toggle="tooltip" data-placement="right" title='{% trans "Coaches assist learners to learn, and can be teachers, parents, or fellow students." %}'></span>
+                    <!---TODO - Radina: implement accessible tooltip. -->
                 </small>
             </div>
         </div>
@@ -54,7 +55,8 @@
                                 </td>
                                 <td>
                                     <a title="{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=coach.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        <span aria-hidden="true"><i class="glyphicon glyphicon-pencil"></i></span>
+                                        <span class="sr-only">{% blocktrans with coachname=coach|format_name:"last_first" %}Edit user info for coach {{ coachname }}{% endblocktrans %}</span>
                                     </a>
                                 </td>
                                 <td>{{ coach.total_logins }}</td>
@@ -76,7 +78,7 @@
         <div class="row table-bottom-options">
             <div class="col-sm-4 col-xs-12">
                 <p class="add-new-table-item">
-                    <a href="{% url  'add_facility_teacher' %}?facility={{ facility_id }}"><span class="glyphicon glyphicon-plus-sign"></span> {% trans 'Add a new coach.' %}</a>
+                    <a href="{% url  'add_facility_teacher' %}?facility={{ facility_id }}"><span aria-hidden="true"><i class="glyphicon glyphicon-plus-sign"></i></span> {% trans 'Add a new coach.' %}</a>
                 </p>
             </div>
             <div class="col-sm-4 col-xs-12">
