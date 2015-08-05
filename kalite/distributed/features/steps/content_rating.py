@@ -12,6 +12,8 @@ SUBMIT_CLASS = "rating-submit"
 STAR_RATING_OPTION_CLASS = "star-rating-option"
 STAR_INNER_WRAPPER_CLASS = "star-rating-inner-wrapper"
 TEXT_INPUT_CLASS = "rating-text-feedback"
+DELETE_BTN_CLASS = "rating-delete"
+EDIT_BTN_CLASS = "rating-edit"
 
 @then(u'my feedback is displayed')
 def impl(context):
@@ -46,19 +48,22 @@ def impl(context):
             new_val=new_val,
         )
 
+@then(u'I see a new form')
+def impl(context):
+    # Only star-container-1 should be visible
+    visible_container = find_id_with_wait(context, STAR_CONTAINER_IDS[0])
+    assert visible_container.is_displayed(),\
+        "Element with id '{0}' not visible, but it should be!".format(STAR_CONTAINER_IDS[0])
+    for id_ in STAR_CONTAINER_IDS[1:] + (TEXT_CONTAINER_ID, ):
+        el = find_id_with_wait(context, id_)
+        assert el.rect["width"]*el.rect["height"] == 0 or (not el.is_displayed()),\
+            "Element with id '{0}' is visible, but it should NOT be!".format(id_)
+
 @given(u'some user feedback exists')
 def impl(context):
     assert False
 
 @then(u'the user feedback is present')
-def impl(context):
-    assert False
-
-@then(u'I see a blank form')
-def impl(context):
-    assert False
-
-@when(u'I edit my feedback')
 def impl(context):
     assert False
 
@@ -80,26 +85,40 @@ def impl(context):
         When I fill out the form
     ''')
 
-@then(u'I see an edit button')
-def impl(context):
-    assert False
-
 @then(u'I see a delete button')
 def impl(context):
-    assert False
+    context.delete_btn = find_css_class_with_wait(context, DELETE_BTN_CLASS)
+    assert context.delete_btn.is_displayed()
 
 @when(u'I delete my feedback')
 def impl(context):
-    assert False
+    context.delete_btn.click()
 
 @when(u'I export csv data')
 def impl(context):
     assert False
 
-@then(u'my edited feedback is displayed')
+@when(u'I click the edit button')
 def impl(context):
-    assert False
+    edit_btn = find_css_class_with_wait(context, EDIT_BTN_CLASS)
+    edit_btn.click()
 
+@when(u'I change the text')
+def impl(context):
+    new_text = "Once upon a midnight dreary"
+    context.new_text = get_text_feedback(context) + new_text
+    enter_text_feedback(context, new_text)
+
+@when(u'I submit it')
+def impl(context):
+    find_css_class_with_wait(context, SUBMIT_CLASS).click()
+
+@then(u'the altered text is displayed')
+def impl(context):
+    actual = get_text_feedback(context)
+    expected = context.new_text
+    assert actual == expected, \
+        "Expected text: {exp}\nActual text: {act}".format(exp=expected, act=actual)
 
 def enter_star_ratings(context):
     """

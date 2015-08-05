@@ -14,7 +14,8 @@ module.exports = BaseView.extend({
 
     events: {
         "click .rating-submit": "submit_rating",
-        "click .rating-edit": "edit_callback"
+        "click .rating-edit": "edit_callback",
+        "click .rating-delete": "delete_callback"
     },
 
     initialize: function(options) {
@@ -26,9 +27,8 @@ module.exports = BaseView.extend({
             model.url = "/api/not/gonna/work";
             return model;
         }();
-        _.bindAll(this, "submit_rating", "edit_callback", "render1st", "render2nd", "render3rd", "renderTextArea", "renderAll");
+        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "render1st", "render2nd", "render3rd", "renderTextArea", "renderAll");
         this.model.fetch().done(this.renderAll).fail(this.render1st);
-        window.rating_view = this;
     },
 
     render1st: function() {
@@ -40,6 +40,7 @@ module.exports = BaseView.extend({
         this.$(".rating-submit").hide();
         this.$(".rating-edit").hide();
         this.$(".rating-skip").hide();
+        this.$(".rating-delete").hide();
         this.star_view_1 = this.add_subview(StarView, {
             el: this.$("#star-container-1"),
             model: this.model,
@@ -88,12 +89,14 @@ module.exports = BaseView.extend({
         var self = this;
         // Wrap in _.once, since it could potentially be called twice by different callbacks
         var callback = _.once(function() {
-            // Update the model explicitly before removing the view, since the callback for changed text is debounced
-            self.text_view.model.set(self.text_view.text_attr, self.text_view.$(".rating-text-feedback")[0].value);
             self.text_view.remove();
             self.renderAll();
         });
-        this.$(".rating-submit").one("click", callback);
+        this.$(".rating-submit").one("click", function() {
+            // Update the model explicitly before removing the view, since the callback for changed text is debounced
+            self.text_view.model.set(self.text_view.text_attr, self.text_view.$(".rating-text-feedback")[0].value);
+            callback();
+        });
         this.$(".rating-skip").one("click", function() {
             self.text_view.model.set(self.text_view.text_attr, "");
             callback();
@@ -142,6 +145,21 @@ module.exports = BaseView.extend({
         this.text_view.toggle_disabled(false);
         this.$(".rating-submit").show();
         this.$(".rating-edit").hide();
+    },
+
+    delete_callback: function() {
+        var self = this;
+        this.$el.html("Deleting your review...");
+        this.model.clear();
+        this.model.destroy({
+            "error": function(){
+                // Hmmm, what should I do?
+                console.log("failed to delete the model...")
+            },
+            "success": function(){
+                self.render1st();
+            }
+        });
     }
 });
 
