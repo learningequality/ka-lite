@@ -9,14 +9,12 @@ from django.shortcuts import get_object_or_404
 
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
-from fle_utils.internet.webcache import backend_cache_page
 
 from kalite.topic_tools import get_topic_tree
 from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
 from kalite.facility.models import FacilityUser
 
 @api_handle_error_with_json
-@backend_cache_page
 def topic_tree(request, channel):
     parent = request.GET.get("parent")
     return JsonResponse(get_topic_tree(channel=channel, language=request.language, parent=parent))

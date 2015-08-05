@@ -68,6 +68,10 @@ def learner_logs(request):
     # Look back a week by default
     time_window = request.GET.get("time_window", 7)
 
+    start_date = request.GET.get("start_date", None)
+
+    end_date = request.GET.get("end_date", None)
+
     topic_ids = request.GET.getlist("topic_id", [])
 
     learners = get_learners_from_GET(request)
@@ -84,8 +88,9 @@ def learner_logs(request):
 
     output_objects = []
 
-    start_date = datetime.datetime.now() - datetime.timedelta(time_window)
-    end_date = datetime.datetime.now()
+    end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
+
+    start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
 
     for log_type in log_types:
         LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)
@@ -124,6 +129,10 @@ def aggregate_learner_logs(request):
     # Look back a week by default
     time_window = request.GET.get("time_window", 7)
 
+    start_date = request.GET.get("start_date", None)
+
+    end_date = request.GET.get("end_date", None)
+
     topic_ids = request.GET.getlist("topic_id", [])
 
     log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
@@ -135,8 +144,10 @@ def aggregate_learner_logs(request):
         "exercise_attempts": 0,
         "exercise_mastery": None,
     }
-    start_date = datetime.datetime.now() - datetime.timedelta(time_window)
-    end_date = datetime.datetime.now()
+    
+    end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
+
+    start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
 
     for log_type in log_types:
 

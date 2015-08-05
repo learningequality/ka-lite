@@ -32,12 +32,16 @@ var CoachReportModel = Backbone.Model.extend({
     initialize: function(options) {
         this.facility = options.facility;
         this.group = options.group;
+        this.start_date = options.start_date;
+        this.end_date = options.end_date;
     },
 
     url: function() {
         return setGetParamDict(Urls.learner_logs(), {
             facility_id: this.facility,
-            group_id: this.group
+            group_id: this.group,
+            start_date: this.start_date,
+            end_date: this.end_date
         });
     }
 });
@@ -46,12 +50,16 @@ var CoachReportAggregateModel = Backbone.Model.extend({
     initialize: function(options) {
         this.facility = options.facility;
         this.group = options.group;
+        this.start_date = options.start_date;
+        this.end_date = options.end_date;
     },
 
     url: function() {
         return setGetParamDict(Urls.aggregate_learner_logs(), {
             facility_id: this.facility,
-            group_id: this.group
+            group_id: this.group,
+            start_date: this.start_date,
+            end_date: this.end_date
         });
     }
 });
