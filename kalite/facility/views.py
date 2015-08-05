@@ -123,7 +123,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
                 if request.next:
                     return HttpResponseRedirect(next)
                 else:
-                    zone_id = facility.get_zone().id
+                    zone_id = getattr(facility.get_zone(), "id", None)
                     return HttpResponseRedirect(reverse("facility_management", kwargs={"zone_id": zone_id, "facility_id": facility.id}))
 
             # New student signed up
