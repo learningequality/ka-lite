@@ -349,7 +349,9 @@ var TabularReportView = BaseView.extend({
         var self = this;
         this.data_model = new Models.CoachReportModel({
             facility: this.model.get("facility"),
-            group: this.model.get("group")
+            group: this.model.get("group"),
+            start_date: date_string(this.model.get("start_date")),
+            end_date: date_string(this.model.get("end_date"))
         });
         if (this.model.get("facility")) {
             this.data_model.fetch().then(function() {

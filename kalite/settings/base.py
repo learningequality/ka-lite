@@ -436,48 +436,31 @@ _5_years = 5 * 365 * 24 * 60 * 60
 _100_years = 100 * 365 * 24 * 60 * 60
 _max_cache_time = min(_100_years, sys.maxint - time.time() - _5_years)
 CACHE_TIME = getattr(local_settings, "CACHE_TIME", _max_cache_time)
-CACHE_NAME = getattr(local_settings, "CACHE_NAME", None)  # without a cache defined, None is fine
 
 # Sessions use the default cache, and we want a local memory cache for that.
+CACHE_LOCATION = os.path.realpath(getattr(
+    local_settings,
+    "CACHE_LOCATION",
+    os.path.join(
+        USER_DATA_ROOT,
+        'cache',
+    )
+))
+
 CACHES = {
     "default": {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_LOCATION,  # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME,  # should be consistent
+        'OPTIONS': {
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5 * 2000)  # 2000 entries=~10,000 files
+        },
     }
 }
 
-# Cache is activated in every case,
-#   EXCEPT: if CACHE_TIME=0
-if CACHE_TIME != 0:  # None can mean infinite caching to some functions
-    # When we change versions, cache changes, too
-    KEY_PREFIX = ".".join(version.VERSION)
-
-    # File-based cache
-    install_location_hash = hashlib.sha1(".".join(version.VERSION)).hexdigest()
-    username = getpass.getuser() or "unknown_user"
-    cache_dir_name = "kalite_web_cache_%s" % (username)
-    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
-    CACHES["file_based_cache"] = {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
-        'TIMEOUT': CACHE_TIME, # should be consistent
-        'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-        },
-    }
-
-    # Memory-based cache
-    CACHES["mem_cache"] = {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-        'TIMEOUT': CACHE_TIME, # should be consistent
-        'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
-        },
-    }
-
-    # The chosen cache
-    CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
-
+# Prefix the cache with the version string so we don't experience problems with
+# updates
+KEY_PREFIX = version.VERSION
 
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(
