@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/events_view.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/landing_view.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker3.min.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -18,6 +19,7 @@
         var GROUP_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
         var FACILITY_ID = {% if facility_id %}"{{ facility_id }}"{% else %}undefined{% endif %};
     </script>
+    <script src="{% static 'js/bootstrap-datepicker.min.js' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='coach_nav' %}"></script>
     <script src="{% url 'handlebars_templates' module_name='tabular_reports' %}"></script>
     <script src="{% static 'js/distributed/exercises/models.js' %}"></script>

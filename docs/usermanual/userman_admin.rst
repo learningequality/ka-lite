@@ -669,6 +669,13 @@ User restrictions
   Disables user sign ups.
 
 
+..note:: KA Lite uses caching of web pages, if you change ``LOCKDOWN`` or
+         ``DISABLE_SELF_ADMIN``, you need to flush the cache. To do that, run
+         the following management command::
+         
+             kalite manage cache clearweb
+
+
 Online Synchronization
 ^^^^^^^^^^^^^^^^^^^^^^
 

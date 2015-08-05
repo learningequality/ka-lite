@@ -24,7 +24,7 @@ from django.conf import settings; logging = settings.LOG
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
-from fle_utils.internet.webcache import *
+from fle_utils.internet.webcache import get_web_cache, has_cache_key, expire_page, caching_is_enabled, invalidate_web_cache
 from kalite import i18n, topic_tools
 from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP
 
