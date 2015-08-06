@@ -496,6 +496,11 @@ table td.title {
 .panel-heading h3 {
     margin: 10px 0;
 }
+.panel-heading h1.title {
+    color: white;
+    font-family: Helvetica, Arial, sans-serif ;
+    font-size: 24px;
+}
 .panel-heading span.title {
     color: white;
     font-family: Helvetica, Arial, sans-serif ;

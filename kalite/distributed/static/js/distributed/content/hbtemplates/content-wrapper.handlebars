@@ -14,7 +14,7 @@
 
                     {{#if dubs_available }}
 
-                    <h3>
+                    <span class="h3">
                         <select class="content-language-selector">
                             {{#each availability }}
                             <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
@@ -22,10 +22,9 @@
                             </option>
                             {{/each}}
                         </select>
-                    </h3>
+                    </span>
                     {{/if}}
 
-                    {{!-- Title should go inside H1 element. TODO Radina - add proper CSS after browserify --}}
                     <h1 class="title">{{ title }}</h1>
                     {{#if organization}}
                         <span class="organization">{{_ "by:" }} {{ organization }}</span>

@@ -12,7 +12,7 @@
                   alt="{{ truncate description 150 }}"
               {{/if}}>
           {{else}}
-          <span class="icon-{{kind}} glyphicon glyphicon-expand gly-h1" aria-hidden="true" role="presentation"></span>
+          <span aria-hidden="true" role="presentation"><i class="icon-{{kind}} glyphicon glyphicon-expand gly-h1"></i></span>
           {{/if}}
         </center>
       </div>
@@ -30,7 +30,7 @@
     <a href="/learn/{{ topic.path }}">
       <div class="col-xs-3">
           <p class="h4">{{_ "Topic" }}:</p>
-          <span class="ns_series_arrow glyphicon glyphicon-arrow-right" aria-hidden="true" role="presentation"></span>
+          <span aria-hidden="true" role="presentation"><i class="ns_series_arrow glyphicon glyphicon-arrow-right"></i></span>
           <!--Radina: Since glyph is invisible, adding 'sr-only' topic title-->
           <span class="sr-only">{{ topic.title }}</span>
       </div>
