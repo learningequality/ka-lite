@@ -94,7 +94,7 @@ To create a new Backbone View, you will either add to an existing Javascript fil
 
 ``this.$el.html(this.template(this.model.attributes));`` this line will insert all the attributes of the model into the template for rendering, and then set the HTML of the subsection of the DOM for the view to the resulting HTML.
 
-For this to work, there must be a file ``kalite/coachreports/hbtemplates/reports/hexagon-counting.handlebars`` that contains the Handlebars.js template for this view. For a simple report, the template might look something like this:
+For this to work, there must be a file ``kalite/coachreports/static/js/reports/hexagon-counting.handlebars`` that contains the Handlebars.js template for this view. For a simple report, the template might look something like this:
 
 .. code-block:: html
 
@@ -148,6 +148,6 @@ TL;DR (or 7 quick steps to creating a Backbone View in KA Lite)
 #. Inside this folder either create or open views.js.
 #. To start creating a view, type: ``var MyViewNameView = BaseView.extend({});``
 #. Define at least an ``initialize`` method, and a ``render`` method.
-#. If you want a Handlebars template for your View, look inside <folder>/hbtemplates/ and either create a folder for your Handlebars templates, or find an existing one with a name that fits.
+#. If you want a Handlebars template for your View, look inside **/kalite/<app>/static/js/<app>/** and either create a folder for your Handlebars templates, or find an existing one with a name that fits.
 #. Inside this folder create a new file for your handlebars template ``mytemplatename.handlebars``.
 #. Add this to your View definition code (inside the curly braces and don't forget commas to separate key/value pairs!): ``template: HB.template("<templatefolder>/mytemplatename")``.
