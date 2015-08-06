@@ -31,18 +31,6 @@
 {% block content %}
     {{ block.super }}
 
-    <!-- Radina: Commenting out for now to make sure it doesn't break anything before deleting
-    <div class="row">
-        <div class="col-md-12">
-            <p class="pull-left">
-                <a href="{% url 'facility_management' zone_id=None facility_id=facility_id %}">
-                    &#x2190; {% trans "Back to Facilities" %}
-                </a>
-            </p>
-        </div>
-    </div>
-    -->
-
     {% block student_report %}
         <div class="container">
             <div id="student-progress-container"></div>
