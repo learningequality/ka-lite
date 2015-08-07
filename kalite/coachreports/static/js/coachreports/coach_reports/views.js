@@ -7,6 +7,8 @@ var messages = require("utils/messages");
 var Models = require("./models");
 var TabularReportViews = require("../tabular_reports/views");
 
+var date_string = require("utils/datestring").date_string;
+
 /*
 Hierarchy of views:
 CoachReportView:
@@ -14,12 +16,6 @@ CoachReportView:
     - GroupSelectView
     - CoachSummaryView
 */
-
-var date_string = function(date) {
-    if (date) {
-        return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
-    }
-};
 
 var TimeSetView = BaseView.extend({
     template: require("./hbtemplates/datepicker.handlebars"),
@@ -128,7 +124,7 @@ var CoachSummaryView = BaseView.extend({
         // If no user data at all, then show a warning to the user
         var ref, ref1;
 
-        if ((this.data_model !== null ? this.data_model.get("learner_events") !== null ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
+        if ((this.data_model !== undefined ? this.data_model.get("learner_events") !== undefined ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
           messages.show_message("warning", gettext("No recent learner data for this group is available."));
         }
 

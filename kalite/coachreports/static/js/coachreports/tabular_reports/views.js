@@ -7,6 +7,8 @@ var sprintf = require("sprintf-js").sprintf;
 var ExerciseModels = require("exercises/models");
 var Models = require("../coach_reports/models");
 
+var date_string = require("utils/datestring").date_string;
+
 /*
 Hierarchy of views:
 - TabularReportView:
