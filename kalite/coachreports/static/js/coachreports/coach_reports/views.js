@@ -22,7 +22,7 @@ var date_string = function(date) {
 };
 
 var TimeSetView = BaseView.extend({
-    template: HB.template("coach_nav/datepicker"),
+    template: require("./hbtemplates/datepicker.handlebars"),
 
     events: {
         "click .setrange": "set_range"
@@ -246,7 +246,7 @@ var GroupSelectView = Backbone.View.extend({
         // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         output = (ref = this.group_list.find(function(model) {
           return model.get("id") === id;
-        })) !== null ? ref.get("name") : void 0;
+        })) !== undefined ? ref.get("name") : void 0;
 
         if (output) {
             this.model.set({
