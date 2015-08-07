@@ -28,7 +28,11 @@ module.exports = BaseView.extend({
             return model;
         }();
         _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "render1st", "render2nd", "render3rd", "renderTextArea", "renderAll");
-        this.model.fetch().done(this.renderAll).fail(this.render1st);
+        if( this.model.isNew() || this.model.get("rating1") === 0) {
+            this.render1st();
+        } else {
+            this.renderAll();
+        }
     },
 
     render1st: function() {
@@ -130,7 +134,8 @@ module.exports = BaseView.extend({
         });
         this.text_view = this.add_subview(TextView, {
             el: this.$("#text-container"),
-            model: this.model
+            model: this.model,
+            rating_attr: "text"
         });
         this.submit_rating();
     },
@@ -139,6 +144,7 @@ module.exports = BaseView.extend({
         this.text_view.toggle_disabled(true);
         this.$(".rating-submit").hide();
         this.$(".rating-edit").show();
+        this.model.save();
     },
 
     edit_callback: function() {
@@ -150,15 +156,21 @@ module.exports = BaseView.extend({
     delete_callback: function() {
         var self = this;
         this.$el.html("Deleting your review...");
-        this.model.clear();
-        this.model.destroy({
-            "error": function(){
-                // Hmmm, what should I do?
-                console.log("failed to delete the model...")
+        // Don't simply clear & destroy the model, we wish to remember some attributes (like content_kind and user_uri)
+        this.model.save({
+            rating1: 0,
+            rating2: 0,
+            rating3: 0,
+            text: "",
+        },
+        {
+            error: function(){
+                console.log("failed to clear rating model attributes...")
             },
-            "success": function(){
+            success: function(){
                 self.render1st();
-            }
+            },
+            patch: true
         });
     }
 });

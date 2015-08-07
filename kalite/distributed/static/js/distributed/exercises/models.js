@@ -1,6 +1,9 @@
 var Backbone = require("base/backbone");
 var _ = require("underscore");
 var seeded_shuffle = require("utils/shuffle");
+var get_params = require("utils/get_params");
+
+var setGetParamDict = get_params.setGetParamDict;
 
 var ds = window.ds || {};
 

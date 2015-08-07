@@ -10,6 +10,11 @@ var ContentViews = require("content/views");
 var Models = require("./models");
 
 var RatingView = require("rating/views");
+var RatingModels = require("rating/models");
+var RatingModel = RatingModels.RatingModel;
+var ContentRatingCollection = RatingModels.ContentRatingCollection;
+
+var videos = require("video/models");
 
 // Views
 
@@ -20,6 +25,18 @@ var ContentAreaView = BaseView.extend({
     initialize: function() {
         this.model = new Backbone.Model();
         this.render();
+
+        this.content_rating_collection = new ContentRatingCollection();
+        var self = this;
+        this.content_rating_collection.url = function() {
+            return sessionModel.get("CONTENT_RATING_LIST_URL") + "/?" + $.param({
+                "user": window.statusModel.get("user_id"),
+                "content_kind": self.model.get("kind"),
+                "content_id": self.model.get("id")
+            });
+        };
+        this.listenTo(window.statusModel, "change:user_id", this.show_rating);
+        _.bindAll(this, "show_rating");
     },
 
     render: function() {
@@ -34,10 +51,37 @@ var ContentAreaView = BaseView.extend({
         this.close();
         // set the new view as the current view
         this.currently_shown_view = view;
+
         // show the view
         this.$(".content").html("").append(view.$el);
-        this.rating_view = this.add_subview(RatingView, {el: this.$("#rating-container-wrapper")});
     },
+
+    // Debounced, since on first page render it may be called several times as model attributes changes
+    show_rating: _.debounce(function() {
+        if( typeof  window.statusModel.get("user_id") === "undefined" ) {
+            return;  // Let this be a no-op if the user isn't logged in.
+        }
+        var self = this;
+        this.content_rating_collection.fetch().done(function(){
+            if(self.content_rating_collection.models.length == 1) {
+                self.rating_view = self.add_subview(RatingView, {
+                    el: self.$("#rating-container-wrapper"),
+                    model: content_rating_collection.pop()
+                });
+            } else {
+                self.rating_view = self.add_subview(RatingView, {
+                    el: self.$("#rating-container-wrapper"),
+                    model: new RatingModel({
+                        "user": window.statusModel.get("user_uri"),
+                        "content_kind": self.model.get("kind"),
+                        "content_id": self.model.get("id")
+                    })
+                });
+            }
+        }).error(function(){
+            console.log("content rating collection failed to fetch");
+        });
+    }, 500),
 
     close: function() {
         // This does not actually close this view. If you *really* want to get rid of this view,
@@ -442,7 +486,7 @@ var TopicContainerInnerView = BaseView.extend({
         // load progress data for all videos
         var video_ids = $.map(this.$(".icon-Video[data-content-id]"), function(el) { return $(el).data("content-id"); });
         if (video_ids.length > 0) {
-            videologs = new VideoLogCollection([], {content_ids: video_ids});
+            videologs = new videos.VideoLogCollection([], {content_ids: video_ids});
             videologs.fetch().then(function() {
                 videologs.models.forEach(function(model) {
                     var newClass = model.get("complete") ? "complete" : "partial";
@@ -454,7 +498,7 @@ var TopicContainerInnerView = BaseView.extend({
         // load progress data for all exercises
         var exercise_ids = $.map(this.$(".icon-Exercise[data-content-id]"), function(el) { return $(el).data("content-id"); });
         if (exercise_ids.length > 0) {
-            exerciselogs = new ExerciseLogCollection([], {exercise_ids: exercise_ids});
+            exerciselogs = new ExerciseModels.ExerciseLogCollection([], {exercise_ids: exercise_ids});
             exerciselogs.fetch()
                 .then(function() {
                     exerciselogs.models.forEach(function(model) {
@@ -697,6 +741,10 @@ var TopicContainerOuterView = BaseView.extend({
 
         var view;
 
+        this.content_view.model = entry;
+        // The rating subview depends on the model, but we can't just listen to events on the model since the actual
+        // object is swapped out here.
+        this.content_view.show_rating();
         switch(kind) {
 
             case "Exercise":
@@ -724,7 +772,6 @@ var TopicContainerOuterView = BaseView.extend({
                 this.content_view.show_view(view);
                 break;
         }
-        this.content_view.model = entry;
         this.inner_views.unshift(this.content_view);
         this.trigger("inner_view_added");
         this.state_model.set("content_displayed", true);
