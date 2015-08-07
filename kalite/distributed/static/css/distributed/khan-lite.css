@@ -934,5 +934,14 @@ to items you want to have the icon appear with.
     margin-top:30px
 }
 
+/* Additional styles for content-rec */
 
+.gly-h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
 
+.up10 {
+    margin-top: 10px;
+}
