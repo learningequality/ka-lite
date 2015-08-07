@@ -2,7 +2,7 @@ var get_params = require("./get_params");
 var $ = require("../base/jQuery");
 var messages_utils = require("./messages");
 var sprintf = require("sprintf-js").sprintf;
-var url = require("url");
+var url_utils = require("url");
 
 function handleSuccessAPI(obj) {
 
@@ -92,7 +92,7 @@ function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
     var query;
 
-    if ((query = url.parse(url).query) === null) {
+    if ((query = url_utils.parse(url).query) === null) {
       query = {};
     }
 

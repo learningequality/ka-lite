@@ -4,6 +4,7 @@ require("jquery.fancytree/dist/jquery.fancytree");
 var messages = require("utils/messages");
 var base = require("updates/base");
 var connectivity = require("utils/connectivity");
+var sprintf = require("sprintf-js").sprintf;
 
 require("jquery.fancytree/dist/skin-vista/ui.fancytree.less");
 require("../../../css/updates/update_videos.less");

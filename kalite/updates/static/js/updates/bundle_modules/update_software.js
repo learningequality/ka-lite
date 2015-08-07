@@ -3,6 +3,7 @@ var $ = require("base/jQuery");
 var messages = require("utils/messages");
 var base = require("updates/base");
 var connectivity = require("utils/connectivity");
+var sprintf = require("sprintf-js").sprintf;
 
 
 function software_check_callback(progress_log, resp) {

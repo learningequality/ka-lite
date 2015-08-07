@@ -3,6 +3,7 @@ var $ = require("base/jQuery");
 var messages = require("utils/messages");
 var base = require("updates/base");
 var connectivity = require("utils/connectivity");
+var sprintf = require("sprintf-js").sprintf;
 
 var installable_languages = [];
 var installed_languages = [];

@@ -30,7 +30,7 @@ var TimeSetView = BaseView.extend({
 
     initialize: function () {
         var server_date_now = new Date(new Date().getTime() - window.statusModel.get("client_server_time_diff"));
-        var default_start_date = new Date(server_date_now.getTime())
+        var default_start_date = new Date(server_date_now.getTime());
         default_start_date = new Date(default_start_date.setDate(default_start_date.getDate()-ds.coachreports.default_coach_report_day_range));
 
         this.model.set({
