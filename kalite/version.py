@@ -8,7 +8,7 @@ from kalite.shared.utils import open_json_or_yml
 
 from django.utils.version import get_version
 
-VERSION_TUPLE = (0, 14, 0, "alpha", 0)
+VERSION_TUPLE = (0, 15, 0, "alpha", 0)
 
 MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION = map(str, VERSION_TUPLE[:3])
 
