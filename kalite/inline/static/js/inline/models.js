@@ -1,3 +1,5 @@
+var Backbone = require("base/backbone");
+
 // Model for the inline tutorial system that fetches from tastypie resource "NarrativeResource"
 
 var NarrativeModel = Backbone.Model.extend({
@@ -7,3 +9,5 @@ var NarrativeModel = Backbone.Model.extend({
         return Urls.narrative("");
     }
 });
+
+module.exports = NarrativeModel;

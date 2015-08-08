@@ -8,6 +8,10 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils import unittest
 
+import selenium.webdriver.support.expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+
 from ..forms import FacilityUserForm, FacilityForm, FacilityGroupForm
 from ..models import Facility, FacilityUser, FacilityGroup
 from kalite.testing.base import KALiteTestCase, KALiteBrowserTestCase
@@ -239,8 +243,9 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         self.browse_to(signup_url)
         group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
         self.assertFalse(group_label.is_displayed())
-        group_select = self.browser.find_element_by_id('id_group')
-        self.assertFalse(group_select.is_displayed())
+        WebDriverWait(self.browser, 30).until(
+            EC.invisibility_of_element_located((By.ID, 'id_group'))
+        )
 
     def test_signup_cannot_select_group(self):
         self.group = self.create_group(facility=self.facility)
@@ -248,8 +253,9 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         self.browse_to(signup_url)
         group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
         self.assertTrue(group_label.is_displayed())
-        group_select = self.browser.find_element_by_id('id_group')
-        self.assertFalse(group_select.is_displayed())
+        WebDriverWait(self.browser, 30).until(
+            EC.invisibility_of_element_located((By.ID, 'id_group'))
+        )
 
     def test_logged_in_student_cannot_select_group(self):
         self.group = self.create_group(facility=self.facility)
@@ -258,8 +264,9 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         self.browse_to(self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id}))
         group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
         self.assertTrue(group_label.is_displayed())
-        group_select = self.browser.find_element_by_id('id_group')
-        self.assertFalse(group_select.is_displayed())
+        WebDriverWait(self.browser, 30).until(
+            EC.invisibility_of_element_located((By.ID, 'id_group'))
+        )
 
     def test_teacher_can_select_group(self):
         self.group = self.create_group(facility=self.facility)
@@ -270,7 +277,9 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
         self.assertTrue(group_label.is_displayed())
         group_select = self.browser.find_element_by_id('id_group')
-        self.assertTrue(group_select.is_displayed())
+        WebDriverWait(self.browser, 30).until(
+            EC.visibility_of(group_select)
+        )
 
 
 class FormGroupTest(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin):
@@ -289,19 +298,3 @@ class FormGroupTest(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, 
         select = self.browser_wait_for_element(css_selector="select.movegrouplist option[value='']").text
         txt = 'Ungrouped'
         self.assertEqual(txt, select)
-
-
-class HomePageTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase):
-
-    def setUp(self):
-        super(HomePageTest, self).setUp()
-        self.admin_data = {"username": "admin", "password": "admin"}
-        self.admin = self.create_admin(**self.admin_data)
-
-    def test_homepage_search(self):
-        self.browse_to(self.reverse("homepage"));
-        searchButton = self.browser_wait_for_element(css_selector="#search-button[disabled='disabled']")
-        self.assertNotEqual(None, searchButton);
-        self.browser.find_element_by_id("search").send_keys('search')
-        searchButton = self.browser_wait_for_element(css_selector="#search-button[disabled='disabled']")
-        self.assertEqual(None, searchButton);

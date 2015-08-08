@@ -2,9 +2,12 @@
 This module contains all tests for the functions implemented and used
 in multiple content recommendation functions.
 '''
+import datetime
 
-from kalite.topic_tools.content_recommendation import *
+from kalite.topic_tools.content_recommendation import get_exercises_from_topics, get_most_recent_exercises
 from kalite.testing.base import KALiteTestCase
+from kalite.facility.models import Facility, FacilityUser
+from kalite.main.models import ExerciseLog
 
 class TestHelperMethods(KALiteTestCase):
 

@@ -7,10 +7,7 @@ module.exports = function(grunt) {
 		jshint: {
 			files: [
 				'Gruntfile.js',
-				'kalite/coachreports/static/js/coachreports/',
-				'kalite/control_panel/static/js/control_panel/',
-				'kalite/distributed/static/js/distributed/',
-				'kalite/updates/static/js/updates/',
+				'kalite/*/static/js/*/',
 				'python-packages/securesync/static/js/securesync/'
 			],
 			// http://www.jshint.com/docs/options/
@@ -23,6 +20,7 @@ module.exports = function(grunt) {
 				//curly: true, // Expected '{' and instead saw 'variable'.
 				//eqeqeq: true, // Expected '===' and instead saw '=='.
 				es3: true, // 'feature' is available in ECMAScript > 3
+				exclude: 'kalite/distributed/static/js/distributed/perseus',
 				//forin: true, // The body of a for in should be wrapped in an if statement to filter unwanted properties from the prototype.
 				freeze: true, // Extending prototype of native object: 'Object'.
 				immed: true, // Function declarations are not invocable. Wrap the whole function invocation in parens.

@@ -1,8 +1,19 @@
+var BaseView = require("base/baseview");
+var _ = require("underscore");
+var $ = require("base/jQuery");
+var Backbone = require("base/backbone");
+var messages = require("utils/messages");
+
+var ExerciseViews = require("exercises/views");
+var ExerciseModels = require("exercises/models");
+var ContentViews = require("content/views");
+var Models = require("./models");
+
 // Views
 
-window.ContentAreaView = BaseView.extend({
+var ContentAreaView = BaseView.extend({
 
-    template: HB.template("topics/content-area"),
+    template: require("./hbtemplates/content-area.handlebars"),
 
     initialize: function() {
         this.model = new Backbone.Model();
@@ -16,7 +27,7 @@ window.ContentAreaView = BaseView.extend({
 
     show_view: function(view) {
         // hide any messages being shown for the old view
-        clear_messages();
+        messages.clear_messages();
 
         this.close();
         // set the new view as the current view
@@ -44,9 +55,9 @@ window.ContentAreaView = BaseView.extend({
 
 });
 
-window.SidebarView = BaseView.extend({
+var SidebarView = BaseView.extend({
     el: "#sidebar-container",
-    template: HB.template("topics/sidebar"),
+    template: require("./hbtemplates/sidebar.handlebars"),
 
     events: {
         "click .sidebar-tab": "toggle_sidebar",
@@ -303,13 +314,13 @@ window.SidebarView = BaseView.extend({
 
 });
 
-window.TopicContainerInnerView = BaseView.extend({
+var TopicContainerInnerView = BaseView.extend({
     className: "topic-container-inner",
-    template: HB.template("topics/sidebar-content"),
+    template: require("./hbtemplates/sidebar-content.handlebars"),
 
     initialize: function(options) {
 
-        _.bindAll(this);
+        _.bindAll.apply(_, [this].concat(_.functions(this)))
 
         var self = this;
 
@@ -482,11 +493,11 @@ window.TopicContainerInnerView = BaseView.extend({
 
 });
 
-window.SidebarEntryView = BaseView.extend({
+var SidebarEntryView = BaseView.extend({
 
     tagName: "li",
 
-    template: HB.template("topics/sidebar-entry"),
+    template: require("./hbtemplates/sidebar-entry.handlebars"),
 
     events: {
         "click": "clicked"
@@ -494,7 +505,7 @@ window.SidebarEntryView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "render");
 
         this.listenTo(this.model, "change", this.render);
 
@@ -518,7 +529,7 @@ window.SidebarEntryView = BaseView.extend({
 });
 
 
-window.TopicContainerOuterView = BaseView.extend({
+var TopicContainerOuterView = BaseView.extend({
 
     initialize: function(options) {
 
@@ -529,7 +540,7 @@ window.TopicContainerOuterView = BaseView.extend({
         this.entity_key = options.entity_key;
         this.entity_collection = options.entity_collection;
 
-        this.model = new TopicNode({"id": "root", "title": "Khan"});
+        this.model = new Models.TopicNode({"id": "root", "title": "Khan"});
 
         this.inner_views = [];
         this.render();
@@ -686,7 +697,7 @@ window.TopicContainerOuterView = BaseView.extend({
         switch(kind) {
 
             case "Exercise":
-                view = new ExercisePracticeView({
+                view = new ExerciseViews.ExercisePracticeView({
                     exercise_id: id,
                     context_type: "playlist",
                     context_id: this.model.get("id")
@@ -695,15 +706,15 @@ window.TopicContainerOuterView = BaseView.extend({
                 break;
 
             case "Quiz":
-                view = new ExerciseQuizView({
-                    quiz_model: new QuizDataModel({entry: entry}),
+                view = new ExerciseViews.ExerciseQuizView({
+                    quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
                     context_id: this.model.get("id") // for now, just use the playlist ID as the quiz context_id
                 });
                 this.content_view.show_view(view);
                 break;
 
             default:
-                view = new ContentWrapperView({
+                view = new ContentViews.ContentWrapperView({
                     id: id,
                     context_id: this.model.get("id")
                 });
@@ -725,3 +736,11 @@ window.TopicContainerOuterView = BaseView.extend({
         this.trigger("showSidebar");
     }
 });
+
+module.exports = {
+    SidebarView: SidebarView,
+    SidebarEntryView: SidebarEntryView,
+    TopicContainerInnerView: TopicContainerInnerView,
+    TopicContainerOuterView: TopicContainerOuterView,
+    ContentAreaView: ContentAreaView
+}

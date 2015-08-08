@@ -357,10 +357,20 @@ def request(context, url, method="GET", data=""):
 
     context_wm = ContextWithMixin()
 
-    context.browser.get(build_url(context, reverse("homepage")))
-    context_wm.browser_wait_for_js_object_exists("$")
-    context.browser.execute_script('window.FLAG=false; $.ajax({type: "%s", url: "%s", data: \'%s\', contentType: "application/json", success: function(data){window.FLAG=true; window.DATA=data}})' % (method, url, data))
+    context.browser.get(build_url(context, reverse("homepage")))  # Avoid x-site scripting error by sending request from same domain
+    context.browser.execute_script("""
+            var req = new XMLHttpRequest();
+            req.open("{method}", "{url}", true);
+            req.setRequestHeader("Content-Type", "application/json");
+            req.onreadystatechange = function () {{
+                if( req.readyState === 4 ) {{
+                    window.FLAG = true;
+                    window.DATA = JSON.parse(req.responseText);
+                }}
+            }};
+            req.send('{data}');
+        """.format(method=method, url=url, data=data)  # One must escape '{' and '}' by doubling them
+    )
     context_wm.browser_wait_for_js_condition("window.FLAG")
     resp = context.browser.execute_script("return window.DATA")
-
     return resp

@@ -1,6 +1,12 @@
-window.PDFViewerView = ContentBaseView.extend({
+var _ = require("underscore");
+var Handlebars = require("base/handlebars");
 
-    template: HB.template("pdf/pdf-viewer"),
+var ContentBaseView = require("content/baseview");
+
+
+var PDFViewerView = ContentBaseView.extend({
+
+    template: require("./hbtemplates/pdf-viewer.handlebars"),
 
     render: function() {
         if (!this.log_model.get("highest_page")) {
@@ -49,3 +55,5 @@ window.PDFViewerView = ContentBaseView.extend({
     }
 
 });
+
+module.exports = PDFViewerView;

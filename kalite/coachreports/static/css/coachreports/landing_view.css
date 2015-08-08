@@ -151,3 +151,11 @@ ul {
     color: #000;
 
 }
+
+#datepicker {
+    top: 0px;
+}
+
+span.setrange {
+    color: #fff;
+}

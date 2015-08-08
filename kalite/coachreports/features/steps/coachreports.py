@@ -81,11 +81,39 @@ def impl(context):
 
 @given(u"I am on the tabular report")
 def impl(context):
+    create_some_learner_data()
     context.execute_steps(u"""
         Given I am on the coach report
         When I click on the Show Tabular Report button
         Then I should see the tabular report
         """)
+
+def create_some_learner_data():
+    """
+    Just create a lil' bit-o-data of each type, to populate the table.
+    """
+    user = CreateStudentMixin.create_student()
+    attempt_states = (  # (name, streak_progress, attempt_count)
+        ("not started", 0, 0),
+        ("completed", 100, 15),
+        ("attempted", 50, 10),
+        ("struggling", 30, 25),
+    )
+    exercises = random.sample(get_exercise_cache().keys(), len(attempt_states))  # Important they are *distinct*
+    for state in attempt_states:
+        exercise = exercises.pop()
+        log, created = ExerciseLog.objects.get_or_create(exercise_id=exercise, user=user)
+        if "not started" != state[0]:
+            log.streak_progress, log.attempts = state[1:]
+            for i in range(0, log.attempts):
+                AttemptLog.objects.get_or_create(
+                    exercise_id=exercise,
+                    user=user,
+                    seed=i,
+                    timestamp=datetime.datetime.now()
+                )
+            log.latest_activity_timestamp = datetime.datetime.now()
+            log.save()
 
 @given(u"there are three learners")
 def impl(context):
@@ -241,4 +269,4 @@ def impl(context):
 
 @when(u"I click on the completed colored cell")
 def impl(context):
-    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.complete[value=subtraction_1]"), "details-panel-view")
+    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.complete"), "details-panel-view")
