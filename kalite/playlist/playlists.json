@@ -3542,7 +3542,7 @@
         "sort_order": 0
       },
       {
-        "entity_id": "/v/area-of-rectangle-and-the-distributive-property/",
+        "entity_id": "/v/area-of-rectangles-and-the-distributive-property/",
         "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 1
@@ -3578,7 +3578,7 @@
         "sort_order": 6
       },
       {
-        "entity_id": "/v/finding-width-from-perimeter/",
+        "entity_id": "/v/find-width-from-perimeter/",
         "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 7
@@ -3628,7 +3628,7 @@
         "sort_order": 5
       },
       {
-        "entity_id": "/v/volume-word-problems-example/",
+        "entity_id": "/v/volume-word-problem-example/",
         "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 6
