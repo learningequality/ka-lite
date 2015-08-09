@@ -2353,7 +2353,7 @@
     "id": "g5_p10",
     "show": true,
     "tag": "Grade 5",
-    "title": "Playlist 10- Quadrilaterals & telling time"
+    "title": "Playlist 10: Quadrilaterals & telling time"
   },
   {
     "entries": [
@@ -2505,7 +2505,7 @@
     "id": "g5_p11",
     "show": true,
     "tag": "Grade 5",
-    "title": "Playlist 11- Understanding fractions & equivalent fractions"
+    "title": "Playlist 11: Understanding fractions & equivalent fractions"
   },
   {
     "entries": [
@@ -3532,5 +3532,181 @@
     "show": true,
     "tag": "Grade 7",
     "title": "Playlist 4: Joint Bar Graphs"
-  }
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/rectangle-area-as-product-of-dimensions-same-as-counting-unit-squares/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/area-of-rectangle-and-the-distributive-property/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/area-1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/comparing-areas-of-plots-of-land/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/calculating-the-square-footage-of-a-house/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/area-of-squares-and-rectangles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/length-and-width-from-perimeter-and-area/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/finding-width-from-perimeter/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      }
+    ],
+    "id": "g7_p5",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 5: Area of Rectangle and its application"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/how-we-measure-volume/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/measuring-volume-with-unit-cubes/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/volume-with-unit-cubes/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/measuring-volume-as-area-times-length/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/volume-of-a-rectangular-prism-or-box-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/volume-1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/volume-word-problems-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/volume-2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      }
+    ],
+    "id": "g7_p6",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 6: Volume and surface area of cube and cuboid"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/averages/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      }
+    ],
+    "id": "g7_p7",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 7: Averages"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/direct-and-inverse-variation/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/recognizing-direct-and-inverse-variation/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/direct_and_inverse_variation/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/proportionality-constant-for-direct-variation/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/direct-variation-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/inverse-variation-application/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/direct-variation-application/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      }
+    ],
+    "id": "g7_p8",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 8: Direct and Inverse Variation"
+    }
 ]
