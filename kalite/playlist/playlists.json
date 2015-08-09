@@ -3548,7 +3548,7 @@
         "sort_order": 1
       },
       {
-        "entity_id": "/e/area-1/",
+        "entity_id": "/e/area_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
@@ -3566,7 +3566,7 @@
         "sort_order": 4
       },
       {
-        "entity_id": "/e/area-of-squares-and-rectangles/",
+        "entity_id": "/e/area_of_squares_and_rectangles/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 5
@@ -3604,7 +3604,7 @@
         "sort_order": 1
       },
       {
-        "entity_id": "/e/volume-with-unit-cubes/",
+        "entity_id": "/e/volume_with_unit_cubes/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
@@ -3622,7 +3622,7 @@
         "sort_order": 4
       },
       {
-        "entity_id": "/e/volume-1/",
+        "entity_id": "/e/volume_1/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 5
@@ -3634,7 +3634,7 @@
         "sort_order": 6
       },
       {
-        "entity_id": "/e/volume-2/",
+        "entity_id": "/e/volume_2/",
         "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 7
