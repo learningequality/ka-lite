@@ -56,32 +56,39 @@ var ContentAreaView = BaseView.extend({
         this.$(".content").html("").append(view.$el);
     },
 
-    // Debounced, since on first page render it may be called several times as model attributes changes
-    show_rating: _.debounce(function() {
+    show_rating: function() {
         if( typeof  window.statusModel.get("user_id") === "undefined" ) {
             return;  // Let this be a no-op if the user isn't logged in.
         }
-        var self = this;
-        this.content_rating_collection.fetch().done(function(){
-            if(self.content_rating_collection.models.length == 1) {
-                self.rating_view = self.add_subview(RatingView, {
-                    el: self.$("#rating-container-wrapper"),
-                    model: content_rating_collection.pop()
-                });
-            } else {
-                self.rating_view = self.add_subview(RatingView, {
-                    el: self.$("#rating-container-wrapper"),
-                    model: new RatingModel({
-                        "user": window.statusModel.get("user_uri"),
-                        "content_kind": self.model.get("kind"),
-                        "content_id": self.model.get("id")
-                    })
-                });
-            }
-        }).error(function(){
-            console.log("content rating collection failed to fetch");
-        });
-    }, 500),
+        if( typeof this.rating_view === "undefined" ) {
+            this.rating_view = this.add_subview(RatingView, {
+                el: this.$("#rating-container-wrapper"),
+                model: new RatingModel({
+                    "user": window.statusModel.get("user_uri"),
+                    "content_kind": this.model.get("kind"),
+                    "content_id": this.model.get("id")
+                })
+            });
+        }
+        if( this.rating_view.model.get("content_id") !== this.model.get("id") ) {
+            var self = this;
+            this.content_rating_collection.fetch().done(function(){
+                if(self.content_rating_collection.models.length == 1) {
+                    self.rating_view.model = self.content_rating_collection.pop();
+                    self.rating_view.render();
+                } else {
+                    self.rating_view.model = new RatingModel({
+                            "user": window.statusModel.get("user_uri"),
+                            "content_kind": self.model.get("kind"),
+                            "content_id": self.model.get("id")
+                    });
+                    self.rating_view.render();
+                }
+            }).error(function(){
+                console.log("content rating collection failed to fetch");
+            });
+        }
+    },
 
     close: function() {
         // This does not actually close this view. If you *really* want to get rid of this view,

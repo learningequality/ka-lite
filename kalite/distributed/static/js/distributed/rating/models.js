@@ -6,7 +6,6 @@ var RatingModel = Backbone.Model.extend({
 
 var ContentRatingCollection = Backbone.Collection.extend({
     parse: function(response) {
-        console.log("in parse");
         return response.objects;
     },
 

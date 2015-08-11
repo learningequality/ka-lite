@@ -137,13 +137,13 @@ def rate_id(context, id_, val=3):
     :param id: id of the container element
     :return: nothing
     """
-    container = find_id_with_wait(context, id_)
 
     def get_rating_el(driver):
         try:
+            container = find_id_with_wait(context, id_)
             els = container.find_elements_by_class_name(STAR_RATING_OPTION_CLASS)
             return [el for el in els if int(el.get_attribute("data-val")) == val].pop()
-        except NoSuchElementException:
+        except (NoSuchElementException, StaleElementReferenceException):
             return False
 
     rating_el = WebDriverWait(context.browser, 10).until(get_rating_el)

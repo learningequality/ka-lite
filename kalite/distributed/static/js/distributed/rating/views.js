@@ -27,7 +27,10 @@ module.exports = BaseView.extend({
             model.url = "/api/not/gonna/work";
             return model;
         }();
-        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "render1st", "render2nd", "render3rd", "renderTextArea", "renderAll");
+        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "render1st", "render2nd", "render3rd", "renderTextArea", "renderAll", "render");
+    },
+
+    render: function() {
         if( this.model.isNew() || this.model.get("rating1") === 0) {
             this.render1st();
         } else {
