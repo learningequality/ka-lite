@@ -200,9 +200,8 @@ def get_exercise_cache(force=False, language=None):
         else:
             exercise_root = i18n.get_localized_exercise_dirpath(language)
         if os.path.exists(exercise_root):
-            exercise_path = os.path.join(exercise_root, language) if language != "en" else exercise_root
             try:
-                exercise_templates = os.listdir(exercise_path)
+                exercise_templates = os.listdir(exercise_root)
             except OSError:
                 exercise_templates = []
         else:
