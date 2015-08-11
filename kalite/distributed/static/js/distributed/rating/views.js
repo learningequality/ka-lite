@@ -38,6 +38,19 @@ module.exports = BaseView.extend({
         }
     },
 
+    add_subview_and_once: function(view_class, name, options, event, callback) {
+        /*
+            Repeated logic for displaying each subwidget once, then removing it after user has interacted with it
+            and displaying the next widget in the sequence.
+        */
+        this[name] = this.add_subview(view_class, options);
+        var self = this;
+        this.model.once(event, function() {
+            self[name].remove()
+            callback();
+        });
+    },
+
     render1st: function() {
         /*
             Render the first star rating, then wait until it's been rated to show the next step.
@@ -48,42 +61,21 @@ module.exports = BaseView.extend({
         this.$(".rating-edit").hide();
         this.$(".rating-skip").hide();
         this.$(".rating-delete").hide();
-        this.star_view_1 = this.add_subview(StarView, {
-            el: this.$("#star-container-1"),
-            model: this.model,
-            rating_attr: "rating1"
-        });
-        var self = this;
-        this.model.once("change:rating1", function() {
-            self.star_view_1.remove();
-            self.render2nd();
-        })
+        this.add_subview_and_once(StarView, "star_view_1",
+            {el: this.$("#star-container-1"), model: this.model, rating_attr: "rating1"},
+            "change:rating1", this.render2nd);
     },
 
     render2nd: function() {
-        this.star_view_2 = this.add_subview(StarView, {
-            el: this.$("#star-container-2"),
-            model: this.model,
-            rating_attr: "rating2"
-        });
-        var self = this;
-        this.model.once("change:rating2", function() {
-            self.star_view_2.remove();
-            self.render3rd();
-        })
+        this.add_subview_and_once(StarView, "star_view_2",
+            {el: this.$("#star-container-2"), model: this.model, rating_attr: "rating2"},
+            "change:rating2", this.render3rd);
     },
 
     render3rd: function() {
-        this.star_view_3 = this.add_subview(StarView, {
-            el: this.$("#star-container-3"),
-            model: this.model,
-            rating_attr: "rating3"
-        });
-        var self = this;
-        this.model.once("change:rating3", function() {
-            self.star_view_3.remove();
-            self.renderTextArea();
-        })
+        this.add_subview_and_once(StarView, "star_view_3",
+            {el: this.$("#star-container-3"), model: this.model, rating_attr: "rating3"},
+            "change:rating3", this.renderTextArea);
     },
 
     renderTextArea: function() {
@@ -120,25 +112,15 @@ module.exports = BaseView.extend({
         // Explicitly hide/display desired buttons, since we re-render the template
         this.$(".rating-skip").hide();
         this.$(".rating-edit").hide();
-        this.star_view_1 = this.add_subview(StarView, {
-            el: this.$("#star-container-1"),
-            model: this.model,
-            rating_attr: "rating1"
-        });
-        this.star_view_2 = this.add_subview(StarView, {
-            el: this.$("#star-container-2"),
-            model: this.model,
-            rating_attr: "rating2"
-        });
-        this.star_view_3 = this.add_subview(StarView, {
-            el: this.$("#star-container-3"),
-            model: this.model,
-            rating_attr: "rating3"
-        });
-        this.text_view = this.add_subview(TextView, {
-            el: this.$("#text-container"),
-            model: this.model,
-            rating_attr: "text"
+        var views_and_opts = [
+            ["star_view_1", StarView, {el: this.$("#star-container-1"), model: this.model, rating_attr: "rating1"}],
+            ["star_view_2", StarView, {el: this.$("#star-container-2"), model: this.model, rating_attr: "rating2"}],
+            ["star_view_3", StarView, {el: this.$("#star-container-3"), model: this.model, rating_attr: "rating3"}],
+            ["text_view", TextView, {el: this.$("#text-container"), model: this.model, rating_attr: "text"}]
+        ]
+        var self = this;
+        _.each(views_and_opts, function(el, ind, list){
+            self[el[0]] = self.add_subview(el[1], el[2]);
         });
         this.submit_rating();
     },

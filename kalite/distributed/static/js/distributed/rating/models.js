@@ -5,10 +5,6 @@ var RatingModel = Backbone.Model.extend({
 });
 
 var ContentRatingCollection = Backbone.Collection.extend({
-    parse: function(response) {
-        return response.objects;
-    },
-
     model: RatingModel
 });
 
