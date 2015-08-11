@@ -21,9 +21,6 @@
     "url": "https://github.com/learningequality/ka-lite/issues"
   },
   "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-less": "~0.6.4",
     "karma": "~0.12.31",
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-qunit": "^0.1.4",
