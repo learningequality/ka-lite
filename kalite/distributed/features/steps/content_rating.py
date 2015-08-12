@@ -1,5 +1,16 @@
+import csv
+import glob
+import os
+
 from behave import *
 from kalite.testing.behave_helpers import *
+
+from kalite.main.models import ContentRating
+from kalite.facility.models import FacilityUser
+from kalite.testing.mixins.facility_mixins import FacilityMixins
+from securesync.models import Device
+
+from selenium.webdriver.support.select import Select
 
 RATING_CONTAINER_ID = "rating-container"
 TEXT_CONTAINER_ID = "text-container"
@@ -61,11 +72,39 @@ def impl(context):
 
 @given(u'some user feedback exists')
 def impl(context):
-    assert False
+    context.rating_user = user = FacilityMixins.create_student(facility=facility)
+    assert FacilityUser.objects.count() != 0, "User was not be created!"
+
+    context.rating_text = "My fantastic rating"
+    context.rating = rating = ContentRating(
+        content_kind="Video",
+        content_id="abc123",
+        user=user,
+        text=context.rating_text
+    )
+    rating.save()
+    assert ContentRating.objects.count() != 0, "No ContentRating objects exist to be exported!"
 
 @then(u'the user feedback is present')
 def impl(context):
-    assert False
+    # Wait for the file to finish downloading.
+    old_cwd = os.getcwd()
+    os.chdir(context.download_dir)
+    csv_files, tries, max_tries = None, 0, 1000
+    while not csv_files:
+        if tries >= max_tries:
+            raise FindFileTimeout("Couldn't find the content rating csv file... :(")
+        csv_files = glob.glob("*.csv")
+        tries += 1
+
+    assert len(csv_files) == 1, \
+        "Expected only 1 *.csv file, but found {n}: {files}".format(files=csv_files, n=len(csv_files))
+    csv_file = csv_files.pop()
+    with open(csv_file, "rb") as f:
+        assert [row for row in csv.reader(f) if context.rating_user.username in row and context.rating_text in row], \
+            "Rating data not found in exported csv file."
+
+    os.chdir(old_cwd)
 
 @when(u'I fill out the form')
 def impl(context):
@@ -96,7 +135,13 @@ def impl(context):
 
 @when(u'I export csv data')
 def impl(context):
-    assert False
+    go_to_export_url(context)
+
+    resource_select = find_id_with_wait(context, "resource-id")
+    Select(resource_select).select_by_visible_text("Ratings")
+
+    export_btn = find_id_with_wait(context, "export-button")
+    export_btn.click()
 
 @when(u'I click the edit button')
 def impl(context):
@@ -180,3 +225,12 @@ def get_text_feedback(context):
     return context.browser.execute_script("""
         return $(".{text_input_class}")[0].value;
     """.format(text_input_class=TEXT_INPUT_CLASS))
+
+
+def go_to_export_url(context):
+    params = {"zone_id": Device.get_own_device().get_zone().id}
+    context.browser.get(build_url(context, reverse("data_export"), params))
+
+
+class FindFileTimeout(Exception):
+    pass

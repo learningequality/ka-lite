@@ -30,6 +30,8 @@ Feature: Content Rating
         Then I see a new form
 
     @as_admin
+    @registered_device
+    @download_csv
     Scenario: Admin exports user ratings
         Given some user feedback exists
         When I export csv data

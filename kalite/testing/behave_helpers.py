@@ -28,6 +28,7 @@ For interacting with the API:
 * request
 """
 import json
+import urllib
 
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -232,8 +233,11 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
         return None
 
 
-def build_url(context, url):
-    return urljoin(context.config.server_url, url)
+def build_url(context, url, params={}):
+    url = urljoin(context.config.server_url, url)
+    if params:
+        url += "?" + urllib.urlencode(params)
+    return url
 
 
 def go_to_homepage(context):
