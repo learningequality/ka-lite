@@ -9,7 +9,8 @@ var DataExportView = Backbone.View.extend({
     // the containing view
     template: require('./hbtemplates/data-export-container.handlebars'),
 
-    initialize: function() {
+    initialize: function(options) {
+        this.options = options || {};
 
         this.zone_select_view = new ZoneSelectView({
             org_id: this.options.org_id,
