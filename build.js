@@ -140,6 +140,7 @@ fs.readdir("kalite", function(err, filenames) {
                 async.each(util_files, function(item, callback) {
                     var brow = browserify(staticfiles ? item.bundle : item.backup_file);
                     brow.transform(deamdify);
+                    brow.plugin('minifyify', {map: false});
                     var out = brow.bundle()
                     out.pipe(fs.createWriteStream(item.target_file));
                     logging.info("Writing " + item.alias);
