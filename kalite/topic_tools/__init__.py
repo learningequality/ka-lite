@@ -61,7 +61,7 @@ TOPICS = None
 CACHE_VARS.append("TOPICS")
 CNT=0
 def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
-    
+
     # Hardcode the Brazilian Portuguese mapping that only the central server knows about
     # TODO(jamalex): BURN IT ALL DOWN!
     if language == "pt-BR":
@@ -193,16 +193,15 @@ def get_exercise_cache(force=False, language=None):
                 EXERCISES[language] = exercises
                 return EXERCISES[language]
         EXERCISES[language] = softload_json(settings.EXERCISES_FILEPATH, logger=logging.debug, raises=False)
-        
+
         # English-language exercises live in application space, translations in user space
         if language == "en":
             exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
         else:
-            exercise_root = os.path.join(django_settings.USER_DATA_ROOT, "exercises")
+            exercise_root = i18n.get_localized_exercise_dirpath(language)
         if os.path.exists(exercise_root):
-            exercise_path = os.path.join(exercise_root, language) if language != "en" else exercise_root
             try:
-                exercise_templates = os.listdir(exercise_path)
+                exercise_templates = os.listdir(exercise_root)
             except OSError:
                 exercise_templates = []
         else:
