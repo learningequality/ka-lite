@@ -2,6 +2,7 @@ var Backbone = require("base/backbone");
 var _ = require("underscore");
 var seeded_shuffle = require("utils/shuffle");
 var get_params = require("utils/get_params");
+var seedrandom = require("seedrandom");
 
 var setGetParamDict = get_params.setGetParamDict;
 
@@ -343,7 +344,7 @@ var TestLogModel = Backbone.Model.extend({
         // TODO (rtibbles): qUnit or other javascript unit testing to set up tests for this code.
         if(typeof(test_data_model)==="object"){
 
-            var random = new Math.seedrandom(this.get("user"));
+            var random = seedrandom(this.get("user"));
 
             var items = $.parseJSON(test_data_model.get("ids"));
 
@@ -514,13 +515,13 @@ var QuizLogModel = Backbone.Model.extend({
         */
         if(typeof(quiz_data_model)==="object"){
 
-            var random = new Math.seedrandom(this.get("user") + this.get("attempts"));
+            var random = seedrandom(this.get("user") + this.get("attempts"));
 
             var items = quiz_data_model.get("ids");
 
             var repeats = quiz_data_model.get("repeats");
 
-            var initial_seed = new Math.seedrandom(this.get("user") + this.get("attempts"))()*1000;
+            var initial_seed = seedrandom(this.get("user") + this.get("attempts"))()*1000;
 
             this.item_sequence = [];
 
@@ -664,4 +665,4 @@ module.exports = {
     QuizDataModel: QuizDataModel,
     QuizLogModel: QuizLogModel,
     QuizLogCollection: QuizLogCollection
-}
+};

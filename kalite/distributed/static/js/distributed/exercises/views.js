@@ -9,6 +9,9 @@ var messages = require("utils/messages");
 var $ = require("base/jQuery");
 var $script = require("scriptjs");
 var KhanExercises = require("../perseus/ke/khan-exercise");
+var sprintf = require("sprintf-js").sprintf;
+
+require("qtip2");
 
 var ExerciseHintView = BaseView.extend({
 
@@ -498,7 +501,7 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.options = options;
 
-        _.bindAll.apply(_, [this].concat(_.functions(this)))
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         window.statusModel.loaded.then(this.setup_exercise_environment);
     },
@@ -1037,4 +1040,4 @@ module.exports = {
     ExercisePracticeView: ExercisePracticeView,
     ExerciseRelatedVideoView: ExerciseRelatedVideoView,
     ExerciseWrapperBaseView: ExerciseWrapperBaseView
-}
+};

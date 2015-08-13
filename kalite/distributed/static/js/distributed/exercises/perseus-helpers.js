@@ -2,14 +2,16 @@ var _ = require("underscore");
 var Backbone = require("base/backbone");
 var $ = require("base/jQuery");
 
-require("../perseus/lib/es5-shim.js");
+require("es5-shim");
 global.React = require("react/addons");
-global.katex = require("../perseus/lib/katex/katex.min.js");
+global.katex = require("katex");
+require("../perseus/lib/katex/katex.css");
 require("../perseus/lib/mathquill/mathquill-basic.js");
+require("../perseus/lib/mathquill/mathquill.css");
 require("../perseus/lib/kas.js");
-global.Jed = require("../perseus/ke/local-only/jed.js");
+global.Jed = require("jed");
 require("../perseus/ke/local-only/i18n.js");
-require("../perseus/ke/local-only/jquery.qtip.js");
+require("qtip2");
 
 var KhanUtil = window.KhanUtil || {};
 
@@ -86,6 +88,10 @@ Exercises.PerseusBridge = {
         return Exercises.PerseusBridge.itemRenderer.scoreInput();
     },
 
+    getSeedInfo: function() {
+        return Exercises.PerseusBridge.itemRenderer.props.item;
+    },
+
     // this one needs to be here for khan-exercises
     cleanupProblem: function(data) {
         if (Exercises.PerseusBridge.itemMountNode) {
@@ -109,7 +115,7 @@ Exercises.PerseusBridge = {
 
         // Load khan-exercises modules, then perseus
         require("../perseus/ke-deps.js");
-        var Perseus = require("../perseus/build/perseus-3.js")
+        var Perseus = require("../perseus/build/perseus-3.js");
         Exercises.PerseusBridge._initialize(Perseus);
 
         return Exercises.PerseusBridge._loaded;
@@ -165,4 +171,4 @@ module.exports = {
     KhanUtil: KhanUtil,
     Khan: Khan,
     Exercises: Exercises
-}
+};

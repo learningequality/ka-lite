@@ -15,4 +15,4 @@ module.exports = function get_cookie(name) {
         }
     }
     return cookieValue;
-}
+};

@@ -10,6 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/events_view.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/landing_view.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker3.min.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
@@ -19,6 +20,7 @@
         var FACILITY_ID = {% if facility_id %}"{{ facility_id }}"{% else %}undefined{% endif %};
     </script>
     <script src="{% static 'js/coachreports/bundles/bundle_coach_report.js' %}"></script>
+
     <script>
     $(function(){
         Backbone.history.start({pushState: true, root: "{% url 'coach_reports' %}"});

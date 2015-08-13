@@ -167,4 +167,4 @@ module.exports = {
     ContentDataModel: ContentDataModel,
     ContentLogModel: ContentLogModel,
     ContentLogCollection: ContentLogCollection
-}
+};

@@ -36,4 +36,4 @@ module.exports = {
 	ZoneCollection: ZoneCollection,
 	FacilityCollection: FacilityCollection,
 	GroupCollection: GroupCollection,
-}
+};

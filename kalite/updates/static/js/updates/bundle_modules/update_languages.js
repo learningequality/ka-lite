@@ -3,6 +3,7 @@ var $ = require("base/jQuery");
 var messages = require("utils/messages");
 var base = require("updates/base");
 var connectivity = require("utils/connectivity");
+var sprintf = require("sprintf-js").sprintf;
 
 var installable_languages = [];
 var installed_languages = [];
@@ -84,13 +85,13 @@ function display_languages() {
             // NOTE: N^2 algorithm right here, but meh
             if (installables.length > 0) {
                 var matching_installable = installables.filter(function(installable_lang) { return lang.code === installable_lang.code; });
-                if (matching_installable.length != 0) {
+                if (matching_installable.length !== 0) {
                     matching_installable = matching_installable[0];
 
                     var software_version_comparison = version_comparison(matching_installable.software_version, lang.software_version);
                     var upgradeable =
                         (software_version_comparison == 1) || // language pack is for a new KA Lite version
-                        (software_version_comparison == 0 && (matching_installable.language_pack_version > lang.language_pack_version)); // same KA Lite version, new lang pack
+                        (software_version_comparison === 0 && (matching_installable.language_pack_version > lang.language_pack_version)); // same KA Lite version, new lang pack
                     if (upgradeable) {
                         //add upgrade link here
                         var percent_translated_diff = matching_installable.percent_translated - lang.percent_translated;
@@ -245,7 +246,7 @@ function select_lang_pack( event ) {
     $('#language-packs').attr('value', li.attr('value'));
 
     var matching_installable = installable_languages.filter(function(installable_lang) { return lang_code === installable_lang.code; });
-    var found = (matching_installable.length != 0);
+    found = (matching_installable.length !== 0);
 
     if(!downloading){
         $("#get-language-button").prop("disabled", !found);
