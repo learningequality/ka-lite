@@ -72,7 +72,7 @@ def impl(context):
 
 @given(u'some user feedback exists')
 def impl(context):
-    context.rating_user = user = FacilityMixins.create_student(facility=facility)
+    context.rating_user = user = FacilityMixins.create_student()
     assert FacilityUser.objects.count() != 0, "User was not be created!"
 
     context.rating_text = "My fantastic rating"
