@@ -3,6 +3,7 @@ import json
 import hashlib
 import shutil
 import copy
+import zipfile
 
 from django.conf import settings; logging = settings.LOG
 from django.utils.text import slugify
@@ -44,10 +45,10 @@ attribute_whitelists = {
 }
 
 denormed_attribute_list = {
-    "Video": ["kind", "description", "title", "duration", "id", "y_pos", "x_pos", "path", "slug", "organization"],
-    "Exercise": ["kind", "description", "title", "name", "id", "y_pos", "x_pos", "path", "slug", "organization"],
-    "Audio": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug", "organization"],
-    "Document": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug", "organization"],
+    "Video": ["kind", "description", "title", "duration", "id", "path", "slug", "organization"],
+    "Exercise": ["kind", "description", "title", "name", "id", "path", "slug", "organization"],
+    "Audio": ["kind", "description", "title", "id", "path", "slug", "organization"],
+    "Document": ["kind", "description", "title", "id", "path", "slug", "organization"],
 }
 
 kind_blacklist = [None]
@@ -55,7 +56,7 @@ kind_blacklist = [None]
 slug_blacklist = []
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
-temp_ok_atts = ["x_pos", "y_pos"]
+temp_ok_atts = []
 
 channel_data = {
     "slug_key": slug_key,
@@ -85,6 +86,7 @@ file_kind_dictionary = {
     "Audio": ["mp3", "wma", "wav", "mid", "ogg"],
     "Document": ["pdf", "txt", "rtf", "html", "xml", "doc", "qxd", "docx"],
     "Archive": ["zip", "bzip2", "cab", "gzip", "mar", "tar"],
+    "Exercise": ["exercise"],
 }
 
 file_kind_map = {}
@@ -178,6 +180,23 @@ def construct_node(location, parent_path, node_cache, channel):
                 del data_meta["codec"]
             data_meta.update(meta_data)
             meta_data = data_meta
+        elif kind == "Exercise":
+            zf = zipfile.ZipFile(open(location, "rb"), "r")
+            try:
+                data_meta = json.loads(zf.read("exercise.json"))
+            except KeyError:
+                data_meta = {}
+                logging.debug("No exercise metadata available in zipfile")
+            data_meta.update(meta_data)
+            try:
+                assessment_items = json.loads(zf.read("assessment_items.json"))
+            except KeyError:
+                assessment_items = []
+                logging.debug("No assessment items found in zipfile")
+            for filename in zf.namelist():
+                if os.path.splitext(filename)[0] != "json":
+                    zf.extract(filename, os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel))
+
 
         id = file_md5(channel["id"], location)
 
@@ -211,6 +230,7 @@ def construct_node(location, parent_path, node_cache, channel):
         nodecopy = copy.deepcopy(node)
         if kind == "Exercise":
             node_cache["Exercise"].append(nodecopy)
+            node_cache["AssessmentItem"].extend(assessment_items)
         else:
             node_cache["Content"].append(nodecopy)
 
@@ -260,13 +280,14 @@ def retrieve_API_data(channel=None):
         "Exercise": [],
         "Content": [],
         "Slugs": set(),
+        "AssessmentItem": [],
     }
 
     topic_tree = construct_node(path, "", node_cache, channel)
 
     exercises = node_cache["Exercise"]
 
-    assessment_items = []
+    assessment_items = node_cache["AssessmentItem"]
 
     content = node_cache["Content"]
 
