@@ -169,17 +169,24 @@ def construct_node(location, parent_path, node_cache, channel):
         if not kind:
             return None
         elif kind in ["Video", "Audio", "Image"]:
-            from kaa import metadata as kaa_metadata
-            info = kaa_metadata.parse(location)
-            data_meta = {}
-            for meta_key, data_fn in file_meta_data_map.items():
-                if data_fn(info):
-                    data_meta[meta_key] = data_fn(info)
-            if data_meta.get("codec", None):
-                data_meta["{kind}_codec".format(kind=kind.lower())] = data_meta["codec"]
-                del data_meta["codec"]
-            data_meta.update(meta_data)
-            meta_data = data_meta
+            from hachoir_core.cmd_line import unicodeFilename
+            from hachoir_parser import createParser
+            from hachoir_metadata import extractMetadata
+
+            filename = unicodeFilename(location)
+            parser = createParser(filename, location)
+
+            if parser:
+                info = extractMetadata(parser)
+                data_meta = {}
+                for meta_key, data_fn in file_meta_data_map.items():
+                    if data_fn(info):
+                        data_meta[meta_key] = data_fn(info)
+                if data_meta.get("codec", None):
+                    data_meta["{kind}_codec".format(kind=kind.lower())] = data_meta["codec"]
+                    del data_meta["codec"]
+                data_meta.update(meta_data)
+                meta_data = data_meta
         elif kind == "Exercise":
             zf = zipfile.ZipFile(open(location, "rb"), "r")
             try:
