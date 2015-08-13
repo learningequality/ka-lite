@@ -1,5 +1,6 @@
 var Handlebars = require("hbsfy/runtime");
 var _ = require("underscore");
+var sprintf = require("sprintf-js").sprintf;
 
 Handlebars.registerHelper("ifcond", function(v1, operator, v2, options) {
     switch (operator)
@@ -32,10 +33,10 @@ Handlebars.registerHelper("ifcond", function(v1, operator, v2, options) {
             return (v1>v2)?options.fn(this):options.inverse(this);
 
         case ">=":
-         return (v1>=v2)?options.fn(this):options.inverse(this);
+            return (v1>=v2)?options.fn(this):options.inverse(this);
 
         default:
-            return eval(""+v1+operator+v2)?options.fn(this):options.inverse(this);
+            return eval(""+v1+operator+v2)?options.fn(this):options.inverse(this); // jshint ignore:line
     }
 });
 
@@ -72,8 +73,8 @@ Handlebars.registerHelper('withItem', function(object, options) {
 // Simply pass any arguments that you might otherwise use in order
 Handlebars.registerHelper('url', function(url_name) {
     if (window.Urls) {
-        arguments = Array.prototype.slice.call(arguments, 1, -1);
-        return window.Urls[url_name].apply(window.Urls, arguments);
+        var args = Array.prototype.slice.call(arguments, 1, -1);
+        return window.Urls[url_name].apply(window.Urls, args);
     } else {
         return "";
     }
@@ -103,6 +104,6 @@ Handlebars.registerHelper("ifObject", function(candidate, options){
     } else {
         return options.inverse(this);
     }
-})
+});
 
 module.exports = Handlebars;

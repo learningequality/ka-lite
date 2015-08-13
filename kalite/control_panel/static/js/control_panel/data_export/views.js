@@ -341,4 +341,4 @@ module.exports = {
     ZoneSelectView: ZoneSelectView,
     FacilitySelectView: FacilitySelectView,
     GroupSelectView: GroupSelectView
-}
+};

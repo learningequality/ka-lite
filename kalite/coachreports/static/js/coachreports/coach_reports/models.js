@@ -1,6 +1,6 @@
 var Backbone = require("base/backbone");
 var _ = require("underscore");
-var setGetParamDict = require("utils/get_params").setGetParamDict
+var setGetParamDict = require("utils/get_params").setGetParamDict;
 
 var StateModel = Backbone.Model.extend({
 
@@ -72,4 +72,4 @@ module.exports = {
     GroupCollection: GroupCollection,
     CoachReportModel: CoachReportModel,
     CoachReportAggregateModel: CoachReportAggregateModel
-}
+};

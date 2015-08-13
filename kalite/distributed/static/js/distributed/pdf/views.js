@@ -3,6 +3,17 @@ var Handlebars = require("base/handlebars");
 
 var ContentBaseView = require("content/baseview");
 
+require("../../../../../../static-libraries/pdfjs/web/compatibility.js");
+require("../../../../../../static-libraries/pdfjs/web/l10n.js");
+require("../../../../../../static-libraries/pdfjs/build/pdf.js");
+PDFJS.workerSrc = window.sessionModel.get("STATIC_URL") + 'pdfjs/build/pdf.worker.js';
+PDFJS.imageResourcesPath = window.sessionModel.get("STATIC_URL") + 'pdfjs/web/images/';
+PDFJS.cMapUrl = window.sessionModel.get("STATIC_URL") + 'pdfjs/web/cmaps/';
+PDFJS.cMapPacked = true;
+PDFJS.disableFontFace = true;
+require("../../../../../../static-libraries/pdfjs/web/viewer.js");
+// require("../../../../../../static-libraries/pdfjs/web/viewer.css");
+
 
 var PDFViewerView = ContentBaseView.extend({
 
@@ -56,4 +67,6 @@ var PDFViewerView = ContentBaseView.extend({
 
 });
 
-module.exports = PDFViewerView;
+module.exports = {
+    PDFViewerView: PDFViewerView
+};

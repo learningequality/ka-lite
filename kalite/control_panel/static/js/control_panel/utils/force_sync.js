@@ -9,4 +9,4 @@ module.exports = function force_sync(zone_id, device_id) {
             });
             show_message("success", msg);
         });
-}
+};

@@ -3,6 +3,9 @@ var Handlebars = require("../base/handlebars");
 var _ = require("underscore");
 var api = require("../utils/api");
 var messages = require("utils/messages");
+var sprintf = require("sprintf-js").sprintf;
+
+require("../../../css/distributed/search_autocomplete.css");
 
 var SearchBarTemplate = require("./hbtemplates/search-bar.handlebars");
 var SearchBarItemTemplate = require("./hbtemplates/search-item.handlebars");
@@ -180,7 +183,7 @@ var AutoCompleteView = BaseView.extend({
     },
 
     input_changed: function() {
-        if (this.$("#search").val() != "") {
+        if (this.$("#search").val() !== "") {
            this.$("#search-button").removeAttr("disabled");
         }else {
            this.$("#search-button").attr('disabled', 'disabled');

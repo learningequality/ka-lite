@@ -1,76 +1,9 @@
-/*
- * Line Utils
- * A line is an array of two points e.g. [[-5, 0], [5, 0]].
- */
-define(function(require) {
-
-var kpoint = require("./kpoint.js");
-var knumber = require("./knumber.js");
-
-var kline = KhanUtil.kline = {
-
-    distanceToPoint: function(line, point) {
-        return kpoint.distanceToLine(point, line);
-    },
-
-    reflectPoint: function(line, point) {
-        return kpoint.reflectOverLine(point, line);
-    },
-
-    midpoint: function(line) {
-        return [
-            (line[0][0] + line[1][0]) / 2,
-            (line[0][1] + line[1][1]) / 2
-        ];
-    },
-
-    /**
-    * Tests if two lines are collinear.
-    * https://en.wikipedia.org/wiki/Collinearity
-    */
-    equal: function(line1, line2, tolerance) {
-        /**
-        * line1's points are trivially collinear.
-        * So check against each point in line2.
-        * Form a triangle of the points (line1 and a single point from line2)
-        * iff the area of the triangle is zero, are the points collinear
-        * http://mathworld.wolfram.com/Collinear.html
-        */
-        var x1 = line1[0][0];
-        var y1 = line1[0][1];
-        var x2 = line1[1][0];
-        var y2 = line1[1][1];
-        return _.every(line2, function(point) {
-            var x3 = point[0];
-            var y3 = point[1];
-            
-            //calculating area of triangle formed by the three points
-            //https://en.wikipedia.org/wiki/Shoelace_formula#Examples
-            //A = 1/2|x1*y2 + x2*y3 + x3*y1 - x2*y1 - x3*y2 - x1*y3|
-            var area = (1/2)*Math.abs(x1*y2 + x2*y3 + x3*y1 -
-                x2*y1 - x3*y2 - x1*y3);
-
-            return knumber.equal(area, 0, tolerance);
-        });
-    },
-
-    intersect: function(px, py, rx, ry, qx, qy, sx, sy) {
-        // Returns true is the line from (px, py) to (rx, ry) intersections the line (qx, qy) to (sx, sy)
-        // http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect/565282#565282
-        function cross(vx, vy, wx, wy) {
-            return vx * wy - vy * wx;
-        }
-
-        if (cross(rx, ry, sx, sy) === 0) {
-            return cross(qx - px, qy - py, rx, ry) === 0;
-        } else {
-            var t = cross(qx - px, qy - py, sx, sy) / cross(rx, ry, sx, sy);
-            var u = cross(qx - px, qy - py, rx, ry) / cross(rx, ry, sx, sy);
-            return 0 <= t && t <= 1 && 0 <= u && u <= 1;
-        }
-    }
-};
-
-return kline;
-
-});
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var kpoint=require("./kpoint.js"),knumber=require("./knumber.js"),kline=KhanUtil.kline={distanceToPoint:function(n,e){return kpoint.distanceToLine(e,n)},reflectPoint:function(n,e){return kpoint.reflectOverLine(e,n)},midpoint:function(n){return[(n[0][0]+n[1][0])/2,(n[0][1]+n[1][1])/2]},equal:function(n,e,r){var t=n[0][0],i=n[0][1],u=n[1][0],o=n[1][1];return _.every(e,function(n){var e=n[0],c=n[1],a=.5*Math.abs(t*o+u*c+e*i-u*i-e*o-t*c);return knumber.equal(a,0,r)})},intersect:function(n,e,r,t,i,u,o,c){function a(n,e,r,t){return n*t-e*r}if(0===a(r,t,o,c))return 0===a(i-n,u-e,r,t);var f=a(i-n,u-e,o,c)/a(r,t,o,c),k=a(i-n,u-e,r,t)/a(r,t,o,c);return f>=0&&1>=f&&k>=0&&1>=k}};module.exports=kline;
+},{"./knumber.js":2,"./kpoint.js":3}],2:[function(require,module,exports){
+var DEFAULT_TOLERANCE=1e-9,EPSILON=Math.pow(2,-42),knumber=KhanUtil.knumber={DEFAULT_TOLERANCE:DEFAULT_TOLERANCE,EPSILON:EPSILON,is:function(n){return _.isNumber(n)&&!_.isNaN(n)},equal:function(n,r,u){return null==n||null==r?n===r:(null==u&&(u=DEFAULT_TOLERANCE),Math.abs(n-r)<u)},sign:function(n,r){return knumber.equal(n,0,r)?0:Math.abs(n)/n},round:function(n,r){var u=Math.pow(10,r);return Math.round(n*u)/u},roundTo:function(n,r){return Math.round(n/r)*r},floorTo:function(n,r){return Math.floor(n/r)*r},ceilTo:function(n,r){return Math.ceil(n/r)*r},isInteger:function(n,r){return knumber.equal(Math.round(n),n,r)},toFraction:function(n,r,u){u=u||1e3,r=r||EPSILON;for(var t=[1,0],o=[0,1],e=Math.floor(n),a=n-e;o[0]<=u;){if(knumber.equal(t[0]/o[0],n,r))return[t[0],o[0]];t=[e*t[0]+t[1],t[0]],o=[e*o[0]+o[1],o[0]],e=Math.floor(1/a),a=1/a-e}return[n,1]}};module.exports=knumber;
+},{}],3:[function(require,module,exports){
+var kvector=require("./kvector.js"),knumber=require("./knumber.js"),kpoint=KhanUtil.kpoint={rotateRad:function(r,t,o){return void 0===o?kvector.rotateRad(r,t):kvector.add(o,kvector.rotateRad(kvector.subtract(r,o),t))},rotateDeg:function(r,t,o){return void 0===o?kvector.rotateDeg(r,t):kvector.add(o,kvector.rotateDeg(kvector.subtract(r,o),t))},distanceToPoint:function(r,t){return kvector.length(kvector.subtract(r,t))},distanceToLine:function(r,t){var o=kvector.subtract(t[1],t[0]),e=kvector.subtract(r,t[0]),c=kvector.projection(e,o),a=kvector.subtract(c,e);return kvector.length(a)},reflectOverLine:function(r,t){var o=kvector.subtract(t[1],t[0]),e=kvector.subtract(r,t[0]),c=kvector.projection(e,o),a=kvector.subtract(kvector.scale(c,2),e);return kvector.add(t[0],a)},compare:function(r,t,o){if(r.length!==t.length)return r.length-t.length;for(var e=0;e<r.length;e++)if(!knumber.equal(r[e],t[e],o))return r[e]-t[e];return 0}};_.extend(kpoint,{is:kvector.is,addVector:kvector.add,addVectors:kvector.add,subtractVector:kvector.subtract,equal:kvector.equal,polarRadFromCart:kvector.polarRadFromCart,polarDegFromCart:kvector.polarDegFromCart,cartFromPolarRad:kvector.cartFromPolarRad,cartFromPolarDeg:kvector.cartFromPolarDeg,round:kvector.round,roundTo:kvector.roundTo,floorTo:kvector.floorTo,ceilTo:kvector.ceilTo}),module.exports=kpoint;
+},{"./knumber.js":2,"./kvector.js":4}],4:[function(require,module,exports){
+function arraySum(r){return _.reduce(r,function(r,t){return r+t},0)}function arrayProduct(r){return _.reduce(r,function(r,t){return r*t},1)}var knumber=require("./knumber.js"),kvector=KhanUtil.kvector={is:function(r,t){return _.isArray(r)?void 0!==t&&r.length!==t?!1:_.all(r,knumber.is):!1},normalize:function(r){return kvector.scale(r,1/kvector.length(r))},length:function(r){return Math.sqrt(kvector.dot(r,r))},dot:function(r,t){var n=_.toArray(arguments),e=_.zip.apply(_,n),o=_.map(e,arrayProduct);return arraySum(o)},add:function(){var r=_.toArray(arguments),t=_.zip.apply(_,r);return _.map(t,arraySum)},subtract:function(r,t){return _.map(_.zip(r,t),function(r){return r[0]-r[1]})},negate:function(r){return _.map(r,function(r){return-r})},scale:function(r,t){return _.map(r,function(r){return r*t})},equal:function(r,t,n){return _.all(_.zip(r,t),function(r){return knumber.equal(r[0],r[1],n)})},codirectional:function(r,t,n){return knumber.equal(kvector.length(r),0,n)||knumber.equal(kvector.length(t),0,n)?!0:(r=kvector.normalize(r),t=kvector.normalize(t),kvector.equal(r,t,n))},collinear:function(r,t,n){return kvector.codirectional(r,t,n)||kvector.codirectional(r,kvector.negate(t),n)},polarRadFromCart:function(r){var t=kvector.length(r),n=Math.atan2(r[1],r[0]);return 0>n&&(n+=2*Math.PI),[t,n]},polarDegFromCart:function(r){var t=kvector.polarRadFromCart(r);return[t[0],180*t[1]/Math.PI]},cartFromPolarRad:function(r,t){return _.isUndefined(t)&&(t=r[1],r=r[0]),[r*Math.cos(t),r*Math.sin(t)]},cartFromPolarDeg:function(r,t){return _.isUndefined(t)&&(t=r[1],r=r[0]),kvector.cartFromPolarRad(r,t*Math.PI/180)},rotateRad:function(r,t){var n=kvector.polarRadFromCart(r),e=n[1]+t;return kvector.cartFromPolarRad(n[0],e)},rotateDeg:function(r,t){var n=kvector.polarDegFromCart(r),e=n[1]+t;return kvector.cartFromPolarDeg(n[0],e)},angleRad:function(r,t){return Math.acos(kvector.dot(r,t)/(kvector.length(r)*kvector.length(t)))},angleDeg:function(r,t){return 180*kvector.angleRad(r,t)/Math.PI},projection:function(r,t){var n=kvector.dot(r,t)/kvector.dot(t,t);return kvector.scale(t,n)},round:function(r,t){return _.map(r,function(r,n){return knumber.round(r,t[n]||t)})},roundTo:function(r,t){return _.map(r,function(r,n){return knumber.roundTo(r,t[n]||t)})},floorTo:function(r,t){return _.map(r,function(r,n){return knumber.floorTo(r,t[n]||t)})},ceilTo:function(r,t){return _.map(r,function(r,n){return knumber.ceilTo(r,t[n]||t)})}};module.exports=kvector;
+},{"./knumber.js":2}]},{},[1]);

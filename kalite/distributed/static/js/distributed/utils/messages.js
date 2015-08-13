@@ -3,7 +3,7 @@ var $ = require("../base/jQuery");
 // Generates a unique ID for each message - No duplicates.
 String.prototype.hashCode = function(){
     var hash = 0, i, char;
-    if (this.length == 0) return hash;
+    if (this.length === 0) return hash;
     for (i = 0, l = this.length; i < l; i++) {
         char  = this.charCodeAt(i);
         hash  = ((hash<<5)-hash)+char;
@@ -37,8 +37,8 @@ function show_message(msg_class, msg_text, msg_id) {
     var x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
 
     if (msg_class === "error") {
-        msg_class = "danger"
-    };
+        msg_class = "danger";
+    }
     var msg_html = "<div class='alert alert-" + msg_class + "'";
 
     if (msg_id) {
@@ -71,7 +71,7 @@ function show_api_messages(messages) {
     }
     switch (typeof messages) {
         case "object":
-            for (msg_type in messages) {
+            for (var msg_type in messages) {
                 show_message(msg_type, messages[msg_type]);
             }
             break;
