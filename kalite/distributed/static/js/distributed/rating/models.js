@@ -11,4 +11,4 @@ var ContentRatingCollection = Backbone.Collection.extend({
 module.exports = {
     "RatingModel": RatingModel,
     "ContentRatingCollection": ContentRatingCollection
-}
+};

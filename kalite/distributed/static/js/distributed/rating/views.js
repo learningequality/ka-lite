@@ -46,7 +46,7 @@ module.exports = BaseView.extend({
         this[name] = this.add_subview(view_class, options);
         var self = this;
         this.model.once(event, function() {
-            self[name].remove()
+            self[name].remove();
             callback();
         });
     },
@@ -117,7 +117,7 @@ module.exports = BaseView.extend({
             ["star_view_2", StarView, {el: this.$("#star-container-2"), model: this.model, rating_attr: "rating2"}],
             ["star_view_3", StarView, {el: this.$("#star-container-3"), model: this.model, rating_attr: "rating3"}],
             ["text_view", TextView, {el: this.$("#text-container"), model: this.model, rating_attr: "text"}]
-        ]
+        ];
         var self = this;
         _.each(views_and_opts, function(el, ind, list){
             self[el[0]] = self.add_subview(el[1], el[2]);
@@ -150,7 +150,7 @@ module.exports = BaseView.extend({
         },
         {
             error: function(){
-                console.log("failed to clear rating model attributes...")
+                console.log("failed to clear rating model attributes...");
             },
             success: function(){
                 self.render1st();
@@ -175,7 +175,7 @@ var StarView = BaseView.extend({
     initialize: function(options) {
         this.model = options.model || new Backbone.Model();
         this.rating_attr = options.rating_attr || "rating";
-        _.bindAll(this, "rate_value_callback", "rating_change")
+        _.bindAll(this, "rate_value_callback", "rating_change");
 
         this.model.on("change:"+this.rating_attr, this.rating_change);
 
@@ -233,7 +233,7 @@ var TextView = BaseView.extend({
 
     toggle_disabled: function(val) {
         if( typeof val === "undefined" ) {
-            val = !this.is_disabled()
+            val = !this.is_disabled();
         }
         this.$(".rating-text-feedback").attr("disabled", val);
         return this;
