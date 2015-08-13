@@ -203,14 +203,18 @@ def construct_node(location, parent_path, node_cache, channel):
         node.update({
             "id": id,
             "kind": kind,
-            "format": extension,
         })
+
+        if kind != "Exercise":
+            node.update({
+                "format": extension,
+                })
+            # Copy over content
+            shutil.copy(location, os.path.join(settings.CONTENT_ROOT, id + "." + extension))
+            logging.debug("%s file %s to local content directory." % ("Copied", slug))
 
         node.update(meta_data)
 
-        # Copy over content
-        shutil.copy(location, os.path.join(settings.CONTENT_ROOT, id + "." + extension))
-        logging.debug("%s file %s to local content directory." % ("Copied", slug))
 
     # Verify some required fields:
     if "title" not in node:
