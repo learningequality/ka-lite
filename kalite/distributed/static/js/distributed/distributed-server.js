@@ -204,7 +204,7 @@ var StatusModel = Backbone.Model.extend({
 
     pageType: function() {
 
-        if ( window.location.pathname.search(Urls.coach_reports()) > -1 ) {
+        if ( window.location.pathname.search(Urls.coach_reports(window.statusModel.get("zone_id"))) > -1 ) {
             return "teachPage";
         } 
         if ( window.location.pathname.search(Urls.learn()) > -1 ) {
