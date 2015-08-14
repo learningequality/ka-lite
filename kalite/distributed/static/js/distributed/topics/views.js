@@ -62,7 +62,7 @@ var ContentAreaView = BaseView.extend({
         if( typeof  window.statusModel.get("user_id") === "undefined" ) {
             // Let this be a no-op if the user isn't logged in, and remove the view if it already exists.
             if (typeof this.rating_view !== "undefined") {
-                this.rating_view.remove()
+                this.rating_view.remove();
             }
             return;
         }
@@ -92,7 +92,7 @@ var ContentAreaView = BaseView.extend({
                 } else {
                     messages.show_message("error", "Server Error: More than one rating found for this user and content item!", "too-many-ratings-msg");
                     if (typeof this.rating_view !== "undefined") {
-                        this.rating_view.remove()
+                        this.rating_view.remove();
                     }
                 }
             }).error(function(){
