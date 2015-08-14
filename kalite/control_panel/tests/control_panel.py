@@ -98,7 +98,8 @@ class FacilityControlTests(FacilityMixins,
 
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
-                                           password=teacher_password)
+                                           password=teacher_password,
+                                           facility=self.fac)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
                                    facility_name=self.teacher.facility.name)
@@ -117,7 +118,8 @@ class FacilityControlTests(FacilityMixins,
             setattr(self.fac, field, 'Not Empty')
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
-                                           password=teacher_password)
+                                           password=teacher_password,
+                                           facility=self.fac)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
                                    facility_name=facility_name)
@@ -131,7 +133,8 @@ class FacilityControlTests(FacilityMixins,
         self.fac = self.create_facility(name=facility_name)
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
-                                           password=teacher_password)
+                                           password=teacher_password,
+                                           facility=self.fac)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
                                    facility_name=facility_name)
@@ -150,7 +153,8 @@ class FacilityControlTests(FacilityMixins,
         self.fac.contact_email = ''
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
-                                           password=teacher_password)
+                                           password=teacher_password,
+                                           facility=self.fac)
         self.browser_login_teacher(username=teacher_username,
                                    password=teacher_password,
                                    facility_name=facility_name)
