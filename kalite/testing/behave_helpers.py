@@ -234,6 +234,13 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
 
 
 def build_url(context, url, params={}):
+    """
+    Build a full url given a relative url, using the test server's address & port
+    :param context: behave context
+    :param url: a relative url, like "/learn" or "/my/cool/page" to append to the test server's address
+    :param params: a dictionary of GET parameters, which will be appended to the url. If empty, nothing changes.
+    :return: The full url
+    """
     url = urljoin(context.config.server_url, url)
     if params:
         url += "?" + urllib.urlencode(params)

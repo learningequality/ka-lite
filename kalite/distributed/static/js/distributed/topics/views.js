@@ -60,7 +60,11 @@ var ContentAreaView = BaseView.extend({
 
     show_rating: function() {
         if( typeof  window.statusModel.get("user_id") === "undefined" ) {
-            return;  // Let this be a no-op if the user isn't logged in.
+            // Let this be a no-op if the user isn't logged in, and remove the view if it already exists.
+            if (typeof this.rating_view !== "undefined") {
+                this.rating_view.remove()
+            }
+            return;
         }
         if( typeof this.rating_view === "undefined" ) {
             this.rating_view = this.add_subview(RatingView, {
@@ -75,16 +79,21 @@ var ContentAreaView = BaseView.extend({
         if( this.rating_view.model.get("content_id") !== this.model.get("id") ) {
             var self = this;
             this.content_rating_collection.fetch().done(function(){
-                if(self.content_rating_collection.models.length == 1) {
+                if(self.content_rating_collection.models.length === 1) {
                     self.rating_view.model = self.content_rating_collection.pop();
                     self.rating_view.render();
-                } else {
+                } else if ( self.content_rating_collection.models.length === 0 ) {
                     self.rating_view.model = new RatingModel({
                             "user": window.statusModel.get("user_uri"),
                             "content_kind": self.model.get("kind"),
                             "content_id": self.model.get("id")
                     });
                     self.rating_view.render();
+                } else {
+                    messages.show_message("error", "Server Error: More than one rating found for this user and content item!", "too-many-ratings-msg");
+                    if (typeof this.rating_view !== "undefined") {
+                        this.rating_view.remove()
+                    }
                 }
             }).error(function(){
                 console.log("content rating collection failed to fetch");

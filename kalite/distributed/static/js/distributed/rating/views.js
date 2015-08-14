@@ -27,73 +27,57 @@ module.exports = BaseView.extend({
             model.url = "/api/not/gonna/work";
             return model;
         }();
-        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "renderQuality", "renderDifficulty", "renderTextArea", "renderAll", "render");
+        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "renderAll", "renderSequence", "render");
     },
 
     render: function() {
+        /*
+            If the model is new (never been synced) or empty (such as if it was deleted) render each component in
+            sequence. Otherwise, render all components together, for review.
+        */
         if( this.model.isNew() || this.model.get("quality") === 0) {
-            this.renderQuality();
+            this.renderSequence();
         } else {
             this.renderAll();
         }
     },
 
-    add_subview_and_once: function(view_class, name, options, event, callback) {
+    renderSequence: function() {
         /*
-            Repeated logic for displaying each subwidget once, then removing it after user has interacted with it
-            and displaying the next widget in the sequence.
-        */
-        this[name] = this.add_subview(view_class, options);
-        var self = this;
-        this.model.once(event, function() {
-            self[name].remove();
-            callback();
-        });
-    },
-
-    renderQuality: function() {
-        /*
-            Render the first star rating, then wait until it's been rated to show the next step.
-            Called when the view's model is not fetched successfully -- particularly when it doesn't yet exist.
+            Present each rating widget one at a time, waiting for one to be interacted with before showing the next.
+            Then, once the user has filled out the rating completely, call renderAll to allow review/editing.
         */
         this.$el.html(this.template());
         this.$(".rating-submit").hide();
         this.$(".rating-edit").hide();
         this.$(".rating-skip").hide();
         this.$(".rating-delete").hide();
-        this.add_subview_and_once(StarView, "star_view_quality",
-            {el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"},
-            "change:quality", this.renderDifficulty);
-    },
 
-    renderDifficulty: function() {
-        this.add_subview_and_once(StarView, "star_view_difficulty",
-            {el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty"},
-            "change:difficulty", this.renderTextArea);
-    },
+        this.star_view_quality = this.add_subview(StarView, {el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"});
 
-    renderTextArea: function() {
-        this.$(".rating-submit").show();
-        this.$(".rating-skip").show();
-        this.text_view = this.add_subview(TextView, {
-            el: this.$("#text-container"),
-            model: this.model,
-            rating_attr: "text"
-        });
         var self = this;
-        // Wrap in _.once, since it could potentially be called twice by different callbacks
-        var callback = _.once(function() {
-            self.text_view.remove();
-            self.renderAll();
+
+        this.listenToOnce(this.model, "change:quality", function(){
+            self.star_view_quality.remove();
+            self.star_view_difficulty = self.add_subview(StarView, {el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty"});
         });
-        this.$(".rating-submit").one("click", function() {
-            // Update the model explicitly before removing the view, since the callback for changed text is debounced
-            self.text_view.model.set(self.text_view.text_attr, self.text_view.$(".rating-text-feedback")[0].value);
-            callback();
-        });
-        this.$(".rating-skip").one("click", function() {
-            self.text_view.model.set(self.text_view.text_attr, "");
-            callback();
+
+        this.listenToOnce(this.model, "change:difficulty", function(){
+            self.star_view_difficulty.remove();
+            self.text_view = self.add_subview(TextView, {el: self.$("#text-container"), model: self.model, text_attr: "text"});
+            self.$(".rating-submit").show();
+            self.$(".rating-skip").show();
+
+            // Wrap in _.once, since it could potentially be called twice by different callbacks
+            var callback = _.once(function() {
+                self.text_view.remove();
+                self.renderAll();
+            });
+            self.$(".rating-submit").one("click", callback);
+            self.$(".rating-skip").one("click", function() {
+                self.text_view.model.set(self.text_view.text_attr, "");
+                callback();
+            });
         });
     },
 
@@ -146,7 +130,7 @@ module.exports = BaseView.extend({
                 console.log("failed to clear rating model attributes...");
             },
             success: function(){
-                self.renderQuality();
+                self.renderSequence();
             },
             patch: true
         });
@@ -219,10 +203,9 @@ var TextView = BaseView.extend({
         return this;
     },
 
-    /* Debounce'd -- waits until the input stops arriving (500 ms) to update the model */
-    text_changed: _.debounce(function() {
+    text_changed: function() {
         this.model.set(this.text_attr, this.$(".rating-text-feedback")[0].value);
-    }, 500),
+    },
 
     toggle_disabled: function(val) {
         if( typeof val === "undefined" ) {

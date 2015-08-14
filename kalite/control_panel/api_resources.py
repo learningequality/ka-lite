@@ -379,6 +379,15 @@ class ContentRatingExportResource(ParentFacilityUserResource):
         return super(ContentRatingExportResource, self).authorized_read_list(content_ratings, bundle)
 
     def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """
+        Defines a hook to process list view data before being serialized.
+        We pluck out the "user" and replace with the fields we're interested in (username, facility name, is_teacher),
+          and pluck out the content_id and replace with the content_title (if found).
+        This is to make the csv output more human friendly.
+        :param request: HTTP request object
+        :param to_be_serialized: the unprocessed list of objects that will be serialized
+        :return: the _processed_ list of objects to serialize
+        """
         from kalite.topic_tools import get_content_data, get_exercise_data
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]

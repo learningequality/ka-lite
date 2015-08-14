@@ -3,6 +3,9 @@ environment.py defines setup and teardown behaviors for behave tests.
 The behavior in this file is appropriate for integration tests, and
 could be used to bootstrap other integration tests in our project.
 """
+import tempfile
+import shutil
+
 from behave import *
 from httplib import CannotSendRequest
 from selenium import webdriver
@@ -12,6 +15,8 @@ from django.db import connections
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
+
+from securesync.models import Zone, Device, DeviceZone
 
 def before_all(context):
     pass
@@ -36,7 +41,6 @@ def before_scenario(context, scenario):
     profile = webdriver.FirefoxProfile()
     if "download_csv" in context.tags:
         # Let csv files be downloaded automatically. Can be accessed using context.download_dir
-        import tempfile
         context.download_dir = tempfile.mkdtemp()
         profile.set_preference("browser.download.folderList", 2)
         profile.set_preference("browser.download.manager.showWhenStarting", False)
@@ -71,7 +75,6 @@ def after_scenario(context, scenario):
         logout(context)
 
     if "download_csv" in context.tags:
-        import shutil
         shutil.rmtree(context.download_dir)
 
     try:
@@ -103,7 +106,6 @@ def do_fake_registration():
     Register the device, in case some feature being tested depends on it. Will be undone by the database teardown.
     """
     # Create a Zone and DeviceZone to fool the Device into thinking it's registered
-    from securesync.models import Zone, Device, DeviceZone
     zone = Zone(name="The Danger Zone", description="Welcome to it.")
     zone.save()
     device = Device.get_own_device()
