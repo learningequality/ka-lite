@@ -145,7 +145,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
             "default_language": get_default_language(),
         })
 
-    if is_teacher or (FacilityGroup.objects.filter(facility=facility).count() == 0 and not request.is_admin) or not new_user:
+    if is_teacher or (not (request.is_admin or request.is_teacher) and FacilityGroup.objects.filter(facility=facility).count() == 0) or (not new_user and not (request.is_admin or request.is_teacher)):
         form.fields['group'].widget = forms.HiddenInput()
     if Facility.objects.count() < 2 or (not new_user and not request.is_admin):
         form.fields['facility'].widget = forms.HiddenInput()

@@ -254,12 +254,9 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         self.teacher = self.create_teacher(facility=self.facility)
         self.browser_login_teacher(username=self.teacher.username, password='password', facility_name=self.facility.name)
         self.browse_to(self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id}))
-        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
-        self.assertTrue(group_label.is_displayed())
         group_select = self.browser.find_element_by_id('id_group')
-        WebDriverWait(self.browser, 30).until(
-            EC.visibility_of(group_select)
-        )
+        self.assertTrue(group_select.is_displayed())
+
 
 
 class FormGroupTest(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin):
