@@ -24,21 +24,21 @@ class Migration(DataMigration):
                     e.latest_activity_timestamp = sorted([a.timestamp for a in alogs])[-1]
                     e.zone_fallback = e.get_zone()
                     e.save()
-                else:
+                elif e.completion_timestamp:
                     e.latest_activity_timestamp = e.completion_timestamp
                     e.save()
 
             except:
                 pass
 
-        for v in orm.VideoLog.objects.filter(latest_activity_timestamp=None):
+        for v in orm.VideoLog.objects.filter(latest_activity_timestamp=None).exclude(completion_timestamp=None):
             try:
                 v.latest_activity_timestamp = v.completion_timestamp
                 v.save()
             except:
                 pass
 
-        for c in orm.ContentLog.objects.filter(latest_activity_timestamp=None):
+        for c in orm.ContentLog.objects.filter(latest_activity_timestamp=None).exclude(completion_timestamp=None):
             try:
                 c.latest_activity_timestamp = c.completion_timestamp
                 c.save()
@@ -47,7 +47,7 @@ class Migration(DataMigration):
 
 
     def backwards(self, orm):
-        raise RuntimeError("Cannot reverse this migration.")
+        pass
 
     models = {
         u'main.attemptlog': {
