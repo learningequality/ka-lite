@@ -12,7 +12,12 @@ var AutoCompleteView = BaseView.extend({
 
     item_template: SearchBarItemTemplate,
 
-    tagName: "li", 
+    tagName: "li",
+
+    attributes: { // required for a11y conformance tests
+        role: "menuitem",
+        id: "search_box_cont"
+    },
 
     events: {
         "input #search": "input_changed",

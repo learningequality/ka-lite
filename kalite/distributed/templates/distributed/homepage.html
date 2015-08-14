@@ -26,13 +26,13 @@
     <div class="container" id="content-area">
 
         <div class="row">
-            <h2 class="main-headline hidden-xs">{{ channel_data.head_line }}</h2>
+            <h1 class="h2 main-headline hidden-xs">{{ channel_data.head_line }}</h1>
         </div>
 
         <div class="row">
             <div class="col-sm-4 col-sm-push-4 col-xs-10 col-xs-push-1 vertical-shadow suggested-action">
                 <a href="{% url 'learn' %}">
-                     <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
+                     <h2 class="h3 suggested-action-title">{% trans "Learn!" %}</h2>
                      <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/logo_10_enlarged_2.png" alt="{% trans 'Learn with Khan Academy videos and exercises!' %}">
                 </a>
             </div>
