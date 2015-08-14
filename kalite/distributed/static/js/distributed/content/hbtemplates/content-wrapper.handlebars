@@ -7,7 +7,7 @@
                         <div class="points-wrapper"></div>
                         {{!-- TODO-BLOCKER 0.13 rtibbles enable this for other content types. --}}
                         {{#ifcond kind "==" "Document" }}
-                        <a href="{{ content_urls.stream }}" class="btn btn-primary download-link pull-right">{{_ "Open PDF Reader" }}</a>
+                        <a href="{{ content_urls.stream }}" class="btn btn-primary role="button" download-link pull-right">{{_ "Open PDF Reader" }}</a>
                         {{/ifcond}}
                         <div class="clear"></div>
                     </div>
@@ -47,9 +47,9 @@
                     <div class="row">
                         {{#each related_content }}
                             <div class="col-xs-4">
-                                <a href="/learn/{{ path }}" title="{{description}}" class="btn btn-success btn-related-content">
+                                <a href="/learn/{{ path }}" title="{{description}}" class="btn btn-success btn-related-content" role="button">
                                     <div class="related-content-header">
-                                        <span class="icon-{{ kind }}"></span>
+                                        <span class="icon-{{ kind }}" aria-hidden="true"></span>
                                         <span class="related-content-title">{{ title }}</span>
                                     </div>
                                     <div class="related-content-body">
@@ -70,7 +70,7 @@
                     </h3>
                     {{#each tags }}
                         <a href="/search/?query={{ this }}">
-                            <span class="btn btn-tag">
+                            <span class="btn btn-tag" role="button">
                             {{ this }}
                             </span>
                         </a>

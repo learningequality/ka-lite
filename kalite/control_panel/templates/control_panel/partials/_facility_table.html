@@ -59,7 +59,7 @@
                                 <td>
                                     {% if request.is_django_user %}
                                     <a class="facility-delete-link" href="#">
-                                        <span class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}"></span>
+                                        <span class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}"aria-hidden="true"></span><span class="sr-only">Delete facility</span>
                                     </a>
                                     {% endif %}
                                 </td>
