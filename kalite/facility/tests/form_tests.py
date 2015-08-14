@@ -238,25 +238,6 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         self.facility = self.create_facility()
         super(FormBrowserTests, self).setUp()
 
-    def test_no_groups_no_select(self):
-        signup_url = "%s%s%s" % (self.reverse('facility_user_signup'), "?&facility=", self.facility.id)
-        self.browse_to(signup_url)
-        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
-        self.assertFalse(group_label.is_displayed())
-        WebDriverWait(self.browser, 30).until(
-            EC.invisibility_of_element_located((By.ID, 'id_group'))
-        )
-
-    def test_signup_cannot_select_group(self):
-        self.group = self.create_group(facility=self.facility)
-        signup_url = "%s%s%s" % (self.reverse('facility_user_signup'), "?&facility=", self.facility.id)
-        self.browse_to(signup_url)
-        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
-        self.assertTrue(group_label.is_displayed())
-        WebDriverWait(self.browser, 30).until(
-            EC.invisibility_of_element_located((By.ID, 'id_group'))
-        )
-
     def test_logged_in_student_cannot_select_group(self):
         self.group = self.create_group(facility=self.facility)
         self.student = self.create_student(facility=self.facility, group=self.group)

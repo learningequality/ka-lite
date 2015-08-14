@@ -59,15 +59,12 @@ def rgba_to_hex(rgba_string):
     return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
 
 def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
-    try:
-        wait_elem = context.browser.find_element_by_css_selector(elem)
-        WebDriverWait(context.browser, wait_time).until(
-            EC.staleness_of(wait_elem)
-        )
-    except NoSuchElementException:
-        pass
     with context._runner.test_case.assertRaises(NoSuchElementException):
         context.browser.find_element_by_css_selector(elem)
+
+def assert_no_element_by_xpath_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+    with context._runner.test_case.assertRaises(NoSuchElementException):
+        context.browser.find_element_by_xpath(elem)
 
 def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     """ Click an element and then wait for the page to load. Does this by
