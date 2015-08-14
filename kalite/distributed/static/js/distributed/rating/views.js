@@ -146,7 +146,7 @@ module.exports = BaseView.extend({
                 console.log("failed to clear rating model attributes...");
             },
             success: function(){
-                self.render1st();
+                self.renderQuality();
             },
             patch: true
         });
