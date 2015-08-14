@@ -186,7 +186,8 @@ class GroupControlTests(FacilityMixins,
 
         group_row = self.browser.find_element_by_xpath('//tr[@value="%s"]' % self.group.id)
         group_delete_checkbox = group_row.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]')
-        group_delete_checkbox.click()
+        if not group_delete_checkbox.is_selected():
+            group_delete_checkbox.click()
 
         confirm_group_selector = ".delete-group"
         self.browser_click_and_accept(confirm_group_selector)
