@@ -22,24 +22,6 @@ def step_impl(context):
     # See above. This is hard for me to implement. :(
     pass
 
-@then("I should see an alert")
-def step_impl(context):
-    pass
-    #assert alert_in_page(context.browser), "No alert found!"
-
 @then("I will be happy")
 def step_impl(context):
     pass
-
-
-def alert_in_page(browser):
-    # How do I safely reason about single-page JS apps...
-    # Is this an appropriate timeout value or not?
-    # Can we listen for events in our JS apps to improve testability?
-    try:
-        elem = WebDriverWait(browser, TIMEOUT).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "alert"))
-        )
-        return True
-    except TimeoutException:
-        return False

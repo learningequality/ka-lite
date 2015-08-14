@@ -52,6 +52,15 @@ MAX_WAIT_TIME = 10
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 5
 
+def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
+    try:
+        elem = WebDriverWait(browser, wait_time).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "alert"))
+        )
+        return elem
+    except TimeoutException:
+        return False
+
 def rgba_to_hex(rgba_string):
     """
     Returns an uppercase HEX representation of an rgba(xxx, yyy, zzz, a) string
