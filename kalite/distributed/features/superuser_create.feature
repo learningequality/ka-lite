@@ -35,14 +35,6 @@ Feature: Create superuser from the in browser modal
         Then the password border will turn red
         And the modal won't dismiss
 
-    Scenario: Create superuser with password longer than 40
-        Given superuser is deleted
-        And I am on the homepage
-        Then I should see a modal
-        When I enter a password longer than 40 letters
-        And I click the create button
-        Then the modal won't dismiss
-
     Scenario: Create superuser with unmatched password
         Given superuser is deleted
         And I am on the homepage

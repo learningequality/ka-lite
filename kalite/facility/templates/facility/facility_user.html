@@ -24,42 +24,15 @@
             {% endfor %}
             {% for field in form.visible_fields %}
                 <p>
-                    {# Allow admins to add a new group #}
-                    {% if field.id_for_label == "id_group" %}
-                        {% if request.is_admin %}
-                            {# Do not allow teacher accounts to be in a group. #}
-                            {% if teacher %}
-                            {% else %}
-                                {% if form.fields.group.choices.queryset.count > 0 %}
-                                    {{ field.label_tag }}
-                                    {{ field }}
-                                    {{ field.errors }}
-                                {% endif %}
-                                <span class="helptext">(<a href="{% url 'add_group' %}?facility={{facility.id}}&next={{ request.get_full_path|urlencode }}">{% trans "Add a new group" %}</a>)</span>
-                            {% endif %}
-                        {% elif new_user %}
-                            {% if form.fields.group.choices.queryset.count > 0 %}
-                                {{ field.label_tag }}
-                                {{ field }}
-                                {{ field.errors }}
-                            {% endif %}
-                            {# Do not allow students to edit their own group #}
-                        {% endif %}
-                    {% elif field.id_for_label == "id_facility" %}
-                        {# Show facility info #}
-                        {% if request.session.facility_count < 2 or not request.is_admin %}
-                        {% else %}
-                            {{ field.label_tag }}
-                            {{ field }}
-                            {{ field.errors }}
-                            <span class="helptext">{{ field.help_text }}</span>
-                        {% endif %}
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                    {% if field.id_for_label == "id_group" and request.is_admin %}
+                        {# Allow admins to add a new group #}
+                        <span class="helptext">(<a href="{% url 'add_group' %}?facility={{facility.id}}&next={{ request.get_full_path|urlencode }}">{% trans "Add a new group" %}</a>)</span>
                     {% else %}
-                        {{ field.label_tag }}
-                        {{ field }}
-                        {{ field.errors }}
                         <span class="helptext">{{ field.help_text }}</span>
-                    {% endif %}
+                    {% endif %}   
                 </p>
             {% endfor %}
 
