@@ -1,25 +1,42 @@
-import backup
+from os.path import join, expanduser
+import os
+from django.core.management.base import BaseCommand
+from django.core.management import call_command
+from optparse import make_option
+BACKUP_DIRPATH = expanduser("~")
+BACKUP_DIRPATH = os.path.join(BACKUP_DIRPATH, 'ka-lite-backups')
 
-from django.core.management.base import NoArgsCommand
+backup_filepath=""
 
-backup_dirpath = expanduser("~")
-backup_dirpath = os.path.join(backup_dirpath, 'ka-lite-backups')
-
-class Command(NoArgsCommand):
-    help = "Restore backup to a previous state"
-    def handle_noargs(self, **options):
-        file_list = os.listdir(backup_dirpath) #Retrieve the filenames present in the backup_dirpath
-        filelist = []
-        filenumber = 0
-
-        for i, f in enumerate(file_list):
-            print i, f
-            filenumber += 1
-
-        print "Please enter file-number to restore:\n"
-
-        backup_option = int(raw_input())
-        if backup_option>=0 and backup_option <=filenumber:
-            restoref = filelist[backup_option] #file to be restored based on x
-            backup_filepath = os.path.join(backup_dirpath, restoref) #create file path
-            call_command('dbrestore', filepath=backup_filepath, database='default') #perform restore
+class Command(BaseCommand):
+    help = "Restore backup to a previous state."
+    option_list = BaseCommand.option_list + (
+        make_option(
+            '--file',
+            dest='backup_filepath',
+            default="",
+            help="File path"),
+        )
+    
+    def handle(self, *args, **options):
+            if(options['backup_filepath']):
+                if(os.path.isfile(backup_filepath)):
+                    call_command('dbrestore', filepath=backup_filepath, database='default') #perform restore from the given filepath
+            else:
+                file_list = os.listdir(BACKUP_DIRPATH) #Retrieve the filenames present in the BACKUP_DIRPATH
+                filelist = []
+                filenumber = 0
+                for i, f in enumerate(file_list):
+                    print i, f
+                    filelist.append(f)
+                if(len(filelist) > 0):        
+                    print "Please enter a file-number to restore:\n"
+                    backup_option = int(raw_input())            
+                    try:
+                        restoref = filelist[backup_option] #file to be restored based on x
+                        backup_filepath = os.path.join(BACKUP_DIRPATH, restoref) #create file path
+                        call_command('dbrestore', filepath=backup_filepath, database='default') #perform restore
+                    except IndexError:
+                        print 'Number option out of bounds.'
+                else:
+                    print 'No files available to restore.'                    

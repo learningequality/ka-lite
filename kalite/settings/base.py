@@ -8,6 +8,7 @@ import os
 import json
 import sys
 import warnings
+from os.path import join, expanduser
 
 from kalite import ROOT_DATA_PATH
 from kalite.shared.warnings import RemovedInKALite_v015_Warning
@@ -321,7 +322,9 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
-<<<<<<< HEAD
+backup_dirpath = os.path.join(expanduser("~"), 'ka-lite-backups')
+DBBACKUP_BACKUP_DIRECTORY = backup_dirpath
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -357,6 +360,7 @@ INSTALLED_APPS = [
     'kalite.i18n',
     'kalite.ab_testing',
     'kalite.control_panel',
+    'dbbackup',
 ]
 =======
 INSTALLED_APPS = (

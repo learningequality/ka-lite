@@ -4,31 +4,35 @@ import os
 import sys
 import time
 from os.path import expanduser
+from os.path import join
+
 from django.core.management import call_command
 
 from fle_utils.chronograph.models import Job
+from fle_utils.chronograph.utils import force_job
 
-backup_dirpath = expanduser("~")
-backup_dirpath = os.path.join(backup_dirpath, 'ka-lite-backups')
+BACKUP_DIRPATH = expanduser("~")
+BACKUP_DIRPATH = os.path.join(BACKUP_DIRPATH, 'ka-lite-backups')
+
+DAYS = 7
+SECONDS = 86400
 
 def file_rename():
-    filename ='default.backup'
+    defaultfilename ='default.backup'
     time = datetime.datetime.now().ctime()
-    path = os.path.join(backup_dirpath, filename)
-    target = os.path.join(backup_dirpath, time + '.backup')
-
-    if path.exists():
-        os.rename(path, target)
+    time = time + '.backup'
+    defaultpath = os.path.join(BACKUP_DIRPATH, defaultfilename)
+    target = os.path.join(BACKUP_DIRPATH, time)
+    if(os.path.exists(defaultpath)):
+        os.rename(defaultpath, target)   
 
 def setup_backup():
-    try:
-        command = call_command('dbbackup')
-        force_job(command, frequency="DAILY")
-    except KeyError:
-        pass
+    command = call_command('kalitebackup')
+    force_job("backup",command, frequency="DAILY")
 
 def rotate_backups():
     now = time.time()
-    for fp in os.listdir(backup_dirpath):
-        if os.stat(os.path.join(backup_dirpath, fp)).st_mtime < now - 7 * 86400:
-            os.remove(os.path.join(backup_dirpath, fp))
+    for backupfile in os.listdir(BACKUP_DIRPATH):
+        currentFile = os.path.join(BACKUP_DIRPATH, backupfile)
+        if os.stat(currentFile).st_mtime < now - DAYS * SECONDS:
+            os.remove(currentFile)
