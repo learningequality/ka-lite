@@ -15,9 +15,8 @@ from selenium.webdriver.support.select import Select
 RATING_CONTAINER_ID = "rating-container"
 TEXT_CONTAINER_ID = "text-container"
 STAR_CONTAINER_IDS = (
-    "star-container-1",
-    "star-container-2",
-    "star-container-3",
+    "star-container-quality",
+    "star-container-difficulty",
 )
 SUBMIT_CLASS = "rating-submit"
 STAR_RATING_OPTION_CLASS = "star-rating-option"

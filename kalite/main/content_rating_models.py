@@ -13,7 +13,6 @@ class ContentRating(DeferredCountSyncedModel):
     content_id = models.CharField(max_length=100, db_index=True, blank=False)
 
     user = models.ForeignKey(FacilityUser, blank=False)
-    rating1 = models.IntegerField(blank=False, default=0)
-    rating2 = models.IntegerField(blank=False, default=0)
-    rating3 = models.IntegerField(blank=False, default=0)
+    quality = models.IntegerField(blank=False, default=0)
+    difficulty = models.IntegerField(blank=False, default=0)
     text = models.TextField(blank=True, null=True)

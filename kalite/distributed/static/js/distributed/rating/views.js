@@ -27,12 +27,12 @@ module.exports = BaseView.extend({
             model.url = "/api/not/gonna/work";
             return model;
         }();
-        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "render1st", "render2nd", "render3rd", "renderTextArea", "renderAll", "render");
+        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "renderQuality", "renderDifficulty", "renderTextArea", "renderAll", "render");
     },
 
     render: function() {
-        if( this.model.isNew() || this.model.get("rating1") === 0) {
-            this.render1st();
+        if( this.model.isNew() || this.model.get("quality") === 0) {
+            this.renderQuality();
         } else {
             this.renderAll();
         }
@@ -51,7 +51,7 @@ module.exports = BaseView.extend({
         });
     },
 
-    render1st: function() {
+    renderQuality: function() {
         /*
             Render the first star rating, then wait until it's been rated to show the next step.
             Called when the view's model is not fetched successfully -- particularly when it doesn't yet exist.
@@ -61,21 +61,15 @@ module.exports = BaseView.extend({
         this.$(".rating-edit").hide();
         this.$(".rating-skip").hide();
         this.$(".rating-delete").hide();
-        this.add_subview_and_once(StarView, "star_view_1",
-            {el: this.$("#star-container-1"), model: this.model, rating_attr: "rating1"},
-            "change:rating1", this.render2nd);
+        this.add_subview_and_once(StarView, "star_view_quality",
+            {el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"},
+            "change:quality", this.renderDifficulty);
     },
 
-    render2nd: function() {
-        this.add_subview_and_once(StarView, "star_view_2",
-            {el: this.$("#star-container-2"), model: this.model, rating_attr: "rating2"},
-            "change:rating2", this.render3rd);
-    },
-
-    render3rd: function() {
-        this.add_subview_and_once(StarView, "star_view_3",
-            {el: this.$("#star-container-3"), model: this.model, rating_attr: "rating3"},
-            "change:rating3", this.renderTextArea);
+    renderDifficulty: function() {
+        this.add_subview_and_once(StarView, "star_view_difficulty",
+            {el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty"},
+            "change:difficulty", this.renderTextArea);
     },
 
     renderTextArea: function() {
@@ -83,7 +77,8 @@ module.exports = BaseView.extend({
         this.$(".rating-skip").show();
         this.text_view = this.add_subview(TextView, {
             el: this.$("#text-container"),
-            model: this.model
+            model: this.model,
+            rating_attr: "text"
         });
         var self = this;
         // Wrap in _.once, since it could potentially be called twice by different callbacks
@@ -113,9 +108,8 @@ module.exports = BaseView.extend({
         this.$(".rating-skip").hide();
         this.$(".rating-edit").hide();
         var views_and_opts = [
-            ["star_view_1", StarView, {el: this.$("#star-container-1"), model: this.model, rating_attr: "rating1"}],
-            ["star_view_2", StarView, {el: this.$("#star-container-2"), model: this.model, rating_attr: "rating2"}],
-            ["star_view_3", StarView, {el: this.$("#star-container-3"), model: this.model, rating_attr: "rating3"}],
+            ["star_view_quality", StarView, {el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"}],
+            ["star_view_difficulty", StarView, {el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty"}],
             ["text_view", TextView, {el: this.$("#text-container"), model: this.model, rating_attr: "text"}]
         ];
         var self = this;
@@ -143,10 +137,9 @@ module.exports = BaseView.extend({
         this.$el.html("Deleting your review...");
         // Don't simply clear & destroy the model, we wish to remember some attributes (like content_kind and user_uri)
         this.model.save({
-            rating1: 0,
-            rating2: 0,
-            rating3: 0,
-            text: "",
+            quality: 0,
+            difficulty: 0,
+            text: ""
         },
         {
             error: function(){
