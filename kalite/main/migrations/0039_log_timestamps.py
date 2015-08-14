@@ -11,26 +11,39 @@ class Migration(DataMigration):
         Create latest_activity_timestamp data when possible by inspecting the model.
         For ExerciseLog inspect relevant AttemptLogs to infer most recent activity.
         If not available, and for other Logs, fallback to completion_timestamp if available.
+        All attempted migrations are wrapped in try-except blocks so that this migration
+        does not render an installation unusable simply because this fails for any data.
         """
         for e in orm.ExerciseLog.objects.filter(latest_activity_timestamp=None):
 
-            alogs = orm.AttemptLog.objects.filter(user=e.user, exercise_id=e.exercise_id, context_type__in=["playlist", "exercise"])
+            try:
 
-            if alogs:
-                e.latest_activity_timestamp = sorted([a.timestamp for a in alogs])[-1]
-                e.zone_fallback = e.get_zone()
-                e.save()
-            else:
-                e.latest_activity_timestamp = e.completion_timestamp
-                e.save()
+                alogs = orm.AttemptLog.objects.filter(user=e.user, exercise_id=e.exercise_id, context_type__in=["playlist", "exercise"])
+
+                if alogs:
+                    e.latest_activity_timestamp = sorted([a.timestamp for a in alogs])[-1]
+                    e.zone_fallback = e.get_zone()
+                    e.save()
+                else:
+                    e.latest_activity_timestamp = e.completion_timestamp
+                    e.save()
+
+            except:
+                pass
 
         for v in orm.VideoLog.objects.filter(latest_activity_timestamp=None):
-            v.latest_activity_timestamp = v.completion_timestamp
-            v.save()
+            try:
+                v.latest_activity_timestamp = v.completion_timestamp
+                v.save()
+            except:
+                pass
 
         for c in orm.ContentLog.objects.filter(latest_activity_timestamp=None):
-            c.latest_activity_timestamp = c.completion_timestamp
-            c.save()
+            try:
+                c.latest_activity_timestamp = c.completion_timestamp
+                c.save()
+            except:
+                pass
 
 
     def backwards(self, orm):
