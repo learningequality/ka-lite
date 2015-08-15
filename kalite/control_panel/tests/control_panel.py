@@ -116,6 +116,7 @@ class FacilityControlTests(FacilityMixins,
             setattr(self.fac, field, 100)
         for field in ['address', 'contact_name', 'contact_email']:
             setattr(self.fac, field, 'Not Empty')
+        self.fac.save()
         teacher_username, teacher_password = 'teacher1', 'password'
         self.teacher = self.create_teacher(username=teacher_username,
                                            password=teacher_password,
