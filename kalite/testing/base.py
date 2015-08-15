@@ -156,7 +156,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         try:
             failed = runner.run()
         except TransactionManagementError:
-            pass
+            failed = None
 
         try:
             undefined_steps = runner.undefined_steps
