@@ -22,7 +22,6 @@ class Migration(DataMigration):
 
                 if alogs:
                     e.latest_activity_timestamp = sorted([a.timestamp for a in alogs])[-1]
-                    e.zone_fallback = e.get_zone()
                     e.save()
                 elif e.completion_timestamp:
                     e.latest_activity_timestamp = e.completion_timestamp
