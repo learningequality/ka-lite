@@ -34,7 +34,7 @@ from django.db import transaction
 from fle_utils.general import datediff
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, AttemptLog
-from kalite.topic_tools import get_topic_videos, get_topic_exercises, get_content_cache
+from kalite.topic_tools.base import get_topic_videos, get_topic_exercises, get_content_cache
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",

@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _
 
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
-from kalite import topic_tools
+from kalite.topic_tools import base as topic_tools
 from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone

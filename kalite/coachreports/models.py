@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.playlist.models import QuizLog
-from kalite.topic_tools import get_id2slug_map, get_leafed_topics, get_content_cache, get_exercise_cache, get_node_cache
+from kalite.topic_tools.base import get_id2slug_map, get_leafed_topics, get_content_cache, get_exercise_cache, get_node_cache
 
 class PlaylistProgressParent:
     """Parent class for helpful class methods"""

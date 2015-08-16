@@ -8,7 +8,7 @@ import datetime
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools import get_exercise_cache, get_content_cache
+from kalite.topic_tools.base import get_exercise_cache, get_content_cache
 
 
 def before_scenario(context, scenario):

@@ -11,7 +11,7 @@ import collections
 
 from django.db.models import Count
 
-from kalite.topic_tools import get_content_data, get_exercise_data, get_topic_data, get_topic_exercises, get_topic_tree, get_exercise_cache
+from kalite.topic_tools.base import get_content_data, get_exercise_data, get_topic_data, get_topic_exercises, get_topic_tree, get_exercise_cache
 
 from . import settings
 

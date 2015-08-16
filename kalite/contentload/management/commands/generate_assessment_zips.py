@@ -14,7 +14,7 @@ from django.core.management.base import NoArgsCommand
 
 import kalite.version as version
 
-from kalite.topic_tools import get_content_cache, get_exercise_cache
+from kalite.topic_tools.base import get_content_cache, get_exercise_cache
 from kalite.contentload import settings
 
 logging = django_settings.LOG

@@ -4,7 +4,7 @@ import os
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand
 
-from kalite.topic_tools import video_dict_by_video_id, get_node_cache
+from kalite.topic_tools.base import video_dict_by_video_id, get_node_cache
 
 
 MALFORMED_IDS = []

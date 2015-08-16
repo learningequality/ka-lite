@@ -8,7 +8,7 @@ from django.utils import unittest
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.testing.mixins.facility_mixins import FacilityMixins
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools.base import get_node_cache
 from kalite.student_testing.utils import set_current_unit_settings_value
 
 PLAYLIST_ID = "g4_u403_p1"

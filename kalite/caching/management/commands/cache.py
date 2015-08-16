@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 from fle_utils.internet.webcache import invalidate_web_cache
 
 from .... import caching
-from kalite import topic_tools
+from kalite.topic_tools import base as topic_tools
 
 
 class Command(BaseCommand):

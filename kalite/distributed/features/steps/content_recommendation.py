@@ -1,7 +1,7 @@
 from behave import *
 from kalite.testing.behave_helpers import *
 
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.base import get_content_cache
 
 @then(u'the resume card should be shown on the very left of the page')
 def impl(context):

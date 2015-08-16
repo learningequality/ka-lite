@@ -13,7 +13,7 @@ from kalite.facility.models import FacilityGroup
 
 from kalite.main.models import ExerciseLog, AttemptLog
 
-from kalite.topic_tools import get_exercise_cache
+from kalite.topic_tools.base import get_exercise_cache
 
 from kalite.testing.mixins.facility_mixins import CreateStudentMixin, CreateGroupMixin
 
