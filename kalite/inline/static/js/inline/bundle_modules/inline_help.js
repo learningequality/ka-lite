@@ -2,6 +2,8 @@ var $ = require("base/jQuery");
 var NarrativeModel = require("../models");
 var ButtonView = require("../views");
 
+require("intro.js/introjs.css");
+
 
 // Only load button and narrative if there is one defined for page
 $(function() {

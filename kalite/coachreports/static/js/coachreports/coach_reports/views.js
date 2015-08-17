@@ -7,6 +7,8 @@ var messages = require("utils/messages");
 var Models = require("./models");
 var TabularReportViews = require("../tabular_reports/views");
 
+var date_string = require("utils/datestring").date_string;
+
 /*
 Hierarchy of views:
 CoachReportView:
@@ -14,6 +16,57 @@ CoachReportView:
     - GroupSelectView
     - CoachSummaryView
 */
+
+var TimeSetView = BaseView.extend({
+    template: require("./hbtemplates/datepicker.handlebars"),
+
+    events: {
+        "click .setrange": "set_range"
+    },
+
+    initialize: function () {
+        var server_date_now = new Date(new Date().getTime() - window.statusModel.get("client_server_time_diff"));
+        var default_start_date = new Date(server_date_now.getTime());
+        default_start_date = new Date(default_start_date.setDate(default_start_date.getDate()-ds.coachreports.default_coach_report_day_range));
+
+        this.model.set({
+            "start_date": default_start_date,
+            "end_date": server_date_now
+        });
+        this.render();
+    },
+
+    render: function() {
+        this.$el.html(this.template({
+            start_date: icu.getDateFormat("SHORT").format(this.model.get("start_date")),
+            end_date: icu.getDateFormat("SHORT").format(this.model.get("end_date"))
+        }));
+
+        var format = icu.getDateFormatSymbols().order_short;
+
+        format = format[0] + "/" + format[1] + "/" + format[2];
+
+        format = format.toLowerCase().replace("y", "yy");
+
+        this.datepicker = this.$('.date-range').each(function(){
+            $(this).datepicker({
+                format: format,
+                endDate: "0d",
+                todayBtn: "linked",
+                todayHighlight: true
+            });
+        });
+    },
+
+    set_range: function() {
+        this.model.set({
+            start_date: this.$("#start").datepicker("getDate"),
+            end_date: this.$("#end").datepicker("getDate")
+        });
+        this.model.trigger("set_time");
+        return false;
+    }
+});
 
 var CoachSummaryView = BaseView.extend({
     /*
@@ -30,12 +83,16 @@ var CoachSummaryView = BaseView.extend({
         _.bindAll(this, "set_data_model", "render");
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
+        this.listenTo(this.model, "set_time", this.set_data_model);
         this.set_data_model();
     },
 
     set_data_model: function (){
         if (this.data_model) {
-            if (this.data_model.get("facility") !== this.model.get("facility") || this.data_model.get("group") !== this.model.get("group")) {
+            var check_fields = ["facility", "group", "start_date", "end_date"];
+            var data_fields = _.pick(this.data_model.attributes, check_fields);
+            var status_fields = _.pick(this.model.attributes, check_fields);
+            if (!_.isEqual(data_fields, status_fields)) {
                 delete this.data_model;
             }
         }
@@ -43,7 +100,9 @@ var CoachSummaryView = BaseView.extend({
         if (!this.data_model) {
             this.data_model = new Models.CoachReportAggregateModel({
                 facility: this.model.get("facility"),
-                group: this.model.get("group")
+                group: this.model.get("group"),
+                start_date: date_string(this.model.get("start_date")),
+                end_date: date_string(this.model.get("end_date"))
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
@@ -55,7 +114,9 @@ var CoachSummaryView = BaseView.extend({
     render: function() {
         this.$el.html(this.template({
             status:this.model.attributes,
-            data: this.data_model.attributes
+            data: this.data_model.attributes,
+            start_date: icu.getDateFormat("SHORT").format(this.model.get("start_date")),
+            end_date: icu.getDateFormat("SHORT").format(this.model.get("end_date"))
         }));
 
         messages.clear_messages();
@@ -63,8 +124,8 @@ var CoachSummaryView = BaseView.extend({
         // If no user data at all, then show a warning to the user
         var ref, ref1;
 
-        if ((this.data_model != null ? this.data_model.get("learner_events") != null ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
-          messages.show_message("warning", "No recent learner data for this group is available.");
+        if ((this.data_model !== undefined ? this.data_model.get("learner_events") !== undefined ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
+          messages.show_message("warning", gettext("No recent learner data for this group is available."));
         }
 
         delete this.tabular_report_view;
@@ -77,12 +138,12 @@ var CoachSummaryView = BaseView.extend({
             this.$("#show_tabular_report").text("Loading");
             this.$("#show_tabular_report").attr("disabled", "disabled");
             this.tabular_report_view = new TabularReportViews.TabularReportView({model: this.model, complete: function() {
-                self.$("#show_tabular_report").text("Hide Tabular Report");
+                self.$("#show_tabular_report").text(gettext("Hide Tabular Report"));
                 self.$("#show_tabular_report").removeAttr("disabled");
             }});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         } else {
-            this.$("#show_tabular_report").text("Show Tabular Report");
+            this.$("#show_tabular_report").text(gettext("Show Tabular Report"));
             this.tabular_report_view.remove();
             delete this.tabular_report_view;
         }
@@ -181,7 +242,7 @@ var GroupSelectView = Backbone.View.extend({
         // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         output = (ref = this.group_list.find(function(model) {
           return model.get("id") === id;
-        })) != null ? ref.get("name") : void 0;
+        })) !== undefined ? ref.get("name") : void 0;
 
         if (output) {
             this.model.set({
@@ -229,6 +290,7 @@ var CoachReportView = BaseView.extend({
         this.facility_select_view = new FacilitySelectView({model: this.model});
         this.group_select_view = new GroupSelectView({model: this.model});
         this.coach_summary_view = new CoachSummaryView({model: this.model});
+        this.time_set_view = new TimeSetView({model: this.model});
 
         this.render();
     },
@@ -237,6 +299,7 @@ var CoachReportView = BaseView.extend({
         this.$el.html(this.template());
         this.$('#group-select-container').append(this.group_select_view.el);
         this.$('#facility-select-container').append(this.facility_select_view.el);
+        this.$("#time-set-container").append(this.time_set_view.el);
         this.$("#student_report_container").append(this.coach_summary_view.el);
     }
 });
@@ -246,4 +309,4 @@ module.exports = {
     CoachSummaryView: CoachSummaryView,
     FacilitySelectView: FacilitySelectView,
     GroupSelectView: GroupSelectView
-}
+};

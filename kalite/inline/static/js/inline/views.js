@@ -2,7 +2,7 @@ var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 
-var introJs = require("./intro");
+var introJs = require("intro.js");
 
 var ButtonView = BaseView.extend({
     template: require("./hbtemplates/inline.handlebars"),
@@ -24,7 +24,7 @@ var ButtonView = BaseView.extend({
                 var narr = self.model.attributes;
 
                 //translate narrative into build options for introjs
-                var options = self.parseNarrative(narr);
+                options = _.extend(options, self.parseNarrative(narr));
 
                 //set the options on introjs object
                 var intro = introJs();

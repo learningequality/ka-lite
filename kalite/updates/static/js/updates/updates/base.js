@@ -1,4 +1,7 @@
 var $ = require("base/jQuery");
+require("jquery-ui/progressbar");
+require("jquery-ui-touch-punch");
+
 var messages = require("utils/messages");
 var api = require("utils/api");
 
@@ -139,7 +142,7 @@ function updatesCheck(process_name, interval) {
             var completed = !progress_log.process_name || progress_log.completed;
             if (completed) {
                 //
-                if (progress_log.process_percent == 1. && !progress_log.stage_status) {
+                if (progress_log.process_percent == 1.0 && !progress_log.stage_status) {
                     message = progress_log.notes || (gettext("Completed update successfully.") + " [" + process_name + "]");
                     messages.clear_messages();
                     messages.show_message("success", message);
@@ -248,4 +251,4 @@ module.exports = {
     select_update_elements: select_update_elements,
     updateDisplay: updateDisplay,
     updatesReset: updatesReset
-}
+};

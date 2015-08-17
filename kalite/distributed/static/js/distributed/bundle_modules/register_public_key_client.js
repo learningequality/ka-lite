@@ -25,5 +25,5 @@ function auto_register() {
 
 $(function() {
     $(".refresh-link").click(reload);
-    $("#one-click-register").click(auto_register)
+    $("#one-click-register").click(auto_register);
 });

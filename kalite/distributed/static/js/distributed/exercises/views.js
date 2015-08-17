@@ -9,6 +9,9 @@ var messages = require("utils/messages");
 var $ = require("base/jQuery");
 var $script = require("scriptjs");
 var KhanExercises = require("../perseus/ke/khan-exercise");
+var sprintf = require("sprintf-js").sprintf;
+
+require("qtip2");
 
 var ExerciseHintView = BaseView.extend({
 
@@ -498,7 +501,7 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.options = options;
 
-        _.bindAll.apply(_, [this].concat(_.functions(this)))
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         window.statusModel.loaded.then(this.setup_exercise_environment);
     },
@@ -740,7 +743,7 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
 
         // add some dummy attempt logs if needed, to match it up with the exercise log
         // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
-        if (this.attempt_collection.length < ExerciseParams.STREAK_WINDOW) {
+        if (this.attempt_collection.length < Models.ExerciseParams.STREAK_WINDOW) {
             var exercise_log_streak_progress = Math.min(this.log_model.get("streak_progress"), 100);
             while (this.attempt_collection.get_streak_progress_percent() < exercise_log_streak_progress) {
                 this.attempt_collection.add({correct: true, complete: true, points: this.get_points_per_question()});
@@ -806,8 +809,8 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
         var msg;
 
         var context = {
-            numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
-            denominator: ExerciseParams.STREAK_WINDOW
+            numerator: Models.ExerciseParams.STREAK_CORRECT_NEEDED,
+            denominator: Models.ExerciseParams.STREAK_WINDOW
         };
         if (this.log_model) {
             if (!this.log_model.get("complete")) {
@@ -1037,4 +1040,4 @@ module.exports = {
     ExercisePracticeView: ExercisePracticeView,
     ExerciseRelatedVideoView: ExerciseRelatedVideoView,
     ExerciseWrapperBaseView: ExerciseWrapperBaseView
-}
+};

@@ -366,12 +366,8 @@ class Command(BaseCommand):
         # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
         # Migrate the database
-        call_command(
-            "syncdb", interactive=False, verbosity=options.get("verbosity"))
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
-        # Create *.json and friends database
-        call_command("syncdb", interactive=False, verbosity=options.get(
-            "verbosity"), database="assessment_items")
         Settings.set("database_version", VERSION)
 
         # download assessment items
@@ -382,6 +378,8 @@ class Command(BaseCommand):
             logging.warning("Skipping assessment item downloading and configuration.")
 
         else:
+
+            call_command("syncdb", interactive=False, verbosity=options.get("verbosity"), database="assessment_items")
 
             # Outdated location of assessment items - move assessment items from their
             # old location (CONTENT_ROOT/khan where they were mixed with other content
