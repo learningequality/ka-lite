@@ -7,9 +7,8 @@ Windows Installation
 Mac Installation
 ================
 
-1. Download the KA Lite `OSX installer <https://disney.com>`_.
-
-.. warning:: Dear maintainers, please update this link.
+1. Download the KA Lite `OSX installer <https://learningequality.org/downloads/ka-lite/0.14/installers/mac/KA-Lite-Monitor.dmg>`_.
+2. After the download is complete, double click the .dmg file and follow the window for installation.
 
 Linux: Debian/Ubuntu Installation
 =================================
