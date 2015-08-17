@@ -1,11 +1,13 @@
 var BaseView = require("base/baseview");
 var _ = require("underscore");
 var $ = require("base/jQuery");
+require("jquery-slimscroll/jquery.slimscroll");
 var Backbone = require("base/backbone");
 var messages = require("utils/messages");
+var $script = require("scriptjs");
 
-var ExerciseViews = require("exercises/views");
-var ExerciseModels = require("exercises/models");
+require("../../../css/distributed/sidebar.css");
+
 var ContentViews = require("content/views");
 var Models = require("./models");
 
@@ -263,7 +265,7 @@ var SidebarView = BaseView.extend({
 
         // Used to get left value in number form
         var sidebarPanelPosition = this.sidebar.position();
-        if (sidebarPanelPosition.left != 0) {
+        if (sidebarPanelPosition.left !== 0) {
             this.sidebarBack.offset({left: 0});
         }
         else {
@@ -320,7 +322,7 @@ var TopicContainerInnerView = BaseView.extend({
 
     initialize: function(options) {
 
-        _.bindAll.apply(_, [this].concat(_.functions(this)))
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         var self = this;
 
@@ -362,7 +364,7 @@ var TopicContainerInnerView = BaseView.extend({
 
         this.$el.html(this.template(this.model.attributes));
 
-        this.$(".sidebar").slimScroll({
+        $(this.$(".sidebar")).slimScroll({
             color: "#083505",
             opacity: 0.2,
             size: "6px",
@@ -413,7 +415,7 @@ var TopicContainerInnerView = BaseView.extend({
 
     deferred_node_by_slug: function(slug, callback) {
         // Convenience method to return a node by a passed in slug
-        if (this.collection.loaded == true) {
+        if (this.collection.loaded === true) {
             this.node_by_slug(slug, callback);
         } else {
             var self = this;
@@ -694,23 +696,34 @@ var TopicContainerOuterView = BaseView.extend({
 
         var view;
 
+        var self = this;
+
+        // Do this to prevent browserify from bundling what we want to be external dependencies.
+        var external = require;
+
         switch(kind) {
 
             case "Exercise":
-                view = new ExerciseViews.ExercisePracticeView({
-                    exercise_id: id,
-                    context_type: "playlist",
-                    context_id: this.model.get("id")
+                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
+                    var ExerciseViews = external("exercise");
+                    view = new ExerciseViews.ExercisePracticeView({
+                        exercise_id: id,
+                        context_type: "playlist",
+                        context_id: self.model.get("id")
+                    });
+                    self.content_view.show_view(view);
                 });
-                this.content_view.show_view(view);
                 break;
 
             case "Quiz":
-                view = new ExerciseViews.ExerciseQuizView({
-                    quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
-                    context_id: this.model.get("id") // for now, just use the playlist ID as the quiz context_id
+                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
+                    var ExerciseViews = external("exercise");
+                    view = new ExerciseViews.ExerciseQuizView({
+                        quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
+                        context_id: self.model.get("id") // for now, just use the playlist ID as the quiz context_id
+                    });
+                    self.content_view.show_view(view);
                 });
-                this.content_view.show_view(view);
                 break;
 
             default:
@@ -743,4 +756,4 @@ module.exports = {
     TopicContainerInnerView: TopicContainerInnerView,
     TopicContainerOuterView: TopicContainerOuterView,
     ContentAreaView: ContentAreaView
-}
+};

@@ -32,7 +32,7 @@ def step_impl(context):
     # time it's built because of /api/coachreports/summary/?facility_id
     # being super slow
     try:
-        find_id_with_wait(context, "summary_mainview", wait_time=30)
+        find_id_with_wait(context, "summary_mainview", wait_time=60)
     except TimeoutException:
         raise RuntimeError("Could not find element, this was the DOM:\n\n" + context.browser.execute_script("return document.documentElement.outerHTML"))
 

@@ -7,6 +7,8 @@ var messages = require("utils/messages");
 var Models = require("./models");
 var TabularReportViews = require("../tabular_reports/views");
 
+var date_string = require("utils/datestring").date_string;
+
 /*
 Hierarchy of views:
 CoachReportView:
@@ -15,14 +17,8 @@ CoachReportView:
     - CoachSummaryView
 */
 
-var date_string = function(date) {
-    if (date) {
-        return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
-    }
-};
-
 var TimeSetView = BaseView.extend({
-    template: HB.template("coach_nav/datepicker"),
+    template: require("./hbtemplates/datepicker.handlebars"),
 
     events: {
         "click .setrange": "set_range"
@@ -30,7 +26,7 @@ var TimeSetView = BaseView.extend({
 
     initialize: function () {
         var server_date_now = new Date(new Date().getTime() - window.statusModel.get("client_server_time_diff"));
-        var default_start_date = new Date(server_date_now.getTime())
+        var default_start_date = new Date(server_date_now.getTime());
         default_start_date = new Date(default_start_date.setDate(default_start_date.getDate()-ds.coachreports.default_coach_report_day_range));
 
         this.model.set({
@@ -128,7 +124,7 @@ var CoachSummaryView = BaseView.extend({
         // If no user data at all, then show a warning to the user
         var ref, ref1;
 
-        if ((this.data_model != null ? this.data_model.get("learner_events") != null ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
+        if ((this.data_model !== undefined ? this.data_model.get("learner_events") !== undefined ? this.data_model.get("learner_events").length : void 0 : void 0) === 0) {
           messages.show_message("warning", gettext("No recent learner data for this group is available."));
         }
 
@@ -246,7 +242,7 @@ var GroupSelectView = Backbone.View.extend({
         // This nonsense of 'id' not being the Backbone 'id' is because of tastypie Resource URLs being used as model ids
         output = (ref = this.group_list.find(function(model) {
           return model.get("id") === id;
-        })) != null ? ref.get("name") : void 0;
+        })) !== undefined ? ref.get("name") : void 0;
 
         if (output) {
             this.model.set({
@@ -313,4 +309,4 @@ module.exports = {
     CoachSummaryView: CoachSummaryView,
     FacilitySelectView: FacilitySelectView,
     GroupSelectView: GroupSelectView
-}
+};

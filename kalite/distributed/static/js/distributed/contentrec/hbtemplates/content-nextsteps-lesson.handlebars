@@ -1,6 +1,6 @@
 
 <div class="row" class="content-nextsteps-lesson">
-	<a href="/learn/{{ path }}">
+	<a href="/learn/{{ path }}" class="content-nextsteps-lesson-link">
       <div class="col-xs-3">
         <center>
         <!--ALT for image gets read from 'description' so it doesn't need to be read twice-->
@@ -27,7 +27,7 @@
     </a>
     <!--The URL without the specific video, so that we see the path
     along the nav and show them the entire series-->
-    <a href="/learn/{{ topic.path }}">
+    <a href="/learn/{{ topic.path }}" class="content-nextsteps-topic-link">
       <div class="col-xs-3">
           <p class="h4">{{_ "Topic" }}:</p>
           <span aria-hidden="true" role="presentation"><i class="ns_series_arrow glyphicon glyphicon-arrow-right"></i></span>

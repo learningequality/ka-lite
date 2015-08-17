@@ -6,4 +6,4 @@ module.exports = {
 	$: $,
 	DataExportView: DataExportView,
 	DataExportStateModel: DataExportStateModel
-}
+};

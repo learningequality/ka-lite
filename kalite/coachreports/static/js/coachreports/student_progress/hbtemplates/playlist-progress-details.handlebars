@@ -1,5 +1,45 @@
 {{#each data}}
-<div class="col-xs-1 progress-block">
+    {{!-- Whole section is only for screen readers --}}
+<div class="sr-only">
+        <a href="/learn/{{attributes.path}}"><h3>{{attributes.title}}</h3></a>
+        <div>{{!-- Status info for sr-user. --}}
+            {{_ " Status: " }}
+            {{#ifcond attributes.status "===" "complete"}}
+                {{_ " Completed. " }}
+            {{/ifcond}}
+
+            {{#ifcond attributes.status "===" "inprogress"}}
+                {{_ " In progress. " }}
+            {{/ifcond}}
+
+            {{#ifcond attributes.status "===" "struggling"}}
+                {{_ " Struggling. " }}
+            {{/ifcond}}
+            
+            {{#ifcond attributes.status "===" "notstarted"}}
+                {{_ " Not started. " }}
+            {{/ifcond}}                
+        </div>
+        <div>
+            {{!-- Score info for sr-user. --}}
+            {{!-- Video --}}
+            {{#ifcond attributes.kind "===" "Video"}}
+                <span>{{_ " For this video you completed " }}{{attributes.score}}%.</span>
+            {{/ifcond}}
+
+            {{!-- Exercise --}}
+            {{#ifcond attributes.kind "===" "Exercise"}}
+                <span>{{_ " For this exercise your streak is " }}{{attributes.score}}%.</span>
+            {{/ifcond}}
+
+            {{!-- Quiz --}}
+            {{#ifcond attributes.kind "===" "Quiz"}}
+                <span>{{_ " For this quiz your score is " }}{{attributes.score}}%.</span>
+            {{/ifcond}}
+        </div>
+</div>
+{{!-- Whole section is rendered invisible to screen readers --}}
+<div class="col-xs-1 progress-block" aria-hidden="true" role="presentation">
     <a href="/learn/{{attributes.path}}">
     <div 
         class="progress-indicator progress-indicator-sm {{attributes.status}}"

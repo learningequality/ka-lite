@@ -237,7 +237,7 @@ class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserAction
             navbar_expand = self.browser.find_element_by_class_name('navbar-toggle')
             self.browser_activate_element(elem=navbar_expand)
             # Wait for the animation to finish
-            WebDriverWait(self.browser, 3).until(
+            WebDriverWait(self.browser, 10).until(
                 expected_conditions.visibility_of_element_located((By.CLASS_NAME, "nav"))
             )
         except ElementNotVisibleException:

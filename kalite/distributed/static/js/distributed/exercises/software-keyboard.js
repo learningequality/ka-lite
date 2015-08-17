@@ -3,6 +3,8 @@ var Handlebars = require("base/handlebars");
 var _ = require("underscore");
 var $ = require("base/jQuery");
 
+var Modernizr = require("browsernizr");
+
 var SoftwareKeyboardView = BaseView.extend({
 
     template: require("./hbtemplates/software-keyboard.handlebars"),
