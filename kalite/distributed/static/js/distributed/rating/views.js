@@ -146,7 +146,8 @@ var StarView = BaseView.extend({
     template: require("./hbtemplates/star.handlebars"),
 
     events: {
-        "click .star-rating-option": "rate_value_callback"
+        "click .star-rating-option": "rate_value_callback",
+        "click .star-rating-option >": "rate_value_callback"
     },
 
     initialize: function(options) {
@@ -164,10 +165,12 @@ var StarView = BaseView.extend({
         this.rating_change();
     },
 
-    rate_value_callback: function(ev) {
-        var val = $(ev.target).attr("data-val");
+    // Throttled so it's triggered only once when several children are the targets of the "click" event
+    rate_value_callback: _.throttle(function(ev) {
+        var target = $(ev.target).hasClass("star-rating-option") ? $(ev.target) : $(ev.target).parents(".star-rating-option")[0];
+        var val = $(target).attr("data-val");
         this.model.set(this.rating_attr, val);
-    },
+    }, 100, {trailing: false}),
 
     rating_change: function() {
         opts = this.$(".star-rating-option");
