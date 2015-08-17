@@ -53,13 +53,13 @@ module.exports = BaseView.extend({
         this.$(".rating-skip").hide();
         this.$(".rating-delete").hide();
 
-        this.star_view_quality = this.add_subview(StarView, {el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"});
+        this.star_view_quality = this.add_subview(StarView, {title: "Quality", el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"});
 
         var self = this;
 
         this.listenToOnce(this.model, "change:quality", function(){
             self.star_view_quality.remove();
-            self.star_view_difficulty = self.add_subview(StarView, {el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty"});
+            self.star_view_difficulty = self.add_subview(StarView, {title: "Difficulty", el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty"});
         });
 
         this.listenToOnce(this.model, "change:difficulty", function(){
@@ -92,8 +92,8 @@ module.exports = BaseView.extend({
         this.$(".rating-skip").hide();
         this.$(".rating-edit").hide();
         var views_and_opts = [
-            ["star_view_quality", StarView, {el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"}],
-            ["star_view_difficulty", StarView, {el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty"}],
+            ["star_view_quality", StarView, {title: "Quality", el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"}],
+            ["star_view_difficulty", StarView, {title: "Difficulty", el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty"}],
             ["text_view", TextView, {el: this.$("#text-container"), model: this.model, rating_attr: "text"}]
         ];
         var self = this;
@@ -152,6 +152,7 @@ var StarView = BaseView.extend({
 
     initialize: function(options) {
         this.model = options.model || new Backbone.Model();
+        this.title = options.title || "";
         this.rating_attr = options.rating_attr || "rating";
         _.bindAll(this, "rate_value_callback", "rating_change");
 
@@ -161,7 +162,9 @@ var StarView = BaseView.extend({
     },
 
     render: function() {
-        this.$el.html(this.template(this.model.attributes));
+        var template_options = {};
+        _.extend(template_options, this.model.attributes, {title: this.title});
+        this.$el.html(this.template(template_options));
         this.rating_change();
     },
 
