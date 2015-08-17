@@ -20,12 +20,6 @@ Then, install following python packages:
     pip install pyvirtualdisplay
     pip install sphinx
 ```
-
-On Debian/Ubuntu systems you may need to install `sphinx` with the `apt-get` command instead of `pip install`:
- 
-```
-    apt-get install python-sphinx
-``` 
  
 
 ## Building Documentation
