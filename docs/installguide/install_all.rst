@@ -2,7 +2,7 @@ Windows Installation
 ====================
 
 1. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-latest>`_ installer.
-2. After downloading the .exe file, double click it. A window will appear and guide you through the process of installing KA Lite on the server.
+2. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
 Mac Installation
 ================
@@ -26,7 +26,8 @@ and if you are connected to the internet, this will also give you automatic upda
 
 
 .. _linux-deb-install:
-Option 2, Ubuntu / Debian, download a Debian package
+
+Option 2, Ubuntu / Debian: download a Debian package
 ____________________________________________________
 
 Download the latest .deb manually from
@@ -38,15 +39,15 @@ with ``dpkg -i  ka-lite_0.x.x-0ubuntu1_all.deb``.
 The file may be named as if it was intended for Ubuntu but works just as well
 for any other Debian-based systems like Debian, Raspberry Pi, Linux Mint etc.
 
-Configuration after installing / updating
-_________________________________________
+Configuration after installation or update
+__________________________________________
 
-Every time you install or update kalite, you should (re)run ``kalite manage setup``
-to setup the database and download assessment items (video descriptions,
+Every time you install or update KA Lite, you must run ``kalite manage setup`` command again to setup the database and download assessment items (video descriptions,
 exercises etc.).
 
 
 .. _linux-pypi-install:
+
 Linux: Installing as a PyPI package
 ===================================
 
@@ -148,14 +149,18 @@ In our tests, we found that the WiPi adaptor supported a higher number tablet co
 #. Get the network configuration scripts.
     * ``cd /opt``
     * ``sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git``
+
 #. Install and configure the access point.
     * ``cd /opt/ka-lite-pi-scripts``
     * ``sudo ./configure.sh``
+
     .. note:: If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
+
 #. Install the USB adaptor software.
 	* If using the WiPi, run this command:
         * ``cd /opt/ka-lite-pi-scripts``
         * ``sudo ./use_wipi.sh``
+
     * If using the Edimax EW-7811Un, run this command:
         * ``cd /opt/ka-lite-pi-scripts``
         * ``sudo ./use_edimax.sh``
@@ -169,6 +174,7 @@ In our tests, we found that the WiPi adaptor supported a higher number tablet co
     * If the KA Lite server is started, browse to 1.1.1.1
 
 .. _advanced-installation:
+
 Advanced topics
 ===============
 
@@ -176,7 +182,7 @@ Source code / development
 _________________________
 
 KA Lite can also be run as a "source distribution" for development purposes.
-By this, we just mean a git checkout (from `our github<https://github.com/learningequality/ka-lite/>`_).
+By this, we just mean a git checkout (from `our github <https://github.com/learningequality/ka-lite/>`_).
 
 .. note:: Running directly from source will also maintain all user data in that
           same directory! This is convenient for having several versions of
