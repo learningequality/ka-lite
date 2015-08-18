@@ -43,13 +43,9 @@
 {% endblock buttons %}
 
 {% block control_panel_content %}
-
-<div class="container">
     {# Facilities Section #}
     {% include "control_panel/partials/_facility_table.html" %}
 
     {# Device Section #}
     {% include "control_panel/partials/_device_table.html" %}
-
-</div> <!-- End container -->
 {% endblock control_panel_content %}
