@@ -124,6 +124,9 @@ window.BaseView = Backbone.View.extend({
     },
 
     remove: function() {
+
+        Backbone.View.prototype.remove.call(this);
+
         if (this.subviews!==undefined) {
             for (i=0; i < this.subviews.length; i++) {
                 if (_.isFunction(this.subviews[i].close)) {
@@ -133,6 +136,5 @@ window.BaseView = Backbone.View.extend({
                 }
             }
         }
-        Backbone.View.prototype.remove.call(this);
     }
 });
