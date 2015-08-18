@@ -693,48 +693,21 @@ var TopicContainerOuterView = BaseView.extend({
         var kind = entry.get("kind") || entry.get("entity_kind");
         var id = entry.get("id") || entry.get("entity_id");
 
-        var view;
-
         this.content_view.model = entry;
         // The rating subview depends on the model, but we can't just listen to events on the model since the actual
         // object is swapped out here.
         this.content_view.show_rating();
         var self = this;
-        // Mask "require" with "external" to prevent browserify from bundling what we want to be external dependencies.
-        var external = require;
-        switch(kind) {
 
-            case "Exercise":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    var ExerciseViews = external("exercise");
-                    view = new ExerciseViews.ExercisePracticeView({
-                        exercise_id: id,
-                        context_type: "playlist",
-                        context_id: self.model.get("id")
-                    });
-                    self.content_view.show_view(view);
-                });
-                break;
+        var view = new ContentViews.ContentWrapperView({
+            id: id,
+            kind: kind,
+            context_id: this.model.get("id"),
+            channel: window.channel_router.channel
+        });
 
-            case "Quiz":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    var ExerciseViews = external("exercise");
-                    view = new ExerciseViews.ExerciseQuizView({
-                        quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
-                        context_id: self.model.get("id") // for now, just use the playlist ID as the quiz context_id
-                    });
-                    self.content_view.show_view(view);
-                });
-                break;
+        this.content_view.show_view(view);
 
-            default:
-                view = new ContentViews.ContentWrapperView({
-                    id: id,
-                    context_id: this.model.get("id")
-                });
-                this.content_view.show_view(view);
-                break;
-        }
         this.inner_views.unshift(this.content_view);
         this.trigger("inner_view_added");
         this.state_model.set("content_displayed", true);
