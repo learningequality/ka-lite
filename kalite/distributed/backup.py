@@ -3,8 +3,6 @@ import datetime
 import os
 import sys
 import time
-from os.path import expanduser
-from os.path import join
 
 from django.core.management import call_command
 from django.conf import settings
