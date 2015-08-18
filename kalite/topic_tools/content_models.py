@@ -3,11 +3,8 @@ import json
 
 import sqlite3
 
-from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, Using
+from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using
 from playhouse.shortcuts import model_to_dict
-
-from django.contrib import messages
-from django.utils.translation import gettext as _
 
 from .settings import CONTENT_DATABASE_PATH
 from .base import stamp_content_availability
@@ -23,7 +20,8 @@ class Item(Model):
     available = BooleanField()
     kind = CharField()
     parent = ForeignKeyField("self", null=True, index=True, related_name="children")
-    node_id = CharField(index=True, unique=True)
+    id = CharField(index=True, unique=True)
+    pk = PrimaryKeyField(primary_key=True)
     slug = CharField()
     path = CharField(index=True)
     extra_fields = CharField(null=True)
@@ -91,32 +89,6 @@ def get_content_item(content_id=None, db=None, **kwargs):
             return model_to_dict(value)
 
 
-def get_content_data(request, content_id=None):
-
-    language = request.language
-
-    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
-    # TODO(jamalex): BURN IT ALL DOWN!
-    if language == "pt-BR":
-        language = "pt"
-
-    content = get_content_item(content_id=content_id, language=language)
-
-    if not content:
-        return None
-
-    if not content.get("available", False):
-        if request.is_admin:
-            # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
-            messages.warning(request, _("This content was not found! You can download it by going to the Manage > Videos page."))
-        elif request.is_logged_in:
-            messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
-        elif not request.is_logged_in:
-            messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
-
-    return content
-
-
 @set_database
 def get_content_items(select=None, db=None, **kwargs):
     """
@@ -145,11 +117,10 @@ def get_topic_nodes(parent=None, db=None, **kwargs):
                     Item.available,
                     Item.kind,
                     Item.children,
-                    Item.node_id,
                     Item.id,
                     Item.path,
                     Item.slug,
-                    ).join(Parent, on=(Item.parent == Parent.id)).where(Parent.parent.is_null()).dicts()]
+                    ).join(Parent, on=(Item.parent == Parent.pk)).where(Parent.parent.is_null()).dicts()]
             else:
                 values = [item for item in Item.select(
                     Item.title,
@@ -157,11 +128,10 @@ def get_topic_nodes(parent=None, db=None, **kwargs):
                     Item.available,
                     Item.kind,
                     Item.children,
-                    Item.node_id,
                     Item.id,
                     Item.path,
                     Item.slug,
-                    ).where(Item.parent==parent).dicts()]
+                    ).join(Parent, on=(Item.parent == Parent.pk)).where(Parent.id==parent).dicts()]
             return values
 
 
@@ -229,8 +199,8 @@ def update_parents(db=None, parent_mapping={}, channel="khan", language="en", **
         with db.atomic() as transaction:
             for key, value in parent_mapping.iteritems():
                 if value:
-                    parent_id = Item.get(node_id=value).id
-                    item = Item.get(node_id=key)
+                    parent_id = Item.get(id=value).pk
+                    item = Item.get(id=key)
                     item.parent = parent_id
                     item.save()
 

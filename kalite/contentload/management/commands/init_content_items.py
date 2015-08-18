@@ -64,8 +64,6 @@ def generate_topic_tree_items(channel="khan", language="en"):
             node["title"] = _(node.get("title", ""))
             node["description"] = _(node.get("description", "")) if node.get("description") else ""
 
-        node["node_id"] = node.pop("id")
-
         flat_topic_tree.append(node)
 
     recurse_nodes(topic_tree)
@@ -124,10 +122,10 @@ class Command(BaseCommand):
         node_ids = []
 
         for i, item in enumerate(items):
-            if item.get("node_id") in node_ids:
+            if item.get("id") in node_ids:
                 delete_ids.append(i)
             else:
-                node_ids.append(item.get("node_id"))
+                node_ids.append(item.get("id"))
 
         for i in reversed(delete_ids):
             items.pop(i)

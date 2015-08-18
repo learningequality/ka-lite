@@ -12,7 +12,7 @@ import collections
 from django.db.models import Count
 
 from kalite.topic_tools.base import get_exercise_data, get_topic_data, get_topic_exercises, get_topic_tree, get_exercise_cache
-from kalite.topic_tools.content_models import  get_content_data
+from kalite.topic_tools.content_models import get_content_item
 
 from . import settings
 
@@ -35,10 +35,7 @@ def get_resume_recommendations(user, request):
 
     final = get_most_recent_incomplete_item(user)
     if final:
-        if final.get("kind") == "Content":
-            return [get_content_data(request, final.get("id"))]
-        if final.get("kind") == "Exercise":
-            return [get_exercise_data(request, final.get("id"))]
+        return [get_content_item(language=request.language, channel=getattr(final, "channel", "khan"), content_id=final.get("id"))]
     else:
         return []
 

@@ -6,11 +6,13 @@ Here, these are focused on:
 * topic tree views (search, knowledge map)
 """
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from django.utils.translation import gettext as _
 
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 
-from kalite.topic_tools.content_models import get_topic_nodes
+from kalite.topic_tools.content_models import get_topic_nodes, get_content_item
 from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
 from kalite.facility.models import FacilityUser
 
@@ -18,6 +20,34 @@ from kalite.facility.models import FacilityUser
 def topic_tree(request, channel):
     parent = request.GET.get("parent")
     return JsonResponse(get_topic_nodes(channel=channel, language=request.language, parent=parent))
+
+
+@api_handle_error_with_json
+def content_item(request, channel, content_id):
+    language = request.language
+
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if language == "pt-BR":
+        language = "pt"
+
+    content = get_content_item(channel=channel, content_id=content_id, language=language)
+
+    if not content:
+        return None
+
+    if not content.get("available", False):
+        if request.is_admin:
+            # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
+            messages.warning(request, _("This content was not found! You can download it by going to the Manage > Videos page."))
+        elif request.is_logged_in:
+            messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
+        elif not request.is_logged_in:
+            messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
+
+
+    return JsonResponse(content)
+
 
 @api_handle_error_with_json
 def content_recommender(request):
