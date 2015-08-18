@@ -90,13 +90,13 @@ def get_content_item(content_id=None, db=None, **kwargs):
 
 
 @set_database
-def get_content_items(ids=[], db=None, **kwargs):
+def get_content_items(ids=None, db=None, **kwargs):
     """
     Convenience function for returning multiple content nodes for use in rendering content
     """
     with Using(db, [Item]):
         if ids:
-            values = Item.select(Item.id >> ids)
+            values = Item.select().where(Item.id >> ids)
         else:
             values = Item.select()
     return values
@@ -152,7 +152,7 @@ def get_or_create(item, db=None, **kwargs):
 
 
 @set_database
-def update(update={}, select=None, **kwargs):
+def update(update=None, select=None, **kwargs):
     if update:
         with Using(db, [Item]):
             if select:
@@ -170,50 +170,53 @@ def create_table(db=None, **kwargs):
 
 
 @set_database
-def annotate_content_models(db=None, channel="khan", language="en", ids=[], **kwargs):
-    content_models = get_content_items(ids=ids, channel=channel, language=language)
-    updates_dict = update_content_availability(content_models)
+def annotate_content_models(db=None, channel="khan", language="en", ids=None, **kwargs):
+    try:
+        content_models = get_content_items(ids=ids, channel=channel, language=language)
+        updates_dict = update_content_availability(content_models)
 
-    for key, value in updates_dict.iteritems():
-        updates_dict[key] = parse_model_data(value)
+        for key, value in updates_dict.iteritems():
+            updates_dict[key] = parse_model_data(value)
 
-    with Using(db, [Item]):
+        with Using(db, [Item]):
 
-        with db.atomic() as transaction:
-            def recurse_availability_up_tree(node, available):
-                if not node.parent:
-                    return
-                else:
-                    parent = node.parent
-                if not available:
-                    Parent = Item.alias()
-                    children_available = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk, Item.available == True).count() > 0
-                    available = children_available
-                if parent.available != available:
-                    parent.available = available
-                    parent.save()
-                    recurse_availability_up_tree(parent, available)
-                
+            with db.atomic() as transaction:
+                def recurse_availability_up_tree(node, available):
+                    if not node.parent:
+                        return
+                    else:
+                        parent = node.parent
+                    if not available:
+                        Parent = Item.alias()
+                        children_available = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk, Item.available == True).count() > 0
+                        available = children_available
+                    if parent.available != available:
+                        parent.available = available
+                        parent.save()
+                        recurse_availability_up_tree(parent, available)
+                    
 
-            for id, update in updates_dict.iteritems():
-                if update:
-                    item = Item.get(id=id)
-                    for attr, val in update.iteritems():
-                        setattr(item, attr, val)
-                    item.save()
-                    recurse_availability_up_tree(item, update.get("available", False))
+                for id, update in updates_dict.iteritems():
+                    if update:
+                        item = Item.get(id=id)
+                        for attr, val in update.iteritems():
+                            setattr(item, attr, val)
+                        item.save()
+                        recurse_availability_up_tree(item, update.get("available", False))
+    except:
+        import pdb; pdb.set_trace()
 
 
 @set_database
-def update_parents(db=None, parent_mapping={}, channel="khan", language="en", **kwargs):
+def update_parents(db=None, parent_mapping=None, channel="khan", language="en", **kwargs):
 
-    with Using(db, [Item]):
+    if parent_mapping:
+        with Using(db, [Item]):
 
-        with db.atomic() as transaction:
-            for key, value in parent_mapping.iteritems():
-                if value:
-                    parent_id = Item.get(id=value).pk
-                    item = Item.get(id=key)
-                    item.parent = parent_id
-                    item.save()
-
+            with db.atomic() as transaction:
+                for key, value in parent_mapping.iteritems():
+                    if value:
+                        parent_id = Item.get(id=value).pk
+                        item = Item.get(id=key)
+                        item.parent = parent_id
+                        item.save()

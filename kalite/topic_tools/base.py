@@ -162,7 +162,7 @@ def update_content_availability(content_list, language="en"):
                         update["available"] = True
                 update["all_assessment_items"] = items
             else:
-                exercise_file = extra_fields.get("name") + ".html"
+                exercise_file = extra_fields.get("name", "") + ".html"
 
                 if language == "en":
                     exercise_template = exercise_file
