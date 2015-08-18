@@ -147,7 +147,18 @@ var StarView = BaseView.extend({
 
     events: {
         "click .star-rating-option": "rate_value_callback",
-        "click .star-rating-option >": "rate_value_callback"
+        "click .star-rating-option >": "rate_value_callback",
+        "mouseenter .star-rating-option >": "mouse_enter_callback",
+        "mouseenter .star-rating-option": "mouse_enter_callback",
+        "mouseleave .star-rating-option": "mouse_leave_callback"
+    },
+
+    label_values: {
+        1: "Very Low",
+        2: "Low",
+        3: "Normal",
+        4: "High",
+        5: "Very High"
     },
 
     initialize: function(options) {
@@ -170,10 +181,24 @@ var StarView = BaseView.extend({
 
     // Throttled so it's triggered only once when several children are the targets of the "click" event
     rate_value_callback: _.throttle(function(ev) {
+        // The target event could be either the .star-rating-option or a child element, so whatever the case get the
+        // parent .star-rating-option element.
         var target = $(ev.target).hasClass("star-rating-option") ? $(ev.target) : $(ev.target).parents(".star-rating-option")[0];
         var val = $(target).attr("data-val");
         this.model.set(this.rating_attr, val);
     }, 100, {trailing: false}),
+
+    mouse_enter_callback: function(ev) {
+        // The target event could be either the .star-rating-option or a child element, so whatever the case get the
+        // parent .star-rating-option element.
+        var target = $(ev.target).hasClass("star-rating-option") ? $(ev.target) : $(ev.target).parents(".star-rating-option")[0];
+        var val = $(target).attr("data-val");
+        this.$(".rating-label").text(this.label_values[val]);
+    },
+
+    mouse_leave_callback: function(ev) {
+        this.$(".rating-label").text("");
+    },
 
     rating_change: function() {
         opts = this.$(".star-rating-option");
