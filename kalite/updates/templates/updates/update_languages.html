@@ -15,7 +15,7 @@
 
 {% block headjs %}{{ block.super }}
     {% compress js file update_languagesjs %}
-        <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/updates/bundles/bundle_update_languages.js' %}"></script>
     {% endcompress %}
     <script type="text/javascript">
      window.sessionModel.set({

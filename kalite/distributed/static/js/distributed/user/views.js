@@ -1,6 +1,18 @@
 var ENTER_KEY = 13;
 
-window.SuperUserCreateModalView = BaseView.extend({
+var Backbone = require("../base/backbone");
+var $ = require("../base/jQuery");
+var _ = require("underscore");
+var BaseView = require("../base/baseview");
+var Handlebars = require("../base/handlebars");
+var AutoCompleteView = require("../search/views");
+var api = require("../utils/api");
+var get_params = require("../utils/get_params");
+var sprintf = require("sprintf-js").sprintf;
+
+
+var SuperUserCreateModalTemplate = require("./hbtemplates/superusercreatemodal.handlebars");
+var SuperUserCreateModalView = BaseView.extend({
     events: {
         "click .create-btn": "create_superuser_click",
         "keypress #id_superusername": "key_user",
@@ -8,17 +20,18 @@ window.SuperUserCreateModalView = BaseView.extend({
         "keypress #id_confirmsuperpassword": "key_confirm"
     },
 
-    template: HB.template("user/superusercreatemodal"),
+    template: SuperUserCreateModalTemplate,
 
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this, "close_modal", "show_modal", "add_superuser_form");
         this.render();
         $("body").append(this.el);
     },
 
     render: function() {
         this.$el.html(this.template());
-        _.defer(this.add_superuser_form);
+        var self = this;
+        _.defer(self.add_superuser_form);
     },
 
     add_superuser_form: function() {
@@ -116,11 +129,12 @@ window.SuperUserCreateModalView = BaseView.extend({
 
 // Separate out the modal behaviour from the login functionality
 // This allows the LoginView to be embedded more flexibly across the site if needed
-window.LoginModalView = BaseView.extend({
-    template: HB.template("user/loginmodal"),
+var LoginModalTemplate = require("./hbtemplates/loginmodal.handlebars");
+var LoginModalView = BaseView.extend({
+    template: LoginModalTemplate,
 
     initialize: function(options) {
-        _.bindAll(this);
+        _.bindAll(this, "close_modal", "show_modal", "addLoginView");
         this.set_options(options);
         this.render();
         $("body").append(this.el);
@@ -162,7 +176,8 @@ window.LoginModalView = BaseView.extend({
     }
 });
 
-window.LoginView = BaseView.extend({
+var LoginTemplate = require("./hbtemplates/login.handlebars");
+var LoginView = BaseView.extend({
 
     events: {
         "click .login-btn": "login_click",
@@ -172,10 +187,10 @@ window.LoginView = BaseView.extend({
         "keypress #id_password": "key_pass"
     },
 
-    template: HB.template("user/login"),
+    template: LoginTemplate,
 
     initialize: function(options) {
-        _.bindAll(this);
+        _.bindAll(this, "handle_login");
         this.next = options.next;
         this.facility = (this.model.get("facilities")[0] || {id:""}).id;
         this.admin = false;
@@ -227,8 +242,7 @@ window.LoginView = BaseView.extend({
             this.$("#id_" + error_data.error_highlight + "-container").addClass("has-error");
             this.$("#id_" + error_data.error_highlight).popover({
                 content: message,
-                placement: "auto bottom",
-                template: sprintf('<div id="id_%(popover_id)s-popover" class="popover alert alert-danger" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',{popover_id: error_data.error_highlight})
+                placement: "auto bottom"
             });
             this.$("#id_" + error_data.error_highlight).popover("show");
             if (error_data.error_highlight == "password") {
@@ -264,7 +278,7 @@ window.LoginView = BaseView.extend({
             is_teacher: false
         };
         var url = setGetParamDict(window.sessionModel.get("USER_URL"), data);
-        doRequest(url, null, {
+        api.doRequest(url, null, {
             cache: true,
             dataType: "json",
             ifModified: true
@@ -345,7 +359,7 @@ window.LoginView = BaseView.extend({
 var TotalPointView = Backbone.View.extend({
 
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this, "render");
         this.listenTo(this.model, "change:points", this.render);
         this.render();
     },
@@ -374,6 +388,7 @@ var TotalPointView = Backbone.View.extend({
 var UsernameView = Backbone.View.extend({
 
     initialize: function() {
+        _.bindAll(this, "render");
         this.listenTo(this.model, "change:username", this.render);
         this.render();
     },
@@ -393,14 +408,14 @@ var UsernameView = Backbone.View.extend({
 
 });
 
-window.UserView = BaseView.extend({
+var UserView = BaseView.extend({
 
     events: {
         "click #nav_logout": "logout"
     },
 
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this, "render");
 
         this.model.loaded.then(this.render);
 
@@ -438,10 +453,10 @@ window.UserView = BaseView.extend({
             *  This means that someone has tried to access an unauthorized page, but we want them to
             *  login before accessing this page
             */
-            var next = getParamValue("next");
+            var next = get_params.getParamValue("next");
             // Check the GET params to see if a 'login' flag has been set
             // If this is the case, the modal should start open
-            var login = getParamValue("login");
+            var login = get_params.getParamValue("login");
             if (login) {
                 // Set an option for the modal to start open
                 options.start_open = true;
@@ -470,13 +485,14 @@ window.UserView = BaseView.extend({
 });
 
 /* This view toggles which navbar items are displayed to each type of user */ 
-window.ToggleNavbarView = BaseView.extend ({
+var ToggleNavbarTemplate = require("./hbtemplates/navigation.handlebars");
+ToggleNavbarView = BaseView.extend ({
 
-    template: HB.template("user/navigation"),
+    template: ToggleNavbarTemplate,
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "render", "collapsed_nav");
         this.listenTo(this.model, "change:is_logged_in", this.render);
         $("topnav").append(this.template());
         $(window).on("resize", this.collapsed_nav);
@@ -521,3 +537,7 @@ window.ToggleNavbarView = BaseView.extend ({
 
 });
 
+module.exports = {
+    "ToggleNavbarView": ToggleNavbarView,
+    "SuperUserCreateModalView": SuperUserCreateModalView
+};

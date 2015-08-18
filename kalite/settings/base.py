@@ -334,10 +334,8 @@ INSTALLED_APPS = [
     'securesync',
     'south',
     'fle_utils.build',
-    'fle_utils.handlebars',
     'fle_utils.django_utils',
     'fle_utils.config',
-    'fle_utils.backbone',
     'fle_utils.chronograph',
     'fle_utils.testing', # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.django_cherrypy_wsgiserver',
