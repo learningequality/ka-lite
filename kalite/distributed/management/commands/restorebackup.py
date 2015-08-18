@@ -1,4 +1,3 @@
-from os.path import join, expanduser
 import os
 
 from django.core.management.base import BaseCommand
