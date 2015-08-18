@@ -1,10 +1,4 @@
 """
-TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other topic_tools.xxx
-modules at load time because it has so many preconditions for loading.
-
-For now, it means that topic_tools.settings has been copied over to kalite.settings
-
-
 Important constants and helpful functions for the topic tree and a view on its data, the node cache.
 
 The topic tree is a hierarchical representation of real data (exercises, and videos).
@@ -38,7 +32,6 @@ from kalite import i18n
 from . import models as main_models
 from . import settings
 
-
 CACHE_VARS = []
 
 
@@ -56,106 +49,20 @@ def cache_file_path(basename):
     return os.path.join(cache_dir, basename)
 
 
+
 # Globals that can be filled
 TOPICS = None
 CACHE_VARS.append("TOPICS")
 CNT = 0
 def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
+    return []
 
-    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
-    # TODO(jamalex): BURN IT ALL DOWN!
-    if language == "pt-BR":
-        language = "pt"
 
-    if not channel:
-        channel = django_settings.CHANNEL
+CONTENT = None
+CACHE_VARS.append("CONTENT")
+def get_content_cache(force=False, annotate=False, language=None):
 
-    if not language:
-        language = django_settings.LANGUAGE_CODE
-
-    global TOPICS
-    if not TOPICS:
-        TOPICS = {}
-    if TOPICS.get(channel) is None:
-        TOPICS[channel] = {}
-
-    if annotate or TOPICS.get(channel, {}).get(language) is None:
-        cached_topics = None
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            cached_topics = softload_json(
-                cache_file_path("topic_{0}_{1}.json".format(channel, language)),
-                logger=logging.debug,
-                raises=False
-            )
-        if cached_topics:
-            TOPICS[channel][language] = cached_topics
-            annotate = False
-        else:
-            topics = softload_json(settings.TOPICS_FILEPATHS.get(channel), logger=logging.debug, raises=False)
-            # Just loaded from disk, so have to restamp.
-            annotate = True
-
-    if annotate:
-        flat_topic_tree = []
-
-        # Loop through all the nodes in the topic tree
-        # and cross reference with the content_cache to check availability.
-        content_cache = get_content_cache(language=language)
-        exercise_cache = get_exercise_cache(language=language)
-
-        def recurse_nodes(node, parent=""):
-
-            node["parent"] = parent
-
-            node.pop("child_data", None)
-
-            child_availability = []
-
-            child_ids = [child.get("id") for child in node.get("children", [])]
-
-            # Do the recursion
-            for child in node.get("children", []):
-                recurse_nodes(child, node.get("id"))
-                child_availability.append(child.get("available", False))
-
-            if child_ids:
-                node["children"] = child_ids
-
-            # If child_availability is empty then node has no children so we can determine availability
-            if child_availability:
-                node["available"] = any(child_availability)
-            else:
-                # By default this is very charitable, assuming if something has not been annotated
-                # it is available.
-                if node.get("kind") == "Exercise":
-                    cache_node = exercise_cache.get(node.get("id"), {})
-                else:
-                    cache_node = content_cache.get(node.get("id"), {})
-                node["available"] = cache_node.get("available", True)
-
-            # Translate everything for good measure
-            with i18n.translate_block(language):
-                node["title"] = _(node.get("title", ""))
-                node["description"] = _(node.get("description", "")) if node.get("description") else ""
-
-            flat_topic_tree.append(node)
-
-        recurse_nodes(topics)
-
-        TOPICS[channel][language] = flat_topic_tree
-
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
-            try:
-                with open(cache_file_path("topic_{0}_{1}.json".format(channel, language)), "w") as f:
-                    json.dump(TOPICS[channel][language], f)
-            except IOError as e:
-                logging.warn("Annotated topic cache file failed in saving with error {e}".format(e=e))
-
-    if parent:
-        return filter(lambda x: x.get("parent") == parent, TOPICS[channel][language])
-    else:
-        return TOPICS[channel][language]
-
+    return {}
 
 NODE_CACHE = None
 CACHE_VARS.append("NODE_CACHE")
@@ -176,85 +83,7 @@ EXERCISES = None
 CACHE_VARS.append("EXERCISES")
 def get_exercise_cache(force=False, language=None):
 
-    if not language:
-        language = django_settings.LANGUAGE_CODE
-
-    global EXERCISES
-    if EXERCISES is None:
-        EXERCISES = {}
-    if EXERCISES.get(language) is None:
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            exercises = softload_json(
-                cache_file_path("exercises_{0}.json".format(language)),
-                logger=logging.debug,
-                raises=False
-            )
-            if exercises:
-                EXERCISES[language] = exercises
-                return EXERCISES[language]
-        EXERCISES[language] = softload_json(settings.EXERCISES_FILEPATH, logger=logging.debug, raises=False)
-
-        # English-language exercises live in application space, translations in user space
-        if language == "en":
-            exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
-        else:
-            exercise_root = i18n.get_localized_exercise_dirpath(language)
-        if os.path.exists(exercise_root):
-            try:
-                exercise_templates = os.listdir(exercise_root)
-            except OSError:
-                exercise_templates = []
-        else:
-            exercise_templates = []
-
-        for exercise in EXERCISES[language].values():
-            exercise_file = exercise["name"] + ".html"
-            exercise_template = exercise_file
-            exercise_lang = "en"
-
-            # The central server doesn't have an assessment item database
-            if django_settings.CENTRAL_SERVER:
-                available = False
-            elif exercise.get("uses_assessment_items", False):
-                available = False
-                items = []
-                for item in exercise.get("all_assessment_items", "[]"):
-                    item = json.loads(item)
-                    if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
-                        items.append(item)
-                        available = True
-                exercise["all_assessment_items"] = items
-            else:
-                available = exercise_template in exercise_templates
-
-                # Get the language codes for exercise templates that exist
-                # Try to minimize the number of os.path.exists calls (since they're a bottleneck) by using the same
-                # precedence rules in i18n.select_best_available_languages
-                available_langs = set(["en"] + [language] * available)
-                # Return the best available exercise template
-                exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
-
-            if exercise_lang == "en":
-                exercise_template = exercise_file
-            else:
-                exercise_template = os.path.join(exercise_lang, exercise_file)
-
-            with i18n.translate_block(exercise_lang):
-                exercise["available"] = available
-                exercise["lang"] = exercise_lang
-                exercise["template"] = exercise_template
-                exercise["title"] = _(exercise.get("title", ""))
-                exercise["description"] = _(exercise.get("description", "")) if exercise.get("description") else ""
-
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
-            try:
-                with open(cache_file_path("exercises_{0}.json".format(language)), "w") as f:
-                    json.dump(EXERCISES[language], f)
-            except IOError as e:
-                logging.warn("Annotated exercise cache file failed in saving with error {e}".format(e=e))
-
-    return EXERCISES[language]
-
+    return {}
 
 LEAFED_TOPICS = None
 CACHE_VARS.append("LEAFED_TOPICS")
@@ -276,112 +105,128 @@ def create_thumbnail_url(thumbnail):
         return django_settings.CONTENT_URL + thumbnail + ".jpg"
     return None
 
-CONTENT = None
-CACHE_VARS.append("CONTENT")
-def get_content_cache(force=False, annotate=False, language=None):
+def stamp_content_availability(content_list, language="en"):
+    # Loop through all content items and put thumbnail urls, content urls,
+    # and subtitle urls on the content dictionary, and list all languages
+    # that the content is available in.
+    try:
+        contents_folder = os.listdir(django_settings.CONTENT_ROOT)
+    except OSError:
+        contents_folder = []
 
-    if not language:
-        language = django_settings.LANGUAGE_CODE
+    subtitle_langs = {}
 
-    global CONTENT
+    updates = {}
 
-    if CONTENT is None:
-        CONTENT = {}
+    if os.path.exists(i18n.get_srt_path()):
+        for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
+            # Only both looking at files that are inside a 'subtitles' directory
+            if os.path.basename(dirpath) == "subtitles":
+                lc = os.path.basename(os.path.dirname(dirpath))
+                for filename in filenames:
+                    if filename in subtitle_langs:
+                        subtitle_langs[filename].append(lc)
+                    else:
+                        subtitle_langs[filename] = [lc]
 
-    if CONTENT.get(language) is None:
-        content = None
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(
-                cache_file_path("content_{0}.json".format(language)),
-                logger=logging.debug,
-                raises=False
-            )
-        if content:
-            CONTENT[language] = content
-            return CONTENT[language]
-        else:
-            CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
-            annotate = True
-
-    if annotate:
-
-        # Loop through all content items and put thumbnail urls, content urls,
-        # and subtitle urls on the content dictionary, and list all languages
-        # that the content is available in.
+    # English-language exercises live in application space, translations in user space
+    if language == "en":
+        exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
+    else:
+        exercise_root = i18n.get_localized_exercise_dirpath(language)
+    if os.path.exists(exercise_root):
         try:
-            contents_folder = os.listdir(django_settings.CONTENT_ROOT)
+            exercise_templates = os.listdir(exercise_root)
         except OSError:
-            contents_folder = []
+            exercise_templates = []
+    else:
+        exercise_templates = []
 
-        subtitle_langs = {}
+    for content in content_list:
+        update = {}
+        extra_fields = json.loads(content.extra_fields)
 
-        if os.path.exists(i18n.get_srt_path()):
-            for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
-                # Only both looking at files that are inside a 'subtitles' directory
-                if os.path.basename(dirpath) == "subtitles":
-                    lc = os.path.basename(os.path.dirname(dirpath))
-                    for filename in filenames:
-                        if filename in subtitle_langs:
-                            subtitle_langs[filename].append(lc)
-                        else:
-                            subtitle_langs[filename] = [lc]
+        if content.kind == "Exercise":
 
-        for content in CONTENT[language].values():
-            default_thumbnail = create_thumbnail_url(content.get("id"))
-            dubmap = i18n.get_id2oklang_map(content.get("id"))
+            # The central server doesn't have an assessment item database
+            if django_settings.CENTRAL_SERVER:
+                available = False
+            elif extra_fields.get("uses_assessment_items", False):
+                available = False
+                items = []
+
+                assessment_items = extra_fields.get("all_assessment_items", [])
+
+                for item in assessment_items:
+                    item = json.loads(item)
+                    if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
+                        items.append(item)
+                        available = True
+                update["all_assessment_items"] = items
+            else:
+                exercise_file = extra_fields.get("name") + ".html"
+
+                if language == "en":
+                    exercise_template = exercise_file
+                else:
+                    exercise_template = os.path.join(language, exercise_file)
+                    available = exercise_template in exercise_templates
+                    update["template"] = exercise_template
+
+            update["available"] = available
+
+        else:
+            default_thumbnail = create_thumbnail_url(content.id)
+            dubmap = i18n.get_id2oklang_map(content.id)
             if dubmap:
                 content_lang = i18n.select_best_available_language(language, available_codes=dubmap.keys()) or ""
                 if content_lang:
                     dubbed_id = dubmap.get(content_lang)
-                    format = content.get("format", "")
+                    format = extra_fields.get("format", "")
                     if (dubbed_id + "." + format) in contents_folder:
-                        content["available"] = True
+                        update["available"] = True
                         thumbnail = create_thumbnail_url(dubbed_id) or default_thumbnail
-                        content["content_urls"] = {
+                        update["content_urls"] = {
                             "stream": django_settings.CONTENT_URL + dubmap.get(content_lang) + "." + format,
-                            "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                            "stream_type": "{kind}/{format}".format(kind=content.kind.lower(), format=format),
                             "thumbnail": thumbnail,
                         }
                     elif django_settings.BACKUP_VIDEO_SOURCE:
-                        content["available"] = True
-                        content["content_urls"] = {
+                        update["available"] = True
+                        update["content_urls"] = {
                             "stream": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
-                            "stream_type": "{kind}/{format}".format(kind=content.get("kind", "").lower(), format=format),
+                            "stream_type": "{kind}/{format}".format(kind=content.kind.lower(), format=format),
                             "thumbnail": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
                         }
                     else:
-                        content["available"] = False
+                        update["available"] = False
                 else:
-                    content["available"] = False
+                    update["available"] = False
             else:
-                content["available"] = False
+                update["available"] = False
 
             # Get list of subtitle language codes currently available
-            subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.get("id")), [])
+            subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.id), [])
 
             # Generate subtitle URLs for any subtitles that do exist for this content item
             subtitle_urls = [{
                 "code": lc,
-                "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
+                "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.id),
                 "name": i18n.get_language_name(lc)
                 } for lc in subtitle_lang_codes]
 
             # Sort all subtitle URLs by language code
-            content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
+            update["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
-            with i18n.translate_block(content_lang):
-                content["selected_language"] = content_lang
-                content["title"] = _(content["title"])
-                content["description"] = _(content.get("description")) if content.get("description") else ""
+        with i18n.translate_block(content_lang):
+            update["title"] = _(content["title"])
+            update["description"] = _(content.description) if content.description else ""
 
-        if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
-            try:
-                with open(cache_file_path("content_{0}.json".format(language)), "w") as f:
-                    json.dump(CONTENT[language], f)
-            except IOError as e:
-                logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
+        extra_fields.update(update)
 
-    return CONTENT[language]
+        update = extra_fields
+
+        updates[content.id] = update
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
@@ -552,33 +397,6 @@ def smart_translate_item_data(item_data):
 
         return item_data
 
-
-
-def get_content_data(request, content_id=None):
-
-    language = request.language
-
-    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
-    # TODO(jamalex): BURN IT ALL DOWN!
-    if language == "pt-BR":
-        language = "pt"
-
-    content_cache = get_content_cache(language=language)
-    content = content_cache.get(content_id, None)
-
-    if not content:
-        return None
-
-    if not content.get("content_urls", None):
-        if request.is_admin:
-            # TODO(bcipolli): add a link, with querystring args that auto-checks this content in the topic tree
-            messages.warning(request, _("This content was not found! You can download it by going to the Manage > Videos page."))
-        elif request.is_logged_in:
-            messages.warning(request, _("This content was not found! Please contact your coach or an admin to have it downloaded."))
-        elif not request.is_logged_in:
-            messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
-
-    return content
 
 def get_topic_data(request, topic_id=None):
     topic_cache = get_node_cache(node_type='Topic', language=request.language)

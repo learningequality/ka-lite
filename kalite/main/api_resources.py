@@ -9,7 +9,7 @@ from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
 from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
-from kalite.topic_tools.base import get_exercise_data, get_content_data
+from kalite.topic_tools.content_models import get_content_data
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -89,81 +89,6 @@ class VideoLogResource(ModelResource):
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
-
-
-class Exercise():
-
-    def __init__(self, **kwargs):
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
-
-
-class ExerciseResource(Resource):
-    lang = fields.CharField(attribute='lang', default='en')
-    kind = fields.CharField(attribute='kind')
-    all_assessment_items = fields.ListField(attribute='all_assessment_items', default=[])
-    display_name = fields.CharField(attribute='display_name')
-    description = fields.CharField(attribute='description')
-    title = fields.CharField(attribute='title')
-    prerequisites = fields.ListField(attribute='prerequisites')
-    name = fields.CharField(attribute='name')
-    id = fields.CharField(attribute='id')
-    seconds_per_fast_problem = fields.CharField(attribute='seconds_per_fast_problem')
-    basepoints = fields.CharField(attribute='basepoints', default='10')
-    template = fields.CharField(attribute='template')
-    path = fields.CharField(attribute='path')
-    slug = fields.CharField(attribute='slug')
-    exercise_id = fields.CharField(attribute='exercise_id')
-    uses_assessment_items = fields.BooleanField(attribute='uses_assessment_items')
-    available = fields.BooleanField(attribute='available', default=True)
-
-    class Meta:
-        resource_name = 'exercise'
-        object_class = Exercise
-
-    def prepend_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)/(?P<id>[\w\d_.-]+)/$" % self._meta.resource_name,
-                self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail"),
-        ]
-
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if getattr(bundle_or_obj, 'obj', None):
-            kwargs['pk'] = bundle_or_obj.obj.id
-        else:
-            kwargs['pk'] = bundle_or_obj.id
-        return kwargs
-
-    def obj_get_list(self, bundle, **kwargs):
-        """
-        Get the list of exercises.
-        """
-        raise NotImplemented("Operation not implemented yet for videos.")
-
-    def obj_get(self, bundle, **kwargs):
-        id = kwargs.get("id", None)
-        exercise = get_exercise_data(bundle.request, id)
-        if exercise:
-            return Exercise(**exercise)
-        else:
-            raise NotFound('Exercise with id %s not found' % id)
-
-    def obj_create(self, bundle, **kwargs):
-        raise NotImplemented("Operation not implemented yet for exercises.")
-
-    def obj_update(self, bundle, **kwargs):
-        raise NotImplemented("Operation not implemented yet for exercises.")
-
-    def obj_delete_list(self, bundle, **kwargs):
-        raise NotImplemented("Operation not implemented yet for exercises.")
-
-    def obj_delete(self, bundle, **kwargs):
-        raise NotImplemented("Operation not implemented yet for exercises.")
-
-    def rollback(self, bundles):
-        raise NotImplemented("Operation not implemented yet for exercises.")
 
 
 class AssessmentItemResource(ModelResource):
