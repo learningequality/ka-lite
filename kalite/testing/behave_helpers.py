@@ -54,6 +54,15 @@ MAX_WAIT_TIME = 10
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 5
 
+def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
+    try:
+        elem = WebDriverWait(browser, wait_time).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "alert"))
+        )
+        return elem
+    except TimeoutException:
+        return False
+
 def rgba_to_hex(rgba_string):
     """
     Returns an uppercase HEX representation of an rgba(xxx, yyy, zzz, a) string
@@ -61,6 +70,11 @@ def rgba_to_hex(rgba_string):
     return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
 
 def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Assert that no element is found. Use a wait in case the element currently exists
+    on the page, and we want to wait for it to disappear before doing the assert.
+    Finds the element using a CSS Selector.
+    """
     try:
         wait_elem = context.browser.find_element_by_css_selector(elem)
         WebDriverWait(context.browser, wait_time).until(
@@ -70,6 +84,22 @@ def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIM
         pass
     with context._runner.test_case.assertRaises(NoSuchElementException):
         context.browser.find_element_by_css_selector(elem)
+
+def assert_no_element_by_xpath_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Assert that no element is found. Use a wait in case the element currently exists
+    on the page, and we want to wait for it to disappear before doing the assert.
+    Finds the element using XPATH.
+    """
+    try:
+        wait_elem = context.browser.find_element_by_xpath(elem)
+        WebDriverWait(context.browser, wait_time).until(
+            EC.staleness_of(wait_elem)
+        )
+    except NoSuchElementException:
+        pass
+    with context._runner.test_case.assertRaises(NoSuchElementException):
+        context.browser.find_element_by_xpath(elem)
 
 def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     """ Click an element and then wait for the page to load. Does this by
@@ -155,6 +185,17 @@ def find_css_class_with_wait(context, css_class, **kwargs):
     return _find_elem_with_wait(context, (By.CLASS_NAME, css_class), **kwargs)
 
 
+def find_clickable_id_with_wait(context, id_str, **kwargs):
+    """ Tries to find an element with given id with an explicit timeout.
+    context: a behave context
+    id_str: A string with the id (no leading #)
+    kwargs: can optionally pass "wait_time", which will be the max wait time in
+        seconds. Default is defined by behave_helpers.py
+    Returns the element if found or raises TimeoutException
+    """
+    return _find_clickable_elem_with_wait(context, (By.ID, id_str), **kwargs)
+
+
 def find_id_with_wait(context, id_str, **kwargs):
     """ Tries to find an element with given id with an explicit timeout.
     context: a behave context
@@ -206,6 +247,18 @@ def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """
     return WebDriverWait(context.browser, wait_time).until(
         EC.presence_of_element_located(by)
+    )
+
+def _find_clickable_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
+    """ Tries to find an enabled element with an explicit timeout.
+    "Private" function to hide Selenium details.
+    context: a behave context
+    by: A tuple selector used by Selenium
+    wait_time: The max time to wait in seconds
+    Returns the element if found or raises TimeoutException
+    """
+    return WebDriverWait(context.browser, wait_time).until(
+        EC.element_to_be_clickable(by)
     )
 
 def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
