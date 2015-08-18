@@ -105,7 +105,7 @@ def create_thumbnail_url(thumbnail):
         return django_settings.CONTENT_URL + thumbnail + ".jpg"
     return None
 
-def stamp_content_availability(content_list, language="en"):
+def update_content_availability(content_list, language="en"):
     # Loop through all content items and put thumbnail urls, content urls,
     # and subtitle urls on the content dictionary, and list all languages
     # that the content is available in.
@@ -150,31 +150,31 @@ def stamp_content_availability(content_list, language="en"):
 
             # The central server doesn't have an assessment item database
             if django_settings.CENTRAL_SERVER:
-                available = False
+                continue
             elif extra_fields.get("uses_assessment_items", False):
-                available = False
                 items = []
 
                 assessment_items = extra_fields.get("all_assessment_items", [])
 
                 for item in assessment_items:
-                    item = json.loads(item)
                     if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
                         items.append(item)
-                        available = True
+                        update["available"] = True
                 update["all_assessment_items"] = items
             else:
                 exercise_file = extra_fields.get("name") + ".html"
 
                 if language == "en":
                     exercise_template = exercise_file
+                    update["available"] = True
                 else:
                     exercise_template = os.path.join(language, exercise_file)
-                    available = exercise_template in exercise_templates
+                    if exercise_template in exercise_templates:
+                        update["available"] = True
                     update["template"] = exercise_template
-
-            update["available"] = available
-
+        elif content.kind == "Topic":
+            # Ignore topics, as we only want to update their availability after we have updated the rest.
+            continue
         else:
             default_thumbnail = create_thumbnail_url(content.id)
             dubmap = i18n.get_id2oklang_map(content.id)
@@ -198,12 +198,6 @@ def stamp_content_availability(content_list, language="en"):
                             "stream_type": "{kind}/{format}".format(kind=content.kind.lower(), format=format),
                             "thumbnail": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
                         }
-                    else:
-                        update["available"] = False
-                else:
-                    update["available"] = False
-            else:
-                update["available"] = False
 
             # Get list of subtitle language codes currently available
             subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.id), [])
@@ -219,14 +213,20 @@ def stamp_content_availability(content_list, language="en"):
             update["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
         with i18n.translate_block(content_lang):
-            update["title"] = _(content["title"])
+            update["title"] = _(content.title)
             update["description"] = _(content.description) if content.description else ""
 
         extra_fields.update(update)
 
         update = extra_fields
 
+        # Content is currently flagged as available, but is not. Flag as unavailable.
+        if content.available and "available" not in update:
+            update["available"] = False
+
         updates[content.id] = update
+
+    return updates
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")

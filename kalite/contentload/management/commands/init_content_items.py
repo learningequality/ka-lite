@@ -84,7 +84,7 @@ class Command(BaseCommand):
                     action="store",
                     dest="database_path",
                     default="",
-                    help="Override the destination path for the assessment item DB file"),
+                    help="Override the destination path for the content item DB file"),
         make_option("-b", "--bulk-create",
                     action="store_true",
                     dest="bulk_create",

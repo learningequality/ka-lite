@@ -7,7 +7,7 @@ from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, Fo
 from playhouse.shortcuts import model_to_dict
 
 from .settings import CONTENT_DATABASE_PATH
-from .base import stamp_content_availability
+from .base import update_content_availability
 
 
 # This BaseItem is used to subclass different Models for different languages.
@@ -90,13 +90,13 @@ def get_content_item(content_id=None, db=None, **kwargs):
 
 
 @set_database
-def get_content_items(select=None, db=None, **kwargs):
+def get_content_items(ids=[], db=None, **kwargs):
     """
-    Convenience function for returning a fully fleshed out content node for use in rendering content
+    Convenience function for returning multiple content nodes for use in rendering content
     """
     with Using(db, [Item]):
-        if select:
-            values = Item.select(select)
+        if ids:
+            values = Item.select(Item.id >> ids)
         else:
             values = Item.select()
     return values
@@ -131,7 +131,7 @@ def get_topic_nodes(parent=None, db=None, **kwargs):
                     Item.id,
                     Item.path,
                     Item.slug,
-                    ).join(Parent, on=(Item.parent == Parent.pk)).where(Parent.id==parent).dicts()]
+                    ).join(Parent, on=(Item.parent == Parent.pk)).where(Parent.id == parent).dicts()]
             return values
 
 
@@ -170,25 +170,38 @@ def create_table(db=None, **kwargs):
 
 
 @set_database
-def annotate_content_models(db=None, channel="khan", language="en", **kwargs):
-    content_models = get_content_items(channel=channel, language=language)
-    updates_dict = stamp_content_availability(content_models)
-    for key, value in updates_dict:
+def annotate_content_models(db=None, channel="khan", language="en", ids=[], **kwargs):
+    content_models = get_content_items(ids=ids, channel=channel, language=language)
+    updates_dict = update_content_availability(content_models)
+
+    for key, value in updates_dict.iteritems():
         updates_dict[key] = parse_model_data(value)
-    
-    # Reorder the updates dict so that we can pass it directly to update
-    # With the keys being the values we want to update.
-    update_keys_dict = {}
-    for item_key, item_update in updates_dict:
-        for key, value in item_update:
-            if key not in update_keys_dict:
-                update_keys_dict[key] = {}
-            update_keys_dict[key][item_key] = value
 
     with Using(db, [Item]):
 
-        query = Item.update(**{key: value.get(Item.node_id)})
-        query.execute()
+        with db.atomic() as transaction:
+            def recurse_availability_up_tree(node, available):
+                if not node.parent:
+                    return
+                else:
+                    parent = node.parent
+                if not available:
+                    Parent = Item.alias()
+                    children_available = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk, Item.available == True).count() > 0
+                    available = children_available
+                if parent.available != available:
+                    parent.available = available
+                    parent.save()
+                    recurse_availability_up_tree(parent, available)
+                
+
+            for id, update in updates_dict.iteritems():
+                if update:
+                    item = Item.get(id=id)
+                    for attr, val in update.iteritems():
+                        setattr(item, attr, val)
+                    item.save()
+                    recurse_availability_up_tree(item, update.get("available", False))
 
 
 @set_database
