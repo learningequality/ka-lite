@@ -206,6 +206,7 @@ var StarView = BaseView.extend({
             $opt = $(opt);
             $opt.toggleClass("activated", parseInt($opt.attr("data-val")) <= parseInt(this.model.get(this.rating_attr)));
         }, this);
+        this.model.save();
     }
 });
 
