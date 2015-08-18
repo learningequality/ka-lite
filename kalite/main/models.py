@@ -28,7 +28,7 @@ from securesync.models import DeferredCountSyncedModel, Device
 class VideoLog(DeferredCountSyncedModel):
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
+    video_id = models.CharField(max_length=200, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
     youtube_id = models.CharField(max_length=20) # metadata only
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
@@ -123,7 +123,7 @@ class VideoLog(DeferredCountSyncedModel):
 
 class ExerciseLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    exercise_id = models.CharField(max_length=100, db_index=True)
+    exercise_id = models.CharField(max_length=200, db_index=True)
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
@@ -489,7 +489,7 @@ class AttemptLog(DeferredCountSyncedModel):
     minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, db_index=True)
-    exercise_id = models.CharField(max_length=100, db_index=True)
+    exercise_id = models.CharField(max_length=200, db_index=True)
     seed = models.IntegerField(default=0)
     answer_given = models.TextField(blank=True) # first answer given to the question
     points = models.IntegerField(default=0)
@@ -516,7 +516,7 @@ class ContentLog(DeferredCountSyncedModel):
     minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    content_id = models.CharField(max_length=100, db_index=True)
+    content_id = models.CharField(max_length=200, db_index=True)
     points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
