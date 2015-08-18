@@ -23,29 +23,29 @@
     padding-top: 0.5em;
     margin: 0 auto;
 
-    .star-rating-option {
-        background: #FFFFCC;
+    .btn-star {
         font-size: 3em;
-        width: 1.5em;
-        display: inline-block;
-
         border-style: solid;
-        border-color: black;
         border-width: 1px;
-        border-radius: 10px;
+        border-color: black;
 
-        margin: 0;
-        padding: 0;
+        .glyphicon-star-empty {
+            top: 5px;
+            left: 2px;
+        }
     }
 
-    .glyphicon {
-        position: relative;
-        top: 7px;
-        left: 1px;
+    .btn-star {
+        background: #FFFFFF;
     }
-
-    .star-rating-option:hover, .star-rating-option.activated {
-        background: yellow;
+    .btn-star:active {
+        background: #FFFF66;
+    }
+    .btn-star.activated {
+        background: #CC6600;
+    }
+    .btn-star.activated:active {
+        background: #663300;
     }
 
     .star-title-label {
