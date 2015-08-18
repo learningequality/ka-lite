@@ -8,7 +8,16 @@ Mac Installation
 ================
 
 1. Download the KA Lite `OSX installer <https://learningequality.org/downloads/ka-lite/0.14/installers/mac/KA-Lite-Monitor.dmg>`_.
-2. After the download is complete, double click the .dmg file and follow the window for installation.
+2. After the download is complete, double click the .dmg file.
+3. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
+4. Launch "KA-Lite Monitor" from your 'Applications' folder.
+5. On first load, it will check for some settings and prompt for the Preferences dialog.
+6. Input your preferred admin username and password.
+7. Click on the Apply button.
+8. You will be prompted that initial setup will take a few minutes, just click on Ok button and wait for the prompt that KA-Lite has been setup and can now be started.
+9. Click on the KA-Lite logo icon on the Status Menu Bar and select the "Start KA-Lite" menu option.
+10. When prompted that KA-Lite has been started, click on the logo icon again and select "Open in Browser" menu option - this should launch KA-Lite on your preferred web browser.
+11. Login using the administrator account you have specified during setup.
 
 Linux: Debian/Ubuntu Installation
 =================================
