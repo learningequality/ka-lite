@@ -14,7 +14,7 @@ Mac Installation
 5. On first load, it will check for some settings and prompt for the Preferences dialog.
 6. Input your preferred admin username and password.
 7. Click on the Apply button.
-8. You will be prompted that initial setup will take a few minutes, just click on Ok button and wait for the prompt that KA-Lite has been setup and can now be started.
+8. You will be prompted that initial setup will take a few minutes, just click the "OK" button and wait for the prompt that KA-Lite has been setup and can now be started.
 9. Click on the KA-Lite logo icon on the Status Menu Bar and select the "Start KA-Lite" menu option.
 10. When prompted that KA-Lite has been started, click on the logo icon again and select "Open in Browser" menu option - this should launch KA-Lite on your preferred web browser.
 11. Login using the administrator account you have specified during setup.
