@@ -9,7 +9,8 @@ var DataExportView = Backbone.View.extend({
     // the containing view
     template: require('./hbtemplates/data-export-container.handlebars'),
 
-    initialize: function() {
+    initialize: function(options) {
+        this.options = options || {};
 
         this.zone_select_view = new ZoneSelectView({
             org_id: this.options.org_id,
@@ -64,6 +65,8 @@ var DataExportView = Backbone.View.extend({
                 return DEVICE_LOG_CSV_URL;
             case "store_log":
                 return STORE_LOG_CSV_URL;
+            case "content_rating":
+                return CONTENT_RATING_CSV_URL;
         }
     },
 

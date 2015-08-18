@@ -24,6 +24,8 @@ from kalite.facility.models import FacilityUser
 from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
 
+from .content_rating_models import ContentRating
+
 
 class VideoLog(DeferredCountSyncedModel):
 

@@ -28,7 +28,7 @@ var GroupCollection = Backbone.Collection.extend({
     url: ALL_GROUPS_URL
 });
 
-modules.export = {
+module.exports = {
 	ZoneModel: ZoneModel,
 	FacilityModel: FacilityModel,
 	GroupModel: GroupModel,

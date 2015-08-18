@@ -28,6 +28,7 @@ For interacting with the API:
 * request
 """
 import json
+import urllib
 
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -39,6 +40,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from kalite.facility.models import FacilityUser
+from kalite.topic_tools import get_content_cache
 
 # Use these for now, so that we don't DROurselves, but eventually
 # we'll want to move away from mixins.
@@ -96,7 +98,6 @@ def click_and_wait_for_id_to_appear(context, elem_click, elem_wait, wait_time=MA
     """
     elem_click.click()
     return id_shown_with_wait(context, elem_wait, wait_time=wait_time)
-
 
 
 def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
@@ -232,11 +233,32 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
         return None
 
 
-def build_url(context, url):
-    return urljoin(context.config.server_url, url)
+def build_url(context, url, params={}):
+    """
+    Build a full url given a relative url, using the test server's address & port
+    :param context: behave context
+    :param url: a relative url, like "/learn" or "/my/cool/page" to append to the test server's address
+    :param params: a dictionary of GET parameters, which will be appended to the url. If empty, nothing changes.
+    :return: The full url
+    """
+    url = urljoin(context.config.server_url, url)
+    if params:
+        url += "?" + urllib.urlencode(params)
+    return url
+
 
 def go_to_homepage(context):
     url = reverse("homepage")
+    context.browser.get(build_url(context, url))
+
+
+def go_to_content_item(context):
+    """
+    Go to the page for a content item (video, exercise, etc). This method does not care which one, it's to ensure
+    that an instantiated ContentAreaView exists on the page. Not the content item may not be flagged as "available".
+    """
+    content = get_content_cache().itervalues().next()
+    url = urljoin(reverse("learn"), content["path"])
     context.browser.get(build_url(context, url))
 
 
