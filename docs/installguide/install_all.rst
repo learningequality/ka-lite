@@ -89,17 +89,17 @@ Uninstalling
 Windows
 _______
 
-Uninstall KA Lite from the Control Panel.
-In Windows XP, double-click the "Add or Remove Programs" icon, then choose KA Lite.
-In later version of Windows, click the "Programs and Features" icon, then choose KA Lite.
+1. Uninstall KA Lite from the Control Panel.
+2. In Windows XP, double-click the "Add or Remove Programs" icon, then choose KA Lite.
+3. In later version of Windows, click the "Programs and Features" icon, then choose KA Lite.
 
 Mac OSX
 _______
 
-Uninstall KA-Lite Monitor.
-Click the Reset app button the cancel from the Advanced tab.
-Quit the KA-Lite Monitor app.
-Move KA-Lite Monitor app to trash.
+1. Uninstall KA-Lite Monitor.
+2. Click the Reset app and then cancel button from the Advanced tab.
+3. Quit the KA-Lite Monitor app.
+4. Move KA-Lite Monitor app to trash.
 
 .. note:: Dear maintainers, please put instructions here.
 
