@@ -7,6 +7,7 @@ Hello! If you know what OS you're installing on then click ahead.
 
     Installation Guide <install_all>
     Release Notes <release_notes>
+    Advanced Topics <advanced>
 
 Supported Browsers
 ------------------
