@@ -192,7 +192,7 @@ def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    find_id_with_wait(context, "show_tabular_report", wait_time=30).click()
+    find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30).click()
 
 @then(u"I should see the list of two groups that I teach")
 def impl(context):
@@ -254,7 +254,7 @@ def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    tab_button = find_id_with_wait(context, "show_tabular_report", wait_time=30)
+    tab_button = find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30)
     assert tab_button.text == "Hide Tabular Report"
 
 @then(u"I should see the tabular report")

@@ -6,8 +6,6 @@ var seedrandom = require("seedrandom");
 
 var ContentModels = require("content/models");
 
-var setGetParamDict = get_params.setGetParamDict;
-
 var ds = window.ds || {};
 
 var ExerciseParams = {
@@ -174,7 +172,7 @@ var ExerciseLogCollection = Backbone.Collection.extend({
         } else if (typeof this.exercise_ids !== "undefined") {
             data["exercise_id__in"] = this.exercise_ids;
         }
-        return setGetParamDict(this.model.prototype.urlRoot, data);
+        return get_params.setGetParamDict(this.model.prototype.urlRoot, data);
     },
 
     get_first_log_or_new_log: function() {

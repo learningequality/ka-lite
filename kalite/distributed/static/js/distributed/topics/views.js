@@ -16,8 +16,6 @@ var RatingModels = require("rating/models");
 var RatingModel = RatingModels.RatingModel;
 var ContentRatingCollection = RatingModels.ContentRatingCollection;
 
-var videos = require("video/models");
-
 // Views
 
 var ContentAreaView = BaseView.extend({
@@ -450,9 +448,6 @@ var TopicContainerInnerView = BaseView.extend({
         this.listenTo(view, "showSidebar", this.show_sidebar);
         this._entry_views.push(view);
         this.$(".sidebar").append(view.render().$el);
-        if (window.statusModel.get("is_logged_in")) {
-            this.load_entry_progress();
-        }
     },
 
     add_all_entries: function() {
@@ -495,66 +490,7 @@ var TopicContainerInnerView = BaseView.extend({
             view.model.set("active", false);
         });
         this.remove();
-    },
-
-    load_entry_progress: _.debounce(function() {
-
-        var self = this;
-
-        // load progress data for all videos
-        var video_ids = $.map(this.$(".icon-Video[data-content-id]"), function(el) { return $(el).data("content-id"); });
-        if (video_ids.length > 0) {
-            videologs = new videos.VideoLogCollection([], {content_ids: video_ids});
-            videologs.fetch().then(function() {
-                videologs.models.forEach(function(model) {
-                    var newClass = model.get("complete") ? "complete" : "partial";
-                    self.$("[data-video-id='" + model.get("video_id") + "']").removeClass("complete partial").addClass(newClass);
-                });
-            });
-        }
-
-        // load progress data for all exercises
-        var exercise_ids = $.map(this.$(".icon-Exercise[data-content-id]"), function(el) { return $(el).data("content-id"); });
-        if (exercise_ids.length > 0) {
-            exerciselogs = new ExerciseModels.ExerciseLogCollection([], {exercise_ids: exercise_ids});
-            exerciselogs.fetch()
-                .then(function() {
-                    exerciselogs.models.forEach(function(model) {
-                        var newClass = model.get("complete") ? "complete" : "partial";
-                        self.$("[data-exercise-id='" + model.get("exercise_id") + "']").removeClass("complete partial").addClass(newClass);
-                    });
-                });
-        }
-
-        // load progress data for quiz; TODO(jamalex): since this is RESTful anyway, perhaps use a model here?
-        var quiz_ids = $.map(this.$("[data-quiz-id]"), function(el) { return $(el).data("quiz-id"); });
-        if (quiz_ids.length > 0) {
-            // TODO(jamalex): for now, we just hardcode the quiz id as being the playlist id, since we don't have a good independent quiz id
-            var quiz_id = this.model.get("id");
-            doRequest("/api/playlists/quizlog/?user=" + statusModel.get("user_id") + "&quiz=" + quiz_id)
-                .success(function(data) {
-                    data.objects.forEach(function(ind, quiz) {
-                        var newClass = quiz.complete ? "complete" : "partial";
-                        // TODO(jamalex): see above; just assume we only have 1 quiz
-                        self.$("[data-quiz-id]").removeClass("complete partial").addClass(newClass);
-                    });
-                });
-        }
-
-        // load progress data for all content
-        var content_ids = $.map(this.$(".sidebar-icon:not(.icon-Exercise, .icon-Video, .icon-Topic)"), function(el) { return $(el).data("content-id"); });
-        if (content_ids.length > 0) {
-            contentlogs = new ContentLogCollection([], {content_ids: content_ids});
-            contentlogs.fetch()
-                .then(function() {
-                    contentlogs.models.forEach(function(model) {
-                        var newClass = model.get("complete") ? "complete" : "partial";
-                        self.$("[data-content-id='" + content.get("content_id") + "']").removeClass("complete partial").addClass(newClass);
-                    });
-                });
-        }
-
-    }, 100)
+    }
 
 });
 
