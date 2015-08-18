@@ -4,6 +4,8 @@ var seeded_shuffle = require("utils/shuffle");
 var get_params = require("utils/get_params");
 var seedrandom = require("seedrandom");
 
+var ContentModels = require("content/models");
+
 var setGetParamDict = get_params.setGetParamDict;
 
 var ds = window.ds || {};
@@ -15,7 +17,7 @@ var ExerciseParams = {
 };
 
 
-var ExerciseDataModel = Backbone.Model.extend({
+var ExerciseDataModel = ContentModels.ContentDataModel.extend({
     /*
     Contains data about an exercise itself, with no user-specific data.
     */
