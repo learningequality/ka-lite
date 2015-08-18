@@ -5,7 +5,7 @@ from tastypie.exceptions import NotFound
 from django.conf.urls import url
 from django.conf import settings
 
-from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
+from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
 from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
@@ -298,3 +298,18 @@ class ContentResource(Resource):
 
     def rollback(self, bundles):
         raise NotImplementedError
+
+
+class ContentRatingResource(ModelResource):
+
+    user = fields.ForeignKey(FacilityUserResource, 'user')
+
+    class Meta:
+        resource_name = 'content_rating'
+        queryset = ContentRating.objects.all()
+        filtering = {
+            "content_id": ('exact', 'in', ),
+            "content_kind": ('exact', 'in', ),
+            "user": ('exact', ),
+        }
+        authorization = UserObjectsOnlyAuthorization()

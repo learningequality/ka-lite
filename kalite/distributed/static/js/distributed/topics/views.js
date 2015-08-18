@@ -11,6 +11,13 @@ require("../../../css/distributed/sidebar.css");
 var ContentViews = require("content/views");
 var Models = require("./models");
 
+var RatingView = require("rating/views");
+var RatingModels = require("rating/models");
+var RatingModel = RatingModels.RatingModel;
+var ContentRatingCollection = RatingModels.ContentRatingCollection;
+
+var videos = require("video/models");
+
 // Views
 
 var ContentAreaView = BaseView.extend({
@@ -20,6 +27,18 @@ var ContentAreaView = BaseView.extend({
     initialize: function() {
         this.model = new Backbone.Model();
         this.render();
+
+        this.content_rating_collection = new ContentRatingCollection();
+        var self = this;
+        this.content_rating_collection.url = function() {
+            return sessionModel.get("CONTENT_RATING_LIST_URL") + "/?" + $.param({
+                "user": window.statusModel.get("user_id"),
+                "content_kind": self.model.get("kind"),
+                "content_id": self.model.get("id")
+            });
+        };
+        this.listenTo(window.statusModel, "change:user_id", this.show_rating);
+        _.bindAll(this, "show_rating");
     },
 
     render: function() {
@@ -34,8 +53,52 @@ var ContentAreaView = BaseView.extend({
         this.close();
         // set the new view as the current view
         this.currently_shown_view = view;
+
         // show the view
         this.$(".content").html("").append(view.$el);
+    },
+
+    show_rating: function() {
+        if( typeof  window.statusModel.get("user_id") === "undefined" ) {
+            // Let this be a no-op if the user isn't logged in, and remove the view if it already exists.
+            if (typeof this.rating_view !== "undefined") {
+                this.rating_view.remove();
+            }
+            return;
+        }
+        if( typeof this.rating_view === "undefined" ) {
+            this.rating_view = this.add_subview(RatingView, {
+                el: this.$("#rating-container-wrapper"),
+                model: new RatingModel({
+                    "user": window.statusModel.get("user_uri"),
+                    "content_kind": this.model.get("kind"),
+                    "content_id": this.model.get("id")
+                })
+            });
+        }
+        if( this.rating_view.model.get("content_id") !== this.model.get("id") ) {
+            var self = this;
+            this.content_rating_collection.fetch().done(function(){
+                if(self.content_rating_collection.models.length === 1) {
+                    self.rating_view.model = self.content_rating_collection.pop();
+                    self.rating_view.render();
+                } else if ( self.content_rating_collection.models.length === 0 ) {
+                    self.rating_view.model = new RatingModel({
+                            "user": window.statusModel.get("user_uri"),
+                            "content_kind": self.model.get("kind"),
+                            "content_id": self.model.get("id")
+                    });
+                    self.rating_view.render();
+                } else {
+                    messages.show_message("error", "Server Error: More than one rating found for this user and content item!", "too-many-ratings-msg");
+                    if (typeof this.rating_view !== "undefined") {
+                        this.rating_view.remove();
+                    }
+                }
+            }).error(function(){
+                console.log("content rating collection failed to fetch");
+            });
+        }
     },
 
     close: function() {
@@ -441,7 +504,7 @@ var TopicContainerInnerView = BaseView.extend({
         // load progress data for all videos
         var video_ids = $.map(this.$(".icon-Video[data-content-id]"), function(el) { return $(el).data("content-id"); });
         if (video_ids.length > 0) {
-            videologs = new VideoLogCollection([], {content_ids: video_ids});
+            videologs = new videos.VideoLogCollection([], {content_ids: video_ids});
             videologs.fetch().then(function() {
                 videologs.models.forEach(function(model) {
                     var newClass = model.get("complete") ? "complete" : "partial";
@@ -453,7 +516,7 @@ var TopicContainerInnerView = BaseView.extend({
         // load progress data for all exercises
         var exercise_ids = $.map(this.$(".icon-Exercise[data-content-id]"), function(el) { return $(el).data("content-id"); });
         if (exercise_ids.length > 0) {
-            exerciselogs = new ExerciseLogCollection([], {exercise_ids: exercise_ids});
+            exerciselogs = new ExerciseModels.ExerciseLogCollection([], {exercise_ids: exercise_ids});
             exerciselogs.fetch()
                 .then(function() {
                     exerciselogs.models.forEach(function(model) {
@@ -696,11 +759,13 @@ var TopicContainerOuterView = BaseView.extend({
 
         var view;
 
+        this.content_view.model = entry;
+        // The rating subview depends on the model, but we can't just listen to events on the model since the actual
+        // object is swapped out here.
+        this.content_view.show_rating();
         var self = this;
-
-        // Do this to prevent browserify from bundling what we want to be external dependencies.
+        // Mask "require" with "external" to prevent browserify from bundling what we want to be external dependencies.
         var external = require;
-
         switch(kind) {
 
             case "Exercise":
@@ -734,7 +799,6 @@ var TopicContainerOuterView = BaseView.extend({
                 this.content_view.show_view(view);
                 break;
         }
-        this.content_view.model = entry;
         this.inner_views.unshift(this.content_view);
         this.trigger("inner_view_added");
         this.state_model.set("content_displayed", true);

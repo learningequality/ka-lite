@@ -30,7 +30,6 @@ var ContentWrapperView = BaseView.extend({
                 window.statusModel.loaded.then(self.setup_content_environment);
             });
         }
-        
     },
 
     setup_content_environment: function() {
