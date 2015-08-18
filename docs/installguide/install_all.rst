@@ -7,7 +7,7 @@ Windows Installation
 Mac Installation
 ================
 
-1. Download the KA Lite `OSX installer <https://learningequality.org/downloads/ka-lite/0.14/installers/mac/KA-Lite-Monitor.dmg>`_.
+1. Download the KA Lite `OSX installer <https://learningequality.org/r/mac-installer-latest>`_.
 2. After the download is complete, double click the .dmg file.
 3. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
 4. Launch "KA-Lite Monitor" from your 'Applications' folder.
