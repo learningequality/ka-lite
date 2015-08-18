@@ -130,7 +130,7 @@ class FacilityUserResource(ModelResource):
             extras = {'success': True}
             if user.is_teacher:
                 extras.update({
-                    "redirect": reverse("coach_reports")
+                    "redirect": reverse("coach_reports", kwargs={"zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")})
                 })
             return self.create_response(request, extras)
 
@@ -188,7 +188,7 @@ class FacilityUserResource(ModelResource):
             "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
             "docs_exist": getattr(settings, "DOCS_EXIST", False),
-            "zone_id": Device.get_own_device().get_zone().id,
+            "zone_id": getattr(Device.get_own_device().get_zone(), "id", "None"),
             "has_superuser": User.objects.filter(is_superuser=True).exists(),
         }
 
