@@ -343,7 +343,6 @@ INSTALLED_APPS = [
     'kalite.distributed',
     'kalite.main',
     'kalite.playlist',
-    'kalite.caching',
     'kalite.updates',
     'kalite.facility',
     'kalite.student_testing',

@@ -9,7 +9,6 @@ from django.core.management.base import BaseCommand
 from django.db import DatabaseError
 
 from fle_utils.config.models import Settings
-from kalite.caching import initialize_content_caches
 from securesync.models import Device
 
 
@@ -43,8 +42,6 @@ class Command(BaseCommand):
         logging.info("Running videoscan.")
         call_command("videoscan")
 
-        # Finally, pre-load global data
-        initialize_content_caches()
 
     def handle(self, *args, **options):
 

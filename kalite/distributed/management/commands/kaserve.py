@@ -14,7 +14,6 @@ from fle_utils.chronograph.models import Job
 from fle_utils.config.models import Settings
 from fle_utils.general import isnumeric
 from fle_utils.internet.functions import get_ip_addresses
-from kalite.caching import initialize_content_caches
 from securesync.models import Device
 import warnings
 from kalite.shared.warnings import RemovedInKALite_v015_Warning
@@ -93,9 +92,6 @@ class Command(BaseCommand):
         # Next, call videoscan.
         logging.info("Running videoscan.")
         call_command("videoscan")
-
-        # Finally, pre-load global data
-        initialize_content_caches()
 
 
     def handle(self, *args, **options):
