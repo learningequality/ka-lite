@@ -70,6 +70,11 @@ def rgba_to_hex(rgba_string):
     return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
 
 def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Assert that no element is found. Use a wait in case the element currently exists
+    on the page, and we want to wait for it to disappear before doing the assert.
+    Finds the element using a CSS Selector.
+    """
     try:
         wait_elem = context.browser.find_element_by_css_selector(elem)
         WebDriverWait(context.browser, wait_time).until(
@@ -81,6 +86,11 @@ def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIM
         context.browser.find_element_by_css_selector(elem)
 
 def assert_no_element_by_xpath_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Assert that no element is found. Use a wait in case the element currently exists
+    on the page, and we want to wait for it to disappear before doing the assert.
+    Finds the element using XPATH.
+    """
     try:
         wait_elem = context.browser.find_element_by_xpath(elem)
         WebDriverWait(context.browser, wait_time).until(
