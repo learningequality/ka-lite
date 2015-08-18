@@ -96,6 +96,11 @@ In later version of Windows, click the "Programs and Features" icon, then choose
 Mac OSX
 _______
 
+Uninstall KA-Lite Monitor.
+Click the Reset app button the cancel from the Advanced tab.
+Quit the KA-Lite Monitor app.
+Move KA-Lite Monitor app to trash.
+
 .. note:: Dear maintainers, please put instructions here.
 
 Linux: Debian/Ubuntu Installation
@@ -121,7 +126,7 @@ You can check these values from the command prompt using the commands ``echo %HO
 Within that directory, the data is stored in the `.kalite` subdirectory.
 On most versions of Windows, this is `C:\Users\YourUsername\.kalite\`.
 
-On Linux and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
+On Linux, OSX and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
 
 
 
