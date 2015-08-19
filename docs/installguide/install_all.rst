@@ -104,8 +104,6 @@ _______
 6. Quit the ``KA-Lite Monitor`` app.
 7. Move ``KA-Lite Monitor`` app to ``Trash``.
 
-.. note:: Dear maintainers, please put instructions here.
-
 Linux: Debian/Ubuntu Installation
 _________________________________
 
