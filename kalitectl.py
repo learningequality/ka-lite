@@ -630,6 +630,24 @@ def status():
         sys.stderr.write("KA Lite running on:\n\n")
         for addr in get_ip_addresses():
             sys.stderr.write("\thttp://%s:%s/\n" % (addr, port))
+
+        # Import settings and check if a proxy port exists
+        try:
+            from django.conf import settings
+            if hasattr(settings, 'PROXY_PORT'):
+                if settings.PROXY_PORT != port:
+                    sys.stderr.write(
+                        "\n\nKA Lite configured behind another server, primary "
+                        "addresses are:\n\n"
+                    )
+                    for addr in get_ip_addresses():
+                        sys.stderr.write("\thttp://%s:%s/\n" % (addr, settings.PROXY_PORT))
+        except Exception as e:
+            sys.stderr.write(
+                "\n\nWarning, exception fetching KA Lite settings module:\n\n" +
+                str(e) + "\n\n"
+            )
+
         return STATUS_RUNNING
     except NotRunning as e:
         status_code = e.status_code
