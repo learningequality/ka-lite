@@ -388,7 +388,7 @@ class ContentRatingExportResource(ParentFacilityUserResource):
         :param to_be_serialized: the unprocessed list of objects that will be serialized
         :return: the _processed_ list of objects to serialize
         """
-        from kalite.topic_tools import get_content_data, get_exercise_data
+        from kalite.topic_tools.content_models import get_content_item
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)
@@ -398,7 +398,7 @@ class ContentRatingExportResource(ParentFacilityUserResource):
             bundle.data.pop("user")
 
             content_id = bundle.data.pop("content_id", None)
-            content = get_content_data(request, content_id) or get_exercise_data(request, content_id)
+            content = get_content_item(language=request.language, channel=request.channel, content_id=content_id)
             bundle.data["content_title"] = content.get("title", "Missing title") if content else "Unknown content"
 
         return to_be_serialized

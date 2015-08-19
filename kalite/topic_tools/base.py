@@ -161,64 +161,6 @@ def generate_node_cache(topictree=None, language=None):
 
     return node_cache
 
-def get_topic_by_path(path, root_node=None):
-    """Given a topic path, return the corresponding topic node in the topic hierarchy"""
-
-    # Normalize the path
-    path_withslash = path + ("/" if not path.endswith("/") else "")
-    path_noslash = path_withslash[:-1]
-
-    if path_noslash:
-        slug = path_noslash.split("/")[-1]
-    else:
-        slug = "root"
-
-    cur_node = get_node_cache()["Topic"].get(slug, {})
-
-
-    return cur_node
-
-
-def get_all_leaves(topic_node=None, leaf_type=None):
-    """
-    Returns all leaves of type leaf_type, at all levels of the tree.
-
-    If leaf_type is None, returns all child nodes of all types and levels.
-    """
-    if not topic_node:
-        topic_node = get_node_cache()["Topic"].get("root")
-    leaves = [topic for topic in get_topic_tree() if (not leaf_type or topic.get("kind") == leaf_type) and (topic_node.get("path") in topic.get("path"))]
-
-    return leaves
-
-
-def get_topic_leaves(topic_id=None, leaf_type=None):
-    """Given a topic (identified by topic_id ), return all descendent leaf nodes"""
-
-    topic_node = get_node_cache('Topic').get(topic_id, None)
-
-    exercises = get_all_leaves(topic_node=topic_node, leaf_type=leaf_type)
-
-    return exercises
-
-
-def get_topic_exercises(*args, **kwargs):
-    """Get all exercises for a particular set of topics"""
-    kwargs["leaf_type"] = "Exercise"
-    return get_topic_leaves(*args, **kwargs)
-
-
-def get_topic_videos(*args, **kwargs):
-    """Get all videos for a particular set of topics"""
-    kwargs["leaf_type"] = "Video"
-    return get_topic_leaves(*args, **kwargs)
-
-
-def get_exercise_data(request, exercise_id=None):
-    exercise = get_exercise_cache(language=request.language).get(exercise_id, None)
-
-    return exercise
-
 
 def get_assessment_item_data(request, assessment_item_id=None):
     try:
