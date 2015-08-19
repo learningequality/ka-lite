@@ -68,7 +68,7 @@ def get_device_counters(**kwargs):
                 cnt = 0
                 for Model in _syncing_models:
                     cnt += Model.all_objects.filter(Q(counter__isnull=True) | Q(signature__isnull=True)).count()  # include deleted records
-                device_counters[device.id] += cnt()
+                device_counters[device.id] += cnt
 
     return device_counters
 

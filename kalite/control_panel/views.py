@@ -34,10 +34,6 @@ from kalite.shared.decorators.auth import require_authorized_admin, require_auth
 from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 
-# TODO(dylanjbarth): this looks awful
-if settings.CENTRAL_SERVER:
-    from central.models import Organization
-
 
 UNGROUPED = "Ungrouped"
 
@@ -135,18 +131,19 @@ def zone_management(request, zone_id="None"):
 
         user_activity = UserLogSummary.objects.filter(user__facility=facility)
         exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
-
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
+            "meta_data_in_need": check_meta_data(facility),
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
         }
 
     context.update({
         "is_headless_zone": is_headless_zone,
         "facilities": facility_data,
+        "missing_meta": any([facility['meta_data_in_need'] for facility in facility_data.values()]),
         "devices": device_data,
         "upload_form": UploadFileForm(),
         "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
@@ -175,6 +172,8 @@ def data_export(request):
         zone = ""
 
     if settings.CENTRAL_SERVER:
+        # TODO(dylanjbarth and benjaoming): this looks awful
+        from central.models import Organization
         all_zones_url = reverse("api_dispatch_list", kwargs={"resource_name": "zone"})
         if zone_id:
             org = Zone.objects.get(id=zone_id).get_org()
@@ -407,7 +406,9 @@ def account_management(request):
             # Never report this error; don't want this logging to block other functionality.
             logging.error("Failed to update student userlog activity: %s" % e)
 
-    return student_view_context(request)
+    c = student_view_context(request)
+    c['restricted'] = settings.DISABLE_SELF_ADMIN
+    return c
 
 
 # data functions
@@ -556,6 +557,19 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             del group_data[None]
 
     return (user_data, group_data)
+
+
+def check_meta_data(facility):
+    '''Checks whether any metadata is missing for the specified facility.
+
+    Args: 
+      facility (Facility instance): facility to check for missing metadata
+ 
+    Returns:
+      bool: True if one or more metadata fields are missing'''
+
+    check_fields = ['user_count', 'latitude', 'longitude', 'address', 'contact_name', 'contact_phone', 'contact_email']
+    return any([ (getattr(facility, field, None) is None or getattr(facility, field)=='') for field in check_fields])
 
 
 # context functions

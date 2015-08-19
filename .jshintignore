@@ -1,0 +1,8 @@
+**/*.handlebars
+**/*.less
+**/*.css
+kalite/distributed/static/js/distributed/base/backbone-tastypie.js
+kalite/distributed/static/js/distributed/perseus/**/*
+kalite/*/static/js/*/bundles/*
+static-libraries/**
+kalite/i18n/static/js/i18n

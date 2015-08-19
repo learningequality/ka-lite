@@ -2,6 +2,9 @@
 # File created by Coverage
 .coverage
 
+# PyCharm
+.idea
+
 # Eclipse
 .project
 .pydevproject
@@ -20,6 +23,12 @@ MANIFEST.in
 dist-packages-temp/
 dist-packages-downloads/
 dist-packages/
+
+# User cache data generated at runtime
+cache/
+
+# Updates downloaded at runtime
+static-updates
 
 # MAC stuff
 .DS_Store
@@ -41,12 +50,19 @@ dist-packages/
 *.zip
 
 # Documentation
-sphinx-docs/_build
-sphinx-docs/images/*
+docs/_build
+docs/images/*
 
 # oh-my-zsh convention for automatically
 # switching on a venv
 .venv
+venv/
+
+# Ignore built javascript files
+/kalite/*/static/js/*/bundles
+
+# Ignore changes to Perseus and Khan Exercises that do not come from intentional edits
+/kalite/distributed/static/js/distributed/perseus
 
 # Lacks documentation
 locale/
@@ -69,6 +85,7 @@ writeup/
 /content/*.mp3
 /content/*.pdf
 /content/khan/
+/content/assessment
 /data/logs
 /data/i18n
 /data/subtitles

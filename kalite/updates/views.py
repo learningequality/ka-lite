@@ -2,12 +2,14 @@ from annoying.decorators import render_to
 
 from django.utils.translation import ugettext as _, ugettext_lazy
 from django.contrib import messages
+from django.conf import settings
 
 from .models import VideoFile
 from kalite.i18n import get_installed_language_packs
 from kalite.shared.decorators.auth import require_admin
 from securesync.models import Device
 from securesync.devices.decorators import require_registration
+from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP
 
 
 def update_context(request):
@@ -27,7 +29,11 @@ def update_context(request):
 @render_to("updates/update_videos.html")
 def update_videos(request, max_to_show=4):
     context = update_context(request)
-    messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download videos one at a time.'))
+    if getattr(settings, 'USING_RASPBERRY_PI', False):
+        messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download less than 25 videos at a time.'))
+
+    if DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+        messages.warning(request, _('After video download, the server must be restarted for them to be available to users.'))
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),
     })

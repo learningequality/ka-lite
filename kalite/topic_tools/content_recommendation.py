@@ -11,16 +11,15 @@ import collections
 
 from django.db.models import Count
 
-from kalite.topic_tools import * 
+from kalite.topic_tools import get_content_data, get_exercise_data, get_topic_data, get_topic_exercises, get_topic_tree, get_exercise_cache
+
+from . import settings
+
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
-from kalite.facility.models import Facility, FacilityUser
+from kalite.facility.models import FacilityUser
 
-TOPICS_FILEPATHS = {
-    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
-}
-
-TOPIC_RECOMMENDATION_DEPTH = 3
+CACHE_VARS = []
 
 def get_resume_recommendations(user, request):
     """Get the recommendation for the Resume section.
@@ -69,7 +68,7 @@ def get_next_recommendations(user, request):
 
     #logic for recommendations based off of the topic tree structure
     if current_subtopic:
-        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:TOPIC_RECOMMENDATION_DEPTH]
+        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:settings.TOPIC_RECOMMENDATION_DEPTH]
         topic_tree_based_data = get_exercises_from_topics(topic_tree_based_data)
     else:
         topic_tree_based_data = []
@@ -179,7 +178,7 @@ def get_explore_recommendations(user, request):
     recent_subtopics = list(set([exercise_parents_table[ex]['subtopic_id'] for ex in recent_exercises if ex in exercise_parents_table]))
 
     #choose sample number, up to three
-    sampleNum = min(len(recent_subtopics), TOPIC_RECOMMENDATION_DEPTH)
+    sampleNum = min(len(recent_subtopics), settings.TOPIC_RECOMMENDATION_DEPTH)
     
     random_subtopics = random.sample(recent_subtopics, sampleNum)
     added = []                                                      #keep track of what has been added (below)

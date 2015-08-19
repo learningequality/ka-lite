@@ -23,7 +23,10 @@ def get_learners_from_GET(request):
     if learner_ids:
         learner_filter = Q(pk__in=learner_ids)
     elif group_ids:
-        learner_filter = Q(group__pk__in=group_ids)
+        if "Ungrouped" in group_ids:
+            learner_filter = Q(group__pk__in=group_ids) | Q(group__isnull=True)
+        else:
+            learner_filter = Q(group__pk__in=group_ids)
     else:
         # Do this to ensure that we never return more than one facility's worth of anything.
         learner_filter = Q(facility__pk__in=facility_ids)
@@ -65,6 +68,10 @@ def learner_logs(request):
     # Look back a week by default
     time_window = request.GET.get("time_window", 7)
 
+    start_date = request.GET.get("start_date", None)
+
+    end_date = request.GET.get("end_date", None)
+
     topic_ids = request.GET.getlist("topic_id", [])
 
     learners = get_learners_from_GET(request)
@@ -81,8 +88,9 @@ def learner_logs(request):
 
     output_objects = []
 
-    start_date = datetime.datetime.now() - datetime.timedelta(time_window)
-    end_date = datetime.datetime.now()
+    end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
+
+    start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
 
     for log_type in log_types:
         LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)
@@ -121,6 +129,10 @@ def aggregate_learner_logs(request):
     # Look back a week by default
     time_window = request.GET.get("time_window", 7)
 
+    start_date = request.GET.get("start_date", None)
+
+    end_date = request.GET.get("end_date", None)
+
     topic_ids = request.GET.getlist("topic_id", [])
 
     log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
@@ -132,8 +144,10 @@ def aggregate_learner_logs(request):
         "exercise_attempts": 0,
         "exercise_mastery": None,
     }
-    start_date = datetime.datetime.now() - datetime.timedelta(time_window)
-    end_date = datetime.datetime.now()
+    
+    end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
+
+    start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
 
     for log_type in log_types:
 
@@ -167,7 +181,7 @@ def aggregate_learner_logs(request):
         "progress": getattr(log, "streak_progress", getattr(log, "progress", None)),
         "content": get_exercise_cache().get(getattr(log, "exercise_id", ""), get_content_cache().get(getattr(log, "video_id", getattr(log, "content_id", "")), {})),
         } for log in output_logs[:event_limit]]
-    output_dict["total_time_logged"] = UserLogSummary.objects\
-        .filter(user__in=learners, last_activity_datetime__gte=start_date, last_activity_datetime__lte=end_date)\
-        .aggregate(Sum("total_seconds")).get("total_seconds__sum") or 0
+    output_dict["total_time_logged"] = round((UserLogSummary.objects\
+        .filter(user__in=learners, start_datetime__gte=start_date, start_datetime__lte=end_date)\
+        .aggregate(Sum("total_seconds")).get("total_seconds__sum") or 0)/3600.0, 1)
     return JsonResponse(output_dict)

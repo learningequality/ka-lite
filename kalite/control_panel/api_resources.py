@@ -13,7 +13,7 @@ from securesync.models import Zone, Device, SyncSession
 
 from kalite.facility.utils import get_accessible_objects_from_logged_in_user
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
-from kalite.main.models import AttemptLog, ExerciseLog
+from kalite.main.models import AttemptLog, ExerciseLog, ContentRating
 from kalite.shared.api_auth.auth import ObjectAdminAuthorization
 from kalite.store.models import StoreTransactionLog, StoreItem
 from kalite.student_testing.models import TestLog
@@ -87,23 +87,7 @@ class FacilityGroupResource(ModelResource):
             else:
                 qs = FacilityGroup.objects.filter(facility__id__in=facility_ids)
 
-        # Flag to return only the FacilityGroup objects and not including the "All" and "Ungrouped" options.
-        # TODO(cpauya): how to convert this into a kwargs above instead of a request.GET?
-        groups_only = bundle.request.GET.get("groups_only", True)
-        if groups_only:
-            group_list = list(qs)
-        else:
-            default_list = []
-            if qs or ungrouped_available:
-                # add the "All" option
-                default_list = [FacilityGroup(id=ALL_KEY, name=_("All"))]
-
-                # add the "Ungrouped" option
-                if ungrouped_available:
-                    fg = FacilityGroup(id=UNGROUPED_KEY, name=_("Ungrouped"))
-                    default_list.append(fg)
-            # add all the facility group options for the user
-            group_list = default_list + list(qs)
+        group_list = list(qs)
 
         # call super to trigger auth
         return super(FacilityGroupResource, self).authorized_read_list(group_list, bundle)
@@ -372,5 +356,49 @@ class StoreTransactionLogResource(ParentFacilityUserResource):
             item = store_items.get(item_id)
             bundle.data["item_name"] = item.title if item else None
             bundle.data.pop("user")
+
+        return to_be_serialized
+
+
+class ContentRatingExportResource(ParentFacilityUserResource):
+
+    _facility_users = None
+
+    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
+
+    class Meta:
+        queryset = ContentRating.objects.all()
+        resource_name = 'content_rating_csv'
+        authorization = ObjectAdminAuthorization()
+        excludes = ['signed_version', 'counter', 'signature', 'id', 'resource_uri']
+        serializer = CSVSerializer()
+
+    def obj_get_list(self, bundle, **kwargs):
+        self._facility_users = self._get_facility_users(bundle)
+        content_ratings = ContentRating.objects.filter(user__id__in=self._facility_users.keys())
+        return super(ContentRatingExportResource, self).authorized_read_list(content_ratings, bundle)
+
+    def alter_list_data_to_serialize(self, request, to_be_serialized):
+        """
+        Defines a hook to process list view data before being serialized.
+        We pluck out the "user" and replace with the fields we're interested in (username, facility name, is_teacher),
+          and pluck out the content_id and replace with the content_title (if found).
+        This is to make the csv output more human friendly.
+        :param request: HTTP request object
+        :param to_be_serialized: the unprocessed list of objects that will be serialized
+        :return: the _processed_ list of objects to serialize
+        """
+        from kalite.topic_tools import get_content_data, get_exercise_data
+        for bundle in to_be_serialized["objects"]:
+            user_id = bundle.data["user"].data["id"]
+            user = self._facility_users.get(user_id)
+            bundle.data["username"] = user.username
+            bundle.data["facility_name"] = user.facility.name
+            bundle.data["is_teacher"] = user.is_teacher
+            bundle.data.pop("user")
+
+            content_id = bundle.data.pop("content_id", None)
+            content = get_content_data(request, content_id) or get_exercise_data(request, content_id)
+            bundle.data["content_title"] = content.get("title", "Missing title") if content else "Unknown content"
 
         return to_be_serialized
