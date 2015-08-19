@@ -622,6 +622,10 @@ def status():
     Check the server's status. For possible statuses, see the status dictionary
     status.codes
 
+    Status *always* outputs the current status in the first line if stderr.
+    The following lines contain optional information such as the addresses where
+    the server is listening.
+
     :returns: status_code, key has description in status.codes
     """
     try:
@@ -637,7 +641,7 @@ def status():
             if hasattr(settings, 'PROXY_PORT'):
                 if settings.PROXY_PORT != port:
                     sys.stderr.write(
-                        "\n\nKA Lite configured behind another server, primary "
+                        "\nKA Lite configured behind another server, primary "
                         "addresses are:\n\n"
                     )
                     for addr in get_ip_addresses():
