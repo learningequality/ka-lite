@@ -96,10 +96,13 @@ _______
 Mac OSX
 _______
 
-1. Uninstall KA-Lite Monitor.
-2. Click the Reset app and then cancel button from the Advanced tab.
-3. Quit the KA-Lite Monitor app.
-4. Move KA-Lite Monitor app to trash.
+1. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+2. Click on ``Preferences`` in the menu option.
+3. Click the ``Reset App`` from The ``Advanced``
+4. You will be prompted that "this will reset app. Are you sure?", just click on ``OK`` button.
+5. Another dialog will appear asking your ``Password`` just click on ``Cancel`` button.
+6. Quit the ``KA-Lite Monitor`` app.
+7. Move ``KA-Lite Monitor`` app to ``Trash``.
 
 .. note:: Dear maintainers, please put instructions here.
 
@@ -126,7 +129,7 @@ You can check these values from the command prompt using the commands ``echo %HO
 Within that directory, the data is stored in the `.kalite` subdirectory.
 On most versions of Windows, this is `C:\Users\YourUsername\.kalite\`.
 
-On Linux, OSX and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
+On Linux, OSX, and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
 
 
 
