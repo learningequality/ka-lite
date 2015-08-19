@@ -7,7 +7,7 @@ from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, Fo
 from playhouse.shortcuts import model_to_dict
 
 from .settings import CONTENT_DATABASE_PATH
-from .base import update_content_availability
+from .annotate import update_content_availability
 
 
 # This BaseItem is used to subclass different Models for different languages.
@@ -49,6 +49,12 @@ def parse_model_data(item):
     item["extra_fields"] = json.dumps(extra_fields)
     return item
 
+def unparse_model_data(item):
+    extra_fields = json.loads(item.get("extra_fields", "{}"))
+
+    item.update(extra_fields)
+    return item
+
 
 def set_database(function):
     """
@@ -78,6 +84,28 @@ def set_database(function):
     return wrapper
 
 
+def parse_data(function):
+    """
+    Parses the output of functions to be dicts (and expanded extra_fields if needed)
+    """
+
+    def wrapper(*args, **kwargs):
+
+        dicts = kwargs.get("dicts", False)
+
+        expanded = kwargs.get("expanded", False)
+
+        output = function(*args, **kwargs)
+
+        if dicts:
+            output = [item for item in output.dicts()]
+            if expanded:
+                output = map(unparse_model_data, output)
+
+        return output
+    return wrapper
+
+
 @set_database
 def get_content_item(content_id=None, db=None, **kwargs):
     """
@@ -88,7 +116,7 @@ def get_content_item(content_id=None, db=None, **kwargs):
             value = Item.get(Item.id == content_id)
             return model_to_dict(value)
 
-
+@parse_data
 @set_database
 def get_content_items(ids=None, db=None, **kwargs):
     """
@@ -99,7 +127,7 @@ def get_content_items(ids=None, db=None, **kwargs):
             values = Item.select().where(Item.id >> ids)
         else:
             values = Item.select()
-    return values
+        return values
 
 
 @set_database
@@ -111,28 +139,64 @@ def get_topic_nodes(parent=None, db=None, **kwargs):
         with Using(db, [Item]):
             Parent = Item.alias()
             if parent == "root":
-                values = [item for item in Item.select(
-                    Item.title,
-                    Item.description,
-                    Item.available,
-                    Item.kind,
-                    Item.children,
-                    Item.id,
-                    Item.path,
-                    Item.slug,
-                    ).join(Parent, on=(Item.parent == Parent.pk)).where(Parent.parent.is_null()).dicts()]
+                selector = Parent.parent.is_null()
             else:
-                values = [item for item in Item.select(
-                    Item.title,
-                    Item.description,
-                    Item.available,
-                    Item.kind,
-                    Item.children,
-                    Item.id,
-                    Item.path,
-                    Item.slug,
-                    ).join(Parent, on=(Item.parent == Parent.pk)).where(Parent.id == parent).dicts()]
+                selector = Parent.id == parent
+            values = [item for item in Item.select(
+                Item.title,
+                Item.description,
+                Item.available,
+                Item.kind,
+                Item.children,
+                Item.id,
+                Item.path,
+                Item.slug,
+                ).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
             return values
+
+@set_database
+def get_topic_nodes_with_children(parent=None, db=None, **kwargs):
+    """
+    Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
+    """
+    if parent:
+        with Using(db, [Item]):
+            Parent = Item.alias()
+            Child = Item.alias()
+            if parent == "root":
+                selector = Parent.parent.is_null()
+            else:
+                selector = Parent.id == parent
+            child_values = [item for item in Item.select(
+                Child
+                ).join(Child, on=(Child.parent == Item.pk)).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
+            parent_values = [item for item in Item.select(
+                Item
+                ).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
+            topics = []
+            for topic in parent_values:
+                output = {}
+                output.update(topic)
+                output["children"] = [child["id"] for child in child_values if child["parent"] == topic["pk"]]
+                topics.append(output)
+            return topics
+
+@set_database
+def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
+    """
+    Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
+    """
+    if topic_id:
+        with Using(db, [Item]):
+            topic_node = Item.get(Item.id == topic_id)
+
+            if not kinds:
+                kinds == ["Video", "Audio", "Exercise", "Document"]
+
+            contents = [item for item in Item.select(
+                Item
+                ).where(Item.kind << kinds, Item.path.contains(topic_node.path)).dicts()]
+            return contents
 
 
 @set_database

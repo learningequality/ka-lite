@@ -24,7 +24,6 @@ from django.utils.translation import ugettext as _
 
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
-from kalite.topic_tools import base as topic_tools
 from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
@@ -89,10 +88,6 @@ def homepage(request):
     Homepage.
     """
     return {}
-
-def watch_home(request):
-    """Dummy wrapper function for topic_handler with url=/"""
-    return topic_handler(request, cached_nodes={"topic": topic_tools.get_topic_tree()})
 
 
 def help(request):
