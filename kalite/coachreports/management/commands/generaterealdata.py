@@ -34,7 +34,8 @@ from django.db import transaction
 from fle_utils.general import datediff
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, AttemptLog
-from kalite.topic_tools.base import get_topic_videos, get_topic_exercises, get_content_cache
+from kalite.topic_tools.base import get_content_cache
+from kalite.content_models import get_topic_contents
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",
@@ -232,7 +233,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
         for topic in topics:
             # Get all exercises related to the topic
-            exercises = get_topic_exercises(topic_id=topic)
+            exercises = get_topic_contents(topic_id=topic_id, kinds=["Exercise"])
 
             # Problem:
             #   Not realistic for students to have lots of unfinished exercises.
@@ -333,9 +334,9 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
         video_cache = get_content_cache()
 
         for topic in topics:
-            videos = get_topic_videos(topic_id=topic)
+            videos = get_topic_contents(topic_id=topic, kinds=["Video"])
 
-            exercises = get_topic_exercises(topic_id=topic)
+            exercises = get_topic_contents(topic_id=topic, kinds=["Exercise"])
             exercise_ids = [ex["id"] if "id" in ex else ex['name'] for ex in exercises]
             exercise_logs = ExerciseLog.objects.filter(user=facility_user, id__in=exercise_ids)
 

@@ -12,7 +12,6 @@ import json
 
 from django.db.models import Count
 
-from kalite.topic_tools.base import get_exercise_cache
 from kalite.topic_tools.content_models import get_content_item, get_topic_nodes_with_children, get_topic_contents, get_content_items
 
 from . import settings

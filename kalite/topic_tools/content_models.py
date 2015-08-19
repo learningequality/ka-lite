@@ -124,7 +124,7 @@ def get_content_items(ids=None, db=None, **kwargs):
     """
     with Using(db, [Item]):
         if ids:
-            values = Item.select().where(Item.id >> ids)
+            values = Item.select().where(Item.id.in_(ids))
         else:
             values = Item.select()
         return values
