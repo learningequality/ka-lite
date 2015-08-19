@@ -342,7 +342,6 @@ INSTALLED_APPS = [
     'kalite.coachreports',
     'kalite.distributed',
     'kalite.main',
-    'kalite.playlist',
     'kalite.updates',
     'kalite.facility',
     'kalite.student_testing',
@@ -500,7 +499,6 @@ from securesync.settings import *
 from fle_utils.chronograph.settings import *
 from kalite.facility.settings import *
 from kalite.main.settings import *
-from kalite.playlist.settings import *
 from kalite.student_testing.settings import *
 
 # Import from applications with problematic __init__.py files

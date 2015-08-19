@@ -31,7 +31,6 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.topic_tools.base import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 
 

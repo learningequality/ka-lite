@@ -151,13 +151,6 @@ def search(request):
     possible_matches = {}
     hit_max = {}
 
-
-    node_kinds = {
-        "Topic": ["Topic"],
-        "Exercise": ["Exercise"],
-        "Content": ["Video", "Audio", "Document"],
-    }
-
     if query is None:
         query_error = _("Error: query not specified.")
 
@@ -167,29 +160,20 @@ def search(request):
     else:
         query = query.lower()
         # search for topic, video or exercise with matching title
-        for node_type, node_dict in topic_tools.get_node_cache().iteritems():
-            if category and node_type != category:
-                # Skip categories that don't match (if specified)
-                continue
 
-            exact_match = filter(lambda node: node["kind"] in node_kinds[node_type] and node["title"].lower() == query, node_dict.values())[:1]
+        matches, exact = search_topic_nodes(query=query, language=request.language)
 
-            if exact_match:
-                # Redirect to an exact match
-                return HttpResponseRedirect(reverse('learn') + exact_match[0]['path'])
+        if exact:
+            # Redirect to an exact match
+            return HttpResponseRedirect(reverse('learn') + matches[0]['path'])
 
-            # For efficiency, don't do substring matches when we've got lots of results
-            match_generator = (node for node in node_dict.values()
-                if node["kind"] in node_kinds[node_type] and (query in node["title"].lower() or query in [x.lower() for x in node.get('keywords', [])] or
-                query in [x.lower() for x in node.get('tags', [])]))
+        # Only return max results
+        try:
+            possible_matches[node_type] = list(islice(matches, (page-1)*max_results_per_category, page*max_results_per_category))
+        except ValueError:
+            return HttpResponseNotFound("Page does not exist")
 
-            # Only return max results
-            try:
-                possible_matches[node_type] = list(islice(match_generator, (page-1)*max_results_per_category, page*max_results_per_category))
-            except ValueError:
-                return HttpResponseNotFound("Page does not exist")
-
-            hit_max[node_type] = next(match_generator, False)
+        hit_max[node_type] = next(matches, False)
 
     previous_params = request.GET.copy()
     previous_params['page'] = page - 1

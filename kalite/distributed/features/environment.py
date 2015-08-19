@@ -8,7 +8,7 @@ import datetime
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools.base import get_exercise_cache, get_content_cache
+from kalite.topic_tools.content_models import get_random_content
 
 
 def before_scenario(context, scenario):
@@ -16,7 +16,7 @@ def before_scenario(context, scenario):
 
     if "with_progress" in context.tags:
         user = FacilityUser.objects.get(username=context.user, facility=getattr(context, "facility", None))
-        exercises = random.sample(get_exercise_cache().keys(), 2)
+        exercises = get_random_content(kinds=["Exercise"], limit=2)
         for exercise in exercises:
             log = ExerciseLog(
                 exercise_id=exercise,
@@ -28,7 +28,7 @@ def before_scenario(context, scenario):
             log.save()
         context.exercises = exercises
 
-        videos = random.sample(get_content_cache().keys(), 2)
+        videos = get_random_content(kinds=["Video"], limit=2)
 
         for video in videos:
             log = VideoLog(

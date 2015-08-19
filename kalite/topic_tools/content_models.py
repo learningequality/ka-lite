@@ -3,7 +3,7 @@ import json
 
 import sqlite3
 
-from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using
+from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 
 from .settings import CONTENT_DATABASE_PATH
@@ -35,7 +35,7 @@ def parse_model_data(item):
     extra_fields = item.get("extra_fields", {})
 
     if type(extra_fields) is not dict:
-        extra_fields = json.load(extra_fields)
+        extra_fields = json.loads(extra_fields)
 
     remove_keys = []
     for key, value in item.iteritems():
@@ -48,6 +48,7 @@ def parse_model_data(item):
 
     item["extra_fields"] = json.dumps(extra_fields)
     return item
+
 
 def unparse_model_data(item):
     extra_fields = json.loads(item.get("extra_fields", "{}"))
@@ -76,7 +77,12 @@ def set_database(function):
 
         db.connect()
 
-        output = function(*args, **kwargs)
+        try:
+
+            output = function(*args, **kwargs)
+
+        except DoesNotExist:
+            output = None
 
         db.close()
 
@@ -91,30 +97,45 @@ def parse_data(function):
 
     def wrapper(*args, **kwargs):
 
-        dicts = kwargs.get("dicts", False)
+        dicts = kwargs.get("dicts", True)
 
-        expanded = kwargs.get("expanded", False)
+        expanded = kwargs.get("expanded", True)
 
         output = function(*args, **kwargs)
 
-        if dicts:
-            output = [item for item in output.dicts()]
+        if dicts and output:
             if expanded:
-                output = map(unparse_model_data, output)
+                output = map(unparse_model_data, output.dicts())
+            else:
+                output = [item for item in output.dicts()]
 
         return output
     return wrapper
+
+
+@parse_data
+@set_database
+def get_random_content(kinds=None, limit=1, db=None):
+    """
+    Convenience function for returning random content nodes for use in testing
+    """
+    with Using(db, [Item]):
+        if not kinds:
+            kinds == ["Video", "Audio", "Exercise", "Document"]
+        return Item.select().where(Item.kinds.in_(kinds)).order_by(fn.Random()).limit(limit)
 
 
 @set_database
 def get_content_item(content_id=None, db=None, **kwargs):
     """
     Convenience function for returning a fully fleshed out content node for use in rendering content
+    To save server processing, the extra_fields are fleshed out on the client side.
     """
     if content_id:
         with Using(db, [Item]):
             value = Item.get(Item.id == content_id)
             return model_to_dict(value)
+
 
 @parse_data
 @set_database
@@ -154,6 +175,7 @@ def get_topic_nodes(parent=None, db=None, **kwargs):
                 ).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
             return values
 
+
 @set_database
 def get_topic_nodes_with_children(parent=None, db=None, **kwargs):
     """
@@ -181,10 +203,27 @@ def get_topic_nodes_with_children(parent=None, db=None, **kwargs):
                 topics.append(output)
             return topics
 
+
+@parse_data
+@set_database
+def get_content_parents(ids=None, db=None, **kwargs):
+    """
+    Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
+    """
+    if ids:
+        with Using(db, [Item]):
+            Parent = Item.alias()
+            parent_values = [item for item in Item.select(
+                Parent
+                ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids)).dicts()]
+            return parent_values            
+
+
+@parse_data
 @set_database
 def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
     """
-    Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
+    Convenience function for returning a set of cotent nodes for a topic
     """
     if topic_id:
         with Using(db, [Item]):
@@ -193,11 +232,24 @@ def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
             if not kinds:
                 kinds == ["Video", "Audio", "Exercise", "Document"]
 
-            contents = [item for item in Item.select(
+            return Item.select(
                 Item
-                ).where(Item.kind << kinds, Item.path.contains(topic_node.path)).dicts()]
-            return contents
+                ).where(Item.kind.in_(kinds), Item.path.contains(topic_node.path))
 
+
+@set_database
+def search_topic_nodes(kinds=None, query=None, db=None, **kwargs):
+    if query:
+        with Using(db, [Item]):
+            if not kinds:
+                kinds == ["Video", "Audio", "Exercise", "Document", "Topic"]
+            try:
+                topic_node = Item.get(fn.Lower(Item.title) == query, Item.kind.in_(kinds))
+                return [model_to_dict(topic_node)], True
+            except DoesNotExist:
+                # For efficiency, don't do substring matches when we've got lots of results
+                topic_nodes = Item.select().where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query)))).dicts()
+                return topic_nodes, False
 
 @set_database
 def bulk_insert(items, db=None, **kwargs):

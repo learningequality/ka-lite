@@ -34,7 +34,6 @@ from django.db import transaction
 from fle_utils.general import datediff
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, AttemptLog
-from kalite.topic_tools.base import get_content_cache
 from kalite.content_models import get_topic_contents
 
 
@@ -329,9 +328,6 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                 logging.error("Error saving facility user: %s" % e)
 
         date_diff_started = datetime.timedelta(seconds=datediff(date_diff, units="seconds") * user_settings["time_in_program"])  # when this user started in the program, relative to NOW
-
-        # contains the video duration key
-        video_cache = get_content_cache()
 
         for topic in topics:
             videos = get_topic_contents(topic_id=topic, kinds=["Video"])
