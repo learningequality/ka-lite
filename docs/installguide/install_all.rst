@@ -124,10 +124,10 @@ Removing that directory can potentially reclaim lots of hard drive space.
 
 On Windows, the HOME and USERPROFILE registry values will be used if set, otherwise the combination ``%HOMEDRIVE%%HOMEPATH%`` will be used.
 You can check these values from the command prompt using the commands ``echo %HOME%``, ``echo $USERPROFILE%``, etc.
-Within that directory, the data is stored in the `.kalite` subdirectory.
-On most versions of Windows, this is `C:\Users\YourUsername\.kalite\`.
+Within that directory, the data is stored in the ``.kalite`` subdirectory.
+On most versions of Windows, this is ``C:\Users\YourUsername\.kalite\``.
 
-On Linux, OSX, and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
+On Linux, OSX, and other Unix-like systems, downloaded videos and database files are in ``~/.kalite``.
 
 
 
