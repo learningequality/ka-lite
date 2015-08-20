@@ -82,11 +82,19 @@ def unpack_zipfile_to_content_folder(zf):
     try:
         channel = zf.read("channel.name")
     except KeyError:
-        channel = "khan"
+        channel = ""
 
-    folder = os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel)
+    if channel:
+
+        folder = os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel)
+
+    else:
+        folder = settings.ASSESSMENT_ITEM_ROOT
+
     ensure_dir(folder)
     zf.extractall(folder)
+
+    ensure_dir(settings.KHAN_ASSESSMENT_ITEM_ROOT)
     # Ensure that special files are in their configured locations
     os.rename(
         os.path.join(folder, 'assessmentitems.version'),

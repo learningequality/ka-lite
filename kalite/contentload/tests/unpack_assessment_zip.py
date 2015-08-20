@@ -122,12 +122,14 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         os.unlink(self.zipfile_path)
 
     def test_unpack_zipfile_to_khan_content_extracts_to_content_dir(self):
-        zipfile_instance = MagicMock()
+        zipfile_instance = zipfile.ZipFile(open(self.zipfile_path, "r"), "r")
+
+        zipfile_instance.extractall = MagicMock(side_effect=zipfile_instance.extractall)
         
         from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT
         extract_dir = KHAN_ASSESSMENT_ITEM_ROOT
 
-        mod.unpack_zipfile_to_khan_content(zipfile_instance)
+        mod.unpack_zipfile_to_content_folder(zipfile_instance)
 
         zipfile_instance.extractall.assert_called_once_with(extract_dir)
 
