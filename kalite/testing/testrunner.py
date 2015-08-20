@@ -17,6 +17,7 @@ from selenium import webdriver
 from optparse import make_option
 
 from kalite.testing.base import DjangoBehaveTestCase
+from kalite.topic_tools.content_models import database_exists
 
 
 def get_app_dir(app_module):
@@ -136,10 +137,14 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         print("Successfully setup Firefox {0}".format(browser.capabilities['version']))
         browser.quit()
 
-        call_command("init_content_items")
-        call_command("annotate_content_items")
+        if not database_exists():
+            call_command("init_content_items")
+            call_command("annotate_content_items")
 
-        print("Successfully setup content database")
+            print("Successfully setup content database")
+        else:
+            print("Content database already exists")
+
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
         bdd_labels = test_labels

@@ -3,6 +3,8 @@ machine:
     version: 2.7.9
 
 dependencies:
+  cache_directories:
+    - "content"
   override:
     - pip install -r requirements_test.txt
     - pip install -e .
