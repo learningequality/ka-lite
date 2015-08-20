@@ -291,40 +291,37 @@ def create_table(db=None, **kwargs):
 
 @set_database
 def annotate_content_models(db=None, channel="khan", language="en", ids=None, **kwargs):
-    try:
-        content_models = get_content_items(ids=ids, channel=channel, language=language)
-        updates_dict = update_content_availability(content_models)
+    content_models = get_content_items(ids=ids, channel=channel, language=language)
+    updates_dict = update_content_availability(content_models)
 
-        for key, value in updates_dict.iteritems():
-            updates_dict[key] = parse_model_data(value)
+    for key, value in updates_dict.iteritems():
+        updates_dict[key] = parse_model_data(value)
 
-        with Using(db, [Item]):
+    with Using(db, [Item]):
 
-            with db.atomic() as transaction:
-                def recurse_availability_up_tree(node, available):
-                    if not node.parent:
-                        return
-                    else:
-                        parent = node.parent
-                    if not available:
-                        Parent = Item.alias()
-                        children_available = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk, Item.available == True).count() > 0
-                        available = children_available
-                    if parent.available != available:
-                        parent.available = available
-                        parent.save()
-                        recurse_availability_up_tree(parent, available)
+        with db.atomic() as transaction:
+            def recurse_availability_up_tree(node, available):
+                if not node.parent:
+                    return
+                else:
+                    parent = node.parent
+                if not available:
+                    Parent = Item.alias()
+                    children_available = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk, Item.available == True).count() > 0
+                    available = children_available
+                if parent.available != available:
+                    parent.available = available
+                    parent.save()
+                    recurse_availability_up_tree(parent, available)
 
 
-                for id, update in updates_dict.iteritems():
-                    if update:
-                        item = Item.get(id=id)
-                        for attr, val in update.iteritems():
-                            setattr(item, attr, val)
-                        item.save()
-                        recurse_availability_up_tree(item, update.get("available", False))
-    except:
-        import pdb; pdb.set_trace()
+            for id, update in updates_dict.iteritems():
+                if update:
+                    item = Item.get(id=id)
+                    for attr, val in update.iteritems():
+                        setattr(item, attr, val)
+                    item.save()
+                    recurse_availability_up_tree(item, update.get("available", False))
 
 
 @set_database
