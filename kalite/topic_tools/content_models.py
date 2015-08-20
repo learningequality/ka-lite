@@ -122,7 +122,7 @@ def get_random_content(kinds=None, limit=1, db=None):
     with Using(db, [Item]):
         if not kinds:
             kinds == ["Video", "Audio", "Exercise", "Document"]
-        return Item.select().where(Item.kinds.in_(kinds)).order_by(fn.Random()).limit(limit)
+        return Item.select().where(Item.kind.in_(kinds)).order_by(fn.Random()).limit(limit)
 
 
 @set_database
@@ -310,7 +310,7 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
                         parent.available = available
                         parent.save()
                         recurse_availability_up_tree(parent, available)
-                    
+
 
                 for id, update in updates_dict.iteritems():
                     if update:
