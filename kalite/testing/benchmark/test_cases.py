@@ -130,7 +130,7 @@ class OneHundredRandomLogUpdates(base.UserCommon):
     """
     def _setup(self, num_logs=50, **kwargs):
         super(OneHundredRandomLogUpdates, self)._setup(**kwargs)
-        nodes = dict([(node.get("id"), node) for node in get_content_items(dicts=True)])
+        nodes = dict([(node.get("id"), node) for node in get_content_items()])
 
         try:
             self.user = FacilityUser.objects.get(username=self.username)

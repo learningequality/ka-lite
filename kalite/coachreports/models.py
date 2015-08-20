@@ -16,7 +16,7 @@ class PlaylistProgressParent:
     def get_playlist_entry_ids(cls, playlist):
         """Return a tuple of the playlist's video ids and exercise ids as sets"""
         playlist_entries = playlist.get("children")
-        items = get_content_items(ids=playlist_entries, dicts=True)
+        items = get_content_items(ids=playlist_entries)
         pl_video_ids = set([item.get("id") for item in items if item.get("kind") == "Video"])
         pl_exercise_ids = set([item.get("id") for item in items if item.get("kind") == "Exercise"])
         return (pl_video_ids, pl_exercise_ids)

@@ -16,7 +16,7 @@ class TestTopicAvailability(UpdatesTestCase):
         self.n_content = len(glob.glob(os.path.join(settings.CONTENT_ROOT, "*.mp4")))
 
     def test_topic_availability(self):
-        nodes = get_content_items(dict=True)
+        nodes = get_content_items()
         for topic in nodes:
             if topic.get("kind") == "Topic":
                 any_available = any([item.get("available", False) for item in get_topic_nodes(parent=topic.get("id"))])

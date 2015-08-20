@@ -61,7 +61,7 @@ def update_all_distributed_callback(request):
     videos = json.loads(request.POST["video_logs"])
     exercises = json.loads(request.POST["exercise_logs"])
     user = FacilityUser.objects.get(id=request.POST["user_id"])
-    node_ids = [node.get("id") for node in get_content_items(dicts=True)]
+    node_ids = [node.get("id") for node in get_content_items()]
     # Save videos
     n_videos_uploaded = 0
     for video in videos:

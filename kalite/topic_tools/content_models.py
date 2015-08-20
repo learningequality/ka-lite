@@ -59,6 +59,12 @@ def unparse_model_data(item):
     return item
 
 
+def database_exists(channel="khan", language="en", database_path=None):
+    path = database_path or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
+
+    return os.path.exists(path)
+
+
 def set_database(function):
     """
     Sets the appropriate database for the ensuing model interactions.
@@ -144,7 +150,7 @@ def get_content_item(content_id=None, db=None, **kwargs):
 @set_database
 def get_content_items(ids=None, db=None, **kwargs):
     """
-    Convenience function for returning multiple content nodes for use in rendering content
+    Convenience function for returning multiple topic tree nodes for use in rendering content
     """
     with Using(db, [Item]):
         if ids:

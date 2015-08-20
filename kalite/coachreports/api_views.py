@@ -100,7 +100,7 @@ def learner_logs(request):
             topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date, latest_activity_timestamp__lte=end_date)
             if topic_objects.count() == 0:
                 topic_objects = log_objects
-            objects = get_content_items(ids=[obj[id_field] for obj in topic_objects], dicts=True)
+            objects = get_content_items(ids=[obj[id_field] for obj in topic_objects])
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
@@ -176,7 +176,7 @@ def aggregate_learner_logs(request):
     output_logs.sort(key=lambda x: x.latest_activity_timestamp, reverse=True)
 
     learner_event_objects = dict([(item["id"], item) for item in get_content_items(
-        ids=[getattr(log, "exercise_id", getattr(log, "video_id", getattr(log, "content_id", ""))) for log in output_logs[:event_limit]], dicts=True, language=request.language)])
+        ids=[getattr(log, "exercise_id", getattr(log, "video_id", getattr(log, "content_id", ""))) for log in output_logs[:event_limit]], language=request.language)])
 
     output_dict["learner_events"] = [{
         "learner": log.user.get_name(),

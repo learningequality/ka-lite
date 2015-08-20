@@ -147,7 +147,7 @@ def get_struggling_exercises(user):
 def get_exercise_prereqs(exercises):
     """Return a list of prequisites (if applicable) for each specified exercise."""
     if exercises:
-        exercises = get_content_items(ids=exercises, dicts=True, expanded=True)
+        exercises = get_content_items(ids=exercises)
     prereqs = []
     for exercise in exercises:
         prereqs += exercise.get('prerequisites', [])
