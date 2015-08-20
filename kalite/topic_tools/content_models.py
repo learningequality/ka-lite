@@ -3,7 +3,7 @@ import json
 
 import sqlite3
 
-from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist
+from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn
 from playhouse.shortcuts import model_to_dict
 
 from .settings import CONTENT_DATABASE_PATH
