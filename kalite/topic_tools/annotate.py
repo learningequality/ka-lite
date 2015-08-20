@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 from kalite import i18n
 
 from . import settings
+from .base import get_assessment_item_data
 
 
 def is_content_on_disk(content_id, format="mp4", content_path=None):

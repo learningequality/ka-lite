@@ -56,4 +56,4 @@ class MainTestCase(KALiteTestCase):
         with open(fake_content_file, "w") as fh:
             fh.write("")
         self.assertTrue(os.path.exists(fake_content_file), "Make sure the content file was created, youtube_id='%s'." % youtube_id)
-        return (fake_content_file, content_id, youtube_id)
+        return (fake_content_file, content["id"], youtube_id)

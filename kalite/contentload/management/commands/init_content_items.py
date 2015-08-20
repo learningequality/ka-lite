@@ -100,6 +100,11 @@ class Command(BaseCommand):
                     dest="language",
                     default="en",
                     help="Language to create database for."),
+        make_option("-o", "--overwrite",
+                    action="store_true",
+                    dest="overwrite",
+                    default=False,
+                    help="Overwrite existing Database"),
     )
 
     def handle(self, *args, **kwargs):
@@ -111,7 +116,11 @@ class Command(BaseCommand):
         bulk_create = kwargs["bulk_create"]
 
         if bulk_create and os.path.isfile(database_path):
-            os.remove(database_path)
+            if kwargs["overwrite"]:
+                os.remove(database_path)
+            else:
+                print("Database already exists, use --overwrite to force overwrite")
+                return None
 
         channel_data_path = kwargs.get("content_items_filepath")
 

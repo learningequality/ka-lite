@@ -537,7 +537,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # Add group data.  Allow a fake group UNGROUPED
     for user in users:
-        user_data[user.pk]["pct_mastery"] = user_data[user.pk]["pct_mastery"]/user_data[user.pk]["total_exercises"]
+        user_data[user.pk]["pct_mastery"] = user_data[user.pk]["pct_mastery"]/(user_data[user.pk]["total_exercises"] or 1)
         group_pk = getattr(user.group, "pk", None)
         if group_pk not in group_data:
             logging.error("User %s still in nonexistent group %s!" % (user.id, group_pk))

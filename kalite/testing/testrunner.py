@@ -6,6 +6,7 @@ import os
 from django.conf import settings
 logging = settings.LOG
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
 from django.db.models import get_app, get_apps
 from django.test.simple import DjangoTestSuiteRunner, build_suite, build_test, reorder_suite
 from django.utils import unittest
@@ -16,9 +17,6 @@ from selenium import webdriver
 from optparse import make_option
 
 from kalite.testing.base import DjangoBehaveTestCase
-from kalite.testing.content_fixture import items, parental_units
-from kalite.topic_tools.content_models import bulk_insert, create_table, update_parents
-from peewee import OperationalError
 
 
 def get_app_dir(app_module):
@@ -138,16 +136,10 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         print("Successfully setup Firefox {0}".format(browser.capabilities['version']))
         browser.quit()
 
-        try:
-            create_table()
+        call_command("init_content_items")
+        call_command("annotate_content_items")
 
-            bulk_insert(items)
-
-            update_parents(parent_mapping=parental_units)
-
-            print("Successfully setup content database")
-        except OperationalError:
-            print("Content database already exists")
+        print("Successfully setup content database")
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
         bdd_labels = test_labels

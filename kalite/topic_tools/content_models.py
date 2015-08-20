@@ -226,14 +226,14 @@ def get_content_parents(ids=None, db=None, **kwargs):
 @set_database
 def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
     """
-    Convenience function for returning a set of cotent nodes for a topic
+    Convenience function for returning a set of nodes for a topic
     """
     if topic_id:
         with Using(db, [Item]):
             topic_node = Item.get(Item.id == topic_id)
 
             if not kinds:
-                kinds == ["Video", "Audio", "Exercise", "Document"]
+                kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
 
             return Item.select(
                 Item
@@ -245,7 +245,7 @@ def search_topic_nodes(kinds=None, query=None, db=None, **kwargs):
     if query:
         with Using(db, [Item]):
             if not kinds:
-                kinds == ["Video", "Audio", "Exercise", "Document", "Topic"]
+                kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
             try:
                 topic_node = Item.get(fn.Lower(Item.title) == query, Item.kind.in_(kinds))
                 return [model_to_dict(topic_node)], True

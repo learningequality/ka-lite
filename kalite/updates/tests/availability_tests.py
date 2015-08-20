@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 
 from .base import UpdatesTestCase
-from kalite.topic_tools.content_models import get_content_items, get_topic_contents
+from kalite.topic_tools.content_models import get_content_items, get_topic_nodes
 
 class TestTopicAvailability(UpdatesTestCase):
     """
@@ -19,5 +19,5 @@ class TestTopicAvailability(UpdatesTestCase):
         nodes = get_content_items(dict=True)
         for topic in nodes:
             if topic.get("kind") == "Topic":
-                any_available = any([item.get("available", False) for item in get_topic_contents(topic_id=topic.get("id"))])
-                self.assertEqual(topic["available"], any_available, "Make sure topic availability matches child availability when any children are available.")
+                any_available = any([item.get("available", False) for item in get_topic_nodes(parent=topic.get("id"))])
+                self.assertEqual(topic["available"], any_available, "Topic availability for {topic} did not match child availability when any children are available.".format(topic=topic.get("title")))
