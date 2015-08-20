@@ -13,6 +13,8 @@ from django.conf import settings as django_settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
+from optparse import make_option
+
 import kalite.version as version
 
 from kalite.topic_tools import get_content_cache, get_exercise_cache
