@@ -121,7 +121,7 @@ def get_random_content(kinds=None, limit=1, db=None):
     """
     with Using(db, [Item]):
         if not kinds:
-            kinds == ["Video", "Audio", "Exercise", "Document"]
+            kinds = ["Video", "Audio", "Exercise", "Document"]
         return Item.select().where(Item.kind.in_(kinds)).order_by(fn.Random()).limit(limit)
 
 
@@ -250,6 +250,7 @@ def search_topic_nodes(kinds=None, query=None, db=None, **kwargs):
                 # For efficiency, don't do substring matches when we've got lots of results
                 topic_nodes = Item.select().where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query)))).dicts()
                 return topic_nodes, False
+
 
 @set_database
 def bulk_insert(items, db=None, **kwargs):
