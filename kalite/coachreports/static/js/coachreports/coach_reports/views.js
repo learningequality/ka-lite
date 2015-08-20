@@ -79,6 +79,43 @@ var CoachSummaryView = BaseView.extend({
         "click #show_tabular_report": "toggle_tabular_view"
     },
 
+    displayRadialGraph: function(target_elem, data_sub, data_total) {
+        var parseData = [
+            { label: "Time spent on content", count: data_sub },
+            { label: "Total time logged", count: data_total - data_sub }
+        ];
+
+        var width = document.getElementById(target_elem).clientWidth;
+        var height = document.getElementById(target_elem).clientHeight;
+        var radius = (Math.min(width, height) / 2) - 5;    
+
+        var color = d3.scale.category20();
+
+        var svg = d3.select(target_elem)
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(" + (width/2) + "," + (height/2) + ")");
+
+        var arc = d3.svg.arc()
+            .innerRadius(radius - radius/4)
+            .outerRadius(radius);
+
+        var pie = d3.layout.pie()
+            .value(function(d) { return d.count; })
+            .sort(null);
+
+        var path = svg.selectAll("path")
+            .data(pie(parseData))
+            .enter()
+            .append("path")
+            .attr("d", arc)
+            .attr("fill", function(d, i) {
+                return color(d.data.label);
+            });
+    },
+
     initialize: function() {
         _.bindAll(this, "set_data_model", "render");
         this.listenTo(this.model, "change:facility", this.set_data_model);
@@ -132,6 +169,8 @@ var CoachSummaryView = BaseView.extend({
 
     },
 
+
+
     toggle_tabular_view: _.debounce(function() {
         var self = this;
         if (!this.tabular_report_view) {
@@ -147,7 +186,11 @@ var CoachSummaryView = BaseView.extend({
             this.tabular_report_view.remove();
             delete this.tabular_report_view;
         }
-    }, 100)
+    }, 100),
+
+    displayRadialGraph("#full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"))
+
+
 
 });
 
