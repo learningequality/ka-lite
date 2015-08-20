@@ -17,12 +17,6 @@
     .panel-body {
         background: inherit;
     }
-
-    .rating-edit, .rating-submit, .rating-skip {
-        display: block;
-        margin: 5px auto;
-        max-width: 25%;
-    }
 }
 
 .star-rating-inner-wrapper {
@@ -53,6 +47,12 @@
     .btn-star.activated:active {
         background: #663300;
     }
+    .btn-star:hover {
+        background: #EEEEEE;
+    }
+    .btn-star.activated:hover {
+        background: #BB5500;
+    }
 
     .star-title-label {
         background: inherit;
@@ -62,5 +62,15 @@
     .rating-label {
         height: 1em;
         font-size: 1em;
+    }
+}
+
+#text-container {
+    .rating-text-feedback {
+        max-width: 60%;
+    }
+
+    .text-feedback-label {
+        padding-left: 0;
     }
 }

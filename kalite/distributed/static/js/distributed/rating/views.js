@@ -13,8 +13,6 @@ module.exports = BaseView.extend({
     template: require("./hbtemplates/rating.handlebars"),
 
     events: {
-        "click .rating-submit": "submit_rating",
-        "click .rating-edit": "edit_callback",
         "click .rating-delete": "delete_callback"
     },
 
@@ -27,7 +25,7 @@ module.exports = BaseView.extend({
             model.url = "/api/not/gonna/work";
             return model;
         }();
-        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "renderAll", "renderSequence", "render");
+        _.bindAll(this, "delete_callback", "renderAll", "renderSequence", "render");
     },
 
     render: function() {
@@ -35,7 +33,7 @@ module.exports = BaseView.extend({
             If the model is new (never been synced) or empty (such as if it was deleted) render each component in
             sequence. Otherwise, render all components together, for review.
         */
-        if( this.model.isNew() || this.model.get("quality") === 0) {
+        if( this.model.isNew() || this.model.get("quality") === 0 || this.model.get("difficulty") === 0) {
             this.renderSequence();
         } else {
             this.renderAll();
@@ -44,41 +42,20 @@ module.exports = BaseView.extend({
 
     renderSequence: function() {
         /*
-            Present each rating widget one at a time, waiting for one to be interacted with before showing the next.
-            Then, once the user has filled out the rating completely, call renderAll to allow review/editing.
+            Present each rating widget one by one, waiting for user interaction before growing to show the next.
+            Then once the user has filled out the rating completely, call renderAll to allow review/editing.
         */
         this.$el.html(this.template());
-        this.$(".rating-submit").hide();
-        this.$(".rating-edit").hide();
-        this.$(".rating-skip").hide();
-        this.$(".rating-delete").hide();
 
         this.star_view_quality = this.add_subview(StarView, {title: "Quality", el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"});
 
         var self = this;
 
         this.listenToOnce(this.model, "change:quality", function(){
-            self.star_view_quality.remove();
             self.star_view_difficulty = self.add_subview(StarView, {title: "Difficulty", el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty"});
         });
 
-        this.listenToOnce(this.model, "change:difficulty", function(){
-            self.star_view_difficulty.remove();
-            self.text_view = self.add_subview(TextView, {el: self.$("#text-container"), model: self.model, text_attr: "text"});
-            self.$(".rating-submit").show();
-            self.$(".rating-skip").show();
-
-            // Wrap in _.once, since it could potentially be called twice by different callbacks
-            var callback = _.once(function() {
-                self.text_view.remove();
-                self.renderAll();
-            });
-            self.$(".rating-submit").one("click", callback);
-            self.$(".rating-skip").one("click", function() {
-                self.text_view.model.set(self.text_view.text_attr, "");
-                callback();
-            });
-        });
+        this.listenToOnce(this.model, "change:difficulty", this.renderAll);
     },
 
     renderAll: function() {
@@ -88,9 +65,6 @@ module.exports = BaseView.extend({
                          2) The view's model is not fetched, and the user finishes filling out the new form.
         */
         this.$el.html(this.template());
-        // Explicitly hide/display desired buttons, since we re-render the template
-        this.$(".rating-skip").hide();
-        this.$(".rating-edit").hide();
         var views_and_opts = [
             ["star_view_quality", StarView, {title: "Quality", el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"}],
             ["star_view_difficulty", StarView, {title: "Difficulty", el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty"}],
@@ -100,20 +74,6 @@ module.exports = BaseView.extend({
         _.each(views_and_opts, function(el, ind, list){
             self[el[0]] = self.add_subview(el[1], el[2]);
         });
-        this.submit_rating();
-    },
-
-    submit_rating: function() {
-        this.text_view.toggle_disabled(true);
-        this.$(".rating-submit").hide();
-        this.$(".rating-edit").show();
-        this.model.save();
-    },
-
-    edit_callback: function() {
-        this.text_view.toggle_disabled(false);
-        this.$(".rating-submit").show();
-        this.$(".rating-edit").hide();
     },
 
     delete_callback: function() {
@@ -225,7 +185,7 @@ var TextView = BaseView.extend({
     initialize: function(options) {
         this.model = options.model || new Backbone.Model();
         this.text_attr = options.text_attr || "text";
-        _.bindAll(this, "toggle_disabled", "is_disabled", "text_changed");
+        _.bindAll(this, "text_changed");
         this.model.on("change:"+this.text_attr, this.text_changed);
         this.render();
     },
@@ -235,19 +195,8 @@ var TextView = BaseView.extend({
         return this;
     },
 
-    text_changed: function() {
+    text_changed: _.throttle(function() {
         this.model.set(this.text_attr, this.$(".rating-text-feedback")[0].value);
-    },
-
-    toggle_disabled: function(val) {
-        if( typeof val === "undefined" ) {
-            val = !this.is_disabled();
-        }
-        this.$(".rating-text-feedback").attr("disabled", val);
-        return this;
-    },
-
-    is_disabled: function() {
-        return this.$(".rating-text-feedback").attr("disabled") === "disabled";
-    }
+        this.model.save();
+    }, 200),
 });
