@@ -1,6 +1,8 @@
 import os
 import json
 
+from django.conf import settings as django_settings
+
 import sqlite3
 
 from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn
@@ -71,6 +73,7 @@ def set_database(function):
             language = "pt"
 
         path = kwargs.pop("database_path", None) or CONTENT_DATABASE_PATH.format(channel=kwargs.get("channel", "khan"), language=language)
+
         db = SqliteDatabase(path)
 
         kwargs["db"] = db
@@ -213,10 +216,10 @@ def get_content_parents(ids=None, db=None, **kwargs):
     if ids:
         with Using(db, [Item]):
             Parent = Item.alias()
-            parent_values = [item for item in Item.select(
+            parent_values = Item.select(
                 Parent
-                ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids)).dicts()]
-            return parent_values            
+                ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids))
+            return parent_values
 
 
 @parse_data

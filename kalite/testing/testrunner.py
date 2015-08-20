@@ -16,6 +16,9 @@ from selenium import webdriver
 from optparse import make_option
 
 from kalite.testing.base import DjangoBehaveTestCase
+from kalite.testing.content_fixture import items, parental_units
+from kalite.topic_tools.content_models import bulk_insert, create_table, update_parents
+from peewee import OperationalError
 
 
 def get_app_dir(app_module):
@@ -134,6 +137,17 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         browser = webdriver.Firefox()
         print("Successfully setup Firefox {0}".format(browser.capabilities['version']))
         browser.quit()
+
+        try:
+            create_table()
+
+            bulk_insert(items)
+
+            update_parents(parent_mapping=parental_units)
+
+            print("Successfully setup content database")
+        except OperationalError:
+            print("Content database already exists")
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
         bdd_labels = test_labels
