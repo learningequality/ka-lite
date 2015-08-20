@@ -16,6 +16,7 @@ import re
 import shutil
 import sys
 import tempfile
+import subprocess
 from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
@@ -384,16 +385,16 @@ class Command(BaseCommand):
             # Outdated location of assessment items - move assessment items from their
             # old location (CONTENT_ROOT/khan where they were mixed with other content
             # items)
-            
+
             # TODO(benjaoming) for 0.15, remove the "move assessment items"
             # mechanism
             writable_assessment_items = os.access(KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
-    
+
             # Remove old assessment items
             if os.path.exists(OLD_ASSESSMENT_ITEMS_LOCATION) and os.access(OLD_ASSESSMENT_ITEMS_LOCATION, os.W_OK):
                 logging.info("Deleting old assessment items")
                 shutil.rmtree(OLD_ASSESSMENT_ITEMS_LOCATION)
-            
+
             if writable_assessment_items and options['force-assessment-item-dl']:
                 call_command(
                     "unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
@@ -409,7 +410,7 @@ class Command(BaseCommand):
                     "If you have already downloaded the assessment items package, you can specify the file in the next step.")
                 print("Otherwise, we will download it from {url}.".format(
                     url=settings.ASSESSMENT_ITEMS_ZIP_URL))
-    
+
                 if raw_input_yn("Do you wish to download the assessment items package now?"):
                     ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
                 elif raw_input_yn("Have you already downloaded the assessment items package?"):
@@ -422,7 +423,7 @@ class Command(BaseCommand):
                         "No assessment items package file given. You will need to download and unpack it later.")
                 else:
                     call_command("unpack_assessment_zip", ass_item_filename)
-            
+
             elif options['interactive'] and not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
                 logging.warning(
                     "Assessment item directory not writable, skipping download.")
@@ -476,7 +477,11 @@ class Command(BaseCommand):
             call_command("videoscan")
 
             # done; notify the user.
-            print(
-                "\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
-            print(
-                "You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+            print("\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
+            print("You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+
+            if options['interactive']:
+                if raw_input_yn("Do you wish to start the server now?"):
+                    print("Running {0} start".format(start_script_path))
+                    p = subprocess.Popen([start_script_path, "start"], env=os.environ)
+                    p.wait()
