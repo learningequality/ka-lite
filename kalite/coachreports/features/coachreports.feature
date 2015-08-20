@@ -21,12 +21,12 @@ Feature: Coach reports
 
     Scenario: I want to see all the relevant data
         Given there are three learners
-        And all learners have completed ten exercises
+        And all learners have completed four exercises
         And I am on the coach report
         When I click on the Show Tabular Report button
         Then I should see the tabular report
         And there should be three learner rows displayed
-        And there should be ten exercise columns displayed
+        And there should be four exercise columns displayed
         And I should see a Hide Tabular Report button
 
     Scenario Outline: I want to read student data from the tabular report
