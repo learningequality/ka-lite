@@ -75,6 +75,10 @@ channel_data = {
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)
 
 def build_full_cache(items, id_key="id"):
+    """
+    Uses list of items retrieved from building the topic tree
+    to create an item cache with look up keys.
+    """
     return dict((item["id"], item) for item in items)
 
 file_kind_dictionary = {
@@ -311,6 +315,9 @@ def retrieve_API_data(channel=None):
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
 
 def channel_data_files(dest=None):
+    """
+    Copies all remaining files to appropriate channel data directory
+    """
     channel_data_filename = "channel_data.json"
     if dest:
         if not channel_data_path:
