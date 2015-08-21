@@ -8,6 +8,7 @@ var Models = require("./models");
 var TabularReportViews = require("../tabular_reports/views");
 
 var date_string = require("utils/datestring").date_string;
+var d3 = require("d3");
 
 /*
 Hierarchy of views:
@@ -80,40 +81,57 @@ var CoachSummaryView = BaseView.extend({
     },
 
     displayRadialGraph: function(target_elem, data_sub, data_total) {
-        var parseData = [
-            { label: "Time spent on content", count: data_sub },
-            { label: "Total time logged", count: data_total - data_sub }
-        ];
+        if(!data_sub || !data_total) {
+            document.getElementById(target_elem+"_p").innerHTML = "N/A";
+        } else {
+            var parseData = [
+                //parsing data to 2 decimal positions
+                { label: "Time spent on content", count: Math.round(data_sub * 100)/100 },
+                { label: "Total time logged", count: Math.round((data_total - data_sub) * 100)/100 }
+            ];
 
-        var width = document.getElementById(target_elem).clientWidth;
-        var height = document.getElementById(target_elem).clientHeight;
-        var radius = (Math.min(width, height) / 2) - 5;    
+            var width = document.getElementById(target_elem).clientWidth;
+            var height = document.getElementById(target_elem).clientHeight;
+            var radius = (Math.min(width, height) / 2);    
 
-        var color = d3.scale.category20();
+            var color = d3.scale.category20();
 
-        var svg = d3.select(target_elem)
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .append("g")
-            .attr("transform", "translate(" + (width/2) + "," + (height/2) + ")");
+            var svg = d3.select("#" + target_elem)
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + (width/2) + "," + (height/2) + ")");
 
-        var arc = d3.svg.arc()
-            .innerRadius(radius - radius/4)
-            .outerRadius(radius);
+            var arc = d3.svg.arc()
+                .innerRadius(radius - radius/6)
+                .outerRadius(radius);
 
-        var pie = d3.layout.pie()
-            .value(function(d) { return d.count; })
-            .sort(null);
+            var pie = d3.layout.pie()
+                .value(function(d) { return d.count; })
+                .sort(null);
 
-        var path = svg.selectAll("path")
-            .data(pie(parseData))
-            .enter()
-            .append("path")
-            .attr("d", arc)
-            .attr("fill", function(d, i) {
-                return color(d.data.label);
-            });
+            var path = svg.selectAll("path")
+                .data(pie(parseData))
+                .enter()
+                .append("path")
+                .attr("d", arc)
+                .attr("fill", function(d, i) {
+                    return color(d.data.label);
+                });
+
+            path.on('mouseover', function(d) {                            // NEW
+                document.getElementById(target_elem+"_p").innerHTML = (d.data.label + ": " + d.data.count);
+            });                                                           // NEW
+              
+            path.on('mouseout', function() {                              // NEW
+                var total = d3.sum(parseData.map(function(d) {
+                    return d.count;
+                }));
+
+                document.getElementById(target_elem+"_p").innerHTML = "Total: " + total;
+            });       
+        }
     },
 
     initialize: function() {
@@ -122,6 +140,7 @@ var CoachSummaryView = BaseView.extend({
         this.listenTo(this.model, "change:group", this.set_data_model);
         this.listenTo(this.model, "set_time", this.set_data_model);
         this.set_data_model();
+
     },
 
     set_data_model: function (){
@@ -167,9 +186,8 @@ var CoachSummaryView = BaseView.extend({
 
         delete this.tabular_report_view;
 
+        this.displayRadialGraph("full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"));
     },
-
-
 
     toggle_tabular_view: _.debounce(function() {
         var self = this;
@@ -187,10 +205,6 @@ var CoachSummaryView = BaseView.extend({
             delete this.tabular_report_view;
         }
     }, 100),
-
-    displayRadialGraph("#full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"))
-
-
 
 });
 
