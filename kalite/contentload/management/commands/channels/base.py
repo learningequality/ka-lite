@@ -6,6 +6,8 @@ from django.conf import settings; logging = settings.LOG
 
 from django.utils.text import slugify
 
+from kalite.contentload.utils import dedupe_paths
+
 # For specification of channel_data dictionary, please see CHANNELDATA.md
 def retrieve_API_data(channel=None):
 
@@ -195,6 +197,8 @@ def rebuild_topictree(
 
         return child_kinds
     recurse_nodes(topic_tree)
+
+    dedupe_paths(topic_tree)
 
     def recurse_nodes_to_remove_childless_nodes(node):
         """

@@ -22,10 +22,10 @@ class Item(Model):
     available = BooleanField()
     kind = CharField()
     parent = ForeignKeyField("self", null=True, index=True, related_name="children")
-    id = CharField(index=True, unique=True)
+    id = CharField(index=True)
     pk = PrimaryKeyField(primary_key=True)
     slug = CharField()
-    path = CharField(index=True)
+    path = CharField(index=True, unique=True)
     extra_fields = CharField(null=True)
 
     def __init__(self, *args, **kwargs):
@@ -240,10 +240,7 @@ def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
 
             if not kinds:
                 kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
-
-            return Item.select(
-                Item
-                ).where(Item.kind.in_(kinds), Item.path.contains(topic_node.path))
+            return Item.select(Item).where(Item.kind.in_(kinds), Item.path.contains(topic_node.path))
 
 
 @set_database
@@ -323,11 +320,13 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
 
             for id, update in updates_dict.iteritems():
                 if update:
-                    item = Item.get(id=id)
-                    for attr, val in update.iteritems():
-                        setattr(item, attr, val)
-                    item.save()
-                    recurse_availability_up_tree(item, update.get("available", False))
+                    # We have duplicates in the topic tree, make sure the stamping happens to all of them.
+                    items = Item.select().where(Item.id == id)
+                    for item in items:
+                        for attr, val in update.iteritems():
+                            setattr(item, attr, val)
+                        item.save()
+                        recurse_availability_up_tree(item, update.get("available", False))
 
 
 @set_database
@@ -339,7 +338,11 @@ def update_parents(db=None, parent_mapping=None, channel="khan", language="en", 
             with db.atomic() as transaction:
                 for key, value in parent_mapping.iteritems():
                     if value:
-                        parent_id = Item.get(id=value).pk
-                        item = Item.get(id=key)
-                        item.parent = parent_id
-                        item.save()
+                        try:
+                            parent = Item.get(Item.id == value)
+                            item = Item.get(Item.path == key)
+                        except DoesNotExist:
+                            print(key, value, "Parent not found" if not parent else "Item not found")
+                        if item and parent:
+                            item.parent = parent
+                            item.save()

@@ -12,6 +12,7 @@ logging = django_settings.LOG
 from kalite.topic_tools.content_models import bulk_insert, get_or_create, create_table, update_parents
 
 from kalite.contentload import settings
+from kalite.contentload.utils import dedupe_paths
 
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH
 
@@ -32,7 +33,7 @@ def generate_topic_tree_items(channel="khan", language="en"):
 
     def recurse_nodes(node, parent=""):
 
-        parental_units[node.get("id")] = parent
+        parental_units[node.get("path")] = parent
 
         node.pop("child_data", None)
 
@@ -47,17 +48,15 @@ def generate_topic_tree_items(channel="khan", language="en"):
 
         node.pop("children", None)
 
-        # If child_availability is empty then node has no children so we can determine availability
-        if child_availability:
-            node["available"] = any(child_availability)
-        else:
-            # By default this is very charitable, assuming if something has not been annotated
-            # it is available.
+        if node.get("kind") != "Topic":
+
             if node.get("kind") == "Exercise":
-                node.update(exercise_cache.get(node.get("id"), {}))
+                data = exercise_cache.get(node.get("id"), {})
             else:
-                node.update(content_cache.get(node.get("id"), {}))
-            node["available"] = False
+                data = content_cache.get(node.get("id"), {})
+
+            node = dict(data, **node)
+        node["available"] = False
 
         # Translate everything for good measure
         with i18n.translate_block(language):
@@ -65,6 +64,8 @@ def generate_topic_tree_items(channel="khan", language="en"):
             node["description"] = _(node.get("description", "")) if node.get("description") else ""
 
         flat_topic_tree.append(node)
+
+    dedupe_paths(topic_tree)
 
     recurse_nodes(topic_tree)
 
@@ -119,32 +120,27 @@ class Command(BaseCommand):
             if kwargs["overwrite"]:
                 os.remove(database_path)
             else:
-                print("Database already exists, use --overwrite to force overwrite")
+                logging.info("Database already exists, use --overwrite to force overwrite")
                 return None
 
         channel_data_path = kwargs.get("content_items_filepath")
 
+        logging.info("Generating flattened topic tree for import")
+
         items, parental_units = generate_topic_tree_items(channel=channel, language=language)
 
-        delete_ids = []
-
-        node_ids = []
-
-        for i, item in enumerate(items):
-            if item.get("id") in node_ids:
-                delete_ids.append(i)
-            else:
-                node_ids.append(item.get("id"))
-
-        for i in reversed(delete_ids):
-            items.pop(i)
+        logging.info("Creating database file at {path}".format(path=database_path))
 
         create_table(database_path=database_path)
 
         if bulk_create:
+            logging.info("Bulk creating {number} topic and content items".format(number=len(items)))
             bulk_insert(items, database_path=database_path)
         else:
+            logging.info("Individually creating {number} topic and content items".format(number=len(items)))
             for k, v in raw_items.iteritems():
                 get_or_create(items, database_path=database_path)
 
+        logging.info("Adding parent mapping information to nodes")
         update_parents(parent_mapping=parental_units, database_path=database_path)
+        logging.info("Database creation completed successfully")

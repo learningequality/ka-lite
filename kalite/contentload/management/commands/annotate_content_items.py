@@ -44,4 +44,8 @@ class Command(BaseCommand):
         # temporarily swap out the database path for the desired target
         database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
 
+        logging.info("Annotating content models for language: {language}, channel: {channel} in database located at {path}".format(
+            language=language,
+            channel=channel,
+            path=database_path))
         annotate_content_models(database_path=database_path, channel=channel, language=language)
