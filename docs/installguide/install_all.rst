@@ -1,11 +1,11 @@
-Windows Installation
-====================
+Windows
+=======
 
 #. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-latest>`_ installer.
 #. After downloading the .exe file, double click it. A window will appear and guide you through the process of installing KA Lite on the server.
 
-Mac Installation
-================
+Mac/OSX
+=======
 
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-latest>`_.
 #. After the download is complete, double click the .dmg file.

@@ -83,10 +83,13 @@ Beware that the PyPi sources do not contain assessment items, you need to
 `download assessment.zip manually <http://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip>`_ (~350 MB).
 
 
+Specific system setups
+______________________
+
 .. _raspberry-pi-wifi:
 
 Raspberry Pi Wi-Fi
-==================
+~~~~~~~~~~~~~~~~~~
 
 .. note:: Two Wi-Fi USB modules have been tested with KA Lite on the Raspberry Pi
 
@@ -133,7 +136,7 @@ In our tests, we found that the WiPi adaptor supported a higher number tablet co
 
 
 Nginx / Apache setup
-====================
+~~~~~~~~~~~~~~~~~~~~
 
 This section is written for the Django-knowledgable crowd.
 
