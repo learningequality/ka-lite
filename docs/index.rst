@@ -13,7 +13,7 @@ Welcome to the KA Lite Documentation page! Here, you will find all the informati
 .. _Forums: https://forums.learningequality.org/
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
     Installation Guide <installguide/install_main>
     User Manual <usermanual/userman_main>
