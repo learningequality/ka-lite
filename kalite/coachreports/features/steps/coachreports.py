@@ -102,7 +102,7 @@ def create_some_learner_data():
     exercises = get_random_content(kinds=["Exercise"], limit=len(attempt_states))  # Important they are *distinct*
     for state in attempt_states:
         exercise = exercises.pop()
-        log, created = ExerciseLog.objects.get_or_create(exercise_id=exercise, user=user)
+        log, created = ExerciseLog.objects.get_or_create(exercise_id=exercise.get("id"), user=user)
         if "not started" != state[0]:
             log.streak_progress, log.attempts = state[1:]
             for i in range(0, log.attempts):
@@ -219,7 +219,7 @@ def impl(context):
     for user in FacilityUser.objects.all():
         for exercise in exercises:
             log, created = ExerciseLog.objects.get_or_create(
-                exercise_id=exercise,
+                exercise_id=exercise.get("id"),
                 user=user,
                 streak_progress=100,
                 attempts=15,

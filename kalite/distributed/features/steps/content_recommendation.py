@@ -17,7 +17,7 @@ def impl(context):
 
 @then(u'the last in-progress video/exercise should be shown')
 def impl(context):
-    assert get_content_item(content_id=context.videos[1]).get("path") in context.browser.current_url, "Last in progress video not in %s" % context.browser.current_url
+    assert get_content_item(content_id=context.videos[1].get("id")).get("path") in context.browser.current_url, "Last in progress video not in %s" % context.browser.current_url
 
 @when(u'I click on the right of an exercise suggestion on the next steps card')
 def impl(context):

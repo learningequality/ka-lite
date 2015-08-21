@@ -17,6 +17,7 @@ from kalite.main.models import AttemptLog, ExerciseLog, ContentRating
 from kalite.shared.api_auth.auth import ObjectAdminAuthorization
 from kalite.store.models import StoreTransactionLog, StoreItem
 from kalite.student_testing.models import TestLog
+from kalite.topic_tools.content_models import get_content_item
 
 from .api_serializers import CSVSerializer
 
@@ -132,12 +133,15 @@ class ParentFacilityUserResource(ModelResource):
         return facility_user_dict
 
     def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
-        response = super(ParentFacilityUserResource, self).create_response(request, data, response_class=response_class, **response_kwargs)
-        # add a suggested download filename if we're replying with a CSV file
-        if response["Content-Type"].startswith("text/csv"):
-            params = ["%s-%s" % (k,str(v)[0:8]) for (k,v) in request.GET.items() if v and k not in ["format", "limit"]]
-            response["Content-Disposition"] = "filename=%s__%s__exported_at-%s.csv" % (request.path.strip("/").split("/")[-1], "__".join(params), datetime.now().strftime("%Y%m%d_%H%M%S"))
-        return response
+        try:
+            response = super(ParentFacilityUserResource, self).create_response(request, data, response_class=response_class, **response_kwargs)
+            # add a suggested download filename if we're replying with a CSV file
+            if response["Content-Type"].startswith("text/csv"):
+                params = ["%s-%s" % (k,str(v)[0:8]) for (k,v) in request.GET.items() if v and k not in ["format", "limit"]]
+                response["Content-Disposition"] = "filename=%s__%s__exported_at-%s.csv" % (request.path.strip("/").split("/")[-1], "__".join(params), datetime.now().strftime("%Y%m%d_%H%M%S"))
+            return response
+        except Exception as e:
+            import pdb; pdb.set_trace()
 
 class FacilityUserResource(ParentFacilityUserResource):
 
@@ -378,6 +382,7 @@ class ContentRatingExportResource(ParentFacilityUserResource):
         content_ratings = ContentRating.objects.filter(user__id__in=self._facility_users.keys())
         return super(ContentRatingExportResource, self).authorized_read_list(content_ratings, bundle)
 
+
     def alter_list_data_to_serialize(self, request, to_be_serialized):
         """
         Defines a hook to process list view data before being serialized.
@@ -388,7 +393,6 @@ class ContentRatingExportResource(ParentFacilityUserResource):
         :param to_be_serialized: the unprocessed list of objects that will be serialized
         :return: the _processed_ list of objects to serialize
         """
-        from kalite.topic_tools.content_models import get_content_item
         for bundle in to_be_serialized["objects"]:
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)

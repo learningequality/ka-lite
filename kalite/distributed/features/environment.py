@@ -19,7 +19,7 @@ def before_scenario(context, scenario):
         exercises = get_random_content(kinds=["Exercise"], limit=2)
         for exercise in exercises:
             log = ExerciseLog(
-                exercise_id=exercise,
+                exercise_id=exercise.get("id"),
                 user=user,
                 streak_progress=50,
                 attempts=15,
@@ -32,8 +32,8 @@ def before_scenario(context, scenario):
 
         for video in videos:
             log = VideoLog(
-                youtube_id=video,
-                video_id=video,
+                youtube_id=video.get("id"),
+                video_id=video.get("id"),
                 user=user,
                 total_seconds_watched=100,
                 points=600,
