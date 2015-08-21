@@ -504,10 +504,26 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
 
     manage('initialize_kalite')
 
+<<<<<<< HEAD
     if watch:
         watchify_thread = Thread(target=start_watchify)
         watchify_thread.daemon = True
         watchify_thread.start()
+=======
+    from kalite.distributed import backup
+    backup.setup_backup()
+
+    # Start the job scheduler (not Celery yet...)
+    # This command is run before starting the server, in case the server
+    # should be configured to not run in daemon mode or in case the
+    # server fails to go to daemon mode.
+    if not skip_job_scheduler:
+        manage(
+            'cronserver_blocking',
+            args=[],
+            as_thread=True
+        )
+>>>>>>> update restore management command
 
     # Remove the startup lock at this point
     if STARTUP_LOCK:
