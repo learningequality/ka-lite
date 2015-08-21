@@ -82,7 +82,7 @@ module.exports = BaseView.extend({
         var views_and_opts = [
             ["star_view_quality", StarView, {title: "Quality", el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality", label_values: this.quality_label_values}],
             ["star_view_difficulty", StarView, {title: "Difficulty", el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty", label_values: this.difficulty_label_values}],
-            ["text_view", TextView, {el: this.$("#text-container"), model: this.model, rating_attr: "text"}]
+            ["text_view", TextView, {el: this.$("#text-container"), model: this.model}]
         ];
         var self = this;
         _.each(views_and_opts, function(el, ind, list){
@@ -200,9 +200,8 @@ var TextView = BaseView.extend({
 
     initialize: function(options) {
         this.model = options.model || new Backbone.Model();
-        this.text_attr = options.text_attr || "text";
         _.bindAll(this, "text_changed");
-        this.model.on("change:"+this.text_attr, this.text_changed);
+        this.model.on("change:text", this.text_changed);
         this.render();
     },
 
@@ -212,7 +211,7 @@ var TextView = BaseView.extend({
     },
 
     text_changed: _.throttle(function() {
-        this.model.set(this.text_attr, this.$(".rating-text-feedback")[0].value);
+        this.model.set("text", this.$(".rating-text-feedback")[0].value);
         this.model.save();
     }, 500),
 });
