@@ -105,7 +105,7 @@ In our tests, we found that the WiPi adaptor supported a higher number tablet co
     * Afterwards, insert the wireless USB adaptor.
     * Lastly, switch the Raspberry Pi on.
 
-#. Install the .deb package: ``dpkg -i /path/to/ka-lite-raspberry-pi.deb``
+#. Install the .deb package, see :ref:`raspberry-pi-install`.
 #. Get the network configuration scripts.
     * ``cd /opt``
     * ``sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git``

@@ -43,6 +43,8 @@ for any other Debian-based systems like Debian, Raspberry Pi, Linux Mint etc.
     also use :ref:`ppa-installation`.
 
 
+.. _raspberry-pi-install:
+
 Raspberry Pi
 ____________
 
@@ -51,7 +53,11 @@ package ``ka-lite-raspberry-pi``.
 
 It can be installed by downloading the latest .deb on the Pi and installing it::
 
+    # Install dependencies
+    sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
+    # Fetch the latest .deb
     sudo wget https://learningequality.org/r/deb/ka-lite-raspberry-pi/0.14
+    # Install the .deb
     sudo dpkg -i ka-lite-raspberry-pi*.deb
 
 You can also add the PPA, see :ref:`ppa-installation`, and then
