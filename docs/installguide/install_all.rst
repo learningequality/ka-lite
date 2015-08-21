@@ -104,16 +104,22 @@ _______
 6. Quit the ``KA-Lite Monitor`` app.
 7. Move ``KA-Lite Monitor`` app to ``Trash``.
 
-Linux: Debian/Ubuntu Installation
-_________________________________
 
-For Ubuntu, use ``apt-get remove ka-lite``.
+Linux: Debian/Ubuntu
+____________________
+
+Option 1: Open up **Ubuntu Software Center** and locate the KA Lite package.
+Press ``Remove``.
+
+Option 2: Use ``apt-get remove <name of package>``. You have to know which
+package you installed, typically this is ``ka-lite`` or ``ka-lite-bundle``.
+
 
 Installed with pip
 __________________
 
 You can remove KA Lite (when installed from pip or source distribution) with
-`pip uninstall ka-lite` or `pip uninstall ka-lite-static` (static version).
+``pip uninstall ka-lite`` or ``pip uninstall ka-lite-static`` (static version).
 
 
 Removing user data
