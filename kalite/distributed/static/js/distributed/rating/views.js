@@ -27,18 +27,18 @@ module.exports = BaseView.extend({
         }();
         _.bindAll(this, "delete_callback", "renderAll", "renderSequence", "render");
         this.quality_label_values = {
-            1:  "Poor quality",
-            2:  "Somewhat poor",
-            3:  "Average",
-            4:  "Somewhat high",
-            5:  "High quality"
+            1:  gettext("Poor quality"),
+            2:  gettext("Somewhat poor"),
+            3:  gettext("Average"),
+            4:  gettext("Somewhat high"),
+            5:  gettext("High quality")
         };
         this.difficulty_label_values = {
-            1:  "Very easy",
-            2:  "Easy",
-            3:  "Average",
-            4:  "Hard",
-            5:  "Very hard"
+            1:  gettext("Very easy"),
+            2:  gettext("Easy"),
+            3:  gettext("Average"),
+            4:  gettext("Hard"),
+            5:  gettext("Very hard")
         };
     },
 
@@ -61,12 +61,12 @@ module.exports = BaseView.extend({
         */
         this.$el.html(this.template());
 
-        this.star_view_quality = this.add_subview(StarView, {title: "Quality", el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality", label_values: this.quality_label_values});
+        this.star_view_quality = this.add_subview(StarView, {title: gettext("Quality"), el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality", label_values: this.quality_label_values});
 
         var self = this;
 
         this.listenToOnce(this.model, "change:quality", function(){
-            self.star_view_difficulty = self.add_subview(StarView, {title: "Difficulty", el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty", label_values: this.difficulty_label_values});
+            self.star_view_difficulty = self.add_subview(StarView, {title: gettext("Difficulty"), el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty", label_values: this.difficulty_label_values});
         });
 
         this.listenToOnce(this.model, "change:difficulty", this.renderAll);
@@ -80,8 +80,8 @@ module.exports = BaseView.extend({
         */
         this.$el.html(this.template());
         var views_and_opts = [
-            ["star_view_quality", StarView, {title: "Quality", el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality", label_values: this.quality_label_values}],
-            ["star_view_difficulty", StarView, {title: "Difficulty", el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty", label_values: this.difficulty_label_values}],
+            ["star_view_quality", StarView, {title: gettext("Quality"), el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality", label_values: this.quality_label_values}],
+            ["star_view_difficulty", StarView, {title: gettext("Difficulty"), el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty", label_values: this.difficulty_label_values}],
             ["text_view", TextView, {el: this.$("#text-container"), model: this.model}]
         ];
         var self = this;
@@ -128,11 +128,11 @@ var StarView = BaseView.extend({
     },
 
     label_values: {
-        1: "Very Low",
-        2: "Low",
-        3: "Normal",
-        4: "High",
-        5: "Very High"
+        1: gettext("Very Low"),
+        2: gettext("Low"),
+        3: gettext("Normal"),
+        4: gettext("High"),
+        5: gettext("Very High")
     },
 
     initialize: function(options) {
