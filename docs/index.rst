@@ -20,3 +20,18 @@ Welcome to the KA Lite Documentation page! Here, you will find all the informati
     FAQ <faq>
     Contributing and Development <developer_docs/contributing>
     For Devs <developer_docs/index>
+
+    
+
+Contact Us
+==========
+
+We would love to hear about your project and experiences!
+
+**Email:**
+
+info@learningequality.org
+
+**Website:**
+
+http://learningequality.org
