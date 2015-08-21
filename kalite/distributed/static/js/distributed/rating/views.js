@@ -154,14 +154,15 @@ var StarView = BaseView.extend({
         this.rating_change();
     },
 
-    // Throttled so it's triggered only once when several children are the targets of the "click" event
-    rate_value_callback: _.throttle(function(ev) {
+    // Debounced with immediate=true option, so that it's triggered _at most_ once per 100 ms, since it
+    //   could be called by clicking on a child element as well.
+    rate_value_callback: _.debounce(function(ev) {
         // The target event could be either the .star-rating-option or a child element, so whatever the case get the
         // parent .star-rating-option element.
         var target = $(ev.target).hasClass("star-rating-option") ? $(ev.target) : $(ev.target).parents(".star-rating-option")[0];
         var val = $(target).attr("data-val");
         this.model.set(this.rating_attr, val);
-    }, 100, {trailing: false}),
+    }, 100, true),
 
     mouse_enter_callback: function(ev) {
         // The target event could be either the .star-rating-option or a child element, so whatever the case get the
@@ -213,5 +214,5 @@ var TextView = BaseView.extend({
     text_changed: _.throttle(function() {
         this.model.set(this.text_attr, this.$(".rating-text-feedback")[0].value);
         this.model.save();
-    }, 200),
+    }, 500),
 });
