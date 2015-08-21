@@ -44,7 +44,7 @@ def coach_reports(request, facility=None, zone_id=None):
     """Landing page needs plotting context in order to generate the navbar"""
     zone = get_object_or_None(Zone, pk=zone_id)
 
-    if not zone:
+    if not zone and settings.CENTRAL_SERVER:
         raise Http404("Zone not found.")
 
     if facility:
@@ -53,7 +53,7 @@ def coach_reports(request, facility=None, zone_id=None):
         facility_id = None
     return {
         "facility_id": facility_id,
-        "zone_id": zone.id
+        "zone_id": zone.id if zone else None
         }
 
 
