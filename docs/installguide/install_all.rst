@@ -7,9 +7,8 @@ Windows Installation
 Mac Installation
 ================
 
-1. Download the KA Lite `OSX installer <https://disney.com>`_.
-
-.. warning:: Dear maintainers, please update this link.
+1. Download the KA Lite `OSX installer <https://learningequality.org/downloads/ka-lite/0.14/installers/mac/KA-Lite-Monitor.dmg>`_.
+2. After the download is complete, double click the .dmg file and follow the window for installation.
 
 Linux: Debian/Ubuntu Installation
 =================================
@@ -122,9 +121,11 @@ Raspberry Pi
 ============
 
 For a Raspberry Pi running a Debian system, you can install the special Debian
-package, 'ka-lite-raspberry-pi'.
+package (``ka-lite-raspberry-pi_0.X-buildYZ.deb``).
 
-You can find here (TODO)
+Download the latest .deb manually from
+`the Launchpad archive server <http://ppa.launchpad.net/learningequality/ka-lite/ubuntu/pool/main/k/ka-lite-source/?C=M;O=D>`_.
+Look for the latest ``ka-lite-raspberry-pi`` file with a ``.deb`` extension, download it and install it from command line with ``dpkg -i  ka-lite-raspberry-pi_0.*.deb``.
 
 
 
@@ -335,6 +336,6 @@ it may be located somewhere else.
 
 Example of setting up kalite for the www-data user: ::
 
-    $> su -s /bin/bash www-data
+    $> sudo su -s /bin/bash www-data
     $> kalite manage setup
     $> exit
