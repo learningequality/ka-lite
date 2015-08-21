@@ -3,62 +3,62 @@
 Advanced installation options
 =============================
 
-
-Source code / development
-_________________________
-
-KA Lite can also be run as a "source distribution" for development purposes.
-By this, we just mean a git checkout (from `our github <https://github.com/learningequality/ka-lite/>`_).
-
-.. note:: Running directly from source will also maintain all user data in that
-          same directory! This is convenient for having several versions of
-          kalite with different data on the same computer.
-
-If you are able to use pip and install conventional python packages from an
-online source, then the quickest option to install the latest stable release
-of KA Lite is `pip install ka-lite` or `pip install ka-lite-static`.
+.. note::
+    Every time you install or update kalite, you should (re)run ``kalite manage setup``
+    to setup the database and download assessment items (video descriptions,
+    exercises etc.).
 
 
-Static vs. Dynamic version
-__________________________
+.. _ppa-installation:
 
-Apart from Python itself, KA Lite depends on a couple of python applications,
-mainly from the Django ecology. These applications can be installed in two ways:
+Debian/Ubuntu: Subscribe to updates through a PPA
+_________________________________________________
 
-* **Dynamic**: That means that they are automatically installed through
-   *PIP* as a separate software package accessible to your whole system. This
-   is recommended if you run KA Lite and have internet access while installing
-   and updating.
-* **Static**: Static means that KA Lite is installed with all the external
-   applications bundled in. Use this method if you need to have KA Lite
-   installed from offline media or if KA Lite's dependencies are in conflict
-   with the system that you install upon.
+We maintain a `PPA on Launchpad <https://launchpad.net/~learningequality/+archive/ubuntu/ka-lite>`_
+and if you are connected to the internet, this will also give you automatic updates::
+
+    sudo apt-get install software-properties-common python-software-properties
+    sudo add-apt-repository ppa:learningequality/ka-lite
+    sudo apt-get update
+    sudo apt-get install ka-lite
 
 
-Virtualenv
-__________
+.. _gtk-installation:
 
-You can install KA Lite in its very own separate environment that does not
-interfere with other Python software on your machine like this::
+User interface for Debian/Ubuntu
+__________________________________
 
-    $> pip install virtualenv virtualenvwrapper
-    $> mkvirtualenv my-kalite-env
-    $> workon my-kalite-env
-    $> pip install ka-lite
+Make sure you have the PPA added, then run::
+
+    sudo apt-get install ka-lite-gtk
 
 
-Installing through PIP or with setup.py
-_______________________________________
+.. _development-installation:
 
-This documentation is preliminary and will be moved and restructured.
+Development
+___________
+A guide recommending how to install KA Lite for development is available in
+:ref:`development-environment`.
 
-For command line users with access to PIP, you can install the following versions of KA Lite::
+
+
+.. _pip-installation:
+
+Generic installation (pip install)
+__________________________________
+
+
+Installing through pip or with setup.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For command line users with access to pip, you can install KA Lite from an
+online source like this::
 
     $> pip install ka-lite
 
 
 Static version
-______________
+~~~~~~~~~~~~~~
 
 If you need to run KA Lite with static dependencies bundled and isolated from
 the rest of your environment, you can run::
@@ -67,31 +67,32 @@ the rest of your environment, you can run::
 
 
 Portable tarballs / zip files with setup.py
-___________________________________________
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can also fetch a tarball directly from `PyPi <https://pypi.python.org/pypi/ka-lite-static>`.
-Do this for the sake of carrying KA Lite on an offline media. You can then
-unpack the tarball and run ``python setup.py install``.
+Adequate to the online source, you can fetch a zip/tarball directly from
+`PyPi <https://pypi.python.org/pypi/ka-lite-static>`.
+Do this for the sake of carrying KA Lite on an offline media for use on systems
+that are not capable of installing the .exe/.dmg/.deb formats.
 
+A .tar.gz or .zip is unpacked and from command line inside the unpacked
+directory, run::
 
-Developer setup
-_______________
+    $> sudo python setup.py install.
 
-Developers should consider installing in "editable" mode. That means, create a
-git clone and from the git cloned directory, run::
-
-    $> git clone git@github.com:learningequality/ka-lite.git
-    $> cd ka-lite
-    $> # You may wish to create and activate a virtual env here
-    $> pip install -e .
+Beware that the PyPi sources do not contain assessment items, you need to
+`download assessment.zip manually <http://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip>`_ (~350 MB).
 
 
-Testing installers
-__________________
+Overview for installation testers
+=================================
 
 Here's an overview of the various ways of installing KA Lite as a reference
 to testers and package maintainers:
 
+ * The Windows installer
+ * The OSX installer
+ * .deb packages installed without dependencies: ``dpkg -i package.deb``.
+ * Installation from PPA
  * Source code setuptools test: ``python setup.py install``
  * Source code setuptools test, static: ``python setup.py install --static``
  * Source code pip test: ``pip install .``
@@ -102,14 +103,54 @@ to testers and package maintainers:
    * Removal: ``pip remove ka-lite-static``.
  * Wheel / whl: Not supported in 0.14.
 
-Those testing scenarios should be sufficient, but there may be small differences
-encountered that we need to look at once in a while with
-``pip install -e`` (editable mode) or unzipping a source "ka-lite.XXX.zip" and
-run setup.py with setuptools instead of through pip.
 
-Using ``pip install`` and ``--static``: Is not possible, so you cannot install
-the static version in "editable" mode. This is because pip commands do not
-pass our user-defined options to setup.py.
+.. _raspberry-pi-wifi:
+
+Raspberry Pi Wi-Fi
+==================
+
+.. note:: Two Wi-Fi USB modules have been tested with KA Lite on the Raspberry Pi
+
+    * Raspberry Pi WiPi adaptor
+    * Edimax EW-7811Un
+
+In our tests, we found that the WiPi adaptor supported a higher number tablet connections.
+
+
+.. note:: The Raspberry Pi may crash if the USB adaptor is inserted or removed while the computer is switched on.
+
+    * Make sure to shutdown and remove the power from the Raspberry Pi.
+    * Afterwards, insert the wireless USB adaptor.
+    * Lastly, switch the Raspberry Pi on.
+
+#. Install the .deb package: ``dpkg -i /path/to/ka-lite-raspberry-pi.deb``
+#. Get the network configuration scripts.
+    * ``cd /opt``
+    * ``sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git``
+#. Install and configure the access point::
+  
+    cd /opt/ka-lite-pi-scripts
+    sudo ./configure.sh
+
+   .. note::
+         If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
+
+#. Install the USB adaptor software.
+    * If using the WiPi, run this command::
+            cd /opt/ka-lite-pi-scripts
+            sudo ./use_wipi.sh
+
+    * If using the Edimax EW-7811Un, run this command:
+        * ``cd /opt/ka-lite-pi-scripts``
+        * ``sudo ./use_edimax.sh``
+#. Complete the access point configuration
+    * ``sudo python ./configure_network_interfaces.py``
+    * ``sudo insserv hostapd``
+#. Finally
+    * ``sudo reboot``
+    * A wireless network named "kalite" should be available.
+    * Connect to this network
+    * If the KA Lite server is started, browse to 1.1.1.1
 
 
 Nginx / Apache setup
