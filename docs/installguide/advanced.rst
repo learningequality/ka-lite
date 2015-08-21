@@ -1,7 +1,8 @@
-Advanced topics
-===============
-
 .. _advanced-installation:
+
+Advanced installation options
+=============================
+
 
 Source code / development
 _________________________
