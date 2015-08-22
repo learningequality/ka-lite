@@ -23,8 +23,7 @@ def file_rename():
         os.rename(defaultpath, target)   
 
 def setup_backup():
-    command = call_command('kalitebackup')
-    force_job("backup",command, frequency="DAILY")
+    force_job("kalitebackup", frequency="DAILY")
 
 def rotate_backups():
     now = time.time()
