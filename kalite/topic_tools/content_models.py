@@ -160,10 +160,13 @@ def get_content_items(ids=None, db=None, **kwargs):
         return values
 
 
+@parse_data
 @set_database
-def get_topic_nodes(parent=None, db=None, **kwargs):
+def get_topic_nodes(parent=None, ids=None, db=None, **kwargs):
     """
     Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
+    Can either pass in the parent id to return all the immediate children of a node,
+    or a list of ids to return an arbitrary set of nodes with limited fields.
     """
     if parent:
         with Using(db, [Item]):
@@ -172,7 +175,7 @@ def get_topic_nodes(parent=None, db=None, **kwargs):
                 selector = Parent.parent.is_null()
             else:
                 selector = Parent.id == parent
-            values = [item for item in Item.select(
+            values = Item.select(
                 Item.title,
                 Item.description,
                 Item.available,
@@ -181,8 +184,41 @@ def get_topic_nodes(parent=None, db=None, **kwargs):
                 Item.id,
                 Item.path,
                 Item.slug,
-                ).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
+                ).join(Parent, on=(Item.parent == Parent.pk)).where(selector)
             return values
+    elif ids:
+        with Using(db, [Item]):
+            values = Item.select(
+                Item.title,
+                Item.description,
+                Item.available,
+                Item.kind,
+                Item.children,
+                Item.id,
+                Item.path,
+                Item.slug,
+                ).where(Item.id.in_(ids))
+            return values
+
+
+@set_database
+def get_topic_node(content_id=None, db=None, **kwargs):
+    """
+    Convenience function for returning a topic/content node with limited fields
+    """
+    if content_id:
+        with Using(db, [Item]):
+            value = Item.select(
+                Item.title,
+                Item.description,
+                Item.available,
+                Item.kind,
+                Item.children,
+                Item.id,
+                Item.path,
+                Item.slug,
+                ).where(Item.id == content_id)
+            return model_to_dict(value)
 
 
 @set_database

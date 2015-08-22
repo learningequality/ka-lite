@@ -108,7 +108,7 @@ def create_some_learner_data():
             log.streak_progress, log.attempts = state[1:]
             for i in range(0, log.attempts):
                 AttemptLog.objects.get_or_create(
-                    exercise_id=exercise,
+                    exercise_id=exercise.get("id"),
                     user=user,
                     seed=i,
                     timestamp=datetime.datetime.now()
@@ -200,10 +200,10 @@ def impl(context):
     dropdown = Select(find_id_with_wait(context, "group-select"))
     assert len(dropdown.options) == 4, "Only {n} displayed".format(n=len(dropdown.options))
 
-@then(u"there should be four exercise columns displayed")
+@then(u"there should be ten exercise columns displayed")
 def impl(context):
     find_css_class_with_wait(context, "headrow")
-    assert len(context.browser.find_elements_by_css_selector(".headrow.data")) == 4
+    assert len(context.browser.find_elements_by_css_selector(".headrow.data")) == 10, len(context.browser.find_elements_by_css_selector(".headrow.data"))
 
 @when(u"I click on the dropdown button under the Group label")
 def impl(context):
@@ -214,9 +214,9 @@ def impl(context):
     headrow = find_css_class_with_wait(context, "headrow")
     click_and_wait_for_page_load(context, headrow.find_element_by_tag_name("a"))
 
-@given(u"all learners have completed four exercises")
+@given(u"all learners have completed ten exercises")
 def impl(context):
-    exercises = get_random_content(kinds=["Exercise"], limit=4) 
+    exercises = get_random_content(kinds=["Exercise"], limit=10)
     for user in FacilityUser.objects.all():
         for exercise in exercises:
             log, created = ExerciseLog.objects.get_or_create(

@@ -9,7 +9,7 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonRe
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog, AttemptLog, UserLogSummary
 from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools.content_models import get_topic_contents, get_content_items
+from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes
 
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
@@ -100,7 +100,8 @@ def learner_logs(request):
             topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date, latest_activity_timestamp__lte=end_date)
             if topic_objects.count() == 0:
                 topic_objects = log_objects
-            objects = get_content_items(ids=[obj[id_field] for obj in topic_objects])
+            # Can return multiple items with same id, due to topic tree redundancy, so make unique by id here.
+            objects = dict([(item.get("id"), item) for item in get_topic_nodes(ids=[obj[id_field] for obj in topic_objects]) or []]).values()
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
@@ -175,8 +176,8 @@ def aggregate_learner_logs(request):
     output_dict["content_time_spent"] = round(output_dict["content_time_spent"]/3600.0,1)
     output_logs.sort(key=lambda x: x.latest_activity_timestamp, reverse=True)
 
-    learner_event_objects = dict([(item["id"], item) for item in get_content_items(
-        ids=[getattr(log, "exercise_id", getattr(log, "video_id", getattr(log, "content_id", ""))) for log in output_logs[:event_limit]], language=request.language)])
+    learner_event_objects = dict([(item["id"], item) for item in get_topic_nodes(
+        ids=[getattr(log, "exercise_id", getattr(log, "video_id", getattr(log, "content_id", ""))) for log in output_logs[:event_limit]], language=request.language) or []])
 
     output_dict["learner_events"] = [{
         "learner": log.user.get_name(),
