@@ -8,6 +8,7 @@ import os
 import json
 import sys
 import warnings
+from os.path import join, expanduser
 
 from kalite import ROOT_DATA_PATH
 from kalite.shared.warnings import RemovedInKALite_v015_Warning
@@ -106,7 +107,7 @@ if IS_SOURCE:
 
     if not _data_path:
         _data_path = '.'
-
+    
     # This is getting deprecated as we will not explicitly operate with a static
     # source structure, but have shared system-wide data and user data.
     # It's not actually even a project root, because it's also the application's
@@ -124,10 +125,10 @@ if IS_SOURCE:
             default_project_root
         )
     )
-
+    
 else:
     _data_path = os.path.join(ROOT_DATA_PATH,)
-
+    
     # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
     PROJECT_PATH = os.environ.get(
         "KALITE_HOME",
@@ -186,7 +187,7 @@ if IS_SOURCE:
     USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
     LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR,))
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
-
+    
     # This is the legacy location kalite/database/data.sqlite
     DEFAULT_DATABASE_PATH = os.path.join(_data_path, "kalite", "database", "data.sqlite")
 
@@ -196,23 +197,23 @@ if IS_SOURCE:
 
 # Storing data in a user directory
 else:
-
+    
     # Ensure that path exists
     if not os.path.exists(USER_DATA_ROOT):
         os.mkdir(USER_DATA_ROOT)
-
+    
     USER_WRITABLE_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
     KALITE_APP_LOCALE_DIR = os.path.join(USER_DATA_ROOT, 'locale')
-
+    
     LOCALE_PATHS = getattr(local_settings, "LOCALE_PATHS", (USER_WRITABLE_LOCALE_DIR, KALITE_APP_LOCALE_DIR))
     if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
         os.mkdir(USER_WRITABLE_LOCALE_DIR)
-
+    
     DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
     if not os.path.exists(DEFAULT_DATABASE_PATH):
         os.mkdir(DEFAULT_DATABASE_PATH)
-
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'data.sqlite')
+    
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'default.sqlite')
 
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security
@@ -237,9 +238,35 @@ else:
 # Content path-related settings
 CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.join(USER_DATA_ROOT, 'content')))
 if not os.path.exists(CONTENT_ROOT):
-    os.makedirs(CONTENT_ROOT)
+    os.mkdir(CONTENT_ROOT)
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
+# Special setting for Khan Academy content
+KHAN_CONTENT_PATH = os.path.join(CONTENT_ROOT, "khan")
+if not os.path.exists(KHAN_CONTENT_PATH):
+    os.mkdir(KHAN_CONTENT_PATH)
+
+#######################################
+# ASSESSMENT ITEMS DATA
+#######################################
+
+# Special settings for Khan Academy assessment items
+ASSESSMENT_ITEM_ROOT = os.path.join(CONTENT_ROOT, 'assessment')
+
+if not os.path.exists(ASSESSMENT_ITEM_ROOT):
+    os.mkdir(ASSESSMENT_ITEM_ROOT)
+
+KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
+if not os.path.exists(KHAN_ASSESSMENT_ITEM_ROOT):
+    os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
+
+# Are assessment items distributed in the data directory?
+if os.path.isfile(os.path.join(_data_path, 'assessment', 'assessmentitems.version')):
+    KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(_data_path, 'assessment')
+
+KHAN_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.sqlite')
+KHAN_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.version')
+KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json')
 
 # Necessary for Django compressor
 if not DEBUG:
@@ -284,7 +311,7 @@ DATABASES = getattr(local_settings, "DATABASES", {
     },
     "assessment_items": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": __assessment_items_database_path,
+        "NAME": KHAN_ASSESSMENT_ITEM_DATABASE_PATH,
         "OPTIONS": {
         },
     }
@@ -321,7 +348,9 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
-<<<<<<< HEAD
+BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
+DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -335,10 +364,12 @@ INSTALLED_APPS = [
     'securesync',
     'south',
     'fle_utils.build',
+    'fle_utils.handlebars',
     'fle_utils.django_utils',
     'fle_utils.config',
+    'fle_utils.backbone',
     'fle_utils.chronograph',
-    'fle_utils.testing',  # needed to get the "runcode" command, which we sometimes tell users to run
+    'fle_utils.testing', # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.django_cherrypy_wsgiserver',
     'kalite.coachreports',
     'kalite.distributed',
@@ -357,6 +388,7 @@ INSTALLED_APPS = [
     'kalite.i18n',
     'kalite.ab_testing',
     'kalite.control_panel',
+    'dbbackup',
 ]
 =======
 INSTALLED_APPS = (
@@ -421,16 +453,16 @@ if not os.path.exists(USER_STATIC_FILES):
     os.mkdir(USER_STATIC_FILES)
 
 # libraries common to all apps
-STATICFILES_DIRS = (
-    os.path.join(_data_path, 'static-libraries'),
-    USER_STATIC_FILES
-)
-built_docs_path = os.path.join(_data_path, "docs", "_build")
-DOCS_EXIST = os.path.exists(built_docs_path)
-if DOCS_EXIST:
-    STATICFILES_DIRS += (
+built_docs_path = os.path.join(_data_path, "sphinx-docs", "_build")
+if os.path.exists(built_docs_path):
+    STATICFILES_DIRS = (
+        os.path.join(_data_path, 'static-libraries'),
         built_docs_path,
     )
+    DOCS_EXIST = True
+else:
+    STATICFILES_DIRS = (os.path.join(_data_path, 'static-libraries'),)
+    DOCS_EXIST = False
 
 DEFAULT_ENCODING = 'utf-8'
 
@@ -480,27 +512,26 @@ if CACHE_TIME != 0:  # None can mean infinite caching to some functions
     install_location_hash = hashlib.sha1(".".join(version.VERSION)).hexdigest()
     username = getpass.getuser() or "unknown_user"
     cache_dir_name = "kalite_web_cache_%s" % (username)
-    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(
-        tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
+    CACHE_LOCATION = os.path.realpath(getattr(local_settings, "CACHE_LOCATION", os.path.join(tempfile.gettempdir(), cache_dir_name, install_location_hash))) + "/"
     CACHES["file_based_cache"] = {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': CACHE_LOCATION,  # this is kind of OS-specific, so dangerous.
-        'TIMEOUT': CACHE_TIME,  # should be consistent
+        'LOCATION': CACHE_LOCATION, # this is kind of OS-specific, so dangerous.
+        'TIMEOUT': CACHE_TIME, # should be consistent
         'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5 * 2000)  # 2000 entries=~10,000 files
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
         },
     }
+}
 
     # Memory-based cache
     CACHES["mem_cache"] = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
-        'TIMEOUT': CACHE_TIME,  # should be consistent
+        'TIMEOUT': CACHE_TIME, # should be consistent
         'OPTIONS': {
-            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5 * 2000)  # 2000 entries=~10,000 files
+            'MAX_ENTRIES': getattr(local_settings, "CACHE_MAX_ENTRIES", 5*2000) #2000 entries=~10,000 files
         },
     }
-}
 
     # The chosen cache
     CACHE_NAME = getattr(local_settings, "CACHE_NAME", "file_based_cache")
@@ -550,6 +581,7 @@ from kalite.student_testing.settings import *
 
 # Import from applications with problematic __init__.py files
 from kalite.legacy.i18n_settings import *
+from kalite.legacy.topic_tools_settings import *
 from kalite.legacy.updates_settings import *
 
 from kalite.testing.settings import *
