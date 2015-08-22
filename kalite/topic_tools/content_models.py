@@ -78,7 +78,7 @@ def set_database(function):
         if language == "pt-BR":
             language = "pt"
 
-        path = kwargs.pop("database_path", None) or CONTENT_DATABASE_PATH.format(channel=kwargs.get("channel", "khan"), language=language)
+        path = kwargs.pop("database_path", None) or CONTENT_DATABASE_PATH.format(channel=kwargs.get("channel", django_settings.CHANNEL), language=language)
 
         db = SqliteDatabase(path)
 

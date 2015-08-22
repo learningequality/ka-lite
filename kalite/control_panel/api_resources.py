@@ -402,7 +402,7 @@ class ContentRatingExportResource(ParentFacilityUserResource):
             bundle.data.pop("user")
 
             content_id = bundle.data.pop("content_id", None)
-            content = get_content_item(language=request.language, channel=request.channel, content_id=content_id)
+            content = get_content_item(language=request.language, content_id=content_id)
             bundle.data["content_title"] = content.get("title", "Missing title") if content else "Unknown content"
 
         return to_be_serialized

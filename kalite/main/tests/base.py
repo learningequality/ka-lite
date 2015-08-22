@@ -51,7 +51,7 @@ class MainTestCase(KALiteTestCase):
         Helper function for testing content files.
         """
         content = get_random_content(kinds=["Video"], limit=1)[0]
-        youtube_id = content["youtube_id"]
+        youtube_id = content["id"]
         fake_content_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
         with open(fake_content_file, "w") as fh:
             fh.write("")
