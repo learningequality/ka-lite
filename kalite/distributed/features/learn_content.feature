@@ -3,6 +3,6 @@ Feature: Content on the Learn page
 
     Scenario: Content is not available
         Given I open some content
-        And the exercise is not available
+        And the content is not available
         Then I should see an alert
         And the alert should tell me the content is not available
