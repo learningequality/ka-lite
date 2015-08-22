@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools.content_models import get_content_items, get_content_item, get_content_parents
+from kalite.topic_tools.content_models import get_topic_nodes, get_topic_node, get_content_parents, get_topic_contents
 
 
 class PlaylistProgressParent:
@@ -15,8 +15,7 @@ class PlaylistProgressParent:
     @classmethod
     def get_playlist_entry_ids(cls, playlist):
         """Return a tuple of the playlist's video ids and exercise ids as sets"""
-        playlist_entries = playlist.get("children")
-        items = get_content_items(ids=playlist_entries)
+        items = get_topic_contents(topic_id=playlist.get("id"))
         pl_video_ids = set([item.get("id") for item in items if item.get("kind") == "Video"])
         pl_exercise_ids = set([item.get("id") for item in items if item.get("kind") == "Exercise"])
         return (pl_video_ids, pl_exercise_ids)
@@ -54,8 +53,8 @@ class PlaylistProgress(PlaylistProgressParent):
         # Retrieve video, exercise, and quiz logs that appear in this playlist
         user_vid_logs, user_ex_logs = cls.get_user_logs(user)
 
-        exercise_ids = set([ex_log["exercise_id"] for ex_log in user_ex_logs])
-        video_ids = set([vid_log["video_id"] for vid_log in user_vid_logs])
+        exercise_ids = list(set([ex_log["exercise_id"] for ex_log in user_ex_logs]))
+        video_ids = list(set([vid_log["video_id"] for vid_log in user_vid_logs]))
 
         # Build a list of playlists for which the user has at least one data point
         user_playlists = get_content_parents(ids=exercise_ids+video_ids)
@@ -89,9 +88,9 @@ class PlaylistProgress(PlaylistProgressParent):
             n_ex_started = len([ex for ex in pl_ex_logs if ex["attempts"] > 0])
             n_ex_incomplete = len([ex for ex in pl_ex_logs if (ex["attempts"] > 0 and not ex["complete"])])
             n_ex_struggling = len([ex for ex in pl_ex_logs if ex["struggling"]])
-            ex_pct_mastered = int(float(n_ex_mastered) / n_pl_exercises * 100)
-            ex_pct_incomplete = int(float(n_ex_incomplete) / n_pl_exercises * 100)
-            ex_pct_struggling = int(float(n_ex_struggling) / n_pl_exercises * 100)
+            ex_pct_mastered = int(float(n_ex_mastered) / (n_pl_exercises or 1) * 100)
+            ex_pct_incomplete = int(float(n_ex_incomplete) / (n_pl_exercises or 1) * 100)
+            ex_pct_struggling = int(float(n_ex_struggling) / (n_pl_exercises or 1) * 100)
             if not n_ex_started:
                 ex_status = "notstarted"
             elif ex_pct_struggling > 0:
@@ -141,7 +140,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
     @classmethod
     def create_empty_entry(cls, entity_id, kind, playlist):
         if kind != "Quiz":
-            topic_node = get_content_item(content_id=entity_id)
+            topic_node = get_topic_node(content_id=entity_id)
             title = topic_node["title"]
             path = topic_node["path"]
         else:
@@ -165,7 +164,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         objects associated with a specific user and playlist ID.
         """
         user = FacilityUser.objects.get(id=user_id)
-        playlist = get_content_item(content_id=playlist_id)
+        playlist = get_topic_node(content_id=playlist_id)
 
         pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist)
 
@@ -177,7 +176,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         progress_details = list()
         for entity_id in playlist.get("children"):
             entry = {}
-            leaf_node = get_content_item(content_id=entity_id)
+            leaf_node = get_topic_node(content_id=entity_id)
             kind = leaf_node.get("kind")
 
             if kind == "Video":
