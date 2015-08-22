@@ -26,8 +26,10 @@ class Migration(SchemaMigration):
             ('counter', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, blank=True)),
             ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
-            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')
+             (blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')
+             (blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
             ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('device', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.Device'])),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'])),
@@ -38,14 +40,12 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('main', ['UserLogSummary'])
 
-
     def backwards(self, orm):
         # Deleting model 'UserLog'
         db.delete_table('main_userlog')
 
         # Deleting model 'UserLogSummary'
         db.delete_table('main_userlogsummary')
-
 
     models = {
         'main.exerciselog': {

@@ -26,6 +26,7 @@ Listen %(port)s
 
 """
 
+
 class Command(BaseCommand):
     help = "Print recommended Apache virtual host configuration file contents."
 

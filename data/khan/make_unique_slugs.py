@@ -11,12 +11,14 @@ import re
 
 TOPICS_FILE = "topics.json"
 
+
 def recurse_nodes(node):
     children = node.get("children", None)
     if children:
         for c in children:
             recurse_nodes(c)
     make_unique_child_slugs(node)
+
 
 def make_unique_child_slugs(node):
     children = node.get("children", None)
@@ -30,7 +32,7 @@ def make_unique_child_slugs(node):
                 i += 1
                 print("{0} is a duplicate, trying {1}".format(base_slug, c["slug"]))
             if c["slug"] != base_slug:  # Update the path as well
-                    c["path"] = re.sub(base_slug, c["slug"], c["path"])
+                c["path"] = re.sub(base_slug, c["slug"], c["path"])
             new_children.append(c)
         node["children"] = new_children
 

@@ -16,38 +16,34 @@ from django.db import connections
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
 
+<<<<<<< HEAD
 from securesync.models import Zone, Device, DeviceZone
+=======
+>>>>>>> origin/develop
 
 def before_all(context):
     pass
 
+
 def after_all(context):
     pass
 
+
 def before_feature(context, feature):
     pass
+
 
 def after_feature(context, feature):
     pass
 
 # FYI: scenario tags are inherited from features, so tagging a feature is almost the same as tagging each
 # scenario individually, as long as you are cautious not to duplicate logic in before_feature and before_scenario.
+
+
 def before_scenario(context, scenario):
     database_setup(context)
 
-    if "registered_device" in context.tags:
-        do_fake_registration()
-
-    profile = webdriver.FirefoxProfile()
-    if "download_csv" in context.tags:
-        # Let csv files be downloaded automatically. Can be accessed using context.download_dir
-        context.download_dir = tempfile.mkdtemp()
-        profile.set_preference("browser.download.folderList", 2)
-        profile.set_preference("browser.download.manager.showWhenStarting", False)
-        profile.set_preference("browser.download.dir", context.download_dir)
-        profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
-
-    browser = context.browser = webdriver.Firefox(firefox_profile=profile)
+    browser = context.browser = webdriver.Firefox()
     # ensure the window is reasonably sized.
     browser.set_window_size(2560, 1920)
 
@@ -70,6 +66,7 @@ def before_scenario(context, scenario):
         context.logged_in = True
         login_as_learner(context)
 
+
 def after_scenario(context, scenario):
     if context.logged_in:
         logout(context)
@@ -84,6 +81,7 @@ def after_scenario(context, scenario):
 
     database_teardown(context)
 
+
 def database_setup(context):
     """
     Behave features are analogous to test suites, and behave scenarios are analogous to TestCases, but due to
@@ -91,6 +89,7 @@ def database_setup(context):
     setup/teardown done by TestCases in order to achieve consistent isolation.
     """
     KALiteTestCase.setUpDatabase()
+
 
 def database_teardown(context):
     """

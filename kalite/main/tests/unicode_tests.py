@@ -15,7 +15,7 @@ from securesync.models import Device
 class MainUnicodeModelsTest(MainTestCase):
 
     korean_string = unichr(54392)
-    
+
     def test_unicode_string(self):
         # Dependencies
         dev = Device.get_own_device()

@@ -27,7 +27,8 @@ import json
 from math import exp, sqrt, ceil, floor
 from optparse import make_option
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
@@ -46,10 +47,14 @@ lastnames = ["Awolowo", "Clement", "Smith", "Ramirez", "Hussein", "Wong", "St. L
 # We want to show some users that have a correlation between effort and mastery, some that show mastery without too much effort (unchallenged), and some that show little mastery with a lot of effort
 # Each 4-uple represents: (mean,std of gaussian, min/max values)
 user_types = [
-    {"name": "common",       "weight": 0.6, "speed_of_learning": (0.5, 0.5,  0.05, 0.95), "effort_level": (0.5,  0.5,  0.05, 0.95), "time_in_program": (0.5, 0.5, 0.05, 0.95)},
-    {"name": "unchallenged", "speed_of_learning": (0.75, 0.25, 0.05, 0.95), "effort_level": (0.25, 0.25, 0.05, 0.95), "time_in_program": (0.5, 0.5, 0.05, 0.95)},
-    {"name": "struggling",   "speed_of_learning": (0.25, 0.25, 0.05, 0.95), "effort_level": (0.75, 0.25, 0.05, 0.95), "time_in_program": (0.5, 0.5, 0.05, 0.95)},
-    {"name": "inactive",     "speed_of_learning": (0.25, 0.25, 0.05, 0.95), "effort_level": (0.0,  0.0,  0.00, 0.00), "time_in_program": (0.5, 0.5, 0.05, 0.95)},
+    {"name": "common",       "weight": 0.6, "speed_of_learning": (0.5, 0.5,  0.05, 0.95), "effort_level": (
+        0.5,  0.5,  0.05, 0.95), "time_in_program": (0.5, 0.5, 0.05, 0.95)},
+    {"name": "unchallenged", "speed_of_learning": (0.75, 0.25, 0.05, 0.95), "effort_level": (
+        0.25, 0.25, 0.05, 0.95), "time_in_program": (0.5, 0.5, 0.05, 0.95)},
+    {"name": "struggling",   "speed_of_learning": (0.25, 0.25, 0.05, 0.95), "effort_level": (
+        0.75, 0.25, 0.05, 0.95), "time_in_program": (0.5, 0.5, 0.05, 0.95)},
+    {"name": "inactive",     "speed_of_learning": (0.25, 0.25, 0.05, 0.95), "effort_level": (
+        0.0,  0.0,  0.00, 0.00), "time_in_program": (0.5, 0.5, 0.05, 0.95)},
 ]
 
 
@@ -75,7 +80,8 @@ def sample_user_settings():
         "name": user_type["name"],
         "speed_of_learning": max(user_type["speed_of_learning"][2], min(user_type["speed_of_learning"][3], random.gauss(user_type["speed_of_learning"][0], user_type["speed_of_learning"][1]))),
         "effort_level":      max(user_type["effort_level"][2],      min(user_type["effort_level"][3],      random.gauss(user_type["effort_level"][0],      user_type["effort_level"][1]))),
-        "time_in_program":   max(user_type["time_in_program"][2],   min(user_type["time_in_program"][3],   random.random()))  # (user_type["time_in_program"][0],   user_type["time_in_program"][1]),
+        # (user_type["time_in_program"][0],   user_type["time_in_program"][1]),
+        "time_in_program":   max(user_type["time_in_program"][2],   min(user_type["time_in_program"][3],   random.random()))
     }
     return user_settings
 
@@ -178,8 +184,8 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                 facility_users.append(facility_user)
 
                 cur_usernum += 1  # this is messy and could be done more intelligently;
-                                 # could also randomize to add more users, as this function
-                                 # seems to be generic, but really is not.
+                # could also randomize to add more users, as this function
+                # seems to be generic, but really is not.
 
     return (facility_users, facility_groups, facilities)
 
@@ -228,7 +234,8 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
             user_settings = sample_user_settings()
             facility_user.notes = json.dumps(user_settings)
             facility_user.save()
-        date_diff_started = datetime.timedelta(seconds=datediff(date_diff, units="seconds") * user_settings["time_in_program"])  # when this user started in the program, relative to NOW
+        # when this user started in the program, relative to NOW
+        date_diff_started = datetime.timedelta(seconds=datediff(date_diff, units="seconds") * user_settings["time_in_program"])
 
         for topic in topics:
             # Get all exercises related to the topic
@@ -245,7 +252,8 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
             # Probability of doing any particular exercise
             p_exercise = probability_of(qty="exercise", user_settings=user_settings)
-            logging.info("# exercises: %d; p(exercise)=%4.3f, user settings: %s\n" % (len(exercises), p_exercise, json.dumps(user_settings)))
+            logging.info("# exercises: %d; p(exercise)=%4.3f, user settings: %s\n" %
+                         (len(exercises), p_exercise, json.dumps(user_settings)))
 
             # of exercises is related to
             for j, exercise in enumerate(exercises):
@@ -262,7 +270,8 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                 alogs = []
 
                 for i in range(0, attempts):
-                    alog = AttemptLog.objects.create(user=facility_user, exercise_id=exercise["id"], timestamp=start_date + date_diff*i/attempts)
+                    alog = AttemptLog.objects.create(user=facility_user, exercise_id=exercise[
+                                                     "id"], timestamp=start_date + date_diff * i / attempts)
                     alogs.append(alog)
                     if random.random() < user_settings["speed_of_learning"]:
                         alog.correct = True
@@ -271,7 +280,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
                 elog.attempts = attempts
                 elog.latest_activity_timestamp = start_date + date_diff
-                elog.streak_progress = sum([log.correct for log in alogs][-10:])*10
+                elog.streak_progress = sum([log.correct for log in alogs][-10:]) * 10
                 elog.points = sum([log.points for log in alogs][-10:])
 
                 elog.save()
@@ -281,9 +290,9 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                 ulog = UserLog(
                     user=facility_user,
                     activity_type=1,
-                    start_datetime = start_date,
-                    end_datetime = start_date + date_diff,
-                    last_active_datetime = start_date + date_diff,
+                    start_datetime=start_date,
+                    end_datetime=start_date + date_diff,
+                    last_active_datetime=start_date + date_diff,
                 )
                 ulog.save()
                 user_logs.append(ulog)
@@ -327,7 +336,8 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
             except Exception as e:
                 logging.error("Error saving facility user: %s" % e)
 
-        date_diff_started = datetime.timedelta(seconds=datediff(date_diff, units="seconds") * user_settings["time_in_program"])  # when this user started in the program, relative to NOW
+        # when this user started in the program, relative to NOW
+        date_diff_started = datetime.timedelta(seconds=datediff(date_diff, units="seconds") * user_settings["time_in_program"])
 
         # contains the video duration key
         video_cache = get_content_cache()
@@ -341,7 +351,8 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
 
             # Probability of watching a video, irrespective of the context
             p_video_outer = probability_of("video", user_settings=user_settings)
-            logging.debug("# videos: %d; p(videos)=%4.3f, user settings: %s\n" % (len(videos), p_video_outer, json.dumps(user_settings)))
+            logging.debug("# videos: %d; p(videos)=%4.3f, user settings: %s\n" %
+                          (len(videos), p_video_outer, json.dumps(user_settings)))
 
             for video in videos:
                 p_completed = probability_of("completed", user_settings=user_settings)
@@ -372,7 +383,8 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                 elif p_completed > random.random():
                     pct_completed = 100.
                 else:      # Slower students will use videos more.  Effort also important.
-                    pct_completed = 100. * min(1., sqrt(random.random() * sqrt(user_settings["effort_level"] * user_settings["time_in_program"] / sqrt(user_settings["speed_of_learning"]))))
+                    pct_completed = 100. * min(1., sqrt(random.random() * sqrt(user_settings["effort_level"] * user_settings[
+                                               "time_in_program"] / sqrt(user_settings["speed_of_learning"]))))
 
                 # get the video duration on the video cache
                 video_id = video.get("id", "")
@@ -392,12 +404,15 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                 #   and the latest possible start_time
                 if did_exercise:
                     # More jitter if you learn fast, less jitter if you try harder (more diligent)
-                    date_jitter = datetime.timedelta(days=max(0, random.gauss(1, user_settings["speed_of_learning"] / user_settings["effort_level"])))
+                    date_jitter = datetime.timedelta(days=max(0, random.gauss(
+                        1, user_settings["speed_of_learning"] / user_settings["effort_level"])))
                     date_completed = exercise_log[0].completion_timestamp - date_jitter
                 else:
-                    rate_of_videos = 0.66 * user_settings["effort_level"] + 0.33 * user_settings["speed_of_learning"]  # exercises per day
+                    rate_of_videos = 0.66 * user_settings["effort_level"] + 0.33 * \
+                        user_settings["speed_of_learning"]  # exercises per day
                     time_for_watching = total_seconds_watched
-                    time_delta_completed = datetime.timedelta(seconds=random.randint(int(time_for_watching), int(datediff(date_diff_started, units="seconds"))))
+                    time_delta_completed = datetime.timedelta(seconds=random.randint(
+                        int(time_for_watching), int(datediff(date_diff_started, units="seconds"))))
                     date_completed = datetime.datetime.now() - time_delta_completed
 
                 try:
@@ -432,6 +447,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
 
     return video_logs
 
+
 def generate_fake_coachreport_logs(password="hellothere"):
     try:
         t = FacilityUser.objects.get(
@@ -450,7 +466,7 @@ def generate_fake_coachreport_logs(password="hellothere"):
     num_logs = 20
     logs = []
     for _ in xrange(num_logs):
-        date_logged_in = datetime.datetime.now() - datetime.timedelta(days=random.randint(1,10))
+        date_logged_in = datetime.datetime.now() - datetime.timedelta(days=random.randint(1, 10))
         date_viewed_coachreport = date_logged_in + datetime.timedelta(minutes=random.randint(0, 30))
         date_logged_out = date_viewed_coachreport + datetime.timedelta(minutes=random.randint(0, 30))
         login_log = UserLog.objects.create(
@@ -480,11 +496,11 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('-t', '--transaction',
-            action='store_true',
-            dest='in_transaction',
-            default=True,
-            help='Create all objects in a single transaction',
-            metavar="TRANSACTION"),
+                    action='store_true',
+                    dest='in_transaction',
+                    default=True,
+                    help='Create all objects in a single transaction',
+                    metavar="TRANSACTION"),
     )
 
     def handle(self, *args, **options):
@@ -496,7 +512,6 @@ class Command(BaseCommand):
                 self.handle_stuff(*args, **options)
         else:
             self.handle_stuff(*args, **options)
-
 
     def handle_stuff(self, *args, **options):
         # First arg is the type of data to generate

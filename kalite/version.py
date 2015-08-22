@@ -11,6 +11,7 @@ PATCH_VERSION = "0"
 VERSION = "%s.%s.%s" % (MAJOR_VERSION, MINOR_VERSION, PATCH_VERSION)
 SHORTVERSION = "%s.%s" % (MAJOR_VERSION, MINOR_VERSION)
 
+
 def VERSION_INFO():
     """
     Load a dictionary of changes between each version. The key of the

@@ -10,6 +10,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateTeacherM
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
 
+
 @unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BaseTest(FacilityMixins, KALiteTestCase):
 
@@ -25,6 +26,7 @@ class BaseTest(FacilityMixins, KALiteTestCase):
         self.student = self.create_student(**self.student_data)
 
         self.client = KALiteClient()
+
 
 @unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class PlaylistTests(FacilityMixins, KALiteTestCase):
@@ -113,7 +115,6 @@ class PlaylistAPITests(CreateAdminMixin, BaseTest):
         self.client.login_teacher(self.teacher_data)
         resp = self.client.put(self._playlist_url(self.test_playlist_id), data=jsondata, content_type="application/json")
         self.assertEquals(resp.status_code, 204)
-
 
     def test_playlist_list_has_required_data(self):
         PLAYLIST_REQUIRED_ATTRIBUTES = [('description', unicode),

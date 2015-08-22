@@ -46,7 +46,7 @@ _IS_PLURAL_NUM = {}
 # We effectively treat these as strings since their pluralization is
 # already taken care of in word-problems.js
 _functions = ['deskItem', 'exam', 'item', 'storeItem', 'crop', 'distance',
-    'exercise', 'pizza', 'animal', 'fruit', 'group', 'clothing']
+              'exercise', 'pizza', 'animal', 'fruit', 'group', 'clothing']
 
 # In an ambiguous case the presence of these strings tend to indicate
 # what the variable holds
@@ -117,6 +117,7 @@ _CLEAN_ENTITIES = {
 # into a usable DOM. Make sure that we ignore the implied HTML namespace,
 # and make sure we always read input files as utf-8.
 class HTMLParser(lxml.html.html5parser.HTMLParser):
+
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('namespaceHTMLElements', False)
         super(HTMLParser, self).__init__(*args, **kwargs)
@@ -135,11 +136,11 @@ def main():
     arg_parser = argparse.ArgumentParser(
         description='Extract translatable strings from HTML exercise files.')
     arg_parser.add_argument('html_files', nargs='+',
-        help='The HTML exercise files to extract strings from.')
+                            help='The HTML exercise files to extract strings from.')
     arg_parser.add_argument('--quiet', '-q', action='store_true',
-        help='Do not emit status to stderr on successful runs.')
+                            help='Do not emit status to stderr on successful runs.')
     arg_parser.add_argument('--fix', action='store_true',
-        help='Automatically fix some i18n issues in the input files.')
+                            help='Automatically fix some i18n issues in the input files.')
 
     args = arg_parser.parse_args()
 
@@ -232,7 +233,7 @@ def lint_file(filename, apply_fix, verbose):
 
     # The filters through which the files should be passed and in which order
     filters = [PronounFilter, TernaryFilter, AlwaysPluralFilter, PluralFilter,
-        AnFilter]
+               AnFilter]
 
     if ERROR_AMBIGUOUS_PLURALS:
         filters.append(AmbiguousPluralFilter)
@@ -336,8 +337,8 @@ def lint_file(filename, apply_fix, verbose):
             # Consider it to be an error when there are nodes that need
             # fixing and we haven't run with --fix
             errors.append(('%s node%s need to be fixed. '
-                'Re-run with --fix to automatically fix them.' % (
-                    nodes_changed, "" if nodes_changed == 1 else "s")))
+                           'Re-run with --fix to automatically fix them.' % (
+                               nodes_changed, "" if nodes_changed == 1 else "s")))
 
     return (errors, nodes_changed)
 
@@ -351,6 +352,7 @@ class BaseFilter(object):
           Returns False if the filtering proved to be a noop, otherwise True.
      - get_match: A method returning True if a <var> matches
     """
+
     def __init__(self):
         """Intitialize and keep track of nodes_changed and errors."""
         self.nodes_changed = 0
@@ -417,7 +419,7 @@ class BaseFilter(object):
         """
         # Construct an XPath expression for finding nodes to fix
         fix_expr = '|'.join(['.//%s[%s]' % (name, self.xpath)
-            for name in _INLINE_SCRIPT_NODES])
+                             for name in _INLINE_SCRIPT_NODES])
 
         return node.xpath(fix_expr)
 
@@ -692,7 +694,7 @@ class PronounFilter(IfElseFilter):
     _regex = re.compile(r'^\s*(he|his)\(\s*(.*?)\s*\)\s*$', re.I)
 
     xpath = ' or '.join(['contains(text(),"%s(")' % pronoun
-        for pronoun in _pronouns])
+                         for pronoun in _pronouns])
 
     def get_match(self, fix_node):
         """Return a match of a string that matches he|his(...)"""
@@ -713,7 +715,7 @@ class PronounFilter(IfElseFilter):
         """
         _replace_node(var_node, match.group(1))
         _replace_node(self._get_cloned_var(var_node),
-            self._pronoun_map[match.group(1)])
+                      self._pronoun_map[match.group(1)])
         return True
 
     def get_condition(self, key):
@@ -747,10 +749,10 @@ class AlwaysPluralFilter(BaseFilter):
     }
     # Matches plural(...)
     _regex = re.compile(r'^\s*(plural)'
-        r'\(\s*((?:[^,]+|\([^\)]*\))*)\s*\)\s*$', re.I)
+                        r'\(\s*((?:[^,]+|\([^\)]*\))*)\s*\)\s*$', re.I)
 
     xpath = ' or '.join(['contains(text(),"%s(")' % method
-        for method in _function_map])
+                         for method in _function_map])
 
     def get_match(self, fix_node):
         """Return a match of a string that matches plural(...)"""
@@ -789,7 +791,7 @@ class AlwaysPluralFilter(BaseFilter):
             # be transformed into plural("", NUM), which will then be
             # converted into its correct form via the PluralFilter
             var_node.text = self._empty_str_fn % (match.group(1).strip(),
-                match.group(2).strip())
+                                                  match.group(2).strip())
         else:
             # Make the string which will be used to wrap the output variable
             # We mark ambiguous strings with an obvious function name
@@ -869,10 +871,10 @@ class PluralFilter(IfElseFilter):
     _ngetpos_condition = 'isSingular(%s)'
     # See if it matches the form plural(..., ...)
     _regex = re.compile(r'^\s*(plural)'
-        r'\(\s*((?:[^,(]+|\(.+?\))*),\s*((?:[^,(]+|\(.+?\))*)\s*\)\s*$', re.I)
+                        r'\(\s*((?:[^,(]+|\(.+?\))*),\s*((?:[^,(]+|\(.+?\))*)\s*\)\s*$', re.I)
 
     xpath = ' or '.join(['contains(text(),"%s(")' % method
-        for method in _function_map.keys()])
+                         for method in _function_map.keys()])
 
     def get_match(self, fix_node):
         """Return a match of a string that matches plural(...)"""
@@ -952,7 +954,7 @@ class PluralFilter(IfElseFilter):
 
             # Insert a space and the plural form of the word after the variable
             cloned_var.tail = (' ' + get_plural_form(word) +
-                (cloned_var.tail or ''))
+                               (cloned_var.tail or ''))
 
         # Otherwise both of the results are variables or function calls.
         else:
@@ -962,7 +964,7 @@ class PluralFilter(IfElseFilter):
             # Check to see if the argument holding the string is ambiguously
             # named, and thus we need to mark it as such.
             check_str = (match.group(3) if plural_num_pos == 1 else
-                match.group(2))
+                         match.group(2))
 
             # Make the string which will be used to wrap the output variable
             # We mark ambiguous strings with an obvious function name
@@ -999,7 +1001,7 @@ class PluralFilter(IfElseFilter):
                 # Switch the order of the arguments to match the new signature
                 # that is used by plural_form(STRING, NUM)
                 plural_var_node.text = (pluralize %
-                    (match.group(3).strip(), match.group(2).strip()))
+                                        (match.group(3).strip(), match.group(2).strip()))
 
                 # Insert the new node after the <var>
                 var_node.addnext(singular_var_node)
@@ -1014,7 +1016,7 @@ class PluralFilter(IfElseFilter):
             else:
                 var_node.text = match.group(2).strip()
                 cloned_var.text = (pluralize %
-                    (match.group(2).strip(), match.group(3).strip()))
+                                   (match.group(2).strip(), match.group(3).strip()))
         return True
 
     def get_condition(self, key):
@@ -1067,7 +1069,7 @@ class TernaryFilter(IfElseFilter):
 
         # Only return the match if one of the statements is a string
         if match and (_STRING_RE.match(match.group(2)) or
-            _STRING_RE.match(match.group(3))):
+                      _STRING_RE.match(match.group(3))):
             return match
 
     def extract_key(self, match):
@@ -1130,10 +1132,10 @@ class AnFilter(BaseFilter):
 
     # Matches an|An(...)
     _regex = re.compile(r'^\s*\b(an|An)'
-        r'\(\s*((?:[^,]+|\([^\)]*\))*)\s*\)\s*$', re.I)
+                        r'\(\s*((?:[^,]+|\([^\)]*\))*)\s*\)\s*$', re.I)
 
     xpath = ' or '.join(['contains(text(),"%s(")' % method
-        for method in _an_map])
+                         for method in _an_map])
 
     def get_match(self, fix_node):
         """Return a match of a string that matches an/An(...)"""
@@ -1239,7 +1241,7 @@ class MathJaxTextFilter(BaseFilter):
                 [^}]*? # match a tail with no parentheses
             )
             (\s*\}) # match a }""",
-            re.DOTALL | re.VERBOSE)
+                                 re.DOTALL | re.VERBOSE)
 
         # Do all of the replacements. We look at the type of the tag to
         # determine whether we should be looking for html or javascript
@@ -1370,7 +1372,7 @@ class MathJaxTextFilter(BaseFilter):
             r"""["']\s*\+\s*(.*?)\s*\+\s*["']""",
             re.DOTALL)
 
-        #TODO(emily): We should probably use a real javascript parser for this
+        # TODO(emily): We should probably use a real javascript parser for this
         # at some point instead of this hacky regex system, so that we can do
         # more complex parsing and won't get as many strange bugs (for example,
         # there's a weird bug when you just have a bunch of string literals
@@ -1400,15 +1402,15 @@ class MathJaxTextFilter(BaseFilter):
 
                 # Do the replacements
                 interp_string = search_re.sub(
-                        MathJaxTextFilter.var_replace_builder(var_dict),
-                        text_content)
+                    MathJaxTextFilter.var_replace_builder(var_dict),
+                    text_content)
 
                 # Re-build our string with the replacements
                 text_content = '%s + $._("%s", %s) + %s' % (
-                        start_quote.group(1),
-                        interp_string,
-                        MathJaxTextFilter._javascript_dumps(var_dict),
-                        end_quote.group(1))
+                    start_quote.group(1),
+                    interp_string,
+                    MathJaxTextFilter._javascript_dumps(var_dict),
+                    end_quote.group(1))
             else:
                 # Otherwise, just wrap in $._
                 text_content = '" + $._("%s") + "' % text_content
@@ -1457,11 +1459,11 @@ class MathJaxTextFilter(BaseFilter):
 
                 # Build the new interpolation string
                 interp_string = search_re.sub(
-                        MathJaxTextFilter.var_replace_builder(var_dict),
-                        text_content)
+                    MathJaxTextFilter.var_replace_builder(var_dict),
+                    text_content)
 
                 text_content = '<var>$._("%s", %s)</var>' % (interp_string,
-                        MathJaxTextFilter._javascript_dumps(var_dict))
+                                                             MathJaxTextFilter._javascript_dumps(var_dict))
             else:
                 text_content = '<var>$._("%s")</var>' % text_content
 
@@ -1473,7 +1475,7 @@ class AmbiguousPluralFilter(BaseFilter):
     """Detect instances of AMBIGUOUS_PLURAL() and report an error."""
     # Matches AMBIGUOUS_PLURAL(...)
     _regex = re.compile(r'^\s*\bAMBIGUOUS_PLURAL'
-        r'\(\s*((?:.*?|\([^\)]*\))*)\s*\)\s*$', re.I)
+                        r'\(\s*((?:.*?|\([^\)]*\))*)\s*\)\s*$', re.I)
 
     xpath = 'contains(text(),"AMBIGUOUS_PLURAL(")'
 
@@ -1507,7 +1509,7 @@ class StringInVarFilter(BaseFilter):
     def filter_var(self, match, var_node):
         """Generate an error in every node that uses $._"""
         self.errors.append("Using $._ inside of a <var>:\n%s" %
-            _get_outerhtml(var_node))
+                           _get_outerhtml(var_node))
 
 
 def get_plural_form(word):
@@ -1529,7 +1531,7 @@ def get_plural_form(word):
         # Need to print the result so that it goes to stdout
         # If no input was provided then we default to: word + 's'
         plural = prompt_user(('What is the plural form of "%s" [%ss]: ' %
-            (word, word)), default=word + 's')
+                              (word, word)), default=word + 's')
 
         # Cache the plural form for later
         _PLURAL_FORMS[word] = plural
@@ -1581,7 +1583,7 @@ def get_plural_num_pos(match):
             # If the user provides no input then we default to the first
             # argument
             pos = prompt_user(('Ambiguous: %s which is the number? ([1] 2) ' %
-                plural_str), default=1)
+                               plural_str), default=1)
 
         # Make sure that the number is an integer and not a string
         _PLURAL_NUM_POS[plural_str] = int(pos)
@@ -1794,12 +1796,12 @@ def get_page_html(html_tree):
         attrs = dict(el.attrib)
         keys = el.attrib.keys()
         keys.sort(key=lambda k:
-            0 if (k == 'href') else
-            1 if (k == 'class') else
-            2 if (k == 'id') else
-            3 if (k == 'http-equiv') else
-            4 if (k == 'content') else
-            k)
+                  0 if (k == 'href') else
+                  1 if (k == 'class') else
+                  2 if (k == 'id') else
+                  3 if (k == 'http-equiv') else
+                  4 if (k == 'content') else
+                  k)
         el.attrib.clear()
         for k in keys:
             el.attrib[k] = attrs[k]

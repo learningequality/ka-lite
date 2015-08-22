@@ -29,7 +29,7 @@ class KnowledgeMapTests(KALiteBrowserTestCase):
             url = exercise.get_attribute("href")
             if url.startswith(self.reverse("exercise_dashboard")):
                 link_urls.append(url)
-            self.assertTrue(url is not None and url!= "")
+            self.assertTrue(url is not None and url != "")
 
         for url in link_urls:
             self.test_exercise_dashboard(map_url=url)

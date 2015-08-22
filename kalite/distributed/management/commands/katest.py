@@ -3,7 +3,8 @@ This is a command-line tool to execute functions helpful to testing.
 """
 from optparse import make_option
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 
 from kalite.facility.models import Facility
@@ -32,6 +33,7 @@ def unregister_distributed_server():
 
     settings.DEBUG_ALLOW_DELETIONS = tmp
 
+
 def clean_db():
     """
     Delete kalite data associated with Zone, Facility and Device
@@ -48,8 +50,8 @@ def clean_db():
 class Command(BaseCommand):
     help = "KA Lite test help"
     option_list = BaseCommand.option_list + (
-    make_option('--noinput', action='store_false', dest='interactive', default=True,
-            help='Tells Django to NOT prompt the user for input of any kind.'),)
+        make_option('--noinput', action='store_false', dest='interactive', default=True,
+                    help='Tells Django to NOT prompt the user for input of any kind.'),)
 
     def handle(self, *args, **options):
 
@@ -71,4 +73,4 @@ class Command(BaseCommand):
             confirm = raw_input(("%s \n Type 'yes' to continue, or 'no' to cancel: ") % (info_message))
             return confirm == "yes"
         else:
-            return True  #not interactive, so default to confirmed
+            return True  # not interactive, so default to confirmed

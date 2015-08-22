@@ -15,6 +15,7 @@ PLAYLIST_ID = "g4_u403_p1"
 
 logging = settings.LOG
 
+
 @unittest.skipIf("nalanda" not in settings.CONFIG_PACKAGE, "Test only when testing RCT3")
 class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
     """
@@ -30,9 +31,9 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         """
         super(UnitSwitchTest, self).setUp()
         self.facility = self.create_facility(name=self.facility_name)
-        self.student = self.create_student(username=self.student_username, password=self.student_password, facility=self.facility)
+        self.student = self.create_student(username=self.student_username,
+                                           password=self.student_password, facility=self.facility)
         self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
-
 
     def set_unit_navigate_to_exercise(self, unit, exercise_id):
         """
@@ -58,9 +59,11 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         """
         self.set_unit_navigate_to_exercise(101, "telling_time")
         time.sleep(5)
-        actual_points = self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')")
+        actual_points = self.browser.execute_script(
+            "return window.exercise_practice_view.exercise_view.data_model.get('basepoints')")
         expected_points = 25
-        self.assertEqual(actual_points, expected_points, "Basepoints should be %s in input condition; is actually %s" % (expected_points, actual_points))
+        self.assertEqual(actual_points, expected_points,
+                         "Basepoints should be %s in input condition; is actually %s" % (expected_points, actual_points))
 
     def test_nalanda_output_exercise(self):
         """
@@ -68,4 +71,5 @@ class UnitSwitchTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase)
         """
         self.set_unit_navigate_to_exercise(101, "conditional_statements_2")
         time.sleep(5)
-        self.assertEqual(self.browser.execute_script("return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 0, "Basepoints should be zero in output")
+        self.assertEqual(self.browser.execute_script(
+            "return window.exercise_practice_view.exercise_view.data_model.get('basepoints')"), 0, "Basepoints should be zero in output")

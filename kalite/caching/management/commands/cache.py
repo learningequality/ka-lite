@@ -1,6 +1,7 @@
 """
 """
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 from fle_utils.internet.webcache import invalidate_web_cache
 
@@ -19,12 +20,11 @@ class Command(BaseCommand):
     show - show a list of urls that are currently in the cache
     clear - remove all items from the cache"""
 
-
     def handle(self, *args, **options):
 
         if settings.CACHE_TIME == 0:
             raise CommandError("caching is turned off (CACHE_TIME is zero or none)")
-        elif len(args)<1:
+        elif len(args) < 1:
             raise CommandError("No command specified.")
         cmd = args[0].lower()
 
@@ -39,14 +39,12 @@ class Command(BaseCommand):
         else:
             raise CommandError("Unknown option: %s" % cmd)
 
-
     def create_cache(self, force=False):
         for node_type in ['Topic', 'Content', 'Exercise']:
             self.stdout.write("Caching %ss:\n" % node_type)
             for narr in topic_tools.get_node_cache(node_type).values():
                 for n in narr:
                     self.create_page_cache(path=n["path"], force=force)
-
 
     def create_page_cache(self, path, force=False):
         """Go through each cacheable page, and either:
@@ -69,7 +67,7 @@ class Command(BaseCommand):
 
         if not caching.has_cache_key(path=path):
             # should never get here!
-            self.stdout.write("%s%s\n" % ("?"*10, path))
+            self.stdout.write("%s%s\n" % ("?" * 10, path))
 
     def show_cache(self, force=False):
         """Go through each cacheable page, and show which are cached and which are NOT"""
@@ -81,11 +79,9 @@ class Command(BaseCommand):
                     if caching.has_cache_key(path=n["path"]):
                         self.stdout.write("\t%s\n" % n["path"])
 
-
     def clear_web_cache(self):
         invalidate_web_cache()
         logging.info("Cleared the web cache.")
-
 
     def clear_cache(self):
         """Go through each cacheable page, and show which are cached and which are NOT"""

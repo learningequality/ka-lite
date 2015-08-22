@@ -11,6 +11,7 @@ from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools import get_topic_leaves, get_exercise_cache, get_content_cache
 
+
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
 
@@ -32,6 +33,7 @@ def get_learners_from_GET(request):
         learner_filter = Q(facility__pk__in=facility_ids)
 
     return FacilityUser.objects.filter(learner_filter & Q(is_teacher=False)).order_by("last_name")
+
 
 def return_log_type_details(log_type, topic_ids=None):
     fields = ["user", "points", "complete", "completion_timestamp", "completion_counter"]
@@ -58,6 +60,7 @@ def return_log_type_details(log_type, topic_ids=None):
         obj_ids = {}
     return LogModel, fields, id_field, obj_ids, objects
 
+
 @require_admin
 def learner_logs(request):
 
@@ -76,11 +79,11 @@ def learner_logs(request):
 
     learners = get_learners_from_GET(request)
 
-    pages = int(ceil(len(learners)/float(limit)))
+    pages = int(ceil(len(learners) / float(limit)))
 
-    if page*limit < len(learners):
+    if page * limit < len(learners):
 
-        learners = learners[(page - 1)*limit: page*limit]
+        learners = learners[(page - 1) * limit: page * limit]
 
     log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
 
@@ -97,10 +100,12 @@ def learner_logs(request):
 
         log_objects = LogModel.objects.filter(user__in=learners, **obj_ids).values(*fields)
         if not topic_ids:
-            topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date, latest_activity_timestamp__lte=end_date)
+            topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date,
+                                               latest_activity_timestamp__lte=end_date)
             if topic_objects.count() == 0:
                 topic_objects = log_objects
-            objects = dict([(obj[id_field], get_content_cache().get(obj[id_field], get_exercise_cache().get(obj[id_field]))) for obj in topic_objects]).values()
+            objects = dict([(obj[id_field], get_content_cache().get(obj[id_field], get_exercise_cache().get(obj[id_field])))
+                            for obj in topic_objects]).values()
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
@@ -113,11 +118,12 @@ def learner_logs(request):
             "last_name": learner.last_name,
             "username": learner.username,
             "pk": learner.pk
-            } for learner in learners],
+        } for learner in learners],
         "page": page,
         "pages": pages,
         "limit": limit
     })
+
 
 @require_admin
 def aggregate_learner_logs(request):
@@ -158,21 +164,21 @@ def aggregate_learner_logs(request):
             latest_activity_timestamp__gte=start_date,
             latest_activity_timestamp__lte=end_date, **obj_ids).order_by("-latest_activity_timestamp")
 
-
         if log_type == "video":
-            output_dict["content_time_spent"] += log_objects.aggregate(Sum("total_seconds_watched"))["total_seconds_watched__sum"] or 0
+            output_dict[
+                "content_time_spent"] += log_objects.aggregate(Sum("total_seconds_watched"))["total_seconds_watched__sum"] or 0
         elif log_type == "content":
             output_dict["content_time_spent"] += log_objects.aggregate(Sum("time_spent"))["time_spent__sum"] or 0
         elif log_type == "exercise":
             output_dict["exercise_attempts"] = AttemptLog.objects.filter(user__in=learners,
-                timestamp__gte=start_date,
-                timestamp__lte=end_date).count()
+                                                                         timestamp__gte=start_date,
+                                                                         timestamp__lte=end_date).count()
             if log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"] is not None:
                 output_dict["exercise_mastery"] = round(log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"])
         output_logs.extend(log_objects)
 
     # Report total time in hours
-    output_dict["content_time_spent"] = round(output_dict["content_time_spent"]/3600.0,1)
+    output_dict["content_time_spent"] = round(output_dict["content_time_spent"] / 3600.0, 1)
     output_logs.sort(key=lambda x: x.latest_activity_timestamp, reverse=True)
     output_dict["learner_events"] = [{
         "learner": log.user.get_name(),
@@ -180,8 +186,8 @@ def aggregate_learner_logs(request):
         "struggling": getattr(log, "struggling", None),
         "progress": getattr(log, "streak_progress", getattr(log, "progress", None)),
         "content": get_exercise_cache().get(getattr(log, "exercise_id", ""), get_content_cache().get(getattr(log, "video_id", getattr(log, "content_id", "")), {})),
-        } for log in output_logs[:event_limit]]
-    output_dict["total_time_logged"] = round((UserLogSummary.objects\
-        .filter(user__in=learners, start_datetime__gte=start_date, start_datetime__lte=end_date)\
-        .aggregate(Sum("total_seconds")).get("total_seconds__sum") or 0)/3600.0, 1)
+    } for log in output_logs[:event_limit]]
+    output_dict["total_time_logged"] = round((UserLogSummary.objects
+                                              .filter(user__in=learners, start_datetime__gte=start_date, start_datetime__lte=end_date)
+                                              .aggregate(Sum("total_seconds")).get("total_seconds__sum") or 0) / 3600.0, 1)
     return JsonResponse(output_dict)

@@ -60,6 +60,8 @@ def cache_file_path(basename):
 TOPICS = None
 CACHE_VARS.append("TOPICS")
 CNT = 0
+
+
 def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
 
     # Hardcode the Brazilian Portuguese mapping that only the central server knows about
@@ -159,6 +161,8 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
 
 NODE_CACHE = None
 CACHE_VARS.append("NODE_CACHE")
+
+
 def get_node_cache(node_type=None, force=False, language=None):
 
     if not language:
@@ -174,6 +178,8 @@ def get_node_cache(node_type=None, force=False, language=None):
 
 EXERCISES = None
 CACHE_VARS.append("EXERCISES")
+
+
 def get_exercise_cache(force=False, language=None):
 
     if not language:
@@ -198,10 +204,11 @@ def get_exercise_cache(force=False, language=None):
         if language == "en":
             exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
         else:
-            exercise_root = i18n.get_localized_exercise_dirpath(language)
+            exercise_root = os.path.join(django_settings.USER_DATA_ROOT, "exercises")
         if os.path.exists(exercise_root):
+            exercise_path = os.path.join(exercise_root, language) if language != "en" else exercise_root
             try:
-                exercise_templates = os.listdir(exercise_root)
+                exercise_templates = os.listdir(exercise_path)
             except OSError:
                 exercise_templates = []
         else:
@@ -258,6 +265,8 @@ def get_exercise_cache(force=False, language=None):
 
 LEAFED_TOPICS = None
 CACHE_VARS.append("LEAFED_TOPICS")
+
+
 def get_leafed_topics(force=False, language=None):
 
     if not language:
@@ -266,8 +275,10 @@ def get_leafed_topics(force=False, language=None):
     global LEAFED_TOPICS
     if LEAFED_TOPICS is None or force:
         topic_cache = get_node_cache(language=language)["Topic"]
-        LEAFED_TOPICS = [topic for topic in topic_cache.values() if [child for child in topic.get("children", []) if topic_cache.get(child, {}).get("kind") != "Topic"]]
+        LEAFED_TOPICS = [topic for topic in topic_cache.values() if [child for child in topic.get("children", [])
+                                                                     if topic_cache.get(child, {}).get("kind") != "Topic"]]
     return LEAFED_TOPICS
+
 
 def create_thumbnail_url(thumbnail):
     if is_content_on_disk(thumbnail, "png"):
@@ -278,6 +289,8 @@ def create_thumbnail_url(thumbnail):
 
 CONTENT = None
 CACHE_VARS.append("CONTENT")
+
+
 def get_content_cache(force=False, annotate=False, language=None):
 
     if not language:
@@ -296,9 +309,9 @@ def get_content_cache(force=False, annotate=False, language=None):
                 logger=logging.debug,
                 raises=False
             )
-        if content:
-            CONTENT[language] = content
-            return CONTENT[language]
+            if content:
+                CONTENT[language] = content
+                return CONTENT[language]
         else:
             CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
             annotate = True
@@ -364,7 +377,7 @@ def get_content_cache(force=False, annotate=False, language=None):
                 "code": lc,
                 "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
                 "name": i18n.get_language_name(lc)
-                } for lc in subtitle_lang_codes]
+            } for lc in subtitle_lang_codes]
 
             # Sort all subtitle URLs by language code
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
@@ -385,6 +398,8 @@ def get_content_cache(force=False, annotate=False, language=None):
 
 SLUG2ID_MAP = None
 CACHE_VARS.append("SLUG2ID_MAP")
+
+
 def get_slug2id_map(force=False):
     global SLUG2ID_MAP
     if SLUG2ID_MAP is None or force:
@@ -394,6 +409,8 @@ def get_slug2id_map(force=False):
 
 ID2SLUG_MAP = None
 CACHE_VARS.append("ID2SLUG_MAP")
+
+
 def get_id2slug_map(force=False):
     global ID2SLUG_MAP
     if ID2SLUG_MAP is None or force:
@@ -442,6 +459,7 @@ def generate_node_cache(topictree=None, language=None):
 
     return node_cache
 
+
 def get_topic_by_path(path, root_node=None):
     """Given a topic path, return the corresponding topic node in the topic hierarchy"""
 
@@ -456,7 +474,6 @@ def get_topic_by_path(path, root_node=None):
 
     cur_node = get_node_cache()["Topic"].get(slug, {})
 
-
     return cur_node
 
 
@@ -468,7 +485,8 @@ def get_all_leaves(topic_node=None, leaf_type=None):
     """
     if not topic_node:
         topic_node = get_node_cache()["Topic"].get("root")
-    leaves = [topic for topic in get_topic_tree() if (not leaf_type or topic.get("kind") == leaf_type) and (topic_node.get("path") in topic.get("path"))]
+    leaves = [topic for topic in get_topic_tree() if (not leaf_type or topic.get("kind") == leaf_type)
+              and (topic_node.get("path") in topic.get("path"))]
 
     return leaves
 
@@ -553,7 +571,6 @@ def smart_translate_item_data(item_data):
         return item_data
 
 
-
 def get_content_data(request, content_id=None):
 
     language = request.language
@@ -580,11 +597,13 @@ def get_content_data(request, content_id=None):
 
     return content
 
+
 def get_topic_data(request, topic_id=None):
     topic_cache = get_node_cache(node_type='Topic', language=request.language)
     topic = topic_cache.get(topic_id, None)
 
     return topic
+
 
 def video_dict_by_video_id(node_cache=None):
     # TODO (aron): Add i18n by varying the language of the topic tree here

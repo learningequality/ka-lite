@@ -13,11 +13,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'UpdateProgressLog.cancel_requested'
         db.delete_column('updates_updateprogresslog', 'cancel_requested')
-
 
     models = {
         'updates.updateprogresslog': {

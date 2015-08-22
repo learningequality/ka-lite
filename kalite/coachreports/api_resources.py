@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from .models import PlaylistProgress, PlaylistProgressDetail
 
+
 class CoachReportBaseResource(Resource):
     """
     A base resource that houses shared code between the resources we actually use 
@@ -57,6 +58,7 @@ class PlaylistProgressResource(CoachReportBaseResource):
         result = PlaylistProgress.user_progress(user_id=user_id)
         return result
 
+
 class PlaylistProgressDetailResource(CoachReportBaseResource):
 
     kind = fields.CharField(attribute='kind')
@@ -74,6 +76,6 @@ class PlaylistProgressDetailResource(CoachReportBaseResource):
         playlist_id = request.GET.get("playlist_id")
         result = PlaylistProgressDetail.user_progress_detail(user_id=user_id, playlist_id=playlist_id)
         if not result:
-            raise NotFound("User playlist progress details with user ID '%s' and playlist ID '%s' were not found." % (user_id, playlist_id))        
+            raise NotFound("User playlist progress details with user ID '%s' and playlist ID '%s' were not found." %
+                           (user_id, playlist_id))
         return result
-

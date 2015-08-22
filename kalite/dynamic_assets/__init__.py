@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 
 from . import fields
 
+
 class DynamicSettingsMetaclass(type):
 
     def __init__(cls, name, bases, dict):

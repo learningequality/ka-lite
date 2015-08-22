@@ -23,7 +23,8 @@ ZIP_FILE_PATH = os.path.join(django_settings.USER_DATA_ROOT, "assessment.zip")
 
 IMAGE_URL_REGEX = re.compile('https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-\%]+\.(png|gif|jpg|jpeg|svg))', flags=re.IGNORECASE)
 
-WEB_GRAPHIE_URL_REGEX = re.compile('web\+graphie://ka\-perseus\-graphie\.s3\.amazonaws\.com\/(?P<filename>\w+)', flags=re.IGNORECASE)
+WEB_GRAPHIE_URL_REGEX = re.compile(
+    'web\+graphie://ka\-perseus\-graphie\.s3\.amazonaws\.com\/(?P<filename>\w+)', flags=re.IGNORECASE)
 
 IMAGE_URLS_NOT_TO_REPLACE = set([
     "http://www.dogs.com/photo.jpg",
@@ -42,7 +43,8 @@ MANUAL_IMAGE_URL_TO_FILENAME_MAPPING = {
 # TODO(jamalex): answer any questions people might have when this breaks!
 CONTENT_URL_REGEX_PLAIN = "https?://www\.khanacademy\.org/[\/\w\-\%]*/./(?P<slug>[\w\-]+)"
 CONTENT_URL_REGEX = re.compile("(?P<prefix>)" + CONTENT_URL_REGEX_PLAIN + "(?P<suffix>)", flags=re.IGNORECASE)
-CONTENT_LINK_REGEX = re.compile("(?P<prefix>\**\[[^\]\[]+\] ?\(?) ?" + CONTENT_URL_REGEX_PLAIN + "(?P<suffix>\)? ?\**)", flags=re.IGNORECASE)
+CONTENT_LINK_REGEX = re.compile("(?P<prefix>\**\[[^\]\[]+\] ?\(?) ?" +
+                                CONTENT_URL_REGEX_PLAIN + "(?P<suffix>\)? ?\**)", flags=re.IGNORECASE)
 
 ZIP_WRITE_MUTEX = Lock()
 
@@ -86,7 +88,8 @@ def write_assessment_item_db_to_zip(zf, assessment_items):
     temp_database_file = os.path.join(tempfile.gettempdir(), "assessmentitems.sqlite")
     with open(temp_json_file, "w") as f:
         json.dump(assessment_items, f)
-    call_command("init_assessment_items", assessment_items_filepath=temp_json_file, database_path=temp_database_file, bulk_create=True)
+    call_command("init_assessment_items", assessment_items_filepath=temp_json_file,
+                 database_path=temp_database_file, bulk_create=True)
     with open(temp_database_file) as f:
         db_data = f.read()
     zf.writestr("assessmentitems.sqlite", db_data)
@@ -171,7 +174,7 @@ def find_all_graphie_urls(items):
 
     for v in items.itervalues():
         for match in re.finditer(WEB_GRAPHIE_URL_REGEX, v["item_data"]):
-            base_filename = str(match.group(0)).replace("web+graphie:", "https:") # match.group(0) means get the entire string
+            base_filename = str(match.group(0)).replace("web+graphie:", "https:")  # match.group(0) means get the entire string
             yield base_filename + ".svg"
             yield base_filename + "-data.json"
 
@@ -250,6 +253,8 @@ def _old_content_links_to_local_links(matchobj):
 
 
 CONTENT_BY_READABLE_ID = None
+
+
 def _get_content_by_readable_id(readable_id):
     global CONTENT_BY_READABLE_ID
     if not CONTENT_BY_READABLE_ID:
@@ -280,4 +285,3 @@ def _list_all_exercises_with_bad_links():
                         print "EXERCISE: '%s'" % ex["title"], ex["path"]
                         displayed_title = True
                     print "\t", status_code, url
-

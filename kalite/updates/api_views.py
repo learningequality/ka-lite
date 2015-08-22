@@ -9,7 +9,8 @@ import math
 from annoying.functions import get_object_or_None
 from collections_local_copy import defaultdict
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management import call_command
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
@@ -140,12 +141,14 @@ def start_video_download(request):
 
     # OK to do bulk_create; cache invalidation triggered via save download
     for lang_code, lang_youtube_ids in divide_videos_by_language(video_files_to_create).iteritems():
-        VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True, language=lang_code) for id in lang_youtube_ids])
+        VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True,
+                                                 language=lang_code) for id in lang_youtube_ids])
 
     # OK to update all, since we're not setting all props above.
     # One query per chunk
     for chunk in break_into_chunks(youtube_ids):
-        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
+        video_files_needing_model_update = VideoFile.objects.filter(
+            download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
         video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
 
     force_job("videodownload", _("Download Videos"), locale=request.language)
@@ -196,7 +199,8 @@ def cancel_video_download(request):
     VideoFile.objects.all().update(download_in_progress=False)
 
     # unflag all video downloads
-    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False, download_in_progress=False)
+    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True,
+                                                               flagged_for_download=False, download_in_progress=False)
 
     force_job("videodownload", stop=True, locale=request.language)
 

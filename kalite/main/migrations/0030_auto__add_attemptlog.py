@@ -14,8 +14,10 @@ class Migration(SchemaMigration):
             ('counter', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, blank=True)),
             ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True, blank=True)),
             ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
-            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')
+             (blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')
+             (blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
             ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'])),
             ('exercise_id', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
@@ -32,11 +34,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('main', ['AttemptLog'])
 
-
     def backwards(self, orm):
         # Deleting model 'AttemptLog'
         db.delete_table('main_attemptlog')
-
 
     models = {
         'main.attemptlog': {

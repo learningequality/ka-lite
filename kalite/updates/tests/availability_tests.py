@@ -6,6 +6,7 @@ from django.conf import settings
 from .base import UpdatesTestCase
 from kalite.topic_tools import get_content_cache, get_node_cache
 
+
 class TestTopicAvailability(UpdatesTestCase):
     """
     Test that topics with exercises are available, others are not.
@@ -22,5 +23,7 @@ class TestTopicAvailability(UpdatesTestCase):
     def test_topic_availability(self):
         for topic in get_node_cache("Topic").values():
             if topic.get("kind") == "Topic":
-                any_available = bool(sum([get_node_cache("Topic").get(v, {}).get("available", False) for v in topic.get("children", [])]))
-                self.assertEqual(topic["available"], any_available, "Make sure topic availability matches child availability when any children are available.")
+                any_available = bool(sum([get_node_cache("Topic").get(v, {}).get("available", False)
+                                          for v in topic.get("children", [])]))
+                self.assertEqual(topic["available"], any_available,
+                                 "Make sure topic availability matches child availability when any children are available.")

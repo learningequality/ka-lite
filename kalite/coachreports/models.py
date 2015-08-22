@@ -9,6 +9,7 @@ from kalite.main.models import ExerciseLog, VideoLog
 from kalite.playlist.models import QuizLog
 from kalite.topic_tools import get_id2slug_map, get_leafed_topics, get_content_cache, get_exercise_cache, get_node_cache
 
+
 class PlaylistProgressParent:
     """Parent class for helpful class methods"""
 
@@ -23,12 +24,12 @@ class PlaylistProgressParent:
 
     @classmethod
     def get_user_logs(cls, user, pl_video_ids=None, pl_exercise_ids=None):
-        user_ex_logs = list(ExerciseLog.objects \
-            .filter(user=user) \
-            .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
-        user_vid_logs = list(VideoLog.objects \
-            .filter(user=user) \
-            .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
+        user_ex_logs = list(ExerciseLog.objects
+                            .filter(user=user)
+                            .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
+        user_vid_logs = list(VideoLog.objects
+                             .filter(user=user)
+                             .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
 
         if pl_video_ids and pl_exercise_ids:
             user_ex_logs = [ex_log for ex_log in user_ex_logs if ex_log.get("exercise_id") in pl_exercise_ids]
@@ -45,11 +46,12 @@ class PlaylistProgressParent:
             quiz = None
 
         if quiz:
-            score = int(float(json.loads(quiz.response_log)[quiz.attempts-1]) / float(quiz.total_number) * 100)
+            score = int(float(json.loads(quiz.response_log)[quiz.attempts - 1]) / float(quiz.total_number) * 100)
         else:
             score = 0
 
         return (exists, quiz, score)
+
 
 class PlaylistProgress(PlaylistProgressParent):
     """Users progress on playlists"""
@@ -164,6 +166,7 @@ class PlaylistProgress(PlaylistProgressParent):
             user_progress.append(cls(**progress))
 
         return user_progress
+
 
 class PlaylistProgressDetail(PlaylistProgressParent):
     """Detailed progress on a specific playlist for a specific user"""

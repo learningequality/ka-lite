@@ -30,13 +30,12 @@ class I18nTestCase(TestCase):
         if not self.TEST_LANGUAGES:
             logging.debug("self.TEST_LANGUAGES not defined. Not installing any language.")
         else:
-            logging.disable(logging.ERROR) # silence langpack installation logs
+            logging.disable(logging.ERROR)  # silence langpack installation logs
 
             for lang in self.TEST_LANGUAGES:
                 self.install_language(lang)
 
-            logging.disable(logging.NOTSET) # reactivate logs again
-
+            logging.disable(logging.NOTSET)  # reactivate logs again
 
     def uninstall_languages(self):
         logging.disable(logging.ERROR)

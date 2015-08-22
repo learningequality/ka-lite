@@ -14,7 +14,6 @@ class Migration(SchemaMigration):
         #               self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
         #               keep_default=False)
 
-
         # Changing field 'VideoLog.counter'
         db.alter_column('main_videolog', 'counter', self.gf('django.db.models.fields.IntegerField')(null=True))
         # Adding field 'UserLog.language'
@@ -29,7 +28,6 @@ class Migration(SchemaMigration):
         #               self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
         #               keep_default=False)
 
-
         # Changing field 'UserLogSummary.counter'
         db.alter_column('main_userlogsummary', 'counter', self.gf('django.db.models.fields.IntegerField')(null=True))
         # Adding field 'ExerciseLog.language'
@@ -38,10 +36,9 @@ class Migration(SchemaMigration):
         #               self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
         #               keep_default=False)
 
-
         # Changing field 'ExerciseLog.counter'
         db.alter_column('main_exerciselog', 'counter', self.gf('django.db.models.fields.IntegerField')(null=True))
-        
+
         # Renaming field 'LanguagePack.lang_version'
         db.rename_column('main_languagepack', 'lang_version', 'crowdin_version')
 
@@ -69,11 +66,9 @@ class Migration(SchemaMigration):
         # Changing field 'LanguagePack.software_version'
         db.alter_column('main_languagepack', 'software_version', self.gf('django.db.models.fields.CharField')(max_length=20))
 
-
     def backwards(self, orm):
         # Deleting field 'VideoLog.language'
         # db.delete_column('main_videolog', 'language')
-
 
         # Changing field 'VideoLog.counter'
         db.alter_column('main_videolog', 'counter', self.gf('django.db.models.fields.IntegerField')())
@@ -83,12 +78,10 @@ class Migration(SchemaMigration):
         # Deleting field 'UserLogSummary.language'
         # db.delete_column('main_userlogsummary', 'language')
 
-
         # Changing field 'UserLogSummary.counter'
         db.alter_column('main_userlogsummary', 'counter', self.gf('django.db.models.fields.IntegerField')())
         # Deleting field 'ExerciseLog.language'
         # db.delete_column('main_exerciselog', 'language')
-
 
         # Changing field 'ExerciseLog.counter'
         db.alter_column('main_exerciselog', 'counter', self.gf('django.db.models.fields.IntegerField')())

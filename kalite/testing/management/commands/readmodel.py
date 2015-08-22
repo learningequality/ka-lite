@@ -6,11 +6,15 @@ import sys
 from optparse import make_option
 from fle_utils.importing import resolve_model
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 from django.core import serializers
 
+<<<<<<< HEAD
 dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
+=======
+>>>>>>> origin/develop
 
 class Command(BaseCommand):
     args = "<model_path>"
@@ -21,10 +25,10 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('-i', '--id',
-            action='store',
-            type='string',
-            dest='id',
-            help='Primary key of the model object to read'),
+                    action='store',
+                    type='string',
+                    dest='id',
+                    help='Primary key of the model object to read'),
     )
 
     def handle(self, *args, **options):
@@ -35,7 +39,7 @@ class Command(BaseCommand):
         model_id = options["id"]
         if model_id:
             Model = resolve_model(model_path)
-            
+
             try:
                 data = Model.objects.get(pk=model_id)
                 # logging.info("Retrieved '%s' entry with primary key: '%s'" % (model_path, model_id))
@@ -43,11 +47,11 @@ class Command(BaseCommand):
                 serialized_data = serializers.serialize("python", [data])[0]["fields"]
                 serialized_data["id"] = model_id
                 logging.debug("Serialized data: '%s'" % serialized_data)
-                print json.dumps(serialized_data, default=dthandler)
+                print json.dumps(serialized_data)
 
             except Model.DoesNotExist:
                 logging.error("Could not find '%s' entry with primary key: '%s'" % (model_path, model_id))
                 sys.exit(1)
-            
+
         else:
             raise CommandError("Please specify --id to fetch model.")

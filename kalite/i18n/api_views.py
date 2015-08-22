@@ -1,6 +1,7 @@
 import json
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 
@@ -16,7 +17,7 @@ def set_server_or_user_default_language(request):
         return JsonResponseMessageError(_("Can only handle default language changes through POST requests"), status=405)
 
     elif request.method == 'POST':
-        data = json.loads(request.raw_post_data) # POST is getting interpreted wrong again by Django
+        data = json.loads(request.raw_post_data)  # POST is getting interpreted wrong again by Django
         lang_code = data['lang']
 
         if request.is_django_user and lang_code != get_default_language():

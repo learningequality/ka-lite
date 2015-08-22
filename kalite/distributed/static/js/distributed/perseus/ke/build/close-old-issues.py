@@ -32,7 +32,7 @@ address it--really helps.\
 def fetch_issues(github_auth):
     issues = []
     url = ("https://api.github.com/repos/Khan/khan-exercises/issues?"
-            "per_page=100")
+           "per_page=100")
 
     while url:
         print "fetching", url
@@ -50,8 +50,8 @@ def fetch_issues(github_auth):
 def fetch_issue_comments(issue, github_auth):
     print "fetching comments for issue #%(number)s" % issue
     r = requests.get("https://api.github.com/repos/Khan/khan-exercises/issues/"
-            "%s/comments?per_page=100" % issue['number'],
-            auth=github_auth)
+                     "%s/comments?per_page=100" % issue['number'],
+                     auth=github_auth)
     r.raise_for_status()
     time.sleep(1)
     return r.json()
@@ -63,8 +63,8 @@ def close_issue(issue, github_auth):
     closed_issue['state'] = 'closed'
 
     r = requests.post("https://api.github.com/repos/Khan/khan-exercises/"
-            "issues/%s" % issue['number'],
-            data=json.dumps(closed_issue), auth=github_auth)
+                      "issues/%s" % issue['number'],
+                      data=json.dumps(closed_issue), auth=github_auth)
 
     try:
         r.raise_for_status()
@@ -81,8 +81,8 @@ def post_issue_comment(issue, comment_text, github_auth):
     closed_issue['state'] = 'closed'
 
     r = requests.post("https://api.github.com/repos/Khan/khan-exercises/"
-            "issues/%s/comments" % issue['number'],
-            data=json.dumps({'body': comment_text}), auth=github_auth)
+                      "issues/%s/comments" % issue['number'],
+                      data=json.dumps({'body': comment_text}), auth=github_auth)
 
     try:
         r.raise_for_status()
@@ -124,7 +124,7 @@ def close_old_issues(close_before, github_auth):
                         print "closed issue %s (%s)" % (issue['number'], user)
                     else:
                         print "error closing issue %s (%s)" % (issue['number'],
-                                user)
+                                                               user)
                     break
         elif issue_created < close_before:
             if post_issue_comment(issue, AUTOCLOSE_MESSAGE, github_auth):
@@ -151,13 +151,13 @@ if __name__ == '__main__':
 
     default_user = "KhanBugz"
     github_user = (raw_input("GitHub username [%s]: " % default_user)
-            or default_user)
+                   or default_user)
     github_pass = getpass.getpass()
     print
     github_auth = (github_user, github_pass)
 
     notabug_taggers, realbug_taggers = close_old_issues(
-            close_before, github_auth)
+        close_before, github_auth)
 
     print "notabug taggers:"
     for tagger in notabug_taggers:

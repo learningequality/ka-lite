@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import imp
-import os, time, signal, errno
+import os
+import time
+import signal
+import errno
 import urlparse
 
 import cherrypy
@@ -12,7 +15,9 @@ from django.core.handlers.wsgi import WSGIHandler
 
 __all__ = ['DjangoAppPlugin']
 
+
 class DjangoAppPlugin(plugins.SimplePlugin):
+
     def __init__(self, bus):
         """ CherryPy engine plugin to configure and mount
         the Django application onto the CherryPy server.
@@ -91,10 +96,13 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         try:
             return imp.load_module(mod, fd, path, description)
         finally:
-            if fd: fd.close()
+            if fd:
+                fd.close()
 
 # TODO: This is not used anymore and does not comply with OS agnostic ideals
 # /benjaoming
+
+
 def poll_process(pid):
     """
     Poll for process with given pid up to 10 times waiting .25 seconds in between each poll.
@@ -115,6 +123,8 @@ def poll_process(pid):
 
 # TODO: This is not used anymore and does not comply with OS agnostic ideals
 # /benjaoming
+
+
 def stop_server(pidfile):
     """
     Stop process whose pid was written to supplied pidfile.
@@ -124,13 +134,13 @@ def stop_server(pidfile):
         pid = int(open(pidfile).read())
         try:
             os.kill(pid, signal.SIGTERM)
-        except OSError: #process does not exist
+        except OSError:  # process does not exist
             os.remove(pidfile)
             return
         if poll_process(pid):
-            #process didn't exit cleanly, make one last effort to kill it
+            # process didn't exit cleanly, make one last effort to kill it
             os.kill(pid, signal.SIGKILL)
-            #if still_alive(pid):
+            # if still_alive(pid):
             if poll_process(pid):
                 raise OSError, "Process %s did not stop."
         os.remove(pidfile)
@@ -143,7 +153,7 @@ def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=Fal
     if daemonize:
         if not pidfile:
             pidfile = '~/cpwsgi_%d.pid' % port
-        
+
         # benjaoming: stopping the server is an explicit logic that has already
         # been implemented other places. Killing some process related to a
         # possibly out-dated pidfile is not exactly best practice
@@ -179,6 +189,6 @@ def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=Fal
     if pidfile:
         stop_server(pidfile)
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     run_cherrypy_server()

@@ -35,8 +35,8 @@ def allow_all_languages_alist(langlookupfile):
     for lc, metadata in langlookup.iteritems():
         lc = (lc.
               lower().          # django only accepts lowercase languages
-              replace('-', '_') # django needs the underscore
-        )
+              replace('-', '_')  # django needs the underscore
+              )
         yield (lc, metadata['name'])
 
 

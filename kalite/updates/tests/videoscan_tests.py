@@ -7,6 +7,7 @@ from kalite.testing.base import KALiteTestCase
 from kalite.updates.models import VideoFile
 from kalite import updates, caching
 
+
 class CacheInvalidationTestCase(KALiteTestCase):
     """
     Test that cache invalidation only happens ONCE per videoscan, even if multiple deletions are made.
@@ -30,4 +31,3 @@ class CacheInvalidationTestCase(KALiteTestCase):
         call_command("videoscan")
         actual = mock_func.call_count
         self.assertEqual(actual, 1, "The call count should be exactly 1. Actual count: {actual}".format(actual=actual))
-

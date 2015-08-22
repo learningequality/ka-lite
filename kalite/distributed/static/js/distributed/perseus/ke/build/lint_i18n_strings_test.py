@@ -15,48 +15,48 @@ TESTS = {
     'pronoun': {
         'nodes_changed': 6,
         'errors': ['6 nodes need to be fixed. '
-            'Re-run with --fix to automatically fix them.']
+                   'Re-run with --fix to automatically fix them.']
     },
     'always_plural': {
         'nodes_changed': 5,
         'errors': [
             'Ambiguous plural usage (TYPES[ 2 ]):\n'
-                '<var>AMBIGUOUS_PLURAL(TYPES[ 2 ])</var>',
+            '<var>AMBIGUOUS_PLURAL(TYPES[ 2 ])</var>',
             '5 nodes need to be fixed. '
-                'Re-run with --fix to automatically fix them.']
+            'Re-run with --fix to automatically fix them.']
     },
     'plural': {
         'nodes_changed': 16,
         'errors': [
             'Ambiguous plural usage (UNIT_TEXT, S):\n'
-                '<var>AMBIGUOUS_PLURAL(UNIT_TEXT, S)</var>',
+            '<var>AMBIGUOUS_PLURAL(UNIT_TEXT, S)</var>',
             'Ambiguous plural usage (UNIT_TEXT, S):\n'
-                '<var>AMBIGUOUS_PLURAL(UNIT_TEXT, S)</var>',
+            '<var>AMBIGUOUS_PLURAL(UNIT_TEXT, S)</var>',
             'Ambiguous plural usage (UNIT_TEXT, S):\n'
-                '<var>AMBIGUOUS_PLURAL(UNIT_TEXT, S)</var>',
+            '<var>AMBIGUOUS_PLURAL(UNIT_TEXT, S)</var>',
             '16 nodes need to be fixed. '
-                'Re-run with --fix to automatically fix them.']
+            'Re-run with --fix to automatically fix them.']
     },
     'ternary': {
         'nodes_changed': 5,
         'errors': ['5 nodes need to be fixed. '
-            'Re-run with --fix to automatically fix them.']
+                   'Re-run with --fix to automatically fix them.']
     },
     'an': {
         'nodes_changed': 2,
         'errors': ['2 nodes need to be fixed. '
-            'Re-run with --fix to automatically fix them.']
+                   'Re-run with --fix to automatically fix them.']
     },
     'data-if': {
         'nodes_changed': 9,
         'errors': ['9 nodes need to be fixed. '
-            'Re-run with --fix to automatically fix them.']
+                   'Re-run with --fix to automatically fix them.']
     },
     'text': {
         'nodes_changed': 12,
         'errors': [
             'Using $._ inside of a <var>:\n<var>$._("%(something)s", '
-                '{something: something})</var>',
+            '{something: something})</var>',
             '12 nodes need to be fixed. '
             'Re-run with --fix to automatically fix them.']
     },
@@ -110,7 +110,7 @@ class LintStringsTest(unittest.TestCase):
         for file_name, checks in TESTS.iteritems():
             checks['test_file'] = os.path.join(_TMP_DIR, file_name) + '.html'
             checks['output_file'] = (os.path.join(_TMP_DIR, file_name) +
-                '_output.html')
+                                     '_output.html')
             checks['original'] = _slurp(checks['test_file'])
 
     def tearDown(self):
@@ -126,22 +126,22 @@ class LintStringsTest(unittest.TestCase):
 
         # Apply without making any changes to the file
         (errors, nodes_changed) = lint_i18n_strings.lint_file(test_file,
-            apply_fix=False, verbose=False)
+                                                              apply_fix=False, verbose=False)
 
         self.assertEqual(nodes_changed, checks['nodes_changed'],
-            '# of nodes changed differ in %s' % test_file)
+                         '# of nodes changed differ in %s' % test_file)
         self.assertEqual(errors, checks['errors'],
-            'Errors reported differ in %s' % test_file)
+                         'Errors reported differ in %s' % test_file)
         self.assertEqual(_slurp(test_file), checks['original'],
-            'Make sure that the output of the file did not change with '
-            'apply_fix=False.')
+                         'Make sure that the output of the file did not change with '
+                         'apply_fix=False.')
 
         # Test again with apply_fix=True
         (errors, nodes_changed) = lint_i18n_strings.lint_file(test_file,
-            apply_fix=True, verbose=False)
+                                                              apply_fix=True, verbose=False)
 
         self.assertEqual(nodes_changed, checks['nodes_changed'],
-            '# of nodes changed differ in %s' % test_file)
+                         '# of nodes changed differ in %s' % test_file)
 
         real_errors = checks['errors']
         # If there are nodes changed, then the last error line disappears when
@@ -150,10 +150,10 @@ class LintStringsTest(unittest.TestCase):
             real_errors = real_errors[:-1]
 
         self.assertEqual(errors, real_errors,
-            'These should be no errors in %s' % test_file)
+                         'These should be no errors in %s' % test_file)
         self.assertEqual(_slurp(test_file), _slurp(checks['output_file']),
-            'Make sure that the output of the file matches the expected '
-            'output.')
+                         'Make sure that the output of the file matches the expected '
+                         'output.')
 
     def test_pronoun(self):
         self.run_test('pronoun')

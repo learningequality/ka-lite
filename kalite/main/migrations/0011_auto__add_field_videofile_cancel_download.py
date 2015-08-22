@@ -13,11 +13,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'VideoFile.cancel_download'
         db.delete_column('main_videofile', 'cancel_download')
-
 
     models = {
         'main.exerciselog': {

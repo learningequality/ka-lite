@@ -3,6 +3,7 @@
 from .base import FacilityTestCase
 from ..models import FacilityUser
 
+
 class UserDeletionTestCase(FacilityTestCase):
 
     def test_deleting_user_does_not_work(self):
@@ -18,6 +19,7 @@ class UserDeletionTestCase(FacilityTestCase):
         user.save()
         user.soft_delete()
         self.assertTrue(user.deleted)
+
 
 class FacilityDeletionTestCase(FacilityTestCase):
 
@@ -43,6 +45,7 @@ class FacilityDeletionTestCase(FacilityTestCase):
     # def test_soft_deleting_facility_deletes_group(self):
     #     self.facility.soft_delete()
     #     self.assertTrue(self.group.deleted)
+
 
 class GroupDeletionTestCase(FacilityTestCase):
 

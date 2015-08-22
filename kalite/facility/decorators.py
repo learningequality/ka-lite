@@ -93,11 +93,11 @@ def facility_required(handler):
 
         if not request.session["facility_exists"]:
             if request.is_admin:
-                messages.warning(request, _("To continue, you must first add a facility (e.g. for your school). ") \
-                    + _("Please use the form below to add a facility."))
+                messages.warning(request, _("To continue, you must first add a facility (e.g. for your school). ")
+                                 + _("Please use the form below to add a facility."))
             else:
                 messages.warning(request,
-                    _("You must first have the administrator of this server log in below to add a facility."))
+                                 _("You must first have the administrator of this server log in below to add a facility."))
             zone_id = getattr(Device.get_own_device().get_zone(), "id", "None")
             return HttpResponseRedirect(reverse("add_facility", kwargs={"zone_id": zone_id}))
 
@@ -112,7 +112,7 @@ def facility_required(handler):
                 if cp_path_match:
                     path_template = "%s%%(facility_id)s%s" % cp_path_match.groups()
                 else:
-                    path_template="%(path)s?%(querystring)s&facility=%(facility_id)s"
+                    path_template = "%(path)s?%(querystring)s&facility=%(facility_id)s"
 
                 selection_paths = {}
                 for facility in facilities:

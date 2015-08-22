@@ -15,7 +15,8 @@ from kalite.facility.models import FacilityUser, Facility
 
 from securesync.models import DeferredCountSyncedModel
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 
 from .data.items import STORE_ITEMS
 
@@ -57,7 +58,7 @@ class StoreTransactionLog(DeferredCountSyncedModel):
 
     user = models.ForeignKey(FacilityUser, db_index=True)
     value = models.IntegerField(default=0)
-    context_id = models.CharField(max_length=100, blank=True) # e.g. the unit id that it was spent/earned during
+    context_id = models.CharField(max_length=100, blank=True)  # e.g. the unit id that it was spent/earned during
     context_type = models.CharField(max_length=100, blank=True)
     # can this transaction be undone by user actions? Initially set by 'returnable' on StoreItem, but can be changed subsequently
     reversible = models.BooleanField(default=False)
@@ -101,9 +102,11 @@ def handle_exam_unset(sender, **kwargs):
             unit_id = get_current_unit_settings_value(facility.id)
             ds = load_dynamic_settings(user=facility_user)
             if ds["student_testing"].turn_on_points_for_practice_exams:
-                transaction_log, created = StoreTransactionLog.objects.get_or_create(user=testlog.user, context_id=unit_id, context_type="output_condition", item="gift_card")
+                transaction_log, created = StoreTransactionLog.objects.get_or_create(
+                    user=testlog.user, context_id=unit_id, context_type="output_condition", item="gift_card")
                 try:
-                    transaction_log.value = int(round(settings.UNIT_POINTS * float(testlog.total_correct)/testlog.total_number))
+                    transaction_log.value = int(
+                        round(settings.UNIT_POINTS * float(testlog.total_correct) / testlog.total_number))
                 except ZeroDivisionError:  # one of the students just hasn't started answering a test when we turn it off
                     continue
                 transaction_log.save()
@@ -120,6 +123,7 @@ def playlist_group_mapping_reset_for_a_facility(facility_id):
             if assigned_group.group_id == group['id']:
                 assigned_group.delete()
 
+
 @receiver(unit_switch, dispatch_uid="unit_switch")
 def handle_unit_switch(sender, **kwargs):
     old_unit = kwargs.get("old_unit")
@@ -133,11 +137,13 @@ def handle_unit_switch(sender, **kwargs):
             users = FacilityUser.objects.filter(facility=facility_id)
             for user in users:
                 old_unit_points = compute_total_points(user) or 0
-                old_unit_transaction_log = StoreTransactionLog(user=user, context_id=old_unit, context_type="unit_points_reset", item="gift_card")
+                old_unit_transaction_log = StoreTransactionLog(
+                    user=user, context_id=old_unit, context_type="unit_points_reset", item="gift_card")
                 old_unit_transaction_log.value = - old_unit_points
                 old_unit_transaction_log.purchased_at = datetime.datetime.now()
                 old_unit_transaction_log.save()
-                new_unit_transaction_log = StoreTransactionLog.objects.filter(user=user, context_id=new_unit, context_type="unit_points_reset", item="gift_card")
+                new_unit_transaction_log = StoreTransactionLog.objects.filter(
+                    user=user, context_id=new_unit, context_type="unit_points_reset", item="gift_card")
                 new_unit_transaction_log.soft_delete()
 
             playlist_group_mapping_reset_for_a_facility(facility_id)

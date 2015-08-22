@@ -15,6 +15,7 @@ from django.conf import settings
 
 logging = settings.LOG
 
+
 class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
 
     def check_test(self, bundle):
@@ -47,6 +48,7 @@ class UserTestObjectsOnlyAuthorization(UserObjectsOnlyAuthorization):
         self.check_test(bundle)
 
         return super(UserTestObjectsOnlyAuthorization, self).update_detail(object_list, bundle)
+
 
 class TestLogResource(ModelResource):
 
@@ -172,4 +174,3 @@ class TestResource(Resource):
 
     def rollback(self, request):
         raise NotImplemented("Operation not implemented yet for tests.")
-

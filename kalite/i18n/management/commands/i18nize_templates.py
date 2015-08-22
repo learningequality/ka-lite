@@ -2,7 +2,8 @@ import logging
 import os
 import subprocess
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core.management.base import AppCommand
 from django.core.management.commands.makemessages import handle_extensions
 
@@ -113,10 +114,10 @@ class Command(AppCommand):
         # TODO(cpauya): Get the app name here.
         if parse_file:
             logging.info("Will look for %s only at %s app with extensions: [%s]..." %
-                        (parse_file, app.__file__, ', '.join(extensions),))
+                         (parse_file, app.__file__, ', '.join(extensions),))
         else:
             logging.info("Will look for template files at %s app with extensions: [%s]..." %
-                        (app.__name__, ', '.join(extensions)))
+                         (app.__name__, ', '.join(extensions)))
 
         local_dir = os.path.dirname(app.__file__)
         i18nize_parser(parse_dir=local_dir, extensions=extensions, parse_file=parse_file, ignores=ignores)

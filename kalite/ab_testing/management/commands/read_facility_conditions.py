@@ -38,7 +38,7 @@ class Command(BaseCommand):
                                "..",
                                "..",
                                "data"
-        )
+                               )
 
         facility_unit_mappings_file = os.path.join(
             savedir,

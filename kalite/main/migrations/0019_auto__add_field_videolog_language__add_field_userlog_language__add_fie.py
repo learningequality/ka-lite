@@ -28,7 +28,6 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(max_length=8, null=True, blank=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'VideoLog.language'
         db.delete_column('main_videolog', 'language')
@@ -41,7 +40,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'ExerciseLog.language'
         db.delete_column('main_exerciselog', 'language')
-
 
     models = {
         'main.exerciselog': {

@@ -56,4 +56,3 @@ class QuizTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
         self.browser.execute_script("quizlog.add_response_log_item({correct: true});")
         self.assertEqual(self.browser.execute_script("return quizlog.get('total_correct')"), 1)
         self.assertEqual(self.browser.execute_script("return quizlog._response_log_cache[0]"), 1)
-

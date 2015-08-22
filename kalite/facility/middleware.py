@@ -9,6 +9,7 @@ from .models import Facility
 
 FACILITY_CACHE_STALE = False
 
+
 def refresh_session_facility_info(request, facility_count):
     # Fix for #1211
     # Free time to refresh the facility info, which is otherwise cached for efficiency
@@ -20,13 +21,16 @@ def refresh_session_facility_info(request, facility_count):
     # without significantly increasing DB load on every status call.
     request.session["facilities"] = [{"id": id, "name": name} for id, name in Facility.objects.values_list("id", "name")]
 
+
 def flag_facility_cache(**kwargs):
     global FACILITY_CACHE_STALE
     FACILITY_CACHE_STALE = True
 
 post_save.connect(flag_facility_cache, sender=Facility)
 
+
 class AuthFlags:
+
     def process_request(self, request):
         request.is_admin = False
         request.is_teacher = False
@@ -54,6 +58,7 @@ class AuthFlags:
 
 
 class FacilityCheck:
+
     def process_request(self, request):
         """
         Cache facility data in the session,

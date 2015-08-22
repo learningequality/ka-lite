@@ -23,7 +23,6 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'VideoLog.latest_activity_timestamp'
         db.delete_column(u'main_videolog', 'latest_activity_timestamp')
@@ -33,7 +32,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'ExerciseLog.latest_activity_timestamp'
         db.delete_column(u'main_exerciselog', 'latest_activity_timestamp')
-
 
     models = {
         u'main.assessmentitem': {

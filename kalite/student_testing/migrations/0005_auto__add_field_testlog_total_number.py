@@ -13,11 +13,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.IntegerField')(default=0),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'TestLog.total_number'
         db.delete_column(u'student_testing_testlog', 'total_number')
-
 
     models = {
         'securesync.device': {

@@ -41,7 +41,8 @@
 import time
 import datetime
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.core import management
 from django.db import transaction
 from selenium.webdriver.support import expected_conditions, ui
@@ -116,8 +117,8 @@ class OneThousandRandomReads(base.Common):
 
     def _execute(self):
         for x in range(500):
-            VideoLog.objects.get(id=self.video_list[int(self.random.random()*self.video_count)].id)
-            ExerciseLog.objects.get(id=self.exercise_list[int(self.random.random()*self.exercise_count)].id)
+            VideoLog.objects.get(id=self.video_list[int(self.random.random() * self.video_count)].id)
+            ExerciseLog.objects.get(id=self.exercise_list[int(self.random.random() * self.exercise_count)].id)
 
     def _get_post_execute_info(self):
         return {"total_records_accessed": 1000}
@@ -128,6 +129,7 @@ class OneHundredRandomLogUpdates(base.UserCommon):
     One hundred random accesses and updates tothe video and exercise logs (50 of each)
     The I/O here is SELECT and UPDATE - update will normally generate physical media access
     """
+
     def _setup(self, num_logs=50, **kwargs):
         super(OneHundredRandomLogUpdates, self)._setup(**kwargs)
         node_cache = get_node_cache()
@@ -135,12 +137,12 @@ class OneHundredRandomLogUpdates(base.UserCommon):
         try:
             self.user = FacilityUser.objects.get(username=self.username)
         except:
-            #take username from ExerciseLog
+            # take username from ExerciseLog
             all_exercises = ExerciseLog.objects.all()
             self.user = FacilityUser.objects.get(id=all_exercises[0].user_id)
             print self.username, " not in FacilityUsers, using ", self.user
         self.num_logs = num_logs
-        #give the platform a chance to cache the logs
+        # give the platform a chance to cache the logs
         ExerciseLog.objects.filter(user=self.user).delete()
         for x in range(num_logs):
             while True:
@@ -165,12 +167,11 @@ class OneHundredRandomLogUpdates(base.UserCommon):
         self.video_list = VideoLog.objects.filter(user=self.user)
         self.video_count = self.video_list.count()
 
-
     def _execute(self):
         for x in range(50):
-            this_video = VideoLog.objects.get(id=self.video_list[int(self.random.random()*self.video_count)].id)
+            this_video = VideoLog.objects.get(id=self.video_list[int(self.random.random() * self.video_count)].id)
             this_video.save()
-            this_exercise = ExerciseLog.objects.get(id=self.exercise_list[int(self.random.random()*self.exercise_count)].id)
+            this_exercise = ExerciseLog.objects.get(id=self.exercise_list[int(self.random.random() * self.exercise_count)].id)
             this_exercise.save()
 
     def _get_post_execute_info(self):
@@ -253,6 +254,7 @@ class SeleniumStudent(base.SeleniumCommon):
           Students with the same profile will follow the same behaviour.
 
     """
+
     def _setup(self, starttime="00:00", duration=30, **kwargs):
         kwargs["timeout"] = kwargs.get("timeout", 240)
         super(SeleniumStudent, self)._setup(**kwargs)
@@ -266,8 +268,8 @@ class SeleniumStudent(base.SeleniumCommon):
         def wait_until_starttime(starttime):
             time_to_sleep = (self.random.random() * 10.0) + 10
             if self.verbosity >= 1:
-                print("(" + str(self.behavior_profile-24601) + ") waiting until it's time to start (%.1fs)." % time_to_sleep)
-            time.sleep(time_to_sleep) #sleep
+                print("(" + str(self.behavior_profile - 24601) + ") waiting until it's time to start (%.1fs)." % time_to_sleep)
+            time.sleep(time_to_sleep)  # sleep
             now = datetime.datetime.today()
             if now.hour >= int(starttime[:2]):
                 if now.minute >= int(starttime[-2:]):
@@ -275,7 +277,7 @@ class SeleniumStudent(base.SeleniumCommon):
             logging.debug("Go!")
             return True
         while wait_until_starttime(starttime):
-            pass #wait until lesson starttime
+            pass  # wait until lesson starttime
 
     def _setup_activities(self):
         """
@@ -297,177 +299,177 @@ class SeleniumStudent(base.SeleniumCommon):
 
         self.activity = {}
 
-        self.activity["begin"]= {  # wait
-                "method":self._pass, "duration": 1+(self.random.random()*3),
-                "args":{},
-                "nextstep":[(1.00, "begin_2")]
-                 }
+        self.activity["begin"] = {  # wait
+            "method": self._pass, "duration": 1 + (self.random.random() * 3),
+            "args": {},
+            "nextstep": [(1.00, "begin_2")]
+        }
 
-        self.activity["begin_2"]= {  # go to the homepage
-                "method":self._get_path, "duration":1+(self.random.random()*3),
-                "args":{"path":""},
-                "nextstep":[(1.00, "begin_3")]
-                }
-        self.activity["begin_3"]= {  # click the login link
-                "method":self._click, "duration":2+(self.random.random()*3),
-                "args":{"find_by":By.ID, "find_text":"nav_login"},
-                "nextstep":[(1.00, "login")]
-                 }
+        self.activity["begin_2"] = {  # go to the homepage
+            "method": self._get_path, "duration": 1 + (self.random.random() * 3),
+            "args": {"path": ""},
+            "nextstep": [(1.00, "begin_3")]
+        }
+        self.activity["begin_3"] = {  # click the login link
+            "method": self._click, "duration": 2 + (self.random.random() * 3),
+            "args": {"find_by": By.ID, "find_text": "nav_login"},
+            "nextstep": [(1.00, "login")]
+        }
 
-        self.activity["login"]= {  # enter login info
-                "method":self._do_login_step_1, "duration": 3,
-                "args":{"username":self.username, "password": self.password},
-                "nextstep":[(1.00, "login_2")]
-                 }
-        self.activity["login_2"]= {  # do nothing, just choose whereto go next
-                "method":self._do_login_step_2, "duration": 3,
-                "args":{},
-                "nextstep":[(1.00, "decide")]
-                 }
-        self.activity["decide"]= {
-                "method":self._pass, "duration": 2+ self.random.random() * 3,
-                "args":{},
-                "nextstep":[(.10, "decide"), (.25, "watch"), (.98, "exercise"), (1.00, "end")]
-                 }
+        self.activity["login"] = {  # enter login info
+            "method": self._do_login_step_1, "duration": 3,
+            "args": {"username": self.username, "password": self.password},
+            "nextstep": [(1.00, "login_2")]
+        }
+        self.activity["login_2"] = {  # do nothing, just choose whereto go next
+            "method": self._do_login_step_2, "duration": 3,
+            "args": {},
+            "nextstep": [(1.00, "decide")]
+        }
+        self.activity["decide"] = {
+            "method": self._pass, "duration": 2 + self.random.random() * 3,
+            "args": {},
+            "nextstep": [(.10, "decide"), (.25, "watch"), (.98, "exercise"), (1.00, "end")]
+        }
 
-        self.activity["watch"]= {
-                "method":self._pass, "duration":1,
-                "args":{},
-                "nextstep":[(.95, "w1"),(1.00, "exercise")]
-                 }
-        self.activity["w1"]= {
-                "method":self._get_path, "duration":4,
-                "args":{"path":"/math/"},
-                "nextstep":[(1.00, "w2")]
-                 }
-        self.activity["w2"]= {
-                "method":self._get_path, "duration":3+(self.random.random()*5),
-                "args":{"path":"/math/arithmetic/"},
-                "nextstep":[(1.00, "w3")]
-                }
-        self.activity["w3"]= {
-                "method":self._get_path, "duration":2+(self.random.random()*12),
-                "args":{"path":"/math/arithmetic/addition-subtraction/"},
-                "nextstep":[(1.00, "w4")]
-                 }
-        self.activity["w4"]= {
-                "method":self._get_path, "duration":6,
-                "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/"},
-                "nextstep":[(1.00, "w5")]
-                 }
-        self.activity["w5"]= {
-                "method":self._get_path, "duration":2,
-                "args":{"path":"/math/arithmetic/"},
-                "nextstep":[(.20, "wv1"), (.40, "wv2"), (.60, "wv3"), (.80, "wv4"), (1.00, "wv5")]
-            }
+        self.activity["watch"] = {
+            "method": self._pass, "duration": 1,
+            "args": {},
+            "nextstep": [(.95, "w1"), (1.00, "exercise")]
+        }
+        self.activity["w1"] = {
+            "method": self._get_path, "duration": 4,
+            "args": {"path": "/math/"},
+            "nextstep": [(1.00, "w2")]
+        }
+        self.activity["w2"] = {
+            "method": self._get_path, "duration": 3 + (self.random.random() * 5),
+            "args": {"path": "/math/arithmetic/"},
+            "nextstep": [(1.00, "w3")]
+        }
+        self.activity["w3"] = {
+            "method": self._get_path, "duration": 2 + (self.random.random() * 12),
+            "args": {"path": "/math/arithmetic/addition-subtraction/"},
+            "nextstep": [(1.00, "w4")]
+        }
+        self.activity["w4"] = {
+            "method": self._get_path, "duration": 6,
+            "args": {"path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/"},
+            "nextstep": [(1.00, "w5")]
+        }
+        self.activity["w5"] = {
+            "method": self._get_path, "duration": 2,
+            "args": {"path": "/math/arithmetic/"},
+            "nextstep": [(.20, "wv1"), (.40, "wv2"), (.60, "wv3"), (.80, "wv4"), (1.00, "wv5")]
+        }
 
-        self.activity["wv1"]= {
-                "method":self._get_path, "duration":4+(self.random.random()*7),
-                "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/v/addition-2/"},
-                "nextstep":[(1.00, "wv1_1")]
-                 }
-        self.activity["wv1_1"]= {
-                "method":self._do_vid, "duration":750,
-                "args":{},
-                "nextstep":[(.10, "wv1_1"), (.20, "wv2"), (1.00, "decide")]
-                 }
+        self.activity["wv1"] = {
+            "method": self._get_path, "duration": 4 + (self.random.random() * 7),
+            "args": {"path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/v/addition-2/"},
+            "nextstep": [(1.00, "wv1_1")]
+        }
+        self.activity["wv1_1"] = {
+            "method": self._do_vid, "duration": 750,
+            "args": {},
+            "nextstep": [(.10, "wv1_1"), (.20, "wv2"), (1.00, "decide")]
+        }
 
-        self.activity["wv2"]= {
-                "method":self._get_path, "duration":3,
-                "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/v/adding-whole-numbers-and-applications-1/"},
-                "nextstep":[(1.00, "wv2_1")]
-                 }
-        self.activity["wv2_1"]= {
-                "method":self._do_vid, "duration":95,
-                "args":{},
-                "nextstep":[(.10, "wv2_1"), (.70, "eadd2"), (1.00, "decide")]
-                 }
+        self.activity["wv2"] = {
+            "method": self._get_path, "duration": 3,
+            "args": {"path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/v/adding-whole-numbers-and-applications-1/"},
+            "nextstep": [(1.00, "wv2_1")]
+        }
+        self.activity["wv2_1"] = {
+            "method": self._do_vid, "duration": 95,
+            "args": {},
+            "nextstep": [(.10, "wv2_1"), (.70, "eadd2"), (1.00, "decide")]
+        }
 
-        self.activity["wv3"]= {
-                "method":self._get_path, "duration":5,
-                "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/v/subtraction-2/"},
-                "nextstep":[(1.00, "wv3_1")]
-                 }
-        self.activity["wv3_1"]= {
-                "method":self._do_vid, "duration":760,
-                "args":{},
-                "nextstep":[(.10, "wv3_1"), (.30, "wv4"), (.90, "esub2"), (1.00, "decide")]
-                 }
+        self.activity["wv3"] = {
+            "method": self._get_path, "duration": 5,
+            "args": {"path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/v/subtraction-2/"},
+            "nextstep": [(1.00, "wv3_1")]
+        }
+        self.activity["wv3_1"] = {
+            "method": self._do_vid, "duration": 760,
+            "args": {},
+            "nextstep": [(.10, "wv3_1"), (.30, "wv4"), (.90, "esub2"), (1.00, "decide")]
+        }
 
-        self.activity["wv4"]= {
-                "method":self._get_path, "duration":3,
-                "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/v/subtracting-whole-numbers/"},
-                "nextstep":[(1.00, "wv4_1")]
-                 }
-        self.activity["wv4_1"]= {
-                "method":self._do_vid, "duration":175,
-                "args":{},
-                "nextstep":[(.10, "wv4_1"), (.30, "wv5"), (.90, "esub2"), (1.00, "decide")]
-                 }
+        self.activity["wv4"] = {
+            "method": self._get_path, "duration": 3,
+            "args": {"path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/v/subtracting-whole-numbers/"},
+            "nextstep": [(1.00, "wv4_1")]
+        }
+        self.activity["wv4_1"] = {
+            "method": self._do_vid, "duration": 175,
+            "args": {},
+            "nextstep": [(.10, "wv4_1"), (.30, "wv5"), (.90, "esub2"), (1.00, "decide")]
+        }
 
-        self.activity["wv5"]= {
-                "method":self._get_path, "duration":3,
-                "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/v/level-2-addition/"},
-                "nextstep":[(1.00, "wv5_1")]
-                 }
-        self.activity["wv5_1"]= {
-                "method":self._do_vid, "duration":580,
-                "args":{},
-                "nextstep":[(.10, "wv5_1"), (.70, "eadd2"), (.80, "decide")]
-                 }
+        self.activity["wv5"] = {
+            "method": self._get_path, "duration": 3,
+            "args": {"path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/v/level-2-addition/"},
+            "nextstep": [(1.00, "wv5_1")]
+        }
+        self.activity["wv5_1"] = {
+            "method": self._do_vid, "duration": 580,
+            "args": {},
+            "nextstep": [(.10, "wv5_1"), (.70, "eadd2"), (.80, "decide")]
+        }
 
-        self.activity["exercise"]= {
-                "method":self._pass, "duration":1,
-                "args":{},
-                "nextstep":[(.60, "eadd2"),(1.00, "esub2")]
-                 }
-        self.activity["eadd2"]= {
-                "method":self._click, "duration":4+(self.random.random()*3),
-                "args":{"find_by":By.ID, "find_text":"nav_practice"},
-                "nextstep":[(1.00, "neadd2_1")]
-                 }
-        self.activity["neadd2"]= {
-                "method":self._get_path, "duration":5,
-                "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/"},
-                "nextstep":[(1.00, "weadd2")]
-                 }
-        self.activity["weadd2"]= {
-                "method":self._wait_for_element, "duration":5,
-                "args":{"find_by":By.CSS_SELECTOR, "find_text":"#solutionarea input[type=text]"},
-                "nextstep":[(1.00, "do_eadd2")]
-                 }
-        self.activity["do_eadd2"]= {
-                "method":self._do_exer, "duration":3+(self.random.random()*9),
-                "args":{},
-                "nextstep":[(.03, "decide"), (.75, "do_eadd2"), (1.00, "esub2")]
-                 }
+        self.activity["exercise"] = {
+            "method": self._pass, "duration": 1,
+            "args": {},
+            "nextstep": [(.60, "eadd2"), (1.00, "esub2")]
+        }
+        self.activity["eadd2"] = {
+            "method": self._click, "duration": 4 + (self.random.random() * 3),
+            "args": {"find_by": By.ID, "find_text": "nav_practice"},
+            "nextstep": [(1.00, "neadd2_1")]
+        }
+        self.activity["neadd2"] = {
+            "method": self._get_path, "duration": 5,
+            "args": {"path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/"},
+            "nextstep": [(1.00, "weadd2")]
+        }
+        self.activity["weadd2"] = {
+            "method": self._wait_for_element, "duration": 5,
+            "args": {"find_by": By.CSS_SELECTOR, "find_text": "#solutionarea input[type=text]"},
+            "nextstep": [(1.00, "do_eadd2")]
+        }
+        self.activity["do_eadd2"] = {
+            "method": self._do_exer, "duration": 3 + (self.random.random() * 9),
+            "args": {},
+            "nextstep": [(.03, "decide"), (.75, "do_eadd2"), (1.00, "esub2")]
+        }
 
-        self.activity["esub2"]= {
-                "method":self._click, "duration":3,
-                "args":{"find_by":By.ID, "find_text":"nav_practice"},
-                "nextstep":[(1.00, "nesub2_1")]
-                 }
-        self.activity["nesub2"]= {
-                "method":self._get_path, "duration":3+(self.random.random()*3),
-                "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/"},
-                "nextstep":[(1.00, "wesub2")]
-                 }
-        self.activity["wesub2"]= {
-                "method":self._wait_for_element, "duration":6,
-                "args":{"find_by":By.CSS_SELECTOR, "find_text":"#solutionarea input[type=text]"},
-                "nextstep":[(1.00, "do_esub2")]
-                 }
-        self.activity["do_esub2"]= {
-                "method":self._do_exer, "duration":9+(self.random.random()*7),
-                "args":{},
-                "nextstep":[(.03, "decide"), (.75, "do_esub2"), (.91, "watch"), (1.00, "eadd2")]
-                 }
+        self.activity["esub2"] = {
+            "method": self._click, "duration": 3,
+            "args": {"find_by": By.ID, "find_text": "nav_practice"},
+            "nextstep": [(1.00, "nesub2_1")]
+        }
+        self.activity["nesub2"] = {
+            "method": self._get_path, "duration": 3 + (self.random.random() * 3),
+            "args": {"path": "/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/"},
+            "nextstep": [(1.00, "wesub2")]
+        }
+        self.activity["wesub2"] = {
+            "method": self._wait_for_element, "duration": 6,
+            "args": {"find_by": By.CSS_SELECTOR, "find_text": "#solutionarea input[type=text]"},
+            "nextstep": [(1.00, "do_esub2")]
+        }
+        self.activity["do_esub2"] = {
+            "method": self._do_exer, "duration": 9 + (self.random.random() * 7),
+            "args": {},
+            "nextstep": [(.03, "decide"), (.75, "do_esub2"), (.91, "watch"), (1.00, "eadd2")]
+        }
 
         self.activity["end"] = {
-                "method":self._do_logout, "duration":1,
-                "args":{},
-                "nextstep":[(1.00, "end")]
-                 }
+            "method": self._do_logout, "duration": 1,
+            "args": {},
+            "nextstep": [(1.00, "end")]
+        }
         return self.activity
 
     def _execute(self):
@@ -482,12 +484,12 @@ class SeleniumStudent(base.SeleniumCommon):
             try:
                 start_clock_time = datetime.datetime.today()
                 start_time = time.time()
-                result=self.activity[current_activity]["method"](self.activity[current_activity]["args"])
+                result = self.activity[current_activity]["method"](self.activity[current_activity]["args"])
                 self.return_list.append((
-                        current_activity,
-                        '%02d:%02d:%02d' % (start_clock_time.hour,start_clock_time.minute,start_clock_time.second),
-                        round((time.time() - start_time),2),
-                                        ))
+                    current_activity,
+                    '%02d:%02d:%02d' % (start_clock_time.hour, start_clock_time.minute, start_clock_time.second),
+                    round((time.time() - start_time), 2),
+                ))
             except Exception as e:
                 if current_activity != "end":
                     raise
@@ -500,15 +502,15 @@ class SeleniumStudent(base.SeleniumCommon):
             # Wait before the next activity
             if "duration" in self.activity[current_activity]:
                 if self.verbosity >= 2:
-                    print "(" + str(self.behavior_profile-24601) + ")" + "sleeping for ", self.activity[current_activity]["duration"]
+                    print "(" + str(self.behavior_profile - 24601) + ")" + "sleeping for ", self.activity[current_activity]["duration"]
                 time.sleep(self.activity[current_activity]["duration"])
 
             # Choose the next activity
-            next_activity_random = round(self.random.random(),2)
+            next_activity_random = round(self.random.random(), 2)
             for threshold, next_activity in self.activity[current_activity]["nextstep"]:
                 if threshold >= next_activity_random:
                     if self.verbosity >= 2:
-                        print "(" + str(self.behavior_profile-24601) + ")" + str(next_activity_random), "next_activity =", next_activity
+                        print "(" + str(self.behavior_profile - 24601) + ")" + str(next_activity_random), "next_activity =", next_activity
                     current_activity = next_activity
                     break
 
@@ -534,7 +536,7 @@ class SeleniumStudent(base.SeleniumCommon):
         elem = self.browser.find_element_by_css_selector('#solutionarea input[type=text]')
         elem.click()
         elem.clear()
-        elem.send_keys(int(self.random.random()*11111.)) # a wrong answer, but we don't care
+        elem.send_keys(int(self.random.random() * 11111.))  # a wrong answer, but we don't care
         self.exercise_count += 1
         wait = ui.WebDriverWait(self.browser, self.timeout)
         wait.until(expected_conditions.element_to_be_clickable((By.ID, "check-answer-button")))
@@ -545,7 +547,8 @@ class SeleniumStudent(base.SeleniumCommon):
 
     def _do_vid(self, args):
         wait = ui.WebDriverWait(self.browser, self.timeout)
-        wait.until(expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, "div#video-element.video-js div.vjs-big-play-button")))
+        wait.until(expected_conditions.element_to_be_clickable(
+            (By.CSS_SELECTOR, "div#video-element.video-js div.vjs-big-play-button")))
         elem = self.browser.find_element_by_css_selector("div#video-element.video-js div.vjs-big-play-button")
         elem.click()
 
@@ -584,8 +587,8 @@ class SeleniumStudent(base.SeleniumCommon):
         self.browser.get(path)
 
     def _get_post_execute_info(self):
-        #we are done! class over, lets get out of here
-        return {"timings":self.return_list, "behavior_profile":self.behavior_profile}
+        # we are done! class over, lets get out of here
+        return {"timings": self.return_list, "behavior_profile": self.behavior_profile}
 
     def _teardown(self):
         if self.verbosity >= 1:
@@ -594,7 +597,8 @@ class SeleniumStudent(base.SeleniumCommon):
 
 
 class SeleniumStudentExercisesOnly(SeleniumStudent):
+
     def _setup(self, *args, **kwargs):
         super(SeleniumStudentExercisesOnly, self)._setup(*args, **kwargs)
         self.activity["decide"]["nextstep"] = [(.10, "decide"), (1.00, "exercise")]
-        self.activity["do_esub2"]["nextstep"] =[(.03, "decide"), (.75, "do_esub2"), (1.00, "eadd2")]
+        self.activity["do_esub2"]["nextstep"] = [(.03, "decide"), (.75, "do_esub2"), (1.00, "eadd2")]

@@ -30,7 +30,8 @@ def get_old_content_path(default):
 
     while True:
 
-        path = raw_input("Please enter path you would like to import videos from (press Enter to choose '%s')? " % default) or default
+        path = raw_input("Please enter path you would like to import videos from (press Enter to choose '%s')? " %
+                         default) or default
 
         if os.path.exists(path):
             break
@@ -51,7 +52,7 @@ def raw_input_options(prompt, options, reminder="Please provide a valid response
 
 
 def get_glob_size_in_mb(pathglob):
-     return sum([os.path.getsize(f) for f in glob.glob(pathglob)]) / 1048576
+    return sum([os.path.getsize(f) for f in glob.glob(pathglob)]) / 1048576
 
 
 class Command(BaseCommand):
@@ -68,11 +69,11 @@ class Command(BaseCommand):
             help="Path of previous KA Lite installation (version 0.13 or below) from which to import",
         ),
         make_option('-n', '--noinput',
-            action='store_false',
-            dest='interactive',
-            default=True,
-            help='Run in non-interactive mode',
-        ),
+                    action='store_false',
+                    dest='interactive',
+                    default=True,
+                    help='Run in non-interactive mode',
+                    ),
     )
 
     def handle(self, *args, **options):
@@ -89,7 +90,8 @@ class Command(BaseCommand):
             if interactive:
                 path = get_old_installation_path()
             else:
-                raise CommandError("Must specify a path for the old installation of KA Lite to import data from, using --path argument.")
+                raise CommandError(
+                    "Must specify a path for the old installation of KA Lite to import data from, using --path argument.")
 
         print
         print "-------------------------------------------------------------------"
@@ -143,8 +145,9 @@ class Command(BaseCommand):
             move_content = True
         else:
             move_content = raw_input_options(
-                "Would you like to move, or copy, the %dmb of videos and %dmb of thumbnails from '%s' to '%s'?" % (video_size_mb, image_size_mb, old_content_path, settings.CONTENT_ROOT),
-                ["move","copy","c","m"],
+                "Would you like to move, or copy, the %dmb of videos and %dmb of thumbnails from '%s' to '%s'?" % (
+                    video_size_mb, image_size_mb, old_content_path, settings.CONTENT_ROOT),
+                ["move", "copy", "c", "m"],
                 "Please enter either 'move' or 'copy'."
             ).startswith("m")
         clone_fn = shutil.move if move_content else shutil.copy

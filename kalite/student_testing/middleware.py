@@ -10,6 +10,7 @@ class ExamModeCheck:
     """
     If exam-mode is on for the device, redirect user to the exam page set in the exam list page.
     """
+
     def process_request(self, request):
 
         # check if logged-in user is a student

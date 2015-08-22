@@ -1,6 +1,6 @@
-import csv 
+import csv
 import StringIO
-from tastypie.serializers import Serializer 
+from tastypie.serializers import Serializer
 
 
 class CSVSerializer(Serializer):
@@ -21,8 +21,7 @@ class CSVSerializer(Serializer):
             writer = csv.writer(raw_data, empty_file)
             writer.writerow(empty_file)
             raw_data.seek(0)
-            return raw_data.read()  
-
+            return raw_data.read()
 
         header = objects[0].keys()
         writer = csv.writer(raw_data, header)

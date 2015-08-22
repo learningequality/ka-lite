@@ -20,20 +20,22 @@ class FacilityUserForm(forms.ModelForm):
     The views contain manual logic for processing passwords (hashing them, etc), so we use
     custom fields here for the "password" and "confirm password" fields.
     """
-    password_first   = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
+    password_first = forms.CharField(widget=forms.PasswordInput, label=_("Password"))
     password_recheck = forms.CharField(widget=forms.PasswordInput, label=_("Confirm password"))
     default_language = forms.ChoiceField(label=_("Default Language"))
-    warned           = forms.BooleanField(widget=forms.HiddenInput, required=False, initial=False)
+    warned = forms.BooleanField(widget=forms.HiddenInput, required=False, initial=False)
 
     def __init__(self, facility, *args, **kwargs):
         super(FacilityUserForm, self).__init__(*args, **kwargs)
 
-        self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code)) for lang_code in get_installed_language_packs()]
+        self.fields["default_language"].choices = [(lang_code, get_language_name(lang_code))
+                                                   for lang_code in get_installed_language_packs()]
 
         # Select the initial default language,
         #   but only if we're not in the process of updating it to something else.
         if not self.fields["default_language"].initial and "default_language" not in self.changed_data:
-            self.fields["default_language"].initial = (self.instance and self.instance.default_language) or get_default_language()
+            self.fields["default_language"].initial = (
+                self.instance and self.instance.default_language) or get_default_language()
 
         # Passwords only required on new, not on edit
         self.fields["password_first"].required = self.instance.pk == ""
@@ -48,7 +50,8 @@ class FacilityUserForm(forms.ModelForm):
     class Meta:
         model = FacilityUser
         # Note: must preserve order
-        fields = ("facility", "group", "username", "first_name", "last_name", "password_first", "password_recheck", "default_language", "is_teacher", "zone_fallback", "warned")
+        fields = ("facility", "group", "username", "first_name", "last_name", "password_first",
+                  "password_recheck", "default_language", "is_teacher", "zone_fallback", "warned")
         widgets = {
             "is_teacher": forms.HiddenInput(),
             "zone_fallback": forms.HiddenInput(),
@@ -58,16 +61,13 @@ class FacilityUserForm(forms.ModelForm):
             "last_name": forms.TextInput(attrs={"autocomplete": "off"}),
         }
 
-
     def set_field_error(self, message, field_name=forms.forms.NON_FIELD_ERRORS):
         self._errors[field_name] = self.error_class(ValidationError(message).messages)
         if field_name in self.cleaned_data:
             del self.cleaned_data[field_name]
 
-
     def has_errors(self):
         return bool(self._errors)
-
 
     def clean(self):
         facility = self.cleaned_data.get('facility')
@@ -79,14 +79,16 @@ class FacilityUserForm(forms.ModelForm):
         username_taken = users_with_same_username.count() > 0
         username_changed = not self.instance or self.instance.username != username
         if username_taken and username_changed or User.objects.filter(username__iexact=username).count() > 0:
-            self.set_field_error(field_name='username', message=_("A user with this username already exists. Please choose a new username and try again."))
+            self.set_field_error(field_name='username', message=_(
+                "A user with this username already exists. Please choose a new username and try again."))
 
-        ## Check password
+        # Check password
         password_first = self.cleaned_data.get('password_first', "")
         password_recheck = self.cleaned_data.get('password_recheck', "")
         # If they have put anything in the new password field, it must match the password check field
         if password_first != password_recheck:
-            self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
+            self.set_field_error(field_name='password_recheck', message=_(
+                "The passwords didn't match. Please re-enter the passwords."))
 
         # Next, enforce length if they submitted a password
         if password_first:
@@ -105,9 +107,10 @@ class FacilityUserForm(forms.ModelForm):
         elif (self.instance and not self.instance.password) or password_first or password_recheck:
             # Only perform check on a new user or a password change
             if password_first != password_recheck:
-                self.set_field_error(field_name='password_recheck', message=_("The passwords didn't match. Please re-enter the passwords."))
+                self.set_field_error(field_name='password_recheck', message=_(
+                    "The passwords didn't match. Please re-enter the passwords."))
 
-        ## Warn the user during sign up or adding user if a user with this first and last name already exists in the facility
+        # Warn the user during sign up or adding user if a user with this first and last name already exists in the facility
         if not self.cleaned_data.get("warned", False) and (self.cleaned_data["first_name"] or self.cleaned_data["last_name"]):
             users_with_same_name = FacilityUser.objects.filter(first_name__iexact=self.cleaned_data["first_name"], last_name__iexact=self.cleaned_data["last_name"]) \
                 .filter(Q(signed_by__devicezone__zone=zone) | Q(zone_fallback=zone))  # within the same facility
@@ -132,7 +135,8 @@ class FacilityForm(forms.ModelForm):
 
     class Meta:
         model = Facility
-        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom", "contact_name", "contact_phone", "contact_email", "user_count", "zone_fallback", )
+        fields = ("name", "description", "address", "address_normalized", "latitude", "longitude", "zoom",
+                  "contact_name", "contact_phone", "contact_email", "user_count", "zone_fallback", )
         widgets = {
             "zone_fallback": forms.HiddenInput(),
         }
@@ -170,7 +174,7 @@ class FacilityGroupForm(forms.ModelForm):
         fields = ("name", "description", "facility", "zone_fallback", )
         widgets = {
             "facility": forms.HiddenInput(),
-            "zone_fallback": forms.HiddenInput(), # TODO(jamalex): this shouldn't be in here
+            "zone_fallback": forms.HiddenInput(),  # TODO(jamalex): this shouldn't be in here
         }
 
     def clean_name(self):
@@ -186,4 +190,3 @@ class FacilityGroupForm(forms.ModelForm):
                 raise ValidationError(_("There is already a group with this name."), code='group_name_exists')
 
         return name
-

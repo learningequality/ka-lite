@@ -15,21 +15,22 @@ from kalite.contentload.management.commands import generate_assessment_zips as m
 
 
 TEST_FIXTURES_DIR = os.path.join(os.path.dirname(__file__),
-                                        "fixtures")
+                                 "fixtures")
 ASSESSMENT_ITEMS_SAMPLE_PATH = os.path.join(TEST_FIXTURES_DIR,
                                             "assessment_items_sample.json")
+
 
 class TestUrlConversion(TestCase):
 
     def setUp(self):
         with open(ASSESSMENT_ITEMS_SAMPLE_PATH) as f:
             self.assessment_items = json.load(f)
-    
+
     def test_image_url_converted(self):
         url_string = "A string with http://example.com/cat_pics.gif"
         expected_string = "A string with /content/khan/cat/cat_pics.gif"
         self.assertEqual(expected_string, mod.convert_urls(url_string))
-    
+
     def test_multiple_image_urls_in_one_string_converted(self):
         url_string = "A string with http://example.com/cat_pics.JPEG http://example.com/cat_pics2.gif"
         expected_string = "A string with /content/khan/cat/cat_pics.JPEG /content/khan/cat/cat_pics2.gif"

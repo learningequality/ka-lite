@@ -9,6 +9,7 @@ from fle_utils.importing import resolve_model
 
 from django.core.management.base import BaseCommand, CommandError
 
+
 class Command(BaseCommand):
     args = "<data_model_name>"
 
@@ -16,15 +17,15 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('-d', '--data',
-            action='store',
-            dest='json_data',
-            default=None,
-            help='The json string representing the fields of the data model.'),
+                    action='store',
+                    dest='json_data',
+                    default=None,
+                    help='The json string representing the fields of the data model.'),
         make_option('-c', '--count',
-            action='store',
-            dest='count',
-            default=1,
-            help='The number of instances to create.'),
+                    action='store',
+                    dest='count',
+                    default=1,
+                    help='The number of instances to create.'),
     )
 
     def handle(self, *args, **options):

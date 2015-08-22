@@ -18,6 +18,7 @@ from .utils import get_exam_mode_on, set_exam_mode_on, \
 
 logging = settings.LOG
 
+
 @unittest.skipUnless("nalanda" in settings.CONFIG_PACKAGE, "requires Nalanda")
 class BaseTest(FacilityMixins, KALiteClientTestCase):
 
@@ -25,8 +26,8 @@ class BaseTest(FacilityMixins, KALiteClientTestCase):
     exam_id = 'g4_u401_t1'  # needs to be the first exam in the test list UI
     login_url = reverse('homepage')
     logout_url = reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + 'logout/'
-    test_list_url = reverse('test_list') if "nalanda" in settings.CONFIG_PACKAGE else  ""
-    exam_page_url = reverse('test', args=[exam_id]) if "nalanda" in settings.CONFIG_PACKAGE else  ""
+    test_list_url = reverse('test_list') if "nalanda" in settings.CONFIG_PACKAGE else ""
+    exam_page_url = reverse('test', args=[exam_id]) if "nalanda" in settings.CONFIG_PACKAGE else ""
     put_url = '/test/api/test/%s/' % exam_id
 
     def setUp(self):
@@ -157,13 +158,13 @@ class BrowserTests(BrowserActionMixins, BaseTest, KALiteBrowserTestCase):
     def get_button(self, is_on=False):
         if is_on:
             self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON)
-            WebDriverWait(self.browser,1).until(ec.text_to_be_present_in_element(
+            WebDriverWait(self.browser, 1).until(ec.text_to_be_present_in_element(
                 (By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON_ON), self.TEXT_DISABLE))
             btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON_ON)
             self.assertEqual(btn.text, self.TEXT_DISABLE)
         else:
             self.wait_for_element(By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON)
-            WebDriverWait(self.browser,1).until(ec.text_to_be_present_in_element(
+            WebDriverWait(self.browser, 1).until(ec.text_to_be_present_in_element(
                 (By.CSS_SELECTOR, self.CSS_TEST_ROW_BUTTON), self.TEXT_ENABLE))
             btn = self.browser.find_element_by_css_selector(self.CSS_TEST_ROW_BUTTON)
             self.assertEqual(btn.text, self.TEXT_ENABLE)
@@ -288,7 +289,7 @@ class CurrentUnitTests(FacilityMixins, KALiteClientTestCase):
 
     def _check_url(self, response, url):
         path = response.request['PATH_INFO']
-        self.assertEqual(path, url[-1*len(path):])
+        self.assertEqual(path, url[-1 * len(path):])
 
     def login_teacher(self):
         response = self.client.login_teacher(data=self.teacher_data, facility=self.facility)

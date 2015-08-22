@@ -44,6 +44,7 @@ class TestLog(DeferredCountSyncedModel):
         '''
         return Test.all(show_all=True)[self.test]
 
+
 class Test():
 
     _testscache = {}

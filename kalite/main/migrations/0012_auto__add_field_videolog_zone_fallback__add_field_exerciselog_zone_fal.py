@@ -10,14 +10,15 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'VideoLog.zone_fallback'
         db.add_column('main_videolog', 'zone_fallback',
-                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(
+                          blank=True, related_name='+', null=True, to=orm['securesync.Zone']),
                       keep_default=False)
 
         # Adding field 'ExerciseLog.zone_fallback'
         db.add_column('main_exerciselog', 'zone_fallback',
-                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(
+                          blank=True, related_name='+', null=True, to=orm['securesync.Zone']),
                       keep_default=False)
-
 
     def backwards(self, orm):
         # Deleting field 'VideoLog.zone_fallback'
@@ -25,7 +26,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'ExerciseLog.zone_fallback'
         db.delete_column('main_exerciselog', 'zone_fallback_id')
-
 
     models = {
         'main.exerciselog': {

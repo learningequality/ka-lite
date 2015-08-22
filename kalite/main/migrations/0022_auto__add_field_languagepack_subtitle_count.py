@@ -13,11 +13,9 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.PositiveIntegerField')(default=0),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'LanguagePack.subtitle_count'
         db.delete_column('main_languagepack', 'subtitle_count')
-
 
     models = {
         'main.exerciselog': {

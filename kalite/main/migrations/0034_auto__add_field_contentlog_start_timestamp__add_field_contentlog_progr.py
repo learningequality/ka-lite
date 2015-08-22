@@ -10,7 +10,8 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'ContentLog.start_timestamp'
         db.add_column(u'main_contentlog', 'start_timestamp',
-                      self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, default=datetime.datetime(2014, 12, 10, 0, 0), blank=True),
+                      self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True,
+                                                                       default=datetime.datetime(2014, 12, 10, 0, 0), blank=True),
                       keep_default=False)
 
         # Adding field 'ContentLog.progress_timestamp'
@@ -18,14 +19,12 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Deleting field 'ContentLog.start_timestamp'
         db.delete_column(u'main_contentlog', 'start_timestamp')
 
         # Deleting field 'ContentLog.progress_timestamp'
         db.delete_column(u'main_contentlog', 'progress_timestamp')
-
 
     models = {
         u'main.attemptlog': {

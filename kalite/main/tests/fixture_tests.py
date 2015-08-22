@@ -22,7 +22,8 @@ class FixtureTestCases(KALiteTestCase):
     def test_dumpdata(self):
 
         #
-        self.assertEqual(call_command("dumpdata", "main"), None, "call_command always returns none.  We're just making sure it doesn't raise an Exception")
+        self.assertEqual(call_command("dumpdata", "main"), None,
+                         "call_command always returns none.  We're just making sure it doesn't raise an Exception")
         #call_command("migrate", "main", "zero")
         call_command("dumpdata", "main")
         #call_command("migrate", "main")

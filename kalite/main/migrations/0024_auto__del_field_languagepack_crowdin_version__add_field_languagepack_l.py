@@ -16,7 +16,6 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.PositiveIntegerField')(default=1),
                       keep_default=False)
 
-
     def backwards(self, orm):
         # Adding field 'LanguagePack.crowdin_version'
         db.add_column('main_languagepack', 'crowdin_version',
@@ -25,7 +24,6 @@ class Migration(SchemaMigration):
 
         # Deleting field 'LanguagePack.language_pack_version'
         db.delete_column('main_languagepack', 'language_pack_version')
-
 
     models = {
         'main.exerciselog': {

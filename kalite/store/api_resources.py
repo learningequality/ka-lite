@@ -97,7 +97,6 @@ class StoreItemResource(Resource):
         raise NotImplemented("Operation not implemented yet for storeitems.")
 
 
-
 class StoreTransactionLogResource(ModelResource):
 
     user = fields.ForeignKey(FacilityUserResource, 'user')

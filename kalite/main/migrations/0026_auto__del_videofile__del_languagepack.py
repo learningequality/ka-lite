@@ -14,7 +14,6 @@ class Migration(SchemaMigration):
         # Deleting model 'LanguagePack'
         db.delete_table('main_languagepack')
 
-
     def backwards(self, orm):
         # Adding model 'VideoFile'
         db.create_table('main_videofile', (
@@ -39,7 +38,6 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
         ))
         db.send_create_signal('main', ['LanguagePack'])
-
 
     models = {
         'main.exerciselog': {
