@@ -1,3 +1,22 @@
+"""
+Base module for building the topic tree, used in the sidebar among other places.
+Don't import this! Instead import one of the other modules in this directory depending on the source of your content.
+Modules need to define:
+    path:
+
+    channel_data_path:
+
+    rebuild_topictree: see docstring below
+
+    build_full_cache:
+
+    channel_data:
+
+    channel_data_files:
+
+    retrieve_API_data: see docstring below
+
+"""
 import copy
 
 from math import ceil, log, exp  # needed for basepoints calculation
@@ -6,8 +25,19 @@ from django.conf import settings; logging = settings.LOG
 
 from django.utils.text import slugify
 
+# A module-level channel_data dict needs to be defined.
 # For specification of channel_data dictionary, please see CHANNELDATA.md
-def retrieve_API_data(channel=None):
+
+def retrieve_API_data():
+    """
+    A function that returns the topic tree and associated data for content items. Should be defined by each
+        channel-specific submodule. This particular function returns a totally empty topic tree.
+
+    :return: A tuple, `(topic_tree, exercises, assessment_items, content)`.
+        topic_tree: A dictionary. Tree-like structure of topics & subtopics, where leaves are content items.
+                    Should only represent hierarchical relationships, with full node data in the lists below.
+        exercises, assessment_items, content: lists. A list of nodes for each content type.
+    """
 
     topic_tree = {}
 
@@ -25,6 +55,11 @@ def whitewash_node_data(node, path="", channel_data={}):
     Utility function to convert nodes into the format used by KA Lite.
     Extracted from other functions so as to be reused by both the denormed
     and fully inflated exercise and video nodes.
+
+    :param node: A dictionary. The input node with potentially extra keys.
+    :param path: ????
+    :param channel_data: A channel_data dict as described in CHANNELDATA.md
+    :return: node, with extra keys stripped out.
     """
 
     kind = node.get("kind", None)
@@ -73,19 +108,24 @@ def whitewash_node_data(node, path="", channel_data={}):
 
 
 def rebuild_topictree(
-        remove_unknown_exercises=False,
-        remove_disabled_topics=True,
         whitewash_node_data=whitewash_node_data,
         retrieve_API_data=retrieve_API_data,
         channel_data={},
         channel=None):
     """
-    Downloads topictree (and supporting) data and uses it to
-    rebuild the KA Lite topictree cache (topics.json).
+    Downloads topictree (and supporting) data and uses it to rebuild the KA Lite topictree cache (topics.json).
     Does this by collecting all relevant topic_tree and content data from data source.
     Recurses over the entire topic tree to remove extraneous data.
     Denorms content data to reduce the bulk of the topic tree.
     Adds position data to every node in the topic tree.
+
+    :param whitewash_node_data: A function. See docstring above. Strips topic tree nodes of extraneous keys.
+    :param retrieve_API_data: A function. See docstring above. Defines the return type of rebuild_topictree.
+    :param channel_data: A channel_data dict as described in CHANNELDATA.md
+    :param channel: keyword arg passed in to retrieve_API_data
+
+    :return: A tuple `(topic_tree, exercises, assessment_items, contents)`.
+        The items in this tuple are defined by retrieve_API_data.
     """
     
     topic_tree, exercises, assessment_items, contents = retrieve_API_data(channel=channel)

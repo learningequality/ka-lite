@@ -1,3 +1,5 @@
+This file describes module-level attributes which should be defined per-channel.
+
 slug_key is a mapping for different data kinds, showing which attribute to use to define the slug.
 This slug will be used to build the resource path in the URL.
 
