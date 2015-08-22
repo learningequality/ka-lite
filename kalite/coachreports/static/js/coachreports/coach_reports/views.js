@@ -162,7 +162,11 @@ var FacilitySelectView = Backbone.View.extend({
         _.bindAll(this, "render");
         this.facility_list = new Models.FacilityCollection();
         this.listenTo(this.facility_list, 'sync', this.render);
-        this.facility_list.fetch();
+        this.facility_list.fetch({
+                data: $.param({
+                    zone_id: ZONE_ID
+                })
+            });
     },
 
     render: function() {

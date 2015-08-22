@@ -16,6 +16,7 @@ from kalite.main.models import ExerciseLog, AttemptLog
 from kalite.testing.mixins.facility_mixins import CreateStudentMixin, CreateGroupMixin
 
 from kalite.topic_tools.content_models import get_random_content
+from securesync.models import Device
 
 colour_legend = {
     "light blue": "#C0E7F3",
@@ -26,7 +27,7 @@ colour_legend = {
 
 @given("I am on the coach report")
 def step_impl(context):
-    url = reverse("coach_reports")
+    url = reverse("coach_reports", kwargs={"zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")})
     context.browser.get(build_url(context, url))
     # TODO(benjaoming) : This takes an awful lot of time to load the first
     # time it's built because of /api/coachreports/summary/?facility_id
