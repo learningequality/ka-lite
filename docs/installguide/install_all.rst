@@ -1,13 +1,13 @@
 Windows
 =======
 
-#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-latest>`_ installer.
+#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-14>`_ installer.
 #. After downloading the .exe file, double click it. A window will appear and guide you through the process of installing KA Lite on the server.
 
 Mac/OSX
 =======
 
-#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-latest>`_.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-14>`_.
 #. After the download is complete, double click the .dmg file.
 #. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
 #. Launch "KA-Lite Monitor" from your 'Applications' folder.
@@ -26,7 +26,7 @@ Main method: Ubuntu/Debian .deb
 _______________________________
 
 Download the latest .deb manually from
-`our server <https://learningequality.org/r/deb/ka-lite-bundle/0.14>`_.
+`our server <https://learningequality.org/r/deb-bundle-installer-0-14>`_.
 After that, you can install the .deb file like this::
 
     dpkg -i FILENAME.deb
@@ -56,7 +56,7 @@ It can be installed by downloading the latest .deb on the Pi and installing it::
     # Install dependencies
     sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
     # Fetch the latest .deb
-    sudo wget https://learningequality.org/r/deb/ka-lite-raspberry-pi/0.14
+    sudo wget https://learningequality.org/r/deb-pi-installer-0-14
     # Install the .deb
     sudo dpkg -i ka-lite-raspberry-pi*.deb
 
