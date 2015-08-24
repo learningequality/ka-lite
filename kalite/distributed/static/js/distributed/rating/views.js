@@ -210,8 +210,8 @@ var TextView = BaseView.extend({
         return this;
     },
 
-    text_changed: _.throttle(function() {
+    text_changed: function() {
         this.model.set("text", this.$(".rating-text-feedback")[0].value);
-        this.model.save();
-    }, 500),
+        this.model.debounced_save();
+    }
 });
