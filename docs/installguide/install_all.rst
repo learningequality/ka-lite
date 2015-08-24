@@ -7,8 +7,17 @@ Windows Installation
 Mac Installation
 ================
 
-1. Download the KA Lite `OSX installer <https://learningequality.org/downloads/ka-lite/0.14/installers/mac/KA-Lite-Monitor.dmg>`_.
-2. After the download is complete, double click the .dmg file and follow the window for installation.
+1. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-latest>`_.
+2. After the download is complete, double click the .dmg file.
+3. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
+4. Launch "KA-Lite Monitor" from your 'Applications' folder.
+5. On first load, it will check your current environment and show the Preferences dialog.
+6. Input your preferred admin username and password.
+7. Click on the Apply button.
+8. You will be prompted that initial setup will take a few minutes, click the "OK" button and wait for the notification that KA-Lite has been setup and can now be started.
+9. Click on the KA-Lite logo icon on the Status Menu Bar and select the "Start KA-Lite" menu option.
+10. When prompted that KA-Lite has been started, click on the logo icon again and select "Open in Browser" menu option - this should launch KA-Lite on your preferred web browser.
+11. Login using the administrator account you have specified during setup.
 
 Linux: Debian/Ubuntu Installation
 =================================
@@ -81,14 +90,20 @@ Uninstalling
 Windows
 _______
 
-Uninstall KA Lite from the Control Panel.
-In Windows XP, double-click the "Add or Remove Programs" icon, then choose KA Lite.
-In later version of Windows, click the "Programs and Features" icon, then choose KA Lite.
+1. Uninstall KA Lite from the Control Panel.
+2. In Windows XP, double-click the "Add or Remove Programs" icon, then choose KA Lite.
+3. In later version of Windows, click the "Programs and Features" icon, then choose KA Lite.
 
 Mac OSX
 _______
 
-.. note:: Dear maintainers, please put instructions here.
+1. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+2. Click on ``Preferences`` in the menu option.
+3. Click the ``Reset App`` from The ``Advanced``
+4. You will be prompted that "this will reset app. Are you sure?", just click on ``OK`` button.
+5. Another dialog will appear asking your ``Password`` just click on ``Cancel`` button.
+6. Quit the ``KA-Lite Monitor`` app.
+7. Move ``KA-Lite Monitor`` app to ``Trash``.
 
 Linux: Debian/Ubuntu Installation
 _________________________________
@@ -110,10 +125,10 @@ Removing that directory can potentially reclaim lots of hard drive space.
 
 On Windows, the HOME and USERPROFILE registry values will be used if set, otherwise the combination ``%HOMEDRIVE%%HOMEPATH%`` will be used.
 You can check these values from the command prompt using the commands ``echo %HOME%``, ``echo $USERPROFILE%``, etc.
-Within that directory, the data is stored in the `.kalite` subdirectory.
-On most versions of Windows, this is `C:\Users\YourUsername\.kalite\`.
+Within that directory, the data is stored in the ``.kalite`` subdirectory.
+On most versions of Windows, this is ``C:\Users\YourUsername\.kalite\``.
 
-On Linux and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
+On Linux, OSX, and other Unix-like systems, downloaded videos and database files are in ``~/.kalite``.
 
 
 

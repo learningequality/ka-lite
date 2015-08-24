@@ -1,3 +1,24 @@
+0.15:
+  release_date:
+  git_commit: ""
+  new_features:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
+  bugs_fixed:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
+  bugs_fixed:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
 0.14.dev0:
   release_date:
   git_commit: ""
