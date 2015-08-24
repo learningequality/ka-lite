@@ -1,13 +1,13 @@
 Windows
 =======
 
-#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-latest>`_ installer.
+#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-14>`_ installer.
 #. After downloading the .exe file, double click it. A window will appear and guide you through the process of installing KA Lite on the server.
 
 Mac/OSX
 =======
 
-#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-latest>`_.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-14>`_.
 #. After the download is complete, double click the .dmg file.
 #. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
 #. Launch "KA-Lite Monitor" from your 'Applications' folder.
@@ -26,16 +26,33 @@ Main method: Ubuntu/Debian .deb
 _______________________________
 
 Download the latest .deb manually from
-`our server <https://learningequality.org/r/deb/ka-lite-bundle/0.14>`_.
+`our server <https://learningequality.org/r/deb-bundle-installer-0-14>`_.
 After that, you can install the .deb file like this::
 
-    dpkg -i FILENAME.deb
+    sudo dpkg -i FILENAME.deb
 
-In Ubuntu, you can also double-click it, and it should open with Ubuntu Software
-Center.
 
-The file may be named as if it was intended for Ubuntu but works just as well
-for any other Debian-based systems like Debian, Raspberry Pi, Linux Mint etc.
+The file may be named as if it was intended for Ubuntu but works just as well for any other Debian-based systems like
+Debian, Raspberry Pi, Linux Mint etc.
+
+In Ubuntu, you can also double-click it, and it should open with Ubuntu Software Center.
+You will be prompted to enter some configuration information.
+You should read the on-screen instructions carefully, but some explanation is included here:
+
+1. You will asked to choose to run KA Lite on boot or not. We recommend choosing yes, as it simplifies data management.
+If you choose no, you must manually start KA lite every time. Note that running KA Lite as different users creates
+different sets of data files, so it's recommended that you run KA Lite as the same user every time.
+
+.. image:: linux-install-startup.png
+  :class: screenshot
+
+2. If you chose to start on boot in the previous step, you will be prompted to choose the owner for the KA Lite server
+process. Generally the default value is ok.
+
+.. image:: linux-install-owner.png
+  :class: screenshot
+
+3. You will be asked to review your choices, and finally KA Lite will start automatically when installation is complete.
 
 
 .. tip::
@@ -56,7 +73,7 @@ It can be installed by downloading the latest .deb on the Pi and installing it::
     # Install dependencies
     sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
     # Fetch the latest .deb
-    sudo wget https://learningequality.org/r/deb/ka-lite-raspberry-pi/0.14
+    sudo wget https://learningequality.org/r/deb-pi-installer-0-14
     # Install the .deb
     sudo dpkg -i ka-lite-raspberry-pi*.deb
 
