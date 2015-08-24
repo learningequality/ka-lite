@@ -3,6 +3,9 @@ environment.py defines setup and teardown behaviors for behave tests.
 The behavior in this file is appropriate for integration tests, and
 could be used to bootstrap other integration tests in our project.
 """
+import tempfile
+import shutil
+
 from behave import *
 from httplib import CannotSendRequest
 from selenium import webdriver
@@ -12,6 +15,8 @@ from django.db import connections
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
+
+from securesync.models import Zone, Device, DeviceZone
 
 def before_all(context):
     pass
@@ -30,7 +35,19 @@ def after_feature(context, feature):
 def before_scenario(context, scenario):
     database_setup(context)
 
-    browser = context.browser = webdriver.Firefox()
+    if "registered_device" in context.tags:
+        do_fake_registration()
+
+    profile = webdriver.FirefoxProfile()
+    if "download_csv" in context.tags:
+        # Let csv files be downloaded automatically. Can be accessed using context.download_dir
+        context.download_dir = tempfile.mkdtemp()
+        profile.set_preference("browser.download.folderList", 2)
+        profile.set_preference("browser.download.manager.showWhenStarting", False)
+        profile.set_preference("browser.download.dir", context.download_dir)
+        profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
+
+    browser = context.browser = webdriver.Firefox(firefox_profile=profile)
     # ensure the window is reasonably sized.
     browser.set_window_size(2560, 1920)
 
@@ -56,6 +73,10 @@ def before_scenario(context, scenario):
 def after_scenario(context, scenario):
     if context.logged_in:
         logout(context)
+
+    if "download_csv" in context.tags:
+        shutil.rmtree(context.download_dir)
+
     try:
         context.browser.quit()
     except CannotSendRequest:
@@ -79,3 +100,14 @@ def database_teardown(context):
     """
     for alias in connections:
         call_command("flush", database=alias, interactive=False)
+
+def do_fake_registration():
+    """
+    Register the device, in case some feature being tested depends on it. Will be undone by the database teardown.
+    """
+    # Create a Zone and DeviceZone to fool the Device into thinking it's registered
+    zone = Zone(name="The Danger Zone", description="Welcome to it.")
+    zone.save()
+    device = Device.get_own_device()
+    device_zone = DeviceZone(device=device, zone=zone)
+    device_zone.save()

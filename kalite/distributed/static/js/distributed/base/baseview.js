@@ -73,6 +73,15 @@ module.exports = Backbone.View.extend({
     },
 
     remove: function() {
+
+        // make sure we never end up removing the same view twice, in case there's weird circularity
+        if (this._removed) return;
+        this._removed = true;
+
+        // remove this view using the default Backbone code, which removes the DOM element
+        Backbone.View.prototype.remove.call(this);
+
+        // recursively remove this view's subviews, to avoid detached views with zombie listeners
         if (this.subviews!==undefined) {
             for (i=0; i < this.subviews.length; i++) {
                 if (_.isFunction(this.subviews[i].close)) {
@@ -82,6 +91,5 @@ module.exports = Backbone.View.extend({
                 }
             }
         }
-        Backbone.View.prototype.remove.call(this);
     }
 });

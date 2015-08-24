@@ -110,14 +110,12 @@
 {% endblock buttons %}
 
 {% block control_panel_content %}
-    <div class="container">
-        {# Coaches table #}
-        {% include "control_panel/partials/_coaches_table.html" %}
+    {# Coaches table #}
+    {% include "control_panel/partials/_coaches_table.html" %}
 
-        {# Groups table #}
-        {% include "control_panel/partials/_groups_table.html" %}
+    {# Groups table #}
+    {% include "control_panel/partials/_groups_table.html" %}
 
-        {# Students table #}
-        {% include "control_panel/partials/_students_table.html" %}
-    </div> <!-- End Container -->
+    {# Students table #}
+    {% include "control_panel/partials/_students_table.html" %}
 {% endblock control_panel_content %}

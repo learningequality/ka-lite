@@ -2,14 +2,22 @@ Windows Installation
 ====================
 
 1. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-latest>`_ installer.
-2. After downloading the .exe file, double click it. A window will appear and guide you through the process of installing KA Lite on the server.
+2. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
 Mac Installation
 ================
 
-1. Download the KA Lite `OSX installer <https://disney.com>`_.
-
-.. warning:: Dear maintainers, please update this link.
+1. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-latest>`_.
+2. After the download is complete, double click the .dmg file.
+3. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
+4. Launch "KA-Lite Monitor" from your 'Applications' folder.
+5. On first load, it will check your current environment and show the Preferences dialog.
+6. Input your preferred admin username and password.
+7. Click on the Apply button.
+8. You will be prompted that initial setup will take a few minutes, click the "OK" button and wait for the notification that KA-Lite has been setup and can now be started.
+9. Click on the KA-Lite logo icon on the Status Menu Bar and select the "Start KA-Lite" menu option.
+10. When prompted that KA-Lite has been started, click on the logo icon again and select "Open in Browser" menu option - this should launch KA-Lite on your preferred web browser.
+11. Login using the administrator account you have specified during setup.
 
 Linux: Debian/Ubuntu Installation
 =================================
@@ -26,7 +34,8 @@ and if you are connected to the internet, this will also give you automatic upda
 
 
 .. _linux-deb-install:
-Option 2, Ubuntu / Debian, download a Debian package
+
+Option 2, Ubuntu / Debian: download a Debian package
 ____________________________________________________
 
 Download the latest .deb manually from
@@ -38,15 +47,15 @@ with ``dpkg -i  ka-lite_0.x.x-0ubuntu1_all.deb``.
 The file may be named as if it was intended for Ubuntu but works just as well
 for any other Debian-based systems like Debian, Raspberry Pi, Linux Mint etc.
 
-Configuration after installing / updating
-_________________________________________
+Configuration after installation or update
+__________________________________________
 
-Every time you install or update kalite, you should (re)run ``kalite manage setup``
-to setup the database and download assessment items (video descriptions,
+Every time you install or update KA Lite, you must run ``kalite manage setup`` command again to setup the database and download assessment items (video descriptions,
 exercises etc.).
 
 
 .. _linux-pypi-install:
+
 Linux: Installing as a PyPI package
 ===================================
 
@@ -81,14 +90,20 @@ Uninstalling
 Windows
 _______
 
-Uninstall KA Lite from the Control Panel.
-In Windows XP, double-click the "Add or Remove Programs" icon, then choose KA Lite.
-In later version of Windows, click the "Programs and Features" icon, then choose KA Lite.
+1. Uninstall KA Lite from the Control Panel.
+2. In Windows XP, double-click the "Add or Remove Programs" icon, then choose KA Lite.
+3. In later version of Windows, click the "Programs and Features" icon, then choose KA Lite.
 
 Mac OSX
 _______
 
-.. note:: Dear maintainers, please put instructions here.
+1. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+2. Click on ``Preferences`` in the menu option.
+3. Click the ``Reset App`` from The ``Advanced``
+4. You will be prompted that "this will reset app. Are you sure?", just click on ``OK`` button.
+5. Another dialog will appear asking your ``Password`` just click on ``Cancel`` button.
+6. Quit the ``KA-Lite Monitor`` app.
+7. Move ``KA-Lite Monitor`` app to ``Trash``.
 
 Linux: Debian/Ubuntu Installation
 _________________________________
@@ -110,10 +125,10 @@ Removing that directory can potentially reclaim lots of hard drive space.
 
 On Windows, the HOME and USERPROFILE registry values will be used if set, otherwise the combination ``%HOMEDRIVE%%HOMEPATH%`` will be used.
 You can check these values from the command prompt using the commands ``echo %HOME%``, ``echo $USERPROFILE%``, etc.
-Within that directory, the data is stored in the `.kalite` subdirectory.
-On most versions of Windows, this is `C:\Users\YourUsername\.kalite\`.
+Within that directory, the data is stored in the ``.kalite`` subdirectory.
+On most versions of Windows, this is ``C:\Users\YourUsername\.kalite\``.
 
-On Linux and other Unix-like systems, downloaded videos and database files are in `~/.kalite`.
+On Linux, OSX, and other Unix-like systems, downloaded videos and database files are in ``~/.kalite``.
 
 
 
@@ -121,9 +136,11 @@ Raspberry Pi
 ============
 
 For a Raspberry Pi running a Debian system, you can install the special Debian
-package, 'ka-lite-raspberry-pi'.
+package (``ka-lite-raspberry-pi_0.X-buildYZ.deb``).
 
-You can find here (TODO)
+Download the latest .deb manually from
+`the Launchpad archive server <http://ppa.launchpad.net/learningequality/ka-lite/ubuntu/pool/main/k/ka-lite-source/?C=M;O=D>`_.
+Look for the latest ``ka-lite-raspberry-pi`` file with a ``.deb`` extension, download it and install it from command line with ``dpkg -i  ka-lite-raspberry-pi_0.*.deb``.
 
 
 
@@ -148,14 +165,18 @@ In our tests, we found that the WiPi adaptor supported a higher number tablet co
 #. Get the network configuration scripts.
     * ``cd /opt``
     * ``sudo git clone https://github.com/learningequality/ka-lite-pi-scripts.git``
+
 #. Install and configure the access point.
     * ``cd /opt/ka-lite-pi-scripts``
     * ``sudo ./configure.sh``
+
     .. note:: If using the Edimax EW-7811UN, ignore the "hostapdSegmentation fault" error.
+
 #. Install the USB adaptor software.
 	* If using the WiPi, run this command:
         * ``cd /opt/ka-lite-pi-scripts``
         * ``sudo ./use_wipi.sh``
+
     * If using the Edimax EW-7811Un, run this command:
         * ``cd /opt/ka-lite-pi-scripts``
         * ``sudo ./use_edimax.sh``
@@ -169,6 +190,7 @@ In our tests, we found that the WiPi adaptor supported a higher number tablet co
     * If the KA Lite server is started, browse to 1.1.1.1
 
 .. _advanced-installation:
+
 Advanced topics
 ===============
 
@@ -176,7 +198,7 @@ Source code / development
 _________________________
 
 KA Lite can also be run as a "source distribution" for development purposes.
-By this, we just mean a git checkout (from `our github<https://github.com/learningequality/ka-lite/>`_).
+By this, we just mean a git checkout (from `our github <https://github.com/learningequality/ka-lite/>`_).
 
 .. note:: Running directly from source will also maintain all user data in that
           same directory! This is convenient for having several versions of
@@ -329,6 +351,6 @@ it may be located somewhere else.
 
 Example of setting up kalite for the www-data user: ::
 
-    $> su -s /bin/bash www-data
+    $> sudo su -s /bin/bash www-data
     $> kalite manage setup
     $> exit
