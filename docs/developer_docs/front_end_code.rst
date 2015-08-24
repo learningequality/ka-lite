@@ -1,9 +1,9 @@
 Front End Code
 --------------
 
-All of our front end code is written in Javascript, with much of it using `Backbone.js <http://backbonejs.org>`_ (and its dependencies `jQuery <https://jquery.com/>`_ and `Underscore.js <http://underscorejs.org>`_).
+All of our front end code is written in Javascript, with much of it using `Backbone.js <http://backbonejs.org>`__ (and its dependencies `jQuery <https://jquery.com/>`_ and `Underscore.js <http://underscorejs.org>`_).
 
-All new code, where possible, should be written using `Backbone.js <http://backbone.js>`_ to modularize functionality, and allow code to be reused across the site.
+All new code, where possible, should be written using `Backbone.js <http://backbone.js>`__ to modularize functionality, and allow code to be reused across the site.
 
 Inline Javascript (i.e. Javascript directly in the Django templates inside `<script>` tags) should be avoided except where absolutely necessary (such as to initialize some master object on a page).
 
