@@ -78,6 +78,7 @@ th.headrowuser {
 
 .partial {
     background-color: #C0E7F3;
+    fill: #C0E7F3;
 }
 
 .partial.selected, .partial:hover{
@@ -86,6 +87,7 @@ th.headrowuser {
 
 .complete {
     background-color: #5AA685;
+    fill: #5AA685;
 }
 
 .complete.selected, .complete:hover{
@@ -94,6 +96,7 @@ th.headrowuser {
 
 .struggling {
     background-color: #FD795B;
+    fill: #FD795B;
 }
 
 .struggling.selected, .struggling:hover{
@@ -102,6 +105,7 @@ th.headrowuser {
 
 .not-attempted {
 	background-color: #eee;
+    fill: #eee;
 }
 
 /* Make this specific to .status to prevent it overriding cells in the details panel table. */

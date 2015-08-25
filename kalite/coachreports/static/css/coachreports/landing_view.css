@@ -159,3 +159,15 @@ ul {
 span.setrange {
     color: #fff;
 }
+
+.progressbar {
+    text-align: center;
+}
+
+.bartext {
+    text-align: center;
+    margin: auto auto;
+    bottom: 0;    
+    width: 12em;
+    font-weight: 300;
+}
