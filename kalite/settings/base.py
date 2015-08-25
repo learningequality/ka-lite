@@ -465,6 +465,9 @@ KEY_PREFIX = version.VERSION
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(
     local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.signed_cookies' + (''))
+    
+# Expire session cookies whenever we close the browser.
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Use our custom message storage to avoid adding duplicate messages
 MESSAGE_STORAGE = 'fle_utils.django_utils.classes.NoDuplicateMessagesSessionStorage'
