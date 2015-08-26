@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.utils import unittest
 
 import selenium.webdriver.support.expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -236,37 +237,16 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
 
     def setUp(self):
         self.facility = self.create_facility()
+        self.admin = self.create_admin()
         super(FormBrowserTests, self).setUp()
-
-    def test_no_groups_no_select(self):
-        signup_url = "%s%s%s" % (self.reverse('facility_user_signup'), "?&facility=", self.facility.id)
-        self.browse_to(signup_url)
-        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
-        self.assertFalse(group_label.is_displayed())
-        WebDriverWait(self.browser, 30).until(
-            EC.invisibility_of_element_located((By.ID, 'id_group'))
-        )
-
-    def test_signup_cannot_select_group(self):
-        self.group = self.create_group(facility=self.facility)
-        signup_url = "%s%s%s" % (self.reverse('facility_user_signup'), "?&facility=", self.facility.id)
-        self.browse_to(signup_url)
-        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
-        self.assertTrue(group_label.is_displayed())
-        WebDriverWait(self.browser, 30).until(
-            EC.invisibility_of_element_located((By.ID, 'id_group'))
-        )
 
     def test_logged_in_student_cannot_select_group(self):
         self.group = self.create_group(facility=self.facility)
         self.student = self.create_student(facility=self.facility, group=self.group)
         self.browser_login_student(username=self.student.username, password='password', facility_name=self.facility.name)
         self.browse_to(self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id}))
-        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
-        self.assertTrue(group_label.is_displayed())
-        WebDriverWait(self.browser, 30).until(
-            EC.invisibility_of_element_located((By.ID, 'id_group'))
-        )
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_xpath("//label[@for='id_group']")
 
     def test_teacher_can_select_group(self):
         self.group = self.create_group(facility=self.facility)
@@ -274,12 +254,9 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         self.teacher = self.create_teacher(facility=self.facility)
         self.browser_login_teacher(username=self.teacher.username, password='password', facility_name=self.facility.name)
         self.browse_to(self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id}))
-        group_label = self.browser.find_element_by_xpath("//label[@for='id_group']")
-        self.assertTrue(group_label.is_displayed())
         group_select = self.browser.find_element_by_id('id_group')
-        WebDriverWait(self.browser, 30).until(
-            EC.visibility_of(group_select)
-        )
+        self.assertTrue(group_select.is_displayed())
+
 
 
 class FormGroupTest(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin):

@@ -2,9 +2,12 @@ var BaseView = require("base/baseview");
 var _ = require("underscore");
 var Backbone = require("base/backbone");
 var Handlebars = require("base/handlebars");
+var sprintf = require("sprintf-js").sprintf;
 
 var ExerciseModels = require("exercises/models");
 var Models = require("../coach_reports/models");
+
+var date_string = require("utils/datestring").date_string;
 
 /*
 Hierarchy of views:
@@ -349,7 +352,9 @@ var TabularReportView = BaseView.extend({
         var self = this;
         this.data_model = new Models.CoachReportModel({
             facility: this.model.get("facility"),
-            group: this.model.get("group")
+            group: this.model.get("group"),
+            start_date: date_string(this.model.get("start_date")),
+            end_date: date_string(this.model.get("end_date"))
         });
         if (this.model.get("facility")) {
             this.data_model.fetch().then(function() {
@@ -392,4 +397,4 @@ module.exports = {
     DetailPanelInlineRowView: DetailPanelInlineRowView,
     DetailPanelView: DetailPanelView,
     DetailPanelBodyView: DetailPanelBodyView
-}
+};

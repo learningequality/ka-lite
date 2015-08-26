@@ -1,6 +1,8 @@
 var get_params = require("./get_params");
 var $ = require("../base/jQuery");
 var messages_utils = require("./messages");
+var sprintf = require("sprintf-js").sprintf;
+var url_utils = require("url");
 
 function handleSuccessAPI(obj) {
 
@@ -23,15 +25,15 @@ function handleSuccessAPI(obj) {
         }
     } else if (obj.hasOwnProperty("messages")) {
         // Got messages embedded in the object
-        messages = {}
-        for (idx in obj.messages) {
+        messages = {};
+        for (var idx in obj.messages) {
             messages = obj.messages[idx];
         }
     } else {
         // Got messages at the top level of the object; grab them.
         messages = {};
-        for (idx in msg_types) {
-            var msg_type = msg_types[idx];
+        for (var idy in msg_types) {
+            var msg_type = msg_types[idy];
             if (msg_type in obj) {
                 messages[msg_type] = obj[msg_type];
                 console.log(messages[msg_type]);
@@ -65,7 +67,7 @@ function handleFailedAPI(resp, error_prefix) {
             if (window.statusModel) {
                 window.statusModel.fetch().success(function() {
                     window.userView.login_start_open = true;
-                })
+                });
             }
             break;
 
@@ -74,7 +76,9 @@ function handleFailedAPI(resp, error_prefix) {
             try {
                 messages = $.parseJSON(resp.responseText || "{}").messages || $.parseJSON(resp.responseText || "{}");
             } catch (e) {
-                var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, resp.responseText, resp);
+                // Replacing resp.responseText with "There was an unexpected error!" is just a workaround... this should be fixed.
+                // See https://github.com/learningequality/ka-lite/issues/4203
+                var error_msg = sprintf("%s<br/>%s<br/>%s", resp.status, "There was an unexpected error!", resp);
                 messages = {error: sprintf(gettext("Unexpected error; contact the FLE with the following information: %(error_msg)s"), {error_msg: error_msg})};
                 console.log("Response text: " + resp.responseText);
                 console.log(e);
@@ -88,7 +92,13 @@ function handleFailedAPI(resp, error_prefix) {
 
 function doRequest(url, data, opts) {
     // If locale is not already set, set it to the current language.
-    if ($.url(url).param("lang") === undefined && data !== null && data !== undefined) {
+    var query;
+
+    if ((query = url_utils.parse(url).query) === null) {
+      query = {};
+    }
+
+    if (query.lang === undefined && data !== null && data !== undefined) {
         if (!data.hasOwnProperty('lang')) {
             url = get_params.setGetParam(url, "lang", window.sessionModel.get("CURRENT_LANGUAGE"));
         }
@@ -103,7 +113,7 @@ function doRequest(url, data, opts) {
     };
     var error_prefix = "";
 
-    for (opt_key in opts) {
+    for (var opt_key in opts) {
         switch (opt_key) {
             case "error_prefix":  // Set the error prefix on a failure.
                 error_prefix = opts[opt_key];

@@ -1,7 +1,8 @@
-var soundManager = require("soundmanager2");
+var soundManager = require("soundmanager2").soundManager;
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 
+require("../../../css/distributed/audio.css");
 
 var AudioPlayerView = ContentBaseView.extend({
 
@@ -10,6 +11,14 @@ var AudioPlayerView = ContentBaseView.extend({
     events: {
         "click .play-pause": "play_pause_clicked",
         "click .sm2-progress-track": "progress_track_clicked"
+    },
+
+    initialize: function(options) {
+
+        ContentBaseView.prototype.initialize.call(this, options);
+
+        _.bindAll(this, "create_audio_object");
+
     },
 
     render: function() {
@@ -149,4 +158,6 @@ var AudioPlayerView = ContentBaseView.extend({
 
 });
 
-module.exports = AudioPlayerView;
+module.exports = {
+    AudioPlayerView: AudioPlayerView
+};

@@ -1,0 +1,30 @@
+/* Responsive content display for tablets */
+/* Jessica TODO: take off !important tags */
+div.video-player {
+    width: 100% !important;
+    margin: auto !important;
+}
+.vjs-default-skin .vjs-big-play-button {
+    margin: auto !important;
+    position: relative !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important; 
+}
+.video-js.vjs-fullscreen {
+	position: relative !important;
+}
+
+@media screen and (max-width: 1000px) , screen and (max-height: 610px) {
+	.kalite-navbar {
+		margin-bottom: 0px;
+	}
+	#content-container {
+		width: 100%;
+	}
+	.content-description {
+		padding: 0px;
+	}
+	.top-nav {
+		padding-right: 0px;
+	}
+}

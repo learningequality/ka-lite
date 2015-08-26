@@ -26,7 +26,7 @@ def step_impl(context):
 def step_impl(context):
     assert find_id_with_wait(context, modal_container, wait_time=120), "modal not displayed!"
 
-@given("the username is empty")
+@when("the username is empty")
 def step_impl(context):
     fill_username(context, "")
 
@@ -40,7 +40,7 @@ def step_impl(context):
 def impl(context):
     is_border_red(context, "id_superusername")
 
-@given("I enter a username longer than 40 letters")
+@when("I enter a username longer than 40 letters")
 def step_impl(context):
     fill_username(context, "x" * 41)
 
@@ -48,7 +48,7 @@ def step_impl(context):
 def step_impl(context):
     assert not elem_is_invisible_with_wait(context, context.modal_element), "modal dismissed!"
 
-@given("the password is empty")
+@when("the password is empty")
 def step_impl(context):
     fill_password(context, "")
 
@@ -56,11 +56,11 @@ def step_impl(context):
 def impl(context):
     is_border_red(context, "id_superpassword")
 
-@given("I enter a password longer than 40 letters")
+@when("I enter a password longer than 40 letters")
 def step_impl(context):
     fill_password(context, "x" * 41)
 
-@given("I enter an unmatched password")
+@when("I enter an unmatched password")
 def step_impl(context):
     reenter_password(context, "unmatched")
 
@@ -68,15 +68,15 @@ def step_impl(context):
 def impl(context):
     is_border_red(context, "id_confirmsuperpassword")
 
-@given("I enter username correctly")
+@when("I enter username correctly")
 def step_impl(context):
     fill_username(context, "correct_name")
 
-@given("I enter password correctly")
+@when("I enter password correctly")
 def step_impl(context):
     fill_password(context, "correct_password")
 
-@given("I re-enter password correctly")
+@when("I re-enter password correctly")
 def step_impl(context):
     reenter_password(context, "correct_password")
 

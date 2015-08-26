@@ -1,4 +1,5 @@
 var Backbone = require("base/backbone");
+var sprintf = require("sprintf-js").sprintf;
 
 var PlaylistProgressModel = Backbone.Model.extend();
 
@@ -36,4 +37,4 @@ module.exports = {
     PlaylistProgressDetailModel: PlaylistProgressDetailModel,
     PlaylistProgressCollection: PlaylistProgressCollection,
     PlaylistProgressDetailCollection: PlaylistProgressDetailCollection
-}
+};

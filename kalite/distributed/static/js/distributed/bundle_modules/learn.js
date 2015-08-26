@@ -6,4 +6,4 @@ module.exports = {
 	$: $,
 	TopicChannelRouter: TopicChannelRouter,
 	Backbone: Backbone
-}
+};

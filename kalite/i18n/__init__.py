@@ -47,7 +47,7 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(settings.USER_DATA_ROOT, "exercises", ka_lang_code)  # Translations live in user data space
+    return os.path.join(settings.USER_STATIC_FILES, "perseus", "ke", "exercises", ka_lang_code)  # Translations live in user data space
 
 
 def get_locale_path(lang_code=None):
@@ -340,7 +340,7 @@ def _get_installed_language_packs():
         # This is idiotic, it just assumes that every directory / file is
         # a valid language code
         for django_disk_code in os.listdir(locale_dir):
-            
+
             # Skip if it's a file
             if not os.path.isdir(os.path.join(locale_dir, django_disk_code)):
                 continue
@@ -390,7 +390,7 @@ def update_jsi18n_file(code="en"):
     request.path = output_file
     request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
-    response = javascript_catalog(request, packages=('ka-lite.locale',), domain="django")
+    response = javascript_catalog(request, packages=('ka-lite.locale',), domain="djangojs")
     icu_js = ""
     for path in settings.LOCALE_PATHS:
         try:

@@ -2,7 +2,7 @@ var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 
-var introJs = require("./intro");
+var introJs = require("intro.js");
 
 /*
     Force the bootstrap script to be reloaded. This is meant to be run after the bootstrap API has been disabled.
@@ -32,9 +32,9 @@ var ButtonView = BaseView.extend({
     clickCallback: function() {
         var self = this;
         this.model.fetch({
-            success: function(model, response, options) {
+            success: function(model, response) {
                 //obtain narrative, JSON obj of elements and their attributes
-                var narr = self.model.attributes;
+                var narr = model.attributes;
 
                 //translate narrative into build options for introjs
                 var parsedNarr = self.parseNarrative(narr);
@@ -42,7 +42,6 @@ var ButtonView = BaseView.extend({
                 var before_showing = parsedNarr["before_showing"];
 
                 var intro = introJs.introJs();
-
                 intro.setOption('tooltipPosition', 'auto');
                 intro.setOption('positionPrecedence', ['left', 'right', 'bottom', 'top']);
                 intro.setOptions(options);
