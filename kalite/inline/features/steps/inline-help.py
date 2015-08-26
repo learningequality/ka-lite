@@ -15,7 +15,7 @@ STARTING_POINT_ID = "inline-btn"
 # Classes for the introjs modal and associated elements
 MODAL_CLASS = "introjs-tooltip"
 STEP_NUMBER_CLASS = "introjs-helperNumberLayer"
-HIGHLIGHTED_CLASS = "introjs-tooltipReferenceLayer"
+HIGHLIGHTED_CLASS = "introjs-showElement"
 NEXT_BUTTON_CLASS = "introjs-nextbutton"
 BACK_BUTTON_CLASS = "introjs-prevbutton"
 SKIP_BUTTON_CLASS = "introjs-skipbutton"

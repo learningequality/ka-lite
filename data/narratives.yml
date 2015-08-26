@@ -1,5 +1,5 @@
 management/zone/.*:
-  - li.manage.active:
+  - li.manage-tab.active:
     - step: 1
     - text: Welcome! This is the landing page for admins. If at any point you would like to navigate back to this page, click on this tab!
   - li.facility:
@@ -15,7 +15,7 @@ management/zone/.*:
   - a.facility-name:
     - step: 5
     - text: To view more detailed information such as learner groups, learners, and coaches belonging to a facility, click on the facility name.
-  - div.row:nth-child(3):
+  - '#devices-table tbody tr td:nth-child(1)':
     - step: 6
     - text: Information on your device status will be shown here
   - unattached:
