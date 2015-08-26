@@ -48,6 +48,8 @@ MIDDLEWARE_CLASSES += [
     'fle_utils.django_utils.middleware.JsonAsHTML'
 ]
 
+COMPRESS_OFFLINE = False
+
 #######################################
 # DEBUG TOOLBAR
 #######################################

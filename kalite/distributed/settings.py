@@ -34,6 +34,8 @@ COMPRESS_CONTEXT_REQUEST.is_logged_in = False
 COMPRESS_CONTEXT_REQUEST.is_django_user = False
 COMPRESS_CONTEXT_REQUEST.language = "en"
 
+COMPRESS_OFFLINE = True
+
 COMPRESS_OFFLINE_CONTEXT = {
     "base_template": "distributed/base.html",
     "request": COMPRESS_CONTEXT_REQUEST,
