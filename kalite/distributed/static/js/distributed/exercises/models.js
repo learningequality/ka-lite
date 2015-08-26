@@ -161,10 +161,11 @@ var ExerciseLogCollection = ContentModels.ContentLogCollection.extend({
         if (this.length > 0) {
             return this.at(0);
         } else { // create a new exercise log if none existed
-            return new ExerciseLogModel({
-                model_id_key: this[model_id_key],
+            var data = {
                 "user": window.statusModel.get("user_uri")
-            });
+            };
+            data[this.model_id_key] = this.content_model.get("id");
+            return new this.model(data);
         }
     }
 
