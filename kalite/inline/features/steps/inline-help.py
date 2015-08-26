@@ -33,8 +33,13 @@ def step_impl(context):
 
 @then("I see a modal with step number {expected_num:d}")
 def step_impl(context, expected_num):
-    actual_num = get_modal_step_number(context)
-    assert actual_num == expected_num, "Unexpected step number '%s' found. Expected: %s" % (actual_num, expected_num)
+
+    def condition(driver):
+        number_el = driver.find_element_by_class_name(STEP_NUMBER_CLASS)
+        actual_num_text = number_el.text
+        return int(actual_num_text) == expected_num if actual_num_text else False
+
+    WebDriverWait(context.browser, 30, ignored_exceptions=NoSuchElementException).until(condition)
 
 
 @then("an element is highlighted")
@@ -95,16 +100,6 @@ def step_impl(context):
         assert False, "There should not be a starting point element for the intro!"
     except NoSuchElementException:
         pass
-
-
-def get_modal_step_number(context):
-    number_el = find_css_class_with_wait(context, STEP_NUMBER_CLASS)
-    def text_present(driver):
-        return bool(number_el.text)
-    WebDriverWait(context.browser, 30).until(
-        text_present
-    )
-    return int(number_el.text)
 
 
 def go_to_manage_page(context):
