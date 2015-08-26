@@ -35,7 +35,6 @@ After that, you can install the .deb file like this::
 The file may be named as if it was intended for Ubuntu but works just as well for any other Debian-based systems like
 Debian, Raspberry Pi, Linux Mint etc.
 
-In Ubuntu, you can also double-click it, and it should open with Ubuntu Software Center.
 You will be prompted to enter some configuration information.
 You should read the on-screen instructions carefully, but some explanation is included here:
 
