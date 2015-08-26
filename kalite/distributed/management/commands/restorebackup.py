@@ -16,7 +16,7 @@ class Command(BaseCommand):
             default="",
             help="File path"),
         )
-    
+
     def handle(self, *args, **options):
             if(options['backup_filepath']):
                 if(os.path.isfile(backup_filepath)):
@@ -28,9 +28,9 @@ class Command(BaseCommand):
                 for i, f in enumerate(file_list):
                     print i, f.replace(".backup", "")
                     filelist.append(f)
-                if filelist:        
+                if filelist:
                     print "Please enter a file-number to restore:"
-                    backup_option = int(raw_input())            
+                    backup_option = int(raw_input())
                     try:
                         restoref = filelist[backup_option] #file to be restored based on x
                         backup_filepath = os.path.join(settings.BACKUP_DIRPATH, restoref) #create file path
@@ -38,4 +38,4 @@ class Command(BaseCommand):
                     except IndexError:
                         print 'Number option out of bounds.'
                 else:
-                    print 'No files available to restore.'   
+                    print 'No files available to restore.'
