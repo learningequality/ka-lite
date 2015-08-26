@@ -8,7 +8,7 @@ from django.conf import settings
 from kalite.distributed import backup
 
 
-try: 
+try:
     os.makedirs(settings.BACKUP_DIRPATH)
 except OSError:
     if not os.path.isdir(settings.BACKUP_DIRPATH):
@@ -24,10 +24,10 @@ class Command(BaseCommand):
             default=settings.BACKUP_DIRPATH,
             help="File path"),
         )
-    
-    def handle(self, *args, **options):                                
+
+    def handle(self, *args, **options):
             try:
-                call_command('dbbackup', filepath=settings.BACKUP_DIRPATH, database='default') 
+                call_command('dbbackup', filepath=settings.BACKUP_DIRPATH, database='default')
             except KeyError:
                 pass
             backup.file_rename()
