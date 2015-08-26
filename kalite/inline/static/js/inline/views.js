@@ -84,7 +84,7 @@ var ButtonView = BaseView.extend({
     },
 
     //Translate narrative into JSON obj used to set introjs options
-    parseNarrative: function(narr, before_showing) {
+    parseNarrative: function(narr) {
         var steps = [];
         var before_showing = [];
 
