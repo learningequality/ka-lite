@@ -1,2 +1,5 @@
-from fle_utils.importing import import_all_child_modules
-import_all_child_modules()
+from base import *
+from crypto_tests import *
+from decorators import *
+from trust_tests import *
+from unicode_tests import *

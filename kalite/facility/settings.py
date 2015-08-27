@@ -1,42 +1,7 @@
 try:
-    import local_settings
+    from kalite import local_settings
 except ImportError:
     local_settings = object()
-
-
-########################
-# Django dependencies
-########################
-
-INSTALLED_APPS = (
-    "django.contrib.auth",  # co-exists with Django auth
-    "django.contrib.sessions",  # logged in user stored within session object
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "south",
-    "fle_utils.config",  # Settings used for default_facility
-    "fle_utils.django_utils",  # templatetags
-    "securesync",  # must be above, for dependency on RegisteredCheck middleware
-    "kalite.i18n",  # needed for default_language   TODO: make default_language part of facility, use settings.LANGUAGE
-    "kalite.main", # needed for UserLog  TODO: move UserLog into main app, connect here as signal listeners
-    "kalite.testing",
-)
-
-MIDDLEWARE_CLASSES = (
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "fle_utils.django_utils.middleware.GetNextParam",  # adds request.next parameter
-    __package__ + ".middleware.AuthFlags",  # this must come first in app-dependent middleware--many others depend on it.
-    __package__ + ".middleware.FacilityCheck",
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",  # used by distributed to authenticate admin (django) user
-    "django.core.context_processors.request",  # expose request object within templates
-    __package__ + ".custom_context_processors.custom",  # for enabling a 'restricted' user mode for self-admin of user accounts
-)
-
 
 #######################
 # Set module settings
@@ -65,3 +30,7 @@ PASSWORD_CONSTRAINTS = getattr(local_settings, "PASSWORD_CONSTRAINTS", {
 DISABLE_SELF_ADMIN = getattr(local_settings, "DISABLE_SELF_ADMIN", False)  #
 
 RESTRICTED_TEACHER_PERMISSIONS = getattr(local_settings, "RESTRICTED_TEACHER_PERMISSIONS", False)  # setting this to True will disable creating/editing/deleting facilties/students for teachers
+
+# Setting this to True will eliminate the need for password authentication for student accounts
+# Further, it will provide an autocomplete for any student account on typing.
+SIMPLIFIED_LOGIN = getattr(local_settings, "SIMPLIFIED_LOGIN", False)

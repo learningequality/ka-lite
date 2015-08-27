@@ -28,13 +28,12 @@ from math import exp, sqrt, ceil, floor
 from optparse import make_option
 
 from django.conf import settings; logging = settings.LOG
-from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from fle_utils.general import datediff
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
-from kalite.main.models import ExerciseLog, VideoLog, UserLog
+from kalite.main.models import ExerciseLog, VideoLog, UserLog, AttemptLog
 from kalite.topic_tools import get_topic_videos, get_topic_exercises, get_content_cache
 
 
@@ -246,7 +245,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
             # Probability of doing any particular exercise
             p_exercise = probability_of(qty="exercise", user_settings=user_settings)
-            logging.debug("# exercises: %d; p(exercise)=%4.3f, user settings: %s\n" % (len(exercises), p_exercise, json.dumps(user_settings)))
+            logging.info("# exercises: %d; p(exercise)=%4.3f, user settings: %s\n" % (len(exercises), p_exercise, json.dumps(user_settings)))
 
             # of exercises is related to
             for j, exercise in enumerate(exercises):
@@ -254,69 +253,40 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
                     continue
 
                 # Probability of completing this exercise, and .. proportion of attempts
-                p_completed = probability_of(qty="completed", user_settings=user_settings)
                 p_attempts = probability_of(qty="attempts", user_settings=user_settings)
 
                 attempts = int(random.random() * p_attempts * 30 + 10)  # always enough to have completed
-                completed = (random.random() < p_completed)
-                if completed:
-                    streak_progress = 100
-                else:
-                    streak_progress = max(0, min(90, random.gauss(100 * user_settings["speed_of_learning"], 20)))
-                    streak_progress = int(floor(streak_progress / 10.)) * 10
-                points = streak_progress / 10 * 12 if completed else 0  # only get points when you master.
 
-                # Choose a rate of exercises, based on their effort level and speed of learning.
-                #   Compute the latest possible start time.
-                #   Then sample a start time between their start time
-                #   and the latest possible start_time
-                rate_of_exercises = 0.66 * user_settings["effort_level"] + 0.33 * user_settings["speed_of_learning"]  # exercises per day
-                time_for_attempts = min(datetime.timedelta(days=rate_of_exercises * attempts), date_diff_started)  # protect with min
-                time_delta_completed = datetime.timedelta(seconds=random.randint(int(datediff(time_for_attempts, units="seconds")), int(datediff(date_diff_started, units="seconds"))))
-                date_completed = datetime.datetime.now() - time_delta_completed
+                elog, created = ExerciseLog.objects.get_or_create(user=facility_user, exercise_id=exercise["id"])
 
-                # Always create new
-                logging.info("Creating exercise log: %-12s: %-25s (%d points, %d attempts, %d%% streak on %s)" % (
-                    facility_user.first_name,
-                    exercise["id"],
-                    points,
-                    attempts,
-                    streak_progress,
-                    date_completed,
-                ))
-                try:
-                    elog = ExerciseLog.objects.get(user=facility_user, exercise_id=exercise["id"])
-                except ExerciseLog.DoesNotExist:
-                    elog = ExerciseLog(
-                        user=facility_user,
-                        exercise_id=exercise["id"],
-                        attempts=int(attempts),
-                        streak_progress=streak_progress,
-                        points=int(points),
-                        complete=completed,
-                        completion_timestamp=date_completed,
-                    )
-                    try:
-                        elog.save()
+                alogs = []
 
-                        # For now, make all attempts on an exercise into a single UserLog.
-                        seconds_per_attempt = 10 * (1 + user_settings["speed_of_learning"] * random.random())
-                        time_to_navigate = 15 * (0.5 + random.random())  #between 7.5s and 22.5s
-                        time_to_logout = 5 * (0.5 + random.random()) # between 2.5 and 7.5s
-                        if UserLog.is_enabled():
-                            ulog = UserLog(
-                                user=facility_user,
-                                activity_type=1,
-                                start_datetime = date_completed - datetime.timedelta(seconds=int(attempts * seconds_per_attempt + time_to_navigate)),
-                                end_datetime = date_completed + datetime.timedelta(seconds=time_to_logout),
-                                last_active_datetime = date_completed,
-                            )
-                            ulog.save()
-                            user_logs.append(ulog)
-                    except Exception as e:
-                        logging.error("Error saving exercise log: %s" % e)
-                        continue
+                for i in range(0, attempts):
+                    alog = AttemptLog.objects.create(user=facility_user, exercise_id=exercise["id"], timestamp=start_date + date_diff*i/attempts)
+                    alogs.append(alog)
+                    if random.random() < user_settings["speed_of_learning"]:
+                        alog.correct = True
+                        alog.points = 10
+                    alog.save()
+
+                elog.attempts = attempts
+                elog.latest_activity_timestamp = start_date + date_diff
+                elog.streak_progress = sum([log.correct for log in alogs][-10:])*10
+                elog.points = sum([log.points for log in alogs][-10:])
+
+                elog.save()
+
                 exercise_logs.append(elog)
+
+                ulog = UserLog(
+                    user=facility_user,
+                    activity_type=1,
+                    start_datetime = start_date,
+                    end_datetime = start_date + date_diff,
+                    last_active_datetime = start_date + date_diff,
+                )
+                ulog.save()
+                user_logs.append(ulog)
 
     return (exercise_logs, user_logs)
 
@@ -450,6 +420,7 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                         points=points,
                         complete=(pct_completed == 100.),
                         completion_timestamp=date_completed,
+                        latest_activity_timestamp=date_completed,
                     )
                     try:
                         vlog.save()  # avoid userlog issues
@@ -511,7 +482,7 @@ class Command(BaseCommand):
         make_option('-t', '--transaction',
             action='store_true',
             dest='in_transaction',
-            default=False,
+            default=True,
             help='Create all objects in a single transaction',
             metavar="TRANSACTION"),
     )

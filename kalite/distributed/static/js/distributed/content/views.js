@@ -12,34 +12,40 @@ window.ContentWrapperView = BaseView.extend({
 
         var self = this;
 
-        window.statusModel.loaded.then(function() {
-            // load the info about the content itself
-            self.data_model = new ContentDataModel({id: options.id});
-            if (self.data_model.get("id")) {
-                self.data_model.fetch().then(function() {
+        // load the info about the content itself
+        this.data_model = new ContentDataModel({id: options.id});
+        if (this.data_model.get("id")) {
+            this.data_model.fetch().then(function() {
+                window.statusModel.loaded.then(self.setup_content_environment);
+            });
+        }
 
-                    // This is a hack to support the legacy VideoLog, separate from other ContentLog
-                    // TODO-BLOCKER (rtibbles) 0.14: Remove this
+        
+    },
 
-                    if (self.data_model.get("kind") == "Video") {
-                        LogCollection = VideoLogCollection;
-                    } else {
-                        LogCollection = ContentLogCollection;
-                    }
+    setup_content_environment: function() {
 
-                    self.log_collection = new LogCollection([], {content_model: self.data_model});
+        // This is a hack to support the legacy VideoLog, separate from other ContentLog
+        // TODO-BLOCKER (rtibbles) 0.14: Remove this
 
-                    if (window.statusModel.get("is_logged_in")) {
+        if (this.data_model.get("kind") == "Video") {
+            LogCollection = VideoLogCollection;
+        } else {
+            LogCollection = ContentLogCollection;
+        }
 
-                        self.log_collection.fetch().then(self.user_data_loaded);
+        this.log_collection = new LogCollection([], {content_model: this.data_model});
 
-                    } else {
-                        self.user_data_loaded();
-                    }
-                });
-            }
+        if (window.statusModel.get("is_logged_in")) {
 
-        });
+            this.log_collection.fetch().then(this.user_data_loaded);
+
+        } else {
+            this.user_data_loaded();
+        }
+
+        this.listenToOnce(window.statusModel, "change:is_logged_in", this.setup_content_environment);
+
     },
 
     user_data_loaded: function() {

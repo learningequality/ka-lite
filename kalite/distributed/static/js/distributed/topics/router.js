@@ -15,7 +15,13 @@ TopicChannelRouter = Backbone.Router.extend({
     },
 
     navigate_default_channel: function() {
-        this.navigate(this.default_channel + "/", {trigger: true, replace: true});
+        var addParam;
+        if (window.location.toString().split("?").length > 1) {
+            addParam = "?" + window.location.toString().split("?")[1];
+        } else {
+            addParam = "";
+        }
+        this.navigate(this.default_channel + "/" + addParam, {trigger: true, replace: true});
     },
 
     intercept_learn_nav: function(event){

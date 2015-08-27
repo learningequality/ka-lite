@@ -1,17 +1,20 @@
 """
+
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other i18n.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that i18n.settings has been copied over to kalite.settings
+
 i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
-import json
 import os
 import re
 import requests
 import shutil
-from collections_local_copy import OrderedDict, defaultdict
-from fle_utils.internet import invalidate_web_cache
+from collections_local_copy import OrderedDict
+from fle_utils.internet.webcache import invalidate_web_cache
 
-from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
 from django.http import HttpRequest
 from django.utils import translation
 from django.views.i18n import javascript_catalog
@@ -33,8 +36,9 @@ from kalite.version import VERSION
 
 CACHE_VARS = []
 
-DUBBED_VIDEOS_MAPPING_FILEPATH = os.path.join(settings.I18N_DATA_PATH, "dubbed_video_mappings.json")
-LOCALE_ROOT = settings.LOCALE_PATHS[0]
+
+from django.conf import settings; logging = settings.LOG
+
 
 class LanguageNotFoundError(Exception):
     pass
@@ -42,18 +46,17 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(os.path.dirname(__file__), settings.KHAN_EXERCISES_RELPATH, "exercises", ka_lang_code)
+    return os.path.join(settings.USER_STATIC_FILES, "perseus", "ke", "exercises", ka_lang_code)  # Translations live in user data space
 
 
 def get_locale_path(lang_code=None):
     """returns the location of the given language code, or the default locale root
     if none is provided."""
-    global LOCALE_ROOT
 
     if not lang_code:
-        return LOCALE_ROOT
+        return settings.USER_WRITABLE_LOCALE_DIR
     else:
-        return os.path.join(LOCALE_ROOT, lcode_to_django_dir(lang_code))
+        return os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lcode_to_django_dir(lang_code))
 
 def get_po_filepath(lang_code, filename=None):
     """Return the LC_MESSAGES directory for the language code, with an optional filename appended."""
@@ -69,20 +72,20 @@ def get_dubbed_video_map(lang_code=None, force=False):
     """
     Stores a key per language.  Value is a dictionary between video_id and (dubbed) youtube_id
     """
-    global DUBBED_VIDEO_MAP, DUBBED_VIDEO_MAP_RAW, DUBBED_VIDEOS_MAPPING_FILEPATH
+    global DUBBED_VIDEO_MAP, DUBBED_VIDEO_MAP_RAW
 
     if DUBBED_VIDEO_MAP is None or force:
         try:
-            if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
+            if not os.path.exists(settings.DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
                 try:
                     # Never call commands that could fail from the distributed server.
                     #   Always create a central server API to abstract things
                     response = requests.get("%s://%s/api/i18n/videos/dubbed_video_map" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST))
                     response.raise_for_status()
-                    with open(DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
+                    with open(settings.DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
                         fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.
                 except Exception as e:
-                    if not os.path.exists(DUBBED_VIDEOS_MAPPING_FILEPATH):
+                    if not os.path.exists(settings.DUBBED_VIDEOS_MAPPING_FILEPATH):
                         # Unrecoverable error, so raise
                         raise
                     elif DUBBED_VIDEO_MAP:
@@ -92,7 +95,7 @@ def get_dubbed_video_map(lang_code=None, force=False):
                         # We can recover by NOT forcing reload.
                         logging.warn("%s" % e)
 
-            DUBBED_VIDEO_MAP_RAW = softload_json(DUBBED_VIDEOS_MAPPING_FILEPATH, raises=True)
+            DUBBED_VIDEO_MAP_RAW = softload_json(settings.DUBBED_VIDEOS_MAPPING_FILEPATH, raises=True)
         except Exception as e:
             logging.info("Failed to get dubbed video mappings; defaulting to empty.")
             DUBBED_VIDEO_MAP_RAW = {}  # setting this will avoid triggering reload on every call
@@ -102,6 +105,11 @@ def get_dubbed_video_map(lang_code=None, force=False):
             if lang_name:
                 logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
                 DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
+
+    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
+    # TODO(jamalex): BURN IT ALL DOWN!
+    if lang_code == "pt-BR":
+        lang_code = "pt"
 
     return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
 
@@ -157,12 +165,16 @@ def get_id2oklang_map(video_id, force=False):
         return ID2OKLANG_MAP
 
 
-def get_youtube_id(video_id, lang_code=settings.LANGUAGE_CODE):
+def get_youtube_id(video_id, lang_code=None):
     """Given a video ID, return the youtube ID for the given language.
     If lang_code is None, return the base / default youtube_id for the given video_id.
     If youtube_id for the given lang_code is not found, function returns None.
     Accepts lang_code in ietf format
     """
+
+    if not lang_code:
+        lang_code = settings.LANGUAGE_CODE
+
     if not lang_code or lang_code == "en":  # looking for the base/default youtube_id
         return video_id
     return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
@@ -324,7 +336,13 @@ def _get_installed_language_packs():
             continue
 
         # Loop through folders in each locale dir
+        # This is idiotic, it just assumes that every directory / file is
+        # a valid language code
         for django_disk_code in os.listdir(locale_dir):
+
+            # Skip if it's a file
+            if not os.path.isdir(os.path.join(locale_dir, django_disk_code)):
+                continue
 
             # Inside each folder, read from the JSON file - language name, % UI trans, version number
             try:
@@ -363,7 +381,7 @@ def update_jsi18n_file(code="en"):
     save to disk--it won't change until the next language pack update!
     """
     translation.activate(code)  # we switch the language of the whole thread
-    output_dir = os.path.join(os.path.dirname(__file__), 'static', 'js', 'i18n')
+    output_dir = os.path.join(settings.CONTENT_ROOT, 'locale', 'js', 'i18n')
     ensure_dir(output_dir)
     output_file = os.path.join(output_dir, "%s.js" % code)
 
@@ -371,7 +389,7 @@ def update_jsi18n_file(code="en"):
     request.path = output_file
     request.session = {settings.LANGUAGE_COOKIE_NAME: code}
 
-    response = javascript_catalog(request, packages=('ka-lite.locale',), domain="django")
+    response = javascript_catalog(request, packages=('ka-lite.locale',), domain="djangojs")
     icu_js = ""
     for path in settings.LOCALE_PATHS:
         try:
@@ -379,8 +397,13 @@ def update_jsi18n_file(code="en"):
         except IOError:
             logging.warn("No {code}_icu.js file found in locale_path {path}".format(code=code, path=path))
     output_js = response.content + "\n" + icu_js
+    logging.info("Writing i18nized js file to {0}".format(output_file))
     with open(output_file, "w") as fp:
         fp.write(output_js)
+
+
+# Cache for language selections
+__select_best_available_language = {}
 
 
 def select_best_available_language(target_code, available_codes=None):
@@ -395,9 +418,21 @@ def select_best_available_language(target_code, available_codes=None):
 
     # Scrub the input
     target_code = lcode_to_django_lang(target_code)
+
+    store_cache = False
+
+    # Only use cache when available_codes is trivial, i.e. not a set of
+    # language codes
     if available_codes is None:
-        available_codes = get_installed_language_packs().keys()
-    logging.debug("choosing best language among %s" % available_codes)
+        if target_code in __select_best_available_language:
+            return __select_best_available_language[target_code]
+        else:
+            store_cache = True
+            available_codes = get_installed_language_packs().keys()
+
+    # logging.debug("choosing best language among %s" % (available_codes))
+
+    # Make it a tuple so we can hash it
     available_codes = [lcode_to_django_lang(lc) for lc in available_codes if lc]
 
     # Hierarchy of language selection
@@ -412,10 +447,15 @@ def select_best_available_language(target_code, available_codes=None):
     elif available_codes:
         actual_code = available_codes[0]
     else:
-        actual_code = None
+        raise RuntimeError("No languages found")
 
-    if actual_code != target_code:
-        logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+    # if actual_code != target_code:
+    #    logging.debug("Requested code %s, got code %s" % (target_code, actual_code))
+
+    # Store in cache when available_codes are not set
+    if store_cache:
+        __select_best_available_language[target_code] = actual_code
+
     return actual_code
 
 

@@ -1,29 +1,28 @@
 {% extends "updates/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
-
-{% block i18n_do_not_translate %}
-    {% block languages_active %}active active-tab active-nav{% endblock languages_active %}
-    {% block users_active %}active{% endblock users_active %}
-    {% block manage_active %}active{% endblock manage_active %}
-{% endblock i18n_do_not_translate %}
+{% load compress %}
 
 {% block title %}{% trans "Update Languages" %}{% endblock %}
+
+{% block i18n_do_not_translate %}
+    {% block languages_active %}active{% endblock languages_active %}
+{% endblock i18n_do_not_translate %}
 
 {% block headcss %}{{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'css/updates/update_languages.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
+    {% compress js file update_languagesjs %}
+        <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
+    {% endcompress %}
     <script type="text/javascript">
-        var start_languagepackdownload_url = "{% url 'start_languagepack_download' %}";
-        var INSTALLED_LANGUAGES_URL = "{% url 'installed_language_packs' %}"
-        var AVAILABLE_LANGUAGEPACK_URL = "http://" + CENTRAL_SERVER_HOST +  "/api/i18n/language_packs/available/{{ SHORTVERSION }}";
-        var DELETE_LANGUAGEPACK_URL = "{% url 'delete_language_pack' %}";
-        var defaultLanguage = "{{ default_language }}";
-        var BETA_BUTTON_URL = "{% static 'images/updates/beta-button.png' %}";
+     window.sessionModel.set({
+         AVAILABLE_LANGUAGEPACK_URL: "http://" + window.sessionModel.get("CENTRAL_SERVER_HOST") + "/api/i18n/language_packs/available/{{ SHORTVERSION }}",
+         DEFAULT_LANGUAGE: "{{ default_language }}",
+     });
     </script>
-    <script type="text/javascript" src="{% static 'js/updates/update_languages.js' %}"></script>
 {% endblock headjs %}
 
 {% block content %}
@@ -50,7 +49,7 @@
                     <span class= "button_style">
                         <div class="dropdown" id="language-packs">
                             <button class="btn btn-default dropdown-toggle" type="button" id="language-packs-selection" data-toggle="dropdown" aria-expanded="true">
-                                {% trans "select language pack" %}
+                                {% trans "Select language pack" %}
                                 <span class="caret"></span>
                             </button>
                           <ul class="dropdown-menu" role="menu" id="language-packs-ul"></ul>

@@ -1,5 +1,3 @@
-import logging
-
 from annoying.functions import get_object_or_None
 from datetime import datetime
 
@@ -8,15 +6,15 @@ from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 
 from tastypie import fields
-from tastypie.exceptions import NotFound, BadRequest
-from tastypie.resources import Resource, ModelResource
+from tastypie.exceptions import BadRequest
+from tastypie.resources import ModelResource
 
 from securesync.models import Zone, Device, SyncSession
 
-from kalite.facility import get_accessible_objects_from_logged_in_user
+from kalite.facility.utils import get_accessible_objects_from_logged_in_user
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog
-from kalite.shared.api_auth import ObjectAdminAuthorization
+from kalite.shared.api_auth.auth import ObjectAdminAuthorization
 from kalite.store.models import StoreTransactionLog, StoreItem
 from kalite.student_testing.models import TestLog
 
@@ -89,23 +87,7 @@ class FacilityGroupResource(ModelResource):
             else:
                 qs = FacilityGroup.objects.filter(facility__id__in=facility_ids)
 
-        # Flag to return only the FacilityGroup objects and not including the "All" and "Ungrouped" options.
-        # TODO(cpauya): how to convert this into a kwargs above instead of a request.GET?
-        groups_only = bundle.request.GET.get("groups_only", True)
-        if groups_only:
-            group_list = list(qs)
-        else:
-            default_list = []
-            if qs or ungrouped_available:
-                # add the "All" option
-                default_list = [FacilityGroup(id=ALL_KEY, name=_("All"))]
-
-                # add the "Ungrouped" option
-                if ungrouped_available:
-                    fg = FacilityGroup(id=UNGROUPED_KEY, name=_("Ungrouped"))
-                    default_list.append(fg)
-            # add all the facility group options for the user
-            group_list = default_list + list(qs)
+        group_list = list(qs)
 
         # call super to trigger auth
         return super(FacilityGroupResource, self).authorized_read_list(group_list, bundle)

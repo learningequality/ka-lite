@@ -14,7 +14,9 @@ from django.utils import unittest
 from django.core.management import call_command
 
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import BrowserActionMixins, CreateAdminMixin, FacilityMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.facility.models import FacilityGroup, FacilityUser
 from kalite.i18n import get_installed_language_packs, set_default_language
 
@@ -76,40 +78,6 @@ class TestUserManagement(BrowserActionMixins, CreateAdminMixin, FacilityMixins, 
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[5]").text.strip()[:len(group.name)], "1", "Does not report one user for group.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[2]").text.strip()[:len(user.username)], "test_user", "Does not show user in list.")
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[5]").text.strip()[:len(user.group.name)], "Test Group", "Does not report user in group.")
-
-
-    @unittest.skipIf(settings.RUNNING_IN_TRAVIS, 'fails occasionally on travis')
-    def test_groups_two_groups_one_user_in_group_no_ungrouped_group_selected_move(self):
-        facility = self.facility
-        params = {
-            "zone_id": None,
-            "facility_id": facility.id,
-        }
-        group_name_1 = "From Group"
-        group1 = FacilityGroup(name=group_name_1, facility=self.facility)
-        group1.save()
-        group_name_2 = "To Group"
-        group2 = FacilityGroup(name=group_name_2, facility=self.facility)
-        group2.save()
-        user = FacilityUser(username="test_user", facility=self.facility, group=group1)
-        user.set_password(raw_password="not-blank")
-        user.save()
-        self.browser_login_admin(**self.admin_data)
-        self.browse_to(self.reverse("facility_management", kwargs=params))
-        self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[1]/input[@type='checkbox'][1]").click()
-        Select(self.browser.find_element_by_css_selector("div#students select.movegrouplist")).select_by_visible_text("To Group")
-        self.browser.find_element_by_css_selector("button.movegroup").click()
-        if self.is_phantomjs:
-            alert = self.browser_click_and_accept('button.movegroup')
-        else:
-            alert = self.browser.switch_to_alert()
-            self.assertNotEqual(alert.text, None, "Does not produce alert of group movement.")
-            self.assertEqual(alert.text, "You are about to move selected users to another group.",
-                             "Does not warn that users are about to be moved.")
-            alert.accept()
-        WebDriverWait(self.browser, 5).until(EC.presence_of_element_located((By.ID, "students")))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr[1]/td[5]").text, "0", "Does not report no user for From Group.")
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr[2]/td[5]").text, "1", "Does not report one user for To Group.")
 
 
     @mock.patch.object(urllib, 'urlretrieve')

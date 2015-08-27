@@ -1,0 +1,55 @@
+{{#if is_admin }}
+  <li class="teach-tab"><a href="{{ url "coach_reports" }}">{{_ "Teach" }}</a></li>
+  <li class="manage-tab"><a href="{{#unless is_django_user }}{{ url "facility_management" "None" facility_id }}{{else}}{{url "zone_redirect" }}{{/unless}}">{{_ "Manage" }}</a></li>
+{{/if}}
+{{!-- Learn for all --}}
+  <li id="nav-handlebars" class="learn-tab"><a href="{{url "learn" }}" id="nav_learn" class="home-navlink">{{_ "Learn" }}</a></li>
+{{!-- Login --}}
+{{#unless is_logged_in}}
+  <li><a href="#" data-toggle="modal" data-target="#loginModal" id="nav_login">{{_ "Login" }}</a></li>
+  <li><a href="{{ url "facility_user_signup" }}" id="nav_signup">{{_ "Sign Up" }}</a></li>
+{{/unless}}
+
+  <hr class="nav-divider">
+{{#if is_admin}}
+  <hr class="nav-divider">
+{{/if}}
+
+{{!-- Farthest right nav is logged in user dropdown --}}
+{{#if is_logged_in}}
+  <li class="dropdown " id="user-name">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="user-name-a">
+        <span id="username">{{!-- Username injected here w/ js --}}</span>
+      <span class="caret hidden-xs"></span>
+    </a>
+
+    <ul class="dropdown-menu" data-no-collapse="true" role="menu">
+    {{#unless is_admin}}
+      <li id="points-tab" role="presentation">
+        <span id="points">{{!-- Points injected here w/ js --}}</span>
+      </li>
+      <li role="presentation" class="divider"></li>
+      {{!-- Student account management --}}
+      <li role="presentation" class="motivational-feature">
+        <a href="{{ url "student_view" }}" role="menuitem" tabindex="-1" id="nav_progress">
+          {{_ "My Progress" }}
+        </a>
+      </li>
+      <li role="presentation" class="divider"></li>
+    {{/unless}}
+      {{!-- Logout goes at the bottom! --}}
+      <li role="presentation" id="logout">
+        <a role="menuitem" tabindex="-1" id="nav_logout" href="#">
+          {{_ "Logout" }}
+        </a>
+      </li>
+    {{#if docs_exist}}
+      <li role="presentation" id="documentation">
+        <a role="menuitem" id="documentation_a" href="/static/html/index.html">
+          {{_ "Documentation" }}
+        </a>
+      </li>
+    {{/if}}
+    </ul>
+  </li>
+{{/if}}

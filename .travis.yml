@@ -8,20 +8,34 @@ before_install:
 - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile
   --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
 install:
-- pushd $TRAVIS_BUILD_DIR; npm install; popd
-- pushd $TRAVIS_BUILD_DIR; npm install -g grunt-cli; popd
+-  npm install
+-  npm install -g grunt-cli
+-  pip install -r requirements_test.txt
+-  pip install coveralls
+
 script:
-- cd $TRAVIS_BUILD_DIR
-- bin/kalite start --traceback -v 2
+
+- bin/kalite start --traceback -v2
 - bin/kalite status
-- bin/kalite stop --traceback -v 2
+- bin/kalite stop --traceback -v2
+
+# Check that there are no processes remaining containing the string "kalite" after stopping
+- if [ ! `ps ax | grep kalite | wc -l` -eq 1 ]; then echo "Processes remain after stop"; ps ax | grep kalite; exit 1; fi
+
 - python python-packages/fle_utils/tests.py
-- bin/kalite manage syncdb --migrate --noinput --traceback
-- bin/kalite test --traceback -v 2
+
+# KA Lite tests with coverage
+- coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" bin/kalite manage test --traceback -v2
+
+# JavaScript tests
 - grunt jshint
+
 notifications:
   email:
     - aron@learningequality.org
   hipchat:
     rooms:
       secure: A4OlCFaETlLB20ATXrPmA+8F35AsjZZ9nO8dPUG9m5pAr1pD4CDiVrn/tmHbbk2rQaQLm3B8CifdNuQL6fLuEv2pJpfIdSESVqsqJcQPPpgogjvHRabOXgAmC5AWpQupe3DARIMDjOPhHaeRFN/GYjEnK8N+nqu/SQ2mPmAzOFQ=
+after_success:
+- coverage report
+- coveralls

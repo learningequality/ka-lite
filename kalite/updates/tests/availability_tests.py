@@ -21,5 +21,6 @@ class TestTopicAvailability(UpdatesTestCase):
 
     def test_topic_availability(self):
         for topic in get_node_cache("Topic").values():
-            any_available = bool(sum([v.get("available", False) for v in topic["children"]]))
-            self.assertEqual(topic["available"], any_available, "Make sure topic availability matches video availability when only videos are available.")
+            if topic.get("kind") == "Topic":
+                any_available = bool(sum([get_node_cache("Topic").get(v, {}).get("available", False) for v in topic.get("children", [])]))
+                self.assertEqual(topic["available"], any_available, "Make sure topic availability matches child availability when any children are available.")

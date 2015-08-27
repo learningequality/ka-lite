@@ -1,0 +1,42 @@
+<div class="row">
+    <div class="col-md-6 col-xs-12">
+	<label id="legendMargin" for="legend">Key</label>
+        <ul id="legend">
+            <li class="legend"><div class="partial"></div><span>{{_ "In Progress" }}</span></li>
+            <li class="legend"><div class="complete"></div><span>{{_ "Completed" }}</span></li>
+            <li class="legend"><div class="struggling"></div><span>{{_ "Struggling" }}</span></li>
+			<li class="legend"><div class="not-attempted"></div><span>{{_ "Not Attempted" }}</span></li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {{#if learners}}
+            <div id="displaygrid">
+                <div class="users-table">
+                    <table class="table table-bordered tab_report">
+                        <thead>
+                            <tr>
+                                <th class="headrowuser">
+                                    {{_ "Learner"}}
+                                </th>
+                                {{#each contents}}
+                                     <th class="headrow data">
+                                        <div>
+                                            <a href="{{ url "learn" }}{{ path }}" title='"{{_ display_name }}"{{#if description }} {{ description }}{{/if }}'>{{_ title }}</a>
+                                        </div>
+                                    </th>
+                                {{/each}}
+                            </tr>
+                        </thead>
+                        <tbody class="student-data">
+                        </tbody>
+                    </table>
+                    <div style="clear: both;">
+                    </div>
+                </div>
+            </div>
+        {{/if}} 
+    </div>
+</div>
+

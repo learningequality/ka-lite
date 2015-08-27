@@ -45,13 +45,10 @@ from django.conf import settings; logging = settings.LOG
 from django.core import management
 from django.db import transaction
 from selenium.webdriver.support import expected_conditions, ui
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 
 from . import base
-from ..browser import BrowserTestCase
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog
 from kalite.topic_tools import get_node_cache
@@ -429,12 +426,7 @@ class SeleniumStudent(base.SeleniumCommon):
                 "args":{"find_by":By.ID, "find_text":"nav_practice"},
                 "nextstep":[(1.00, "neadd2_1")]
                  }
-        self.activity["neadd2_1"]= {
-                "method":self._get_path, "duration":3+(self.random.random()*10),
-                "args":{"path":"/exercisedashboard/?topic=addition-subtraction"},
-                "nextstep":[(1.00, "neadd2_2")]
-                 }
-        self.activity["neadd2_2"]= {
+        self.activity["neadd2"]= {
                 "method":self._get_path, "duration":5,
                 "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/e/addition_2/"},
                 "nextstep":[(1.00, "weadd2")]
@@ -455,12 +447,7 @@ class SeleniumStudent(base.SeleniumCommon):
                 "args":{"find_by":By.ID, "find_text":"nav_practice"},
                 "nextstep":[(1.00, "nesub2_1")]
                  }
-        self.activity["nesub2_1"]= {
-                "method":self._get_path, "duration":3,
-                "args":{"path":"/exercisedashboard/?topic=addition-subtraction"},
-                "nextstep":[(1.00, "nesub2_2")]
-                 }
-        self.activity["nesub2_2"]= {
+        self.activity["nesub2"]= {
                 "method":self._get_path, "duration":3+(self.random.random()*3),
                 "args":{"path":"/math/arithmetic/addition-subtraction/two_dig_add_sub/e/subtraction_2/"},
                 "nextstep":[(1.00, "wesub2")]

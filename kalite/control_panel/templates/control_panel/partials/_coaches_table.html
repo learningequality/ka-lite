@@ -58,7 +58,7 @@
                                     </a>
                                 </td>
                                 <td>{{ coach.total_logins }}</td>
-                                <td>{{ coach.total_hours|floatformat }}</td>
+                                <td>{{ coach.total_hours|floatformat }} {% trans "hour(s)" %}</td>
                                 <td>{{ coach.total_report_views }}</td>
                             </tr>
                             {% endfor %}

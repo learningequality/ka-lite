@@ -1,5 +1,5 @@
 try:
-    import local_settings
+    from kalite import local_settings
 except ImportError:
     local_settings = object()
 

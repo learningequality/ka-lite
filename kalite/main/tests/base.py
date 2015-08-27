@@ -11,7 +11,7 @@ from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools import get_exercise_cache, get_content_cache
+from kalite.topic_tools import get_content_cache
 from securesync.models import Device
 
 

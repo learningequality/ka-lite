@@ -18,10 +18,6 @@ except ImportError:
 if __name__ == "__main__":
     import warnings
     
-    # TODO.. DRY,  is duplicated code, also exists in kalite.settings /benjaoming
-    BUILD_INDICATOR_FILE = os.path.join("kalite", "_built.touch")
-    BUILT = os.path.exists(BUILD_INDICATOR_FILE)  # whether this installation was processed by the build server
-
     # We are overriding a few packages (like Django) from the system path.
     #   Suppress those warnings
     warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.path', append=True)
@@ -43,7 +39,7 @@ if __name__ == "__main__":
     ########################
     # Run it.
     ########################
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.default")
 
     from django.core.management import execute_from_command_line
     execute_from_command_line(sys.argv)

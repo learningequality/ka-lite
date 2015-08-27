@@ -4,40 +4,39 @@ from threading import Thread
 from time import sleep
 from optparse import make_option
 import os
-try:
-    import memory_profiler
-except Exception as e:
-    pass
 import gc
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
-from django.core.management import call_command
 from django.utils.translation import ugettext_lazy as _
 
 from ....chronograph.models import Job
 
 
 class CronThread(Thread):
-    daemon = True
+    daemon = False
     def __init__(self, gc=False, mp=False, *args, **kwargs):
         self.do_gc = gc
-
-        if mp and not "memory_profiler" in sys.modules.keys():
-            mp = False
-            warnings.warn("memory_profiling disabled.")
-        self.do_profile = mp
-
+        self.do_profile = True
 
         return super(CronThread, self).__init__(*args, **kwargs)
 
     def run(self):
         jobs = Job.objects.due()
-        prof_string = "" if not self.do_profile else "[%8.2f MB] " % memory_profiler.memory_usage()[0]
+        
+        if self.do_profile:
+            try:
+                import memory_profiler
+                prof_string = "[%8.2f MB] " % memory_profiler.memory_usage()[0]
+            except ImportError:
+                prof_string = "No profiler found"
+        else:
+            prof_string = ""
 
         if jobs:
             logging.info("%sRunning %d due jobs... (%s)" % (prof_string, jobs.count(), ", ".join(['"%s"' % job.name for job in jobs])))
-            call_command('cron')
+            for job in Job.objects.due():
+                job.run()
         else:
             logging.debug("%sNo jobs due to run." % prof_string)
 
@@ -72,7 +71,12 @@ class Command(BaseCommand):
             help='Write PID to file when running as daemon'),
     )
     def handle( self, *args, **options ):
-
+        
+        warnings.warn(
+            "This command is deprecated. 'kalite start' will create a "
+            "thread that runs chronograph."
+        )
+        
         # Run as daemon, ie. fork the process
         if options['daemon']:
             from django.utils.daemonize import become_daemon

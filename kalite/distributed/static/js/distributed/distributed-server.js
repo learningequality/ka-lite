@@ -5,7 +5,7 @@
 
 // Functions related to loading the page
 
-function toggle_state(state, status){
+function toggle_state(state, status) {
     $("." + (status ? "not-" : "") + state + "-only").hide();
     $("." + (!status ? "not-" : "") + state + "-only").show();
     // Use display block setting instead of inline to prevent misalignment of navbar items.
@@ -35,14 +35,14 @@ function show_api_messages(messages) {
     }
 }
 
-function force_sync() {
+function force_sync(zone_id, device_id) {
     // Simple function that calls the API endpoint to force a data sync,
     //   then shows a message for success/failure
-    doRequest(FORCE_SYNC_URL)
+    doRequest(window.Urls.api_force_sync())
         .success(function() {
             var msg = gettext("Successfully launched data syncing job.") + " ";
             msg += sprintf(gettext("After syncing completes, visit the <a href='%(devman_url)s'>device management page</a> to view results."), {
-                devman_url: LOCAL_DEVICE_MANAGEMENT_URL
+                devman_url: Urls.device_management(zone_id, device_id)
             });
             show_message("success", msg);
         });
@@ -59,22 +59,118 @@ var StatusModel = Backbone.Model.extend({
         client_server_time_diff: 0
     },
 
-    url: STATUS_URL,
+    is_student: function() {
+        return this.get("is_logged_in") && !this.get("is_admin");
+    },
+
+    urlRoot: function() {
+        return window.sessionModel.get("USER_URL");
+    },
+
+    url: function () {
+        return this.urlRoot() + "status/";
+    },
 
     initialize: function() {
 
         _.bindAll(this);
 
+    },
+
+    fetch_data: function() {
         // save the deferred object from the fetch, so we can run stuff after this model has loaded
         this.loaded = this.fetch();
 
         this.loaded.then(this.after_loading);
-
     },
 
     get_server_time: function () {
+        var regex = /(Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s[0-9]{2}\s[0-9]{4}\s[0-9]{2}:[0-9]{2}:[0-9]{2}/;
         // Function to return time corrected to server clock based on status update.
-        return (new Date(new Date() - this.get("client_server_time_diff"))).toISOString().slice(0, -1);
+        return (new Date(new Date().getTime() - this.get("client_server_time_diff"))).toString().match(regex)[0];
+    },
+
+    login: function(username, password, facility, callback) {
+        /**
+        * login method for StatusModel
+        *
+        * @method login
+        * @param {String} username Username to login with
+        * @param {String} password Password with with to login
+        * @param {String} facility The id of the facility object to which the facility user belongs
+        * @param {Function} callback A callback function
+        * Add a callback to allow functions calling this method to
+        * the login - failure, success, and particular errors that can be noted on the UI (such as incorrect username)
+        */
+
+        var self = this;
+
+        data = {
+            username: username || "",
+            password: password || "",
+            facility: facility || ""
+        };
+
+        $.ajax({
+            url: self.urlRoot() + "login/",
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'POST',
+            data: JSON.stringify(data),
+            // Pass callback to wrapper function to pass the callback argument to the success and fail functions.
+            success: self.handle_login_logout_success_with_callback(callback),
+            error: self.handle_login_logout_error_with_callback(callback)
+        });
+    },
+
+    logout: function(callback) {
+        var self = this;
+
+        $.ajax({
+            url: self.urlRoot() + "logout/",
+            contentType: 'application/json',
+            dataType: 'json',
+            type: 'GET',
+            // Pass callback to wrapper function to pass the callback argument to the success and fail functions.
+            success: self.handle_login_logout_success_with_callback(callback),
+            error: self.handle_login_logout_error_with_callback(callback)
+        });
+    },
+
+    handle_login_logout_success_with_callback: function(callback) {
+        var self = this;
+        return function(data, status, response) {
+            self.handle_login_logout_success(data, status, response, callback);
+        };
+    },
+
+    handle_login_logout_success: function(data, status, response, callback) {
+        if (data.redirect) {
+            response.redirect = data.redirect;
+        }
+        this.fetch_data();
+        if (callback) {
+            callback(response);
+        } else {
+            if (data.redirect) {
+                window.location = data.redirect;
+            }
+        }
+    },
+
+    handle_login_logout_error_with_callback: function(callback) {
+        var self = this;
+        return function(response, status, error) {
+            self.handle_login_logout_error(response, status, error, callback);
+        };
+    },
+
+    handle_login_logout_error: function(response, status, error, callback) {
+        if (callback) {
+            callback(response);
+        } else {
+            handleFailedAPI(response);
+        }
     },
 
     after_loading: function() {
@@ -86,7 +182,8 @@ var StatusModel = Backbone.Model.extend({
         // As the server sends its timestamp without a timezone (and we can't rely on timezones
         // being set correctly, we need to do some finagling with the offset to get it to work out.
         var time_stamp = new Date(this.get("status_timestamp"));
-        this.set("client_server_time_diff", new Date() - time_stamp.getTime());
+
+        this.set("client_server_time_diff", (new Date()).getTime() - time_stamp.getTime());
 
         $(function() {
             toggle_state("logged-in", self.get("is_logged_in"));
@@ -97,74 +194,34 @@ var StatusModel = Backbone.Model.extend({
             toggle_state("admin", self.get("is_admin")); // combination of teachers & super-users
             $('.navbar-right').show();
         });
-
     },
 
     update_total_points: function(points) {
         points = points || 0;
         // add the points that existed at page load and the points earned since page load, to get the total current points
         this.set("points", this.get("points") + points);
+    },
+
+    pageType: function() {
+
+        if ( window.location.pathname.search(Urls.coach_reports()) > -1 ) {
+            return "teachPage";
+        } 
+        if ( window.location.pathname.search(Urls.learn()) > -1 ) {
+            return "learnPage";
+        } 
+        if ( window.location.pathname.search(Urls.zone_redirect()) > -1 || window.location.pathname.search("/update/") > -1 ) {
+            return "managePage";
+        }
+        
     }
 
 });
 
 // create a global StatusModel instance to hold shared state, mostly as returned by the "status" api call
-window.statusModel = new StatusModel();
 
+window.statusModel = new window.StatusModel();
 
-/**
- * View that wraps the point display in the top-right corner of the screen, updating itself when points change.
- */
-var TotalPointView = Backbone.View.extend({
-
-    initialize: function() {
-        _.bindAll(this);
-        this.model.bind("change:points", this.render);
-        this.render();
-    },
-
-    render: function() {
-
-        var points = this.model.get("points");
-        var message = null;
-
-        // only display the points if they are greater than zero, and the user is logged in
-        if (!this.model.get("is_logged_in")) {
-            return;
-        }
-
-        message = sprintf(gettext("Points: %(points)d "), { points : points });
-        if (ds.store.show_store_link_once_points_earned) {
-            message += " | <a href='/store/'>Store!</a>";
-        }
-
-        this.$el.html(message);
-        this.$el.show();
-    }
-
-});
-
-var UsernameView = Backbone.View.extend({
-
-    initialize: function() {
-        this.listenTo(this.model, "change:username", this.render);
-        this.render();
-    },
-
-    render: function() {
-
-        var username_span = this.model.get("username");
-
-        // only display the points if they are greater than zero, and the user is logged in
-        if (!this.model.get("is_logged_in")) {
-            return;
-        }
-
-        this.$el.html(username_span);
-        this.$el.show();
-    }
-
-});
 
 function sanitize_string(input_string) {
     return $('<div/>').text(input_string).html();
@@ -172,13 +229,6 @@ function sanitize_string(input_string) {
 
 // Related to showing elements on screen
 $(function(){
-
-    // create an instance of the total point view, which encapsulates the point display in the top right of the screen
-    var usernameView = new UsernameView({model: statusModel, el: "#username"});
-    var totalPointView = new TotalPointView({model: statusModel, el: "#points"});
-
-    // For mobile (Bootstrap xs) view
-    var totalPointViewXs = new TotalPointView({model: statusModel, el: "#points-xs"});
 
     // Process any direct messages, from the url querystring
     if ($.url().param('message')) {
@@ -202,7 +252,7 @@ $(function() {
     // load progress data for all videos linked on page, and render progress circles
     var video_ids = $.map($(".progress-circle[data-video-id]"), function(el) { return $(el).data("video-id"); });
     if (video_ids.length > 0) {
-        doRequest(GET_VIDEO_LOGS_URL, video_ids)
+        doRequest(window.sessionModel.get("GET_VIDEO_LOGS_URL"), video_ids)
             .success(function(data) {
                 $.each(data, function(ind, video) {
                     var newClass = video.complete ? "complete" : "partial";
@@ -214,7 +264,7 @@ $(function() {
     // load progress data for all exercises linked on page, and render progress circles
     var exercise_ids = $.map($(".progress-circle[data-exercise-id]"), function(el) { return $(el).data("exercise-id"); });
     if (exercise_ids.length > 0) {
-        doRequest(GET_EXERCISE_LOGS_URL, exercise_ids)
+        doRequest(window.sessionModel.get("GET_EXERCISE_LOGS_URL"), exercise_ids)
             .success(function(data) {
                 $.each(data, function(ind, exercise) {
                     var newClass = exercise.complete ? "complete" : "partial";
@@ -232,7 +282,7 @@ $(function() {
     $("#language_selector").change(function() {
         var lang_code = $("#language_selector").val();
         if (lang_code != "") {
-            doRequest(SET_DEFAULT_LANGUAGE_URL,
+            doRequest(window.Urls.set_default_language(),
                       {lang: lang_code}
                      ).success(function() {
                          window.location.reload();
@@ -259,7 +309,7 @@ function get_server_status(options, fields, callback) {
         protocol: "http",
         hostname: "",
         port: 8008,
-        path: SERVER_INFO_PATH
+        path: window.Urls.get_server_info()
     };
 
     var args = $.extend(defaults, options);
@@ -303,9 +353,9 @@ function check_now_whether_server_is_online(callback) {
  * @return {boolean} The callback function will be passed true if the client is online, and false otherwise.
  */
 function check_now_whether_client_is_online(callback) {
-    var hostname = CENTRAL_SERVER_HOST.split(":")[0];
-    var port = CENTRAL_SERVER_HOST.split(":")[1] || null;
-    get_server_status({protocol: SECURESYNC_PROTOCOL, hostname: hostname, port: port}, [], function(data) {
+    var hostname = window.sessionModel.get("CENTRAL_SERVER_HOST").split(":")[0];
+    var port = window.sessionModel.get("CENTRAL_SERVER_HOST").split(":")[1] || null;
+    get_server_status({protocol: window.sessionModel.get("SECURESYNC_PROTOCOL"), hostname: hostname, port: port}, [], function(data) {
         callback(data["status"] === "OK");
     });
 }

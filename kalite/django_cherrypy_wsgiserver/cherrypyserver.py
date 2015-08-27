@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import imp
-import os, sys, time, signal, errno
+import os, time, signal, errno
 import urlparse
 
 import cherrypy
@@ -30,6 +30,14 @@ class DjangoAppPlugin(plugins.SimplePlugin):
 
         # Serve the content files
         if getattr(settings, "CONTENT_ROOT", None):
+            # Assessment items
+            from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT
+            static_handler = cherrypy.tools.staticdir.handler(
+                section="/",
+                dir="",
+                root=os.path.abspath(KHAN_ASSESSMENT_ITEM_ROOT)
+            )
+            cherrypy.tree.mount(static_handler, settings.CONTENT_URL + "khan/")
             static_handler = cherrypy.tools.staticdir.handler(
                 section="/",
                 dir=os.path.split(settings.CONTENT_ROOT)[1],
@@ -129,7 +137,7 @@ def stop_server(pidfile):
 
 
 def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=False, pidfile=None, autoreload=False, startuplock=None):
-    port = port or getattr(settings, "CHERRYPY_PORT", 8008)
+    port = port or getattr(settings, "PRODUCTION_PORT", 8008)
     threads = threads or getattr(settings, "CHERRYPY_THREAD_COUNT", 18)
 
     if daemonize:
@@ -142,11 +150,16 @@ def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=Fal
         # stop_server(pidfile)
 
         from django.utils.daemonize import become_daemon
-        become_daemon()
+        kalite_home = os.environ.get("KALITE_HOME", None)
+        logfile = os.path.join(kalite_home, "kalite.log") if (kalite_home and os.environ.get("NAIVE_LOGGING", False)) else None
+        if logfile:
+            become_daemon(out_log=logfile, err_log=logfile)
+        else:
+            become_daemon()
 
-        fp = open(pidfile, 'w')
-        fp.write("%d\n" % os.getpid())
-        fp.close()
+        with open(pidfile, 'w') as f:
+            f.write("%d\n" % os.getpid())
+            f.write(port)
 
     cherrypy.config.update({
         'server.socket_host': host,

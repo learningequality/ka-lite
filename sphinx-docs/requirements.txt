@@ -1,6 +1,0 @@
-sphinx==1.3
-sphinx-intl
-# Required for sphinx-intl in python 2.6
-ordereddict
-# Required by screenshots.py to take screenshots in headless manner
-pyvirtualdisplay
