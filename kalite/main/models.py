@@ -5,13 +5,11 @@ All models associated with user learning / usage, including:
 """
 import random
 import uuid
-from annoying.functions import get_object_or_None
 from math import ceil
 from datetime import datetime
 from dateutil import relativedelta
 
 from django.conf import settings; logging = settings.LOG
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.signals import user_logged_out
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -19,18 +17,18 @@ from django.db.models import Sum
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
-from fle_utils.django_utils import ExtendedModel
+from fle_utils.django_utils.classes import ExtendedModel
 from fle_utils.general import datediff, isnumeric
 from kalite import i18n
 from kalite.facility.models import FacilityUser
 from kalite.dynamic_assets.utils import load_dynamic_settings
-from securesync.models import DeferredCountSyncedModel, SyncedModel, Device
+from securesync.models import DeferredCountSyncedModel, Device
 
 
 class VideoLog(DeferredCountSyncedModel):
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
+    video_id = models.CharField(max_length=200, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
     youtube_id = models.CharField(max_length=20) # metadata only
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
@@ -38,6 +36,11 @@ class VideoLog(DeferredCountSyncedModel):
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
+    latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
+
+    def __init__(self, *args, **kwargs):
+        super(VideoLog, self).__init__(*args, **kwargs)
+        self._unhashable_fields += ("latest_activity_timestamp",) # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -120,7 +123,7 @@ class VideoLog(DeferredCountSyncedModel):
 
 class ExerciseLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    exercise_id = models.CharField(max_length=100, db_index=True)
+    exercise_id = models.CharField(max_length=200, db_index=True)
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
@@ -130,6 +133,11 @@ class ExerciseLog(DeferredCountSyncedModel):
     attempts_before_completion = models.IntegerField(blank=True, null=True)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
+    latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
+
+    def __init__(self, *args, **kwargs):
+        super(ExerciseLog, self).__init__(*args, **kwargs)
+        self._unhashable_fields += ("latest_activity_timestamp",) # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -481,7 +489,7 @@ class AttemptLog(DeferredCountSyncedModel):
     minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, db_index=True)
-    exercise_id = models.CharField(max_length=100, db_index=True)
+    exercise_id = models.CharField(max_length=200, db_index=True)
     seed = models.IntegerField(default=0)
     answer_given = models.TextField(blank=True) # first answer given to the question
     points = models.IntegerField(default=0)
@@ -508,7 +516,7 @@ class ContentLog(DeferredCountSyncedModel):
     minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    content_id = models.CharField(max_length=100, db_index=True)
+    content_id = models.CharField(max_length=200, db_index=True)
     points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
@@ -517,11 +525,16 @@ class ContentLog(DeferredCountSyncedModel):
     completion_counter = models.IntegerField(blank=True, null=True)
     time_spent = models.FloatField(blank=True, null=True)
     progress_timestamp = models.DateTimeField(blank=True, null=True)
+    latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
     content_source = models.CharField(max_length=100, db_index=True, default=settings.CHANNEL)
     content_kind = models.CharField(max_length=100, db_index=True)
     progress = models.FloatField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)
     extra_fields = models.TextField(blank=True)
+
+    def __init__(self, *args, **kwargs):
+        super(ContentLog, self).__init__(*args, **kwargs)
+        self._unhashable_fields += ("latest_activity_timestamp",) # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass

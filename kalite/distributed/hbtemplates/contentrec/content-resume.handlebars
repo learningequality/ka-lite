@@ -1,0 +1,68 @@
+<div class="container card">
+  <!--This is where the card title is-->
+  <div class="row card-title">
+    <div class="col-xs-9">
+      <h1>{{_ "Resume" }}</h1>
+    </div>
+    <div class="col-xs-3">
+      <h1 class="glyphicon glyphicon-play-circle" aria-hidden="true"></h1>
+    </div>
+    <hr class="module_divider" />
+  </div>
+  <a href="/learn/{{ path }}">
+    <!--Where the video thumbnail and description go-->
+    <div id="content-resume-thumbnail">
+      {{#if content_urls.thumbnail }}
+      <div class="row">
+        <center>
+          <div class="col-xs-12">
+            <h4>{{ title }}</h4>
+          </div>
+        </center>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <center>
+            <img src="{{content_urls.thumbnail}}" class="img-responsive" alt="{{ truncate description 100 }}">
+          </center>
+        </div>
+      </div>
+        {{#if description }}
+        <div class="row">
+          <div class="col-xs-12">
+            <h3>{{_ "Description" }}:</h3>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <p>{{ truncate description 100 }}</p>
+          </div>
+        </div>
+        {{/if}} 
+      {{else}}
+      <div class="row">
+        <div class="col-xs-3">
+          <center>
+            <h1 id="exercise-icon" class="icon-{{kind}} glyphicon-expand"></h1>
+          </center>
+        </div> 
+        
+        <div class="col-xs-9">
+          <h4><small>{{_ "Exercise" }}:</small></h4>
+          <h4>{{ title }}</h4>
+        </div>
+        
+<!-- NO descriptions for excercise? Is it necessary?
+        {{#if description }}
+          <div class="col-xs-12">
+            <h3><small>Description:</small></h3>
+            <p>{{ truncate description 100 }}</p>
+          </div>
+        {{/if}}
+-->
+        
+      </div>
+      {{/if}}
+    </div>
+  </a>
+</div>

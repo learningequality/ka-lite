@@ -1,13 +1,10 @@
 {% extends base_template %}
 {% load i18n %}
 {% load my_filters %}
+{% load staticfiles %}
 
 {% block headcss %}{{ block.super }}
-    <style>
-        h3 {
-            margin:20px 0px 5px 0px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/distributed/search.css' %}">
 {% endblock headcss %}
 
 {% block title %}{{ title }}{% endblock title %}
@@ -18,19 +15,46 @@
 
     {% else %}
         <h2>{{ title }}</h2>
-
-        {% for category, subresults in results.iteritems %}
-            <h3>{{ category }}{% if hit_max|get_item:category %} ({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %}){% endif %}</h3>
-            <ul>
-            {% for node in subresults %}
-                <li>
-                    <a href="{% url 'learn' %}{{ node.path }}" class="{{ node.kind }}-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
-                </li>
+        <div class="container container-fluid search-results">
+            <div class="row">
+            {% for category, subresults in results.iteritems %}
+                <div class="col-sm-4 category-col">    
+                    <h3>{{ category }}
+                    {% if hit_max|get_item:category %}
+                        <br class="visible-sm"/>
+                        <small>({% blocktrans %}showing first {{ max_results }} results{% endblocktrans %})</small>
+                    {% endif %}</h3>
+                    <ul class="subresults-list">
+                    {% for node in subresults %}
+                        <li class="subresults-item">
+                            <a href="{% url 'learn' %}{{ node.path }}" class="{{ node.kind }}-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
+                        </li>
+                    {% endfor %}
+                    {% if hit_max|get_item:category %}
+                        <div>...</div>
+                    {% endif %}
+                    </ul>
+                </div>
+                <hr class="visible-xs">
             {% endfor %}
-            {% if hit_max|get_item:category %}
-                <li>...</li>
+            </div>
+            {% if more or page > 1 %}
+            <nav>
+              <ul class="pagination">
+                <li {% if page == 1 %}class="disabled"{% endif %}>
+                  <a href="{{ previous_url }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="active"><a href="#">{{ page }} <span class="sr-only">({% trans "current" %})</span></a></li>
+                <li {% if not more %}class="disabled"{% endif %}>
+                  <a href="{{ next_url }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
             {% endif %}
-            </ul>
-        {% endfor %}
+        </div>
     {% endif %}
 {% endblock %}

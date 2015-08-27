@@ -1,16 +1,15 @@
-import errno
 import glob
 import json
 import os
-import re
+
 from optparse import make_option
-from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import WebDriverException
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.utils.six import StringIO
 
@@ -18,8 +17,10 @@ from securesync.models import Device, DeviceZone, Zone
 
 from fle_utils.general import ensure_dir
 from kalite.testing.base import KALiteBrowserTestCase
-from kalite.testing.mixins import FacilityMixins, BrowserActionMixins
+from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.distributed.management.commands.katest import unregister_distributed_server
+from kalite.facility.models import Facility
 
 USER_TYPE_ADMIN = "admin"
 USER_TYPE_COACH = "coach"
@@ -56,6 +57,11 @@ class Command(BaseCommand):
             dest='no_del',
             default=None,
             help='Don\'t delete existing screenshots.'),
+        make_option('--lang',
+            action='store',
+            dest='language',
+            default=None,
+            help='Specify the language of the session, set by the "set_default_language" api endpoint.'),
         )
 
     def handle(self, *args, **options):
@@ -86,9 +92,10 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None,
         ensure_dir(settings.SCREENSHOTS_OUTPUT_PATH)
 
         new_io = StringIO()
-        call_command("reset_db", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
         call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
+        call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity, database="assessment_items")
         call_command("migrate", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
+        call_command("generaterealdata", interactive=False, stdout=new_io, router=router, verbosity=verbosity)  # For coachreports pages
         if username and email and password:
             log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,)) if int(verbosity) > 0 else None
             call_command("createsuperuser", username=username, email=email,
@@ -136,7 +143,6 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
     KEY_INPUTS = 'inputs'
     KEY_PAGES = 'pages'
     KEY_FOCUS = 'focus'
-    # Notes aren't used anywhere...
     KEY_NOTES = 'notes'
 
     KEY_CMD_SLUG = '<slug>'
@@ -196,9 +202,10 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         if not self.admin_user:
             raise Exception("==> Did not successfully setup database!")
 
-        self.facility = self.create_facility()
-        self.create_student(username=self.student_username, password=self.default_password)
-        self.create_teacher(username=self.coach_username, password=self.default_password)
+        Facility.initialize_default_facility("Silly Facility")  # Default facility required to avoid pernicious facility selection page
+        facility = self.facility = Facility.objects.get(name="Silly Facility")
+        self.create_student(username=self.student_username, password=self.default_password, facility=facility)
+        self.create_teacher(username=self.coach_username, password=self.default_password, facility=facility)
 
         self.persistent_browser = True
         self.max_wait_time = kwargs.get('max_wait_time', 30)
@@ -207,12 +214,33 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
         self.loginfo("==> Setting-up browser ...")
         super(Screenshot, self).setUp()
+        # Selenium won't scroll to an element, so we have to make the window size is large enough so that everything is visible
         self.browser.set_window_size(1024, 768)
-        self.browser.implicitly_wait(15)
+        # self.browser.implicitly_wait(3)
+
+        # After initializing the server (with setUp) and a browser, set the language
+        self.set_session_language(kwargs['language'])
 
         self.loginfo("==> Browser %s successfully setup with live_server_url %s." %
                  (self.browser.name, self.live_server_url,))
         self.loginfo("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
+
+    def set_session_language(self, lang_code):
+        """ Uses the "set_default_language" api endpoint to set the language for the session.
+        The language pack should already be downloaded, or the behavior is undefined.
+        TODO: Handle the case when the language pack is not downloaded.
+
+        :param lang_code: A string with the language code or None. Value None is a no-op 
+        """
+        if not lang_code:
+            return
+        self.browser.get(self.live_server_url + reverse("homepage"))
+        self.browser_wait_for_js_object_exists("$")
+        data = json.dumps({"lang": lang_code})
+        self.browser.execute_script("window.SUCCESS=false; $.ajax({type: \"POST\", url: \"%s\", data: '%s', contentType: \"application/json\", success: function(){window.SUCCESS=true}})" % (reverse("set_default_language"), data))
+        self.browser_wait_for_js_condition("window.SUCCESS")    
+        # Ensure the changes are loaded 
+        self.browser.get(self.live_server_url + reverse("homepage"))
 
     def validate_json_keys(self, shot):
         """
@@ -230,14 +258,21 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
                  (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
 
         if focus:
-            # Apply the specified styles to element. Currently only selection by
-            # id is supported. TODO: Extend it a more generic CSS selector.
+            self.browser_wait_for_js_object_exists("$")
             selector = focus['selector']
             styles = focus['styles']
-            for key, value in styles.iteritems():
-                self.browser.execute_script('$("%s").css("%s", "%s");' % (selector, key, value))
-            if note:
-                self.browser.execute_script("$('%s').qtip({content:{text:\"%s\"},show:{ready:true,delay:0,effect:false}})" % (selector, note))
+            try:
+                for key, value in styles.iteritems():
+                    self.browser.execute_script('$("%s").css("%s", "%s");' % (selector, key, value))
+                if note:
+                    self.browser.execute_script("$('%s').qtip({content:{text:\"%s\"},show:{ready:true,delay:0,effect:false}})" % (selector, note))
+            except WebDriverException as e:
+                log.error("Error taking screenshot:")
+                log.error(str(e))
+                log.error("Screenshot info: {0}".format((focus, note)))
+                log.error("Current url: {0}".format(self.browser.current_url))
+                import sys
+                sys.exit(1)
         self.browser.save_screenshot(filename)
 
     def process_snap(self, shot, browser=None):
@@ -247,80 +282,69 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.validate_json_keys(shot)
 
         start_url = '/'
-        try:
-            # Let's just always start logged out
-            if self.browser_is_logged_in():
-                self.browser_logout_user()
+        # Let's just always start logged out
+        if self.browser_is_logged_in():
+            self.browser_logout_user()
 
-            # Make sure to unregister after finishing for the next shot
-            if shot["registered"]:
-                self._do_fake_registration()
+        # Make sure to unregister after finishing for the next shot
+        if shot["registered"]:
+            self._do_fake_registration()
 
-            if USER_TYPE_STUDENT in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.student_username):
-                self.browser_login_student(self.student_username, self.default_password, self.facility.name)
-            elif USER_TYPE_COACH in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.coach_username):
-                self.browser_login_teacher(self.coach_username, self.default_password, self.facility.name)
-            elif USER_TYPE_ADMIN in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.admin_username):
-                self.browser_login_user(self.admin_username, self.default_password)
-            elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.browser_is_logged_in():
-                self.browser_logout_user()
+        if USER_TYPE_STUDENT in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.student_username):
+            self.browser_login_student(self.student_username, self.default_password, self.facility.name)
+        elif USER_TYPE_COACH in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.coach_username):
+            self.browser_login_teacher(self.coach_username, self.default_password, self.facility.name)
+        elif USER_TYPE_ADMIN in shot[self.KEY_USERS] and not self.browser_is_logged_in(self.admin_username):
+            self.browser_login_user(self.admin_username, self.default_password)
+        elif USER_TYPE_GUEST in shot[self.KEY_USERS] and self.browser_is_logged_in():
+            self.browser_logout_user()
 
-            start_url = "%s%s" % (self.live_server_url, shot["start_url"],)
-            if self.browser.current_url != start_url:
-                self.browse_to(start_url)
+        start_url = "%s%s" % (self.live_server_url, shot["start_url"],)
+        if self.browser.current_url != start_url:
+            self.browse_to(start_url)
 
-            inputs = shot[self.KEY_INPUTS]
-            focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
-            note = shot[self.KEY_NOTES] if self.KEY_NOTES in shot else {}
-            for item in inputs:
-                for key, value in item.iteritems():
-                    if key:
-                        if key.lower() == self.KEY_CMD_SLUG:
-                            self.snap(slug=value, focus=focus, note=note)
-                        elif key.lower() == self.KEY_CMD_SUBMIT:
-                            self.browser_send_keys(Keys.RETURN)
+        inputs = shot[self.KEY_INPUTS]
+        focus = shot[self.KEY_FOCUS] if self.KEY_FOCUS in shot else {}
+        note = shot[self.KEY_NOTES] if self.KEY_NOTES in shot else {}
+        for item in inputs:
+            for key, value in item.iteritems():
+                if key:
+                    if key.lower() == self.KEY_CMD_SLUG:
+                        self.snap(slug=value, focus=focus, note=note)
+                    elif key.lower() == self.KEY_CMD_SUBMIT:
+                        self.browser_send_keys(Keys.RETURN)
+                    else:
+                        if key[0] == "#":
+                            kwargs = {'id': key[1:]}
+                        elif key[0] == ".":
+                            kwargs = {'css_class': key[1:]}
                         else:
-                            if key[0] == "#":
-                                kwargs = {'id': key[1:]}
-                            elif key[0] == ".":
-                                kwargs = {'css_class': key[1:]}
-                            else:
-                                kwargs = {'name': key}
-                            self.browser_activate_element(**kwargs)
-                            if value:
-                                self.browser_send_keys(value)
-                    elif not key and value:
-                        self.browser_send_keys(value)
+                            kwargs = {'name': key}
+                        self.browser_activate_element(**kwargs)
+                        if value:
+                            self.browser_send_keys(value)
+                elif not key and value:
+                    self.browser_send_keys(value)
 
-            if shot[self.KEY_SLUG]:
-                self.snap(slug=shot[self.KEY_SLUG], focus=focus, note=note)
-            
-            if shot["registered"]:
-                self._undo_fake_registration()
-        except Exception as exc:
-            log.error("====> EXCEPTION snapping url %s: %s" % (start_url, exc,))
-            log.error("'shot' object: %s" % repr(shot))
-            self.browser.close()
-            raise
+        if shot[self.KEY_SLUG]:
+            self.snap(slug=shot[self.KEY_SLUG], focus=focus, note=note)
+
+        if shot["registered"]:
+            self._undo_fake_registration()
 
     def snap_all(self, browser=None, **options):
         """
         Take screenshots for each item from json grouped by user.
         """
         shots = []
-        try:
-            if options['cl_str']:
-                shots = json.loads(options['cl_str'])
-            else:
-                self.loginfo('==> Fetching screenshots.json from %s ...' % (settings.SCREENSHOTS_JSON_FILE,))
-                shots = json.load(open(settings.SCREENSHOTS_JSON_FILE))
-            for shot in shots:
-                self.process_snap(shot, browser=browser)
-            self.browser.quit()
-        except Exception as exc:
-            log.error("Cannot open `screenshots.json` at %s:\n  exception:  %s" %
-                      (settings.SCREENSHOTS_JSON_FILE, exc,))
-            raise
+        if options['cl_str']:
+            shots = json.loads(options['cl_str'])
+        else:
+            self.loginfo('==> Fetching screenshots.json from %s ...' % (settings.SCREENSHOTS_JSON_FILE,))
+            shots = json.load(open(settings.SCREENSHOTS_JSON_FILE))
+        for shot in shots:
+            self.process_snap(shot, browser=browser)
+        self.browser.quit()
 
     def _do_fake_registration(self):
         # Create a Zone and DeviceZone to fool the Device into thinking it's registered

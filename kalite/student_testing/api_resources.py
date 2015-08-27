@@ -1,27 +1,15 @@
-import os
-
-from random import randint
-
 from django.conf.urls import url
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
 from tastypie import fields
 from tastypie.exceptions import NotFound, Unauthorized
 from tastypie.resources import ModelResource, Resource
 
-from fle_utils.config.models import Settings
-from fle_utils.internet import api_handle_error_with_json
-
-from kalite.shared.api_auth import UserObjectsOnlyAuthorization
+from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
-from kalite.facility.models import Facility
-from kalite.playlist import UNITS
-from kalite.ab_testing.data.groups import get_grade_by_facility, GRADE_BY_FACILITY as GRADE
 
 from .models import Test, TestLog
-from .settings import SETTINGS_KEY_EXAM_MODE
-from .utils import get_exam_mode_on, set_exam_mode_on, get_current_unit_settings_value, set_current_unit_settings_value
+from .utils import get_exam_mode_on, set_exam_mode_on
 
 from django.conf import settings
 
@@ -118,11 +106,6 @@ class TestResource(Resource):
         testscache = Test.all(force=force)
         return sorted(testscache.values(), key=lambda test: test.title)
 
-    def _read_facility_tests(self, facility, test_id=None, force=False):
-        testscache = Test.all(force=force)
-        valid_tests = dict((id, test) for (id, test) in testscache.iteritems() if test.grade == get_grade_by_facility(facility) and test.unit == get_current_unit_settings_value(facility.id))
-        return sorted(valid_tests.values(), key=lambda test: test.title)
-
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/(?P<test_id>[\w\d_.-]+)/$" % self._meta.resource_name,
@@ -147,7 +130,7 @@ class TestResource(Resource):
         else:
             if 'facility_user' in request.session:
                 facility = request.session['facility_user'].facility
-                return self._read_facility_tests(facility, force=force,)
+                return self._read_tests(facility, force=force,)
         return self._read_tests(force=force)
 
     def obj_get_list(self, bundle, **kwargs):
@@ -190,107 +173,3 @@ class TestResource(Resource):
     def rollback(self, request):
         raise NotImplemented("Operation not implemented yet for tests.")
 
-
-# ==========================
-# TastyPie classes
-# ==========================
-
-class CurrentUnit():
-    def __init__(self, **kwargs):
-        self.id = kwargs.get('id', '<id>')
-        self.facility_id = kwargs.get('facility_id', '')
-        self.facility_name = kwargs.get('facility_name', '<facility_name>')
-        self.facility_url = kwargs.get('facility_url', '<facility_url>')
-        self.unit_list = [unit for unit in kwargs.get('unit_list', UNITS) if unit > 100]
-        self.current_unit = kwargs.get('current_unit', self._get_current_unit())
-        self.max_unit = max(self.unit_list)
-        self.min_unit = min(self.unit_list)
-
-    def __unicode__(self):
-        return self.facility_name
-
-    def _get_current_unit(self):
-        # get active unit for the Facility from Settings
-        current_unit = 101
-        if self.facility_id:
-            current_unit = get_current_unit_settings_value(self.facility_id)
-        return current_unit
-
-
-class CurrentUnitResource(Resource):
-
-    id = fields.CharField(attribute='id')
-    facility_id = fields.CharField(attribute='facility_id')
-    facility_name = fields.CharField(attribute='facility_name')
-    facility_url = fields.CharField(attribute='facility_url')
-    current_unit = fields.IntegerField(attribute='current_unit', default=101)
-    min_unit = fields.IntegerField(attribute='min_unit', default=101)
-    max_unit = fields.IntegerField(attribute='max_unit', default=108)
-    unit_list = fields.ListField(attribute='unit_list')
-
-    class Meta:
-        resource_name = 'current_unit'
-        object_class = CurrentUnit
-
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if isinstance(bundle_or_obj, CurrentUnit):
-            kwargs['pk'] = bundle_or_obj.id
-        else:
-            kwargs['pk'] = bundle_or_obj.obj.id
-        return kwargs
-
-    def obj_get_list(self, bundle, **kwargs):
-        """
-        Get the list of facilities based from a request.
-        """
-        if not bundle.request.is_admin:
-            raise Unauthorized(_("You cannot view these objects."))
-
-        objects = []
-
-        if bundle.request.is_django_user:
-            facilities = Facility.objects.order_by('name')
-        else:
-            facilities = [bundle.request.session["facility_user"].facility]
-
-        for facility in facilities:
-            url = reverse('facility_management', args=[None, facility.id])
-            data = {
-                'id': facility.id,
-                'facility_id': facility.id,
-                'facility_name': facility.name,
-                'facility_url': url
-            }
-            o = CurrentUnit(**data)
-            objects.append(o)
-        return objects
-
-
-    def get_object_list(self, request, force=False):
-        raise NotImplemented(_("Operation not implemented."))
-
-    def obj_create(self, request):
-        raise NotImplemented(_("Operation not implemented."))
-
-    def obj_update(self, bundle, **kwargs):
-        if not bundle.request.is_admin:
-            raise Unauthorized(_("You cannot update this object."))
-        try:
-            facility_id = bundle.data.get('facility_id', '')
-            current_unit = int(bundle.data.get('current_unit', '0'))
-            assert current_unit in UNITS
-            set_current_unit_settings_value(facility_id, current_unit)
-            return bundle
-        except Exception as e:
-            logging.error("CurrentUnitResource.obj_update() exception: %s" % e)
-            raise
-
-    def obj_delete_list(self, request):
-        raise NotImplemented(_("Operation not implemented."))
-
-    def obj_delete(self, request):
-        raise NotImplemented(_("Operation not implemented."))
-
-    def rollback(self, request):
-        raise NotImplemented(_("Operation not implemented."))

@@ -49,7 +49,7 @@ div.definition {
 }
 
 #workarea { margin-left: 30px; }
-#hintsarea { margin-left: 50px; }
+#hintsarea { margin-left: 35px; margin-right:15px; }
 .solutionarea ul { list-style: none; }
 .solutionarea li { padding: 7px 0; }
 .solutionarea li label { display: block; }

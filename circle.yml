@@ -1,0 +1,19 @@
+machine:
+  python:
+    version: 2.7.9
+
+dependencies:
+  override:
+    - pip install -r requirements_test.txt
+    - pip install -e .
+    - npm install
+    - npm install -g grunt-cli
+
+test:
+  override:
+    - kalite start --traceback -v2
+    - kalite status
+    - kalite stop --traceback -v2
+    - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
+        parallel: true
+    - grunt jshint

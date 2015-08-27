@@ -221,7 +221,14 @@ def _decode_list(data):
 
 
 def json_ascii_decoder(data):
-    """A custom JSON decoder that can be passed to json.load/s.  This
+    """
+    TODO: Delete, it doesn't seem to be used anymore
+    
+    benjaoming: I don't see how this is more efficient. Letting the JSON
+    library load files and parse them with a built-in decoder, probably even
+    implemented in C would be much faster.
+    
+    A custom JSON decoder that can be passed to json.load/s.  This
     parses strings into str instead of unicode. To use this, pass this
     function to the object_hook keyword param in json.load/s.
 
@@ -243,11 +250,16 @@ def json_ascii_decoder(data):
 
 
 def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="Failed to read json file"):
+    # TODO(benjaoming): What's this? No comment for crazy statement for
+    # reference value'ed kwarg :/ default=X is only used in kalite/basetests/tests.py
+    # so can easily be removed anyways.
     if default == {}:
         default = {}
     try:
         with open(json_filepath, "r") as fp:
             return json.load(fp, object_hook=json_ascii_decoder)
+    # TODO: This is an anti-pattern, never do this. Always expect specific
+    # exceptions and handle them in a specific context.
     except Exception as e:
         if logger:
             logger("%s %s: %s" % (errmsg, json_filepath, e))

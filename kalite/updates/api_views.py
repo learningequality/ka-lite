@@ -20,14 +20,15 @@ from django.utils.translation import ugettext as _
 from . import delete_downloaded_files, get_local_video_size, get_remote_video_size
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
-from fle_utils.chronograph import force_job
-from fle_utils.django_utils import call_command_async
-from fle_utils.general import isnumeric, break_into_chunks
-from fle_utils.internet import api_handle_error_with_json, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
+from fle_utils.chronograph.utils import force_job
+from fle_utils.django_utils.command import call_command_async
+from fle_utils.general import isnumeric, break_into_chunks, softload_json
+from fle_utils.internet.decorators import api_handle_error_with_json
+from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language
-from kalite.shared.decorators import require_admin
-from kalite.topic_tools import get_topic_tree
+from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language, get_language_name
+from kalite.shared.decorators.auth import require_admin
+from kalite.topic_tools.settings import TOPICS_FILEPATHS
 from kalite.caching import initialize_content_caches
 
 
@@ -48,7 +49,7 @@ def process_log_from_request(handler):
         if request.GET.get("process_id", None):
             # Get by ID--direct!
             if not isnumeric(request.GET["process_id"]):
-                return JsonResponseMessageError(_("process_id is not numeric."))
+                return JsonResponseMessageError(_("process_id is not numeric."), status=400)
             else:
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
@@ -73,9 +74,9 @@ def process_log_from_request(handler):
             except Exception as e:
                 # The process finished before we started checking, or it's been deleted.
                 #   Best to complete silently, but for debugging purposes, will make noise for now.
-                return JsonResponseMessageError(unicode(e))
+                return JsonResponseMessageError(unicode(e), status=500)
         else:
-            return JsonResponseMessageError(_("Must specify process_id or process_name"))
+            return JsonResponseMessageError(_("Must specify process_id or process_name"), status=400)
 
         return handler(request, process_log, *args, **kwargs)
     return wrapper_fn_pfr
@@ -218,7 +219,7 @@ def start_languagepack_download(request):
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
 
-    return JsonResponseMessageSuccess(_("Started language pack download for language %(lang_code)s successfully.") % {"lang_code": lang_code})
+    return JsonResponseMessageSuccess(_("Successfully started language pack download for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
 
 
 @require_admin
@@ -231,14 +232,18 @@ def delete_language_pack(request):
     lang_code = simplejson.loads(request.body or "{}").get("lang")
     delete_language(lang_code)
 
-    return JsonResponse({"success": _("Deleted language pack for language %(lang_code)s successfully.") % {"lang_code": lang_code}})
+    return JsonResponse({"success": _("Successfully deleted language pack for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)}})
 
 
-def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=settings.LANGUAGE_CODE):
+def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=None):
     # Not needed when on an api request (since translation.activate is already called),
     #   but just to do things right / in an encapsulated way...
     # Though to be honest, this isn't quite right; we should be DE-activating translation
     #   at the end.  But with so many function exit-points... just a nightmare.
+
+    if not lang_code:
+        lang_code = settings.LANGUAGE_CODE
+
     if level == 0:
         translation.activate(lang_code)
 
@@ -322,7 +327,7 @@ def get_annotated_topic_tree(request, lang_code=None):
     lang_code = lang_code or request.language      # Get annotations for the current language.
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
 
-    return JsonResponse(annotate_topic_tree(get_topic_tree(language=lang_code), statusdict=statusdict, lang_code=lang_code))
+    return JsonResponse(annotate_topic_tree(softload_json(TOPICS_FILEPATHS.get(settings.CHANNEL), logger=logging.debug, raises=False), statusdict=statusdict, lang_code=lang_code))
 
 
 """

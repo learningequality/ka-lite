@@ -1,4 +1,10 @@
 """
+TODO: NOTHING SHOULD BE HERE! It's prohibiting the import of other caching.xxx
+modules at load time because it has so many preconditions for loading.
+
+For now, it means that caching.settings has been copied over to kalite.settings
+
+
 Caching is a critical part of the KA Lite app, in order to speed up server response times.
 However, if the server state changes, the cache may need to be invalidated.
 
@@ -11,14 +17,16 @@ For any app implementing cacheable data or writing to the web cache, the app sho
     across all apps, by calling invalidate_inmemory_caches
 * Call invalidate_web_cache (from fle_utils.internet.webcache)
 """
+import os
+import glob
+
 from django.conf import settings; logging = settings.LOG
 from django.core.urlresolvers import reverse
 from django.test.client import Client
 
-from fle_utils.internet.webcache import *
+from fle_utils.internet.webcache import get_web_cache, has_cache_key, expire_page, caching_is_enabled, invalidate_web_cache
 from kalite import i18n, topic_tools
-from kalite.distributed.templatetags import kalite_staticfiles
-
+from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP
 
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
@@ -49,7 +57,7 @@ def invalidate_inmemory_caches():
     """
     # TODO: loop through all modules and see if a module variable exists, using getattr,
     #   rather than hard-coding.
-    for module in (i18n, kalite_staticfiles, topic_tools):
+    for module in (i18n, topic_tools):
         for cache_var in getattr(module, "CACHE_VARS", []):
             logging.debug("Emptying cache %s.%s" % (module.__name__, cache_var))
             setattr(module, cache_var, None)
@@ -61,7 +69,18 @@ def invalidate_all_caches():
     call in here.
     """
     invalidate_inmemory_caches()
-    initialize_content_caches(force=True)
+    if DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+        
+        # The underlying assumption here is that if generating in memory caches is too onerous a task to conduct
+        # at every system start up, then it is too onerous a task to conduct during server operation.
+        # We defer the regeneration of these caches to next system startup, by deleting the existing disk based
+        # copies of these caches.
+        # This will prompt the caches to be recreated at next system start up, and the disk based copies to be rewritten.
+        
+        for filename in glob.glob(os.path.join(settings.CHANNEL_DATA_PATH, "*.cache")):
+            os.remove(filename)
+    else:
+        initialize_content_caches(force=True)
     if caching_is_enabled():
         invalidate_web_cache()
     logging.debug("Great success emptying all caches.")

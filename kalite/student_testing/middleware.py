@@ -1,4 +1,3 @@
-import logging
 import re
 
 from django.core.urlresolvers import reverse

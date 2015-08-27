@@ -4,18 +4,16 @@ import logging
 import os
 import sys
 from annoying.functions import get_object_or_None
-from optparse import make_option
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from django.db import IntegrityError, transaction
+from django.db import transaction
 
-from ... import engine
-from ...models import Device, DeviceMetadata, DeviceZone, Zone, ZoneInvitation
+from ...engine.utils import deserialize
+from ...models import Device, DeviceMetadata, DeviceZone, ZoneInvitation
 from ...views import initialize_registration
-from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 
 
@@ -35,7 +33,7 @@ def load_data_for_offline_install(in_file):
     """
     assert os.path.exists(in_file), "in_file must exist."
     with open(in_file, "r") as fp:
-        models = engine.deserialize(fp.read())  # all must be in a consistent version
+        models = deserialize(fp.read())  # all must be in a consistent version
 
     # First object should be the central server.
     try:

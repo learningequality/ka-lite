@@ -33,5 +33,6 @@ def custom(request):
         "SHORTVERSION": version.SHORTVERSION,
         "True": True,
         "False": False,
-        "is_config_package_nalanda": "nalanda" in settings.CONFIG_PACKAGE
+        "is_config_package_nalanda": "nalanda" in settings.CONFIG_PACKAGE,
+        "inline_help": getattr(settings, "INLINE_HELP", False)
     }

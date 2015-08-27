@@ -6,9 +6,13 @@ from django.test.utils import override_settings
 from selenium.common.exceptions import NoSuchElementException
 
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
-from kalite.testing.mixins import BrowserActionMixins, FacilityMixins, CreateZoneMixin, StudentProgressMixin, CreateAdminMixin
 
-from selenium.webdriver.common.by import By
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
+
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -216,7 +220,7 @@ class RestrictedTeacherTests(FacilityMixins,
         self.client.login_teacher(data={"username": self.teacher_username,
                                         "password": self.teacher_password},
                                   facility=self.facility)
-        resp = self.client.get(self.reverse("facility_edit", kwargs={"id": facility_to_edit.id}))
+        resp = self.client.get(self.reverse("facility_form", kwargs={"facility_id": facility_to_edit.id}))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
     def test_teacher_cant_create_facilities(self):
@@ -235,7 +239,7 @@ class RestrictedTeacherTests(FacilityMixins,
         self.client.login_teacher(data={"username": self.teacher_username,
                                         "password": self.teacher_password},
                                   facility=self.facility)
-        resp = self.client.get(self.reverse("add_facility", kwargs={"id": "new", "zone_id": None}))
+        resp = self.client.get(self.reverse("add_facility", kwargs={"zone_id": None}))
         self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
     def test_teacher_cant_create_students(self):

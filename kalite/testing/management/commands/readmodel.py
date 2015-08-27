@@ -1,3 +1,4 @@
+import datetime
 import importlib
 import json
 import sys
@@ -8,6 +9,8 @@ from fle_utils.importing import resolve_model
 from django.conf import settings; logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 from django.core import serializers
+
+dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
 
 class Command(BaseCommand):
     args = "<model_path>"
@@ -40,7 +43,7 @@ class Command(BaseCommand):
                 serialized_data = serializers.serialize("python", [data])[0]["fields"]
                 serialized_data["id"] = model_id
                 logging.debug("Serialized data: '%s'" % serialized_data)
-                print json.dumps(serialized_data)
+                print json.dumps(serialized_data, default=dthandler)
 
             except Model.DoesNotExist:
                 logging.error("Could not find '%s' entry with primary key: '%s'" % (model_path, model_id))

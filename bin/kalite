@@ -28,6 +28,13 @@ import subprocess
 from distutils import spawn
 import warnings
 
+
+# Python 2+3 definition
+try:
+    input = raw_input  # @ReservedAssignment
+except NameError:
+    pass
+
 kalite_path = None
 
 # Ensure that PATH is set because distutils.find_executable fails on
@@ -58,6 +65,10 @@ else:
     if kalite_path and not os.path.exists(os.path.join(kalite_path, 'kalite', '__init__.py')):
         kalite_path = None
 
+    installed_path = os.path.join(sys.prefix, 'share', 'kalite')
+    if not kalite_path and os.path.exists(installed_path):
+        kalite_path = installed_path
+
 if not kalite_path:
     raise RuntimeError("Could not determine where KA Lite is installed. Please set the KALITE_DIR environment variable.")
 
@@ -67,7 +78,36 @@ kalite_path = os.path.abspath(kalite_path)
 
 env = {}
 env.update(os.environ.copy())
-env['KALITE_DIR'] = kalite_path
+
+if not os.path.exists(kalite_path):
+    raise RuntimeError("Assuming kalite data path {} but it doesn't exist!".format(kalite_path))
+
+# Converts to normal string for Windows users, where it gets turned into a unicode string and errors out in subprocess
+env['KALITE_DIR'] = str(kalite_path)
+
+# TODO(benjaoming): Delegate responsibility to the .deb package
+# This always evaluates to False on Windows, so no problem with the
+# system-specific path
+if os.name == "posix" and os.path.isfile("/etc/ka-lite/username"):
+    username = open("/etc/ka-lite/username", "r").read()
+    username = username.split("\n")[0] if username else None
+    if username and username != os.environ["USER"]:
+        default_home = os.environ.get("KALITE_HOME", os.path.expanduser("~/.kalite"))
+        if not os.path.exists(default_home) or not os.listdir(default_home):
+            sys.stderr.write((
+                "You are not running kalite as the default user {0}. "
+                "This is recommended unless you want to re-create the database "
+                "and start storing new videos/exercises etc. for a different "
+                "user account\n\n"
+            ).format(username))
+            sys.stderr.write((
+                "To run the command as the default user, run this instead:\n\n"
+                "    sudo su {user} -s /bin/sh -c {command}\n\n"
+            ).format(user=username, command=" ".join(sys.argv)))
+            cont = input("Do you wish to continue? [y/N] ")
+            if not cont.lower() == "y":
+                sys.exit(0)
+            
 
 if 'KALITE_PYTHON' in os.environ:
     python_executable = os.environ['KALITE_PYTHON']
@@ -87,7 +127,7 @@ else:
     if not python_executable:
         python_executable = sys.executable
         warnings.warn("Could not determine Python in your path, defaulting to {0:s}".format(python_executable), RuntimeWarning)
-
+    
 # Path for manage.py
 manage_py = os.path.join(kalite_path, 'kalitectl.py')
 
@@ -100,5 +140,9 @@ p = subprocess.Popen(
     env=env,
 )
 
-p.communicate()
+try:
+    p.communicate()
+except KeyboardInterrupt:
+    # We are not going to show this un-interesting traceback!
+    pass
 sys.exit(p.returncode)

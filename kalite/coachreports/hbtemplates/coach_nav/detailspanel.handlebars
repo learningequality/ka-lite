@@ -1,0 +1,29 @@
+<div>
+    <h4>{{ itemdata.title }}</h4>
+</div>
+
+{{#if collection}}
+<div class="body detailspanel"></div>
+
+{{#if pages }}
+<div class="nav">
+    <nav>
+        <ul class="pagination">
+            <li{{#ifcond page "===" 1 }} class="disabled"><span{{else}}><a href="#" class="pagination-link" value="previous"{{/ifcond}} aria-label="{{_ "Previous" }}"><span aria-hidden="true">&laquo;</span></{{#ifcond page "===" 1 }}span{{else}}a{{/ifcond}}></li>
+            {{#each pages}}
+            <li{{#ifcond this "===" ../page }} class="active"><span{{else}}><a href="#" class="pagination-link" value="{{ this }}"{{/ifcond}}>{{ this }}</{{#ifcond this "===" page }}span{{else}}a{{/ifcond}}></li>
+            {{/each}}
+            <li{{#ifcond page "===" pages.length }} class="disabled"><span{{else}}><a href="#" class="pagination-link" aria-label="{{_ "Next" }}" value="next"{{/ifcond}}><span aria-hidden="true">&raquo;</span></{{#ifcond page "===" pages.length }}span{{else}}a{{/ifcond}}></li>
+        </ul>
+    </nav>
+</div>
+{{/if}}
+{{else}}
+<div class="well">
+    {{#if itemdata.description }}
+    <p>{{_ "Description" }}: {{ itemdata.description }}</p>
+    {{/if}}
+    <p>{{_ "Points Earned" }}: {{ model.points }}</p>
+    {{#if model.progress }}<p class="item-progress">{{_ "Progress" }}: {{ model.progress }}</p>{{/if}}
+</div>
+{{/if}}

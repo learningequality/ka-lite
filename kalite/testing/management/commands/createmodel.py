@@ -8,7 +8,6 @@ from optparse import make_option
 from fle_utils.importing import resolve_model
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core import serializers
 
 class Command(BaseCommand):
     args = "<data_model_name>"

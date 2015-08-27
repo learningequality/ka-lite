@@ -5,11 +5,11 @@ import sys
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+import getpass
 
-script_template = """
-#! /bin/sh
+script_template = """#!/bin/sh
 
-# Author: Jamie Alexandre, 2012
+# Author: Foundation for Learning Equality
 #
 # /etc/init.d/kalite
 
@@ -22,17 +22,29 @@ script_template = """
 # Short-Description: ka-lite daemon, a local Khan Academy content server
 ### END INIT INFO
 
+set -e
+
+. /lib/lsb/init-functions
+
 case "$1" in
     start)
-        echo "Starting ka-lite!"
-        #run ka-lite as the owner of the project folder, and not as root
-        su `stat --format="%%U" "%(repo_path)s"` -c "%(repo_path)s/bin/kalite start"
+        # run ka-lite as another user, the one who generated this file
+        su %(user)s -c "%(executable_path)s start"
         ;;
     stop)
-        echo "Shutting down ka-lite!"
-        echo
-        "%(repo_path)s/bin/kalite stop"
+        "%(executable_path)s" stop
         ;;
+  restart)
+    $0 stop
+    sleep 1
+    $0 start
+    ;;
+  status)
+    "%(executable_path)s" status
+    ;;
+  *)
+    log_success_msg "Usage: /etc/init.d/kalite {start|stop|restart|status}"
+    exit 1
 esac
 
 """
@@ -50,7 +62,7 @@ if sys.platform == 'darwin':
         <key>Label</key>
         <string>org.learningequality.kalite</string>
         <key>Program</key>
-        <string>%(repo_path)s/bin/kalite start</string>
+        <string>%(executable_path)s start</string>
         <key>RunAtLoad</key>
         <true/>
         <key>StandardOutPath</key>
@@ -58,7 +70,7 @@ if sys.platform == 'darwin':
         <key>StandardErrorPath</key>
         <string>/tmp/kalite.err</string>
         <key>WorkingDirectory</key>
-        <string>%(repo_path)s</string>
+        <string>%(cwd)s</string>
     </dict>
 </plist>
     """
@@ -68,6 +80,17 @@ class Command(BaseCommand):
     help = "Print init.d startup script for the server daemon."
 
     def handle(self, *args, **options):
-        repo_path = os.path.join(settings.PROJECT_PATH, "..")
-        script_path = os.path.join(repo_path, "scripts")
-        self.stdout.write(script_template % {"repo_path": repo_path, "script_path": script_path})
+        if settings.IS_SOURCE:
+            executable_path = os.path.abspath(os.path.join(settings.PROJECT_PATH, "..", "bin", "kalite"))
+            cwd = settings.PROJECT_PATH
+        else:
+            executable_path = "kalite"
+            cwd = "/"
+        
+        self.stdout.write(
+            script_template % {
+                "executable_path": executable_path,
+                "cwd": cwd,
+                "user": getpass.getuser(),
+            }
+        )
