@@ -321,6 +321,11 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
+from os.path import join, expanduser
+
+BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
+DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -356,6 +361,7 @@ INSTALLED_APPS = [
     'kalite.i18n',
     'kalite.ab_testing',
     'kalite.control_panel',
+    'dbbackup',
 ]
 
 if IS_SOURCE:
