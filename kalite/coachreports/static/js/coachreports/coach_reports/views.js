@@ -86,8 +86,11 @@ var CoachSummaryView = BaseView.extend({
     IE time spent doing backflips vs total time spent alive
     */
     displayRadialGraph: function(target_elem, data_sub, data_total) {
+        var targetElemBox = $("#" + target_elem).get(0);
+        var targetElemP = $("#" + target_elem + "_p").get(0);
+
         if(!data_sub || !data_total) {
-            document.getElementById(target_elem+"_p").innerHTML = "N/A";
+            targetElemP.innerHTML = "N/A";
         } else {
             var parseData = [
                 //parsing data to 2 decimal positions
@@ -96,8 +99,8 @@ var CoachSummaryView = BaseView.extend({
             ];
 
             //adjusting the graph's size based on target_elem's sizing
-            var width = document.getElementById(target_elem).clientWidth;
-            var height = document.getElementById(target_elem).clientHeight;
+            var width = targetElemBox.clientWidth;
+            var height = targetElemBox.clientHeight;
             var radius = (Math.min(width, height) / 2);    
 
             var color = d3.scale.category20();
@@ -131,12 +134,12 @@ var CoachSummaryView = BaseView.extend({
 
             //this will display relevant data when you hover over that data's arc on the radial graph
             path.on('mouseover', function(d) {                            
-                document.getElementById(target_elem+"_p").innerHTML = (d.data.label + ":" + "<br />" + d.data.count);
+                targetElemP.innerHTML = (d.data.label + ":" + "<br />" + d.data.count);
             });                                                           
               
             //when not hovering, you'll see the total data
             path.on('mouseout', function() {                              
-                document.getElementById(target_elem+"_p").innerHTML = "Total:" + "<br />" + total;
+                targetElemP.innerHTML = "Total:" + "<br />" + total;
             });       
         }
     },
@@ -211,7 +214,7 @@ var CoachSummaryView = BaseView.extend({
             this.tabular_report_view.remove();
             delete this.tabular_report_view;
         }
-    }, 100),
+    }, 100)
 
 });
 
