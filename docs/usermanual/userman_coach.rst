@@ -56,3 +56,10 @@ Detailed View
 1. Click on the colored cells.
 2. A panel should open up below the cell to reveal the number of questions attempted and the actions made on each exercise. 
 3. Click on the same cell to close the panel. 
+
+Inline Help
+-----------
+
+KA Lite has an inline help system on some pages.
+On parts of the site where it is available, you can find a "Show me how!" button.
+If you click this button, you can view a guided tour of the currently shown interface.
