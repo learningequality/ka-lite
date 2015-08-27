@@ -26,8 +26,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-            try:
-                call_command('dbbackup', filepath=settings.BACKUP_DIRPATH, database='default')
-            except KeyError:
-                pass
-            backup.file_rename()
+        try:
+            call_command('dbbackup', filepath=settings.BACKUP_DIRPATH, database='default')
+        except KeyError:
+            pass
+        backup.file_rename()
