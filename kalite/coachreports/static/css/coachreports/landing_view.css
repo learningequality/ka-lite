@@ -112,10 +112,8 @@ ul {
 
 #full_circle1, #full_circle2, #full_circle3 {
     background-color: rgba(204, 0, 102, 0);
-    /*border: 0.3em solid #32739E;*/
     border: 0;
     height: 10em;
-    /*width: 10em;*/
     margin: auto;
     margin-top: 2em;
     -moz-border-radius: 4.5em;
@@ -127,12 +125,10 @@ ul {
 
 #full_circle1 p, #full_circle2 p, #full_circle3 p{
     width: 100%;
-    font-size: 1.25em;
+    font-size: 1.1em;
     font-weight: 100;
     position: absolute;
     text-align: center;
-    /*padding: 20px;
-    margin-left: 0;*/
     margin-top: 2em;
     padding-left: 2.5em;
     padding-right: 2.5em;

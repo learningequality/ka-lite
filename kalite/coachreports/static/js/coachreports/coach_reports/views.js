@@ -80,16 +80,22 @@ var CoachSummaryView = BaseView.extend({
         "click #show_tabular_report": "toggle_tabular_view"
     },
 
+    /*
+    this function produces a radial graph and inserts it into the target_elem
+    data_sub is a portion of the data, while the data_total param is the total
+    IE time spent doing backflips vs total time spent alive
+    */
     displayRadialGraph: function(target_elem, data_sub, data_total) {
         if(!data_sub || !data_total) {
             document.getElementById(target_elem+"_p").innerHTML = "N/A";
         } else {
             var parseData = [
                 //parsing data to 2 decimal positions
-                { label: "Time spent on content", count: Math.round(data_sub * 100)/100 },
-                { label: "Total time logged", count: Math.round((data_total - data_sub) * 100)/100 }
+                { label: "Hours spent on content", count: Math.round(data_sub * 100)/100 },
+                { label: "Other activites (exercises, etc.)", count: Math.round((data_total - data_sub) * 100)/100 }
             ];
 
+            //adjusting the graph's size based on target_elem's sizing
             var width = document.getElementById(target_elem).clientWidth;
             var height = document.getElementById(target_elem).clientHeight;
             var radius = (Math.min(width, height) / 2);    
@@ -120,16 +126,17 @@ var CoachSummaryView = BaseView.extend({
                     return color(d.data.label);
                 });
 
-            path.on('mouseover', function(d) {                            // NEW
-                document.getElementById(target_elem+"_p").innerHTML = (d.data.label + ": " + d.data.count);
-            });                                                           // NEW
-              
-            path.on('mouseout', function() {                              // NEW
-                var total = d3.sum(parseData.map(function(d) {
-                    return d.count;
-                }));
+            //parsing to 2 decimals
+            var total = Math.round(data_total * 100)/100;
 
-                document.getElementById(target_elem+"_p").innerHTML = "Total: " + total;
+            //this will display relevant data when you hover over that data's arc on the radial graph
+            path.on('mouseover', function(d) {                            
+                document.getElementById(target_elem+"_p").innerHTML = (d.data.label + ":" + "<br />" + d.data.count);
+            });                                                           
+              
+            //when not hovering, you'll see the total data
+            path.on('mouseout', function() {                              
+                document.getElementById(target_elem+"_p").innerHTML = "Total:" + "<br />" + total;
             });       
         }
     },
