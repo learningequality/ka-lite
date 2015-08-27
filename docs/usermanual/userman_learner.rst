@@ -79,7 +79,7 @@ You can edit your comments freely.
 
 At this time, you are only able to view your own ratings.
 
-`Coaches can export the ratings of all users in csv format. <export-content-rating>`_
+:ref:`Coaches can export the ratings of all users in csv format. <export-content-rating>`
 
 How to Practice Exercises
 -------------------------
