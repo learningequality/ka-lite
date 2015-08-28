@@ -50,11 +50,10 @@ We would love for you to get involved!
 Contact Us
 ^^^^^^^^^^
 
-We would love to hear about your project and experiences!
+Tell us about your project and experiences!
 
- - Email: info@learningequality.org
- - Website: http://learningequality.org
-
+-  Email: info@learningequality.org
+-  Add your project to the map: https://learningequality.org/ka-lite/map/
 
 License information
 -------------------
