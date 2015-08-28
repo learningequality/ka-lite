@@ -12,7 +12,7 @@ class ContentRating(DeferredCountSyncedModel):
     minversion = "0.15.0"
 
     class Meta:
-        unique_together = ("content_kind", "content_id", "user")
+        unique_together = ("content_source", "content_kind", "content_id", "user")
 
     # Maintain info on content type -- could be video, exercise, etc, but we should be able to uniquely id it
     content_kind = models.CharField(max_length=100, db_index=True, blank=False)
