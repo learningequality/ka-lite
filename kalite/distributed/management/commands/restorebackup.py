@@ -1,4 +1,5 @@
 import os
+import sys
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
@@ -18,13 +19,16 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        backup_filepath = options['backup_filepath']
         if(options['backup_filepath']):
             if(os.path.isfile(backup_filepath)):
                 call_command('dbrestore', filepath=backup_filepath, database='default') #perform restore from the given filepath
+            else:
+                print 'The given file was not found.'
+                sys.exit(1)
         else:
             file_list = os.listdir(settings.BACKUP_DIRPATH) #Retrieve the filenames present in the BACKUP_DIRPATH
             filelist = []
-            filenumber = 0
             for i, f in enumerate(file_list):
                 print i, f.replace(".backup", "")
                 filelist.append(f)
@@ -37,5 +41,7 @@ class Command(BaseCommand):
                     call_command('dbrestore', filepath=backup_filepath, database='default') #perform restore
                 except IndexError:
                     print 'Number option out of bounds.'
+                    sys.exit(1)
             else:
                 print 'No files available to restore.'
+                sys.exit(1)
