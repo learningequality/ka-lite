@@ -1,7 +1,7 @@
 KA Lite
 =======
 
-|Build Status| |Coverage Status|
+|Build Status| |Coverage Status| |Docs|
 
 .. |Build Status| image:: https://circleci.com/gh/learningequality/ka-lite/tree/develop.svg?style=svg
    :target: https://circleci.com/gh/learningequality/ka-lite/tree/develop
@@ -9,6 +9,8 @@ KA Lite
 .. |Coverage Status| image:: https://coveralls.io/repos/learningequality/ka-lite/badge.svg
    :target: https://coveralls.io/r/learningequality/ka-lite
 
+.. |Docs| image:: https://img.shields.io/badge/docs-latest-brightgreen.svg?style=flat
+   :target: http://ka-lite.readthedocs.org/
 
 `Khan Academy <http://www.khanacademy.org/>`__'s core mission is to
 "provide a free world-class education for anyone anywhere", and as `70%
@@ -45,14 +47,13 @@ We would love for you to get involved!
 -  Read more about the project's motivation at `Introducing KA Lite, an offline version of Khan
    Academy <http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/>`__.
 
-Official website: http://kalite.learningequality.org/
+Contact Us
+^^^^^^^^^^
 
-Documentation
--------------
+We would love to hear about your project and experiences!
 
--  Instructions for installation: `See: INSTALL.md <INSTALL.md>`__
--  Further documentation: `See: our
-   wiki <https://github.com/learningequality/ka-lite/wiki>`__
+ - Email: info@learningequality.org
+ - Website: http://learningequality.org
 
 
 License information
