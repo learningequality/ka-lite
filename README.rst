@@ -39,13 +39,10 @@ Primary use cases include:
 We would love for you to get involved!
 --------------------------------------
 
--  **Learn how you can contribute code on our `KA Lite GitHub
-   Wiki <https://github.com/learningequality/ka-lite/wiki>`__**
--  **Report bugs by `creating
-   issues <https://github.com/learningequality/ka-lite/wiki/Report-Bugs-by-Creating-Issues>`__**
--  **Read more about the project's motivation** at `"Introducing KA
-   Lite, an offline version of Khan
-   Academy" <http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/>`__.
+-  Learn how you can contribute code on our `KA Lite GitHub Wiki <https://github.com/learningequality/ka-lite/wiki>`__
+-  Report bugs by `creating issues <https://github.com/learningequality/ka-lite/wiki/Report-Bugs-by-Creating-Issues>`__
+-  Read more about the project's motivation at `Introducing KA Lite, an offline version of Khan
+   Academy <http://jamiealexandre.com/blog/2012/12/12/ka-lite-offline-khan-academy/>`__.
 
 Official website: http://kalite.learningequality.org/
 
