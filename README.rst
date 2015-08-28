@@ -3,8 +3,9 @@ KA Lite
 
 |Build Status| |Coverage Status|
 
-.. |Build Status| image:: https://travis-ci.org/learningequality/ka-lite.png?branch=master
-   :target: https://travis-ci.org/learningequality/ka-lite
+.. |Build Status| image:: https://circleci.com/gh/learningequality/ka-lite.svg?style=svg
+   :target: https://circleci.com/gh/learningequality/ka-lite
+
 .. |Coverage Status| image:: https://coveralls.io/repos/learningequality/ka-lite/badge.svg
    :target: https://coveralls.io/r/learningequality/ka-lite
 
