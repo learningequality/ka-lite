@@ -18,12 +18,10 @@ STAR_CONTAINER_IDS = (
     "star-container-quality",
     "star-container-difficulty",
 )
-SUBMIT_CLASS = "rating-submit"
 STAR_RATING_OPTION_CLASS = "star-rating-option"
 STAR_INNER_WRAPPER_CLASS = "star-rating-inner-wrapper"
 TEXT_INPUT_CLASS = "rating-text-feedback"
 DELETE_BTN_CLASS = "rating-delete"
-EDIT_BTN_CLASS = "rating-edit"
 
 @then(u'my feedback is displayed')
 def impl(context):
@@ -110,7 +108,6 @@ def impl(context):
     enter_star_ratings(context)
     text_feedback = context.text_feedback = "This stuff is great, A+++"
     enter_text_feedback(context, text_feedback)
-    submit_feedback(context)
 
 @given(u'I am on a content page')
 def impl(context):
@@ -142,20 +139,11 @@ def impl(context):
     export_btn = find_id_with_wait(context, "export-button")
     export_btn.click()
 
-@when(u'I click the edit button')
-def impl(context):
-    edit_btn = find_css_class_with_wait(context, EDIT_BTN_CLASS)
-    edit_btn.click()
-
 @when(u'I change the text')
 def impl(context):
     new_text = "Once upon a midnight dreary"
     context.new_text = get_text_feedback(context) + new_text
     enter_text_feedback(context, new_text)
-
-@when(u'I submit it')
-def impl(context):
-    find_css_class_with_wait(context, SUBMIT_CLASS).click()
 
 @then(u'the altered text is displayed')
 def impl(context):
@@ -203,16 +191,6 @@ def enter_text_feedback(context, text_feedback):
     """
     input_field = find_css_class_with_wait(context, TEXT_INPUT_CLASS)
     input_field.send_keys(text_feedback)
-
-
-def submit_feedback(context):
-    """
-    Submit feedback form
-    :param context: behave context
-    :return: nothing
-    """
-    submit_btn = find_css_class_with_wait(context, SUBMIT_CLASS)
-    submit_btn.click()
 
 
 def get_text_feedback(context):
