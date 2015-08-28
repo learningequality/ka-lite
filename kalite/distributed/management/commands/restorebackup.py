@@ -18,9 +18,12 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        backup_filepath = options['backup_filepath']
         if(options['backup_filepath']):
             if(os.path.isfile(backup_filepath)):
                 call_command('dbrestore', filepath=backup_filepath, database='default') #perform restore from the given filepath
+            else:
+                print 'The given file was not found.'
         else:
             file_list = os.listdir(settings.BACKUP_DIRPATH) #Retrieve the filenames present in the BACKUP_DIRPATH
             filelist = []
