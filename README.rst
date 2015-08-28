@@ -1,6 +1,8 @@
 KA Lite
 =======
 
+by `Foundation for Learning Equality <https://learningequality.org/>`__
+
 |Build Status| |Coverage Status| |Docs|
 
 .. |Build Status| image:: https://circleci.com/gh/learningequality/ka-lite/tree/develop.svg?style=svg
