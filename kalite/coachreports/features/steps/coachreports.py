@@ -249,8 +249,7 @@ def impl(context):
 
 @when(u"I click on the partial colored cell")
 def impl(context):
-    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.partial"), "details-panel-view",
-                                    wait_time=30)
+    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.partial"), "details-panel-view")
 
 @then(u"I should see a Hide Tabular Report button")
 def impl(context):
