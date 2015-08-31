@@ -125,12 +125,11 @@ var CoachSummaryView = BaseView.extend({
 
         var h = 50;
         var w = 500;
-        var count = 0;
         var dataset = [struggling/total, complete/total, in_progress/total];
 
         console.log(dataset);
-        // var svg = d3.select("div.progressbar").append("svg").attr("class", "col-md-12").attr("height", h);
-        var svg = d3.select("div.progressbar").append("svg").attr("width", w).attr("height", h);
+        var svg = d3.select("div.progressbar").append("svg").attr("width", w).attr("height", h).
+            attr("class", "col-md-8 innerbar");
 
         svg.selectAll("rect").data(dataset).enter().append("rect").attr("x", function(d, i){
                 return _.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) * w;
@@ -147,6 +146,7 @@ var CoachSummaryView = BaseView.extend({
                 }
             });
 
+        // Sets the text on the bar itself
         svg.selectAll("text").data(dataset).enter().append("text").text(function(d, i) {
             switch(i) {
                 case(0):
@@ -157,8 +157,9 @@ var CoachSummaryView = BaseView.extend({
                     return in_progress;
             }
         }).attr("fill", "black").attr("x", function(d, i){
-            return _.reduce(dataset.slice(i, i+1), function(memo, num) { return memo + num; }, 0) * w;
-        }).attr("y", h/2).attr("font-size", "11px");
+            return (_.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) + d/2) * w;
+        }).attr("y", h/2).attr("font-size", "12px").style("text-anchor", "middle");
+
     },
 
     render: function() {

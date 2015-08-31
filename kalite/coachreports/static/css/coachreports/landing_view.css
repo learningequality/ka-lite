@@ -8,7 +8,7 @@
     font-weight: 100;
     padding-left: 0.5em;
     color: #32739E;
-    text-align: left;
+    text-align: center;
 }
 
 #chartblock {
@@ -168,6 +168,33 @@ span.setrange {
     text-align: center;
     margin: auto auto;
     bottom: 0;    
-    width: 12em;
+    width: 15em;
     font-weight: 300;
+}
+
+.barlegend {
+    /*display: inline-block;*/
+    height: 20px;
+    overflow: hidden;
+    text-align: center;
+    padding-right: 10px;
+}
+
+.barlegend div {
+    float: left;
+    width: 35px;
+    height: 21px;
+}
+
+.barlegend span {
+    padding-left: 10px;
+}
+
+#legendMargin {
+    margin-left: 15px;
+    float: left;
+}
+
+.innerbar {
+    margin-top: 30px;
 }

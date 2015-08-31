@@ -1,6 +1,5 @@
 <div id="coach_report_wrapper">
 	<div id="summary_mainview">
-		{{!-- <h1 class="status_name">{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}{{#if data.learner_events }}<button id="show_tabular_report" class="btn btn-success pull-right">{{_ "Show Tabular Report" }}</button>{{/if}}</h1> --}}
 		<div id="radial_chartblock">
 			<div id="chartcontainer">
 				<h3>{{#if start_date}}{{ start_date }}{{#if end_date }} → {{ end_date }}{{/if}}{{else}}{{_ "This week" }}{{/if}}</h3>
@@ -38,11 +37,20 @@
 				</div>
 			</div>
 		</div>
-		<div class="progressbar">
+		<div class="progressbar row">
+			<div class="innerbar col-md-3">
+				<label id="legendMargin" for="legend">Key</label>
+		        <ul id="legend">
+		        	<li class="barlegend"><div class="struggling"></div><span>{{_ "Struggling" }}</span></li>
+		            <li class="barlegend"><div class="complete"></div><span>{{_ "Completed" }}</span></li>
+		       		<li class="barlegend"><div class="partial"></div><span>{{_ "In Progress" }}</span></li>
+	        	</ul>
+        	</div>
+        	<h5 class="innerbar bartext">
+				<strong>{{_ "Current status of user exercises" }}</strong>
+			</h5>
 		</div>
-		<div class="bartext">
-			{{_ "Current status of user exercises" }}
-		</div>
+		<h1 class="status_name">{{#if status.group_name }}: {{ status.group_name }}{{/if}}{{#if data.learner_events }}<button id="show_tabular_report" class="btn btn-success">{{_ "Show Tabular Report" }}</button>{{/if}}</h1>
 		{{#if learners }}
 		<section>	
 		<h1>{{_ "Student Activity Feed" }}</h1>
@@ -68,8 +76,6 @@
 		{{/if}}
 	</div>
 	<div id="detailed_report_view"> 
-		<h1 class="status_name">{{#if status.group_name }}: {{ status.group_name }}{{/if}}{{#if data.learner_events }}<button id="show_tabular_report" class="btn btn-success pull-right">{{_ "Show Tabular Report" }}</button>{{/if}}</h1>
-
 	</div>
 </div>
 
