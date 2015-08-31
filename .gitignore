@@ -63,3 +63,18 @@ ghostdriver.log
 sphinx-docs/_build
 sphinx-docs/images/*
 /data/khan/assessmentitems.json.version
+
+
+# Stuff from 0.14+
+
+.venv
+MANIFEST.in
+cache/
+dist-packages/
+dist-packages-temp/
+dist/
+docs/_build/
+ka_lite.egg-info/
+ka_lite_static.egg-info/
+static-updates/
+
