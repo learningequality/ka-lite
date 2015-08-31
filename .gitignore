@@ -1,9 +1,3 @@
-# Future 0.14 files
-.coverage
-.venv
-dist/
-ka_lite.egg-info/
-
 .project
 .pydevproject
 .DS_Store
@@ -73,6 +67,7 @@ sphinx-docs/images/*
 
 # Stuff from 0.14+
 
+.coverage
 .venv
 MANIFEST.in
 cache/
