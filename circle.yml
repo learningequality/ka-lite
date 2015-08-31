@@ -5,16 +5,14 @@ machine:
 dependencies:
   override:
     - pip install -r requirements_dev.txt
-    - pip install -e .
     - npm install
     - npm install -g jshint
 
 test:
   override:
-    - kalite start --traceback -v2
-    - kalite status
-    - kalite stop --traceback -v2
+    - bin/kalite start --traceback -v2
+    - bin/kalite status
+    - bin/kalite stop --traceback -v2
     - node build.js --staticfiles
-    - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
-        parallel: true
+    - bin/kalite manage test
     - jshint kalite/*/static/js/*/
