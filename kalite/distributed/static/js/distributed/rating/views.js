@@ -13,8 +13,6 @@ module.exports = BaseView.extend({
     template: require("./hbtemplates/rating.handlebars"),
 
     events: {
-        "click .rating-submit": "submit_rating",
-        "click .rating-edit": "edit_callback",
         "click .rating-delete": "delete_callback"
     },
 
@@ -27,7 +25,21 @@ module.exports = BaseView.extend({
             model.url = "/api/not/gonna/work";
             return model;
         }();
-        _.bindAll(this, "delete_callback", "submit_rating", "edit_callback", "renderAll", "renderSequence", "render");
+        _.bindAll(this, "delete_callback", "renderAll", "renderSequence", "render");
+        this.quality_label_values = {
+            1:  gettext("Poor quality"),
+            2:  gettext("Somewhat poor"),
+            3:  gettext("Average"),
+            4:  gettext("Somewhat high"),
+            5:  gettext("High quality")
+        };
+        this.difficulty_label_values = {
+            1:  gettext("Very easy"),
+            2:  gettext("Easy"),
+            3:  gettext("Average"),
+            4:  gettext("Hard"),
+            5:  gettext("Very hard")
+        };
     },
 
     render: function() {
@@ -35,7 +47,7 @@ module.exports = BaseView.extend({
             If the model is new (never been synced) or empty (such as if it was deleted) render each component in
             sequence. Otherwise, render all components together, for review.
         */
-        if( this.model.isNew() || this.model.get("quality") === 0) {
+        if( this.model.isNew() || this.model.get("quality") === 0 || this.model.get("difficulty") === 0) {
             this.renderSequence();
         } else {
             this.renderAll();
@@ -44,41 +56,20 @@ module.exports = BaseView.extend({
 
     renderSequence: function() {
         /*
-            Present each rating widget one at a time, waiting for one to be interacted with before showing the next.
-            Then, once the user has filled out the rating completely, call renderAll to allow review/editing.
+            Present each rating widget one by one, waiting for user interaction before growing to show the next.
+            Then once the user has filled out the rating completely, call renderAll to allow review/editing.
         */
         this.$el.html(this.template());
-        this.$(".rating-submit").hide();
-        this.$(".rating-edit").hide();
-        this.$(".rating-skip").hide();
-        this.$(".rating-delete").hide();
 
-        this.star_view_quality = this.add_subview(StarView, {el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"});
+        this.star_view_quality = this.add_subview(StarView, {title: gettext("Quality"), el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality", label_values: this.quality_label_values});
 
         var self = this;
 
         this.listenToOnce(this.model, "change:quality", function(){
-            self.star_view_quality.remove();
-            self.star_view_difficulty = self.add_subview(StarView, {el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty"});
+            self.star_view_difficulty = self.add_subview(StarView, {title: gettext("Difficulty"), el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty", label_values: this.difficulty_label_values});
         });
 
-        this.listenToOnce(this.model, "change:difficulty", function(){
-            self.star_view_difficulty.remove();
-            self.text_view = self.add_subview(TextView, {el: self.$("#text-container"), model: self.model, text_attr: "text"});
-            self.$(".rating-submit").show();
-            self.$(".rating-skip").show();
-
-            // Wrap in _.once, since it could potentially be called twice by different callbacks
-            var callback = _.once(function() {
-                self.text_view.remove();
-                self.renderAll();
-            });
-            self.$(".rating-submit").one("click", callback);
-            self.$(".rating-skip").one("click", function() {
-                self.text_view.model.set(self.text_view.text_attr, "");
-                callback();
-            });
-        });
+        this.listenToOnce(this.model, "change:difficulty", this.renderAll);
     },
 
     renderAll: function() {
@@ -88,32 +79,15 @@ module.exports = BaseView.extend({
                          2) The view's model is not fetched, and the user finishes filling out the new form.
         */
         this.$el.html(this.template());
-        // Explicitly hide/display desired buttons, since we re-render the template
-        this.$(".rating-skip").hide();
-        this.$(".rating-edit").hide();
         var views_and_opts = [
-            ["star_view_quality", StarView, {el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality"}],
-            ["star_view_difficulty", StarView, {el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty"}],
-            ["text_view", TextView, {el: this.$("#text-container"), model: this.model, rating_attr: "text"}]
+            ["star_view_quality", StarView, {title: gettext("Quality"), el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality", label_values: this.quality_label_values}],
+            ["star_view_difficulty", StarView, {title: gettext("Difficulty"), el: this.$("#star-container-difficulty"), model: this.model, rating_attr: "difficulty", label_values: this.difficulty_label_values}],
+            ["text_view", TextView, {el: this.$("#text-container"), model: this.model}]
         ];
         var self = this;
         _.each(views_and_opts, function(el, ind, list){
             self[el[0]] = self.add_subview(el[1], el[2]);
         });
-        this.submit_rating();
-    },
-
-    submit_rating: function() {
-        this.text_view.toggle_disabled(true);
-        this.$(".rating-submit").hide();
-        this.$(".rating-edit").show();
-        this.model.save();
-    },
-
-    edit_callback: function() {
-        this.text_view.toggle_disabled(false);
-        this.$(".rating-submit").show();
-        this.$(".rating-edit").hide();
     },
 
     delete_callback: function() {
@@ -146,11 +120,25 @@ var StarView = BaseView.extend({
     template: require("./hbtemplates/star.handlebars"),
 
     events: {
-        "click .star-rating-option": "rate_value_callback"
+        "click .star-rating-option": "rate_value_callback",
+        "click .star-rating-option >": "rate_value_callback",
+        "mouseenter .star-rating-option >": "mouse_enter_callback",
+        "mouseenter .star-rating-option": "mouse_enter_callback",
+        "mouseleave .star-rating-option": "mouse_leave_callback"
+    },
+
+    label_values: {
+        1: gettext("Very Low"),
+        2: gettext("Low"),
+        3: gettext("Normal"),
+        4: gettext("High"),
+        5: gettext("Very High")
     },
 
     initialize: function(options) {
         this.model = options.model || new Backbone.Model();
+        this.title = options.title || "";
+        this.label_values = options.label_values || this.label_values;
         this.rating_attr = options.rating_attr || "rating";
         _.bindAll(this, "rate_value_callback", "rating_change");
 
@@ -160,13 +148,32 @@ var StarView = BaseView.extend({
     },
 
     render: function() {
-        this.$el.html(this.template(this.model.attributes));
+        var template_options = {};
+        _.extend(template_options, this.model.attributes, {title: this.title, lowest_value: this.label_values[1], highest_value: this.label_values[5]});
+        this.$el.html(this.template(template_options));
         this.rating_change();
     },
 
-    rate_value_callback: function(ev) {
-        var val = $(ev.target).attr("data-val");
+    // Debounced with immediate=true option, so that it's triggered _at most_ once per 100 ms, since it
+    //   could be called by clicking on a child element as well.
+    rate_value_callback: _.debounce(function(ev) {
+        // The target event could be either the .star-rating-option or a child element, so whatever the case get the
+        // parent .star-rating-option element.
+        var target = $(ev.target).hasClass("star-rating-option") ? $(ev.target) : $(ev.target).parents(".star-rating-option")[0];
+        var val = $(target).attr("data-val");
         this.model.set(this.rating_attr, val);
+    }, 100, true),
+
+    mouse_enter_callback: function(ev) {
+        // The target event could be either the .star-rating-option or a child element, so whatever the case get the
+        // parent .star-rating-option element.
+        var target = $(ev.target).hasClass("star-rating-option") ? $(ev.target) : $(ev.target).parents(".star-rating-option")[0];
+        var val = $(target).attr("data-val");
+        this.$(".rating-label").text(this.label_values[val]);
+    },
+
+    mouse_leave_callback: function(ev) {
+        this.$(".rating-label").text("");
     },
 
     rating_change: function() {
@@ -175,6 +182,7 @@ var StarView = BaseView.extend({
             $opt = $(opt);
             $opt.toggleClass("activated", parseInt($opt.attr("data-val")) <= parseInt(this.model.get(this.rating_attr)));
         }, this);
+        this.model.save();
     }
 });
 
@@ -192,9 +200,8 @@ var TextView = BaseView.extend({
 
     initialize: function(options) {
         this.model = options.model || new Backbone.Model();
-        this.text_attr = options.text_attr || "text";
-        _.bindAll(this, "toggle_disabled", "is_disabled", "text_changed");
-        this.model.on("change:"+this.text_attr, this.text_changed);
+        _.bindAll(this, "text_changed");
+        this.model.on("change:text", this.text_changed);
         this.render();
     },
 
@@ -204,18 +211,7 @@ var TextView = BaseView.extend({
     },
 
     text_changed: function() {
-        this.model.set(this.text_attr, this.$(".rating-text-feedback")[0].value);
-    },
-
-    toggle_disabled: function(val) {
-        if( typeof val === "undefined" ) {
-            val = !this.is_disabled();
-        }
-        this.$(".rating-text-feedback").attr("disabled", val);
-        return this;
-    },
-
-    is_disabled: function() {
-        return this.$(".rating-text-feedback").attr("disabled") === "disabled";
+        this.model.set("text", this.$(".rating-text-feedback")[0].value);
+        this.model.debounced_save();
     }
 });
