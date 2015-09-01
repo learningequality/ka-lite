@@ -81,6 +81,9 @@ var ContentAreaView = BaseView.extend({
                     self.rating_view.model = self.content_rating_collection.pop();
                     self.rating_view.render();
                 } else if ( self.content_rating_collection.models.length === 0 ) {
+                    // Since RatingModel uses debounced syncing, let's force one immediate sync before switching out
+                    // the model.
+                    self.rating_view.model.save();
                     self.rating_view.model = new RatingModel({
                             "user": window.statusModel.get("user_uri"),
                             "content_kind": self.model.get("kind"),
