@@ -115,8 +115,6 @@ var ContentAreaView = BaseView.extend({
                 this.currently_shown_view.remove();
             }
         }
-
-        this.model.set("active", false);
     }
 
 });
