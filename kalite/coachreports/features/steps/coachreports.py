@@ -17,6 +17,8 @@ from kalite.topic_tools import get_exercise_cache
 
 from kalite.testing.mixins.facility_mixins import CreateStudentMixin, CreateGroupMixin
 
+from securesync.models import Device
+
 colour_legend = {
     "light blue": "#C0E7F3",
     "dark green": "#5AA685",
@@ -26,13 +28,13 @@ colour_legend = {
 
 @given("I am on the coach report")
 def step_impl(context):
-    url = reverse("coach_reports")
+    url = reverse("coach_reports", kwargs={"zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")})
     context.browser.get(build_url(context, url))
     # TODO(benjaoming) : This takes an awful lot of time to load the first
     # time it's built because of /api/coachreports/summary/?facility_id
     # being super slow
     try:
-        find_id_with_wait(context, "summary_mainview", wait_time=30)
+        find_id_with_wait(context, "summary_mainview", wait_time=60)
     except TimeoutException:
         raise RuntimeError("Could not find element, this was the DOM:\n\n" + context.browser.execute_script("return document.documentElement.outerHTML"))
 
@@ -192,7 +194,7 @@ def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    find_id_with_wait(context, "show_tabular_report", wait_time=30).click()
+    find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30).click()
 
 @then(u"I should see the list of two groups that I teach")
 def impl(context):
@@ -254,7 +256,7 @@ def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    tab_button = find_id_with_wait(context, "show_tabular_report", wait_time=30)
+    tab_button = find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30)
     assert tab_button.text == "Hide Tabular Report"
 
 @then(u"I should see the tabular report")

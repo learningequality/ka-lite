@@ -3,6 +3,7 @@ var Backbone = require("base/backbone");
 var $ = require("base/jQuery");
 var Models = require("./models");
 var Views = require("./views");
+var sprintf = require("sprintf-js").sprintf;
 
 TopicChannelRouter = Backbone.Router.extend({
     initialize: function(options) {

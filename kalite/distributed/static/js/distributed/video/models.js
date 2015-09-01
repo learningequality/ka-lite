@@ -20,4 +20,4 @@ var VideoLogCollection = ContentModels.ContentLogCollection.extend({
 module.exports = {
 	VideoLogModel: VideoLogModel,
 	VideoLogCollection: VideoLogCollection
-}
+};

@@ -3,6 +3,7 @@ import json
 import hashlib
 import shutil
 import copy
+import zipfile
 
 from django.conf import settings; logging = settings.LOG
 from django.utils.text import slugify
@@ -44,10 +45,10 @@ attribute_whitelists = {
 }
 
 denormed_attribute_list = {
-    "Video": ["kind", "description", "title", "duration", "id", "y_pos", "x_pos", "path", "slug", "organization"],
-    "Exercise": ["kind", "description", "title", "name", "id", "y_pos", "x_pos", "path", "slug", "organization"],
-    "Audio": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug", "organization"],
-    "Document": ["kind", "description", "title", "id", "y_pos", "x_pos", "path", "slug", "organization"],
+    "Video": ["kind", "description", "title", "duration", "id", "path", "slug", "organization"],
+    "Exercise": ["kind", "description", "title", "name", "id", "path", "slug", "organization"],
+    "Audio": ["kind", "description", "title", "id", "path", "slug", "organization"],
+    "Document": ["kind", "description", "title", "id", "path", "slug", "organization"],
 }
 
 kind_blacklist = [None]
@@ -55,7 +56,7 @@ kind_blacklist = [None]
 slug_blacklist = []
 
 # Attributes that are OK for a while, but need to be scrubbed off by the end.
-temp_ok_atts = ["x_pos", "y_pos"]
+temp_ok_atts = []
 
 channel_data = {
     "slug_key": slug_key,
@@ -74,6 +75,10 @@ channel_data = {
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)
 
 def build_full_cache(items, id_key="id"):
+    """
+    Uses list of items retrieved from building the topic tree
+    to create an item cache with look up keys.
+    """
     return dict((item["id"], item) for item in items)
 
 file_kind_dictionary = {
@@ -85,6 +90,7 @@ file_kind_dictionary = {
     "Audio": ["mp3", "wma", "wav", "mid", "ogg"],
     "Document": ["pdf", "txt", "rtf", "html", "xml", "doc", "qxd", "docx"],
     "Archive": ["zip", "bzip2", "cab", "gzip", "mar", "tar"],
+    "Exercise": ["exercise"],
 }
 
 file_kind_map = {}
@@ -167,31 +173,59 @@ def construct_node(location, parent_path, node_cache, channel):
         if not kind:
             return None
         elif kind in ["Video", "Audio", "Image"]:
-            from kaa import metadata as kaa_metadata
-            info = kaa_metadata.parse(location)
-            data_meta = {}
-            for meta_key, data_fn in file_meta_data_map.items():
-                if data_fn(info):
-                    data_meta[meta_key] = data_fn(info)
-            if data_meta.get("codec", None):
-                data_meta["{kind}_codec".format(kind=kind.lower())] = data_meta["codec"]
-                del data_meta["codec"]
+            from hachoir_core.cmd_line import unicodeFilename
+            from hachoir_parser import createParser
+            from hachoir_metadata import extractMetadata
+
+            filename = unicodeFilename(location)
+            parser = createParser(filename, location)
+
+            if parser:
+                info = extractMetadata(parser)
+                data_meta = {}
+                for meta_key, data_fn in file_meta_data_map.items():
+                    if data_fn(info):
+                        data_meta[meta_key] = data_fn(info)
+                if data_meta.get("codec", None):
+                    data_meta["{kind}_codec".format(kind=kind.lower())] = data_meta["codec"]
+                    del data_meta["codec"]
+                data_meta.update(meta_data)
+                meta_data = data_meta
+        elif kind == "Exercise":
+            zf = zipfile.ZipFile(open(location, "rb"), "r")
+            try:
+                data_meta = json.loads(zf.read("exercise.json"))
+            except KeyError:
+                data_meta = {}
+                logging.debug("No exercise metadata available in zipfile")
             data_meta.update(meta_data)
-            meta_data = data_meta
+            try:
+                assessment_items = json.loads(zf.read("assessment_items.json"))
+            except KeyError:
+                assessment_items = []
+                logging.debug("No assessment items found in zipfile")
+            for filename in zf.namelist():
+                if os.path.splitext(filename)[0] != "json":
+                    zf.extract(filename, os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel))
+
 
         id = file_md5(channel["id"], location)
 
         node.update({
             "id": id,
             "kind": kind,
-            "format": extension,
         })
+
+        if kind != "Exercise":
+            node.update({
+                "format": extension,
+                })
+            # Copy over content
+            shutil.copy(location, os.path.join(settings.CONTENT_ROOT, id + "." + extension))
+            logging.debug("%s file %s to local content directory." % ("Copied", slug))
 
         node.update(meta_data)
 
-        # Copy over content
-        shutil.copy(location, os.path.join(settings.CONTENT_ROOT, id + "." + extension))
-        logging.debug("%s file %s to local content directory." % ("Copied", slug))
 
     # Verify some required fields:
     if "title" not in node:
@@ -211,6 +245,7 @@ def construct_node(location, parent_path, node_cache, channel):
         nodecopy = copy.deepcopy(node)
         if kind == "Exercise":
             node_cache["Exercise"].append(nodecopy)
+            node_cache["AssessmentItem"].extend(assessment_items)
         else:
             node_cache["Content"].append(nodecopy)
 
@@ -260,13 +295,14 @@ def retrieve_API_data(channel=None):
         "Exercise": [],
         "Content": [],
         "Slugs": set(),
+        "AssessmentItem": [],
     }
 
     topic_tree = construct_node(path, "", node_cache, channel)
 
     exercises = node_cache["Exercise"]
 
-    assessment_items = []
+    assessment_items = node_cache["AssessmentItem"]
 
     content = node_cache["Content"]
 
@@ -279,6 +315,9 @@ def retrieve_API_data(channel=None):
 rebuild_topictree = partial(base.rebuild_topictree, whitewash_node_data=whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=channel_data)
 
 def channel_data_files(dest=None):
+    """
+    Copies all remaining files to appropriate channel data directory
+    """
     channel_data_filename = "channel_data.json"
     if dest:
         if not channel_data_path:

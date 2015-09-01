@@ -1,5 +1,7 @@
 var _ = require("underscore");
 var Backbone = require("base/backbone");
+var get_params = require("utils/get_params");
+var setGetParamDict = get_params.setGetParamDict;
 
 var ExtraFieldsBaseModel = Backbone.Model.extend({
 
@@ -165,4 +167,4 @@ module.exports = {
     ContentDataModel: ContentDataModel,
     ContentLogModel: ContentLogModel,
     ContentLogCollection: ContentLogCollection
-}
+};

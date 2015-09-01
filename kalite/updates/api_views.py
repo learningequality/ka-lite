@@ -262,12 +262,12 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
             child = annotate_topic_tree(child_node, level=level + 1, statusdict=statusdict, lang_code=lang_code)
             if not child:
                 continue
-            elif child["addClass"] == "unstarted":
+            elif child["extraClasses"] == "unstarted":
                 complete = False
-            elif child["addClass"] == "partial":
+            elif child["extraClasses"] == "partial":
                 complete = False
                 unstarted = False
-            elif child["addClass"] == "complete":
+            elif child["extraClasses"] == "complete":
                 unstarted = False
             children.append(child)
 
@@ -278,11 +278,11 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
         return {
             "title": _(node["title"]),
             "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
-            "isFolder": True,
+            "folder": True,
             "key": node["id"],
             "children": children,
-            "addClass": complete and "complete" or unstarted and "unstarted" or "partial",
-            "expand": level < 1,
+            "extraClasses": complete and "complete" or unstarted and "unstarted" or "partial",
+            "expanded": level < 1,
         }
 
     elif node["kind"] == "Video":
@@ -312,7 +312,7 @@ def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_
             "title": _(node["title"]),
             "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
             "key": youtube_id,
-            "addClass": status,
+            "extraClasses": status,
             "size": vid_size,
         }
 

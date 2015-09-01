@@ -26,4 +26,4 @@ var SuggestedContentCollection = Backbone.Collection.extend({
 module.exports = {
 	SuggestedContentModel: SuggestedContentModel,
 	SuggestedContentCollection: SuggestedContentCollection
-}
+};

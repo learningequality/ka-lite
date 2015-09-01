@@ -34,6 +34,10 @@ def get_features(app_module):
     else:
         return None
 
+def check_feature_file(features_dir, feature_name):
+    """Used to check if a feature_name is in the specified features_dir"""
+    return os.path.exists(os.path.join(features_dir, feature_name + ".feature"))
+
 
 def get_options():
     option_list = (
@@ -116,8 +120,8 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             return super(KALiteTestRunner, self).run_tests(test_labels, extra_tests, **kwargs)
         return run_tests_wrapper_fn()
 
-    def make_bdd_test_suite(self, features_dir):
-        return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
+    def make_bdd_test_suite(self, features_dir, feature_name=None):
+        return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info, feature_name=feature_name)
 
     def build_suite(self, test_labels, extra_tests, **kwargs):
         """Run tests normally, but also run BDD tests.
@@ -144,10 +148,15 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # if we don't want any bdd tests, empty out the bdd label list no matter what
         bdd_labels = [] if self._no_bdd else bdd_labels
 
+        ignore_empty_test_labels = False
+
         for label in bdd_labels:
+            feature_name = None
             if '.' in label:
-                print("Ignoring label with dot in: %s" % label)
-                continue
+                print("Found label with dot in: %s, processing individual feature" % label)
+                full_label = label
+                feature_name = label.split(".")[-1]
+                label = label.split(".")[0]
             try:
                 app = get_app(label)
             except ImproperlyConfigured as e:
@@ -161,10 +170,27 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
             # parallel to the models module
             features_dir = get_features(app)
             if features_dir is not None:
+                if feature_name:
+                    if check_feature_file(features_dir, feature_name):
+                        test_labels = filter(lambda x: x != full_label, test_labels)
+                        # Flag that we should ignore test_labels if empty
+                        ignore_empty_test_labels = True
+                    else:
+                        print("Invalid behave feature name, ignoring")
+                        continue
                 # build a test suite for this directory
-                extra_tests.append(self.make_bdd_test_suite(features_dir))
+                extra_tests.append(self.make_bdd_test_suite(features_dir, feature_name=feature_name))
 
-        suite = super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
+        if not test_labels and ignore_empty_test_labels:
+            suite = suite = unittest.TestSuite()
+
+            if extra_tests:
+                for test in extra_tests:
+                    suite.addTest(test)
+
+            suite = reorder_suite(suite, (unittest.TestCase,))
+        else:
+            suite = super(KALiteTestRunner, self).build_suite(test_labels, extra_tests, **kwargs)
 
         # remove all django module tests
         suite._tests = filter(lambda x: 'django.' not in x.__module__, suite._tests)

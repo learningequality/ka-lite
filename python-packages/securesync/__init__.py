@@ -7,17 +7,7 @@ import os
 ID_MAX_LENGTH=32
 IP_MAX_LENGTH=50
 
-
-# TODO(benjaoming): So the version of securesync dynamic !? Not understanding
-# this.. plus it adds problems in dependency testing... but that should be
-# deleted anyways... for now just hard coding it at 1.0 and below will be
-# left commented out.
-# try:
-#     from kalite.version import VERSION
-# except:
-#     VERSION = "1.0"
-
-VERSION = "1.0"
+from kalite.version import VERSION
 
 # JsonResponseMessageError codes
 class ERROR_CODES:

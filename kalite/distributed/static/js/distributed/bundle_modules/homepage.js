@@ -1,6 +1,6 @@
 var $ = require("../base/jQuery");
 var content_rec_views = require("../contentrec/views");
-var user = require("../user/views")
+var user = require("../user/views");
 
 $(function() {
     if (ds.distributed.front_page_welcome_message) {
@@ -12,7 +12,7 @@ $(function() {
                 el:"#content-area"
             });
         }
-    }
+    };
     window.statusModel.listenTo(window.statusModel, "change", content_rec_load);
 
     window.statusModel.listenTo(window.statusModel, "change:has_superuser", function () {

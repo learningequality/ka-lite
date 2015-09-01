@@ -15,4 +15,4 @@ module.exports = function seeded_shuffle(source_array, random) {
     }
 
     return array;
-}
+};
