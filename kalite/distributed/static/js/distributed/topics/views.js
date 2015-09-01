@@ -635,6 +635,10 @@ var TopicContainerOuterView = BaseView.extend({
                 }
             }
         }
+        if (!pruned && (paths.length < check_views.length)) {
+            // Double check that paths and check_views are the same length
+            this.remove_topic_views(check_views.length - paths.length);
+        }
         if (callback) {
             this.stopListening(this, "inner_view_added");
 
