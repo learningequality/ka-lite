@@ -31,7 +31,7 @@ Running the KA Lite Server
 ---------------------------
 After a successful installation of KA Lite, the terminal should give you a command to copy. It will look something like the following:
 
-    ``/PATH/TO/KALITE/bin/kalite start``
+    ``kalite start``
 
 The first string will vary depending on which folder you installed KA Lite in. Simply copy and paste the provided string back into the command prompt, and hit enter on your keyboard. You will be asked whether or not you wish to run the KA Lite server in the background automatically every time you start up the computer. Once you answer yes or no, success! The KA Lite server is now running on your computer.
 
@@ -60,7 +60,7 @@ Copy and paste the URL into a web browser. The KA Lite application should show u
     :focus: #id_username | Enter your username and password using this form!
     :class: screenshot
 
-* If you have forgotten the username/password combination, simply run ``bin/kalite manage createsuperuser`` from the kalite directory and then follow the instructions. If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
+* If you have forgotten the username/password combination, simply run ``kalite manage createsuperuser`` from the kalite directory and then follow the instructions. If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
 
 Once you’ve logged in, the next step in the setup process is registering your device with the KA Lite Hub.
 
@@ -565,7 +565,7 @@ Restarting Your Server: Linux
 
 #. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
 
-#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
+#. Type in ``kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
@@ -586,7 +586,7 @@ Restarting Your Server: Mac
 
 #. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
 
-#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
+#. Type in ``kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
@@ -601,7 +601,7 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 Running KA Lite with your own settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate 
+In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate
 ``X:\Documents and Settings\<username>\.kalite``). That file is where you should
 put your custom settings, and KA Lite will load them automatically.
 
@@ -641,7 +641,7 @@ Most common settings
     have downloaded your own assessment items** and you want to keep the
     read-only assessment_items database (~50 MB) together
     with your other media contents (for portability). Example::
-      
+
       from kalite.project.settings.base import *
       CONTENT_ROOT = '/example'
       DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
@@ -672,7 +672,7 @@ User restrictions
 ..note:: KA Lite uses caching of web pages, if you change ``LOCKDOWN`` or
          ``DISABLE_SELF_ADMIN``, you need to flush the cache. To do that, run
          the following management command::
-         
+
              kalite manage cache clearweb
 
 
