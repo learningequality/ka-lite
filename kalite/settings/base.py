@@ -321,6 +321,11 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
+from os.path import join, expanduser
+
+BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
+DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -356,6 +361,7 @@ INSTALLED_APPS = [
     'kalite.i18n',
     'kalite.ab_testing',
     'kalite.control_panel',
+    'dbbackup',
 ]
 
 if IS_SOURCE:
@@ -465,6 +471,9 @@ KEY_PREFIX = version.VERSION
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(
     local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.signed_cookies' + (''))
+    
+# Expire session cookies whenever we close the browser.
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Use our custom message storage to avoid adding duplicate messages
 MESSAGE_STORAGE = 'fle_utils.django_utils.classes.NoDuplicateMessagesSessionStorage'

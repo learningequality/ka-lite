@@ -32,7 +32,7 @@ from django.contrib import messages
 from django.db import DatabaseError
 from django.utils.translation import gettext as _
 
-from fle_utils.general import softload_json, json_ascii_decoder
+from fle_utils.general import softload_json, softload_sqlite_cache, json_ascii_decoder
 from kalite import i18n
 
 from . import models as main_models
@@ -59,7 +59,7 @@ def cache_file_path(basename):
 # Globals that can be filled
 TOPICS = None
 CACHE_VARS.append("TOPICS")
-CNT=0
+CNT = 0
 def get_topic_tree(force=False, annotate=False, channel=None, language=None, parent=None):
 
     # Hardcode the Brazilian Portuguese mapping that only the central server knows about
@@ -172,7 +172,7 @@ def get_node_cache(node_type=None, force=False, language=None):
     else:
         return NODE_CACHE[node_type]
 
-EXERCISES          = None
+EXERCISES = None
 CACHE_VARS.append("EXERCISES")
 def get_exercise_cache(force=False, language=None):
 
@@ -230,7 +230,7 @@ def get_exercise_cache(force=False, language=None):
                 # Get the language codes for exercise templates that exist
                 # Try to minimize the number of os.path.exists calls (since they're a bottleneck) by using the same
                 # precedence rules in i18n.select_best_available_languages
-                available_langs = set(["en"] + [language]*available)
+                available_langs = set(["en"] + [language] * available)
                 # Return the best available exercise template
                 exercise_lang = i18n.select_best_available_language(language, available_codes=available_langs)
 
@@ -276,7 +276,7 @@ def create_thumbnail_url(thumbnail):
         return django_settings.CONTENT_URL + thumbnail + ".jpg"
     return None
 
-CONTENT          = None
+CONTENT = None
 CACHE_VARS.append("CONTENT")
 def get_content_cache(force=False, annotate=False, language=None):
 
@@ -289,17 +289,19 @@ def get_content_cache(force=False, annotate=False, language=None):
         CONTENT = {}
 
     if CONTENT.get(language) is None:
+        content = None
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
             content = softload_json(
                 cache_file_path("content_{0}.json".format(language)),
                 logger=logging.debug,
                 raises=False
             )
-            if content:
-                CONTENT[language] = content
-                return CONTENT[language]
+        if content:
+            CONTENT[language] = content
+            return CONTENT[language]
         else:
-            CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+            CONTENT[language] = (softload_sqlite_cache(settings.CONTENT_CACHE_FILEPATH) or
+                                 softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False))
             annotate = True
 
     if annotate:

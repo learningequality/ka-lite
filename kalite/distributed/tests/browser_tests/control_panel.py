@@ -105,4 +105,7 @@ class TestUserManagement(BrowserActionMixins, CreateAdminMixin, FacilityMixins, 
         user.save()
 
         self.browse_to(self.reverse("group_management", kwargs=params))
-        self.assertEqual(self.browser.find_element_by_xpath("//div[@id='groups']/div/dl/dd").text, "1", "Does not report one user for From Group.")
+        element = WebDriverWait(self.browser, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[@id='groups']/div/dl/dd"))
+                )
+        self.assertEqual(element.text, "1", "Does not report one user for From Group.")

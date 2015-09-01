@@ -212,4 +212,4 @@ module.exports = {
     ContentNextStepsView: ContentNextStepsView,
     ContentExploreTopicView: ContentExploreTopicView,
     ContentNextStepsLessonView: ContentNextStepsLessonView
-}
+};

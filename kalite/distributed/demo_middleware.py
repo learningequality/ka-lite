@@ -20,6 +20,7 @@ def is_static_file(path):
     url_exceptions = [
         "^/admin/*",
         "^/api/*",
+        "^/securesync/api/*",
         "^{url}/*".format(url=settings.STATIC_URL),
         "^/data/*",
         "^{url}/*".format(url=settings.MEDIA_URL),
@@ -33,6 +34,7 @@ def is_static_file(path):
             return True
 
     return False
+
 
 class LinkUserManual:
     """Shows a message with a link to the user's manual, from the homepage."""
