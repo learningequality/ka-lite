@@ -8,13 +8,15 @@ var getParamValue = (function() {
             params = {};
 
             if (query) {
-                while (match = regex.exec(query)) {
+                while((match = regex.exec(query)) !== null) {
                     params[match[1]] = decodeURIComponent(match[2]);
                 }
-            }    
+            }
         };
 
-    window.addEventListener && window.addEventListener('popstate', resetParams);
+    if(window.addEventListener) {
+        window.addEventListener('popstate', resetParams);
+    }
 
     resetParams();
 

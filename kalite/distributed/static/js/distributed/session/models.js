@@ -20,7 +20,10 @@ var SessionModel = Backbone.Model.extend({
 
         // Used by updates app
         AVAILABLE_LANGUAGEPACK_URL      : "",
-        DEFAULT_LANGUAGE                : ""
+        DEFAULT_LANGUAGE                : "",
+
+        // Used by content rating
+        CONTENT_RATING_LIST_URL     : "/api/content_rating"
     }
 });
 

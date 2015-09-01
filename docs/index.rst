@@ -13,10 +13,25 @@ Welcome to the KA Lite Documentation page! Here, you will find all the informati
 .. _Forums: https://forums.learningequality.org/
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 2
 
     Installation Guide <installguide/install_main>
     User Manual <usermanual/userman_main>
     FAQ <faq>
     Contributing and Development <developer_docs/contributing>
     For Devs <developer_docs/index>
+
+    
+
+Contact Us
+==========
+
+We would love to hear about your project and experiences!
+
+**Email:**
+
+info@learningequality.org
+
+**Website:**
+
+http://learningequality.org

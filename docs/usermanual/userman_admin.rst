@@ -29,11 +29,11 @@ For users that choose to register online, there are some important terms to fami
 
 Running the KA Lite Server
 ---------------------------
-After a successful installation of KA Lite, the terminal should give you a command to copy. It will look something like the following:
+At the very end of the setup, you have been prompted to run kalite. Make note of the command to run the server, which was also mentioned. Usually it's just ``kalite start``.
 
-    ``/PATH/TO/KALITE/bin/kalite start``
 
-The first string will vary depending on which folder you installed KA Lite in. Simply copy and paste the provided string back into the command prompt, and hit enter on your keyboard. You will be asked whether or not you wish to run the KA Lite server in the background automatically every time you start up the computer. Once you answer yes or no, success! The KA Lite server is now running on your computer.
+Windows or OSX behind a Firewall
+________________________________
 
 During the process, your operating system might prompt you to allow "Python.app" to accept incoming connections. The message dialogue may look like the following, depending on your operating system:
 
@@ -41,6 +41,7 @@ During the process, your operating system might prompt you to allow "Python.app"
     :align: center
 
 Please allow the app to run. This will make it possible for the KA Lite application to be accessible.
+
 
 Accessing KA Lite
 -------------------

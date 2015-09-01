@@ -201,4 +201,4 @@ $(function() {
 
 module.exports = {
     $: $
-}
+};

@@ -1,8 +1,13 @@
 var api = require("utils/api");
 var $ = require("base/jQuery");
+require("jquery.fancytree/dist/jquery.fancytree");
 var messages = require("utils/messages");
 var base = require("updates/base");
 var connectivity = require("utils/connectivity");
+var sprintf = require("sprintf-js").sprintf;
+
+require("jquery.fancytree/dist/skin-vista/ui.fancytree.less");
+require("../../../css/updates/update_videos.less");
 
 // Callback functions
 
@@ -25,7 +30,7 @@ function video_reset_callback() {
 
 function video_check_callback(progress_log, resp) {
     // When video status is checked
-    videos_downloading = (progress_log != null) && (progress_log.process_name != null);
+    videos_downloading = (progress_log !== null) && (progress_log.process_name !== null);
 
     if (progress_log) { // check succeeded
         // Determine what changed, and what to update
@@ -35,7 +40,7 @@ function video_check_callback(progress_log, resp) {
         var keyCompleted = null;
         if (currentKey != lastKey) {
             keyCompleted = lastKey;
-        } else if (progress_log.stage_percent == 1.) {
+        } else if (progress_log.stage_percent == 1.0) {
             keyCompleted = currentKey;
         }
 
@@ -49,7 +54,7 @@ function video_check_callback(progress_log, resp) {
                 nErrors++;
             }
 
-            if (progress_log.process_percent == 1.) {
+            if (progress_log.process_percent == 1.0) {
             // 100% done with the set of videos.  Display based on the total
 
                 // 100% done with ALL videos.
@@ -88,6 +93,8 @@ var video_callbacks = {
     reset: video_reset_callback
 };
 
+var tree;
+
 
 $(function() {
 
@@ -97,13 +104,15 @@ $(function() {
                 $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
             }
 
-            $("#content_tree").dynatree({
-                imagePath:"../images/",
-                checkbox: true,
+            $("#content_tree").html("");
+
+            $("#content_tree").fancytree({
+                aria: true, // Enable WAI-ARIA support.
+                checkbox: true, // Show checkboxes.
+                debugLevel: 0, // 0:quiet, 1:normal, 2:debug
                 selectMode: 3,
-                children: treeData,
-                debugLevel: 0,
-                onSelect: function(select, node) {
+                source: [treeData],
+                select: function(event, node) {
 
                     var newVideoMetadata = getSelectedIncompleteMetadata();
                     var oldVideoMetadata = getSelectedStartedMetadata();
@@ -117,9 +126,9 @@ $(function() {
                         return memo + meta.size;
                     }, 0);
 
-                    $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) == 0);
+                    $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) === 0);
 
-                    if (newVideoCount == 0) {
+                    if (newVideoCount === 0) {
                         $("#download-videos").hide();
                     } else {
                         $("#download-videos-text").text(sprintf(gettext("Download %(vid_count)d new selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
@@ -129,7 +138,7 @@ $(function() {
                         }));
                         $("#download-videos").toggle($("#download-videos").attr("disabled") === undefined); // only show if we're not currently downloading
                     }
-                    if (oldVideoCount == 0) {
+                    if (oldVideoCount === 0) {
                         $("#delete-videos").hide();
                     } else {
                         $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
@@ -140,16 +149,8 @@ $(function() {
                         $("#delete-videos").show();
                     }
                 },
-                onDblClick: function(node, event) {
-                    node.toggleSelect();
-                },
-                onKeydown: function(node, event) {
-                    if( event.which == 32 ) {
-                        node.toggleSelect();
-                        return false;
-                    }
-                },
-                onPostInit: function() {
+                init: function(event, data) {
+                    tree = data.tree;
                     connectivity.with_online_status("server", function(server_is_online) {
                         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
                         // Best to assume offline, as online check returns much faster than offline check.
@@ -299,8 +300,8 @@ function show_language_selector() {
 
 /* script functions for doing stuff with the topic tree*/
 function unselectAllNodes() {
-    $.each($("#content_tree").dynatree("getSelectedNodes"), function(ind, node) {
-        node.select(false);
+    $.each(tree.getSelectedNodes(), function(ind, node) {
+        node.setSelected(false);
     });
 }
 
@@ -311,10 +312,9 @@ function getSelectedVideos(vid_type) {
         case "incomplete": avoid_type ="complete"; break;
         default: assert(false, sprintf("Unknown vid type: %s", vid_type)); break;
     }
-
-    var arr = $("#content_tree").dynatree("getSelectedNodes");
+    var arr = tree.getSelectedNodes();
     var vids = _.uniq($.grep(arr, function(node) {
-        return node.data.addClass != avoid_type && node.childList == null;
+        return node.extraClasses != avoid_type && node.children === null;
     }));
     return vids;
 }
@@ -330,13 +330,13 @@ function getSelectedStartedVideos() {
 
 function getSelectedMetadata(vid_type, data_type) {
     var videos = _.uniq(getSelectedVideos(vid_type), function(node) {
-        return node.data.key;
+        return node.key;
     });
     var metadata = $.map(videos, function(node) {
         switch (data_type) {
             case null:
             case undefined: return node.data;
-            case "youtube_id": return node.data.key;
+            case "youtube_id": return node.key;
             default: assert(false, sprintf("Unknown data type: %s", data_type)); break;
         }
     });
@@ -352,9 +352,9 @@ function getSelectedStartedMetadata(data_type) {
 
 function withNodes(nodeKey, callback, currentNode) {
     if (!currentNode) {
-        currentNode = $("#content_tree").dynatree("getTree").tnRoot.childList[0];
+        currentNode = tree.rootNode.children[0];
     }
-    $.each(currentNode.childList || [], function(ind, child) {
+    $.each(currentNode.children || [], function(ind, child) {
         if (child.data.key == nodeKey) {
             callback(child);
         }
@@ -364,8 +364,8 @@ function withNodes(nodeKey, callback, currentNode) {
 
 function setNodeClass(nodeKey, className) {
     withNodes(nodeKey, function(node) {
-        $(node.span).removeClass("unstarted partial complete").addClass(className);
-        node.data.addClass = className;
+        $(node.span).removeClass("unstarted partial complete").extraClasses(className);
+        node.extraClasses = className;
         if (node.parent) {
             updateNodeClass(node.parent);
         }
@@ -373,15 +373,15 @@ function setNodeClass(nodeKey, className) {
 }
 
 function updateNodeClass(node) {
-    if (node.childList) {
+    if (node.children) {
         var complete = true;
         var unstarted = true;
-        for (var i = 0; i < node.childList.length; i++) {
-            var child = node.childList[i];
-            if (child.data.addClass != "complete") {
+        for (var i = 0; i < node.children.length; i++) {
+            var child = node.children[i];
+            if (child.extraClasses != "complete") {
                 complete = false;
             }
-            if (child.data.addClass != "unstarted") {
+            if (child.extraClasses != "unstarted") {
                 unstarted = false;
             }
         }

@@ -3,6 +3,7 @@ var $ = require("base/jQuery");
 var messages = require("utils/messages");
 var base = require("updates/base");
 var connectivity = require("utils/connectivity");
+var sprintf = require("sprintf-js").sprintf;
 
 
 function software_check_callback(progress_log, resp) {
@@ -82,8 +83,8 @@ function version_callback(data) {
             if (! version_info[version]["bugs_fixed"]) {
                 $("#bugs_fixed").append(gettext("<li>(%s)</li>", gettext("None")));
             } else {
-                for (var fi in version_info[version]["bugs_fixed"]) {
-                    $("#bugs_fixed").append("<li>" + version_info[version]["bugs_fixed"][fi] + "</li>");
+                for (var fo in version_info[version]["bugs_fixed"]) {
+                    $("#bugs_fixed").append("<li>" + version_info[version]["bugs_fixed"][fo] + "</li>");
                 }
             }
         }

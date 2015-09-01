@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
         print "Unpacking..."
         zf = zipfile.ZipFile(f, "r")
-        unpack_zipfile_to_khan_content(zf)
+        unpack_zipfile_to_content_folder(zf)
 
 
 def should_upgrade_assessment_items():
@@ -78,23 +78,36 @@ def should_upgrade_assessment_items():
     return software_version > assessment_items_version
 
 
-def unpack_zipfile_to_khan_content(zf):
-    folder = settings.KHAN_ASSESSMENT_ITEM_ROOT
+def unpack_zipfile_to_content_folder(zf):
+    try:
+        channel = zf.read("channel.name")
+    except KeyError:
+        channel = ""
+
+    if channel:
+
+        folder = os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel)
+
+    else:
+        folder = settings.ASSESSMENT_ITEM_ROOT
+
     ensure_dir(folder)
     zf.extractall(folder)
+
+    ensure_dir(settings.KHAN_ASSESSMENT_ITEM_ROOT)
     # Ensure that special files are in their configured locations
     os.rename(
-        os.path.join(settings.KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.version'),
+        os.path.join(folder, 'assessmentitems.version'),
         settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
     )
     os.rename(
-        os.path.join(settings.KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.sqlite'),
+        os.path.join(folder, 'assessmentitems.sqlite'),
         settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH
     )
     # JSON file is apparrently not required (not in the test at least)
-    if os.path.isfile(os.path.join(settings.KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json')):
+    if os.path.isfile(os.path.join(folder, 'assessmentitems.json')):
         os.rename(
-            os.path.join(settings.KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json'),
+            os.path.join(folder, 'assessmentitems.json'),
             settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
         )
 

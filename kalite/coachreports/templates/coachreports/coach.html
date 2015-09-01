@@ -18,13 +18,14 @@
         var FACILITY_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var GROUP_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
         var FACILITY_ID = {% if facility_id %}"{{ facility_id }}"{% else %}undefined{% endif %};
+        var ZONE_ID = "{{ zone_id }}";
     </script>
     <script src="{% static 'js/coachreports/bundles/bundle_coach_report.js' %}"></script>
 
     <script>
-    $(function(){
-        Backbone.history.start({pushState: true, root: "{% url 'coach_reports' %}"});
-    })
+        $(function(){
+            Backbone.history.start({pushState: true, root: "{% url 'coach_reports' zone_id=zone_id %}"});
+        })
     </script>
 {% endblock headjs %}
 

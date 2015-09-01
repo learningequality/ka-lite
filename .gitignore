@@ -2,6 +2,9 @@
 # File created by Coverage
 .coverage
 
+# PyCharm
+.idea
+
 # Eclipse
 .project
 .pydevproject

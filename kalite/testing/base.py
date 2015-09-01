@@ -3,6 +3,7 @@ Contains test wrappers and helper functions for
 automated of KA Lite using selenium
 for automated browser-based testing.
 """
+import re
 import six
 import sys
 
@@ -13,6 +14,7 @@ from behave.runner import Runner as BehaveRunner
 from behave.formatter.ansi_escapes import escapes
 
 from django.core.urlresolvers import reverse
+from django.db.transaction import TransactionManagementError
 from django.test import TestCase, LiveServerTestCase
 
 from .browser import setup_browser
@@ -112,6 +114,7 @@ def parse_argv(argv, option_info):
 class DjangoBehaveTestCase(LiveServerTestCase):
     def __init__(self, **kwargs):
         self.features_dir = kwargs.pop('features_dir')
+        self.feature_name = kwargs.pop('feature_name')
         self.option_info = kwargs.pop('option_info')
         super(DjangoBehaveTestCase, self).__init__(**kwargs)
 
@@ -133,6 +136,8 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
         self.behave_config.server_url = self.live_server_url  # property of LiveServerTestCase
         self.behave_config.paths = self.get_features_dir()
+        if self.feature_name:
+            self.behave_config.exclude = lambda x: self.feature_name not in six.text_type(x)
         self.behave_config.format = self.behave_config.format if self.behave_config.format else ['pretty']
         # disable these in case you want to add set_trace in the tests you're developing
         self.behave_config.stdout_capture =\
@@ -148,7 +153,10 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         runner = BehaveRunner(self.behave_config)
         runner.test_case = self
 
-        failed = runner.run()
+        try:
+            failed = runner.run()
+        except TransactionManagementError:
+            failed = None
 
         try:
             undefined_steps = runner.undefined_steps
