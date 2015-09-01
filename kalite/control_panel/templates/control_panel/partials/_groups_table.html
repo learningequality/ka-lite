@@ -15,6 +15,7 @@
                 {% trans "Learner Groups" %}
                 <small>
                     <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title="{% blocktrans %}A 'group' is set of learners, such as a classroom of students or all students in one grade.{% endblocktrans %} {% trans 'Add learners by selecting a group.' %}"></span>
+                    <!---TODO - Radina: implement accessible tooltip. -->
                 </small>
             </h2>
             {% if not groups %}
@@ -63,7 +64,8 @@
                                     <td>
                                         {% if group.id %}
                                         <a href="{% url 'group_edit' group_id=group.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}" title="{% trans 'Edit group' %}">
-                                            <span class="glyphicon glyphicon-pencil"></span>
+                                            <span aria-hidden="true"><i class="glyphicon glyphicon-pencil"></i></span>
+                                            <span class="sr-only">{% trans 'Edit group' %}</span>
                                         </a>
                                         {% else %}
                                         N/A
@@ -102,7 +104,7 @@
                 <div class="col-sm-4 col-xs-12">
                     <p class="add-new-table-item">
                         <a href="{% url 'add_group' %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                            <span class="glyphicon glyphicon-plus-sign"></span> {% trans 'Add a new group.' %}
+                            <span aria-hidden="true"><i class="glyphicon glyphicon-plus-sign"></i></span> {% trans 'Add a new group.' %}
                         </a>
                     </p>
                 </div>
