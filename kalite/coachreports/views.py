@@ -1,4 +1,5 @@
 from annoying.decorators import render_to
+from annoying.functions import get_object_or_None
 
 from django.conf import settings; logging = settings.LOG
 from django.core.exceptions import ValidationError
@@ -7,6 +8,8 @@ from django.http import Http404
 from kalite.main.models import UserLog
 from kalite.shared.decorators.auth import require_authorized_access_to_student_data, require_authorized_admin, get_user_from_request
 from kalite.facility.decorators import facility_from_request
+
+from securesync.models import Zone
 
 @require_authorized_access_to_student_data
 @render_to("coachreports/student_view.html")
@@ -37,14 +40,20 @@ def student_view_context(request):
 @require_authorized_admin
 @facility_from_request
 @render_to("coachreports/coach.html")
-def coach_reports(request, facility=None):
+def coach_reports(request, facility=None, zone_id=None):
     """Landing page needs plotting context in order to generate the navbar"""
+    zone = get_object_or_None(Zone, pk=zone_id)
+
+    if not zone and settings.CENTRAL_SERVER:
+        raise Http404("Zone not found.")
+
     if facility:
         facility_id = facility.id
     else:
         facility_id = None
     return {
-        "facility_id": facility_id
+        "facility_id": facility_id,
+        "zone_id": zone.id if zone else None
         }
 
 

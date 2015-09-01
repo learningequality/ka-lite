@@ -35,8 +35,8 @@
     width: 12em;
     height: 100%;
     background-color: none;
-    margin-right: calc((100% - 48em)/8);
-    margin-left: calc((100% - 48em)/8);
+    margin-right: calc((100% - 36em)/6);
+    margin-left: calc((100% - 36em)/6);
 }
 
 .panel {
@@ -110,11 +110,10 @@ ul {
     font-weight: 300;
 }
 
-#full_circle1, #full_circle2, #full_circle3, #full_circle4 {
+#full_circle1, #full_circle2, #full_circle3 {
     background-color: rgba(204, 0, 102, 0);
-    border: 0.3em solid #32739E;
-    height: 7em;
-    width: 7em;
+    border: 0;
+    height: 10em;
     margin: auto;
     margin-top: 2em;
     -moz-border-radius: 4.5em;
@@ -124,12 +123,18 @@ ul {
     margin-bottom: 1em;
 }
 
-#full_circle1 p, #full_circle2 p, #full_circle3 p, #full_circle4 p {
-    margin: auto;
-    margin-top: 1.5em;
-    font-size: 1.5em;
+#full_circle1 p, #full_circle2 p, #full_circle3 p{
+    width: 100%;
+    font-size: 1.1em;
     font-weight: 100;
+    position: absolute;
+    text-align: center;
+    margin-top: 2em;
+    padding-left: 2.5em;
+    padding-right: 2.5em;
+    z-index: -5;
 }
+
 
 #full_circle2 .arc, #full_circle3 .arc {
     stroke-weight: 0.1;
@@ -158,4 +163,19 @@ ul {
 
 span.setrange {
     color: #fff;
+}
+
+.tooltip {
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+  color: #333;
+  display: none;
+  font-size: 12px;
+  left: 130px;
+  padding: 10px;
+  position: absolute;
+  text-align: center;
+  top: 95px;
+  width: 80px;
+  z-index: 10;
 }

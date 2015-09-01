@@ -5,7 +5,7 @@ from . import api_urls
 
 
 urlpatterns = patterns(__package__ + '.views',
-    url(r'^teach/', 'coach_reports', {}, 'coach_reports'),
+    url(r'^coach/zone/(?P<zone_id>\w+)', 'coach_reports', {}, 'coach_reports'),
 
     url(r'^student/$', 'student_view', {}, 'student_view'),
     url(r'^student/(?P<xaxis>[^/]+)/(?P<yaxis>[^/]+)/$', 'student_view', {}, 'student_view'),

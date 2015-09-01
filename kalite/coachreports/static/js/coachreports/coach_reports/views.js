@@ -8,6 +8,7 @@ var Models = require("./models");
 var TabularReportViews = require("../tabular_reports/views");
 
 var date_string = require("utils/datestring").date_string;
+var d3 = require("d3");
 
 /*
 Hierarchy of views:
@@ -79,12 +80,77 @@ var CoachSummaryView = BaseView.extend({
         "click #show_tabular_report": "toggle_tabular_view"
     },
 
+    /*
+    this function produces a radial graph and inserts it into the target_elem
+    data_sub is a portion of the data, while the data_total param is the total
+    IE time spent doing backflips vs total time spent alive
+    */
+    displayRadialGraph: function(target_elem, data_sub, data_total) {
+        var targetElemBox = $("#" + target_elem).get(0);
+        var targetElemP = $("#" + target_elem + "_p").get(0);
+
+        if(!data_sub || !data_total) {
+            targetElemP.innerHTML = "N/A";
+        } else {
+            var parseData = [
+                //parsing data to 2 decimal positions
+                { label: "Hours spent on content", count: Math.round(data_sub * 100)/100 },
+                { label: "Other activites (exercises, etc.)", count: Math.round((data_total - data_sub) * 100)/100 }
+            ];
+
+            //adjusting the graph's size based on target_elem's sizing
+            var width = targetElemBox.clientWidth;
+            var height = targetElemBox.clientHeight;
+            var radius = (Math.min(width, height) / 2);    
+
+            var color = d3.scale.category20();
+
+            var svg = d3.select("#" + target_elem)
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + (width/2) + "," + (height/2) + ")");
+
+            var arc = d3.svg.arc()
+                .innerRadius(radius - radius/6)
+                .outerRadius(radius);
+
+            var pie = d3.layout.pie()
+                .value(function(d) { return d.count; })
+                .sort(null);
+
+            var path = svg.selectAll("path")
+                .data(pie(parseData))
+                .enter()
+                .append("path")
+                .attr("d", arc)
+                .attr("fill", function(d, i) {
+                    return color(d.data.label);
+                });
+
+            //parsing to 2 decimals
+            var total = Math.round(data_total * 100)/100;
+
+            //this will display relevant data when you hover over that data's arc on the radial graph
+            path.on('mouseover', function(d) {                            
+                targetElemP.innerHTML = (d.data.label + ":" + "<br />" + d.data.count);
+            });                                                           
+              
+            //when not hovering, you'll see the total data
+            path.on('mouseout', function() {                              
+                targetElemP.innerHTML = "Total:" + "<br />" + total;
+            });       
+        }
+    },
+
     initialize: function() {
         _.bindAll(this, "set_data_model", "render");
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
         this.listenTo(this.model, "set_time", this.set_data_model);
         this.set_data_model();
+
     },
 
     set_data_model: function (){
@@ -130,6 +196,7 @@ var CoachSummaryView = BaseView.extend({
 
         delete this.tabular_report_view;
 
+        this.displayRadialGraph("full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"));
     },
 
     toggle_tabular_view: _.debounce(function() {
@@ -162,7 +229,11 @@ var FacilitySelectView = Backbone.View.extend({
         _.bindAll(this, "render");
         this.facility_list = new Models.FacilityCollection();
         this.listenTo(this.facility_list, 'sync', this.render);
-        this.facility_list.fetch();
+        this.facility_list.fetch({
+                data: $.param({
+                    zone_id: ZONE_ID
+                })
+            });
     },
 
     render: function() {

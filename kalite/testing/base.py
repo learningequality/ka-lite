@@ -14,6 +14,7 @@ from behave.runner import Runner as BehaveRunner
 from behave.formatter.ansi_escapes import escapes
 
 from django.core.urlresolvers import reverse
+from django.db.transaction import TransactionManagementError
 from django.test import TestCase, LiveServerTestCase
 
 from .browser import setup_browser
@@ -152,7 +153,10 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         runner = BehaveRunner(self.behave_config)
         runner.test_case = self
 
-        failed = runner.run()
+        try:
+            failed = runner.run()
+        except TransactionManagementError:
+            failed = None
 
         try:
             undefined_steps = runner.undefined_steps
