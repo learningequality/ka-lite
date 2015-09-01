@@ -22,5 +22,6 @@ TOPICS_FILEPATHS = {
 }
 EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
 CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
+CONTENT_CACHE_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.sqlite")
 
 TOPIC_RECOMMENDATION_DEPTH = 3

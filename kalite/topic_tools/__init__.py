@@ -32,7 +32,7 @@ from django.contrib import messages
 from django.db import DatabaseError
 from django.utils.translation import gettext as _
 
-from fle_utils.general import softload_json, json_ascii_decoder
+from fle_utils.general import softload_json, softload_sqlite_cache, json_ascii_decoder
 from kalite import i18n
 
 from . import models as main_models
@@ -300,7 +300,8 @@ def get_content_cache(force=False, annotate=False, language=None):
             CONTENT[language] = content
             return CONTENT[language]
         else:
-            CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+            CONTENT[language] = (softload_sqlite_cache(settings.CONTENT_CACHE_FILEPATH) or
+                                 softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False))
             annotate = True
 
     if annotate:

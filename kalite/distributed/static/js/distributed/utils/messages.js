@@ -34,7 +34,7 @@ function show_message(msg_class, msg_text, msg_id) {
         return $("#message_container");
     }
 
-    var x_button = '<a class="close" data-dismiss="alert" href="#">&times;</a>';
+    var x_button = '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>';
 
     if (msg_class === "error") {
         msg_class = "danger";

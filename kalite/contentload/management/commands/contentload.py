@@ -73,6 +73,7 @@ class Command(NoArgsCommand):
         channel_tools = importlib.import_module("kalite.contentload.management.commands.channels.{channel}".format(channel=channel))
 
         if options["import_files"]:
+            # Specifies where the files are coming from
             channel_tools.path = options["import_files"]
             if not channel_name or channel_name=="khan":
                 channel_name = os.path.basename(options["import_files"])
