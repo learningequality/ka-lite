@@ -115,8 +115,6 @@ var ContentAreaView = BaseView.extend({
                 this.currently_shown_view.remove();
             }
         }
-
-        this.model.set("active", false);
     }
 
 });
@@ -634,6 +632,10 @@ var TopicContainerOuterView = BaseView.extend({
                     this.remove_topic_views(check_views.length - i);
                 }
             }
+        }
+        if (!pruned && (paths.length < check_views.length)) {
+            // Double check that paths and check_views are the same length
+            this.remove_topic_views(check_views.length - paths.length);
         }
         if (callback) {
             this.stopListening(this, "inner_view_added");
