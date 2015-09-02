@@ -1,6 +1,7 @@
 from math import ceil
 import datetime
 
+from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 from django.db.models import Q, Sum, Avg
 
@@ -143,34 +144,47 @@ def aggregate_learner_logs(request):
         "content_time_spent": 0,
         "exercise_attempts": 0,
         "exercise_mastery": None,
+        "total_in_progress": 0,
+        "total_complete": 0,
+        "total_struggling": 0,
+        "total_not_attempted": 0,
     }
     
     end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
 
     start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
 
+    number_content = 0
+
     for log_type in log_types:
 
-        LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)
+        LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)   
 
         log_objects = LogModel.objects.filter(
             user__in=learners,
             latest_activity_timestamp__gte=start_date,
             latest_activity_timestamp__lte=end_date, **obj_ids).order_by("-latest_activity_timestamp")
 
+        number_content += len(set(log_objects.values_list(id_field, flat=True)))
 
         if log_type == "video":
+            output_dict["total_in_progress"] += log_objects.filter(complete=False).count()
             output_dict["content_time_spent"] += log_objects.aggregate(Sum("total_seconds_watched"))["total_seconds_watched__sum"] or 0
         elif log_type == "content":
+            output_dict["total_in_progress"] += log_objects.filter(complete=False).count()
             output_dict["content_time_spent"] += log_objects.aggregate(Sum("time_spent"))["time_spent__sum"] or 0
         elif log_type == "exercise":
+            output_dict["total_struggling"] = log_objects.filter(struggling=True).count()
+            output_dict["total_in_progress"] += log_objects.filter(complete=False, struggling=False).count()
             output_dict["exercise_attempts"] = AttemptLog.objects.filter(user__in=learners,
                 timestamp__gte=start_date,
                 timestamp__lte=end_date).count()
             if log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"] is not None:
                 output_dict["exercise_mastery"] = round(log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"])
         output_logs.extend(log_objects)
-
+        output_dict["total_complete"] += log_objects.filter(complete=True).count()
+    output_dict["total_not_attempted"] = number_content*len(learners) - (
+        output_dict["total_complete"] + output_dict["total_struggling"] + output_dict["total_in_progress"])
     # Report total time in hours
     output_dict["content_time_spent"] = round(output_dict["content_time_spent"]/3600.0,1)
     output_logs.sort(key=lambda x: x.latest_activity_timestamp, reverse=True)

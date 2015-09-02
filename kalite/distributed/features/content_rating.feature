@@ -17,9 +17,7 @@ Feature: Content Rating
     @as_learner
     Scenario: User alters text feedback
         Given I have filled out a feedback form
-        When I click the edit button
-        And I change the text
-        And I submit it
+        When I change the text
         Then the altered text is displayed
 
     @as_learner
