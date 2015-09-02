@@ -292,7 +292,7 @@ def search_topic_nodes(kinds=None, query=None, db=None, page=1, items_per_page=1
                 # For efficiency, don't do substring matches when we've got lots of results
                 topic_nodes = Item.select().where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query))))
                 pages = topic_nodes.count()/items_per_page
-                topic_nodes = topic_nodes.paginate(page, items_per_page).dicts()
+                topic_nodes = [item for item in topic_nodes.paginate(page, items_per_page).dicts()]
                 return topic_nodes, False, pages
 
 

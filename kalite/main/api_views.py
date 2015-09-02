@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 
-from kalite.topic_tools.content_models import get_topic_nodes, get_content_item
+from kalite.topic_tools.content_models import get_topic_nodes, get_content_item, search_topic_nodes
 from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
 from kalite.facility.models import FacilityUser
 
@@ -20,6 +20,21 @@ from kalite.facility.models import FacilityUser
 def topic_tree(request, channel):
     parent = request.GET.get("parent")
     return JsonResponse(get_topic_nodes(channel=channel, language=request.language, parent=parent))
+
+
+@api_handle_error_with_json
+def search_api(request, channel):
+    query = request.GET.get("term")
+    if query is None:
+        return JsonResponseMessageError("No search term specified", status=404)
+
+    query = query.lower()
+    # search for topic, video or exercise with matching title
+
+    matches, exact, pages = search_topic_nodes(query=query, channel=channel, language=request.language, page=1, items_per_page=15)
+
+    return JsonResponse(matches)
+
 
 
 @api_handle_error_with_json

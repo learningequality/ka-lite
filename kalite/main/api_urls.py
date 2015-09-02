@@ -25,7 +25,10 @@ urlpatterns = patterns(__package__ + '.api_views',
     # A flat data structure for building a graphical knowledge map
     url(r'^topic_tree/(?P<channel>.*)/?$', 'topic_tree', {}, 'topic_tree'),
 
-    # A flat data structure for building a graphical knowledge map
+    # An endpoint for querying any fully fleshed out content item.
     url(r'^content/(?P<channel>\w+)/(?P<content_id>[^\s\/]+)/?$', 'content_item', {}, 'content_item'),
+
+    # A search API endpoint
+    url(r'^search/(?P<channel>\w+)/$', 'search_api', {}, 'search_api'),
 
 )
