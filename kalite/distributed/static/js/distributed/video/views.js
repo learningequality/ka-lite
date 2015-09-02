@@ -22,6 +22,8 @@ var VideoPlayerView = ContentBaseView.extend({
 
     render: function() {
 
+        _.bindAll(this, "on_resize");
+
         var that = this;
 
         this.log_model.set("youtube_id", this.log_model.get("video_id"));
@@ -97,6 +99,7 @@ var VideoPlayerView = ContentBaseView.extend({
             this.player.width(width).height(height);
         }
 
+        this.$("#video-player").height(height);
         this.$(".video-thumb").width(width).height(height);
 
     },
@@ -107,7 +110,6 @@ var VideoPlayerView = ContentBaseView.extend({
         var self = this;
 
         $(window).resize(this.on_resize);
-        this.on_resize();
 
         this.player
             .on("loadstart", function() {
