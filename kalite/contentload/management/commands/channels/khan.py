@@ -59,7 +59,7 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"] # not relevant
 slug_blacklist += ["cs", "towers-of-hanoi"] # not (yet) compatible
 slug_blacklist += ["cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math"] # common core
-slug_blacklist += ["MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "hour-of-code", "metropolitan-museum", "bitcoin", "tate", "crash-course1", "crash-course-bio-ecology", "british-museum", "aspeninstitute", "asian-art-museum", "amnh"] # partner content
+slug_blacklist += ["MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "hour-of-code", "metropolitan-museum", "bitcoin", "tate", "crash-course1", "crash-course-bio-ecology", "british-museum", "aspeninstitute", "asian-art-museum", "amnh", "nova"] # partner content
 
 # TODO(jamalex): re-check these videos later and remove them from here if they've recovered
 slug_blacklist += ["mortgage-interest-rates", "factor-polynomials-using-the-gcf", "inflation-overview", "time-value-of-money", "changing-a-mixed-number-to-an-improper-fraction", "applying-the-metric-system"] # errors on video downloads
