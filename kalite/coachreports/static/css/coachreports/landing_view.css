@@ -201,7 +201,13 @@ span.setrange {
 }
 
 .innerbar {
-    margin-top: 30px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+.button {
+    margin-top: 15px;
+    text-align: center;
 }
 
 .tooltip {
