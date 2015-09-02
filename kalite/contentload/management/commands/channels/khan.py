@@ -226,6 +226,7 @@ def retrieve_API_data(channel=None):
 
     return topic_tree, exercises, assessment_items, content
 
+
 def query_remote_content_file_sizes(content_items, threads=10, blacklist=[]):
     """
     Query and store the file sizes for downloadable videos, by running HEAD requests against them,
@@ -260,6 +261,8 @@ def get_content_length(content):
             break
         except requests.Timeout:
             logging.warning("Timed out on try {i} while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
+        except requests.ConnectionError:
+            logging.warning("Connection error on try {i} while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
         except TypeError:
             logging.warning("No numeric content-length returned while checking remote file size for '{title}' ({readable_id})!".format(**content))
             break
