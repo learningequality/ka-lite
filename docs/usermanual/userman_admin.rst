@@ -454,17 +454,19 @@ After registering your device:
 5. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 6. Once the download is completed, video content will be ready for Learners to watch!
 
+.. _bulk-video-downloads:
 
 Downloading Videos in Bulk
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If want to download all the videos, you'll need ~33 GB free space. To fetch all
-the videos, `download and open the according torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
+The full set of videos, if downloaded through the KA Lite interface, take over 150GB.
+If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
+the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
 
-Save the videos on the ``CONTENT_ROOT`` of your installation. By default, this
+Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, this
 is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
 
-On Windows, navigate to ``X:\Documents and Settings\<username>\.kalite\content``.
+On Windows, navigate to something like ``C:\Documents and Settings\<username>\.kalite\content``.
 
 .. note:: If the drive where your ``.kalite/`` folder does not have enough free disk space,
           you can change your `Configuration Settings`_, the one named ``CONTENT_ROOT`` and
@@ -586,6 +588,7 @@ Restarting Your Server: Mac
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
+.. _configuration-settings:
 
 Configuration Settings
 ----------------------
@@ -597,8 +600,8 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 Running KA Lite with your own settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate
-``X:\Documents and Settings\<username>\.kalite``). That file is where you should
+In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate something like
+``C:\Documents and Settings\<username>\.kalite``). That file is where you should
 put your custom settings, and KA Lite will load them automatically.
 
 You can also run the ``kalite`` with a completely different Python settings
@@ -621,6 +624,7 @@ By default, ``/home/user/.kalite/settings.py`` will load ``kalite.project.settin
 Available settings
 ------------------
 
+See above for instructions on where to configure these settings.
 
 Most common settings
 ^^^^^^^^^^^^^^^^^^^^
@@ -663,13 +667,6 @@ User restrictions
   With this setting, users must be logged in order to access videos & exercises
 * ``DISABLE_SELF_ADMIN = <True or False> (default = False)``
   Disables user sign ups.
-
-
-..note:: KA Lite uses caching of web pages, if you change ``LOCKDOWN`` or
-         ``DISABLE_SELF_ADMIN``, you need to flush the cache. To do that, run
-         the following management command::
-
-             kalite manage cache clearweb
 
 
 Online Synchronization
