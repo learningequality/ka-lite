@@ -21,7 +21,7 @@ Please follow the instructions on our `Github Wiki`_ for reporting bugs.
 How do I change KA Lite's content folder?
 -----------------------------------------
 
-If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), see how to configure CONTENT_ROOT at :ref:`most-common-settings`
+If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), see how to configure CONTENT_ROOT in the ":ref:`configuration-settings`" section.
 
 Is there somewhere I can find Spanish language content organized by topic?
 --------------------------------------------------------------------------

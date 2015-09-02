@@ -592,6 +592,7 @@ Restarting Your Server: Mac
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
+.. _configuration-settings:
 
 Configuration Settings
 ----------------------
@@ -604,7 +605,7 @@ Running KA Lite with your own settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate 
-``X:\Documents and Settings\<username>\.kalite``). That file is where you should
+``C:\Documents and Settings\<username>\.kalite``). That file is where you should
 put your custom settings, and KA Lite will load them automatically.
 
 You can also run the ``kalite`` with a completely different Python settings
@@ -627,6 +628,7 @@ By default, ``/home/user/.kalite/settings.py`` will load ``kalite.project.settin
 Available settings
 ------------------
 
+See above for instructions on where to configure these settings.
 
 Most common settings
 ^^^^^^^^^^^^^^^^^^^^
