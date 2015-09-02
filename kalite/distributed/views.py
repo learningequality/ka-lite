@@ -25,6 +25,7 @@ from django.utils.translation import ugettext as _
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
 from kalite.shared.decorators.auth import require_admin
+from kalite.topic_tools.content_models import search_topic_nodes
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
@@ -143,8 +144,7 @@ def search(request):
     # Inputs
     page = int(request.GET.get('page', 1))
     query = request.GET.get('query')
-    category = request.GET.get('category')
-    max_results_per_category = request.GET.get('max_results', 25)
+    max_results = request.GET.get('max_results', 50)
 
     # Outputs
     query_error = None
@@ -161,19 +161,15 @@ def search(request):
         query = query.lower()
         # search for topic, video or exercise with matching title
 
-        matches, exact = search_topic_nodes(query=query, language=request.language)
+        matches, exact, pages = search_topic_nodes(query=query, language=request.language, page=page, items_per_page=max_results)
 
         if exact:
             # Redirect to an exact match
             return HttpResponseRedirect(reverse('learn') + matches[0]['path'])
 
-        # Only return max results
-        try:
-            possible_matches[node_type] = list(islice(matches, (page-1)*max_results_per_category, page*max_results_per_category))
-        except ValueError:
-            return HttpResponseNotFound("Page does not exist")
+    # Subdivide into categories.
 
-        hit_max[node_type] = next(matches, False)
+    possible_matches = dict([(category, filter(lambda x: x.get("kind") == category, matches)) for category in set([x.get("kind") for x in matches])])
 
     previous_params = request.GET.copy()
     previous_params['page'] = page - 1
@@ -190,13 +186,12 @@ def search(request):
         'query_error': query_error,
         'results': possible_matches,
         'hit_max': hit_max,
-        'more': any(hit_max.values()),
+        'more': pages > page,
         'page': page,
         'previous_url': previous_url,
         'next_url': next_url,
         'query': query,
-        'max_results': max_results_per_category,
-        'category': category,
+        'max_results': max_results,
     }
 
 def add_superuser_form(request):
