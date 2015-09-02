@@ -60,7 +60,7 @@ Copy and paste the URL into a web browser. The KA Lite application should show u
     :focus: #id_username | Enter your username and password using this form!
     :class: screenshot
 
-* If you have forgotten the username/password combination, simply run ``kalite manage createsuperuser`` from the kalite directory and then follow the instructions. If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
+* If you have forgotten the username/password combination, simply run ``kalite manage createsuperuser``  and then follow the instructions.
 
 Once you’ve logged in, the next step in the setup process is registering your device with the KA Lite Hub.
 
@@ -563,8 +563,6 @@ Restarting Your Server: Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. For most Linux distributions, you can do this by going to **Menu -> Accessories -> Terminal** or **Applications menu -> System -> Terminal.**
 
-#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
-
 #. Type in ``kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
@@ -583,8 +581,6 @@ Restarting Your Server: Mac
 
 .. image:: terminal.png
     :align: center
-
-#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
 
 #. Type in ``kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
 

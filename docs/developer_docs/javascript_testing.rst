@@ -105,7 +105,7 @@ Running Tests
 
 When you have written your tests, before you can run them, we need to bundle the Javascript for testing. In order to do this, from the root of the project run::
 
-    kalite manage bundleassets
+    bin/kalite manage bundleassets
 
 This will bundle all the django-compress tags and make concatenated files. It will also update the file_map that our Karma config uses to find these files. When this is complete, simply run::
 
