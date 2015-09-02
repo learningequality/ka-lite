@@ -454,17 +454,19 @@ After registering your device:
 5. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 6. Once the download is completed, video content will be ready for Learners to watch!
 
+.. _bulk-video-downloads:
 
 Downloading Videos in Bulk
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If want to download all the videos, you'll need ~33 GB free space. To fetch all
-the videos, `download and open the according torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
+The full set of videos, if downloaded through the KA Lite interface, take over 150GB.
+If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
+the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
 
-Save the videos on the ``CONTENT_ROOT`` of your installation. By default, this
+Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, this
 is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
 
-On Windows, navigate to ``X:\Documents and Settings\<username>\.kalite\content``.
+On Windows, navigate to something like ``C:\Documents and Settings\<username>\.kalite\content``.
 
 .. note:: If the drive where your ``.kalite/`` folder does not have enough free disk space,
           you can change your `Configuration Settings`_, the one named ``CONTENT_ROOT`` and
@@ -667,14 +669,6 @@ User restrictions
   With this setting, users must be logged in order to access videos & exercises
 * ``DISABLE_SELF_ADMIN = <True or False> (default = False)``
   Disables user sign ups.
-
-
-..note:: KA Lite uses caching of web pages, if you change ``LOCKDOWN`` or
-         ``DISABLE_SELF_ADMIN``, you need to flush the cache. To do that, run
-         the following management command::
-         
-             kalite manage cache clearweb
-
 
 Online Synchronization
 ^^^^^^^^^^^^^^^^^^^^^^
