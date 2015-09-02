@@ -79,9 +79,7 @@ KA Lite can run on almost any major operating system: Windows, Linux, and Mac/OS
 What is data syncing?
 ---------------------
 
-KA Lite is capable to share your student progress data with a `central data repository` when you are online. This enables the system to have an online backup of your data, allows you to view your student progress online, and to share your data across multiple KA Lite installations.
-
-.. _central data https: https://hub.learningequality.org/
+KA Lite is capable to share your student progress data with a `central data repository <https://hub.learningequality.org/>`_ when you are online. This enables the system to have an online backup of your data, allows you to view your student progress online, and to share your data across multiple KA Lite installations.
 
 Who maintains the KA Lite project?
 ----------------------------------
