@@ -106,11 +106,33 @@ $(function() {
             $("#content_tree").html("");
 
             $("#content_tree").fancytree({
+                autoCollapse: true,
                 aria: true, // Enable WAI-ARIA support.
                 checkbox: true, // Show checkboxes.
                 debugLevel: 0, // 0:quiet, 1:normal, 2:debug
                 selectMode: 3,
                 source: [treeData],
+                renderNode: function(event, data){
+                    if(data.node.getLevel() === 1){
+                        $(data.node.span).addClass("ui-accordion-root");
+                    }
+                },
+                click: function(event, data) {
+                    if (data.targetType === "checkbox"){
+                        return true;
+                    }else{
+                        if(data.node.hasChildren()){
+                            data.node.toggleExpanded();
+                        }else{
+                            data.node.toggleSelected();
+                        }
+                        return false;
+                    }
+                },
+                dblclick: function(event, data) {
+                    data.node.toggleSelected();
+                    return false;
+                },
                 select: function(event, node) {
 
                     var newVideoMetadata = getSelectedIncompleteMetadata();
