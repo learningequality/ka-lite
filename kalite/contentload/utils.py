@@ -9,7 +9,7 @@ def group_by_slug(count_dict, item):
 
 def dedupe_paths(topic_tree):
 
-    def recurse_nodes(node, parent_path):
+    def recurse_nodes(node, parent_path=""):
 
         children = node.get("children", [])
 
@@ -17,8 +17,8 @@ def dedupe_paths(topic_tree):
 
         if len(kinds) > 1:
             # Should be no slug collisions when only have the same content type
-            counts = reduce(group_by_slug, children, initializer={})
-            for slug, items in counts.iteritems():
+            counts = reduce(group_by_slug, children, {})
+            for items in counts.values():
                 # Slug has more than one item!
                 if len(items) > 1:
                     i = 1
