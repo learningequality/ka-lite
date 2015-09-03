@@ -9,7 +9,7 @@ function reload() {
 function auto_register() {
     // Disable and show message
     $("#one-click-register").toggleClass("disabled", true);
-    messages.show_message("info", "{% trans 'Contacting central server to register; page will reload upon success.' %}");
+    messages.show_message("info", gettext("Contacting central server to register; page will reload upon success."));
 
     // window.auto_registration_url is defined by a template context variable.
     api.doRequest(window.auto_registration_url, null, {dataType: "jsonp"})
