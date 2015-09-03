@@ -370,8 +370,9 @@ class ContentRatingExportResource(ParentFacilityUserResource):
         queryset = ContentRating.objects.all()
         resource_name = 'content_rating_csv'
         authorization = ObjectAdminAuthorization()
-        excludes = ['signed_version', 'counter', 'signature', 'id', 'resource_uri']
+        excludes = ['signed_version', 'counter', 'signature', 'id', 'deleted']
         serializer = CSVSerializer()
+        include_resource_uri = False
 
     def obj_get_list(self, bundle, **kwargs):
         self._facility_users = self._get_facility_users(bundle)
@@ -389,7 +390,10 @@ class ContentRatingExportResource(ParentFacilityUserResource):
         :return: the _processed_ list of objects to serialize
         """
         from kalite.topic_tools import get_content_data, get_exercise_data
-        for bundle in to_be_serialized["objects"]:
+        filtered_bundles = [bundle for bundle in to_be_serialized["objects"] if
+                            (bundle.data["difficulty"], bundle.data["quality"]) != (0, 0)]
+        serializable_objects = []
+        for bundle in filtered_bundles:
             user_id = bundle.data["user"].data["id"]
             user = self._facility_users.get(user_id)
             bundle.data["username"] = user.username
@@ -401,4 +405,7 @@ class ContentRatingExportResource(ParentFacilityUserResource):
             content = get_content_data(request, content_id) or get_exercise_data(request, content_id)
             bundle.data["content_title"] = content.get("title", "Missing title") if content else "Unknown content"
 
+            serializable_objects.append(bundle)
+
+        to_be_serialized["objects"] = serializable_objects
         return to_be_serialized
