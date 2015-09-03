@@ -15,7 +15,7 @@ test:
     - kalite status
     - kalite stop --traceback -v2
     - node build.js --staticfiles
-    - case $CIRCLE_NODE_INDEX in 0) coverage run -p --source=kalite --omit="kalite/testing/*,*/tests/*" bin/kalite manage test --bdd-only ;; 1) coverage run -p --source=kalite --omit="kalite/testing/*,*/tests/*" bin/kalite manage test --no-bdd;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) coverage run -p --source=kalite --omit="kalite/testing/*,*/tests/*" kalitectl.py manage test --bdd-only ;; 1) coverage run -p --source=kalite --omit="kalite/testing/*,*/tests/*" kalitectl.py manage test --no-bdd;; esac:
         parallel: true
     - jshint kalite/*/static/js/*/
   post:
