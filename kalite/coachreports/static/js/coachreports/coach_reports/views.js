@@ -6,6 +6,7 @@ var Backbone = require("base/backbone");
 var messages = require("utils/messages");
 var Models = require("./models");
 var TabularReportViews = require("../tabular_reports/views");
+var d3 = require("d3");
 
 var date_string = require("utils/datestring").date_string;
 var d3 = require("d3");
@@ -168,16 +169,67 @@ var CoachSummaryView = BaseView.extend({
                 facility: this.model.get("facility"),
                 group: this.model.get("group"),
                 start_date: date_string(this.model.get("start_date")),
-                end_date: date_string(this.model.get("end_date"))
+                end_date: date_string(this.model.get("end_date")),
+            
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
                 this.data_model.fetch();
             }
+
         }
     },
 
+    set_progress_bar: function() {
+        
+        var in_progress = this.data_model.get("total_in_progress");
+        var complete = this.data_model.get("total_complete");
+        var struggling = this.data_model.get("total_struggling");
+        var not_attempted = this.data_model.get("total_not_attempted");
+
+        var total = complete + in_progress + struggling;
+
+        var h = 50;
+        var w = 500;
+        var dataset = [struggling/total, complete/total, in_progress/total];
+
+        console.log(dataset);
+        var svg = d3.select("div.progressbar").append("svg").attr("width", w).attr("height", h).
+            attr("class", "col-md-8 innerbar");
+
+        svg.selectAll("rect").data(dataset).enter().append("rect").attr("x", function(d, i){
+                return _.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) * w;
+            }).attr("y", 0).attr("width", function(d) {
+                return d * w;
+            }).attr("height", h).attr("class", "rect").attr("class", function(d, i){
+                switch(i) {
+                    case(0):
+                        return "struggling";
+                    case(1):
+                        return "complete";
+                    case(2):
+                        return "partial";
+                }
+            });
+
+        // Sets the text on the bar itself
+        svg.selectAll("text").data(dataset).enter().append("text").text(function(d, i) {
+            switch(i) {
+                case(0):
+                    return struggling;
+                case(1):
+                    return complete;
+                case(2):
+                    return in_progress;
+            }
+        }).attr("fill", "black").attr("x", function(d, i){
+            return (_.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) + d/2) * w;
+        }).attr("y", h/2).attr("font-size", "12px").style("text-anchor", "middle");
+
+    },
+
     render: function() {
+
         this.$el.html(this.template({
             status:this.model.attributes,
             data: this.data_model.attributes,
@@ -195,6 +247,7 @@ var CoachSummaryView = BaseView.extend({
         }
 
         delete this.tabular_report_view;
+        this.set_progress_bar();
 
         this.displayRadialGraph("full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"));
     },
@@ -372,7 +425,9 @@ var CoachReportView = BaseView.extend({
         this.$('#facility-select-container').append(this.facility_select_view.el);
         this.$("#time-set-container").append(this.time_set_view.el);
         this.$("#student_report_container").append(this.coach_summary_view.el);
-    }
+
+    },
+
 });
 
 module.exports = {

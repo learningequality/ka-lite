@@ -115,10 +115,10 @@
                     {% else %}
                         <h3>
                             {% if sync_job.last_run_successful %}
-                                <span class="glyphicon glyphicon-ok-circle text-success"></span>
+                                <span aria-hidden="true"><i class="glyphicon glyphicon-ok-circle text-success"></i></span>
                                 {% trans "The last sync completed successfully" %}
                             {% else %}
-                                <span class="glyphicon glyphicon-remove-circle text-danger"></span>
+                                <span aria-hidden="true"><i class="glyphicon glyphicon-remove-circle text-danger"></i></span>
                                 {% trans "There was an error during the last sync" %}
                             {% endif %}
                             <small class="toggle-sync-details"><a><span class="show-detail-text">{% trans "show details" %}</span> <span class="caret-indicator caret"></span></a></small>
