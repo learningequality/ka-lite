@@ -48,9 +48,6 @@
             <script type="text/javascript" src="{{ settings.CONTENT_URL }}locale/js/i18n/{{ request.language }}.js"></script>
         {% endif %}
 
-        <!-- JS translation file statically included as a back-up, so that if the saved file below isn't available, we don't choke. -->
-        <script type="text/javascript" src="{% static 'js/i18n/en.js' %}"></script>
-
         <script src="{% static 'js/distributed/bundles/bundle_common.js' %}"></script>
         <script src="{% static 'js/distributed/bundles/bundle_base.js' %}"></script>
 
