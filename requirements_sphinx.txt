@@ -1,0 +1,6 @@
+-r requirements_dev.txt
+sphinx
+sphinx_rtd_theme
+sphinx-intl
+# Required by screenshots.py to take screenshots in headless manner
+pyvirtualdisplay
