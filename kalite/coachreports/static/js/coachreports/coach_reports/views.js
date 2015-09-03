@@ -94,14 +94,14 @@ var CoachSummaryView = BaseView.extend({
         } else {
             var parseData = [
                 //parsing data to 2 decimal positions
-                { label: "Hours spent on content", count: Math.round(data_sub * 100)/100 },
-                { label: "Other activites (exercises, etc.)", count: Math.round((data_total - data_sub) * 100)/100 }
+                { label: gettext("Hours spent on content"), count: Math.round(data_sub * 100)/100 },
+                { label: gettext("Other activites (exercises, etc.)"), count: Math.round((data_total - data_sub) * 100)/100 }
             ];
 
             //adjusting the graph's size based on target_elem's sizing
             var width = targetElemBox.clientWidth;
             var height = targetElemBox.clientHeight;
-            var radius = (Math.min(width, height) / 2);    
+            var radius = (Math.min(width, height) / 2);
 
             var color = d3.scale.category20();
 
@@ -133,14 +133,14 @@ var CoachSummaryView = BaseView.extend({
             var total = Math.round(data_total * 100)/100;
 
             //this will display relevant data when you hover over that data's arc on the radial graph
-            path.on('mouseover', function(d) {                            
+            path.on('mouseover', function(d) {
                 targetElemP.innerHTML = (d.data.label + ":" + "<br />" + d.data.count);
-            });                                                           
-              
+            });
+
             //when not hovering, you'll see the total data
-            path.on('mouseout', function() {                              
+            path.on('mouseout', function() {
                 targetElemP.innerHTML = "Total:" + "<br />" + total;
-            });       
+            });
         }
     },
 
