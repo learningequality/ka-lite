@@ -224,3 +224,8 @@ span.setrange {
   width: 80px;
   z-index: 10;
 }
+
+.topic-row {
+    height: 4em;
+    width: 100%;
+}
