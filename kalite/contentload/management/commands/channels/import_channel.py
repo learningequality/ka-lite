@@ -198,7 +198,7 @@ def construct_node(location, parent_path, node_cache, channel):
             except KeyError:
                 data_meta = {}
                 logging.debug("No exercise metadata available in zipfile")
-            data_meta.update(meta_data)
+            meta_data.update(data_meta)
             try:
                 assessment_items = json.loads(zf.read("assessment_items.json"))
             except KeyError:
