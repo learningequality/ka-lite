@@ -15,9 +15,17 @@ test:
     - kalite status
     - kalite stop --traceback -v2
     - node build.js --staticfiles
-    - case $CIRCLE_NODE_INDEX in 0) coverage run -p --source=kalite --omit="kalite/testing/*,*/tests/*" kalitectl.py manage test --bdd-only ;; 1) coverage run -p --source=kalite --omit="kalite/testing/*,*/tests/*" kalitectl.py manage test --no-bdd;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" kalitectl.py manage test --bdd-only ;; 1) coverage run --source=kalite --omit="kalite/testing/*,*/tests/*" kalitectl.py manage test --no-bdd;; esac:
         parallel: true
     - jshint kalite/*/static/js/*/
   post:
-    - coverage combine
-    - coveralls
+    - COVERALLS_PARALLEL=true coveralls
+        parallel: true
+
+notify:
+  webhooks:
+    - url: https://coveralls.io/webhook?repo_token=YWMKkAVqIigWxX8XerfykVab17vEKmdXO
+
+general:
+  artifacts:
+    - 'coverage'
