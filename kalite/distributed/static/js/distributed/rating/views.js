@@ -108,6 +108,12 @@ module.exports = BaseView.extend({
             },
             patch: true
         });
+    },
+
+    close: function() {
+        // Defined so that when BaseView.remove is called, we just clear the html instead
+        // of removing the view's element from the DOM.
+        this.$el.html("");
     }
 });
 
