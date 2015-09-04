@@ -19,7 +19,7 @@ test:
         parallel: true
     - jshint kalite/*/static/js/*/
   post:
-    - COVERALLS_PARALLEL=true coveralls
+    - COVERALLS_PARALLEL=true coveralls -v
 
 notify:
   webhooks:
