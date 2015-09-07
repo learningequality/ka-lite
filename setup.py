@@ -352,7 +352,7 @@ setup(
     author_email="info@learningequality.org",
     url="https://www.learningequality.org",
     description=DIST_DESCRIPTION,
-    license="GPLv3",
+    license="MIT",
     keywords=("khan academy", "offline", "education", "OER"),
     scripts=['bin/kalite'],
     packages=find_packages(exclude=["python-packages"]),
@@ -361,7 +361,7 @@ setup(
     install_requires=DIST_REQUIREMENTS,
     classifiers=[
         'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: MIT License',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
