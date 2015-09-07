@@ -54,7 +54,7 @@ def require_admin(handler):
         if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
 
-        # Allow users to edit themselves 
+        # Allow users to edit themselves
         facility_user_id = kwargs.get("facility_user_id", None)
         if facility_user_id == request.session.get('facility_user').id:
             return handler(request, *args, **kwargs)
@@ -131,10 +131,10 @@ def require_authorized_admin(handler):
 
 
         # Objects we're looking to verify
-        org = None; org_id      = kwargs.get("org_id", None)
-        zone = None; zone_id     = kwargs.get("zone_id", None)
+        org = None; org_id = kwargs.get("org_id", None)
+        zone = None; zone_id = kwargs.get("zone_id", None)
         facility = facility_from_request(request=request, *args, **kwargs)
-        device = None; device_id   = kwargs.get("device_id", None)
+        device = None; device_id = kwargs.get("device_id", None)
         user = get_user_from_request(request=request, *args, **kwargs)
 
         # Validate user through facility
@@ -193,7 +193,7 @@ def require_superuser(handler):
 
     """
     def require_superuser_wrapper_fn(request, *args, **kwargs):
-        if getattr(request.user, is_superuser, False):
+        if getattr(request.user, 'is_superuser', False):
             return handler(request, *args, **kwargs)
         else:
             raise PermissionDenied(_("You must be logged in as a superuser to access this endpoint."))

@@ -491,8 +491,6 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertEqual(len(rows), 2, "API response incorrect")
         self.client.logout()
 
-
-    def test_device_log_csv_endpoint(self):
         # Test filtering by zone
         self.client.login(username='admin', password='admin')
         zone_filtered_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id + "&format=csv").content
@@ -522,7 +520,7 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
 
         for option in facility_select.find_elements_by_tag_name('option'):
             if option.text == 'facility1':
-                option.click() # select() in earlier versions of webdriver
+                option.click()  # select() in earlier versions of webdriver
                 break
 
         self.browser_wait_for_ajax_calls_to_finish()
@@ -546,7 +544,7 @@ class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdmin
         self.browse_to(self.distributed_data_export_url)
 
         # Why is this here? Is the intention to wait for the page to load?
-        #self.browser_wait_for_ajax_calls_to_finish()
+        # self.browser_wait_for_ajax_calls_to_finish()
 
         facility_select = self.browser.find_element_by_id("facility-name")
         self.assertFalse(facility_select.is_enabled(), "UI error")

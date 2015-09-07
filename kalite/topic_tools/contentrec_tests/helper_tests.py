@@ -5,10 +5,11 @@ in multiple content recommendation functions.
 
 from kalite.topic_tools.content_recommendation import *
 from kalite.testing.base import KALiteTestCase
+from kalite.facility.models import Facility
 
 class TestHelperMethods(KALiteTestCase):
 
-	TOPIC_TO_TEST = 'decimal-to-fraction-pre-alg' #actually a subtopic, but is still valid
+	TOPIC_TO_TEST = 'decimal-to-fraction-pre-alg'  # actually a subtopic, but is still valid
 	ORIGINAL_POINTS = 37
 	ORIGINAL_ATTEMPTS = 3
 	ORIGINAL_STREAK_PROGRESS = 20
@@ -19,7 +20,7 @@ class TestHelperMethods(KALiteTestCase):
 	NEW_STREAK_PROGRESS_SMALLER = 0
 	EXERCISE_ID = "number_line"
 	EXERCISE_ID2 = "radius_diameter_and_circumference"
-	USERNAME1 = "test_user_helper1" 
+	USERNAME1 = "test_user_helper1"
 	PASSWORD = "dummies"
 	FACILITY = "Test Facility Next Steps"
 	TIMESTAMP_LATER = datetime.datetime(2014, 11, 17, 20, 51, 2, 342662)
@@ -27,8 +28,8 @@ class TestHelperMethods(KALiteTestCase):
 
 	def setUp(self):
 		'''Performed before every test'''
-		
-		#user + facility
+
+		# user + facility
 		self.facility = Facility(name=self.FACILITY)
 		self.facility.save()
 
@@ -36,8 +37,8 @@ class TestHelperMethods(KALiteTestCase):
 		self.user1.set_password(self.PASSWORD)
 		self.user1.save()
 
-		#insert some exercise activity
-		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID, user = self.user1)
+		# insert some exercise activity
+		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID, user=self.user1)
 		self.original_exerciselog2.points = self.ORIGINAL_POINTS
 		self.original_exerciselog2.attempts = self.ORIGINAL_POINTS
 		self.original_exerciselog2.streak_progress = self.ORIGINAL_STREAK_PROGRESS
@@ -46,7 +47,7 @@ class TestHelperMethods(KALiteTestCase):
 		self.original_exerciselog2.struggling = False
 		self.original_exerciselog2.save()
 
-		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID2, user = self.user1)
+		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID2, user=self.user1)
 		self.original_exerciselog2.points = self.ORIGINAL_POINTS
 		self.original_exerciselog2.attempts = self.ORIGINAL_POINTS
 		self.original_exerciselog2.streak_progress = self.ORIGINAL_STREAK_PROGRESS
@@ -64,7 +65,7 @@ class TestHelperMethods(KALiteTestCase):
 		'''get_exercises_from_topics()'''
 
 		expected = ['converting_fractions_to_decimals',
-					'converting_decimals_to_fractions_1', 
+					'converting_decimals_to_fractions_1',
 					'converting_decimals_to_fractions_2']
 		actual = get_exercises_from_topics([self.TOPIC_TO_TEST])
 
@@ -77,5 +78,5 @@ class TestHelperMethods(KALiteTestCase):
 		second = "number_line"
 		expected = [unicode(first, 'utf-8'), unicode(second, 'utf-8')]
 		actual = get_most_recent_exercises(self.user1)
-	
+
 		self.assertSequenceEqual(expected, actual)
