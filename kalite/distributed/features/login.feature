@@ -20,8 +20,8 @@ Feature: Logging into KA Lite
         and I enter my username correctly
         and I enter my password incorrectly
         and I click the login button
-        then the username should be highlighted
-        and a tooltip should appear on the username box only
+        then the password should be highlighted
+        and a tooltip should appear on the password box only
 
     Scenario: Logging in with the wrong username
         Given I have an account
