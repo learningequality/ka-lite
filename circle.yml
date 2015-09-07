@@ -11,7 +11,6 @@ dependencies:
 
 test:
   override:
-    - kalite manage compress
     - kalite start --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
