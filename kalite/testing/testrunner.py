@@ -117,9 +117,9 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # Django < 1.7 serves static files using the staticfiles app, not from static root.
         # This causes django_js_reverse not to get served to the client, so we manually copy it into distributed.
 
-        ensure_dir(os.path.join(os.path.abspath(os.path.dirname(__name__)),"kalite", "distributed", "static", "django_js_reverse", "js"))
+        ensure_dir(os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js"))
         shutil.copy2(os.path.join(settings.STATIC_ROOT, "django_js_reverse", "js", "reverse.js"),
-            os.path.join(os.path.abspath(os.path.dirname(__name__)),"kalite", "distributed", "static", "django_js_reverse", "js", "reverse.js"))
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js", "reverse.js"))
 
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
