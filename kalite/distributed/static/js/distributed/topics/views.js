@@ -62,7 +62,7 @@ var ContentAreaView = BaseView.extend({
         returns: true or false
         */
         var entry_available = (typeof this.model !== "undefined") && !!this.model.get("available");
-        var logged_in = typeof window.statusModel.get("user_id") !== "undefined";
+        var logged_in = window.statusModel.has("user_id");
         return logged_in && entry_available;
     },
 
