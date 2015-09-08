@@ -40,4 +40,3 @@ Feature: Logging into KA Lite
         and I enter my username correctly
         and I enter my password correctly
         and I click the login button
-        then the login button should disappear

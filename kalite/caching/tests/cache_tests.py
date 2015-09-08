@@ -9,7 +9,7 @@ from django.conf import settings; logging = settings.LOG
 from django.test.client import Client
 from django.utils import unittest
 
-from .. import caching
+from ... import caching
 from kalite.testing.base import KALiteTestCase
 from kalite.topic_tools import get_content_cache
 

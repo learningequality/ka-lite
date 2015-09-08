@@ -101,11 +101,11 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # If no liveserver specified, set some default.
         #   port range is the set of open ports that Django can use to
         #   start the server.  They may have multiple servers open at once.
-        if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS',""):
+        if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS', ""):
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
 
         self._bdd_only = kwargs["bdd_only"]  # Extra options from our custom test management command are passed into
-        self._no_bdd = kwargs['no_bdd']      # the constructor, but not the build_suite function where we need them.
+        self._no_bdd = kwargs['no_bdd']  # the constructor, but not the build_suite function where we need them.
 
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
@@ -114,6 +114,8 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
 
         def run_tests_wrapper_fn():
             return super(KALiteTestRunner, self).run_tests(test_labels, extra_tests, **kwargs)
+
+        settings.COMPRESS_OFFLINE = False
         return run_tests_wrapper_fn()
 
     def make_bdd_test_suite(self, features_dir):

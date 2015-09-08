@@ -39,11 +39,11 @@ class MainTestCase(KALiteTestCase):
     def setUp_fake_cache(self):
         if settings.CACHE_TIME != 0:
             # Hackish way to create a temporary new file cache
-            #settings.CACHES["file_based_cache"]["LOCATION"] = self.cache_dir
-            #conf.settings.CACHES["file_based_cache"]["LOCATION"] = self.cache_dir
-            #reload(cache)
-            #reload(caching)
-            self.web_cache = cache.get_cache(settings.CACHE_NAME)
+            # settings.CACHES["file_based_cache"]["LOCATION"] = self.cache_dir
+            # conf.settings.CACHES["file_based_cache"]["LOCATION"] = self.cache_dir
+            # reload(cache)
+            # reload(caching)
+            self.web_cache = cache.get_cache('default')
             self.web_cache.clear()
             self.assertTrue(self.is_cache_empty(), "Check that cache is empty.")
 
@@ -54,12 +54,12 @@ class MainTestCase(KALiteTestCase):
 
     def tearDown_fake_contentroot(self):
         shutil.rmtree(self.content_root)
-        #for path in glob.glob(os.path.join(self.content_root, "*.mp4")):
+        # for path in glob.glob(os.path.join(self.content_root, "*.mp4")):
         #    os.remove(path)
 
     def tearDown_fake_cache(self):
         shutil.rmtree(self.cache_dir)
-        #for path in glob.glob(os.path.join(self.cache_dir, "*")):
+        # for path in glob.glob(os.path.join(self.cache_dir, "*")):
         #    os.remove(path)
 
     def tearDown_fake_device(self):

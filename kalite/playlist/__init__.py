@@ -1,5 +1,5 @@
 import json
-from pkg_resources import resource_filename
+from pkg_resources import resource_filename  # @UnresolvedImport
 
 playlist_file = open(resource_filename(
     'kalite',

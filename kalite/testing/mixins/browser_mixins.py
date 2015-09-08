@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 import re
 
@@ -15,6 +16,7 @@ from kalite.topic_tools import get_content_cache
 from django.contrib.auth.models import User
 
 from random import choice
+from kalite.testing.browser import hacks_for_phantomjs
 
 FIND_ELEMENT_TIMEOUT = 3
 
@@ -120,7 +122,7 @@ class BrowserActionMixins(object):
                 self.assertEqual(exac, message.text, "Make sure message = '%s'" % exac)
 
     def browser_wait_for_ajax_calls_to_finish(self):
-            num_ajax_calls = 1 # to ensure at least one loop
+            num_ajax_calls = 1  # to ensure at least one loop
             while num_ajax_calls > 0:
                 num_ajax_calls = int(self.browser.execute_script('return jQuery.active;'))
                 time.sleep(1)
@@ -416,7 +418,7 @@ class BrowserActionMixins(object):
     def browser_get_points(self):
         # The following commented line of code returns an element with blank text,
         # possibly due to a race condition, hence querying the element with js which "just works"
-        #points_elem = self.browser.find_element_by_id("points")
+        # points_elem = self.browser.find_element_by_id("points")
         # Ensure the element has been populated by triggering an event
         self.browser_wait_for_js_object_exists("window.statusModel");
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
