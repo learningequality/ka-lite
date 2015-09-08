@@ -236,6 +236,8 @@ function start_languagepack_download(lang_code) {
     });
 }
 
+window.start_languagepack_download = start_languagepack_download;
+
 // when we make a selection on the language pack select box, enable the 'Get Language' Button
 function select_lang_pack( event ) {
     var lang_code = event.data.caller_value;
@@ -286,6 +288,8 @@ function set_server_language(lang) {
                  window.location.reload();
              });
 }
+
+window.set_server_language = set_server_language;
 
 function update_server_status() {
     connectivity.with_online_status("server", function(server_is_online) {

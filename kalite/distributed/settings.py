@@ -26,19 +26,6 @@ def USER_FACING_PORT():
 ##############################
 
 
-COMPRESS_CONTEXT_REQUEST = HttpRequest()
-COMPRESS_CONTEXT_REQUEST.is_admin = False
-COMPRESS_CONTEXT_REQUEST.is_teacher = False
-COMPRESS_CONTEXT_REQUEST.is_student = False
-COMPRESS_CONTEXT_REQUEST.is_logged_in = False
-COMPRESS_CONTEXT_REQUEST.is_django_user = False
-COMPRESS_CONTEXT_REQUEST.language = "en"
-
-COMPRESS_OFFLINE_CONTEXT = {
-    "base_template": "distributed/base.html",
-    "request": COMPRESS_CONTEXT_REQUEST,
-}
-
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 
 

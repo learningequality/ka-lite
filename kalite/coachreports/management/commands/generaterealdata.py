@@ -130,7 +130,8 @@ def generate_fake_facility_groups(names=("Class 4E", "Class 5B"), facilities=Non
     return (facility_groups, facilities)
 
 
-def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=None, password="hellothere"):
+def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=None, password="hellothere",
+                                 is_teacher=False):
     """Add the given fake facility users to each of the given fake facilities.
     If no facilities are given, they are created."""
 
@@ -153,7 +154,8 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
 
                 try:
                     facility_user = FacilityUser.objects.get(facility=facility, username=user_data["username"])
-                    facility_user.group = facility_group
+                    facility_user.group = facility_group if not is_teacher else None
+                    facility_user.is_teacher = is_teacher
                     facility_user.save()
                     logging.info("Retrieved facility user '%s/%s'" % (facility.name, user_data["username"]))
                 except FacilityUser.DoesNotExist as e:
@@ -165,7 +167,8 @@ def generate_fake_facility_users(nusers=20, facilities=None, facility_groups=Non
                         first_name=user_data["first_name"],
                         last_name=user_data["last_name"],
                         notes=notes,
-                        group=facility_group,
+                        group=facility_group if not is_teacher else None,
+                        is_teacher=is_teacher,
                     )
                     facility_user.set_password(password)  # set same password for every user
                     try:
@@ -477,23 +480,56 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('-t', '--transaction',
-            action='store_true',
-            dest='in_transaction',
-            default=True,
-            help='Create all objects in a single transaction',
-            metavar="TRANSACTION"),
+                    action='store_true',
+                    dest='in_transaction',
+                    default=True,
+                    help='Create all objects in a single transaction',
+                    metavar="TRANSACTION"),
+        make_option('--scenario-1',
+                    action='store_true',
+                    dest='scenario-1',
+                    default=False,
+                    help="Creates:\n2 Facilities\n3 Coaches per facility\n10 distinct students per facility\nVarious "
+                         "video and exercise logs for each student, with a specifiable time range no later than the "
+                         "current time, and extending back 1 week")
     )
 
     def handle(self, *args, **options):
         if settings.CENTRAL_SERVER:
             raise CommandError("Don't run this on the central server!!  Data not linked to any zone on the central server is BAD.")
 
+        handler = self.choose_handler(*args, **options)
+
         if options["in_transaction"]:
             with transaction.commit_on_success():
-                self.handle_stuff(*args, **options)
+                handler(*args, **options)
         else:
-            self.handle_stuff(*args, **options)
+            handler(*args, **options)
 
+    def choose_handler(self, *args, **options):
+        if options.get("scenario-1"):
+            return self.handle_scenario_1
+        else:
+            return self.handle_stuff
+
+    def handle_scenario_1(self, *args, **options):
+        """
+        Creates:
+        * 2 Facilities
+        * 3 Coaches per facility
+        * 10 distinct students per facility
+        * Various video and exercise logs for each student, with a specifiable time range no later than the current
+            time, and extending back 1 week
+        """
+        facilities = generate_fake_facilities(["Facility One", "Facility Dos"])
+        start_date = datetime.datetime.now() - datetime.timedelta(days=7)
+        for i, fac in enumerate(facilities):
+            groups, _ = generate_fake_facility_groups(names=["Group Alpha %s" % i], facilities=[fac])
+            coaches, _, _ = generate_fake_facility_users(nusers=3, facilities=[fac], facility_groups=groups,
+                                                         is_teacher=True)
+            learners, _, _ = generate_fake_facility_users(nusers=10, facilities=[fac], facility_groups=groups)
+            generate_fake_exercise_logs(facility_user=learners, start_date=start_date)
+            generate_fake_video_logs(facility_user=learners, start_date=start_date)
 
     def handle_stuff(self, *args, **options):
         # First arg is the type of data to generate

@@ -65,7 +65,9 @@ class Command(BaseCommand):
     def handle(self, **options):
         logging.info("fetching assessment items")
 
-        json_path = os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel, 'assessmentitems.json')
+        channel = options.get("channel")
+
+        json_path = os.path.join(django_settings.CONTENT_DATA_PATH, channel, 'assessmentitems.json')
 
         # load the assessmentitems
         assessment_items = json.load(open(json_path))
@@ -78,7 +80,7 @@ class Command(BaseCommand):
         new_assessment_items = localize_all_image_urls(assessment_items)
         new_assessment_items = localize_all_content_links(new_assessment_items)
         new_assessment_items = localize_all_graphie_urls(new_assessment_items)
-        new_assessment_items = localize_all_local_urls(new_assessment_items, channel=options.get("channel"))
+        new_assessment_items = localize_all_local_urls(new_assessment_items, channel=channel)
 
         # TODO(jamalex): We should migrate this away from direct-to-zip so that we can re-run it
         # without redownloading all files. Not possible currently because ZipFile has no `delete`.
@@ -90,11 +92,11 @@ class Command(BaseCommand):
             download_urls_to_zip(zf, graphie_urls)
             copy_local_files_to_zip(zf, local_urls)
             write_assessment_item_version_to_zip(zf)
-            if options.get("channel"):
-                write_channel_info_to_zip(zf, channel=options.get("channel"))
+            if channel:
+                write_channel_info_to_zip(zf, channel=channel)
             zf.close()
 
-        logging.info("Zip File with images placed in %s" % ZIP_FILE_PATH)
+        logging.info("Zip File with images placed in %s" % ZIP_FILE_PATH.format(channel=channel))
 
 
 def write_channel_info_to_zip(zf, channel=None):
@@ -179,7 +181,7 @@ def fetch_file_from_url_or_cache(url):
             out = f.read()
     else:                       # fetch, then write to the cache file
         logging.info("downloading file %s" % url)
-        r = requests.get(url)
+        r = requests.get(url, timeout=10)
         r.raise_for_status()
         with open(cached_file_path, "w") as f:
             f.write(r.content)
@@ -245,7 +247,7 @@ def find_all_local_urls(items, channel="khan"):
     for v in items.itervalues():
         for match in re.finditer(WEB_LOCAL_URL_REGEX, v["item_data"]):
             filename = str(match.group(0)).replace("web+local://", "") # match.group(0) means get the entire string
-            yield os.path.join(settings.ASSESSMENT_ITEM_ROOT, channel, filename)
+            yield os.path.join(django_settings.ASSESSMENT_ITEM_ROOT, channel, filename)
 
 
 def localize_all_local_urls(items, channel="khan"):
@@ -339,8 +341,8 @@ def _get_content_by_readable_id(readable_id):
 def _list_all_exercises_with_bad_links():
     """This is a standalone helper method used to provide KA with a list of exercises with bad URLs in them."""
     url_pattern = r"https?://www\.khanacademy\.org/[\/\w\-]*/./(?P<slug>[\w\-]+)"
-    assessment_items = json.load(open(settings.KHAN_ASSESSMENT_ITEM_JSON_PATH))
-    for ex in get_content_items(dict=True, expanded=True):
+    assessment_items = json.load(open(django_settings.KHAN_ASSESSMENT_ITEM_JSON_PATH))
+    for ex in get_content_items():
         if ex.get("kind") == "Exercise":
             checked_urls = []
             displayed_title = False
@@ -357,4 +359,3 @@ def _list_all_exercises_with_bad_links():
                             print "EXERCISE: '%s'" % ex["title"], ex["path"]
                             displayed_title = True
                         print "\t", status_code, url
-

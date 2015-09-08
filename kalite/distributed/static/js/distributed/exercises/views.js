@@ -212,6 +212,15 @@ var ExerciseView = BaseView.extend({
                 answerType = $("span.sol").map(function(index, item){return $(item).attr("data-forms");}).get().join();
             }
 
+            var hints;
+            if (self.data_model.get_framework() == "khan-exercises") {
+                hints = data.hints;
+            } else if (self.data_model.get_framework() == "perseus") {
+                hints = Exercises.PerseusBridge.getNumHints() > 0;
+            }
+
+            self.trigger("hint_available", hints);
+
             var checkVal = /number|decimal|rational|proper|improper|mixed|radical|integer|cuberoot/gi;
 
             if (checkVal.test(answerType)){
@@ -718,6 +727,8 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
         });
 
         this.listenTo(this.exercise_view, "check_answer", this.check_answer);
+
+        this.listenTo(this.exercise_view, "hint_available", this.toggle_hint_view);
     },
 
     load_user_data: function() {
@@ -832,6 +843,14 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
         }
         messages.clear_messages();
         messages.show_message("info", sprintf(msg, context));
+    },
+
+    toggle_hint_view: function(hints) {
+        if (hints) {
+            this.hint_view.$el.show();
+        } else {
+            this.hint_view.$el.hide();
+        }
     }
 
 });
