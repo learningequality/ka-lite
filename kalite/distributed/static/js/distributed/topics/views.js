@@ -67,10 +67,9 @@ var ContentAreaView = BaseView.extend({
     },
 
     remove_rating_view: function() {
-        // Remove the rating view if it exists. Uses rating_view.close, so that the container element is not removed
-        // from the DOM.
+        // Remove the rating view if it exists.
         if (typeof this.rating_view !== "undefined") {
-            this.rating_view.close();
+            this.rating_view.remove();
             delete this.rating_view;
         }
     },
@@ -86,13 +85,13 @@ var ContentAreaView = BaseView.extend({
         // Secondly, if the rating_view is previously deleted or never shown before at all, then define it.
         if( typeof this.rating_view === "undefined" ) {
             this.rating_view = this.add_subview(RatingView, {
-                el: this.$("#rating-container-wrapper"),
                 model: new RatingModel({
                     "user": window.statusModel.get("user_uri"),
                     "content_kind": "",
                     "content_id": ""
                 })
             });
+            this.$("#rating-container-wrapper").append(this.rating_view.el);
         }
 
         // Finally, handle the actual display logic
