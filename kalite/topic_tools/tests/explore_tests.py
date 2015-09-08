@@ -7,6 +7,7 @@ from django.test.client import RequestFactory
 from kalite.topic_tools.content_recommendation import *
 from kalite.testing.base import KALiteTestCase
 from kalite.facility.models import Facility
+from django.conf import settings
 
 class TestExploreMethods(KALiteTestCase):
 
