@@ -78,6 +78,9 @@ def after_scenario(context, scenario):
         shutil.rmtree(context.download_dir)
 
     try:
+        # Don't shut down the browser until all AJAX requests have completed.
+        while context.browser.execute_script("return (window.jQuery || { active : 0 }).active"):
+            pass
         context.browser.quit()
     except CannotSendRequest:
         pass
