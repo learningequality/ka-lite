@@ -96,7 +96,9 @@ def impl(context):
 def fill_field(context, text, field_id):
     field = find_id_with_wait(context, field_id, wait_time=180)
     field.clear()
-    field.send_keys(text)
+    field.click()  # Ensure that we're focused on that field for input.
+    for key in text:
+        field.send_keys(key)
 
 def fill_username(context, text):
     fill_field(context, text, USERNAME_ID)
