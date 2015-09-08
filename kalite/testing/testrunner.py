@@ -8,6 +8,7 @@ from django.conf import settings
 logging = settings.LOG
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import get_app, get_apps
+from django.core.management import call_command
 from django.test.simple import DjangoTestSuiteRunner, build_suite, build_test, reorder_suite
 from django.utils import unittest
 
@@ -116,6 +117,8 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
 
         # Django < 1.7 serves static files using the staticfiles app, not from static root.
         # This causes django_js_reverse not to get served to the client, so we manually copy it into distributed.
+
+        call_command("collectstatic_js_reverse", interactive=False)
 
         ensure_dir(os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js"))
         shutil.copy2(os.path.join(settings.STATIC_ROOT, "django_js_reverse", "js", "reverse.js"),

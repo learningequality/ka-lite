@@ -32,8 +32,7 @@ def step_impl(context):
 
 @given("I enter nothing in the search bar")
 def step_impl(context):
-    search_field = find_id_with_wait(context, "search")
-    search_field.clear()
+    search_for(context, "")
 
 @then("The search button is disabled")
 def step_impl(context):
@@ -42,4 +41,6 @@ def step_impl(context):
 
 def search_for(context, text):
     search_field = find_id_with_wait(context, "search")
-    search_field.send_keys(text)
+    search_field.click()
+    for key in text:
+        search_field.send_keys(key)
