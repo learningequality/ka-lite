@@ -108,7 +108,7 @@ module.exports = BaseView.extend({
             },
             patch: true
         });
-    },
+    }
 });
 
 
