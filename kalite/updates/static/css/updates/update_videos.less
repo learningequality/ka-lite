@@ -1,7 +1,7 @@
 @import "../../../../../node_modules/jquery.fancytree/dist/skin-common.less";
 
 @fancy-inline-sprites: true;
-@fancy-image-dir: "../../../../../node_modules/jquery.fancytree/dist/skin-vista";
+@fancy-image-dir: "../../../../../node_modules/jquery.fancytree/dist/skin-Lion";
 
 #content_tree .complete span.fancytree-icon {
     margin-top: 2px;
@@ -22,13 +22,12 @@
     margin-bottom: 0px;
 }
 
-span.ui-accordion-root {
-    background-color: #5AA685;
-}
 li span.fancytree-selected {
+    border-color: #00CC99;
     background-color: #00CC99;
 }
 span.fancytree-expanded {
+    border-color: #5AA685;
     background-color: #5AA685;
 }
 span.fancytree-checkbox {
@@ -48,7 +47,17 @@ ul.fancytree-container:focus {
 .fancytree-node {
     font-size: 20px;
     cursor:pointer;
+    background-color: #C4D7E3;
+    border-color: #d0d0d0;
+    border-style: solid;
+    border-width: 5px;
+}
+.fancytree-has-children {
+    border-color: #d0d0d0;
     background-color: #d0d0d0;
+}
+.fancytree-has-children::after {
+    content: " \1F4C2";
 }
 
 ul.fancytree-container {

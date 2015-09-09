@@ -112,11 +112,6 @@ $(function() {
                 debugLevel: 0, // 0:quiet, 1:normal, 2:debug
                 selectMode: 3,
                 source: [treeData],
-                renderNode: function(event, data){
-                    if(data.node.getLevel() === 1){
-                        $(data.node.span).addClass("ui-accordion-root");
-                    }
-                },
                 click: function(event, data) {
                     if (data.targetType === "checkbox"){
                         return true;
