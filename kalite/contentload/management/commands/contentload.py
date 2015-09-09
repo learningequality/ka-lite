@@ -38,11 +38,13 @@ def scrub_topic_tree(node_cache, channel_data):
 
 
 def topic_tree_id_catalog(topic_tree):
-    # Takes the topic tree and returns a dictionary with the ids of all nodes in the tree
-    # This is for use in removing items from caches that are not in the topic tree
-    ids = {}
+    """
+    Takes the topic tree and returns a dictionary with the ids of all nodes in the tree
+    This is for use in removing items from caches that are not in the topic tree
+    """
+    ids = set()
     def recurse_nodes(node):
-        ids[node.get("id")] = None
+        ids.add(node.get("id"))
 
         for child in node.get("children", []):
             recurse_nodes(child)
