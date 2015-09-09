@@ -61,7 +61,6 @@ table.tab_report th.username {
 }
 
 th.headrow, th.headrow div {
-    width: 80px;
     table-layout: fixed;
     font-weight: bold;
     word-wrap: break-word;
