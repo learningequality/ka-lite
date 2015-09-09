@@ -223,12 +223,12 @@ def retrieve_API_data(channel=None):
                     logging.info("Fetching assessment item {assessment} failed more than 5 times, aborting".format(assessment=assessment_item["id"]))
                     break
 
-    # threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises_dummy]
+    threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises_dummy]
 
-    # for thread in threads:
-    #     thread.start()
-    # for thread in threads:
-    #     thread.join()
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
 
     return topic_tree, exercises, assessment_items, content
 
