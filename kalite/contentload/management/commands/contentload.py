@@ -37,6 +37,20 @@ def scrub_topic_tree(node_cache, channel_data):
                     del node[att]
 
 
+def topic_tree_id_catalog(topic_tree):
+    # Takes the topic tree and returns a dictionary with the ids of all nodes in the tree
+    # This is for use in removing items from caches that are not in the topic tree
+    ids = {}
+    def recurse_nodes(node):
+        ids[node.get("id")] = None
+
+        for child in node.get("children", []):
+            recurse_nodes(child)
+    recurse_nodes(topic_tree)
+
+    return ids
+
+
 class Command(NoArgsCommand):
     help = """
     **WARNING** not intended for use outside of the FLE; use at your own risk!
@@ -95,9 +109,11 @@ class Command(NoArgsCommand):
 
         topic_tree, exercises, assessment_items, content = channel_tools.rebuild_topictree(channel=channel_dict)
 
-        exercise_cache = channel_tools.build_full_cache(exercises, id_key=channel_tools.id_key["Exercise"])
+        ids = topic_tree_id_catalog(topic_tree)
+
+        exercise_cache = channel_tools.build_full_cache(exercises, id_key=channel_tools.id_key["Exercise"], ids=ids)
         assessment_item_cache = channel_tools.build_full_cache(assessment_items)
-        content_cache = channel_tools.build_full_cache(content)
+        content_cache = channel_tools.build_full_cache(content, ids=ids)
 
         node_cache = {}
 

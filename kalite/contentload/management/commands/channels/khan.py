@@ -99,7 +99,7 @@ def denorm_data(node):
                     del node[key]
 
 
-def build_full_cache(items, id_key="id"):
+def build_full_cache(items, id_key="id", ids=None):
     """
     Uses list of items retrieved from Khan Academy API to
     create an item cache with fleshed out meta-data.
@@ -138,6 +138,12 @@ def build_full_cache(items, id_key="id"):
             item = json.loads(item.toJSON())
         except AttributeError:
             logging.error("Unable to serialize %r" % item)
+
+        item = whitewash_node_data(item)
+
+        if ids:
+            if item["id"] not in ids:
+                continue
 
         output[item["id"]] = whitewash_node_data(item)
 
@@ -217,12 +223,12 @@ def retrieve_API_data(channel=None):
                     logging.info("Fetching assessment item {assessment} failed more than 5 times, aborting".format(assessment=assessment_item["id"]))
                     break
 
-    threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises_dummy]
+    # threads = [threading.Thread(target=fetch_assessment_data, args=(exercise,)) for exercise in exercises_dummy]
 
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join()
+    # for thread in threads:
+    #     thread.start()
+    # for thread in threads:
+    #     thread.join()
 
     return topic_tree, exercises, assessment_items, content
 
