@@ -77,7 +77,9 @@ def impl(context):
         content_kind="Video",
         content_id="abc123",
         user=user,
-        text=context.rating_text
+        text=context.rating_text,
+        quality=1,
+        difficulty=3
     )
     rating.save()
     assert ContentRating.objects.count() != 0, "No ContentRating objects exist to be exported!"
