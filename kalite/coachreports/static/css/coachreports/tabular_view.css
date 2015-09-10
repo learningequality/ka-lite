@@ -50,6 +50,7 @@ th.username span {
     height: 37px;
     padding-top: 0px;
     border: 1px solid #ddd;
+    margin-left: -2px;
 }
 
 table.tab_report th.username {
@@ -65,7 +66,6 @@ th.headrow, th.headrow div {
     width: 80px;
     table-layout: fixed;
     font-weight: bold;
-    word-wrap: break-word;
     background-color: white;
     overflow: hidden;
     text-overflow: ellipsis;
