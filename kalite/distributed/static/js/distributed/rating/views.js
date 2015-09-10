@@ -61,11 +61,17 @@ module.exports = BaseView.extend({
 
         var self = this;
 
-        this.listenToOnce(this.model, "change:quality", function(){
+        // If the "quality" is already set, display "difficulty" immediately. Otherwise wait.
+        if (parseInt(this.model.get("quality")) === 0) {
+            this.listenToOnce(this.model, "change:quality", function(){
+                self.star_view_difficulty = self.add_subview(StarView, {title: gettext("Difficulty"), el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty", label_values: this.difficulty_label_values});
+            });
+        } else {
             self.star_view_difficulty = self.add_subview(StarView, {title: gettext("Difficulty"), el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty", label_values: this.difficulty_label_values});
-        });
+        }
 
         this.listenToOnce(this.model, "change:difficulty", this.renderAll);
+
     },
 
     renderAll: function() {
