@@ -20,8 +20,8 @@ KALITECTL_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(_
 # Formatted from subprocess.Popen
 # Trying to import call_command to execute a Django mgmt command gets you
 # into a weird import hell, probably because of import_all_child_modules...
-SCREENSHOT_COMMAND = [sys.executable, KALITECTL_PATH, "manage", "screenshots"]
-SCREENSHOT_COMMAND_OPTS = ["-v0", "--output-dir={0}".format(OUTPUT_PATH), "--settings=kalite.project.settings.screenshots"]
+SCREENSHOT_COMMAND = [sys.executable, KALITECTL_PATH, "manage", "screenshots", "--settings=kalite.project.settings.screenshots"]
+SCREENSHOT_COMMAND_OPTS = ["-v0", "--output-dir={0}".format(OUTPUT_PATH)]
 # These keys are css styles but they need to be camelCased
 FOCUS_CSS_STYLES = { "borderStyle": "solid",
                      "borderColor": "red",
@@ -189,7 +189,7 @@ def _parse_nav_steps(arg_str):
             return callback(*words[1:])
 
     commands = arg_str.split('|')
-    parsed_commands = reduce(lambda x,y: x+[y] if y else x, map(_parse_command, commands), [])
+    parsed_commands = reduce(lambda x, y: x+[y] if y else x, map(_parse_command, commands), [])
     runhandler = "_command_handler"
     return { "runhandler":  runhandler,
              "args":        {'commands': parsed_commands}}
@@ -273,16 +273,16 @@ class Screenshot(Image):
 
     # Handlers are invoked by the run function to parse the directives.
     def _login_handler(self, username, password, submit):
-        from_str_arg = { "users": ["guest"], # This will fail if not guest, because of a redirect
-                         "slug": "",
-                         "start_url": "/",
-                         "inputs": [{"#nav_login": ""},
-                                    {"#id_username": username},
-                                    {"#id_password": password},
-                                   ],
-                         "pages": [],
-                         "notes": "",
-                       }
+        from_str_arg = {"users": ["guest"], # This will fail if not guest, because of a redirect
+                        "slug": "",
+                        "start_url": "/",
+                        "inputs": [{"#nav_login": ""},
+                                   {"#id_username": username},
+                                   {"#id_password": password},
+                                  ],
+                        "pages": [],
+                        "notes": "",
+                        }
         if submit:
             from_str_arg["inputs"].append({".login-btn":""})
         from_str_arg = self._common_arg_prep(from_str_arg)
@@ -301,7 +301,7 @@ class Screenshot(Image):
                          "pages": [],
                          "notes": "",
                        }        
-        from_str_arg['inputs'] = reduce(lambda x,y: x+y, map(_cmd_to_inputs, commands), [])
+        from_str_arg['inputs'] = reduce(lambda x, y: x+y, map(_cmd_to_inputs, commands), [])
         from_str_arg = self._common_arg_prep(from_str_arg)
         self.env.screenshot_all_screenshots.append({
             'docname':  self.env.docname,
@@ -312,12 +312,13 @@ class Screenshot(Image):
     def _common_arg_prep(self, arg):
         """All commands are handled in the same way regarding these options. """
         new_arg = arg
-        new_arg["inputs"].append({"<slug>":self.filename})
+        new_arg["inputs"].append({"<slug>": self.filename})
         if hasattr(self, "focus_selector"):
             new_arg["focus"] = {}
             new_arg["focus"]["selector"] = self.focus_selector
             new_arg["focus"]["styles"] = FOCUS_CSS_STYLES
-            new_arg["notes"] = self.focus_annotation if hasattr(self, "focus_annotation") else ""
+            # replace whitespace with an escape character, so that it can be passed on the command line
+            new_arg["notes"] = re.sub(r"\s", "\s", self.focus_annotation) if hasattr(self, "focus_annotation") else ""
         new_arg["registered"] = self.options["registered"]
         return new_arg
 
@@ -357,11 +358,11 @@ def _cmd_to_inputs(cmd):
         sel = ""
     else:
         sel = cmd['selector']
-    if cmd['action']=='click':
+    if cmd['action'] == 'click':
         inputs.append({sel: ""})
-    elif cmd['action']=='submit':
+    elif cmd['action'] == 'submit':
         inputs.append({"<submit>": ""})
-    elif cmd['action']=='send_keys':
-        inputs.append({sel: ' '.join(map(_specialkeys,cmd['options']))})
+    elif cmd['action'] == 'send_keys':
+        inputs.append({sel: '\s'.join(map(_specialkeys, cmd['options']))})  # Escape whitespace for command line
     return inputs
 

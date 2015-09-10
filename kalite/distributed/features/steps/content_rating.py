@@ -113,7 +113,9 @@ def impl(context):
 
 @given(u'I am on a content page')
 def impl(context):
-    go_to_content_item(context)
+    # Hard code to visit a Khan Exercise page, which will always be available.
+    url = urljoin(reverse("learn"), "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/")
+    context.browser.get(build_url(context, url))
 
 @given(u'I have filled out a feedback form')
 def impl(context):
