@@ -8,6 +8,9 @@ dependencies:
     - pip install -e .
     - npm install
     - npm install -g jshint
+  post:
+    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
+    - tar -xzf sc-latest-linux.tar.gz
 
 test:
   override:
@@ -15,6 +18,8 @@ test:
     - kalite start --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
+    - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY:
+        background: true
     - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
         parallel: true
     - jshint kalite/*/static/js/*/
