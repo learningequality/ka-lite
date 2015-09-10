@@ -227,13 +227,15 @@ class BrowserActionMixins(object):
     def empty_form_test(self, url, submission_element_id):
         """
         Submit forms with no values, make sure there are no errors.
+        TODO(MCGallaspy): There's a lot wrong here -- why is a test hidden in a mixin? Can this be done with a client
+          test case? And if not, can it be refactored into the behave framework?
         """
 
         self.browse_to(url)
         self.browser_activate_element(id=submission_element_id)  # explicitly set the focus, to start
         self.browser_send_keys(Keys.RETURN)
         # how to wait for page change?  Will reload the same page.
-        self.assertNotEqual(self.browser_wait_for_element(".errorlist"), None, "Make sure there's an error.")
+        self.assertNotEqual(self.browser_wait_for_element(".errorlist", max_wait_time=30), None, "Make sure there's an error.")
 
     def browser_accept_alert(self, sleep=1, text=None):
         """
