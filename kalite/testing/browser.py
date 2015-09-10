@@ -15,6 +15,7 @@ def setup_browser(browser_type="Firefox"):
 
     browser = getattr(webdriver, browser_type)()
     hacks_for_phantomjs(browser)
+    browser.set_page_load_timeout(60)
 
     return browser
 
