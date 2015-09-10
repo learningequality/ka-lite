@@ -84,27 +84,22 @@ var ContentAreaView = BaseView.extend({
 
         // Secondly, if the rating_view is previously deleted or never shown before at all, then define it.
         if( typeof this.rating_view === "undefined" ) {
-            this.rating_view = this.add_subview(RatingView, {
-                model: new RatingModel({
-                    "user": window.statusModel.get("user_uri"),
-                    "content_kind": "",
-                    "content_id": ""
-                })
-            });
+            this.rating_view = this.add_subview(RatingView, {});
             this.$("#rating-container-wrapper").append(this.rating_view.el);
         }
 
         // Finally, handle the actual display logic
-        if( this.rating_view.model.get("content_id") !== this.model.get("id") ) {
+        if( this.rating_view.model === null || this.rating_view.model.get("content_id") !== this.model.get("id") ) {
             var self = this;
             this.content_rating_collection.fetch().done(function(){
+                // Queue up a save on the model we're about to switch out, in case it hasn't been synced.
+                if (self.rating_view.model !== null && self.rating_view.model.hasChanged()) {
+                    self.rating_view.model.debounced_save();
+                }
                 if(self.content_rating_collection.models.length === 1) {
                     self.rating_view.model = self.content_rating_collection.pop();
                     self.rating_view.render();
                 } else if ( self.content_rating_collection.models.length === 0 ) {
-                    // Since RatingModel uses debounced syncing, let's force one immediate sync before switching out
-                    // the model.
-                    self.rating_view.model.save();
                     self.rating_view.model = new RatingModel({
                             "user": window.statusModel.get("user_uri"),
                             "content_kind": self.model.get("kind"),

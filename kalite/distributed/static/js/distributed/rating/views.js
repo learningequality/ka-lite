@@ -20,11 +20,7 @@ module.exports = BaseView.extend({
         /*
             Prepare self and subviews.
         */
-        this.model = options.model || function() {
-            var model = new Backbone.Model();
-            model.url = "/api/not/gonna/work";
-            return model;
-        }();
+        this.model = options.model || null;
         _.bindAll(this, "delete_callback", "renderAll", "renderSequence", "render");
         this.quality_label_values = {
             1:  gettext("Poor quality"),
@@ -162,7 +158,8 @@ var StarView = BaseView.extend({
         var target = $(ev.target).hasClass("star-rating-option") ? $(ev.target) : $(ev.target).parents(".star-rating-option")[0];
         var val = $(target).attr("data-val");
         this.model.set(this.rating_attr, val);
-    }, 100, true),
+        this.model.debounced_save();
+    }, 500, true),
 
     mouse_enter_callback: function(ev) {
         // The target event could be either the .star-rating-option or a child element, so whatever the case get the
@@ -182,7 +179,6 @@ var StarView = BaseView.extend({
             $opt = $(opt);
             $opt.toggleClass("activated", parseInt($opt.attr("data-val")) <= parseInt(this.model.get(this.rating_attr)));
         }, this);
-        this.model.save();
     }
 });
 
