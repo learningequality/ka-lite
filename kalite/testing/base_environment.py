@@ -56,10 +56,11 @@ def setup_sauce_browser(context):
         profile.set_preference("browser.download.manager.showWhenStarting", False)
         profile.set_preference("browser.download.dir", context.download_dir)
         profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
-
-    context.browser = webdriver.Remote(desired_capabilities=DesiredCapabilities.FIREFOX,
-                                       browser_profile=profile,
-                                       command_executor=sauce_url)
+        context.browser = webdriver.Firefox(firefox_profile=profile)  # Use local browser for this particular test
+    else:
+        context.browser = webdriver.Remote(desired_capabilities=DesiredCapabilities.FIREFOX,
+                                           browser_profile=profile,
+                                           command_executor=sauce_url)
 
 # FYI: context.tags contains feature tags + scenario tags.
 def before_scenario(context, scenario):
