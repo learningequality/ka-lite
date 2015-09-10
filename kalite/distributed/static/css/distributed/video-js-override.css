@@ -1,5 +1,9 @@
 /* Responsive content display for tablets */
 /* Jessica TODO: take off !important tags */
+
+#video-player {
+    height: 500px;
+}
 div.video-player {
     width: 100% !important;
     margin: auto !important;

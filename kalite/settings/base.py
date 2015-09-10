@@ -241,15 +241,6 @@ if not os.path.exists(CONTENT_ROOT):
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
 
-# Necessary for Django compressor
-if not DEBUG:
-    STATICFILES_FINDERS = (
-        "django.contrib.staticfiles.finders.FileSystemFinder",
-        "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-        "compressor.finders.CompressorFinder",
-    )
-
-
 # Overwrite stuff from local_settings
 MEDIA_ROOT = getattr(local_settings, "MEDIA_ROOT", MEDIA_ROOT)
 STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
@@ -334,7 +325,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.contenttypes',
     'tastypie',
-    'compressor',
     'django_js_reverse',
     'securesync',
     'south',

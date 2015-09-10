@@ -1,7 +1,6 @@
 {% extends "updates/base.html" %}
 {% load i18n %}
 {% load staticfiles %}
-{% load compress %}
 
 {% block title %}{% trans "Update Languages" %}{% endblock %}
 
@@ -14,9 +13,7 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    {% compress js file update_languagesjs %}
-        <script type="text/javascript" src="{% static 'js/updates/bundles/bundle_update_languages.js' %}"></script>
-    {% endcompress %}
+    <script type="text/javascript" src="{% static 'js/updates/bundles/bundle_update_languages.js' %}"></script>
     <script type="text/javascript">
      window.sessionModel.set({
          AVAILABLE_LANGUAGEPACK_URL: "http://" + window.sessionModel.get("CENTRAL_SERVER_HOST") + "/api/i18n/language_packs/available/{{ SHORTVERSION }}",

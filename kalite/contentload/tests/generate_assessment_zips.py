@@ -37,7 +37,7 @@ class TestUrlConversion(TestCase):
 
     def test_content_link_converted(self):
         link_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](https://www.khanacademy.org/humanities/history/ancient-medieval/Ancient/v/standard-of-ur-c-2600-2400-b-c-e)"
-        expected_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](/learn/khan/test-prep/ap-art-history/ancient-mediterranean-ap/ancient-near-east-ap/standard-of-ur-c-2600-2400-b-c-e/)"
+        expected_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](/learn/khan/test-prep/ap-art-history/ancient-mediterranean-ap/ancient-near-east-a/standard-of-ur-c-2600-2400-b-c-e/)"
         self.assertEqual(expected_string, mod.convert_urls(link_string))
 
     def test_bad_content_link_removed(self):
@@ -152,7 +152,7 @@ class UtilityFunctionTests(KALiteTestCase):
             os.remove(cached_file_path)  # make sure it doesn't exist
 
         mod.fetch_file_from_url_or_cache(self.imgurl)
-        get_method.assert_called_once_with(self.imgurl)
+        get_method.assert_called_once_with(self.imgurl, timeout=10)
         self.assertTrue(os.path.exists(cached_file_path), "File wasn't cached!")
 
         get_method.call_count = 0
