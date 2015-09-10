@@ -316,7 +316,7 @@ var TabularReportView = BaseView.extend({
     template: require("./hbtemplates/tabular-view.handlebars"),
 
     initialize: function(options) {
-        _.bindAll(this, "set_data_model");
+        _.bindAll(this, "set_data_model", "scroll_bottom", "scroll_top");
         this.complete_callback = options.complete;
         this.set_data_model();
         this.listenTo(this.model, "change", this.set_data_model);
@@ -341,10 +341,28 @@ var TabularReportView = BaseView.extend({
         
         this.$('.headrowuser').css("min-width", this.$('.headrow.data').outerWidth());
 
+        this.$(".scroller").css("width", this.$("table").outerWidth());
+
         if(this.complete_callback) {
             this.complete_callback();
         }
 
+        this.$("#displaygrid").scroll(this.scroll_bottom);
+
+        this.$(".top-scroll").scroll(this.scroll_top);
+
+    },
+
+    scroll_bottom: function() {
+        this.scroll(".top-scroll", "#displaygrid");
+    },
+
+    scroll_top: function() {
+        this.scroll("#displaygrid", ".top-scroll");
+    },
+
+    scroll: function(set, from) {
+        this.$(set).scrollLeft(this.$(from).scrollLeft());
     },
 
     no_user_error: function() {
