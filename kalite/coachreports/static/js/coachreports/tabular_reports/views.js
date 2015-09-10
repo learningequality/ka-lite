@@ -105,7 +105,7 @@ var DetailPanelView = BaseView.extend({
 
     render: function() {
         var item_count = 0;
-        if (this.collection.meta) {
+        if (this.collection && this.collection.meta) {
             item_count = this.collection.meta.total_count;
         }
         this.pages = [];
@@ -119,14 +119,16 @@ var DetailPanelView = BaseView.extend({
             itemdata: this.content_item.attributes,
             pages: this.pages,
             page: this.page,
-            collection: this.collection.to_objects()
+            collection: this.collection ? this.collection.to_objects() : []
         }));
-        this.bodyView = new DetailPanelBodyView ({
-            collection: this.collection,
-            // Question number of first question on this page
-            start_number: (this.page - 1)*this.limit + 1,
-            el: this.$(".body")
-        });
+        if (this.collection) {
+            this.bodyView = new DetailPanelBodyView ({
+                collection: this.collection,
+                // Question number of first question on this page
+                start_number: (this.page - 1)*this.limit + 1,
+                el: this.$(".body")
+            });
+        }
     }
 });
 
