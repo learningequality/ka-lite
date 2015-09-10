@@ -88,8 +88,8 @@ var CoachSummaryView = BaseView.extend({
 
         parseData.forEach(function(datum, index) {
             var opt = document.createElement("option");
-            opt.innerHTML = datum.topic_title;
-            opt.value = datum.topic_title;
+            opt.innerHTML = datum.title;
+            opt.value = datum.title;
             frag.appendChild(opt);
         });
 

@@ -10,7 +10,7 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonRe
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog, AttemptLog, UserLogSummary
 from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools import get_topic_leaves, get_exercise_cache, get_content_cache
+from kalite.topic_tools import get_topic_leaves, get_exercise_cache, get_content_cache, get_leafed_topics
 
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
@@ -140,6 +140,8 @@ def aggregate_learner_logs(request):
 
     output_logs = []
 
+    all_topics = map(lambda x: {"id": x.get("id"), "title": x.get("title")}, get_leafed_topics())
+
     output_dict = {
         "content_time_spent": 0,
         "exercise_attempts": 0,
@@ -148,6 +150,7 @@ def aggregate_learner_logs(request):
         "total_complete": 0,
         "total_struggling": 0,
         "total_not_attempted": 0,
+        "available_topics": all_topics,
     }
     
     end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
