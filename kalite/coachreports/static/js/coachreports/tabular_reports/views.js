@@ -153,19 +153,20 @@ var DetailPanelInlineRowView = BaseView.extend({
             tagName: 'td',
             model: this.model,
             content_item: this.content_item,
-            attributes: {colspan: this.contents_length - this.content_item_place}
+            attributes: {colspan: Math.min(this.contents_length - this.content_item_place, 6)}
         });
 
         // Add in a view that spans the columns up to the selected cell.
-        this.spacer_view = new BaseView({
+        this.left_spacer_view = new BaseView({
             tagName: 'td',
             attributes: {colspan: this.content_item_place + 1}
         });
 
-        this.spacer_view.render();
+        this.left_spacer_view.render();
 
-        this.$el.append(this.spacer_view.el);
+        this.$el.append(this.left_spacer_view.el);
         this.$el.append(this.detail_view.el);
+
     }
 });
 
