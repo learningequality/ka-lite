@@ -10,6 +10,8 @@ var TabularReportViews = require("../tabular_reports/views");
 var date_string = require("utils/datestring").date_string;
 var d3 = require("d3");
 
+require("bootstrap-datepicker/dist/js/bootstrap-datepicker");
+
 /*
 Hierarchy of views:
 CoachReportView:
