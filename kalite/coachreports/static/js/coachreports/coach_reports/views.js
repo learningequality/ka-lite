@@ -96,8 +96,8 @@ var CoachSummaryView = BaseView.extend({
         } else {
             var parseData = [
                 //parsing data to 2 decimal positions
-                { label: gettext("Hours spent on content"), count: Math.round(data_sub * 100)/100 },
-                { label: gettext("Other activites (exercises, etc.)"), count: Math.round((data_total - data_sub) * 100)/100 }
+                { label: gettext("Hours spent on content"), count: Math.round((data_sub * 100)/data_total) },
+                { label: gettext("Other activites (exercises, etc.)"), count: Math.round(((data_total - data_sub) * 100)/data_total) }
             ];
 
             //adjusting the graph's size based on target_elem's sizing
@@ -132,16 +132,17 @@ var CoachSummaryView = BaseView.extend({
                 });
 
             //parsing to 2 decimals
-            var total = Math.round(data_total * 100)/100;
+            var content_percentage = Math.round((data_sub * 100)/data_total);
+            targetElemP.innerHTML = content_percentage + "%";
 
             //this will display relevant data when you hover over that data's arc on the radial graph
             path.on('mouseover', function(d) {
-                targetElemP.innerHTML = (d.data.label + ":" + "<br />" + d.data.count);
+                targetElemP.innerHTML = (d.data.label + ": " + d.data.count + "%");
             });
 
-            //when not hovering, you'll see the total data
+            //when not hovering, you'll see the content percentage
             path.on('mouseout', function() {
-                targetElemP.innerHTML = "Total:" + "<br />" + total;
+                targetElemP.innerHTML = content_percentage + "%";
             });
         }
     },
