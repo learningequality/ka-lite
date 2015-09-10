@@ -41,6 +41,7 @@
 }
 
 th.username span {
+    overflow: hidden;
     position: absolute;
     background: white;
     color: #fff;
