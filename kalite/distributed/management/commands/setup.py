@@ -32,10 +32,14 @@ from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMEN
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
-from kalite.version import VERSION
+from kalite.version import VERSION, SHORTVERSION
 from kalite.facility.models import Facility
 from securesync.models import Device
 import warnings
+
+
+# for extracting assessment item resources
+ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/{version}/content/{channel}_assessment.zip".format(version=SHORTVERSION, channel=settings.CHANNEL)
 
 
 def raw_input_yn(prompt):
@@ -133,7 +137,7 @@ def get_assessment_items_filename():
             return False
 
     def find_recommended_file():
-        filename_guess = "assessment.zip"
+        filename_guess = "{channel}_assessment.zip".format(channel=settings.CHANNEL)
         curdir = os.path.abspath(os.curdir)
         pardir = os.path.abspath(os.path.join(curdir, os.pardir))
         while curdir != pardir:
@@ -198,7 +202,7 @@ class Command(BaseCommand):
                     action='store_true',
                     dest='force-assessment-item-dl',
                     default=False,
-                    help='Downloads assessment items from the url specified by settings.ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
+                    help='Downloads assessment items from the url specified by ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
         make_option('-i', '--no-assessment-items',
                     action='store_true',
                     dest='no-assessment-items',
@@ -397,7 +401,7 @@ class Command(BaseCommand):
 
             if writable_assessment_items and options['force-assessment-item-dl']:
                 call_command(
-                    "unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
+                    "unpack_assessment_zip", ASSESSMENT_ITEMS_ZIP_URL)
             elif options['force-assessment-item-dl']:
                 raise RuntimeError(
                     "Got force-assessment-item-dl but directory not writable")
@@ -409,10 +413,10 @@ class Command(BaseCommand):
                 print(
                     "If you have already downloaded the assessment items package, you can specify the file in the next step.")
                 print("Otherwise, we will download it from {url}.".format(
-                    url=settings.ASSESSMENT_ITEMS_ZIP_URL))
+                    url=ASSESSMENT_ITEMS_ZIP_URL))
 
                 if raw_input_yn("Do you wish to download the assessment items package now?"):
-                    ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
+                    ass_item_filename = ASSESSMENT_ITEMS_ZIP_URL
                 elif raw_input_yn("Have you already downloaded the assessment items package?"):
                     ass_item_filename = get_assessment_items_filename()
                 else:
