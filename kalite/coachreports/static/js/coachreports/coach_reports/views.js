@@ -199,7 +199,10 @@ var CoachSummaryView = BaseView.extend({
           messages.show_message("warning", gettext("No recent learner data for this group is available."));
         }
 
-        delete this.tabular_report_view;
+        if (this.tabular_report_view) {
+            this.tabular_report_view.remove();
+            delete this.tabular_report_view;
+        }
 
         this.displayRadialGraph("full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"));
     },
@@ -210,8 +213,12 @@ var CoachSummaryView = BaseView.extend({
             this.$("#show_tabular_report").text("Loading");
             this.$("#show_tabular_report").attr("disabled", "disabled");
             this.tabular_report_view = new TabularReportViews.TabularReportView({model: this.model, complete: function() {
-                self.$("#show_tabular_report").text(gettext("Hide Tabular Report"));
-                self.$("#show_tabular_report").removeAttr("disabled");
+                if (self.tabular_report_view) {
+                    // Check that tabular report view still exists, as it is possible for it to have been removed
+                    // by the time this call back gets called.
+                    self.$("#show_tabular_report").text(gettext("Hide Tabular Report"));
+                    self.$("#show_tabular_report").removeAttr("disabled");
+                }
             }});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         } else {
