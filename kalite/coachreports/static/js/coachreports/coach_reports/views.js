@@ -88,14 +88,15 @@ var CoachSummaryView = BaseView.extend({
     appendTopicList: function() {
         var parseData = this.data_model.get("available_topics");
         var targetElem = $("#topic-list").get(0);
+        var frag = document.createDocumentFragment();
 
         parseData.forEach(function(datum, index) {
             var opt = document.createElement("option");
             opt.innerHTML = datum.title;
             opt.value = datum.title;
-            targetElem.appendChild(opt);
+            frag.appendChild(opt);
         });
-
+        targetElem.appendChild(frag);
     }, 
 
     /*
