@@ -490,7 +490,7 @@ class Command(BaseCommand):
                     metavar="TRANSACTION"),
         make_option('--scenario-1',
                     action='store_true',
-                    dest='scenario-1',
+                    dest='scenario_1',
                     default=False,
                     help="Creates:\n2 Facilities\n3 Coaches per facility\n10 distinct students per facility\nVarious "
                          "video and exercise logs for each student, with a specifiable time range no later than the "
@@ -510,7 +510,7 @@ class Command(BaseCommand):
             handler(*args, **options)
 
     def choose_handler(self, *args, **options):
-        if options.get("scenario-1"):
+        if options.get("scenario_1"):
             return self.handle_scenario_1
         else:
             return self.handle_stuff

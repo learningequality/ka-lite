@@ -59,18 +59,20 @@ def hacks_for_phantomjs(browser):
 
 
 def browse_to(browser, dest_url, wait_time=0.1, max_retries=50):
-    """Given a selenium browser, open the given url and wait until the browser has completed."""
+    """
+    Browse to the given url, or do nothing if browser.current_url == dest_url
 
+    :param browser: a WebDriver instance.
+    :param dest_url: a string. the destination url.
+    :param wait_time: unused. kept for compatibility.
+    :param max_retries: unused. kept for compatibility.
+    :return: true, always. Used to return the value of wait_for_page_change, but WebDriver.get
+        _already_ waits for the page to finish loading.
+    """
     if dest_url == browser.current_url:
         return True
-
-    source_url = browser.current_url
-    page_source = browser.page_source
-
     browser.get(dest_url)
-
-    return wait_for_page_change(browser, source_url=source_url, page_source=page_source,
-                                wait_time=wait_time, max_retries=max_retries)
+    return True
 
 
 def wait_for_page_change(browser, source_url=None, page_source=None, wait_time=0.1, max_retries=50):
