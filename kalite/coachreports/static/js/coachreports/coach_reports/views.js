@@ -175,12 +175,14 @@ var CoachSummaryView = BaseView.extend({
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
+                this.loading("#content-container");
                 this.data_model.fetch();
             }
         }
     },
 
     render: function() {
+        this.loaded("#content-container");
         this.$el.html(this.template({
             status:this.model.attributes,
             data: this.data_model.attributes,
