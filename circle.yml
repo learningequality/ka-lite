@@ -3,6 +3,8 @@ machine:
     version: 2.7.9
 
 dependencies:
+  cache_directories:
+    - "data"
   override:
     - pip install -r requirements_test.txt
     - pip install -e .
@@ -15,7 +17,7 @@ dependencies:
 test:
   override:
     - node build.js
-    - kalite start --traceback -v2
+    - kalite start --settings=kalite.project.settings.disk_based_cache --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
     - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY:
