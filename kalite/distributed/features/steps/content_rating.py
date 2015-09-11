@@ -63,9 +63,7 @@ def impl(context):
     assert visible_container.is_displayed(),\
         "Element with id '{0}' not visible, but it should be!".format(STAR_CONTAINER_IDS[0])
     for id_ in STAR_CONTAINER_IDS[1:] + (TEXT_CONTAINER_ID, ):
-        el = find_id_with_wait(context, id_)
-        assert el.rect["width"]*el.rect["height"] == 0 or (not el.is_displayed()),\
-            "Element with id '{0}' is visible, but it should NOT be!".format(id_)
+        assert_no_element_by_css_selector(context, "#{id} div".format(id=id_))
 
 @given(u'some user feedback exists')
 def impl(context):
@@ -111,16 +109,11 @@ def impl(context):
     text_feedback = context.text_feedback = "This stuff is great, A+++"
     enter_text_feedback(context, text_feedback)
 
-@given(u'I am on a content page')
-def impl(context):
-    # Hard code to visit a Khan Exercise page, which will always be available.
-    url = urljoin(reverse("learn"), "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/")
-    context.browser.get(build_url(context, url))
 
 @given(u'I have filled out a feedback form')
 def impl(context):
     context.execute_steps(u'''
-        Given I am on a content page
+        Given I open some available content
         When I fill out the form
     ''')
 
