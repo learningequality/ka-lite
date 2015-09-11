@@ -122,10 +122,15 @@ def after_scenario(context, scenario):
     try:
         if hasattr(context, "sauce"):
             print("Link to your job: https://saucelabs.com/jobs/%s" % context.browser.session_id)
-            if sys.exc_info() == (None, None, None):
-                context.sauce.jobs.update_job(context.browser.session_id, passed=True)
-            else:
+            if context.scenario.status == "failed":
                 context.sauce.jobs.update_job(context.browser.session_id, passed=False)
+            else:
+                context.sauce.jobs.update_job(context.browser.session_id, passed=True)
+    except Exception as e:
+        if "404" in e.message:
+            print("Couldn't log the job... Error message:\n" + e.message)
+        else:
+            raise
     finally:
         try:
             # Don't shut down the browser until all AJAX requests have completed.
