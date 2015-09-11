@@ -51,12 +51,17 @@ var TimeSetView = BaseView.extend({
 
         format = format.toLowerCase().replace("y", "yy");
 
+        var self = this;
+
         this.datepicker = this.$('.date-range').each(function(){
             $(this).datepicker({
                 format: format,
                 endDate: "0d",
                 todayBtn: "linked",
                 todayHighlight: true
+            });
+            $(this).datepicker().on('changeDate', function() {
+                self.$(".setrange").css("display", "table-cell");
             });
         });
     },
@@ -67,6 +72,7 @@ var TimeSetView = BaseView.extend({
             end_date: this.$("#end").datepicker("getDate")
         });
         this.model.trigger("set_time");
+        this.$(".setrange").hide();
         return false;
     }
 });

@@ -164,6 +164,7 @@ ul {
 
 span.setrange {
     color: #fff;
+    display: none;
 }
 
 .tooltip {
