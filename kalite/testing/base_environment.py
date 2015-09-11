@@ -62,6 +62,25 @@ def setup_sauce_browser(context):
                                            browser_profile=profile,
                                            command_executor=sauce_url)
 
+def setup_local_browser(context):
+    """
+    Use local webdriver. Has side effects on the passed in behave context.
+
+    :param context: the behave context
+    :return: none, but has side effects. Adds property "browser" to context.
+    """
+
+    profile = webdriver.FirefoxProfile()
+    if "download_csv" in context.tags:
+        # Let csv files be downloaded automatically. Can be accessed using context.download_dir
+        context.download_dir = tempfile.mkdtemp()
+        profile.set_preference("browser.download.folderList", 2)
+        profile.set_preference("browser.download.manager.showWhenStarting", False)
+        profile.set_preference("browser.download.dir", context.download_dir)
+        profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
+
+    context.browser = webdriver.Firefox(firefox_profile=profile)
+
 # FYI: context.tags contains feature tags + scenario tags.
 def before_scenario(context, scenario):
     database_setup(context)
@@ -69,7 +88,10 @@ def before_scenario(context, scenario):
     if "registered_device" in context.tags:
         do_fake_registration()
 
-    setup_sauce_browser(context)
+    if os.environ.get("TRAVIS", False):  # Indicates we're running on remote build server
+        setup_sauce_browser(context)
+    else:
+        setup_local_browser(context)
 
     context.logged_in = False
     # A superuser now needs to exist or UI is blocked by a modal.
@@ -98,11 +120,12 @@ def after_scenario(context, scenario):
         shutil.rmtree(context.download_dir)
 
     try:
-        print("Link to your job: https://saucelabs.com/jobs/%s" % context.browser.session_id)
-        if sys.exc_info() == (None, None, None):
-            context.sauce.jobs.update_job(context.browser.session_id, passed=True)
-        else:
-            context.sauce.jobs.update_job(context.browser.session_id, passed=False)
+        if hasattr(context, "sauce"):
+            print("Link to your job: https://saucelabs.com/jobs/%s" % context.browser.session_id)
+            if sys.exc_info() == (None, None, None):
+                context.sauce.jobs.update_job(context.browser.session_id, passed=True)
+            else:
+                context.sauce.jobs.update_job(context.browser.session_id, passed=False)
     finally:
         try:
             # Don't shut down the browser until all AJAX requests have completed.
