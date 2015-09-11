@@ -44,6 +44,10 @@ def setup_sauce_browser(context):
     # based on http://saucelabs.com/examples/example.py
     username = os.environ.get('SAUCE_USERNAME')
     access_key = os.environ.get('SAUCE_ACCESS_KEY')
+    circle_build = os.environ.get('CIRCLE_BUILD_NUM')
+    circle_node = os.environ.get('CIRCLE_NODE_INDEX')
+    
+    tunnel_id = "{build}-{node}".format(build=circle_build, node=circle_node)
     context.sauce = sc.SauceClient(username, access_key)
     sauce_url = "http://{username}:{access_key}@ondemand.saucelabs.com:80/wd/hub".format(username=username,
                                                                                          access_key=access_key)
@@ -58,7 +62,9 @@ def setup_sauce_browser(context):
         profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
         context.browser = webdriver.Firefox(firefox_profile=profile)  # Use local browser for this particular test
     else:
-        context.browser = webdriver.Remote(desired_capabilities=DesiredCapabilities.FIREFOX,
+        desired_capabilities = DesiredCapabilities.FIREFOX.copy()
+        desired_capabilities["tunnelIdentifier"] = tunnel_id
+        context.browser = webdriver.Remote(desired_capabilities=desired_capabilities,
                                            browser_profile=profile,
                                            command_executor=sauce_url)
 
