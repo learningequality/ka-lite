@@ -56,24 +56,45 @@ var ContentAreaView = BaseView.extend({
         this.$(".content").html("").append(view.$el);
     },
 
+    should_show_rating: function() {
+        /*
+        This function determines whether a rating should be shown for the content item.
+        returns: true or false
+        */
+        var entry_available = (typeof this.model !== "undefined") && !!this.model.get("available");
+        var logged_in = window.statusModel.has("user_id");
+        return logged_in && entry_available;
+    },
+
+    remove_rating_view: function() {
+        // Remove the rating view if it exists.
+        if (typeof this.rating_view !== "undefined") {
+            this.rating_view.remove();
+            delete this.rating_view;
+        }
+    },
+
     show_rating: function() {
-        if( typeof  window.statusModel.get("user_id") === "undefined" ) {
-            // Let this be a no-op if the user isn't logged in, and remove the view if it already exists.
-            if (typeof this.rating_view !== "undefined") {
-                this.rating_view.remove();
-            }
+        // First, determine whether we should show the rating at all.
+        // If it should not be shown, be sure to remove the rating_view; subsequent logic depends on that.
+        if ( !this.should_show_rating() ) {
+            this.remove_rating_view();
             return;
         }
+
+        // Secondly, if the rating_view is previously deleted or never shown before at all, then define it.
         if( typeof this.rating_view === "undefined" ) {
             this.rating_view = this.add_subview(RatingView, {
-                el: this.$("#rating-container-wrapper"),
                 model: new RatingModel({
                     "user": window.statusModel.get("user_uri"),
-                    "content_kind": this.model.get("kind"),
-                    "content_id": this.model.get("id")
+                    "content_kind": "",
+                    "content_id": ""
                 })
             });
+            this.$("#rating-container-wrapper").append(this.rating_view.el);
         }
+
+        // Finally, handle the actual display logic
         if( this.rating_view.model.get("content_id") !== this.model.get("id") ) {
             var self = this;
             this.content_rating_collection.fetch().done(function(){
@@ -92,9 +113,7 @@ var ContentAreaView = BaseView.extend({
                     self.rating_view.render();
                 } else {
                     messages.show_message("error", "Server Error: More than one rating found for this user and content item!", "too-many-ratings-msg");
-                    if (typeof this.rating_view !== "undefined") {
-                        this.rating_view.remove();
-                    }
+                    self.remove_rating_view();
                 }
             }).error(function(){
                 console.log("content rating collection failed to fetch");
@@ -701,8 +720,8 @@ var TopicContainerOuterView = BaseView.extend({
         var view;
 
         this.content_view.model = entry;
-        // The rating subview depends on the model, but we can't just listen to events on the model since the actual
-        // object is swapped out here.
+        // The rating subview depends on the content_view.model, but we can't just listen to events on the model
+        // to trigger show_rating, since the actual object is swapped out here. We must call it explicitly.
         this.content_view.show_rating();
         var self = this;
         // Mask "require" with "external" to prevent browserify from bundling what we want to be external dependencies.
