@@ -5,14 +5,14 @@ machine:
 dependencies:
   cache_directories:
     - "data"
+    - "sc-latest-linux"
   override:
     - pip install -r requirements_test.txt
     - pip install -e .
     - npm install
     - npm install -g jshint
   post:
-    - wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz
-    - tar -xzf sc-latest-linux.tar.gz
+    - if [[ ! -e sc-latest-linux/bin/sc ]]; then wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz && tar -xzf sc-latest-linux.tar.gz &&  mv sc-*-linux sc-latest-linux; fi
 
 test:
   override:
@@ -26,3 +26,5 @@ test:
     - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
         parallel: true
     - jshint kalite/*/static/js/*/
+  post:
+    - killall --wait sc  # wait for Sauce Connect to close the tunnel
