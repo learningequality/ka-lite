@@ -305,16 +305,6 @@ def go_to_homepage(context):
     context.browser.get(build_url(context, url))
 
 
-def go_to_content_item(context):
-    """
-    Go to the page for a content item (video, exercise, etc). This method does not care which one, it's to ensure
-    that an instantiated ContentAreaView exists on the page. Not the content item may not be flagged as "available".
-    """
-    content = get_content_cache().itervalues().next()
-    url = urljoin(reverse("learn"), content["path"])
-    context.browser.get(build_url(context, url))
-
-
 def _login_user(context, username, password, facility=None):
     """ Logs a user in (either User of FacilityUser) with an api endpoint.
     "Private" function to hide details, use login_as_* functions instead.
