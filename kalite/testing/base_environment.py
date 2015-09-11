@@ -3,12 +3,16 @@ environment.py defines setup and teardown behaviors for behave tests.
 The behavior in this file is appropriate for integration tests, and
 could be used to bootstrap other integration tests in our project.
 """
+import os
 import tempfile
 import shutil
+import sauceclient as sc
+import sys
 
 from behave import *
 from httplib import CannotSendRequest
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db import connections
@@ -30,13 +34,47 @@ def before_feature(context, feature):
 def after_feature(context, feature):
     pass
 
-# FYI: scenario tags are inherited from features, so tagging a feature is almost the same as tagging each
-# scenario individually, as long as you are cautious not to duplicate logic in before_feature and before_scenario.
-def before_scenario(context, scenario):
-    database_setup(context)
+def setup_sauce_browser(context):
+    """
+    Use saucelabs remote webdriver. Has side effects on the passed in behave context.
 
-    if "registered_device" in context.tags:
-        do_fake_registration()
+    :param context: the behave context
+    :return: none, but has side effects. Adds properties "sauce" and "browser" to context.
+    """
+    # based on http://saucelabs.com/examples/example.py
+    username = os.environ.get('SAUCE_USERNAME')
+    access_key = os.environ.get('SAUCE_ACCESS_KEY')
+    circle_build = os.environ.get('CIRCLE_BUILD_NUM')
+    circle_node = os.environ.get('CIRCLE_NODE_INDEX')
+    
+    tunnel_id = "{build}-{node}".format(build=circle_build, node=circle_node)
+    context.sauce = sc.SauceClient(username, access_key)
+    sauce_url = "http://{username}:{access_key}@ondemand.saucelabs.com:80/wd/hub".format(username=username,
+                                                                                         access_key=access_key)
+
+    profile = webdriver.FirefoxProfile()
+    if "download_csv" in context.tags:
+        # Let csv files be downloaded automatically. Can be accessed using context.download_dir
+        context.download_dir = tempfile.mkdtemp()
+        profile.set_preference("browser.download.folderList", 2)
+        profile.set_preference("browser.download.manager.showWhenStarting", False)
+        profile.set_preference("browser.download.dir", context.download_dir)
+        profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
+        context.browser = webdriver.Firefox(firefox_profile=profile)  # Use local browser for this particular test
+    else:
+        desired_capabilities = DesiredCapabilities.FIREFOX.copy()
+        desired_capabilities["tunnelIdentifier"] = tunnel_id
+        context.browser = webdriver.Remote(desired_capabilities=desired_capabilities,
+                                           browser_profile=profile,
+                                           command_executor=sauce_url)
+
+def setup_local_browser(context):
+    """
+    Use local webdriver. Has side effects on the passed in behave context.
+
+    :param context: the behave context
+    :return: none, but has side effects. Adds property "browser" to context.
+    """
 
     profile = webdriver.FirefoxProfile()
     if "download_csv" in context.tags:
@@ -47,9 +85,19 @@ def before_scenario(context, scenario):
         profile.set_preference("browser.download.dir", context.download_dir)
         profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
 
-    browser = context.browser = webdriver.Firefox(firefox_profile=profile)
-    # ensure the window is reasonably sized.
-    browser.set_window_size(2560, 1920)
+    context.browser = webdriver.Firefox(firefox_profile=profile)
+
+# FYI: context.tags contains feature tags + scenario tags.
+def before_scenario(context, scenario):
+    database_setup(context)
+
+    if "registered_device" in context.tags:
+        do_fake_registration()
+
+    if os.environ.get("TRAVIS", False):  # Indicates we're running on remote build server
+        setup_sauce_browser(context)
+    else:
+        setup_local_browser(context)
 
     context.logged_in = False
     # A superuser now needs to exist or UI is blocked by a modal.
@@ -78,12 +126,25 @@ def after_scenario(context, scenario):
         shutil.rmtree(context.download_dir)
 
     try:
-        # Don't shut down the browser until all AJAX requests have completed.
-        while context.browser.execute_script("return (window.jQuery || { active : 0 }).active"):
+        if hasattr(context, "sauce"):
+            print("Link to your job: https://saucelabs.com/jobs/%s" % context.browser.session_id)
+            if context.scenario.status == "failed":
+                context.sauce.jobs.update_job(context.browser.session_id, passed=False)
+            else:
+                context.sauce.jobs.update_job(context.browser.session_id, passed=True)
+    except Exception as e:
+        if "404" in e.message:
+            print("Couldn't log the job... Error message:\n" + e.message)
+        else:
+            raise
+    finally:
+        try:
+            # Don't shut down the browser until all AJAX requests have completed.
+            while context.browser.execute_script("return (window.jQuery || { active : 0 }).active"):
+                pass
+            context.browser.quit()
+        except CannotSendRequest:
             pass
-        context.browser.quit()
-    except CannotSendRequest:
-        pass
 
     database_teardown(context)
 
