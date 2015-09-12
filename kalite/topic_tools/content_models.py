@@ -299,6 +299,7 @@ def search_topic_nodes(kinds=None, query=None, db=None, page=1, items_per_page=1
 @set_database
 def bulk_insert(items, db=None, **kwargs):
     if items:
+        items = map(parse_model_data, items)
         with Using(db, [Item]):
             with db.atomic():
                 for idx in range(0, len(items), 500):

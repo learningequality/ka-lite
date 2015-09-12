@@ -105,4 +105,4 @@ class Command(CronCommand):
         touched_video_ids += delete_objects_for_missing_videos(youtube_ids_in_filesystem, videos_marked_at_all)
 
         if touched_video_ids:
-            annotate_content_models(touched_video_ids)
+            annotate_content_models(ids=touched_video_ids)
