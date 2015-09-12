@@ -10,7 +10,7 @@ def step_impl(context):
 
 @when("I search for something")
 def step_impl(context):
-    search_for(context, "Basic Addition")
+    search_for(context, "Basic")
 
 @when("I click on the first option")
 def step_impl(context):
@@ -39,5 +39,9 @@ def step_impl(context):
 def search_for(context, text):
     search_field = find_id_with_wait(context, "search")
     search_field.click()
+    # Search autocomplete relies on a rather long loading AJAX request
+    # we wait for it to finish here before proceeding.
+    while context.browser.execute_script("return (window.jQuery || { active : 0 }).active"):
+        pass
     for key in text:
         search_field.send_keys(key)

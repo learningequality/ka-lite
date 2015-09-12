@@ -18,7 +18,12 @@ from optparse import make_option
 import kalite.version as version
 
 from kalite.topic_tools.content_models import get_content_items
+
+from kalite.topic_tools import settings as topic_tools_settings
+
 from kalite.contentload import settings
+
+from fle_utils.general import softload_json
 
 logging = django_settings.LOG
 
@@ -71,6 +76,17 @@ class Command(BaseCommand):
 
         # load the assessmentitems
         assessment_items = json.load(open(json_path))
+
+        # delete assessment items that aren't referenced in the exercises list (likely due to blacklisting)
+        dangling_ids = set(assessment_items.keys())
+        exercises = softload_json(topic_tools_settings.EXERCISES_FILEPATH)
+        for ex in exercises.values():
+            for item in ex.get("all_assessment_items", []):
+                item = json.loads(item)
+                if item.get("id") in dangling_ids:
+                    dangling_ids.remove(item.get("id"))
+        for item_id in dangling_ids:
+            del assessment_items[item_id]
 
         image_urls = find_all_image_urls(assessment_items)
         graphie_urls = find_all_graphie_urls(assessment_items)

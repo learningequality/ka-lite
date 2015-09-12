@@ -18,7 +18,7 @@ CONTENT_DATABASE_PATH = os.path.join(os.path.dirname(KHAN_ASSESSMENT_ITEM_DATABA
 
 DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = getattr(settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False)
 
-KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "perseus", "ke")
+KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke")
 
 TOPICS_FILEPATHS = {
     settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
