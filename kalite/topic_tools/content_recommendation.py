@@ -152,7 +152,7 @@ def get_exercise_prereqs(exercises):
     for exercise in exercises:
         prereqs += exercise.get('prerequisites', [])
 
-    return prereqs
+    return list(set(prereqs))
 
 
 def get_explore_recommendations(user, request):
