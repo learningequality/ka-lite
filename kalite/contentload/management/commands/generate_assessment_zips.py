@@ -347,7 +347,7 @@ CONTENT_BY_READABLE_ID = None
 def _get_content_by_readable_id(readable_id):
     global CONTENT_BY_READABLE_ID
     if not CONTENT_BY_READABLE_ID:
-        CONTENT_BY_READABLE_ID = dict([(c.get("slug"), c) for c in get_content_items() if c.get("slug")])
+        CONTENT_BY_READABLE_ID = dict([(c.get("readable_id"), c) for c in get_content_items() if c.get("readable_id")])
     try:
         return CONTENT_BY_READABLE_ID[readable_id]
     except KeyError:

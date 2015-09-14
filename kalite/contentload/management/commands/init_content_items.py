@@ -1,3 +1,8 @@
+"""
+Management command to take JSON files with metadata for the topic tree, exercise and content caches
+and turn them into a single database file
+"""
+
 import os
 
 from django.core.management import call_command
@@ -21,6 +26,15 @@ from django.utils.translation import gettext as _
 
 
 def generate_topic_tree_items(channel="khan", language="en"):
+    """
+    Read in all relevant JSON data, recurse over all nodes, and add in the data from the content caches
+    to fully flesh out those nodes in the topic tree.
+
+    Returns a list of topic tree nodes (topic, content, and exercise) and a mapping of children to parents.
+    Need to make this list now, as the pk for each item is not available at row creation in the database,
+    so it has to be added after the fact.
+    """
+
     flat_topic_tree = []
 
     parental_units = {}
@@ -32,6 +46,10 @@ def generate_topic_tree_items(channel="khan", language="en"):
     exercise_cache = softload_json(os.path.join(channel_data_path, "exercises.json"), logger=logging.debug, raises=False)
 
     def recurse_nodes(node, parent=""):
+        """
+        Recurse the nodes of the topic tree to trace parent child relations
+        and substitute full content nodes for denormed nodes.
+        """
 
         parental_units[node.get("path")] = parent
 
