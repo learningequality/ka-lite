@@ -91,12 +91,15 @@ def update_content_availability(content_list, language="en"):
 
                     if language == "en":
                         exercise_template = exercise_file
-                        update["available"] = True
+                        if exercise_template in exercise_templates:
+                            update["available"] = True
+                            update["template"] = exercise_template
                     else:
                         exercise_template = os.path.join(language, exercise_file)
                         if exercise_template in exercise_templates:
                             update["available"] = True
-                        update["template"] = exercise_template
+                            update["template"] = exercise_template
+
             elif content.get("kind") == "Topic":
                 # Ignore topics, as we only want to update their availability after we have updated the rest.
                 continue
@@ -146,6 +149,7 @@ def update_content_availability(content_list, language="en"):
             if content.get("available") and "available" not in update:
                 update["available"] = False
 
-        updates[content.get("id")] = update
+        # Path is the only unique key available.
+        updates[content.get("path")] = update
 
     return updates

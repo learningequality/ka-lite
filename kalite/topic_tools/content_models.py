@@ -336,9 +336,6 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
     content_models = get_content_items(ids=ids, channel=channel, language=language)
     updates_dict = update_content_availability(content_models)
 
-    for key, value in updates_dict.iteritems():
-        updates_dict[key] = parse_model_data(value)
-
     with Using(db, [Item]):
 
         with db.atomic() as transaction:
@@ -357,15 +354,19 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
                     recurse_availability_up_tree(parent, available)
 
 
-            for id, update in updates_dict.iteritems():
+            for path, update in updates_dict.iteritems():
                 if update:
                     # We have duplicates in the topic tree, make sure the stamping happens to all of them.
-                    items = Item.select().where(Item.id == id)
+                    items = Item.select().where(Item.path == path)
                     for item in items:
-                        for attr, val in update.iteritems():
-                            setattr(item, attr, val)
-                        item.save()
-                        recurse_availability_up_tree(item, update.get("available", False))
+                        if item.kind != "Topic":
+                            item_data = unparse_model_data(model_to_dict(item, recurse=False))
+                            item_data.update(update)
+                            item_data = parse_model_data(item_data)
+                            for attr, val in item_data.iteritems():
+                                setattr(item, attr, val)
+                            item.save()
+                            recurse_availability_up_tree(item, update.get("available", False))
 
 
 @set_database
@@ -378,7 +379,8 @@ def update_parents(db=None, parent_mapping=None, channel="khan", language="en", 
                 for key, value in parent_mapping.iteritems():
                     if value:
                         try:
-                            parent = Item.get(Item.id == value)
+                            # Only Topics can be parent nodes
+                            parent = Item.get(Item.id == value, Item.kind == "Topic")
                             item = Item.get(Item.path == key)
                         except DoesNotExist:
                             print(key, value, "Parent not found" if not parent else "Item not found")
