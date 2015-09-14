@@ -1,3 +1,17 @@
+"""
+This module acts as the only interface point between the main app and the database backend for the content.
+
+It exposes several convenience functions for accessing content, which fall into two broad categories:
+
+Topic functions - which return a limited set of fields, for use in rendering topic tree type structures.
+Content functions - which return a full set of fields, for use in rendering content or reasoning about it.
+
+In addition, content can either be returned in an exanded format, where all fields are directly represented on
+the dictionary, or with many of the fields collapsed into an 'extra_fields' key.
+
+All functions return the model data as a dictionary, in order to prevent external functions from having to know
+implementation details about the model class used in this module.
+"""
 import os
 import json
 
@@ -281,24 +295,54 @@ def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
 
 
 @set_database
-def search_topic_nodes(kinds=None, query=None, db=None, page=1, items_per_page=10, **kwargs):
+def search_topic_nodes(kinds=None, query=None, db=None, page=1, items_per_page=10, exact=True, **kwargs):
+    """
+    Search all nodes and return limited fields.
+    """
     if query:
         with Using(db, [Item]):
             if not kinds:
                 kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
             try:
-                topic_node = Item.get(fn.Lower(Item.title) == query, Item.kind.in_(kinds))
-                return [model_to_dict(topic_node)], True, None
+                topic_node = Item.select(
+                    Item.title,
+                    Item.description,
+                    Item.available,
+                    Item.kind,
+                    Item.id,
+                    Item.path,
+                    Item.slug,
+                ).where((fn.Lower(Item.title) == query) & (Item.kind.in_(kinds))).get()
+                if exact:
+                    # If allowing an exact match, just return that one match and we're done!
+                    return [model_to_dict(topic_node)], True, None
             except DoesNotExist:
-                # For efficiency, don't do substring matches when we've got lots of results
-                topic_nodes = Item.select().where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query))))
-                pages = topic_nodes.count()/items_per_page
-                topic_nodes = [item for item in topic_nodes.paginate(page, items_per_page).dicts()]
-                return topic_nodes, False, pages
+                topic_node = {}
+                pass
+            # For efficiency, don't do substring matches when we've got lots of results
+            topic_nodes = Item.select(
+                Item.title,
+                Item.description,
+                Item.available,
+                Item.kind,
+                Item.id,
+                Item.path,
+                Item.slug,
+                ).where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query))))
+            pages = topic_nodes.count()/items_per_page
+            topic_nodes = [item for item in topic_nodes.paginate(page, items_per_page).dicts()]
+            if topic_node:
+                # If we got an exact match, show it first.
+                topic_nodes = [model_to_dict(topic_node)] + topic_nodes
+            return topic_nodes, False, pages
 
 
 @set_database
 def bulk_insert(items, db=None, **kwargs):
+    """
+    Insert many rows into the database at once.
+    Limit to 500 items at a time for performance reasons.
+    """
     if items:
         items = map(parse_model_data, items)
         with Using(db, [Item]):
@@ -309,6 +353,10 @@ def bulk_insert(items, db=None, **kwargs):
 
 @set_database
 def get_or_create(item, db=None, **kwargs):
+    """
+    Wrapper around get or create that allows us to specify a database
+    and also parse the model data to compress extra fields.
+    """
     if item:
         with Using(db, [Item]):
             Item.get_or_create(parse_model_data(item))
@@ -316,6 +364,9 @@ def get_or_create(item, db=None, **kwargs):
 
 @set_database
 def update(update=None, select=None, **kwargs):
+    """
+    Think wrapper around update to select database.
+    """
     if update:
         with Using(db, [Item]):
             if select:
@@ -328,12 +379,20 @@ def update(update=None, select=None, **kwargs):
 
 @set_database
 def create_table(db=None, **kwargs):
+    """
+    Create a table in the database.
+    """
     with Using(db, [Item]):
         db.create_tables([Item])
 
 
 @set_database
 def annotate_content_models(db=None, channel="khan", language="en", ids=None, **kwargs):
+    """
+    Annotate content models that have the ids specified in a list.
+    Our ids can be duplicated at the moment, so this may be several content items per id.
+    When a content item has been updated, propagate availability up the topic tree.
+    """
     content_models = get_content_items(ids=ids, channel=channel, language=language)
     updates_dict = update_content_availability(content_models)
 
@@ -372,6 +431,11 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
 
 @set_database
 def update_parents(db=None, parent_mapping=None, channel="khan", language="en", **kwargs):
+    """
+    Convenience function to add parent nodes to other nodes in the database.
+    Needs a mapping from item path to parent id.
+    As only Topics can be parents, and we can have duplicate ids, we filter on both.
+    """
 
     if parent_mapping:
         with Using(db, [Item]):
