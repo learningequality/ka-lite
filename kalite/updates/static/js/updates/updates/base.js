@@ -4,6 +4,7 @@ require("jquery-ui-touch-punch");
 
 var messages = require("utils/messages");
 var api = require("utils/api");
+var sprintf = require("sprintf-js").sprintf;
 
 // Storage variables for this app
 var process_names = {};  // (string) indices into all arrays
