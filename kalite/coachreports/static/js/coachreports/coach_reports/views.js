@@ -24,7 +24,7 @@ var TimeSetView = BaseView.extend({
     template: require("./hbtemplates/datepicker.handlebars"),
 
     events: {
-        "click .setrange": "set_range"
+        "click .setrange:not([disabled])": "set_range"
     },
 
     initialize: function () {
@@ -61,7 +61,7 @@ var TimeSetView = BaseView.extend({
                 todayHighlight: true
             });
             $(this).datepicker().on('changeDate', function() {
-                self.$(".setrange").css("display", "table-cell");
+                self.$(".setrange").removeAttr("disabled");
             });
         });
     },
@@ -72,7 +72,7 @@ var TimeSetView = BaseView.extend({
             end_date: this.$("#end").datepicker("getDate")
         });
         this.model.trigger("set_time");
-        this.$(".setrange").hide();
+        this.$(".setrange").attr("disabled", "disabled");
         return false;
     }
 });
