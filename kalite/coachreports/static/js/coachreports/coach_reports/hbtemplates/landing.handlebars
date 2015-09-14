@@ -6,7 +6,7 @@
 				<h3>{{#if start_date}}{{ start_date }}{{#if end_date }} → {{ end_date }}{{/if}}{{else}}{{_ "This week" }}{{/if}}</h3>
 				<div class="circlechart">
 					<div id="full_circle1">
-						<p id="full_circle1_p">{{#if data.total_time_logged }}{{_ "Total:" }}<br />{{ data.total_time_logged }}{{else}}{{_ "N/A" }}{{/if}}</p>
+						<p id="full_circle1_p"></p>
 					</div>
 					<div class="charttext">
 						{{_ "Hours spent on content vs total hours logged" }}
