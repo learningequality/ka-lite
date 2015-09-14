@@ -514,6 +514,9 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.options = options;
 
+        this.data_model = options.data_model;
+        this.log_model = options.log_model;
+
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         window.statusModel.loaded.then(this.setup_exercise_environment);
