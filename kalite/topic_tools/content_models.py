@@ -142,7 +142,8 @@ def get_content_item(content_id=None, db=None, **kwargs):
     """
     if content_id:
         with Using(db, [Item]):
-            value = Item.get(Item.id == content_id)
+            # Ignore topics in case of id collision.
+            value = Item.get(Item.id == content_id, Item.kind != "Topic")
             return model_to_dict(value)
 
 

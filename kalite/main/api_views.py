@@ -15,6 +15,7 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 from kalite.topic_tools.content_models import get_topic_nodes, get_content_item, search_topic_nodes
 from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
 from kalite.facility.models import FacilityUser
+from kalite.distributed.api_views import get_messages_for_api_calls
 
 @api_handle_error_with_json
 def topic_tree(request, channel):
@@ -60,6 +61,7 @@ def content_item(request, channel, content_id):
         elif not request.is_logged_in:
             messages.warning(request, _("This content was not found! You must login as an admin/coach to download the content."))
 
+    content["messages"] = get_messages_for_api_calls(request)
 
     return JsonResponse(content)
 

@@ -116,11 +116,6 @@ var ContentWrapperView = BaseView.extend({
                 });
                 break;
 
-            case "Quiz":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    self.add_content_view(external("exercise").ExerciseQuizView);
-                });
-                break;
         }
     },
 
