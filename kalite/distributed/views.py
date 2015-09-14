@@ -153,7 +153,7 @@ def search(request):
 
     if query is None:
         query_error = _("Error: query not specified.")
-        match = []
+        matches = []
         pages = 0
 
 #    elif len(query) < 3:

@@ -60,15 +60,14 @@ var AutoCompleteView = BaseView.extend({
 
     select_item: function( event, ui ) {
         // When they click a specific item, just go there (if we recognize it)
-        var id = ui.item.data_value;
-        if (this._nodes && id in this._nodes && this._nodes[id]) {
+        if (ui.item.path) {
             if ("channel_router" in window) {
-                window.channel_router.navigate(this._nodes[id].path, {trigger: true});
+                window.channel_router.navigate(ui.item.path, {trigger: true});
             } else {
-                window.location.href = "/learn/" + this._nodes[id].path;
+                window.location.href = window.Urls.learn() + ui.item.path;
             }
         } else {
-            show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
+            messages.show_message("error", gettext("Unexpected error: no search data found for selected item. Please select another item."));
         }
         this.$("#search-box input").val("");
         return false;
