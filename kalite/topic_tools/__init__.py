@@ -218,7 +218,7 @@ def get_exercise_cache(force=False, language=None):
             elif exercise.get("uses_assessment_items", False):
                 available = False
                 items = []
-                for item in exercise.get("all_assessment_items", "[]"):
+                for item in exercise.get("all_assessment_items", []):
                     item = json.loads(item)
                     if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
                         items.append(item)
