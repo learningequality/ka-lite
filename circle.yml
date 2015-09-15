@@ -20,9 +20,7 @@ test:
     - kalite start --settings=kalite.project.settings.disk_based_cache --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
-    - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready:
-        background: true
-    - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
+    - sauce_connect.sh
     - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
         parallel: true
     - jshint kalite/*/static/js/*/
