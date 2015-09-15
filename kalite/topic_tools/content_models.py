@@ -149,15 +149,19 @@ def get_random_content(kinds=None, limit=1, db=None):
 
 
 @set_database
-def get_content_item(content_id=None, db=None, **kwargs):
+def get_content_item(content_id=None, db=None, topic=False, **kwargs):
     """
     Convenience function for returning a fully fleshed out content node for use in rendering content
     To save server processing, the extra_fields are fleshed out on the client side.
+    By default, don't return topic nodes to avoid id collisions.
     """
     if content_id:
         with Using(db, [Item]):
             # Ignore topics in case of id collision.
-            value = Item.get(Item.id == content_id, Item.kind != "Topic")
+            if topic:
+                value = Item.get(Item.id == content_id, Item.kind == "Topic")
+            else:
+                value = Item.get(Item.id == content_id, Item.kind != "Topic")
             return model_to_dict(value)
 
 

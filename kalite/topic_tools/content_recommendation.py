@@ -88,7 +88,7 @@ def get_next_recommendations(user, request):
         if exercise_id in exercise_parents_table:
             subtopic_id = exercise_parents_table[exercise_id]['subtopic_id']
             exercise = get_content_item(language=request.language, content_id=exercise_id)
-            exercise["topic"] = get_content_item(language=request.language, content_id=subtopic_id)
+            exercise["topic"] = get_content_item(language=request.language, content_id=subtopic_id, topic=True)
             final.append(exercise)
 
 
@@ -191,8 +191,8 @@ def get_explore_recommendations(user, request):
         if recommended_topic:
 
             final.append({
-                'suggested_topic': get_content_item(language=request.language, content_id=recommended_topic),
-                'interest_topic': get_content_item(language=request.language, content_id=subtopic_id),
+                'suggested_topic': get_content_item(language=request.language, content_id=recommended_topic, topic=True),
+                'interest_topic': get_content_item(language=request.language, content_id=subtopic_id, topic=True),
             })
 
             added.append(recommended_topic)
