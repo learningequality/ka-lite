@@ -20,7 +20,7 @@ test:
     - kalite start --settings=kalite.project.settings.disk_based_cache --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
-    - ./sauce_connect.sh
+    - sh sauce_connect.sh
     - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
         parallel: true
     - jshint kalite/*/static/js/*/
