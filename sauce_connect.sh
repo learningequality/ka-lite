@@ -1,4 +1,4 @@
-!#/bin/sh
+#!/bin/sh
 cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready &
 I=0
 while 1; do
