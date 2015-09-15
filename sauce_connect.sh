@@ -11,4 +11,4 @@ while 1; do
         killall --wait sc
         ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready &
     fi
-end
+done
