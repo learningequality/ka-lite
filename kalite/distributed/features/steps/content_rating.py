@@ -36,7 +36,7 @@ def impl(context):
 @then(u'I see a feedback form')
 def impl(context):
     feedback_form_container = find_id_with_wait(context, RATING_CONTAINER_ID, wait_time=60)
-    assert elem_is_visible_with_wait(context, feedback_form_container), "Rating form is not visible."
+    assert feedback_form_container.is_displayed(), "Rating form is not visible."
 
 @when(u'I alter a star rating')
 def impl(context):
