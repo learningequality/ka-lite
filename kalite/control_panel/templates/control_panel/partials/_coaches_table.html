@@ -47,7 +47,7 @@
                         <tbody>
                             {% for coach in coach_pages %}
                             <tr class="selectable" value="{{ coach.id }}" type="coaches">
-                                <td><input type="checkbox" value="#coaches"></td>
+                                <td><input class="coach-checkbox" type="checkbox" value="#coaches"></td>
                                 <td>
                                     {{ coach|format_name:"last_first" }}
 

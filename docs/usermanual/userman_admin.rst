@@ -300,7 +300,7 @@ Permanently Deleting Coaches
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: #coaches td input | Click a checkbox to select a coach.
+    :focus: .coach-checkbox | Click a checkbox to select a coach.
     :class: screenshot
 
 6. Press the "Delete Coaches" button.
