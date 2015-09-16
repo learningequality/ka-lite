@@ -440,6 +440,7 @@ Downloading Individual Videos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 After registering your device:
+
 1. Click the "Manage" tab at the top of the page.
 2. Click on the "Videos" tab.
 
