@@ -103,7 +103,7 @@ You will have two options:
     :class: screenshot
 
 How to register your device with online access to data
-########################################################
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. NOTE::
     You will need Internet access in order to perform these steps.
@@ -147,7 +147,7 @@ KA Lite assumes that you are going to be using the software primarily in one pla
     :user-role: admin
     :url: /
     :navigation-steps:
-    :focus: ul.nav li a.admin-only[href=\"/management/zone/\"] | Click here!
+    :focus: .manage-tab | Click here!
     :class: screenshot
 
 3. Make sure that the "Facilities" tab is selected.
