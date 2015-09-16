@@ -72,13 +72,15 @@ class Command(NoArgsCommand):
             dest='import_files',
             default=None,
             help=("Import a file structure as a topic tree and move over the appropriate content.\n"
-                  "The value of this argument is the path to the content to be imported.")),
+                  "The value of this argument is the path to the content to be imported."
+                  "Do not include a trailing slash.")),
         make_option('-d', '--data',
             action='store',
             dest='channel_data',
             default=None,
             help=("Add custom path to channel data files.\n"
-                  "Value of the argument is path to channel metadata file.")),
+                  "Value of the argument is path to directory containing channel metadata file(s?)."
+                  "Do not include trailing slash.")),
     )
 
     def handle(self, *args, **options):
