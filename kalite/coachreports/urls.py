@@ -1,5 +1,4 @@
 from django.conf.urls import patterns, url, include
-from django.conf import settings
 
 from . import api_urls
 

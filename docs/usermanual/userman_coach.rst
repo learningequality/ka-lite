@@ -15,7 +15,7 @@ The Report Page displays an overview of the learners and a tabular report.
 
 .. screenshot::
     :user-role: coach
-    :url: /coachreports/teach
+    :url: /coachreports/coach/zone/None
     :navigation-steps:
     :class: screenshot
 
@@ -33,7 +33,7 @@ Tabular Report
 A tabular report is a grid that can show how students are doing in specific subjects at a high level. As a coach, you can select which group of students you'd like to check progress for, and which subset of videos or exercises you'd like to see reports on. This allows you to easily identify which areas learners are struggling in, as well as which learners are doing well.
 
 Progress By Topic
-#################
+^^^^^^^^^^^^^^^^^
 
 1. Click on the "Show Tabular Report" button.
 2. A table should be generated with the data requested.
@@ -51,7 +51,7 @@ The color of the rectangles in the table indicate how that student is doing on a
 +----------------------+-------------------------------------------------------------+
 
 Detailed View
-#############
+^^^^^^^^^^^^^
 
 1. Click on the colored cells.
 2. A panel should open up below the cell to reveal the number of questions attempted and the actions made on each exercise. 
