@@ -27,8 +27,7 @@
 }
 
 #suggested-action-image-link-homepage {
-    display: block;
-    width: 100%;
+    margin: auto;
 }
 
 .suggested-action-title {
