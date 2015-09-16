@@ -66,17 +66,19 @@ class Command(NoArgsCommand):
         make_option('-c', '--channel',
             dest='channel',
             default="khan",
-            help='Create content files for a channel'),
+            help='Create content files for a channel. Value of argument is the name of the channel.'),
         make_option('-i', '--import',
             action='store',
             dest='import_files',
             default=None,
-            help="Import a file structure as a topic tree and move over the appropriate content"),
+            help=("Import a file structure as a topic tree and move over the appropriate content.\n"
+                  "The value of this argument is the path to the content to be imported.")),
         make_option('-d', '--data',
             action='store',
             dest='channel_data',
             default=None,
-            help="Add custom path to channel data files"),
+            help=("Add custom path to channel data files.\n"
+                  "Value of the argument is path to channel metadata file.")),
     )
 
     def handle(self, *args, **options):
