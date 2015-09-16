@@ -98,6 +98,8 @@ class Command(NoArgsCommand):
             if not channel_name or channel_name=="khan":
                 channel_name = os.path.basename(options["import_files"])
 
+        assert channel_name, "Channel name must not be empty. Make sure you used correct arguments."
+
         if options["channel_data"]:
             channel_tools.channel_data_path = options["channel_data"]
 
