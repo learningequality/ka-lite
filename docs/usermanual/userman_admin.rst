@@ -328,7 +328,7 @@ You can create groups within a facility. Each group can represent a classroom, a
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: #groups .add-new-table-item a
+    :focus: #add-a-new-group
     :class: screenshot
 
 6. Fill out the name of the group, and provide a description.
