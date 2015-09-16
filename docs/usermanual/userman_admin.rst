@@ -370,7 +370,7 @@ Moving a User to a New Group
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: #students td input :first | Click this checkbox.
+    :focus: .student-checkbox | Click this checkbox.
     :class: screenshot
 
 3. In the dropbox, select the group you would like to move the user to.
