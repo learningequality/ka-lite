@@ -410,7 +410,7 @@ For each group, you should be able to view some statistics.
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: td .group-name | Click here to view group statistics!
+    :focus: a.group-name | Click here to view group statistics!
     :class: screenshot
 
 3. The statistics for the group should be displayed at the top of the page.
