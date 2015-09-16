@@ -1,6 +1,6 @@
 
 Admininistrator User Manual
-============================
+===========================
 **Who is an "administrator"?**
 
 A person who :
@@ -9,26 +9,26 @@ A person who :
     * can create coach logins, Learner logins, download videos and language packs
 
 Administrator Glossary
--------------------------------------------
+----------------------
 For users that choose to register online, there are some important terms to familiarize yourself with so that you understand how the flow of data works between installations and the online data hub.
 
 **Sharing Network**
-	A Sharing Network is a group of devices that share user data. This data is synced to the central server when an Internet connection is available, and then synced down onto other devices in the same Sharing Network.
+    A Sharing Network is a group of devices that share user data. This data is synced to the central server when an Internet connection is available, and then synced down onto other devices in the same Sharing Network.
 
 **Organization**
-	An organization is a group of people responsible for administering a set of Sharing Networks. An organization can have multiple administrators and manage multiple sharing networks.
+    An organization is a group of people responsible for administering a set of Sharing Networks. An organization can have multiple administrators and manage multiple sharing networks.
 
 **Facility**
-	A facility is the physical space in which a device is located (e.g. a school or a computer lab in a community center). Learner, coach, and admin accounts are associated with a particular facility.
+    A facility is the physical space in which a device is located (e.g. a school or a computer lab in a community center). Learner, coach, and admin accounts are associated with a particular facility.
 
 **Device**
-	A device should be able to run a KA Lite server (most computers) and other devices to be used as clients. One common configuration is using a Raspberry Pi or other inexpensive computer as a server and relatively cheap tablets as client devices. Tablets can access the servers through an access point, such as a Wi-Fi dongle, or some other networking device such as a router.
+    A device should be able to run a KA Lite server (most computers) and other devices to be used as clients. One common configuration is using a Raspberry Pi or other inexpensive computer as a server and relatively cheap tablets as client devices. Tablets can access the servers through an access point, such as a Wi-Fi dongle, or some other networking device such as a router.
 
 **Web Browser**
     A program that retrieves and presents information resources on the World Wide Web. Popular web browsers include Internet Explorer, Google Chrome, Mozilla Firefox, and Safari.
 
 Running the KA Lite Server
----------------------------
+--------------------------
 At the very end of the setup, you have been prompted to run kalite. Make note of the command to run the server, which was also mentioned. Usually it's just ``kalite start``.
 
 
@@ -51,7 +51,7 @@ In order to access KA Lite from another machine, please enter the IP address tha
 
 
 Setting up KA Lite
--------------------
+------------------
 Once you have successfully installed KA Lite, the installation script should give you a URL (http://127.0.0.1:8008/) to visit so that you can open KA Lite and login for the first time.
 
 Copy and paste the URL into a web browser. The KA Lite application should show up. Then, login to KA Lite using the username and password you created during the installation process.
@@ -66,7 +66,7 @@ Copy and paste the URL into a web browser. The KA Lite application should show u
 Once you’ve logged in, the next step in the setup process is registering your device with the KA Lite Hub.
 
 Registering Your Device with the Hub
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By registering your device with FLE, you can sync data back with our central data hub. This is useful for many reasons:
 
@@ -133,11 +133,11 @@ Once you have filled out the form and submitted it, you will be sent an activati
 
 
 Post Registration Setup
--------------------------------------------
+-----------------------
 Now that you have registered successfully, it's time to configure your local KA Lite installation to suit your needs. If any terms like 'facility' or 'device' become confusing, feel free to reference the `Administrator Glossary`_ for a quick reminder.
 
 Create a Facility
--------------------------
+-----------------
 KA Lite assumes that you are going to be using the software primarily in one place. This could be a school, a home, a community center, etc. We call this place a “facility”, and use it to help differentiate users who are syncing back data with our central data hub. In order to create a facility, follow the steps below.
 
 1. Log in to KA Lite.
@@ -173,7 +173,7 @@ KA Lite assumes that you are going to be using the software primarily in one pla
 7. Once the information has been saved, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully saved your new facility.
 
 Delete a Facility
--------------------------
+-----------------
 1. Log in to KA Lite.
 2. Click the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -198,11 +198,11 @@ Delete a Facility
 6. If your delete is successful, you will be redirected back to the "Facilities" page, where you will see a message indicating that you have successfully deleted the facility.
 
 User Management
--------------------------
+---------------
 Coaches and learners are the other types of users that KA Lite supports. In order for them to be able to login, you need to create accounts for them.
 
 Adding Learners
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -236,7 +236,7 @@ Adding Learners
 
 
 Permanently Deleting Learners
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -262,7 +262,7 @@ Permanently Deleting Learners
 7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
 Adding Coaches
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -289,7 +289,7 @@ Adding Coaches
 8. If the user was successfully created, the page will reload with a message indicating that you have created the user.
 
 Permanently Deleting Coaches
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -315,7 +315,7 @@ Permanently Deleting Coaches
 7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
 Adding a Group
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 You can create groups within a facility. Each group can represent a classroom, a study group, or any other way you would like to group Learners. To create a group, follow the instructions below:
 
 1. Log in to KA Lite.
@@ -344,7 +344,7 @@ You can create groups within a facility. Each group can represent a classroom, a
 8. You should be redirected back to the page for the facility. If the group was successfully created, you will see it listed under the "Learner Groups" section.
 
 Deleting a Group
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -362,7 +362,7 @@ Deleting a Group
 7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
 Moving a User to a New Group
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 1. Navigate to the page for the facility the user belongs to.
 2. Under the "Learners" header, select the Learner you would like to move by clicking in the checkbox to the left of the Learner name.
 
@@ -394,13 +394,13 @@ Moving a User to a New Group
 5. The page will refresh, with a message at the top indicating a successful move.
 
 Removing Users from a Group
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If you'd like to remove a user from a group without permanently deleting the user, please follow the instructions below:
 
 #. Follow the same instructions as for "Moving a User to a New Group", but select "Ungrouped" from the dropdown menu.
 
 Group Summary Statistics
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 For each group, you should be able to view some statistics.
 
 1. Navigate to the Learner Groups section of the facility you wish to look at.
@@ -416,7 +416,7 @@ For each group, you should be able to view some statistics.
 3. The statistics for the group should be displayed at the top of the page.
 
 Edit User Information
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 #. Navigate to the page for the facility that the user belongs in.
 #. Find the user you would like to edit.
 #. Click the blue pencil |bluepencil| icon next to the name of the user that you would like to edit.
@@ -551,13 +551,13 @@ To delete language packs:
 .. _restarting-your-server:
 
 Restarting Your Server
------------------------
+----------------------
 If you have made some configuration changes (such as changing the filepath to your video content to your liking), or if you feel the need to reboot your KA Lite system, you may want to restart your server. Please note that this will cause KA Lite to become inaccessible to any users. However, this will not delete any user accounts or information that you have configured during set up.
 
 This process varies, depending on which OS you are running the KA Lite Server on.
 
 Restarting Your Server: Windows
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In the system tray, right click on the KA Lite icon. Click the "Stop Server" item in the context menu. Right click on the KA Lite icon in the system tray again, and click "Start Server". If the option is not clickable, wait a while and try again or restart your computer.
 
