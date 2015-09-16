@@ -264,10 +264,13 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
             styles = focus['styles']
             try:
                 for key, value in styles.iteritems():
-                    self.browser.execute_script('$("%s").css("%s", "%s");' % (selector, key, value))
+                    self.browser.execute_script('$("{selector}").css("{key}", "{value}");'
+                                                .format(selector=selector, key=key, value=value))
                 if note:
                     note = re.sub(r"\\s", " ", note)
-                    self.browser.execute_script("$('%s').qtip({content:{text:\"%s\"},show:{ready:true,delay:0,effect:false}})" % (selector, note))
+                    self.browser.execute_script(
+                        ("$('{selector}:first').qtip({{content:{{text:\"{note}\"}},"
+                         "show:{{ready:true,delay:0,effect:false}} }})").format(selector=selector, note=note))
             except WebDriverException as e:
                 log.error("Error taking screenshot:")
                 log.error(str(e))
