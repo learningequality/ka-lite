@@ -388,7 +388,7 @@ Moving a User to a New Group
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: #students .movegroup
+    :focus: #move-learner-group-btn
     :class: screenshot
 
 5. The page will refresh, with a message at the top indicating a successful move.
