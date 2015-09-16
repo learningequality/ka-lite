@@ -256,7 +256,7 @@ Permanently Deleting Learners
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: #students .form-inline .form-group:last-child
+    :focus: #delete-learners-btn
     :class: screenshot
 
 7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
