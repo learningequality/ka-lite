@@ -66,7 +66,7 @@ Copy and paste the URL into a web browser. The KA Lite application should show u
 Once you’ve logged in, the next step in the setup process is registering your device with the KA Lite Hub.
 
 Registering Your Device with the Hub
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+____________________________________
 
 By registering your device with FLE, you can sync data back with our central data hub. This is useful for many reasons:
 
@@ -103,7 +103,7 @@ You will have two options:
     :class: screenshot
 
 How to register your device with online access to data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+______________________________________________________
 
 .. NOTE::
     You will need Internet access in order to perform these steps.
@@ -202,7 +202,7 @@ User Management
 Coaches and learners are the other types of users that KA Lite supports. In order for them to be able to login, you need to create accounts for them.
 
 Adding Learners
-^^^^^^^^^^^^^^^
+_______________
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -236,7 +236,7 @@ Adding Learners
 
 
 Permanently Deleting Learners
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_____________________________
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -262,7 +262,7 @@ Permanently Deleting Learners
 7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
 Adding Coaches
-^^^^^^^^^^^^^^
+______________
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -289,7 +289,7 @@ Adding Coaches
 8. If the user was successfully created, the page will reload with a message indicating that you have created the user.
 
 Permanently Deleting Coaches
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+____________________________
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -315,7 +315,7 @@ Permanently Deleting Coaches
 7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
 Adding a Group
-^^^^^^^^^^^^^^
+______________
 You can create groups within a facility. Each group can represent a classroom, a study group, or any other way you would like to group Learners. To create a group, follow the instructions below:
 
 1. Log in to KA Lite.
@@ -344,7 +344,7 @@ You can create groups within a facility. Each group can represent a classroom, a
 8. You should be redirected back to the page for the facility. If the group was successfully created, you will see it listed under the "Learner Groups" section.
 
 Deleting a Group
-^^^^^^^^^^^^^^^^
+________________
 1. Log in to KA Lite.
 2. Click on the "Manage" tab at the top of the page.
 3. Make sure that the "Facilities" tab is selected.
@@ -362,7 +362,7 @@ Deleting a Group
 7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
 
 Moving a User to a New Group
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+____________________________
 1. Navigate to the page for the facility the user belongs to.
 2. Under the "Learners" header, select the Learner you would like to move by clicking in the checkbox to the left of the Learner name.
 
@@ -394,13 +394,13 @@ Moving a User to a New Group
 5. The page will refresh, with a message at the top indicating a successful move.
 
 Removing Users from a Group
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+___________________________
 If you'd like to remove a user from a group without permanently deleting the user, please follow the instructions below:
 
 #. Follow the same instructions as for "Moving a User to a New Group", but select "Ungrouped" from the dropdown menu.
 
 Group Summary Statistics
-^^^^^^^^^^^^^^^^^^^^^^^^
+________________________
 For each group, you should be able to view some statistics.
 
 1. Navigate to the Learner Groups section of the facility you wish to look at.
@@ -416,7 +416,7 @@ For each group, you should be able to view some statistics.
 3. The statistics for the group should be displayed at the top of the page.
 
 Edit User Information
-^^^^^^^^^^^^^^^^^^^^^
+_____________________
 #. Navigate to the page for the facility that the user belongs in.
 #. Find the user you would like to edit.
 #. Click the blue pencil |bluepencil| icon next to the name of the user that you would like to edit.
@@ -437,7 +437,7 @@ Now that you've created a facility and user accounts, it's time to add video con
 
 
 Downloading Individual Videos
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_____________________________
 
 After registering your device:
 
@@ -459,7 +459,7 @@ After registering your device:
 .. _bulk-video-downloads:
 
 Downloading Videos in Bulk
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+__________________________
 
 The full set of videos, if downloaded through the KA Lite interface, take over 150GB.
 If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
@@ -480,7 +480,7 @@ On Windows, navigate to something like ``C:\Documents and Settings\<username>\.k
 
 
 Adding assessment items (exercises)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+___________________________________
 
 If you skipped the step for adding assessment items during install, run the following command (beware it can take a while, the download size is over 500 MB):
 
@@ -497,7 +497,7 @@ KA Lite supports internationalization. You can download language packs for your 
 .. warning:: Remember that you **MUST** restart your server after every language pack download or update. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
 
 Download Language Packs
-^^^^^^^^^^^^^^^^^^^^^^^
+_______________________
 To download language packs:
 
 1. From the "Manage" page, click on the "Language" tab.
@@ -534,7 +534,7 @@ To download language packs:
 5. After the server restart, learners and coaches will be able to switch their language to any of the installed language packs. Their default will be the default that you set by clicking on "Set as default".
 
 Delete Language Packs
-^^^^^^^^^^^^^^^^^^^^^
+_____________________
 To delete language packs:
 
 #. Log in as the administrator.
@@ -558,13 +558,13 @@ If you have made some configuration changes (such as changing the filepath to yo
 This process varies, depending on which OS you are running the KA Lite Server on.
 
 Restarting Your Server: Windows
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_______________________________
 
 In the system tray, right click on the KA Lite icon. Click the "Stop Server" item in the context menu. Right click on the KA Lite icon in the system tray again, and click "Start Server". If the option is not clickable, wait a while and try again or restart your computer.
 
 
 Restarting Your Server: Linux
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_____________________________
 #. Open up your terminal. For most Linux distributions, you can do this by going to **Menu -> Accessories -> Terminal** or **Applications menu -> System -> Terminal.**
 
 #. Type in ``kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
@@ -572,7 +572,7 @@ Restarting Your Server: Linux
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
 Restarting Your Server: Mac
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+___________________________
 #. Open up your terminal. You may do this by navigating to the magnifying glass |magglass| at the top right corner of your screen, and typing in "Terminal", then hitting "Enter" on your keyboard.
 
 .. |magglass| image:: magglass.png
@@ -600,7 +600,7 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 .. warning:: Please follow these instructions carefully! Customizing the server incorrectly can break your installation. It can be very hard to find and undo the error.
 
 Running KA Lite with your own settings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+______________________________________
 
 In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate something like
 ``C:\Documents and Settings\<username>\.kalite``). That file is where you should
@@ -614,7 +614,7 @@ module by specifying ``kalite <command> --settings=my_settings_module``.
 
 
 Changing base settings
-^^^^^^^^^^^^^^^^^^^^^^
+______________________
 
 By default, ``/home/user/.kalite/settings.py`` will load ``kalite.project.settings.base`` which are the basic settings. But you can also load Raspberry Pi settings by changing the file to read something like::
 
@@ -629,7 +629,7 @@ Available settings
 See above for instructions on where to configure these settings.
 
 Most common settings
-^^^^^^^^^^^^^^^^^^^^
+____________________
 
 * ``DEBUG = <True or False> (default = False)``
   Enables debug mode. In case you run into technical issues, enable this setting before troubleshooting / reporting.
@@ -663,7 +663,7 @@ Most common settings
 
 
 User restrictions
-^^^^^^^^^^^^^^^^^
+_________________
 
 * ``LOCKDOWN = <True or False> (default = False)``
   With this setting, users must be logged in order to access videos & exercises
@@ -672,7 +672,7 @@ User restrictions
 
 
 Online Synchronization
-^^^^^^^^^^^^^^^^^^^^^^
+______________________
 
 * ``USER_LOG_MAX_RECORDS = <desired maxium for user log records> (default = 0)``
   When this is set to any non-zero number, we will record (and sync for online tracking) user login activity, summarized for every month (which is configurable, see below).  Default is set to 0, for efficiency purposes--but if you want to record this, setting to 1 is enough!  The # of records kept are not "summary" records, but raw records of every login.  These "raw" data are not synced, but are kept on your local machine only--there's too many of them.  Currently, we have no specific report to view these data (though we may have for v0.10.1)
