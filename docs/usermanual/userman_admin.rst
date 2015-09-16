@@ -309,7 +309,7 @@ Permanently Deleting Coaches
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: #coaches div.row div.col-md-2 button
+    :focus: #delete-coaches
     :class: screenshot
 
 7. You will be prompted with a confirmation of your deletion. Press "OK" to proceed with the deletion.
