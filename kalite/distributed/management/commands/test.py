@@ -29,5 +29,33 @@ class Command(TestCommand):
             dest='no_bdd',
             default=False,
             help="Don't run the behave tests."
-        )
+        ),
+        make_option(
+            '--test-cli',
+            action='store_true',
+            dest='test_cli',
+            default=False,
+            help=("Don't execute tests, just test out that management commands are parsed correctly."
+                  "Needs to be used in conjunction with other cl arguments.")
+        ),
+        make_option(
+            '-z', '--fake-arg',
+            action='store',
+            dest='fake_arg',
+            help="Echo the argument. Used in conjunction with --test-cli to test cl arguments are parsed well."
+        ),
+        make_option(
+            '-y', '--fake-arg2',
+            action='store',
+            dest='fake_arg2',
+            help="Echo the argument. Used in conjunction with --test-cli to test cl arguments are parsed well."
+        ),
     )
+
+    def handle(self, *test_labels, **options):
+        if not options['test_cli']:
+            super(Command, self).handle(*test_labels, **options)
+        else:
+            print(options['fake_arg'])
+            if options['fake_arg2']:
+                print(options['fake_arg2'])
