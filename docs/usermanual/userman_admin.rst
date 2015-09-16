@@ -502,7 +502,7 @@ To download language packs:
 
 1. From the "Manage" page, click on the "Language" tab.
 
-.. |language-tab-highlight| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/
     :navigation-steps:
@@ -545,7 +545,7 @@ To delete language packs:
     :user-role: admin
     :url: /update/languages/
     :navigation-steps:
-    :focus: #delete-language-button button | Use the buttons in this column to delete language packs.
+    :focus: .delete-language-button button | Use the buttons in this column to delete language packs.
     :class: screenshot
     :registered: true
 
