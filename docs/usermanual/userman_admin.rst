@@ -273,7 +273,7 @@ Adding Coaches
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: #coaches .add-new-table-item a
+    :focus: #add-a-new-coach
     :class: screenshot
 
 6. You will be redirected to a page that says "Add a new coach". Fill in all the information. The facility dropdown defaults to the facility you selected in the previous steps.
