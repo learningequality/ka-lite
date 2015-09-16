@@ -74,7 +74,7 @@ channel_data = {
 
 whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_data)
 
-def build_full_cache(items, id_key="id"):
+def build_full_cache(items, id_key="id", ids=None):
     """
     Uses list of items retrieved from building the topic tree
     to create an item cache with look up keys.
