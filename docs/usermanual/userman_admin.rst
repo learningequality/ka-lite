@@ -247,7 +247,7 @@ Permanently Deleting Learners
     :user-role: admin
     :url: /management/zone/None/facility/None/management/
     :navigation-steps:
-    :focus: #students td input | You can check one or more of these checkboxes.
+    :focus: .student-checkbox | You can check one or more of these checkboxes.
     :class: screenshot
 
 6. Press the "Delete Learners" button.

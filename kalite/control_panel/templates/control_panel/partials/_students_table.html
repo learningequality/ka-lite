@@ -61,7 +61,7 @@
                     <tbody>
                         {% for student in student_pages %}
                             <tr class="selectable" value="{{ student.id }}" type="students">
-                                <td><input type="checkbox" value="#students" autocomplete="off"/></td>
+                                <td><input class="student-checkbox" type="checkbox" value="#students" autocomplete="off"/></td>
                                 <td>
                                     {{ student|format_name:"last_first" }}
                                 </td>
