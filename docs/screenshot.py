@@ -153,7 +153,10 @@ def _parse_nav_steps(arg_str):
         An explanation of navigation steps follows. Some examples can be found
         in ss_examples.rst in this directory.
 
-        Selector is a single css selector (no whitespace allowed).
+        Selector is a single selector (no whitespace allowed).
+            If it starts with '#', we'll attempt to find the given id.
+            If it starts with '.', we'll attempt to find the given class.
+            If it starts with '//', we'll attempt to find by xpath. Avoid absolute xpaths.
             "NEXT", which just sends a tab keystroke
             "SAME", which just stays focused on the element from the last action
         Where action could be one of "click", "send_keys", or "submit":

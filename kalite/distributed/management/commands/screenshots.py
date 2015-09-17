@@ -203,8 +203,8 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         if not self.admin_user:
             raise Exception("==> Did not successfully setup database!")
 
-        Facility.initialize_default_facility("Silly Facility")  # Default facility required to avoid pernicious facility selection page
-        facility = self.facility = Facility.objects.get(name="Silly Facility")
+        Facility.initialize_default_facility("Facility Dos")  # Default facility required to avoid pernicious facility selection page
+        facility = self.facility = Facility.objects.get(name="Facility Dos")
         self.create_student(username=self.student_username, password=self.default_password, facility=facility)
         self.create_teacher(username=self.coach_username, password=self.default_password, facility=facility)
 
@@ -317,6 +317,8 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
                             kwargs = {'id': key[1:]}
                         elif key[0] == ".":
                             kwargs = {'css_class': key[1:]}
+                        elif key[0:2] == "//":
+                            kwargs = {'xpath': key}
                         else:
                             kwargs = {'name': key}
                         kwargs.update({'max_wait': 60})

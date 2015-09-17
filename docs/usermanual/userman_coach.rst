@@ -50,6 +50,7 @@ This allows you to easily identify which areas learners are struggling in, as we
     :user-role: coach
     :url: /coachreports/coach/zone/None
     :navigation-steps: #show_tabular_report click
+    :focus: #detailed_report_view div
     :class: screenshot
 
 Progress By Topic

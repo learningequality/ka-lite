@@ -78,6 +78,7 @@ class BrowserActionMixins(object):
         name = kwargs.get("name", None)
         tag_name = kwargs.get("tag_name", None)
         css_class = kwargs.get("css_class", None)
+        xpath = kwargs.get("xpath", None)
         max_wait = kwargs.get("max_wait", FIND_ELEMENT_TIMEOUT)
         try:
             if not elem:
@@ -89,6 +90,8 @@ class BrowserActionMixins(object):
                     elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.TAG_NAME, tag_name)))
                 elif css_class:
                     elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.CLASS_NAME, css_class)))
+                elif xpath:
+                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.XPATH, xpath)))
         except TimeoutException:
             raise KALiteTimeout("browser_activate_element timed out with keyword arguments: {0}".format(kwargs))
         elem.click()
