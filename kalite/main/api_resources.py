@@ -10,6 +10,7 @@ from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
 from kalite.topic_tools import get_exercise_data, get_content_data
+from kalite.topic_tools.settings import CHANNEL
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -232,7 +233,7 @@ class Content:
         # TODO(MCGallaspy) but given that there's only one active channel for 0.13 initially (khan)
         # TODO(MCGallaspy) I guess it's okay. In a multiple available channel situation then we should
         # TODO(MCGallaspy) probably get the source attribute from the content data itself.
-        self.source = kwargs.pop("source", settings.CHANNEL)
+        self.source = kwargs.pop("source", CHANNEL)
 
 
 class ContentResource(Resource):
