@@ -29,6 +29,7 @@ from django.conf import settings as django_settings
 logging = django_settings.LOG
 
 from django.contrib import messages
+from django.core.management import call_command
 from django.db import DatabaseError
 from django.utils.translation import gettext as _
 
@@ -291,17 +292,17 @@ def get_content_cache(force=False, annotate=False, language=None):
     if CONTENT.get(language) is None:
         content = None
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(
-                cache_file_path("content_{0}.json".format(language)),
-                logger=logging.debug,
-                raises=False
-            )
+            content = softload_sqlite_cache(settings.CONTENT_CACHE_FILEPATH)
         if content:
             CONTENT[language] = content
             return CONTENT[language]
         else:
-            CONTENT[language] = (softload_sqlite_cache(settings.CONTENT_CACHE_FILEPATH) or
-                                 softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False))
+            if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+                call_command("create_content_db")
+                content = softload_sqlite_cache(settings.CONTENT_CACHE_FILEPATH)
+            else:
+                content = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+            CONTENT[language] = content
             annotate = True
 
     if annotate:
@@ -327,7 +328,7 @@ def get_content_cache(force=False, annotate=False, language=None):
                         else:
                             subtitle_langs[filename] = [lc]
 
-        for content in CONTENT[language].values():
+        for key, content in CONTENT[language].iteritems():
             default_thumbnail = create_thumbnail_url(content.get("id"))
             dubmap = i18n.get_id2oklang_map(content.get("id"))
             if dubmap:
@@ -375,10 +376,11 @@ def get_content_cache(force=False, annotate=False, language=None):
                 content["title"] = _(content["title"])
                 content["description"] = _(content.get("description")) if content.get("description") else ""
 
+            CONTENT[language][key] = content
+
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(cache_file_path("content_{0}.json".format(language)), "w") as f:
-                    json.dump(CONTENT[language], f)
+                CONTENT[language].commit()
             except IOError as e:
                 logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
 
