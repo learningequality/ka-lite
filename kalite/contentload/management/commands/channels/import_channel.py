@@ -150,7 +150,8 @@ def construct_node(location, parent_path, node_cache, channel):
     if os.path.isdir(location):
         node.update({
             "kind": "Topic",
-            "id": slug,
+            # Hardcode id for root node as "root"
+            "id": slug if parent_path else "root",
             "children": sorted([construct_node(os.path.join(location, s), current_path, node_cache, channel) for s in os.listdir(location)], key=lambda x: (not x.get("topic_spotlight", False) if x else True, x.get("title", "") if x else "")),
         })
 

@@ -29,6 +29,7 @@ from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
+from kalite.topic_tools.settings import CHANNEL, LOAD_KHAN_RESOURCES
 import json
 
 def check_setup_status(handler):
@@ -75,8 +76,8 @@ def learn(request):
     Render the all-in-one sidebar navigation/content-viewing app.
     """
     context = {
-        "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
-        "channel": settings.CHANNEL,
+        "load_perseus_assets": LOAD_KHAN_RESOURCES,
+        "channel": CHANNEL,
         "pdfjs": settings.PDFJS,
     }
     return context

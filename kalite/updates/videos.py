@@ -8,7 +8,9 @@ from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
 
-REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "video_file_sizes.json")
+from kalite.topic_tools import settings as topic_tools_settings
+
+REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(topic_tools_settings.CHANNEL_DATA_PATH, "video_file_sizes.json")
 AVERAGE_VIDEO_SIZE = 21135632
 
 REMOTE_VIDEO_SIZES = None
