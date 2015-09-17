@@ -461,6 +461,7 @@ class Command(BaseCommand):
         # Now deploy the static files
         logging.info("Copying static media...")
         call_command("collectstatic", interactive=False, verbosity=0)
+        call_command("collectstatic_js_reverse", interactive=False)
 
         # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
