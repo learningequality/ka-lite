@@ -84,6 +84,10 @@ else:
     filedir = os.path.dirname(__file__)
     sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
 
+if sys.version_info >= (3,):
+    sys.stderr.write("Detected incompatible Python version %s.%s.%s\n" % sys.version_info[:3])
+    sys.stderr.write("Please set the KALITE_PYTHON environment variable to a Python 2.7 interpreter.\n")
+    sys.exit(1)
 
 import httplib
 import re
