@@ -2,8 +2,7 @@ var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 var _V_ = require("video.js");
-require("video.js/dist/video-js/video-js.less");
-require("../../../css/distributed/video-js-override.css");
+require("../../../css/distributed/video-js-override.less");
 
 var ContentBaseView = require("content/baseview");
 

@@ -26,8 +26,7 @@ def dedupe_paths(topic_tree):
                             item["slug"] = item["slug"] + "_{i}".format(i=i)
                             item["path"] = parent_path + item["slug"] + "/"
                             i += 1
-        elif "Topic" in kinds:
-            for child in children:
-                recurse_nodes(child, node.get("path"))
+        for child in children:
+            recurse_nodes(child, node.get("path"))
 
     recurse_nodes(topic_tree)

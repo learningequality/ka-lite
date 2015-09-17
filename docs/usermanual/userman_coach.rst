@@ -27,9 +27,10 @@ Overview
 1. Select the "Teach" tab at the top of the page.
 2. Select the appropriate facility from the drop down menu to view reports for a specific facility.
 3. Select a group from the drop down menu to view the overivew for a specific group or leave the group as is.
-4. The display should refresh with the data requested.
+4. The display should refresh with the data requested, for student activity from the previous week onwards.
+5. To view data over a longer period, select the start and end date using the time picker, and click the 'refresh' icon next to the time picker.
 
-The overview will display the activity of the group: the total hours logged, the average progress in exercises, the total exercises attempted, and the total time spent on content.
+The overview will display the activity of the group: the percentage of hours logged on content versus exercises, the average progress in exercises, and the total exercises attempted.
 
 Tabular Report
 ^^^^^^^^^^^^^^
