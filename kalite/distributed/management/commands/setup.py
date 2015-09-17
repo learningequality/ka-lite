@@ -28,6 +28,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 import kalite
 from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
+from kalite.topic_tools.settings import CHANNEL
 
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
@@ -39,7 +40,7 @@ import warnings
 
 
 # for extracting assessment item resources
-ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/{version}/content/{channel}_assessment.zip".format(version=SHORTVERSION, channel=settings.CHANNEL)
+ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/{version}/content/{channel}_assessment.zip".format(version=SHORTVERSION, channel=CHANNEL)
 
 
 def raw_input_yn(prompt):
@@ -137,7 +138,7 @@ def get_assessment_items_filename():
             return False
 
     def find_recommended_file():
-        filename_guess = "{channel}_assessment.zip".format(channel=settings.CHANNEL)
+        filename_guess = "{channel}_assessment.zip".format(channel=CHANNEL)
         curdir = os.path.abspath(os.curdir)
         pardir = os.path.abspath(os.path.join(curdir, os.pardir))
         while curdir != pardir:

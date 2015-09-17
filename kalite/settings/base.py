@@ -150,22 +150,9 @@ else:
 
 _data_path_channels = os.path.join(_data_path, 'data')
 
-CHANNEL = getattr(local_settings, "CHANNEL", "khan")
-
 CONTENT_DATA_PATH = getattr(local_settings, "CONTENT_DATA_PATH", _data_path_channels)
-CHANNEL_DATA_PATH = os.path.join(CONTENT_DATA_PATH, CHANNEL)
 
 CONTENT_DATA_URL = getattr(local_settings, "CONTENT_DATA_URL", "/data/")
-
-# Parsing a whole JSON file just to load the settings is not nice
-try:
-    CHANNEL_DATA = json.load(open(os.path.join(CHANNEL_DATA_PATH, "channel_data.json"), 'r'))
-except IOError:
-    CHANNEL_DATA = {}
-
-# Whether we wanna load the perseus assets. Set to False for testing for now.
-LOAD_KHAN_RESOURCES = getattr(local_settings, "LOAD_KHAN_RESOURCES", CHANNEL == "khan")
-
 
 ###################################################
 # USER DATA

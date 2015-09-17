@@ -42,8 +42,8 @@ from . import settings
 CACHE_VARS = []
 
 
-if not os.path.exists(django_settings.CHANNEL_DATA_PATH):
-    logging.warning("Channel {channel} does not exist.".format(channel=django_settings.CHANNEL))
+if not os.path.exists(settings.CHANNEL_DATA_PATH):
+    logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
 
 def cache_file_path(basename):
@@ -68,7 +68,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
         language = "pt"
 
     if not channel:
-        channel = django_settings.CHANNEL
+        channel = settings.CHANNEL
 
     if not language:
         language = django_settings.LANGUAGE_CODE
