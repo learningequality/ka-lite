@@ -32,12 +32,15 @@
     position: relative;
     text-align: center;
     float: left;
-    width: 12em;
     height: 100%;
     background-color: none;
-    margin-right: calc((100% - 36em)/6);
-    margin-left: calc((100% - 36em)/6);
     font-size: 0.9em;
+}
+
+@media (min-width: 768px) {
+    .circlechart {
+        width: 30%;
+    }
 }
 
 .panel {
