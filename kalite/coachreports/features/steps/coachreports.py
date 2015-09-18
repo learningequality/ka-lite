@@ -158,7 +158,7 @@ def impl(context, exercise, learner, progress_text, progress_colour):
 @when(u"I click on the learner name")
 def impl(context):
     student_name = find_css_class_with_wait(context, "student-name")
-    click_and_wait_for_page_load(context, student_name.find_element_by_tag_name("a"))
+    click_and_wait_for_page_load(context, student_name)
 
 @then(u"I should be taken to that exercise within the Learn tab")
 def impl(context):

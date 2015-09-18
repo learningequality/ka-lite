@@ -55,11 +55,20 @@ var CoachReportAggregateModel = Backbone.Model.extend({
     },
 
     url: function() {
+        // We want our date ranges to be inclusive, so send the day + 1
+        // to the server in order to do this.
+
+        var end_date;
+        if (this.end_date) {
+            end_date = new Date(this.end_date);
+            end_date.setDate(end_date.getDate() + 1);
+            end_date = end_date.getFullYear() + "/" + (end_date.getMonth() + 1) + "/" + end_date.getDate();
+        }
         return setGetParamDict(Urls.aggregate_learner_logs(), {
             facility_id: this.facility,
             group_id: this.group,
             start_date: this.start_date,
-            end_date: this.end_date
+            end_date: end_date
         });
     }
 });

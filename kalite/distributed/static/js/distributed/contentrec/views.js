@@ -3,6 +3,8 @@ var _ = require("underscore");
 var models = require("./models");
 var BaseView = require("../base/baseview");
 
+require("../../../css/distributed/content_recommendation.less");
+
 /*All 3 cards go into this wrapper, which makes the page responsive*/
 var HomepageWrapper = BaseView.extend({
 

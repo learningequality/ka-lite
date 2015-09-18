@@ -35,8 +35,8 @@ from . import settings
 CACHE_VARS = []
 
 
-if not os.path.exists(django_settings.CHANNEL_DATA_PATH):
-    logging.warning("Channel {channel} does not exist.".format(channel=django_settings.CHANNEL))
+if not os.path.exists(settings.CHANNEL_DATA_PATH):
+    logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
 
 def get_assessment_item_data(request, assessment_item_id=None):

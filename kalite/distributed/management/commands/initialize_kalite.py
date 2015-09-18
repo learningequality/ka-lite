@@ -50,9 +50,3 @@ class Command(BaseCommand):
         # we do this on every server request,
         # as we don't know what happens when we're not looking.
         self.reinitialize_server()
-
-        # Copy static media, one reason for not symlinking: It is not cross-platform and can cause permission issues
-        # with many webservers
-        logging.info("Copying static media...")
-        call_command("collectstatic", interactive=False, verbosity=0)
-        call_command("collectstatic_js_reverse", interactive=False)

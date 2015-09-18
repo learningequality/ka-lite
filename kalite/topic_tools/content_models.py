@@ -15,14 +15,12 @@ implementation details about the model class used in this module.
 import os
 import json
 
-from django.conf import settings as django_settings
-
 import sqlite3
 
 from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn
 from playhouse.shortcuts import model_to_dict
 
-from .settings import CONTENT_DATABASE_PATH
+from .settings import CONTENT_DATABASE_PATH, CHANNEL
 from .annotate import update_content_availability
 
 
@@ -92,7 +90,7 @@ def set_database(function):
         if language == "pt-BR":
             language = "pt"
 
-        path = kwargs.pop("database_path", None) or CONTENT_DATABASE_PATH.format(channel=kwargs.get("channel", django_settings.CHANNEL), language=language)
+        path = kwargs.pop("database_path", None) or CONTENT_DATABASE_PATH.format(channel=kwargs.get("channel", CHANNEL), language=language)
 
         db = SqliteDatabase(path)
 

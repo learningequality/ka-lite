@@ -7,11 +7,11 @@ import os
 import tempfile
 import shutil
 import sauceclient as sc
-import sys
 
 from behave import *
 from httplib import CannotSendRequest
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -64,9 +64,14 @@ def setup_sauce_browser(context):
     else:
         desired_capabilities = DesiredCapabilities.FIREFOX.copy()
         desired_capabilities["tunnelIdentifier"] = tunnel_id
-        context.browser = webdriver.Remote(desired_capabilities=desired_capabilities,
-                                           browser_profile=profile,
-                                           command_executor=sauce_url)
+        try:
+            context.browser = webdriver.Remote(desired_capabilities=desired_capabilities,
+                                               browser_profile=profile,
+                                               command_executor=sauce_url)
+        except WebDriverException:
+            print("Couldn't establish a connection to saucelabs. Using a local Firefox WebDriver instance.")
+            del context.sauce
+            context.browser = webdriver.Firefox(firefox_profile=profile)
 
 def setup_local_browser(context):
     """
