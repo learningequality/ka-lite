@@ -551,6 +551,16 @@ class ContentLog(DeferredCountSyncedModel):
             self.progress_timestamp = datetime.now()
         super(ContentLog, self).save(*args, **kwargs)
 
+    def get_uuid(self):
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.content_id is not None, "Content id required for get_uuid"
+        assert self.content_kind is not None, "Content kind required for get_uuid"
+        assert self.content_source is not None, "Content source required for get_uuid"
+
+        namespace = uuid.UUID(self.user.id)
+        hashtext = ":".join([self.__class__.__name__, self.content_source, self.content_kind, self.content_id])
+        return uuid.uuid5(namespace, hashtext.encode("utf-8")).hex
+
 
 @receiver(pre_save, sender=UserLog)
 def add_to_summary(sender, **kwargs):
