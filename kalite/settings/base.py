@@ -150,22 +150,9 @@ else:
 
 _data_path_channels = os.path.join(_data_path, 'data')
 
-CHANNEL = getattr(local_settings, "CHANNEL", "khan")
-
 CONTENT_DATA_PATH = getattr(local_settings, "CONTENT_DATA_PATH", _data_path_channels)
-CHANNEL_DATA_PATH = os.path.join(CONTENT_DATA_PATH, CHANNEL)
 
 CONTENT_DATA_URL = getattr(local_settings, "CONTENT_DATA_URL", "/data/")
-
-# Parsing a whole JSON file just to load the settings is not nice
-try:
-    CHANNEL_DATA = json.load(open(os.path.join(CHANNEL_DATA_PATH, "channel_data.json"), 'r'))
-except IOError:
-    CHANNEL_DATA = {}
-
-# Whether we wanna load the perseus assets. Set to False for testing for now.
-LOAD_KHAN_RESOURCES = getattr(local_settings, "LOAD_KHAN_RESOURCES", CHANNEL == "khan")
-
 
 ###################################################
 # USER DATA
@@ -241,15 +228,6 @@ if not os.path.exists(CONTENT_ROOT):
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
 
-# Necessary for Django compressor
-if not DEBUG:
-    STATICFILES_FINDERS = (
-        "django.contrib.staticfiles.finders.FileSystemFinder",
-        "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-        "compressor.finders.CompressorFinder",
-    )
-
-
 # Overwrite stuff from local_settings
 MEDIA_ROOT = getattr(local_settings, "MEDIA_ROOT", MEDIA_ROOT)
 STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
@@ -321,6 +299,11 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
+from os.path import join, expanduser
+
+BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
+DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -329,15 +312,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.contenttypes',
     'tastypie',
-    'compressor',
     'django_js_reverse',
     'securesync',
     'south',
     'fle_utils.build',
-    'fle_utils.handlebars',
     'fle_utils.django_utils',
     'fle_utils.config',
-    'fle_utils.backbone',
     'fle_utils.chronograph',
     'fle_utils.testing', # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.django_cherrypy_wsgiserver',
@@ -358,6 +338,7 @@ INSTALLED_APPS = [
     'kalite.i18n',
     'kalite.ab_testing',
     'kalite.control_panel',
+    'dbbackup',
 ]
 
 if IS_SOURCE:
@@ -467,6 +448,10 @@ KEY_PREFIX = version.VERSION
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(
     local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.signed_cookies' + (''))
+
+# Expire session cookies after 30 minutes, but extend sessions when there's activity from the user.
+SESSION_COOKIE_AGE = 60 * 30     # 30 minutes
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Use our custom message storage to avoid adding duplicate messages
 MESSAGE_STORAGE = 'fle_utils.django_utils.classes.NoDuplicateMessagesSessionStorage'

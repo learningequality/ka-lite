@@ -8,6 +8,7 @@ For now, it means that i18n.settings has been copied over to kalite.settings
 i18n defines language
 Utility functions for i18n related tasks on the distributed server
 """
+import errno
 import os
 import re
 import requests
@@ -296,7 +297,7 @@ def convert_language_code_format(lang_code, for_django=True):
     lang_code = lang_code.lower()
     code_parts = re.split('-|_', lang_code)
     if len(code_parts) >  1:
-        assert len(code_parts) == 2
+        assert len(code_parts) == 2, "code_parts was: {0}".format(code_parts)
         code_parts[1] = code_parts[1].upper()
         if for_django:
             lang_code = "_".join(code_parts)
@@ -351,8 +352,8 @@ def _get_installed_language_packs():
                 lang_meta = softload_json(metadata_filepath, raises=True)
 
                 logging.debug("Found language pack %s" % (django_disk_code))
-            except Exception as e:
-                if isinstance(e, IOError) and e.errno == 2:
+            except IOError as e:
+                if e.errno == errno.ENOENT:
                     logging.info("Ignoring non-language pack %s in %s" % (django_disk_code, locale_dir))
                 else:
                     logging.error("Error reading %s metadata (%s): %s" % (django_disk_code, metadata_filepath, e))

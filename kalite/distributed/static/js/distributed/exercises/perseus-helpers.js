@@ -1,10 +1,25 @@
+var _ = require("underscore");
+var Backbone = require("base/backbone");
+var $ = require("base/jQuery");
+
+require("es5-shim");
+global.React = require("react/addons");
+global.katex = require("katex");
+require("../perseus/lib/katex/katex.css");
+require("../perseus/lib/mathquill/mathquill-basic.js");
+require("../perseus/lib/mathquill/mathquill.css");
+require("../perseus/lib/kas.js");
+global.Jed = require("jed");
+require("../perseus/ke/local-only/i18n.js");
+require("qtip2");
+
 var KhanUtil = window.KhanUtil || {};
 
 var Khan = window.Khan || {
     error: function() {},
     query: {debug: ""},
-    imageBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/images/",
-    urlBase: window.sessionModel.get("STATIC_URL") + "perseus/ke/",
+    imageBase: window.sessionModel.get("STATIC_URL") + "js/distributed/perseus/ke/images/",
+    urlBase: window.sessionModel.get("STATIC_URL") + "js/distributed/perseus/ke/",
     scratchpad: {
         disable: function() {},
         enable: function() {},
@@ -15,7 +30,7 @@ var Khan = window.Khan || {
     warnTimeout: function() {}
 };
 
-window.Exercises = _.extend({
+var Exercises = _.extend({
     localMode: true,
     embeddedMode: true,
     useKatex: true,
@@ -73,6 +88,14 @@ Exercises.PerseusBridge = {
         return Exercises.PerseusBridge.itemRenderer.scoreInput();
     },
 
+    getSeedInfo: function() {
+        return Exercises.PerseusBridge.itemRenderer.props.item;
+    },
+
+    getNumHints: function() {
+        return Exercises.PerseusBridge.itemRenderer.getNumHints();
+    },
+
     // this one needs to be here for khan-exercises
     cleanupProblem: function(data) {
         if (Exercises.PerseusBridge.itemMountNode) {
@@ -95,13 +118,9 @@ Exercises.PerseusBridge = {
         }
 
         // Load khan-exercises modules, then perseus
-        require([
-                window.sessionModel.get("STATIC_URL") + "perseus/ke-deps.js"
-                // STATIC_URL + "perseus/ke/main.js",
-            ], function() {
-                require([window.sessionModel.get("STATIC_URL") + "perseus/build/perseus-2.js"], Exercises.PerseusBridge._initialize);
-            }
-        );
+        require("../perseus/ke-deps.js");
+        var Perseus = require("../perseus/build/perseus-3.js");
+        Exercises.PerseusBridge._initialize(Perseus);
 
         return Exercises.PerseusBridge._loaded;
     },
@@ -145,4 +164,15 @@ Exercises.PerseusBridge = {
 
     }
 
+};
+
+global.Exercises = Exercises;
+global.Khan = Khan;
+
+require("../perseus/ke/interface.js");
+
+module.exports = {
+    KhanUtil: KhanUtil,
+    Khan: Khan,
+    Exercises: Exercises
 };

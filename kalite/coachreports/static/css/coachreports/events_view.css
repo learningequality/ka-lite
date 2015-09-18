@@ -18,6 +18,8 @@
 }
 .tabs-left > .nav-tabs {
 	float: left;
+	display: block;
+	min-height: 300px;
 	margin-right: 5px;
 	border-right: 1px solid #ddd;
 }

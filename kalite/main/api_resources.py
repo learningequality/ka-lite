@@ -5,11 +5,12 @@ from tastypie.exceptions import NotFound
 from django.conf.urls import url
 from django.conf import settings
 
-from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog
+from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
 from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
 from kalite.topic_tools import get_exercise_data, get_content_data
+from kalite.topic_tools.settings import CHANNEL
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -232,7 +233,7 @@ class Content:
         # TODO(MCGallaspy) but given that there's only one active channel for 0.13 initially (khan)
         # TODO(MCGallaspy) I guess it's okay. In a multiple available channel situation then we should
         # TODO(MCGallaspy) probably get the source attribute from the content data itself.
-        self.source = kwargs.pop("source", settings.CHANNEL)
+        self.source = kwargs.pop("source", CHANNEL)
 
 
 class ContentResource(Resource):
@@ -298,3 +299,18 @@ class ContentResource(Resource):
 
     def rollback(self, bundles):
         raise NotImplementedError
+
+
+class ContentRatingResource(ModelResource):
+
+    user = fields.ForeignKey(FacilityUserResource, 'user')
+
+    class Meta:
+        resource_name = 'content_rating'
+        queryset = ContentRating.objects.all()
+        filtering = {
+            "content_id": ('exact', 'in', ),
+            "content_kind": ('exact', 'in', ),
+            "user": ('exact', ),
+        }
+        authorization = UserObjectsOnlyAuthorization()

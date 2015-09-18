@@ -29,24 +29,19 @@ from kalite.shared.decorators.auth import require_admin
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
+from kalite.topic_tools.settings import CHANNEL, LOAD_KHAN_RESOURCES
 import json
-
 
 def check_setup_status(handler):
     """
     Decorator for validating that KA Lite post-install setup has completed.
-    NOTE that this decorator must appear before the backend_cache_page decorator,
+    NOTE that this decorator must appear before  the backend_cache_page decorator,
     so that it is run even when there is a cache hit.
     """
     def check_setup_status_wrapper_fn(request, *args, **kwargs):
 
         if "registered" not in request.session:
             logging.error("Key 'registered' not defined in session, but should be by now.")
-
-        if User.objects.exists():
-            request.has_superuser = True
-            # next line is for testing
-            # User.objects.all().delete()
 
         if request.is_admin:
             # TODO(bcipolli): move this to the client side?
@@ -81,8 +76,8 @@ def learn(request):
     Render the all-in-one sidebar navigation/content-viewing app.
     """
     context = {
-        "load_perseus_assets": settings.LOAD_KHAN_RESOURCES,
-        "channel": settings.CHANNEL,
+        "load_perseus_assets": LOAD_KHAN_RESOURCES,
+        "channel": CHANNEL,
         "pdfjs": settings.PDFJS,
     }
     return context
@@ -293,9 +288,6 @@ def handler_403(request, *args, **kwargs):
         messages.error(request, mark_safe(_("You must be logged in with an account authorized to view this page.")))
         return HttpResponseRedirect(set_query_params(reverse("homepage"), {"next": request.get_full_path(), "login": True}))
 
-@render_to("distributed/perseus.html")
-def perseus(request):
-    return {}
 
 def handler_404(request):
     return HttpResponseNotFound(render_to_string("distributed/404.html", {}, context_instance=RequestContext(request)))

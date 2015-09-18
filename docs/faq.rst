@@ -4,7 +4,7 @@ Frequently Asked Questions
 How do I install KA Lite?
 -------------------------
 
-Information on how to install KA Lite is available via our :doc:`user guides </usermanual/userman_main>`.
+Information on how to install KA Lite is available via our :doc:`user guides </installguide/install_main>`.
 
 How much does KA Lite cost to install?
 --------------------------------------
@@ -21,15 +21,7 @@ Please follow the instructions on our `Github Wiki`_ for reporting bugs.
 How do I change KA Lite's content folder?
 -----------------------------------------
 
-If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), here are the steps you need to do:
-
-#. If it doesn't already exist, create a file named local_settings.py in the ka-lite/kalite folder (the one containing settings.py)
-#. Add the line ``CONTENT_ROOT="[full path to your videos directory]"``, making SURE to include an OS-specific slash at the end (see examples) and encapsulate it in quotes.
-    **For example, on Windows:** ``CONTENT_ROOT="C:\\videos_location\\"``
-
-    **For example, on Linux:** ``CONTENT_ROOT="/home/me/videos_location/"``
-#. Restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
-
+If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), see how to configure CONTENT_ROOT in the ":ref:`configuration-settings`" section.
 
 Is there somewhere I can find Spanish language content organized by topic?
 --------------------------------------------------------------------------
@@ -41,38 +33,17 @@ Yes! Thanks to the efforts of an awesome volunteer deploying KA Lite and other O
 I would like to download the videos for KA Lite via BitTorrent, is this possible?
 ---------------------------------------------------------------------------------
 
-We have made the full set of KA videos (in the format needed by KA Lite) available via `BitTorrent Sync (btsync)`_ (note that this is different from BitTorrent; btsync allows us to add new videos or fix problems without issuing a whole new torrent file and then having seeders split between the old and new torrent files) Here are the steps to set this up:
-
-* Download and install BitTorrent Sync
-* Run btsync. On some platforms, this will bring up a graphical interface. On Linux, you will need to load http://127.0.0.1:8888/ to get the interface.
-* Click the "Enter a key or link" button, and enter  ::
-
-    BT7AOITNAIP3X3CSLE2EPQJFXJXMXVGQI
-
-* Then select the "content" folder inside your KA Lite installation as the "location" (unless you want the videos going somewhere else).
-* Allow the videos to sync in there from your peers! It may take a while for now, as we don't yet have many seeders on it. On that note -- please help seed by keeping it running even after you've got all the videos , if you have the bandwidth to spare! This to will make it easier for others to download the content as well.
-* Please note that these are resized videos. All in all, this will take around 23GB of space.
-
-
-
-Once you have the videos, you need to tell KA Lite where to find them by following the instructions in the :doc:`user guide </usermanual/userman_main>` for your version.
-
-.. _BitTorrent Sync (btsync): http://www.bittorrent.com/sync
+Yes! Please see the instructions for ":ref:`bulk-video-downloads`".
 
 Do I need the internet to run KA Lite?
 --------------------------------------
 
 No. The only time you need an internet connection is for the initial download of the content (either to the target device, or to a USB stick that can then be carried or mailed). After installation, you can serve the content from a local server or use it directly on the server device without an internet connection.
 
-Is KA Lite involved in getting devices into the hands of students, families, and communities?
----------------------------------------------------------------------------------------------
-
-Currently, KA Lite does not distribute any devices. We are working with partner organizations who do directly distribute devices to local students and communities, and KA Lite is open to any organization who would like to help in this regard. If your organization wants to help KA Lite distribute devices, you can contact us at info@learningequality.org.
-
 How do you operate in the field?
 --------------------------------
 
-The FLE team primarily works in our San Diego offices, building software and shaping our roadmap based on our interactions with our partners around the world. We work with individual humanitarians and NGOs of all sizes to help them distribute KA Lite to offline communities around the world.
+The Learning Equality team primarily works in our San Diego offices, building software and shaping our roadmap based on our interactions with our partners around the world. We work with individual humanitarians and NGOs of all sizes to help them distribute KA Lite to offline communities around the world.
 
 What are the typical deployment scenarios?
 ------------------------------------------
@@ -108,36 +79,33 @@ KA Lite can run on almost any major operating system: Windows, Linux, and Mac/OS
 What is data syncing?
 ---------------------
 
-KA Lite is capable to share your student progress data with a central data repository when you are online. This enables the system to have an online backup of your data, allows you to view your student progress online, and to share your data across multiple KA Lite installations.
-
-Does KA Lite support peer to peer synchronization?
---------------------------------------------------
-
-Not yet. Peer to peer sync is a priority for KA Lite in the near future, but is not available yet.
+KA Lite is capable to share your student progress data with a `central data repository <https://hub.learningequality.org/>`_ when you are online. This enables the system to have an online backup of your data, allows you to view your student progress online, and to share your data across multiple KA Lite installations.
 
 Who maintains the KA Lite project?
 ----------------------------------
 
 KA Lite is created, maintained, and operated by the `Foundation for Learning Equality, Inc`_, a California-based nonprofit organization.
 
-.. _Foundation for Learning Equality, Inc: http://learningequality.org
+.. _Foundation for Learning Equality, Inc: https://learningequality.org
 
 What is KA Lite's affiliation with Khan Academy?
 ------------------------------------------------
 
-KA Lite is an independent, open-source project maintained by a distributed team of volunteers, and is not officially affiliated with Khan Academy, although they are (unofficially) very supportive of the KA Lite project.
+KA Lite is an independent, open-source project maintained by `Learning Equality`_, and is not officially affiliated with Khan Academy, although they are very supportive of the KA Lite project, and are one of our key partners.
+
+.. _Learning Equality: https://learningequality.org
 
 How can local curriculum be generated?
 --------------------------------------
 
-Local content creation is something that KA Lite intends to pursue in the future. This feature is not available at this time, but steps are being taken, as you can `read about here <https://learningequality.org/blog/2013/bringing-ka-lite-gitwe/>`_. If you would like to be notified when it is available, subscribe for updates on our `home page`_, or if you would like to fund this project, please `click here <https://learningequality.org/give/>`_.
+Local content creation is something that Learning Equality intends to build into future platforms. If you would like to be notified when it is available, subscribe for updates on our `home page`_, or if you would like to help fund this project, please `click here <https://learningequality.org/give/>`_.
 
 .. _home page: http://kalite.learningequality.org/
 
 How is it possible to compress the content into KA Lite?
 --------------------------------------------------------
 
-First, users are able to select the amount of videos and exercises they wish to download on the user-interface, allowing the users to customize the size of the files. Also, we have resized much of the content, and approximately 4,000 videos are around 25 GB if downloaded via BitTorrent and around 70 GB via the user-interface.
+First, users are able to select which videos they wish to download through the user-interface, allowing the users to customize the amount of space used.
 
 What languages is KA Lite available in?
 ---------------------------------------
@@ -174,21 +142,14 @@ How do I find out more?
 
 To stay up-to-date on all our activities, follow our `blog <https://learningequality.org/blog>`_, `Twitter <https://twitter.com/LearnEQ>`_, and `Facebook <https://www.facebook.com/learningequality>`_!
 
-What can be done with progress tracking during offline usage?
--------------------------------------------------------------
-
-KA Lite's built-in coach reports are meant to provide teachers and administrators access to progress tracking offline. When a student connects back up to the server that they sync with, all of their progress data will be uploaded for teachers and administrators to evaluate.
-
-How does FLE measure the impact of KA Lite?
+How does Learning Equality measure the impact of KA Lite?
 -------------------------------------------
 
-Because KA Lite is freely available and designed to run offline, we are not in contact with many of our deployments, and collecting impact data can be challenging.
+Because KA Lite is freely available and designed to run offline, collecting impact data can be challenging.
 
-KA Lite is capable to synchronize data with our central data repository when an online connection exists.
+KA Lite is capable of synchronizing data with our central data repository when an online connection exists.
 
-For the deployments in which we do have direct involvement, we receive updates from the administrator’s with quantitative data from the built-in coach reports and attain qualitative data from our on-site visits. For example, we know that 20 out of 20 students in the Idaho Department of Corrections deployment have passed their GED using KA Lite.
-
-We are also developing RCTs to start in June for a deployment in India.
+For the deployments in which we do have direct involvement, we receive updates from our partners with quantitative data from the built-in coach reports and attain qualitative data from our on-site visits. For example, we know that 20 out of 20 students in the Idaho Department of Corrections deployment have passed their GED using KA Lite.
 
 Backing up data: is there any easy way to do it locally?
 --------------------------------------------------------
@@ -199,11 +160,11 @@ changed versions, please run::
 
     kalite manage setup
 
-If you only want to backup the database, locate the ``.kalite/database/`` folder
-and copy and restore that one.
-
 to guarantee your database is compatible with the current version of KA Lite you have installed!
 Note that online data back-ups occur if you "register" your KA Lite installation with an online account on our website.
+
+If you only want to backup the database, locate the ``.kalite/database/`` folder
+and copy and restore that one.
 
 I skipped the step for downloading the assessment items during install, how can I do it now?
 --------------------------------------------------------------------------------------------
