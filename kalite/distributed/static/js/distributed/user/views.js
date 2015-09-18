@@ -457,7 +457,7 @@ var UserView = BaseView.extend({
             // Check the GET params to see if a 'login' flag has been set
             // If this is the case, the modal should start open
             var login = get_params.getParamValue("login");
-            if (login) {
+            if (login || this.login_start_open) {
                 // Set an option for the modal to start open
                 options.start_open = true;
             }

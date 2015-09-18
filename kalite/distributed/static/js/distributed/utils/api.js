@@ -65,9 +65,8 @@ function handleFailedAPI(resp, error_prefix) {
         case 403:
             messages = {error: gettext("You are not authorized to complete the request.  Please login as an authorized user, then retry the request.")};
             if (window.statusModel) {
-                window.statusModel.fetch().success(function() {
-                    window.userView.login_start_open = true;
-                });
+                window.toggleNavbarView.userView.login_start_open = true;
+                window.statusModel.fetch();
             }
             break;
 
