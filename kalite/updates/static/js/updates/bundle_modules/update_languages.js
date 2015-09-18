@@ -216,7 +216,8 @@ $('#beta-checkbox').click(function() {
 //
 
 var languagepack_callbacks = {
-    reset: languagepack_reset_callback
+    reset: languagepack_reset_callback,
+    completed: languagepage_complete_callback
 };
 
 function start_languagepack_download(lang_code) {
@@ -279,6 +280,11 @@ function languagepack_reset_callback(progress, resp) {
     // This will get the latest list of installed languages, and refresh the display.
     get_installed_languages();
     downloading = false;
+}
+
+function languagepack_complete_callback(progress_log) {
+    // Trigger a reminder to restart server when a language pack is installed.
+    messages.show_message("warning", sprintf(gettext("Server must be restarted to activate language pack %(lang)s."), {lang: process_log.process_name}));
 }
 
 function set_server_language(lang) {

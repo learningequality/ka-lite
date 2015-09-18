@@ -147,6 +147,9 @@ function updatesCheck(process_name, interval) {
                     message = progress_log.notes || (gettext("Completed update successfully.") + " [" + process_name + "]");
                     messages.clear_messages();
                     messages.show_message("success", message);
+                    if (process_callbacks[process_name] && process_callbacks[process_name]["completed"]) {
+                        process_callbacks[process_name]["completed"](process_log);
+                    }
                     updatesReset(process_name);
                 } else if (progress_log.completed && progress_log.stage_status == "cancelled") {
                     messages.show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]");
