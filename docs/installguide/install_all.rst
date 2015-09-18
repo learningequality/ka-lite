@@ -2,7 +2,7 @@ Windows
 =======
 
 #. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-14>`_ installer.
-#. After downloading the .exe file, double click it. A window will appear and guide you through the process of installing KA Lite on the server.
+#. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
 Mac/OSX
 =======
@@ -32,6 +32,7 @@ After that, you can install the .deb file like this::
     sudo dpkg -i FILENAME.deb
 
 
+``FILENAME`` should be replaced with the name of the file you downloaded.
 The file may be named as if it was intended for Ubuntu but works just as well for any other Debian-based systems like
 Debian, Raspberry Pi, Linux Mint etc.
 
@@ -80,7 +81,7 @@ You can also add the PPA, see :ref:`ppa-installation`, and then
 run ``sudo apt-get install ka-lite-raspberry-pi``. 
 
 After installing, you can setup a Wifi hotspot using this guide:
-:ref:`raspberry-pi-wifi`_
+:ref:`raspberry-pi-wifi`
 
 
 Other options
@@ -88,6 +89,13 @@ _____________
 
 KA Lite is available for all platforms (e.g. non-Debian compatible platforms)
 through PyPi. See :ref:`pip-installation`.
+
+
+Configuration after installation or update
+__________________________________________
+
+Every time you install or update KA Lite, you must run ``kalite manage setup`` command again to setup the database and download assessment items (video descriptions,
+exercises etc.).
 
 
 Uninstalling
@@ -143,5 +151,4 @@ You can check these values from the command prompt using the commands
 Within that directory, the data is stored in the ``.kalite`` subdirectory.
 On most versions of Windows, this is ``C:\Users\YourUsername\.kalite\``.
 
-On Linux, OSX, and other Unix-like systems, downloaded videos and database
-files are in ``~/.kalite``.
+On Linux, OSX, and other Unix-like systems, downloaded videos and database files are in ``~/.kalite``.

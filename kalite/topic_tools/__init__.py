@@ -32,7 +32,7 @@ from django.contrib import messages
 from django.db import DatabaseError
 from django.utils.translation import gettext as _
 
-from fle_utils.general import softload_json, json_ascii_decoder
+from fle_utils.general import softload_json, softload_sqlite_cache, json_ascii_decoder
 from kalite import i18n
 
 from . import models as main_models
@@ -42,8 +42,8 @@ from . import settings
 CACHE_VARS = []
 
 
-if not os.path.exists(django_settings.CHANNEL_DATA_PATH):
-    logging.warning("Channel {channel} does not exist.".format(channel=django_settings.CHANNEL))
+if not os.path.exists(settings.CHANNEL_DATA_PATH):
+    logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
 
 def cache_file_path(basename):
@@ -68,7 +68,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
         language = "pt"
 
     if not channel:
-        channel = django_settings.CHANNEL
+        channel = settings.CHANNEL
 
     if not language:
         language = django_settings.LANGUAGE_CODE
@@ -218,7 +218,7 @@ def get_exercise_cache(force=False, language=None):
             elif exercise.get("uses_assessment_items", False):
                 available = False
                 items = []
-                for item in exercise.get("all_assessment_items", "[]"):
+                for item in exercise.get("all_assessment_items", []):
                     item = json.loads(item)
                     if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
                         items.append(item)
@@ -300,7 +300,8 @@ def get_content_cache(force=False, annotate=False, language=None):
             CONTENT[language] = content
             return CONTENT[language]
         else:
-            CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+            CONTENT[language] = (softload_sqlite_cache(settings.CONTENT_CACHE_FILEPATH) or
+                                 softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False))
             annotate = True
 
     if annotate:

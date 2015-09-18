@@ -6,8 +6,12 @@
 KA Lite Documentation
 ===================================
 
-Welcome to the KA Lite Documentation page! Here, you will find all the information needed to set up the KA Lite software. Additionally, there's information on how to manage KA Lite and how to perform role-specific tasks. If you have any questions that are not addressed by the documentation and you have access to the Internet, please be sure to check our `FAQ`_ or `Forums`_!    
-
+Welcome to the KA Lite Documentation page! Here, you will find all the 
+information needed to set up the KA Lite software. Additionally, there's 
+information on how to manage KA Lite and how to perform role-specific 
+tasks. If you have any questions that are not addressed by the 
+documentation and you have access to the Internet, please be sure to 
+check our `FAQ`_ or `Forums`_!
 
 .. _FAQ: https://learningequality.org/ka-lite/faq/
 .. _Forums: https://forums.learningequality.org/
@@ -21,17 +25,5 @@ Welcome to the KA Lite Documentation page! Here, you will find all the informati
     Contributing and Development <developer_docs/contributing>
     For Devs <developer_docs/index>
 
-    
 
-Contact Us
-==========
-
-We would love to hear about your project and experiences!
-
-**Email:**
-
-info@learningequality.org
-
-**Website:**
-
-http://learningequality.org
+.. include:: ../README.rst
