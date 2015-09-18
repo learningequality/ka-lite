@@ -66,17 +66,21 @@ class Command(NoArgsCommand):
         make_option('-c', '--channel',
             dest='channel',
             default="khan",
-            help='Create content files for a channel'),
+            help='Create content files for a channel. Value of argument is the name of the channel.'),
         make_option('-i', '--import',
             action='store',
             dest='import_files',
             default=None,
-            help="Import a file structure as a topic tree and move over the appropriate content"),
+            help=("Import a file structure as a topic tree and move over the appropriate content.\n"
+                  "The value of this argument is the path to the content to be imported."
+                  "Do not include a trailing slash.")),
         make_option('-d', '--data',
             action='store',
             dest='channel_data',
             default=None,
-            help="Add custom path to channel data files"),
+            help=("Add custom path to channel data files.\n"
+                  "Value of the argument is path to directory containing channel metadata file(s?)."
+                  "Do not include trailing slash.")),
     )
 
     def handle(self, *args, **options):
@@ -93,6 +97,8 @@ class Command(NoArgsCommand):
             channel_tools.path = options["import_files"]
             if not channel_name or channel_name=="khan":
                 channel_name = os.path.basename(options["import_files"])
+
+        assert channel_name, "Channel name must not be empty. Make sure you used correct arguments."
 
         if options["channel_data"]:
             channel_tools.channel_data_path = options["channel_data"]

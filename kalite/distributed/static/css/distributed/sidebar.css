@@ -128,7 +128,6 @@ div.sidebar-fade {
 .sidebar-back {
     height: 100%;
     width: 2em;
-    padding-top: 100px;
     text-align: center;
     color: #fff;
     background-color: #467471;
@@ -142,6 +141,7 @@ div.sidebar-fade {
     height: 3em;
     padding: 0;
     width: 1.8em;
+    top: 40%;
 }
 
 .sidebar-back-hover {

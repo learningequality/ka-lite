@@ -11,6 +11,8 @@ var d3 = require("d3");
 var date_string = require("utils/datestring").date_string;
 var d3 = require("d3");
 
+require("bootstrap-datepicker/dist/js/bootstrap-datepicker");
+
 /*
 Hierarchy of views:
 CoachReportView:
@@ -23,7 +25,7 @@ var TimeSetView = BaseView.extend({
     template: require("./hbtemplates/datepicker.handlebars"),
 
     events: {
-        "click .setrange": "set_range"
+        "click .setrange:not([disabled])": "set_range"
     },
 
     initialize: function () {
@@ -50,12 +52,17 @@ var TimeSetView = BaseView.extend({
 
         format = format.toLowerCase().replace("y", "yy");
 
+        var self = this;
+
         this.datepicker = this.$('.date-range').each(function(){
             $(this).datepicker({
                 format: format,
                 endDate: "0d",
                 todayBtn: "linked",
                 todayHighlight: true
+            });
+            $(this).datepicker().on('changeDate', function() {
+                self.$(".setrange").removeAttr("disabled");
             });
         });
     },
@@ -66,6 +73,7 @@ var TimeSetView = BaseView.extend({
             end_date: this.$("#end").datepicker("getDate")
         });
         this.model.trigger("set_time");
+        this.$(".setrange").attr("disabled", "disabled");
         return false;
     }
 });
@@ -95,8 +103,8 @@ var CoachSummaryView = BaseView.extend({
         } else {
             var parseData = [
                 //parsing data to 2 decimal positions
-                { label: gettext("Hours spent on content"), count: Math.round(data_sub * 100)/100 },
-                { label: gettext("Other activites (exercises, etc.)"), count: Math.round((data_total - data_sub) * 100)/100 }
+                { label: gettext("Hours spent on content"), count: Math.round((data_sub * 100)/data_total) },
+                { label: gettext("Other activites (exercises, etc.)"), count: Math.round(((data_total - data_sub) * 100)/data_total) }
             ];
 
             //adjusting the graph's size based on target_elem's sizing
@@ -131,16 +139,17 @@ var CoachSummaryView = BaseView.extend({
                 });
 
             //parsing to 2 decimals
-            var total = Math.round(data_total * 100)/100;
+            var content_percentage = Math.round((data_sub * 100)/data_total);
+            targetElemP.innerHTML = content_percentage + "%";
 
             //this will display relevant data when you hover over that data's arc on the radial graph
             path.on('mouseover', function(d) {
-                targetElemP.innerHTML = (d.data.label + ":" + "<br />" + d.data.count);
+                targetElemP.innerHTML = (d.data.label + ": " + d.data.count + "%");
             });
 
-            //when not hovering, you'll see the total data
+            //when not hovering, you'll see the content percentage
             path.on('mouseout', function() {
-                targetElemP.innerHTML = "Total:" + "<br />" + total;
+                targetElemP.innerHTML = content_percentage + "%";
             });
         }
     },
@@ -174,6 +183,7 @@ var CoachSummaryView = BaseView.extend({
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
+                this.loading("#content-container");
                 this.data_model.fetch();
             }
 
@@ -230,6 +240,7 @@ var CoachSummaryView = BaseView.extend({
 
     render: function() {
 
+        this.loaded("#content-container");
         this.$el.html(this.template({
             status:this.model.attributes,
             data: this.data_model.attributes,
@@ -246,8 +257,12 @@ var CoachSummaryView = BaseView.extend({
           messages.show_message("warning", gettext("No recent learner data for this group is available."));
         }
 
-        delete this.tabular_report_view;
         this.set_progress_bar();
+
+        if (this.tabular_report_view) {
+            this.tabular_report_view.remove();
+            delete this.tabular_report_view;
+        }
 
         this.displayRadialGraph("full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"));
     },
@@ -258,8 +273,12 @@ var CoachSummaryView = BaseView.extend({
             this.$("#show_tabular_report").text("Loading");
             this.$("#show_tabular_report").attr("disabled", "disabled");
             this.tabular_report_view = new TabularReportViews.TabularReportView({model: this.model, complete: function() {
-                self.$("#show_tabular_report").text(gettext("Hide Tabular Report"));
-                self.$("#show_tabular_report").removeAttr("disabled");
+                if (self.tabular_report_view) {
+                    // Check that tabular report view still exists, as it is possible for it to have been removed
+                    // by the time this call back gets called.
+                    self.$("#show_tabular_report").text(gettext("Hide Tabular Report"));
+                    self.$("#show_tabular_report").removeAttr("disabled");
+                }
             }});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         } else {

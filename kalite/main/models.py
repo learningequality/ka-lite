@@ -23,6 +23,7 @@ from kalite import i18n
 from kalite.facility.models import FacilityUser
 from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
+from kalite.topic_tools.settings import CHANNEL
 
 from .content_rating_models import ContentRating
 
@@ -528,7 +529,7 @@ class ContentLog(DeferredCountSyncedModel):
     time_spent = models.FloatField(blank=True, null=True)
     progress_timestamp = models.DateTimeField(blank=True, null=True)
     latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
-    content_source = models.CharField(max_length=100, db_index=True, default=settings.CHANNEL)
+    content_source = models.CharField(max_length=100, db_index=True, default=CHANNEL)
     content_kind = models.CharField(max_length=100, db_index=True)
     progress = models.FloatField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)

@@ -37,6 +37,7 @@
     background-color: none;
     margin-right: calc((100% - 36em)/6);
     margin-left: calc((100% - 36em)/6);
+    font-size: 0.9em;
 }
 
 .panel {

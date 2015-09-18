@@ -91,5 +91,32 @@ module.exports = Backbone.View.extend({
                 }
             }
         }
+    },
+
+    loading: function(element) {
+        if (!this._loading) {
+            this._loading = true;
+            _.bindAll(this, "load_animation");
+            _.delay(this.load_animation, 200, element);
+        }
+    },
+
+    load_animation: function(element) {
+        if (this._loading) {
+            if (element) {
+                $(element).plainOverlay("show", {fillColor: '#c4d7e3', duration: 200});
+            } else {
+                this.$el.plainOverlay("show", {fillColor: '#c4d7e3', duration: 200});
+            }
+        }
+    },
+
+    loaded: function(element) {
+        this._loading = false;
+        if (element) {
+            $(element).plainOverlay("hide", {duration: 200});
+        } else {
+            this.$el.plainOverlay("hide", {duration: 200});
+        }
     }
 });

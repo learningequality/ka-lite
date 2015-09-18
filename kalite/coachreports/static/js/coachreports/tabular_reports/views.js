@@ -105,7 +105,7 @@ var DetailPanelView = BaseView.extend({
 
     render: function() {
         var item_count = 0;
-        if (this.collection.meta) {
+        if (this.collection && this.collection.meta) {
             item_count = this.collection.meta.total_count;
         }
         this.pages = [];
@@ -119,14 +119,16 @@ var DetailPanelView = BaseView.extend({
             itemdata: this.content_item.attributes,
             pages: this.pages,
             page: this.page,
-            collection: this.collection.to_objects()
+            collection: this.collection ? this.collection.to_objects() : []
         }));
-        this.bodyView = new DetailPanelBodyView ({
-            collection: this.collection,
-            // Question number of first question on this page
-            start_number: (this.page - 1)*this.limit + 1,
-            el: this.$(".body")
-        });
+        if (this.collection) {
+            this.bodyView = new DetailPanelBodyView ({
+                collection: this.collection,
+                // Question number of first question on this page
+                start_number: (this.page - 1)*this.limit + 1,
+                el: this.$(".body")
+            });
+        }
     }
 });
 
@@ -151,19 +153,20 @@ var DetailPanelInlineRowView = BaseView.extend({
             tagName: 'td',
             model: this.model,
             content_item: this.content_item,
-            attributes: {colspan: this.contents_length - this.content_item_place}
+            attributes: {colspan: Math.min(this.contents_length - this.content_item_place, 6)}
         });
 
         // Add in a view that spans the columns up to the selected cell.
-        this.spacer_view = new BaseView({
+        this.left_spacer_view = new BaseView({
             tagName: 'td',
             attributes: {colspan: this.content_item_place + 1}
         });
 
-        this.spacer_view.render();
+        this.left_spacer_view.render();
 
-        this.$el.append(this.spacer_view.el);
+        this.$el.append(this.left_spacer_view.el);
         this.$el.append(this.detail_view.el);
+
     }
 });
 
@@ -313,7 +316,7 @@ var TabularReportView = BaseView.extend({
     template: require("./hbtemplates/tabular-view.handlebars"),
 
     initialize: function(options) {
-        _.bindAll(this, "set_data_model");
+        _.bindAll(this, "set_data_model", "scroll_bottom", "scroll_top");
         this.complete_callback = options.complete;
         this.set_data_model();
         this.listenTo(this.model, "change", this.set_data_model);
@@ -338,10 +341,28 @@ var TabularReportView = BaseView.extend({
         
         this.$('.headrowuser').css("min-width", this.$('.headrow.data').outerWidth());
 
+        this.$(".scroller").css("width", this.$("table").outerWidth());
+
         if(this.complete_callback) {
             this.complete_callback();
         }
 
+        this.$("#displaygrid").scroll(this.scroll_bottom);
+
+        this.$(".top-scroll").scroll(this.scroll_top);
+
+    },
+
+    scroll_bottom: function() {
+        this.scroll(".top-scroll", "#displaygrid");
+    },
+
+    scroll_top: function() {
+        this.scroll("#displaygrid", ".top-scroll");
+    },
+
+    scroll: function(set, from) {
+        this.$(set).scrollLeft(this.$(from).scrollLeft());
     },
 
     no_user_error: function() {
