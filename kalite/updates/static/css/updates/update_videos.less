@@ -1,20 +1,23 @@
 @import "../../../../../node_modules/jquery.fancytree/dist/skin-common.less";
 
 @fancy-inline-sprites: true;
-@fancy-image-dir: "../../../../../node_modules/jquery.fancytree/dist/skin-Lion";
+@fancy-image-dir: "../../../../../node_modules/jquery.fancytree/dist/skin-lion";
 
 #content_tree .complete span.fancytree-icon {
-    margin-top: 2px;
+    margin-top: 0;
+    vertical-align: middle;
     background: url(/static/images/distributed/circle-complete.png) no-repeat;
 }
 
 #content_tree .partial span.fancytree-icon {
-    margin-top: 2px;
+    margin-top: 0;
+    vertical-align: middle;
     background: url(/static/images/distributed/circle-partial.png) no-repeat;
 }
 
 #content_tree .unstarted span.fancytree-icon {
-    margin-top: 2px;
+    margin-top: 0;
+    vertical-align: middle;
     background: url(/static/images/distributed/circle-empty.png) no-repeat;
 }
 
@@ -32,10 +35,6 @@ span.fancytree-expanded {
 }
 span.fancytree-checkbox {
     margin-top: 6px;
-}
-#content_tree .unstarted span.fancytree-icon {
-    margin-top: 0;
-    vertical-align: middle;
 }
 span.fancytree-expander {
     margin-top: 5px;
