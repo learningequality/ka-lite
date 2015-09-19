@@ -33,11 +33,18 @@ span.fancytree-expanded {
     border-color: #5AA685;
     background-color: #5AA685;
 }
+
+span.fancytree-expanded::before {
+    font-family: "Glyphicons Halflings";
+    content: "\e118  ";
+    font-size: 0.8em;
+    color: white;
+}
 span.fancytree-checkbox {
     margin-top: 6px;
 }
 span.fancytree-expander {
-    margin-top: 5px;
+    display: none;
 }
 ul.fancytree-container:focus {
     outline: 0;
@@ -56,7 +63,10 @@ ul.fancytree-container:focus {
     background-color: #d0d0d0;
 }
 .fancytree-has-children::before {
-    content: " \1F4C2";
+    font-family: "Glyphicons Halflings";
+    content: "\e117  ";
+    font-size: 0.8em;
+    color: grey;
 }
 
 ul.fancytree-container {
