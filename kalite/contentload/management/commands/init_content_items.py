@@ -19,7 +19,7 @@ from kalite.topic_tools.content_models import bulk_insert, get_or_create, create
 from kalite.contentload import settings
 from kalite.contentload.utils import dedupe_paths
 
-from kalite.topic_tools.settings import CONTENT_DATABASE_PATH
+from kalite.topic_tools.settings import CONTENT_DATABASE_PATH, CHANNEL_DATA_PATH
 
 from kalite import i18n
 from django.utils.translation import gettext as _
@@ -97,7 +97,7 @@ class Command(BaseCommand):
         make_option("-f", "--content-items-folderpath",
                     action="store",
                     dest="content_items_filepath",
-                    default=django_settings.CHANNEL_DATA_PATH,
+                    default=CHANNEL_DATA_PATH,
                     help="Override the JSON data source to import assessment items from"),
         make_option("-d", "--database-path",
                     action="store",
