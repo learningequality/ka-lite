@@ -157,7 +157,7 @@ def call_outside_command_with_output(command, *args, **kwargs):
     else:
         kalite_bin = 'kalite'
 
-    cmd = (kalite_bin, "manage", command)
+    cmd = (kalite_bin, "manage", command) if os.name != "nt" else (sys.executable, kalite_bin, "manage", command)
     for arg in args:
         cmd += (arg,)
 
