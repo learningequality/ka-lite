@@ -153,7 +153,7 @@ def call_outside_command_with_output(command, *args, **kwargs):
 
     # build the command
     if kalite_dir:
-        kalite_bin = os.path.join(kalite_dir, "bin/kalite")
+        kalite_bin = os.path.join(kalite_dir, "bin", "kalite")
     else:
         kalite_bin = 'kalite'
 
