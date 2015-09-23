@@ -5,6 +5,7 @@ var messages = require("utils/messages");
 var base = require("updates/base");
 var connectivity = require("utils/connectivity");
 var sprintf = require("sprintf-js").sprintf;
+var get_params = require("utils/get_params");
 
 require("../../../css/updates/update_videos.less");
 
@@ -299,12 +300,12 @@ $(function() {
 
 
     if ($("#download_language_selector option").length > 1) {
-        $("#language_choice_titlebar a").attr("onclick", "show_language_selector();");
+        show_language_selector();
     }
 
     $("#download_language_selector").change(function() {
          var lang_code = $("#download_language_selector option:selected")[0].value;
-         window.location.href = setGetParam(window.location.href, "lang", lang_code);
+         window.location.href = get_params.setGetParam(window.location.href, "lang", lang_code);
     });
     // end onload functions
 });
