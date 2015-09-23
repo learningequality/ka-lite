@@ -299,7 +299,8 @@ $(function() {
 
 
     if ($("#download_language_selector option").length > 1) {
-        $("#language_choice_titlebar a").attr("onclick", "show_language_selector();");
+        // $('#language_choice_titlebar a').click(show_language_selector);
+        show_language_selector();
     }
 
     $("#download_language_selector").change(function() {
