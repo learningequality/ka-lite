@@ -15,6 +15,7 @@ var lastKey = null;
 var nErrors = 0;
 var videos_downloading = false;
 var numVideos = null;
+var downloading_node = null;
 
 function video_start_callback(progress_log, resp) {
     lastKey = null;
@@ -61,6 +62,10 @@ function video_check_callback(progress_log, resp) {
                 $(".progress-section, #cancel-download").hide();
                 $("#download-videos").removeAttr("disabled");
                 base.updatesReset(progress_log.process_name);
+                //update fancytree to reflect the current status of the videos
+                $.each(downloading_node, function(ind, node) {
+                    updateNodeCompleteness(node);
+                });
                 return;
 
             } else if (lastKey != currentKey) {
@@ -199,6 +204,8 @@ $(function() {
                 $("#download-videos").removeAttr("disabled");
             });
 
+        //keep a copy of the selected node
+        downloading_node = tree.getSelectedNodes();
         // Update the UI
         unselectAllNodes();
         $("#cancel-download").show();
@@ -408,6 +415,51 @@ function updateNodeClass(node) {
             setNodeClass(node.data.key, "unstarted");
         } else {
             setNodeClass(node.data.key, "partial");
+        }
+    }
+}
+
+function updateNodeCompleteness(node){
+    //update the selected node
+    node.extraClasses = "complete";
+    node.renderStatus();
+    //1. update the selected node's ancestors
+    if (node.parent) {
+        recurParentNode(node.parent);
+    }
+    //2. update the selected node's children
+    if (node.children) {
+        recurChildNode(node);
+    }
+}
+
+function recurParentNode(node) {
+    var not_completed = false;
+    for (var i = 0; i < node.children.length; i++) {
+        var child = node.children[i];
+        if (child.extraClasses != "complete"){
+            not_completed = true;
+        }
+    }
+    if (not_completed) {
+        node.extraClasses = "partial";
+        node.renderStatus();
+    } else {
+        node.extraClasses = "complete";
+        node.renderStatus();
+    }
+    if (node.parent) {
+        recurParentNode(node.parent);
+    }
+}
+
+function recurChildNode(node) {
+    for (var i = 0; i < node.children.length; i++) {
+        var child = node.children[i];
+        child.extraClasses = "complete";
+        child.renderStatus();
+        if(child.children){
+            recurChildNode(child);
         }
     }
 }
