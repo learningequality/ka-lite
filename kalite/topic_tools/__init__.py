@@ -370,7 +370,7 @@ def get_content_cache(force=False, annotate=False, language=None):
             # Sort all subtitle URLs by language code
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
-            with i18n.translate_block(content_lang):
+            with i18n.translate_block(language):
                 content["selected_language"] = content_lang
                 content["title"] = _(content["title"])
                 content["description"] = _(content.get("description")) if content.get("description") else ""
