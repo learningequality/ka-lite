@@ -469,7 +469,9 @@ var UserView = BaseView.extend({
                 // If there is already a loginModalView for some reason, just set the above options on it
                 // and rerender
                 this.loginModalView.set_options(options);
-                this.loginModalView.render();
+                if (this.login_start_open) {
+                    this.loginModalView.show_modal();
+                }
             } else {
                 // Otherwise just start the modal view with these options, but add in the statusModel with it
                 options.model = this.model;
