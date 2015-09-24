@@ -64,7 +64,7 @@ function video_check_callback(progress_log, resp) {
                 base.updatesReset(progress_log.process_name);
                 //update fancytree to reflect the current status of the videos
                 $.each(downloading_node, function(ind, node) {
-                    updateNodeCompleteness(node);
+                    updateNodeCompleteness(node, "complete");
                 });
                 return;
 
@@ -234,10 +234,18 @@ $(function() {
                     // Prep
                     // Get all videos marked for download
 
+                    //keep a copy of the selected node
+                    downloading_node = tree.getSelectedNodes();
+
                     var youtube_ids = getSelectedStartedMetadata("youtube_id");
                     // Do the request
                     api.doRequest(window.Urls.delete_videos(), {youtube_ids: youtube_ids})
                         .success(function() {
+                            //update fancytree to reflect the current status of the videos
+                            $.each(downloading_node, function(ind, node) {
+                                updateNodeCompleteness(node, "unstarted");
+                            });
+
                             $.each(youtube_ids, function(ind, id) {
                                 setNodeClass(id, "unstarted");
                             });
@@ -419,47 +427,48 @@ function updateNodeClass(node) {
     }
 }
 
-function updateNodeCompleteness(node){
+function updateNodeCompleteness(node, tobe_class){
     //update the selected node
-    node.extraClasses = "complete";
+    node.extraClasses = tobe_class;
     node.renderStatus();
     //1. update the selected node's ancestors
     if (node.parent) {
-        recurParentNode(node.parent);
+        recurParentNode(node.parent, tobe_class);
     }
     //2. update the selected node's children
     if (node.children) {
-        recurChildNode(node);
+        recurChildNode(node, tobe_class);
     }
 }
 
-function recurParentNode(node) {
-    var not_completed = false;
+function recurParentNode(node, tobe_class) {
+    var completeness = false;
     for (var i = 0; i < node.children.length; i++) {
         var child = node.children[i];
-        if (child.extraClasses != "complete"){
-            not_completed = true;
+        if (child.extraClasses != tobe_class){
+            completeness = true;
+            break;
         }
     }
-    if (not_completed) {
+    if (completeness) {
         node.extraClasses = "partial";
         node.renderStatus();
     } else {
-        node.extraClasses = "complete";
+        node.extraClasses = tobe_class;
         node.renderStatus();
     }
     if (node.parent) {
-        recurParentNode(node.parent);
+        recurParentNode(node.parent, tobe_class);
     }
 }
 
-function recurChildNode(node) {
+function recurChildNode(node, tobe_class) {
     for (var i = 0; i < node.children.length; i++) {
         var child = node.children[i];
-        child.extraClasses = "complete";
+        child.extraClasses = tobe_class;
         child.renderStatus();
         if(child.children){
-            recurChildNode(child);
+            recurChildNode(child, tobe_class);
         }
     }
 }
