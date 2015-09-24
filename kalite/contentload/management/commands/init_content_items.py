@@ -107,7 +107,7 @@ class Command(BaseCommand):
         make_option("-b", "--no-bulk-create",
                     action="store_false",
                     dest="no_bulk_create",
-                    default=True,
+                    default=False,
                     help="Create the records in bulk (warning: will delete destination DB first)"),
         make_option("-c", "--channel",
                     action="store",
@@ -156,7 +156,7 @@ class Command(BaseCommand):
             bulk_insert(items, database_path=database_path)
         else:
             logging.info("Individually creating {number} topic and content items".format(number=len(items)))
-            for k, v in raw_items.iteritems():
+            for k, v in items.iteritems():
                 get_or_create(items, database_path=database_path)
 
         logging.info("Adding parent mapping information to nodes")
