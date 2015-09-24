@@ -396,7 +396,7 @@ function withNodes(nodeKey, callback, currentNode) {
 
 function setNodeClass(nodeKey, className) {
     withNodes(nodeKey, function(node) {
-        $(node.span).removeClass("unstarted partial complete").extraClasses(className);
+        // $(node.span).removeClass("unstarted partial complete").extraClasses(className);  no idea why run this here?
         node.extraClasses = className;
         if (node.parent) {
             updateNodeClass(node.parent);
