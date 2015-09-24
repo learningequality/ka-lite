@@ -178,7 +178,7 @@ $(function() {
                         // Best to assume offline, as online check returns much faster than offline check.
                         if(server_is_online){
                             $(".enable-when-server-online").removeAttr("disabled");
-                            base.updatesStart("videodownload", 5000, video_callbacks);
+                            // base.updatesStart("videodownload", 5000, video_callbacks); no idea why run this here?
                         } else {
                             messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
                         }
@@ -396,7 +396,7 @@ function withNodes(nodeKey, callback, currentNode) {
 
 function setNodeClass(nodeKey, className) {
     withNodes(nodeKey, function(node) {
-        $(node.span).removeClass("unstarted partial complete").extraClasses(className);
+        // $(node.span).removeClass("unstarted partial complete").extraClasses(className);  no idea why run this here?
         node.extraClasses = className;
         if (node.parent) {
             updateNodeClass(node.parent);
