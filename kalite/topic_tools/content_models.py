@@ -361,7 +361,7 @@ def get_or_create(item, db=None, **kwargs):
     """
     if item:
         with Using(db, [Item]):
-            Item.get_or_create(parse_model_data(item))
+            Item.create_or_get(**parse_model_data(item))
 
 
 @set_database

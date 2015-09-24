@@ -105,7 +105,7 @@ class Command(BaseCommand):
                     default="",
                     help="Override the destination path for the content item DB file"),
         make_option("-b", "--no-bulk-create",
-                    action="store_false",
+                    action="store_true",
                     dest="no_bulk_create",
                     default=False,
                     help="Create the records in bulk (warning: will delete destination DB first)"),
@@ -137,6 +137,8 @@ class Command(BaseCommand):
         if bulk_create and os.path.isfile(database_path):
             if kwargs["overwrite"]:
                 os.remove(database_path)
+                logging.info("Creating database file at {path}".format(path=database_path))
+                create_table(database_path=database_path)
             else:
                 logging.info("Database already exists, use --overwrite to force overwrite")
                 return None
@@ -147,17 +149,13 @@ class Command(BaseCommand):
 
         items, parental_units = generate_topic_tree_items(channel=channel, language=language)
 
-        logging.info("Creating database file at {path}".format(path=database_path))
-
-        create_table(database_path=database_path)
-
         if bulk_create:
             logging.info("Bulk creating {number} topic and content items".format(number=len(items)))
             bulk_insert(items, database_path=database_path)
         else:
             logging.info("Individually creating {number} topic and content items".format(number=len(items)))
-            for k, v in items.iteritems():
-                get_or_create(items, database_path=database_path)
+            for item in items:
+                get_or_create(item, database_path=database_path)
 
         logging.info("Adding parent mapping information to nodes")
         update_parents(parent_mapping=parental_units, database_path=database_path)
