@@ -130,6 +130,8 @@ def cancel_update_progress(request, process_log):
 @require_admin
 @api_handle_error_with_json
 def start_video_download(request):
+    force_job("videodownload", stop=True, locale=request.language)
+
     """
     API endpoint for launching the videodownload job.
     """
