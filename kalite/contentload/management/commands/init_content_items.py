@@ -137,11 +137,13 @@ class Command(BaseCommand):
         if bulk_create and os.path.isfile(database_path):
             if kwargs["overwrite"]:
                 os.remove(database_path)
-                logging.info("Creating database file at {path}".format(path=database_path))
-                create_table(database_path=database_path)
             else:
                 logging.info("Database already exists, use --overwrite to force overwrite")
                 return None
+
+        if not os.path.isfile(database_path):
+            logging.info("Creating database file at {path}".format(path=database_path))
+            create_table(database_path=database_path)
 
         channel_data_path = kwargs.get("content_items_filepath")
 
