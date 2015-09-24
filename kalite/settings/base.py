@@ -10,7 +10,7 @@ import sys
 import warnings
 
 from kalite import ROOT_DATA_PATH
-from kalite.shared.warnings import RemovedInKALite_v015_Warning
+from kalite.shared.warnings import RemovedInKALite_v016_Warning
 
 
 # Load local settings first... loading it again later to have the possibility
@@ -40,7 +40,7 @@ try:
         "in the kalite code base but to put the file somewhere else in your "
         "python path, for instance in the current directory when running "
         "'kalite --settings=my_module'.",
-        RemovedInKALite_v015_Warning
+        RemovedInKALite_v016_Warning
     )
 except ImportError:
     local_settings = object()
