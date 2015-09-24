@@ -226,7 +226,9 @@ function updatesReset(process_name) {
 
     // Do callbacks
     if (process_callbacks[process_name] && "reset" in process_callbacks[process_name]) {
-        process_callbacks[process_name]["reset"](progress_log);
+        if (typeof progress_log != 'undefined') {
+            process_callbacks[process_name]["reset"](progress_log);
+        }
     }
 
     // Clean up UI

@@ -198,7 +198,7 @@ $(function() {
         // Do the request
         api.doRequest(window.Urls.start_video_download(), {youtube_ids: youtube_ids})
             .success(function() {
-                base.updatesStart("videodownload", 5000, video_callbacks);
+                base.updatesStart("videodownload", 2000, video_callbacks);
             })
             .fail(function(resp) {
                 $("#download-videos").removeAttr("disabled");
