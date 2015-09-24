@@ -105,86 +105,87 @@ $(function() {
 
     api.doRequest(window.Urls.get_annotated_topic_tree(), {})
         .success(function(treeData) {
-            if ($.isEmptyObject(treeData)) {
-                $("#content_tree h2").html(gettext("Apologies, but there are no videos available for this language."));
-            }
-
             $("#content_tree").html("");
 
-            $("#content_tree").fancytree({
-                autoCollapse: true,
-                aria: true, // Enable WAI-ARIA support.
-                checkbox: true, // Show checkboxes.
-                debugLevel: 0, // 0:quiet, 1:normal, 2:debug
-                selectMode: 3,
-                source: [treeData],
-                click: function(event, data) {
-                    if (data.targetType === "checkbox"){
-                        return true;
-                    }else{
-                        if(data.node.hasChildren()){
-                            data.node.toggleExpanded();
+            if (treeData === null) {
+                messages.show_message("warning", gettext("Apologies, but there are no videos available for this language."));
+            } else {
+
+                $("#content_tree").fancytree({
+                    autoCollapse: true,
+                    aria: true, // Enable WAI-ARIA support.
+                    checkbox: true, // Show checkboxes.
+                    debugLevel: 0, // 0:quiet, 1:normal, 2:debug
+                    selectMode: 3,
+                    source: [treeData],
+                    click: function(event, data) {
+                        if (data.targetType === "checkbox"){
+                            return true;
                         }else{
-                            data.node.toggleSelected();
+                            if(data.node.hasChildren()){
+                                data.node.toggleExpanded();
+                            }else{
+                                data.node.toggleSelected();
+                            }
+                            return false;
                         }
+                    },
+                    dblclick: function(event, data) {
+                        data.node.toggleSelected();
                         return false;
-                    }
-                },
-                dblclick: function(event, data) {
-                    data.node.toggleSelected();
-                    return false;
-                },
-                select: function(event, node) {
+                    },
+                    select: function(event, node) {
 
-                    var newVideoMetadata = getSelectedIncompleteMetadata();
-                    var oldVideoMetadata = getSelectedStartedMetadata();
-                    var newVideoCount    = newVideoMetadata.length;
-                    var oldVideoCount    = oldVideoMetadata.length;
-                    var newVideoSize     = _(newVideoMetadata).reduce(function(memo, meta) {
-                        // Reduce to compute sum
-                        return memo + meta.size;
-                    }, 0);
-                    var oldVideoSize     = _(oldVideoMetadata).reduce(function(memo, meta) {
-                        return memo + meta.size;
-                    }, 0);
+                        var newVideoMetadata = getSelectedIncompleteMetadata();
+                        var oldVideoMetadata = getSelectedStartedMetadata();
+                        var newVideoCount    = newVideoMetadata.length;
+                        var oldVideoCount    = oldVideoMetadata.length;
+                        var newVideoSize     = _(newVideoMetadata).reduce(function(memo, meta) {
+                            // Reduce to compute sum
+                            return memo + meta.size;
+                        }, 0);
+                        var oldVideoSize     = _(oldVideoMetadata).reduce(function(memo, meta) {
+                            return memo + meta.size;
+                        }, 0);
 
-                    $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) === 0);
+                        $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) === 0);
 
-                    if (newVideoCount === 0) {
-                        $("#download-videos").hide();
-                    } else {
-                        $("#download-videos-text").text(sprintf(gettext("Download %(vid_count)d new selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
-                            vid_count: newVideoCount,
-                            vid_size: (newVideoSize < Math.pow(2, 10)) ? newVideoSize : newVideoSize / Math.pow(2, 10),
-                            vid_size_units: (newVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
-                        }));
-                        $("#download-videos").toggle($("#download-videos").attr("disabled") === undefined); // only show if we're not currently downloading
-                    }
-                    if (oldVideoCount === 0) {
-                        $("#delete-videos").hide();
-                    } else {
-                        $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
-                            vid_count: oldVideoCount,
-                            vid_size: (oldVideoSize < Math.pow(2, 10)) ? oldVideoSize : oldVideoSize / Math.pow(2, 10),
-                            vid_size_units: (oldVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
-                        }));
-                        $("#delete-videos").show();
-                    }
-                },
-                init: function(event, data) {
-                    tree = data.tree;
-                    connectivity.with_online_status("server", function(server_is_online) {
-                        // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
-                        // Best to assume offline, as online check returns much faster than offline check.
-                        if(server_is_online){
-                            $(".enable-when-server-online").removeAttr("disabled");
-                            base.updatesStart("videodownload", 5000, video_callbacks);
+                        if (newVideoCount === 0) {
+                            $("#download-videos").hide();
                         } else {
-                            messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
+                            $("#download-videos-text").text(sprintf(gettext("Download %(vid_count)d new selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
+                                vid_count: newVideoCount,
+                                vid_size: (newVideoSize < Math.pow(2, 10)) ? newVideoSize : newVideoSize / Math.pow(2, 10),
+                                vid_size_units: (newVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
+                            }));
+                            $("#download-videos").toggle($("#download-videos").attr("disabled") === undefined); // only show if we're not currently downloading
                         }
-                    });
-                }
-            });
+                        if (oldVideoCount === 0) {
+                            $("#delete-videos").hide();
+                        } else {
+                            $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
+                                vid_count: oldVideoCount,
+                                vid_size: (oldVideoSize < Math.pow(2, 10)) ? oldVideoSize : oldVideoSize / Math.pow(2, 10),
+                                vid_size_units: (oldVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
+                            }));
+                            $("#delete-videos").show();
+                        }
+                    },
+                    init: function(event, data) {
+                        tree = data.tree;
+                        connectivity.with_online_status("server", function(server_is_online) {
+                            // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+                            // Best to assume offline, as online check returns much faster than offline check.
+                            if(server_is_online){
+                                $(".enable-when-server-online").removeAttr("disabled");
+                                base.updatesStart("videodownload", 5000, video_callbacks);
+                            } else {
+                                messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
+                            }
+                        });
+                    }
+                });
+            }
         });
 
     $("#download-videos").click(function() {
