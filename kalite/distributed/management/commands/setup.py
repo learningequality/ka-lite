@@ -242,7 +242,7 @@ class Command(BaseCommand):
         if sys.version_info < (2, 7, 9):
             logging.warning(
                 "It's recommended that you install Python version 2.7.9. Your version is: %d.%d.%d\n" % sys.version_info[:3])
-            if sys.version_info < (2, 6):
+            if sys.version_info < (2, 7):
                 warnings.warn(
                     "Support for Python 2.6 will be discontinued in 0.16, please upgrade.",
                     RemovedInKALite_v016_Warning
