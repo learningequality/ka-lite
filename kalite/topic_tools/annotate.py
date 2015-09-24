@@ -140,7 +140,7 @@ def update_content_availability(content_list, language="en"):
                 # Sort all subtitle URLs by language code
                 update["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
-            with i18n.translate_block(content_lang):
+            with i18n.translate_block(language):
                 update["title"] = _(content.get("title"))
                 update["description"] = _(content.get("description")) if content.get("description") else ""
 
