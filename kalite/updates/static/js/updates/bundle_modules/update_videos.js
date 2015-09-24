@@ -15,6 +15,7 @@ var lastKey = null;
 var nErrors = 0;
 var videos_downloading = false;
 var numVideos = null;
+var downloading_node = null;
 
 function video_start_callback(progress_log, resp) {
     lastKey = null;
@@ -61,6 +62,10 @@ function video_check_callback(progress_log, resp) {
                 $(".progress-section, #cancel-download").hide();
                 $("#download-videos").removeAttr("disabled");
                 base.updatesReset(progress_log.process_name);
+                //update fancytree to reflect the current status of the videos
+                $.each(downloading_node, function(ind, node) {
+                    updateNodeCompleteness(node, "complete");
+                });
                 return;
 
             } else if (lastKey != currentKey) {
@@ -199,6 +204,8 @@ $(function() {
                 $("#download-videos").removeAttr("disabled");
             });
 
+        //keep a copy of the selected node
+        downloading_node = tree.getSelectedNodes();
         // Update the UI
         unselectAllNodes();
         $("#cancel-download").show();
@@ -227,10 +234,18 @@ $(function() {
                     // Prep
                     // Get all videos marked for download
 
+                    //keep a copy of the selected node
+                    downloading_node = tree.getSelectedNodes();
+
                     var youtube_ids = getSelectedStartedMetadata("youtube_id");
                     // Do the request
                     api.doRequest(window.Urls.delete_videos(), {youtube_ids: youtube_ids})
                         .success(function() {
+                            //update fancytree to reflect the current status of the videos
+                            $.each(downloading_node, function(ind, node) {
+                                updateNodeCompleteness(node, "unstarted");
+                            });
+
                             $.each(youtube_ids, function(ind, id) {
                                 setNodeClass(id, "unstarted");
                             });
@@ -408,6 +423,52 @@ function updateNodeClass(node) {
             setNodeClass(node.data.key, "unstarted");
         } else {
             setNodeClass(node.data.key, "partial");
+        }
+    }
+}
+
+function updateNodeCompleteness(node, tobe_class){
+    //update the selected node
+    node.extraClasses = tobe_class;
+    node.renderStatus();
+    //1. update the selected node's ancestors
+    if (node.parent) {
+        recurParentNode(node.parent, tobe_class);
+    }
+    //2. update the selected node's children
+    if (node.children) {
+        recurChildNode(node, tobe_class);
+    }
+}
+
+function recurParentNode(node, tobe_class) {
+    var completeness = false;
+    for (var i = 0; i < node.children.length; i++) {
+        var child = node.children[i];
+        if (child.extraClasses != tobe_class){
+            completeness = true;
+            break;
+        }
+    }
+    if (completeness) {
+        node.extraClasses = "partial";
+        node.renderStatus();
+    } else {
+        node.extraClasses = tobe_class;
+        node.renderStatus();
+    }
+    if (node.parent) {
+        recurParentNode(node.parent, tobe_class);
+    }
+}
+
+function recurChildNode(node, tobe_class) {
+    for (var i = 0; i < node.children.length; i++) {
+        var child = node.children[i];
+        child.extraClasses = tobe_class;
+        child.renderStatus();
+        if(child.children){
+            recurChildNode(child, tobe_class);
         }
     }
 }
