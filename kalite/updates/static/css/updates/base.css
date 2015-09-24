@@ -23,6 +23,7 @@
     float: left;
     padding: 5px 0px 0px 0px;
     display: none;
+    width: 100%;
 }
 
 .progress-text {
