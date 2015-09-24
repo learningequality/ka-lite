@@ -292,8 +292,20 @@ USE_I18N = getattr(local_settings, "USE_I18N", True)
 USE_L10N = getattr(local_settings, "USE_L10N", False)
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = getattr(local_settings, "SECRET_KEY",
-                     "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
+SECRET_KEY_FILE = getattr(local_settings,
+                          "SECRET_KEY_FILE",
+                          os.path.join(USER_DATA_ROOT, "secretkey.txt"))
+
+
+try:
+    with open(SECRET_KEY_FILE) as f:
+        SECRET_KEY = getattr(local_settings, "SECRET_KEY", f.read())
+except Exception as e:
+    sys.stderr.write("Error reading secret key file. Generating one now. Error was: %s\n" % e)
+
+    from ._utils import generate_secret_key, cache_secret_key
+    SECRET_KEY = generate_secret_key()
+    cache_secret_key(SECRET_KEY, SECRET_KEY_FILE)
 
 LANGUAGE_COOKIE_NAME = "django_language"
 
