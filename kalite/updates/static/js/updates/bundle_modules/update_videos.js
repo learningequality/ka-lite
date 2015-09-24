@@ -178,7 +178,7 @@ $(function() {
                         // Best to assume offline, as online check returns much faster than offline check.
                         if(server_is_online){
                             $(".enable-when-server-online").removeAttr("disabled");
-                            // base.updatesStart("videodownload", 5000, video_callbacks); no idea why run this here?
+                            base.updatesStart("videodownload", 5000, video_callbacks);
                         } else {
                             messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
                         }
