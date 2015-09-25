@@ -4,6 +4,9 @@ Windows
 #. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-14>`_ installer.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
+Upgrading KA Lite over an existing installation is easy -- just run the installer and follow the prompts!
+You don't need to uninstall your old KA Lite installation first.
+
 Mac/OSX
 =======
 
