@@ -50,6 +50,10 @@
         <script src="{% static 'js/distributed/bundles/bundle_common.js' %}"></script>
         <script src="{% static 'js/distributed/bundles/bundle_base.js' %}"></script>
 
+        {% if settings.INCLUDE_QTIP %}
+            <script src="{% static 'js/distributed/bundles/bundle_qtip.js' %}"></script>
+        {% endif %}
+
         <script>
         window.sessionModel.set({
           USER_URL                    : "{% url 'api_dispatch_list' resource_name='user' %}",

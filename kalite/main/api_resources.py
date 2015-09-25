@@ -8,8 +8,7 @@ from django.conf import settings
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
 from kalite.topic_tools.models import AssessmentItem
 
-from kalite.distributed.api_views import get_messages_for_api_calls
-
+from kalite.topic_tools import get_assessment_item_data
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -103,13 +102,14 @@ class AssessmentItemResource(ModelResource):
                 name="api_dispatch_detail"),
         ]
 
-    def detail_uri_kwargs(self, bundle_or_obj):
-        kwargs = {}
-        if getattr(bundle_or_obj, 'obj', None):
-            kwargs['pk'] = bundle_or_obj.obj.id
+
+    def obj_get(self, bundle, **kwargs):
+        id = kwargs.get("id", None)
+        assessment_item = get_assessment_item_data(bundle.request, id)
+        if assessment_item:
+            return AssessmentItem(**assessment_item)
         else:
-            kwargs['pk'] = bundle_or_obj.id
-        return kwargs
+            raise NotFound('AssessmentItem with id %s not found' % id)
 
 
     def obj_create(self, bundle, **kwargs):

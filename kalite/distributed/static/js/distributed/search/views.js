@@ -42,7 +42,7 @@ var AutoCompleteView = BaseView.extend({
         this.$el.html(this.template({search_url: window.Urls.search()}));
 
         this.$("#search").autocomplete({
-            autoFocus: true,
+            autoFocus: false,
             minLength: 3,
             appendTo: ".navbar-collapse",
             html: true,  // extension allows html-based labels
