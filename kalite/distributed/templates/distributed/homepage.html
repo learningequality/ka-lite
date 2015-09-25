@@ -3,10 +3,6 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}">
-{% endblock headcss %}
-
 {% block headjs %}{{ block.super }}
 
     <script src="{% static 'js/distributed/bundles/bundle_homepage.js' %}"></script>

@@ -1,3 +1,5 @@
+@import "../../../../distributed/static/css/distributed/kalite-base.less";
+
 .container-margin-bottom {
     margin-bottom: 50px;
 }
@@ -23,7 +25,7 @@
 }
 
 .coach-reports-row {
-    border-bottom: 3px solid #5AA685;
+    border-bottom: 3px solid @k-accent-color;
     padding: 20px 0;
     margin-bottom: 3%;
     max-width: 95%;
@@ -70,3 +72,6 @@
 	background-color: #FD795B; 
 	}
 
+@import "./tabular_view.less";
+@import "./events_view.less";
+@import "./landing_view.less";
