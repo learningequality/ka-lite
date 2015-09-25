@@ -8,7 +8,7 @@ from django.conf import settings
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
 from kalite.topic_tools.models import AssessmentItem
 
-from kalite.topic_tools import get_assessment_item_data
+from kalite.topic_tools.base import get_assessment_item_data
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
