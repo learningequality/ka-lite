@@ -6,7 +6,7 @@ var Backbone = require("base/backbone");
 var messages = require("utils/messages");
 var $script = require("scriptjs");
 
-require("../../../css/distributed/sidebar.css");
+require("../../../css/distributed/sidebar.less");
 
 var ContentViews = require("content/views");
 var Models = require("./models");

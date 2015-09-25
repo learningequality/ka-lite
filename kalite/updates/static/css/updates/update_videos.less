@@ -1,4 +1,5 @@
 @import "../../../../../node_modules/jquery.fancytree/dist/skin-common.less";
+@import "../../../../distributed/static/css/distributed/kalite-base.less";
 
 @fancy-inline-sprites: true;
 @fancy-image-dir: "../../../../../node_modules/jquery.fancytree/dist/skin-lion";
@@ -30,8 +31,8 @@ li span.fancytree-selected {
     background-color: #00CC99;
 }
 span.fancytree-expanded {
-    border-color: #5AA685;
-    background-color: #5AA685;
+    border-color: @k-accent-color;
+    background-color: @k-accent-color;
 }
 
 span.fancytree-expanded::before {
