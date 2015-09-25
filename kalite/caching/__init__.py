@@ -19,6 +19,7 @@ For any app implementing cacheable data or writing to the web cache, the app sho
 """
 import os
 import glob
+import sys
 
 from django.conf import settings; logging = settings.LOG
 from django.core.urlresolvers import reverse
@@ -79,7 +80,9 @@ def invalidate_all_caches():
         
         for filename in glob.glob(os.path.join(CHANNEL_DATA_PATH, "*.cache")):
             os.remove(filename)
-    else:
+    elif sys.platform != 'darwin':
+        # Macs have to run video download in a subprocess, and as this is only ever called during runtime from
+        # video download or the videoscan subprocess, this never actually affects variables in the main KA Lite thread.
         initialize_content_caches(force=True)
     if caching_is_enabled():
         invalidate_web_cache()
