@@ -217,7 +217,7 @@ $('#beta-checkbox').click(function() {
 
 var languagepack_callbacks = {
     reset: languagepack_reset_callback,
-    completed: languagepage_complete_callback
+    completed: languagepack_complete_callback
 };
 
 function start_languagepack_download(lang_code) {
