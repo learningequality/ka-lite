@@ -5,7 +5,7 @@ var api = require("../utils/api");
 var messages = require("utils/messages");
 var sprintf = require("sprintf-js").sprintf;
 
-require("../../../css/distributed/search_autocomplete.css");
+require("../../../css/distributed/search_autocomplete.less");
 
 var SearchBarTemplate = require("./hbtemplates/search-bar.handlebars");
 var SearchBarItemTemplate = require("./hbtemplates/search-item.handlebars");

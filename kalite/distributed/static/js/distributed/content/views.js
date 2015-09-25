@@ -8,7 +8,7 @@ var $script = require("scriptjs");
 var ContentBaseView = require("./baseview");
 var ExerciseModels = require("exercises/models");
 
-require("../../../css/distributed/content.css");
+require("../../../css/distributed/content.less");
 
 var ContentWrapperView = BaseView.extend({
 
