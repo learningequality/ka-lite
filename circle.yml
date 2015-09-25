@@ -4,6 +4,7 @@ machine:
 
 dependencies:
   cache_directories:
+    - "content"
     - "data"
     - "sc-latest-linux"
   override:
@@ -17,7 +18,8 @@ dependencies:
 test:
   override:
     - node build.js
-    - kalite start --settings=kalite.project.settings.disk_based_cache --traceback -v2
+    - kalite manage init_content_items
+    - kalite start --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
     - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready > sc_output.txt 2>&1:

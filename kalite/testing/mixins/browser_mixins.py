@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from ..browser import browse_to, setup_browser, wait_for_page_change
 from kalite.facility.models import Facility, FacilityUser
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.content_models import get_random_content
 
 from django.contrib.auth.models import User
 
@@ -403,12 +403,7 @@ class BrowserActionMixins(object):
 
     def browse_to_random_video(self):
         available = False
-        while not available:
-            video = get_content_cache()[choice(get_content_cache().keys())]
-            # The inclusion of this line can potentially lead to the test hanging indefinitely
-            # So we can't assume that a video has been downloaded for testing purposes :(
-            # available = (len(video['languages']) > 0)
-            available = True
+        video = get_random_content(limit=1)[0]
         video_url = video['path']
         self.browse_to(self.reverse("learn") + video_url)
 

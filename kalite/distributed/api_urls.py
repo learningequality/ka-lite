@@ -11,7 +11,6 @@ import kalite.django_cherrypy_wsgiserver.api_urls
 import kalite.i18n.api_urls
 import kalite.coachreports.api_urls
 import kalite.control_panel.api_urls
-import kalite.playlist.api_urls
 import kalite.contentload.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
@@ -54,10 +53,6 @@ urlpatterns += patterns('kalite.updates.api_views',
     url(r'^', include(kalite.updates.api_urls)),
 )
 
-# Playlist endpoints for updating playlist info
-urlpatterns += patterns('kalite.playlist.api_views',
-    url(r'^playlists/', include(kalite.playlist.api_urls)),
-)
 
 # Control panel data export endpoints
 urlpatterns += patterns('kalite.control_panel.api_views',

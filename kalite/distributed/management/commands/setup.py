@@ -478,9 +478,9 @@ class Command(BaseCommand):
                 start_script_path = kalite_executable
 
             # Run videoscan, on the distributed server.
-            print("Scanning for video files in the content directory (%s)" %
+            print("Annotating availability of all content, checking for content in this directory: (%s)" %
                   settings.CONTENT_ROOT)
-            call_command("videoscan")
+            call_command("annotate_content_items")
 
             # done; notify the user.
             print("\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")

@@ -17,6 +17,7 @@ from kalite.main.models import AttemptLog, ExerciseLog, ContentRating
 from kalite.shared.api_auth.auth import ObjectAdminAuthorization
 from kalite.store.models import StoreTransactionLog, StoreItem
 from kalite.student_testing.models import TestLog
+from kalite.topic_tools.content_models import get_content_item
 
 from .api_serializers import CSVSerializer
 
@@ -138,6 +139,7 @@ class ParentFacilityUserResource(ModelResource):
             params = ["%s-%s" % (k,str(v)[0:8]) for (k,v) in request.GET.items() if v and k not in ["format", "limit"]]
             response["Content-Disposition"] = "filename=%s__%s__exported_at-%s.csv" % (request.path.strip("/").split("/")[-1], "__".join(params), datetime.now().strftime("%Y%m%d_%H%M%S"))
         return response
+
 
 class FacilityUserResource(ParentFacilityUserResource):
 
@@ -379,6 +381,7 @@ class ContentRatingExportResource(ParentFacilityUserResource):
         content_ratings = ContentRating.objects.filter(user__id__in=self._facility_users.keys())
         return super(ContentRatingExportResource, self).authorized_read_list(content_ratings, bundle)
 
+
     def alter_list_data_to_serialize(self, request, to_be_serialized):
         """
         Defines a hook to process list view data before being serialized.
@@ -389,7 +392,7 @@ class ContentRatingExportResource(ParentFacilityUserResource):
         :param to_be_serialized: the unprocessed list of objects that will be serialized
         :return: the _processed_ list of objects to serialize
         """
-        from kalite.topic_tools import get_content_data, get_exercise_data
+
         filtered_bundles = [bundle for bundle in to_be_serialized["objects"] if
                             (bundle.data["difficulty"], bundle.data["quality"]) != (0, 0)]
         serializable_objects = []
@@ -402,7 +405,7 @@ class ContentRatingExportResource(ParentFacilityUserResource):
             bundle.data.pop("user")
 
             content_id = bundle.data.pop("content_id", None)
-            content = get_content_data(request, content_id) or get_exercise_data(request, content_id)
+            content = get_content_item(language=request.language, content_id=content_id)
             bundle.data["content_title"] = content.get("title", "Missing title") if content else "Unknown content"
 
             serializable_objects.append(bundle)
