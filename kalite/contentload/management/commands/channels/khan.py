@@ -99,7 +99,7 @@ def denorm_data(node):
                     del node[key]
 
 
-def build_full_cache(items, id_key="id"):
+def build_full_cache(items, id_key="id", ids=None):
     """
     Uses list of items retrieved from Khan Academy API to
     create an item cache with fleshed out meta-data.
@@ -138,6 +138,12 @@ def build_full_cache(items, id_key="id"):
             item = json.loads(item.toJSON())
         except AttributeError:
             logging.error("Unable to serialize %r" % item)
+
+        item = whitewash_node_data(item)
+
+        if ids:
+            if item["id"] not in ids:
+                continue
 
         output[item["id"]] = whitewash_node_data(item)
 

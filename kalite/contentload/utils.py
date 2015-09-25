@@ -13,10 +13,7 @@ def dedupe_paths(topic_tree):
 
         children = node.get("children", [])
 
-        kinds = set([child.get("kind") for child in children])
-
-        if len(kinds) > 1:
-            # Should be no slug collisions when only have the same content type
+        if children:
             counts = reduce(group_by_slug, children, {})
             for items in counts.values():
                 # Slug has more than one item!
@@ -29,8 +26,7 @@ def dedupe_paths(topic_tree):
                             item["slug"] = item["slug"] + "_{i}".format(i=i)
                             item["path"] = parent_path + item["slug"] + "/"
                             i += 1
-        elif "Topic" in kinds:
-            for child in children:
-                recurse_nodes(child, node.get("path"))
+        for child in children:
+            recurse_nodes(child, node.get("path"))
 
     recurse_nodes(topic_tree)

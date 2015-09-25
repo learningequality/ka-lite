@@ -2,16 +2,25 @@
 	cursor: pointer;
 }
 
-#displaygrid {
+#displaygrid, .top-scroll {
 	overflow: auto;
 	border-right: 1px solid #bbb;
 }
 
-#displaygrid > .users-table {
+#displaygrid > .users-table{
     width: 11%;
     margin-right: 1px;
     float: left;
     background: white;
+}
+
+.top-scroll, .scroller {
+    height: 20px;
+}
+
+.top-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .detailspanel{
@@ -41,6 +50,7 @@
 }
 
 th.username span {
+    overflow: hidden;
     position: absolute;
     background: white;
     color: #fff;
@@ -49,6 +59,7 @@ th.username span {
     height: 37px;
     padding-top: 0px;
     border: 1px solid #ddd;
+    margin-left: -2px;
 }
 
 table.tab_report th.username {
@@ -64,7 +75,6 @@ th.headrow, th.headrow div {
     width: 80px;
     table-layout: fixed;
     font-weight: bold;
-    word-wrap: break-word;
     background-color: white;
     overflow: hidden;
     text-overflow: ellipsis;

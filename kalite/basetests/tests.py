@@ -309,7 +309,7 @@ class PathsTests(DependenciesTests):
     """
 
     JSON_FILES = ("channel_data.json", "contents.json", "exercises.json",
-                  "topic_hierarchy.json", "topics.json",)
+                  "topics.json",)
 
     def test_content_path(self):
         content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))
