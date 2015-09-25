@@ -6,6 +6,10 @@ A person who :
     * adds, manages, and tracks the progress of groups of students.
     * has access to student progress data in the form of coach reports
     * provides instructions to students
+In addition, by default, coaches can:
+    * create coach logins, Learner logins, download videos and language packs
+
+(This can be disabled by the administrator with the RESTRICTED_TEACHER_PERMISSIONS setting)
 
 Coach Reports
 -------------
