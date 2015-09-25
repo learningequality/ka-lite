@@ -26,7 +26,8 @@ from django.test.client import Client
 
 from fle_utils.internet.webcache import get_web_cache, has_cache_key, expire_page, caching_is_enabled, invalidate_web_cache
 from kalite import i18n, topic_tools
-from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP, CHANNEL_DATA_PATH
+from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP, CHANNEL_DATA_PATH, CONTENT_CACHE_FILEPATH
+
 
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
@@ -76,8 +77,8 @@ def invalidate_all_caches():
         # We defer the regeneration of these caches to next system startup, by deleting the existing disk based
         # copies of these caches.
         # This will prompt the caches to be recreated at next system start up, and the disk based copies to be rewritten.
-        
-        for filename in glob.glob(os.path.join(CHANNEL_DATA_PATH, "*.cache")):
+
+        for filename in glob.glob(os.path.join(CHANNEL_DATA_PATH, "*.cache")) + [CONTENT_CACHE_FILEPATH]:
             os.remove(filename)
     else:
         initialize_content_caches(force=True)
