@@ -263,7 +263,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
             selector = focus['selector']
             try:
                 self.browser.execute_script("""
-                    $({selector}).css("box-shadow", "0 0 3pt 2pt red");
+                    $("{selector}").css("box-shadow", "0 0 3pt 2pt red");
                 """.format(selector=selector))
                 if note:
                     note = re.sub(r"\\s", " ", note)
