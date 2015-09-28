@@ -1,13 +1,28 @@
 """
 """
 from django.conf import settings
-
 from django.db.models import signals
 from django.db.models.signals import post_save
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
 
 from .models import Facility
+from .views import add_facility_teacher
 
 FACILITY_CACHE_STALE = False
+
+def is_configured():
+    """
+    Checks whether a system has been configured. For now, it simply 
+    checks if a superuser exists.
+    """
+    try:
+        u = User.objects.get(is_superuser=True)
+    except ObjectDoesNotExist:
+        return False
+
+    return True
 
 def refresh_session_facility_info(request, facility_count):
     # Fix for #1211
@@ -62,3 +77,17 @@ class FacilityCheck:
         if not "facility_exists" in request.session or FACILITY_CACHE_STALE:
             # always refresh for admins, or when no facility exists yet.
             refresh_session_facility_info(request, facility_count=Facility.objects.count())
+
+class ConfigCheck:
+    def process_request(self, request):
+        """
+        Display configuration modal if facility does not have all of the
+        required settings yet.
+        """
+        if is_configured():
+            return None
+
+        #does_database_exist(request)
+        #return HttpResponse("not configured.... ")
+        #response = TemplateResponse("not configured")
+        #return response

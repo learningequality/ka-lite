@@ -188,3 +188,29 @@ def group_edit(request, facility, group_id):
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
+
+#@render_to("facility/config_form.html")
+def does_database_exist(self, request):
+    """
+    Detect if there is an existing database file. If database exists, will 
+    render form that prompts user to keep or delete existing database.
+    
+    Depending on state of database, renders different form questions.
+    """
+
+    # check if database exists
+    database_kind = settings.DATABASES["default"]["ENGINE"]
+    database_file = (
+            "sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
+
+    return HttpResponse("hello, it is not configured. inside does db exist")
+    """
+    if database_file and os.path.exists(database_file):
+        return {
+            "database": "exists"
+        }
+    # else:
+    return {
+        "database": "doesn't exist"
+    }
+    """
