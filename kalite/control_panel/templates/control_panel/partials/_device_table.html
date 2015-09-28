@@ -69,7 +69,7 @@
                                             {% trans "Sync Now!" %}
                                         </a>
                                     {% if not device.is_registered %}
-                                        <a class="btn btn-success not-registered-only" id="not-registered" href="{% url 'register_public_key' %}">
+                                        <a class="btn btn-success not-registered-only" role="button" id="not-registered" href="{% url 'register_public_key' %}">
                                             {% trans "Register device" %}
                                         </a>
                                     {% endif %}
