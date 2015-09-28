@@ -123,7 +123,7 @@ def get_installed_packages():
 # site-packages directory.
 
 
-def gen_data_files(*dirs):
+def gen_data_files(*dirs, **kwargs):
     """
     We can only link files, not directories. Therefore, we use an approach
     that scans all files to pass them to the data_files kwarg for setup().
@@ -131,12 +131,17 @@ def gen_data_files(*dirs):
     """
     results = []
 
+    optional = kwargs.pop('optional', False)
+
     def filter_illegal_extensions(f):
         return os.path.splitext(f)[1] != ".pyc"
 
     for src_dir in dirs:
         if not os.path.isdir(src_dir):
-            raise RuntimeError("{dir:s} does not exist, cannot continue").format(dir=src_dir)
+            if optional:
+                continue
+            else:
+                raise RuntimeError("{dir:s} does not exist, cannot continue".format(dir=src_dir))
 
         for root, dirs, files in os.walk(src_dir):
             results.append(
@@ -168,7 +173,7 @@ data_files += map(
 
 data_files += map(
     lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('docs/_build/html')
+    gen_data_files('docs/_build/html', optional=True)
 )
 
 # For now, just disguise the kalitectl.py script here as it's only to be accessed
