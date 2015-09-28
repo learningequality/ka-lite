@@ -163,6 +163,11 @@ data_files += map(
     gen_data_files('static-libraries')
 )
 
+data_files += map(
+    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
+    gen_data_files('docs/_build/html')
+)
+
 # For now, just disguise the kalitectl.py script here as it's only to be accessed
 # with the bin/kalite proxy.
 data_files += [(
