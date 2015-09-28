@@ -2,6 +2,7 @@ var _ = require("underscore");
 var Backbone = require("base/backbone");
 var get_params = require("utils/get_params");
 var setGetParamDict = get_params.setGetParamDict;
+var sprintf = require("sprintf-js").sprintf;
 
 var ExtraFieldsBaseModel = Backbone.Model.extend({
 
@@ -51,7 +52,7 @@ var ContentDataModel = ExtraFieldsBaseModel.extend({
     },
 
     url: function () {
-        return "/api/content/" + this.get("id");
+        return sprintf("/api/content/%s/%s/", this.get("channel"), this.get("id"));
     }
 
 });

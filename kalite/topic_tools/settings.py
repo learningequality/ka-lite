@@ -12,6 +12,10 @@ only on django.conf.settings
 import os
 from django.conf import settings
 
+from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_DATABASE_PATH
+
+CONTENT_DATABASE_PATH = os.path.join(os.path.dirname(KHAN_ASSESSMENT_ITEM_DATABASE_PATH), "content_{channel}_{language}.sqlite")
+
 CHANNEL = getattr(settings, "CHANNEL", "khan")
 
 CHANNEL_DATA_PATH = os.path.join(settings.CONTENT_DATA_PATH, CHANNEL)

@@ -18,7 +18,6 @@ from ... import REMOTE_VIDEO_SIZE_FILEPATH
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet.download import callback_percent_proxy, download_file
-from kalite import caching
 from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath, get_language_pack_url, get_language_name
 from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.version import SHORTVERSION
@@ -93,9 +92,6 @@ class Command(UpdatesStaticCommand, CronCommand):
 
             self.next_stage()
             call_command("collectstatic", interactive=False)
-
-            self.next_stage(_("Invalidate caches"))
-            caching.invalidate_all_caches()
 
             self.complete(_("Finished processing language pack %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
         except Exception as e:

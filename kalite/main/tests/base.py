@@ -11,7 +11,7 @@ from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.content_models import get_random_content
 from securesync.models import Device
 
 
@@ -50,10 +50,10 @@ class MainTestCase(KALiteTestCase):
         """
         Helper function for testing content files.
         """
-        content_id = random.choice(get_content_cache().keys())
-        youtube_id = get_content_cache()[content_id]["youtube_id"]
+        content = get_random_content(kinds=["Video"], limit=1)[0]
+        youtube_id = content["id"]
         fake_content_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
         with open(fake_content_file, "w") as fh:
             fh.write("")
         self.assertTrue(os.path.exists(fake_content_file), "Make sure the content file was created, youtube_id='%s'." % youtube_id)
-        return (fake_content_file, content_id, youtube_id)
+        return (fake_content_file, content["id"], youtube_id)

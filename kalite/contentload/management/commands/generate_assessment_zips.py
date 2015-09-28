@@ -17,8 +17,10 @@ from optparse import make_option
 
 import kalite.version as version
 
-from kalite.topic_tools import get_content_cache, get_exercise_cache
+from kalite.topic_tools.content_models import get_content_items
+
 from kalite.topic_tools import settings as topic_tools_settings
+
 from kalite.contentload import settings
 
 from fle_utils.general import softload_json
@@ -345,7 +347,7 @@ CONTENT_BY_READABLE_ID = None
 def _get_content_by_readable_id(readable_id):
     global CONTENT_BY_READABLE_ID
     if not CONTENT_BY_READABLE_ID:
-        CONTENT_BY_READABLE_ID = dict([(c["readable_id"], c) for c in get_content_cache().values()])
+        CONTENT_BY_READABLE_ID = dict([(c.get("readable_id"), c) for c in get_content_items() if c.get("readable_id")])
     try:
         return CONTENT_BY_READABLE_ID[readable_id]
     except KeyError:
@@ -356,20 +358,20 @@ def _list_all_exercises_with_bad_links():
     """This is a standalone helper method used to provide KA with a list of exercises with bad URLs in them."""
     url_pattern = r"https?://www\.khanacademy\.org/[\/\w\-]*/./(?P<slug>[\w\-]+)"
     assessment_items = json.load(open(django_settings.KHAN_ASSESSMENT_ITEM_JSON_PATH))
-    for ex in get_exercise_cache().values():
-        checked_urls = []
-        displayed_title = False
-        for aidict in ex.get("all_assessment_items", []):
-            ai = assessment_items[aidict["id"]]
-            for match in re.finditer(url_pattern, ai["item_data"], flags=re.IGNORECASE):
-                url = str(match.group(0))
-                if url in checked_urls:
-                    continue
-                checked_urls.append(url)
-                status_code = requests.get(url).status_code
-                if status_code != 200:
-                    if not displayed_title:
-                        print "EXERCISE: '%s'" % ex["title"], ex["path"]
-                        displayed_title = True
-                    print "\t", status_code, url
-
+    for ex in get_content_items():
+        if ex.get("kind") == "Exercise":
+            checked_urls = []
+            displayed_title = False
+            for aidict in ex.get("all_assessment_items", []):
+                ai = assessment_items[aidict["id"]]
+                for match in re.finditer(url_pattern, ai["item_data"], flags=re.IGNORECASE):
+                    url = str(match.group(0))
+                    if url in checked_urls:
+                        continue
+                    checked_urls.append(url)
+                    status_code = requests.get(url).status_code
+                    if status_code != 200:
+                        if not displayed_title:
+                            print "EXERCISE: '%s'" % ex["title"], ex["path"]
+                            displayed_title = True
+                        print "\t", status_code, url
