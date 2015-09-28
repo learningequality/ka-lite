@@ -4,7 +4,7 @@ get the "Next" recommendations.
 '''
 
 from kalite.topic_tools.content_recommendation import *
-from kalite.facility.models import FacilityGroup
+from kalite.facility.models import FacilityGroup, Facility
 from kalite.testing.base import KALiteTestCase
 
 class TestNextMethods(KALiteTestCase):
@@ -31,7 +31,7 @@ class TestNextMethods(KALiteTestCase):
 
 	def setUp(self):
 		'''Performed before every test'''
-	
+
 		# create a facility and user that can be referred to in models across tests
 		self.facility = Facility(name=self.FACILITY)
 		self.facility.save()
@@ -47,7 +47,7 @@ class TestNextMethods(KALiteTestCase):
 		self.user2.set_password(self.PASSWORD)
 		self.user2.save()
 
-		#user 1 - now add some mock data into exercise log
+		# user 1 - now add some mock data into exercise log
 		self.original_exerciselog = ExerciseLog(exercise_id=self.EXERCISE_ID, user=self.user1)
 		self.original_exerciselog.points = self.ORIGINAL_POINTS
 		self.original_exerciselog.attempts = self.ORIGINAL_ATTEMPTS
@@ -56,8 +56,8 @@ class TestNextMethods(KALiteTestCase):
 		self.original_exerciselog.completion_timestamp = self.TIMESTAMP_EARLY
 		self.original_exerciselog.save()
 
-		#user 2
-		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID, user = self.user2, struggling=False)
+		# user 2
+		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID, user=self.user2, struggling=False)
 		self.original_exerciselog2.points = self.ORIGINAL_POINTS
 		self.original_exerciselog2.attempts = self.ORIGINAL_POINTS
 		self.original_exerciselog2.streak_progress = self.ORIGINAL_STREAK_PROGRESS
@@ -65,7 +65,7 @@ class TestNextMethods(KALiteTestCase):
 		self.original_exerciselog2.completion_timestamp = self.TIMESTAMP_EARLY
 		self.original_exerciselog2.save()
 
-		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID2, user = self.user2, struggling=False)
+		self.original_exerciselog2 = ExerciseLog(exercise_id=self.EXERCISE_ID2, user=self.user2, struggling=False)
 		self.original_exerciselog2.points = self.ORIGINAL_POINTS
 		self.original_exerciselog2.attempts = self.ORIGINAL_POINTS
 		self.original_exerciselog2.streak_progress = self.ORIGINAL_STREAK_PROGRESS
@@ -73,7 +73,7 @@ class TestNextMethods(KALiteTestCase):
 		self.original_exerciselog2.completion_timestamp = self.TIMESTAMP_LATER
 		self.original_exerciselog2.save()
 
-		self.original_exerciselog3 = ExerciseLog(exercise_id=self.EXERCISE_ID_STRUGGLE, user = self.user2, struggling=True)
+		self.original_exerciselog3 = ExerciseLog(exercise_id=self.EXERCISE_ID_STRUGGLE, user=self.user2, struggling=True)
 		self.original_exerciselog3.points = self.ORIGINAL_POINTS
 		self.original_exerciselog3.attempts = self.ORIGINAL_POINTS
 		self.original_exerciselog3.streak_progress = 0
@@ -82,7 +82,7 @@ class TestNextMethods(KALiteTestCase):
 		self.original_exerciselog3.attempts = 100
 		self.original_exerciselog3.save()
 
-		#set all other exercise's struggling param to false
+		# set all other exercise's struggling param to false
 
 	def test_group_recommendations(self):
 		'''get_group_recommendations()'''
@@ -92,7 +92,7 @@ class TestNextMethods(KALiteTestCase):
 		actual = get_group_recommendations(user)
 
 		self.assertEqual(expected, actual, "Group recommendations incorrect.")
-		
+
 
 	def test_struggling(self):
 		'''get_struggling_exercises()'''
@@ -111,5 +111,5 @@ class TestNextMethods(KALiteTestCase):
 
 		expected = ['visualizing-equivalent-fractions']
 		actual = get_exercise_prereqs([ex_id])
-		
+
 		self.assertEqual(expected, actual, "Exercise Prereqs incorrect.")
