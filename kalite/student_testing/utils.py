@@ -3,7 +3,6 @@ from django.conf import settings
 from fle_utils.config.models import Settings
 
 from .settings import SETTINGS_KEY_EXAM_MODE
-from kalite.playlist import UNITS
 from kalite.student_testing.signals import exam_unset, unit_switch
 
 logging = settings.LOG
@@ -86,7 +85,7 @@ def get_current_unit_settings_value(facility_id):
     entry on the Settings.
     """
     name = get_current_unit_settings_name(facility_id)
-    value = Settings.get(name, UNITS[0])
+    value = Settings.get(name, 1)
     if value == 0:
         # This may be the first time this facility`s current unit is queried so
         # make sure it has a value at Settings so we can either change it on

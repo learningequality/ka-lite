@@ -150,22 +150,9 @@ else:
 
 _data_path_channels = os.path.join(_data_path, 'data')
 
-CHANNEL = getattr(local_settings, "CHANNEL", "khan")
-
 CONTENT_DATA_PATH = getattr(local_settings, "CONTENT_DATA_PATH", _data_path_channels)
-CHANNEL_DATA_PATH = os.path.join(CONTENT_DATA_PATH, CHANNEL)
 
 CONTENT_DATA_URL = getattr(local_settings, "CONTENT_DATA_URL", "/data/")
-
-# Parsing a whole JSON file just to load the settings is not nice
-try:
-    CHANNEL_DATA = json.load(open(os.path.join(CHANNEL_DATA_PATH, "channel_data.json"), 'r'))
-except IOError:
-    CHANNEL_DATA = {}
-
-# Whether we wanna load the perseus assets. Set to False for testing for now.
-LOAD_KHAN_RESOURCES = getattr(local_settings, "LOAD_KHAN_RESOURCES", CHANNEL == "khan")
-
 
 ###################################################
 # USER DATA
@@ -239,15 +226,6 @@ CONTENT_ROOT = os.path.realpath(getattr(local_settings, "CONTENT_ROOT", os.path.
 if not os.path.exists(CONTENT_ROOT):
     os.makedirs(CONTENT_ROOT)
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
-
-
-# Necessary for Django compressor
-if not DEBUG:
-    STATICFILES_FINDERS = (
-        "django.contrib.staticfiles.finders.FileSystemFinder",
-        "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-        "compressor.finders.CompressorFinder",
-    )
 
 
 # Overwrite stuff from local_settings
@@ -334,7 +312,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.contenttypes',
     'tastypie',
-    'compressor',
     'django_js_reverse',
     'securesync',
     'south',
@@ -347,8 +324,6 @@ INSTALLED_APPS = [
     'kalite.coachreports',
     'kalite.distributed',
     'kalite.main',
-    'kalite.playlist',
-    'kalite.caching',
     'kalite.updates',
     'kalite.facility',
     'kalite.student_testing',
@@ -471,9 +446,10 @@ KEY_PREFIX = version.VERSION
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(
     local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.signed_cookies' + (''))
-    
-# Expire session cookies whenever we close the browser.
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Expire session cookies after 30 minutes, but extend sessions when there's activity from the user.
+SESSION_COOKIE_AGE = 60 * 30     # 30 minutes
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Use our custom message storage to avoid adding duplicate messages
 MESSAGE_STORAGE = 'fle_utils.django_utils.classes.NoDuplicateMessagesSessionStorage'
@@ -510,7 +486,6 @@ from securesync.settings import *
 from fle_utils.chronograph.settings import *
 from kalite.facility.settings import *
 from kalite.main.settings import *
-from kalite.playlist.settings import *
 from kalite.student_testing.settings import *
 
 # Import from applications with problematic __init__.py files

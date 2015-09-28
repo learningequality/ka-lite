@@ -1,0 +1,314 @@
+@import "./kalite-base.less";
+
+.sidebar-icon {
+    font-size: 0.7em;
+    padding-right: 10px;
+    background-color: rgba(219, 219, 219, 0.19);
+    border-radius: 3px;
+    padding: 7px;
+}
+.sidebar-icon.partial {
+    opacity: 0.45;
+}
+
+.sidebar-icon.complete {
+    opacity: 0.15;
+}
+
+.sidebar-title.complete {
+    opacity: 0.45;
+}
+
+/*
+Nav Panel
+======================================
+*/
+
+.sidebar-panel {
+    -webkit-transform: translateZ(0);
+    background: @k-accent-color;
+    z-index: 9999;
+    position: fixed;
+    height: 100%;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    top: 0;
+    bottom: 0;
+    font-size: 100%;
+}
+
+div.sidebar-fade {
+    position: absolute;  /* makes the div go into a position that’s absolute to the browser viewing area */
+    left: 0%; /* makes the div span all the way across the viewing area */
+    top: 0%; /* makes the div span all the way across the viewing area */
+    background-color: black;
+    -moz-opacity: 0.7; /* makes the div transparent, so you have a cool overlay effect */
+    opacity: .70;
+    filter: alpha(opacity=70);
+    width: 100%;
+    height: 100%;
+    z-index: 9998; /* makes the div the second most top layer, so it’ll lay on top of everything else EXCEPT for divs with a higher z-index (meaning the #overlay ruleset) */
+}
+
+.sidebar-panel ul {
+    list-style-type: none;
+    margin-left: -40px;
+}
+
+.sidebar-panel li {
+    /*box-shadow: 0 -1px 0 rgba(0, 0, 0, .20) inset, 0 1px 0 rgba(255, 255, 255, .05);*/
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-panel .sidebar-entry {
+    display: block;
+    padding: 1.1em 1em;
+    font-size: 1.2em;
+}
+
+.missing {
+    opacity: 0.4;
+    background: #93BFAC;
+}
+
+.sidebar-panel a:link,
+.sidebar-panel a:visited {
+    color: #fff;
+    display: block;
+    margin: 3px 3px 3px 0;
+}
+
+.sidebar-panel .active-entry {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-divider {
+    color: #bcb;
+    font-weight: bolder;
+    background: rgba(116, 116, 116, 0.5);
+}
+
+.sidebar-tab {
+    z-index: 10000;
+    position: fixed;
+    left: 0;
+    top: 40%;
+    background: @k-accent-color;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.9em;
+    padding: 30px 10px;
+    padding-left: 14px;
+    border-width: 1px 1px 1px 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    cursor: pointer;
+    box-shadow: inset 3px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-tab:hover {
+    padding-left: 20px;
+}
+
+.sidebar-tab a {
+  display: block;
+  text-decoration: none;
+}
+
+.sidebar-nav-container .title {
+    display: block;
+    float: left;
+    width: 160px;
+    padding-left: 26px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-left: 2px solid #587448;
+    font-size: 2em;
+    font-weight: bold;
+    color: #CCC;
+}
+
+.sidebar-back {
+    height: 100%;
+    width: 2em;
+    text-align: center;
+    color: #fff;
+    background-color: #467471;
+    font-size: 1.5em;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    position: absolute;
+    z-index: 10000;
+}
+
+.sidebar-back button {
+    height: 3em;
+    padding: 0;
+    width: 1.8em;
+    top: 40%;
+}
+
+.sidebar-back-hover {
+    background-color: #3D6663 !important;
+}
+
+/* Sidebar panel & entry styling */
+.topic-container-inner {
+    float: left;
+    width: 200px;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+
+}
+.topic-container-inner:last-child {
+    width: 400px;
+}
+.topic-container-inner .sidebar-topic-description {
+    display: none;
+    font-size: 0.9em;
+    margin-top: 15px;
+}
+/* applied to all in outermost expanded panel */
+.topic-container-inner:last-child .sidebar-description {
+    display: block;
+    line-height: 1.1em;
+    margin-bottom: -10px;
+    padding-top: 10px;
+    color: #ADD3C2;
+    word-wrap: break-word;
+}
+
+/* applied to all in outermost expanded panel */
+.topic-container-inner:last-child .sidebar-organization {
+    display: block;
+    line-height: 1.1em; 
+    margin-top: -7px;
+    color: #aaacaa; 
+    word-wrap: break-word;
+}
+
+/* applied to all in outermost expanded panel */
+.topic-container-inner:last-child .sidebar-space-holder {
+    display: block;
+    line-height: 1.1em; 
+    margin-top: -12px;
+    color: #A3CCA3; 
+    word-wrap: break-word;
+}
+
+/*.sidebar-entry-header {
+    max-height: 2.5em;
+    margin-bottom: -10px;
+    margin-top: -10px;
+}
+.topic-container-inner:last-child .sidebar-entry-header {
+    margin-bottom: 12px;
+}
+.sidebar-entry-header > .sidebar-icon {
+    height: 100%;
+    margin-top: 2px;
+    margin-right: 5px;
+}
+.sidebar-entry-header > .sidebar-title {
+    line-height: 1em;
+    vertical-align:middle;
+    white-space: inherit;
+    text-overflow: inherit; 
+    padding-left: 8px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+.topic-container-inner:last-child .sidebar-entry-header > .sidebar-title {
+    vertical-align:middle;
+    white-space: inherit;
+    text-overflow: inherit; 
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.topic-container-inner:last-child .sidebar-entry-header > .sidebar-icon {
+    height: 100%;
+    margin-top: 2px;
+    vertical-align:middle;
+}
+*/
+.sidebar-entry-header {
+    display: table;
+    max-height: 2.5em;
+    margin-bottom: -10px;
+    margin-top: -10px;
+}
+.topic-container-inner:last-child .sidebar-entry-header {
+    display: table;
+    margin-bottom: 12px;
+}
+.sidebar-entry-header > .sidebar-icon {
+    height: 100%;
+    margin-top: 2px;
+}
+.sidebar-entry-header > .sidebar-title {
+    line-height: 1em;
+    display:table-cell;
+    vertical-align:middle;
+    white-space: inherit;
+    text-overflow: inherit; 
+    padding-left: 8px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+.topic-container-inner:last-child .sidebar-entry-header > .sidebar-title {
+    display:table-cell;
+    vertical-align:middle;
+    white-space: inherit;
+    text-overflow: inherit; 
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.topic-container-inner:last-child .sidebar-entry-header > .sidebar-icon {
+    height: 100%;
+    margin-top: 2px;
+    display:table-cell;
+    vertical-align:middle;
+}
+
+@media only screen and (max-width: 768px) {
+    .sidebar-tab {
+        top: 55px;
+        height: 2em;
+        padding: 9px;
+    }
+}
+
+@media only screen and (max-width: 720px) {
+    .sidebar-panel { 
+        font-size: 85%;
+    }
+    .topic-container-inner:last-child {
+        width: 300px;
+    }
+}
+
+@media only screen and (min-width: 720px) {
+    .sidebar-panel { 
+        font-size: 90%;
+    }
+    .topic-container-inner:last-child {
+        width: 300px;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .sidebar-panel { 
+        font-size: 100%;
+    }
+    .topic-container-inner:last-child {
+        width: 400px;
+    }
+}
+
+@media only screen and (min-width: 1300px) {
+    .sidebar-panel { 
+        font-size: 105%;
+    }
+    .topic-container-inner:last-child {
+        width: 400px;
+    }
+}

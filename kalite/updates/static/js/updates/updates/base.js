@@ -4,6 +4,7 @@ require("jquery-ui-touch-punch");
 
 var messages = require("utils/messages");
 var api = require("utils/api");
+var sprintf = require("sprintf-js").sprintf;
 
 // Storage variables for this app
 var process_names = {};  // (string) indices into all arrays
@@ -146,6 +147,9 @@ function updatesCheck(process_name, interval) {
                     message = progress_log.notes || (gettext("Completed update successfully.") + " [" + process_name + "]");
                     messages.clear_messages();
                     messages.show_message("success", message);
+                    if (process_callbacks[process_name] && process_callbacks[process_name]["completed"]) {
+                        process_callbacks[process_name]["completed"](process_log);
+                    }
                     updatesReset(process_name);
                 } else if (progress_log.completed && progress_log.stage_status == "cancelled") {
                     messages.show_message("info", gettext("Update cancelled successfully.") + " [" + process_name + "]");
@@ -225,7 +229,9 @@ function updatesReset(process_name) {
 
     // Do callbacks
     if (process_callbacks[process_name] && "reset" in process_callbacks[process_name]) {
-        process_callbacks[process_name]["reset"](progress_log);
+        if (typeof progress_log != 'undefined') {
+            process_callbacks[process_name]["reset"](progress_log);
+        }
     }
 
     // Clean up UI

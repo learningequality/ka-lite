@@ -10,7 +10,7 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonRe
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog, AttemptLog, UserLogSummary
 from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools import get_topic_leaves, get_exercise_cache, get_content_cache
+from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes
 
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
@@ -24,8 +24,8 @@ def get_learners_from_GET(request):
     if learner_ids:
         learner_filter = Q(pk__in=learner_ids)
     elif group_ids:
-        if "Ungrouped" in group_ids:
-            learner_filter = Q(group__pk__in=group_ids) | Q(group__isnull=True)
+        if "Ungrouped" in group_ids and facility_ids:
+            learner_filter = (Q(group__pk__in=group_ids) | Q(group__isnull=True)) & Q(facility__pk__in=facility_ids)
         else:
             learner_filter = Q(group__pk__in=group_ids)
     else:
@@ -52,7 +52,7 @@ def return_log_type_details(log_type, topic_ids=None):
         return None
     id_field = obj_id_field.split("__")[0]
     if topic_ids:
-        objects = [obj for topic_id in topic_ids for obj in get_topic_leaves(topic_id=topic_id, leaf_type=log_type.title())]
+        objects = [obj for topic_id in topic_ids for obj in get_topic_contents(topic_id=topic_id, kinds=[log_type.title()])]
         obj_ids = {obj_id_field: [obj.get("id") for obj in objects]}
     else:
         objects = []
@@ -101,7 +101,8 @@ def learner_logs(request):
             topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date, latest_activity_timestamp__lte=end_date)
             if topic_objects.count() == 0:
                 topic_objects = log_objects
-            objects = dict([(obj[id_field], get_content_cache().get(obj[id_field], get_exercise_cache().get(obj[id_field]))) for obj in topic_objects]).values()
+            # Can return multiple items with same id, due to topic tree redundancy, so make unique by id here.
+            objects = dict([(item.get("id"), item) for item in get_topic_nodes(ids=[obj[id_field] for obj in topic_objects]) or []]).values()
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
@@ -188,12 +189,16 @@ def aggregate_learner_logs(request):
     # Report total time in hours
     output_dict["content_time_spent"] = round(output_dict["content_time_spent"]/3600.0,1)
     output_logs.sort(key=lambda x: x.latest_activity_timestamp, reverse=True)
+
+    learner_event_objects = dict([(item["id"], item) for item in get_topic_nodes(
+        ids=[getattr(log, "exercise_id", getattr(log, "video_id", getattr(log, "content_id", ""))) for log in output_logs[:event_limit]], language=request.language) or []])
+
     output_dict["learner_events"] = [{
         "learner": log.user.get_name(),
         "complete": log.complete,
         "struggling": getattr(log, "struggling", None),
         "progress": getattr(log, "streak_progress", getattr(log, "progress", None)),
-        "content": get_exercise_cache().get(getattr(log, "exercise_id", ""), get_content_cache().get(getattr(log, "video_id", getattr(log, "content_id", "")), {})),
+        "content": learner_event_objects.get(getattr(log, "exercise_id", getattr(log, "video_id", getattr(log, "content_id", ""))), {}),
         } for log in output_logs[:event_limit]]
     output_dict["total_time_logged"] = round((UserLogSummary.objects\
         .filter(user__in=learners, start_datetime__gte=start_date, start_datetime__lte=end_date)\

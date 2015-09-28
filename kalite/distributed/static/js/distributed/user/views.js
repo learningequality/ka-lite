@@ -457,7 +457,7 @@ var UserView = BaseView.extend({
             // Check the GET params to see if a 'login' flag has been set
             // If this is the case, the modal should start open
             var login = get_params.getParamValue("login");
-            if (login) {
+            if (login || this.login_start_open) {
                 // Set an option for the modal to start open
                 options.start_open = true;
             }
@@ -469,7 +469,9 @@ var UserView = BaseView.extend({
                 // If there is already a loginModalView for some reason, just set the above options on it
                 // and rerender
                 this.loginModalView.set_options(options);
-                this.loginModalView.render();
+                if (this.login_start_open) {
+                    this.loginModalView.show_modal();
+                }
             } else {
                 // Otherwise just start the modal view with these options, but add in the statusModel with it
                 options.model = this.model;

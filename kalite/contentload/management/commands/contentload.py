@@ -37,6 +37,22 @@ def scrub_topic_tree(node_cache, channel_data):
                     del node[att]
 
 
+def topic_tree_id_catalog(topic_tree):
+    """
+    Takes the topic tree and returns a dictionary with the ids of all nodes in the tree
+    This is for use in removing items from caches that are not in the topic tree
+    """
+    ids = set()
+    def recurse_nodes(node):
+        ids.add(node.get("id"))
+
+        for child in node.get("children", []):
+            recurse_nodes(child)
+    recurse_nodes(topic_tree)
+
+    return ids
+
+
 class Command(NoArgsCommand):
     help = """
     **WARNING** not intended for use outside of the FLE; use at your own risk!
@@ -50,17 +66,21 @@ class Command(NoArgsCommand):
         make_option('-c', '--channel',
             dest='channel',
             default="khan",
-            help='Create content files for a channel'),
+            help='Create content files for a channel. Value of argument is the name of the channel.'),
         make_option('-i', '--import',
             action='store',
             dest='import_files',
             default=None,
-            help="Import a file structure as a topic tree and move over the appropriate content"),
+            help=("Import a file structure as a topic tree and move over the appropriate content.\n"
+                  "The value of this argument is the path to the content to be imported."
+                  "Do not include a trailing slash.")),
         make_option('-d', '--data',
             action='store',
             dest='channel_data',
             default=None,
-            help="Add custom path to channel data files"),
+            help=("Add custom path to channel data files.\n"
+                  "Value of the argument is path to directory containing channel metadata file(s?)."
+                  "Do not include trailing slash.")),
     )
 
     def handle(self, *args, **options):
@@ -77,6 +97,8 @@ class Command(NoArgsCommand):
             channel_tools.path = options["import_files"]
             if not channel_name or channel_name=="khan":
                 channel_name = os.path.basename(options["import_files"])
+
+        assert channel_name, "Channel name must not be empty. Make sure you used correct arguments."
 
         if options["channel_data"]:
             channel_tools.channel_data_path = options["channel_data"]
@@ -95,9 +117,11 @@ class Command(NoArgsCommand):
 
         topic_tree, exercises, assessment_items, content = channel_tools.rebuild_topictree(channel=channel_dict)
 
-        exercise_cache = channel_tools.build_full_cache(exercises, id_key=channel_tools.id_key["Exercise"])
+        ids = topic_tree_id_catalog(topic_tree)
+
+        exercise_cache = channel_tools.build_full_cache(exercises, id_key=channel_tools.id_key["Exercise"], ids=ids)
         assessment_item_cache = channel_tools.build_full_cache(assessment_items)
-        content_cache = channel_tools.build_full_cache(content)
+        content_cache = channel_tools.build_full_cache(content, ids=ids)
 
         node_cache = {}
 

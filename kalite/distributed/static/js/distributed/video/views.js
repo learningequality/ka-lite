@@ -2,8 +2,7 @@ var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 var _V_ = require("video.js");
-require("video.js/dist/video-js/video-js.less");
-require("../../../css/distributed/video-js-override.css");
+require("../../../css/distributed/video-js-override.less");
 
 var ContentBaseView = require("content/baseview");
 
@@ -21,6 +20,8 @@ var VideoPlayerView = ContentBaseView.extend({
     template: require("./hbtemplates/video-player.handlebars"),
 
     render: function() {
+
+        _.bindAll(this, "on_resize");
 
         var that = this;
 
@@ -97,6 +98,7 @@ var VideoPlayerView = ContentBaseView.extend({
             this.player.width(width).height(height);
         }
 
+        this.$("#video-player").height(height);
         this.$(".video-thumb").width(width).height(height);
 
     },
@@ -107,7 +109,6 @@ var VideoPlayerView = ContentBaseView.extend({
         var self = this;
 
         $(window).resize(this.on_resize);
-        this.on_resize();
 
         this.player
             .on("loadstart", function() {

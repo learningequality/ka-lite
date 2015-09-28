@@ -15,7 +15,8 @@ from ... import download_video, DownloadCancelled, URLNotFound
 from ...models import VideoFile
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
-from kalite import caching, i18n, topic_tools
+from kalite import i18n
+from kalite.topic_tools.content_models import get_content_item, annotate_content_models
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
@@ -39,7 +40,7 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
 def get_video_node_by_youtube_id(youtube_id):
     """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
     video_id = i18n.get_video_id(youtube_id=youtube_id)
-    return topic_tools.get_node_cache("Content").get(video_id, [None])
+    return get_content_item(content_id=video_id)
 
 
 class Command(UpdatesDynamicCommand, CronCommand):
@@ -185,6 +186,8 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     handled_youtube_ids.append(video.youtube_id)
                     self.stdout.write(_("Download is complete!") + "\n")
 
+                    annotate_content_models(ids=[video.youtube_id])
+
                 except DownloadCancelled:
                     # Cancellation event
                     video.percent_complete = 0
@@ -221,7 +224,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
                 "num_handled_videos": len(handled_youtube_ids),
                 "num_total_videos": len(handled_youtube_ids) + len(failed_youtube_ids),
             })
-            caching.invalidate_all_caches()
 
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": e})

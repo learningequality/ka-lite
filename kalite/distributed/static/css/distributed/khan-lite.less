@@ -2,20 +2,20 @@
 
 @icon-font-path: "/static/fonts/";
 @import "./bootstrap-overrides.less";
-
+@import "./kalite-base.less";
 /************** khan-site.css overrides ***************/
 
 .simple-button.green,
 .simple-button.primary {
-    background-color: #5AA685 !important;
-    background-image: -moz-linear-gradient(top, #5AA685, #47856A);
-    background-image: -ms-linear-gradient(top, #5AA685, #47856A);
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5AA685), to(#47856A));
-    background-image: -webkit-linear-gradient(top, #5AA685, #47856A);
-    background-image: -o-linear-gradient(top, #5AA685, #47856A);
-    background-image: linear-gradient(top, #5AA685, #47856A);
+    background-color: @k-accent-color !important;
+    background-image: -moz-linear-gradient(top, @k-accent-color, #47856A);
+    background-image: -ms-linear-gradient(top, @k-accent-color, #47856A);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@k-accent-color), to(#47856A));
+    background-image: -webkit-linear-gradient(top, @k-accent-color, #47856A);
+    background-image: -o-linear-gradient(top, @k-accent-color, #47856A);
+    background-image: linear-gradient(top, @k-accent-color, #47856A);
     background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#5AA685', endColorstr='#47856A', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='@k-accent-color', endColorstr='#47856A', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
     color: #ffffff !important;
     border-color: rgba(0, 0, 0, 0.6) !important;
@@ -146,7 +146,7 @@ a:hover {
 /********** "Teacher" Sub-Navigation bar ***********/
 .teach-nav {
     width: 100%;
-    border-bottom: 4px solid #5AA685;
+    border-bottom: 4px solid @k-accent-color;
     margin-bottom: 25px;
 }
 .teach-nav ul {
@@ -154,12 +154,12 @@ a:hover {
     margin-bottom: 0;
 }
 .teach-nav li {
-    background-color: #5AA685;
+    background-color: @k-accent-color;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-    border-top: 3px solid #5AA685;
-    border-right: 3px solid #5AA685;
-    border-left: 3px solid #5AA685;
+    border-top: 3px solid @k-accent-color;
+    border-right: 3px solid @k-accent-color;
+    border-left: 3px solid @k-accent-color;
     width: 130px;
     text-align: center;
     font-weight: bold;
@@ -178,13 +178,13 @@ a:hover {
     padding-top: 5px;
 }
 .teach-nav li div:hover {
-    color: #5AA685;
+    color: @k-accent-color;
 }
 .teach-nav li:hover {
     background-color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 16px;
-    color: #5AA685;
+    color: @k-accent-color;
     font-weight: bold;
     -webkit-transition: all 115ms ease-out;
     -moz-transition: all 115ms ease-out;
@@ -199,7 +199,7 @@ a:hover {
     border-top-right-radius: 17px;
 }
 .teach-nav li a:hover {
-    color: #5AA685;
+    color: @k-accent-color;
 }
 .teach-nav i.icon {
     font-size: 40pt;
@@ -208,14 +208,14 @@ a:hover {
     width: 90px;
 }
 .active-nav {
-    color: #5AA685 !important;
+    color: @k-accent-color !important;
     background-color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 16px;
     font-weight: bold;
 }
 .active-tab div {
-    color: #5AA685 !important;
+    color: @k-accent-color !important;
 }
 .reports, .reports:hover, .reports-active,
 .playlist, .playlist:hover, .playlists-active,
@@ -243,19 +243,19 @@ a:hover {
 .manage-nav {
     display: inline-block;
     width: 100%;
-    border-bottom: 4px solid #5AA685;
+    border-bottom: 4px solid @k-accent-color;
     margin-bottom: 25px;
 }
 .manage-nav ul {
     padding-left: 1%;
 }
 .manage-nav li {
-    background-color: #5AA685;
+    background-color: @k-accent-color;
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-    border-top: 3px solid #5AA685;
-    border-right: 3px solid #5AA685;
-    border-left: 3px solid #5AA685;
+    border-top: 3px solid @k-accent-color;
+    border-right: 3px solid @k-accent-color;
+    border-left: 3px solid @k-accent-color;
     width: 130px;
     padding: 8px 0px;
     text-align: center;
@@ -281,10 +281,10 @@ a:hover {
     border-top-right-radius: 17px;
 }
 .manage-nav li div:hover {
-    color: #5AA685;
+    color: @k-accent-color;
 }
 .manage-nav li a:hover {
-    color: #5AA685;
+    color: @k-accent-color;
     font-weight: bold;
     text-decoration: none;
 }
@@ -331,7 +331,7 @@ a:hover {
     width: 150px;
     height: 80px;
     text-decoration: none;
-    color: #5AA685;
+    color: @k-accent-color;
     font-weight: bold;
     -webkit-transition: all 115ms ease-out !important;
     -moz-transition: all 115ms ease-out !important;
@@ -416,9 +416,7 @@ div.exercises-card {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
 }
 
-.exercise-title-prefix {
-    opacity: 0.3;
-}
+.exercise-title-prefix {}
 
 .attempts {
     font-size: 18px;
@@ -809,6 +807,45 @@ to items you want to have the icon appear with.
     content: "\e614";
 }
 
+/* jQuery UI icon overrides */
+
+.ui-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.ui-widget-content {
+    border: 1px solid #aaaaaa;
+    background: #ffffff url("/static/images/jquery-ui-icons/ui-bg_flat_75_ffffff_40x100.png") 50% 50% repeat-x;
+    color: #222222;
+}
+
+.ui-icon,
+.ui-widget-content .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_222222_256x240.png)/*{iconsContent}*/;
+}
+.ui-widget-header .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_222222_256x240.png)/*{iconsHeader}*/;
+}
+.ui-state-default .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_888888_256x240.png)/*{iconsDefault}*/;
+}
+.ui-state-hover .ui-icon,
+.ui-state-focus .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_454545_256x240.png)/*{iconsHover}*/;
+}
+.ui-state-active .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_454545_256x240.png)/*{iconsActive}*/;
+}
+.ui-state-highlight .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_2e83ff_256x240.png)/*{iconsHighlight}*/;
+}
+.ui-state-error .ui-icon,
+.ui-state-error-text .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_cd0a0a_256x240.png)/*{iconsError}*/;
+}
+
+
 .pdf-frame {
     height: 1000px;
     font-size: 10px;
@@ -930,4 +967,13 @@ to items you want to have the icon appear with.
 
 .up10 {
     margin-top: 10px;
+}
+
+/* jQuery Overlay progress meter overrides */
+
+.jQuery-plainOverlay-progress {
+  border-color: #5aa685 !important;
+}
+.jQuery-plainOverlay-progress-legacy div {
+  background-color: #5aa685 !important;
 }

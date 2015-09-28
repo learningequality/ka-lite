@@ -52,7 +52,7 @@
                                     <td>{% if group.id %}<input type="checkbox" value="#groups" autocomplete="off"/>{% endif %}</td>
                                     <td>
                                         {# Translators: this is a verb; by clicking this link, the user will be able to coach students. #}
-                                        <a title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"
+                                        <a class="group-name" title="{% blocktrans with groupname=group.name %}Manage group {{ groupname }}.{% endblocktrans %}"
                                             {% if group.id %}
                                                 href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=group.id %}">
                                             {% else %}
@@ -103,7 +103,7 @@
             <div class="row table-bottom-options">
                 <div class="col-sm-4 col-xs-12">
                     <p class="add-new-table-item">
-                        <a href="{% url 'add_group' %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
+                        <a id="add-a-new-group" href="{% url 'add_group' %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
                             <span aria-hidden="true"><i class="glyphicon glyphicon-plus-sign"></i></span> {% trans 'Add a new group.' %}
                         </a>
                     </p>

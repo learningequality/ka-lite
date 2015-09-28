@@ -6,8 +6,9 @@ var VideoModels = require("video/models");
 var $script = require("scriptjs");
 
 var ContentBaseView = require("./baseview");
+var ExerciseModels = require("exercises/models");
 
-require("../../../css/distributed/content.css");
+require("../../../css/distributed/content.less");
 
 var ContentWrapperView = BaseView.extend({
 
@@ -24,7 +25,12 @@ var ContentWrapperView = BaseView.extend({
         var self = this;
 
         // load the info about the content itself
-        this.data_model = new Models.ContentDataModel({id: options.id});
+        if (options.kind == "Exercise") {
+            this.data_model = new ExerciseModels.ExerciseDataModel({id: options.id, channel: options.channel});
+        } else {
+            this.data_model = new Models.ContentDataModel({id: options.id, channel: options.channel});
+        }
+
         if (this.data_model.get("id")) {
             this.data_model.fetch().then(function() {
                 window.statusModel.loaded.then(self.setup_content_environment);
@@ -39,6 +45,8 @@ var ContentWrapperView = BaseView.extend({
 
         if (this.data_model.get("kind") == "Video") {
             LogCollection = VideoModels.VideoLogCollection;
+        } else if (this.data_model.get("kind") == "Exercise") {
+            LogCollection = ExerciseModels.ExerciseLogCollection;
         } else {
             LogCollection = Models.ContentLogCollection;
         }
@@ -101,6 +109,13 @@ var ContentWrapperView = BaseView.extend({
                     self.add_content_view(external("video").VideoPlayerView);
                 });
                 break;
+
+            case "Exercise":
+                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
+                    self.add_content_view(external("exercise").ExercisePracticeView);
+                });
+                break;
+
         }
     },
 

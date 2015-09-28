@@ -59,7 +59,7 @@ kind_blacklist = [None, "Separator", "CustomStack", "Scratchpad", "Article"]
 slug_blacklist = ["new-and-noteworthy", "talks-and-interviews", "coach-res"] # not relevant
 slug_blacklist += ["cs", "towers-of-hanoi"] # not (yet) compatible
 slug_blacklist += ["cc-third-grade-math", "cc-fourth-grade-math", "cc-fifth-grade-math", "cc-sixth-grade-math", "cc-seventh-grade-math", "cc-eighth-grade-math"] # common core
-slug_blacklist += ["MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "hour-of-code", "metropolitan-museum", "bitcoin", "tate", "crash-course1", "crash-course-bio-ecology", "british-museum", "aspeninstitute", "asian-art-museum", "amnh"] # partner content
+slug_blacklist += ["MoMA", "getty-museum", "stanford-medicine", "crash-course1", "mit-k12", "hour-of-code", "metropolitan-museum", "bitcoin", "tate", "crash-course1", "crash-course-bio-ecology", "british-museum", "aspeninstitute", "asian-art-museum", "amnh", "nova"] # partner content
 
 # TODO(jamalex): re-check these videos later and remove them from here if they've recovered
 slug_blacklist += ["mortgage-interest-rates", "factor-polynomials-using-the-gcf", "inflation-overview", "time-value-of-money", "changing-a-mixed-number-to-an-improper-fraction", "applying-the-metric-system"] # errors on video downloads
@@ -99,7 +99,7 @@ def denorm_data(node):
                     del node[key]
 
 
-def build_full_cache(items, id_key="id"):
+def build_full_cache(items, id_key="id", ids=None):
     """
     Uses list of items retrieved from Khan Academy API to
     create an item cache with fleshed out meta-data.
@@ -138,6 +138,12 @@ def build_full_cache(items, id_key="id"):
             item = json.loads(item.toJSON())
         except AttributeError:
             logging.error("Unable to serialize %r" % item)
+
+        item = whitewash_node_data(item)
+
+        if ids:
+            if item["id"] not in ids:
+                continue
 
         output[item["id"]] = whitewash_node_data(item)
 
@@ -226,6 +232,7 @@ def retrieve_API_data(channel=None):
 
     return topic_tree, exercises, assessment_items, content
 
+
 def query_remote_content_file_sizes(content_items, threads=10, blacklist=[]):
     """
     Query and store the file sizes for downloadable videos, by running HEAD requests against them,
@@ -260,6 +267,8 @@ def get_content_length(content):
             break
         except requests.Timeout:
             logging.warning("Timed out on try {i} while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
+        except requests.ConnectionError:
+            logging.warning("Connection error on try {i} while checking remote file size for '{title}'!".format(title=content.get("title"), i=i))
         except TypeError:
             logging.warning("No numeric content-length returned while checking remote file size for '{title}' ({readable_id})!".format(**content))
             break

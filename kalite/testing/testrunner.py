@@ -2,13 +2,18 @@
 Test support harness to make setup.py test work.
 """
 import os
+import shutil
 
 from django.conf import settings
 logging = settings.LOG
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
 from django.db.models import get_app, get_apps
+from django.core.management import call_command
 from django.test.simple import DjangoTestSuiteRunner, build_suite, build_test, reorder_suite
 from django.utils import unittest
+
+from fle_utils.general import ensure_dir
 
 from behave.configuration import options
 from selenium import webdriver
@@ -16,6 +21,7 @@ from selenium import webdriver
 from optparse import make_option
 
 from kalite.testing.base import DjangoBehaveTestCase
+from kalite.topic_tools.content_models import database_exists
 
 
 def get_app_dir(app_module):
@@ -111,6 +117,18 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         self._bdd_only = kwargs["bdd_only"]  # Extra options from our custom test management command are passed into
         self._no_bdd = kwargs['no_bdd']      # the constructor, but not the build_suite function where we need them.
 
+        # Django < 1.7 serves static files using the staticfiles app, not from static root.
+        # This causes django_js_reverse not to get served to the client, so we manually copy it into distributed.
+
+        call_command("collectstatic_js_reverse", interactive=False)
+
+        ensure_dir(os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js"))
+        shutil.copy2(os.path.join(settings.STATIC_ROOT, "django_js_reverse", "js", "reverse.js"),
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js", "reverse.js"))
+
+        if os.environ.get("TRAVIS"):
+            settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
+
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
     def run_tests(self, test_labels=None, extra_tests=None, **kwargs):
@@ -132,8 +150,17 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # Output Firefox version, needed to understand Selenium compatibility
         # issues
         browser = webdriver.Firefox()
-        print("Successfully setup Firefox {0}".format(browser.capabilities['version']))
+        logging.info("Successfully setup Firefox {0}".format(browser.capabilities['version']))
         browser.quit()
+
+        if not database_exists():
+            call_command("init_content_items")
+            call_command("annotate_content_items")
+
+            logging.info("Successfully setup content database")
+        else:
+            logging.info("Content database already exists")
+
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
         bdd_labels = test_labels
@@ -153,7 +180,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         for label in bdd_labels:
             feature_name = None
             if '.' in label:
-                print("Found label with dot in: %s, processing individual feature" % label)
+                logging.info("Found label with dot in: %s, processing individual feature" % label)
                 full_label = label
                 feature_name = label.split(".")[-1]
                 label = label.split(".")[0]
@@ -176,7 +203,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
                         # Flag that we should ignore test_labels if empty
                         ignore_empty_test_labels = True
                     else:
-                        print("Invalid behave feature name, ignoring")
+                        logging.info("Invalid behave feature name, ignoring")
                         continue
                 # build a test suite for this directory
                 extra_tests.append(self.make_bdd_test_suite(features_dir, feature_name=feature_name))

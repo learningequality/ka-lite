@@ -9,14 +9,14 @@
     </div>
     {{!-- Videos --}}
     <div class="row progress-block">
-        <div class="col-xs-2">
+        <div class="col-sm-2">
             <div class="progress-indicator progress-indicator-lg center-block {{vid_status}}">
                 <span class="sr-only">{{_ "there are " }}</span>
-                <div class="sidebar-icon icon-Video icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary"><div class="sr-only">{{#unless n_pl_videos}}no{{/unless}}</div>{{#if n_pl_videos}}{{n_pl_videos}}{{/if}}</span></div>
+                <div class="sidebar-icon icon-Video icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary">{{n_pl_videos}}</span></div>
                 <span class="sr-only">{{_ " videos." }}</span>
             </div>
         </div>
-        <div class="col-xs-10">
+        <div class="col-sm-10">
             <div class="progress playlist-progress-bar">
                 {{#if n_pl_videos}}
                     {{#unless vid_pct_started}}
@@ -46,14 +46,14 @@
     </div>
     {{!-- Exercises --}}
     <div class="row progress-block">
-        <div class="col-xs-2">
+        <div class="col-sm-2">
             <div class="progress-indicator progress-indicator-lg center-block {{ex_status}}">
                 <span class="sr-only">{{_ "There are " }}</span>
-                <div class="sidebar-icon icon-Exercise icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary"><div class="sr-only">{{#unless n_pl_exercises}}no{{/unless}}</div>{{#if n_pl_exercises}}{{n_pl_exercises}}{{/if}}</span></div>
+                <div class="sidebar-icon icon-Exercise icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary">{{n_pl_exercises}}</span></div>
                 <span class="sr-only">{{_ " exercises." }}</span>
             </div>
         </div>
-        <div class="col-xs-10">
+        <div class="col-sm-10">
             <div class="progress playlist-progress-bar">
                 {{#if n_pl_exercises}}
                     {{#if ex_status.notstarted}}
@@ -90,14 +90,14 @@
     {{!-- Quiz --}}
     {{#if quiz_exists}}
     <div class="row progress-block">
-        <div class="col-xs-2">
+        <div class="col-sm-2">
             <div class="progress-indicator progress-indicator-lg center-block {{quiz_status}}">
                 <span class="sr-only">{{_ "There are " }}</span>
                 <span class="sidebar-icon icon-Quiz icon-label icon-label-lg"></span>
                 <span class="sr-only">{{_ " quizzes." }}</span>
             </div>
         </div>
-        <div class="col-xs-10">
+        <div class="col-sm-10">
             <div class="progress playlist-progress-bar">
                 {{#if quiz_pct_score}}
                 <div class="progress-bar {{quiz_status}}" title="% Score" style="width: {{quiz_pct_score}}%">

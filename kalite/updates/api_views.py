@@ -28,8 +28,8 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, J
 from fle_utils.orderedset import OrderedSet
 from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools.settings import TOPICS_FILEPATHS
-from kalite.caching import initialize_content_caches
+from kalite.topic_tools.settings import TOPICS_FILEPATHS, CHANNEL
+
 
 
 def divide_videos_by_language(youtube_ids):
@@ -130,6 +130,8 @@ def cancel_update_progress(request, process_log):
 @require_admin
 @api_handle_error_with_json
 def start_video_download(request):
+    force_job("videodownload", stop=True, locale=request.language)
+
     """
     API endpoint for launching the videodownload job.
     """
@@ -182,8 +184,6 @@ def delete_videos(request):
         found_videos = VideoFile.objects.filter(youtube_id=id)
         num_deleted += found_videos.count()
         found_videos.delete()
-
-    initialize_content_caches(force=True)
 
     return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 
@@ -327,7 +327,7 @@ def get_annotated_topic_tree(request, lang_code=None):
     lang_code = lang_code or request.language      # Get annotations for the current language.
     statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
 
-    return JsonResponse(annotate_topic_tree(softload_json(TOPICS_FILEPATHS.get(settings.CHANNEL), logger=logging.debug, raises=False), statusdict=statusdict, lang_code=lang_code))
+    return JsonResponse(annotate_topic_tree(softload_json(TOPICS_FILEPATHS.get(CHANNEL), logger=logging.debug, raises=False), statusdict=statusdict, lang_code=lang_code))
 
 
 """

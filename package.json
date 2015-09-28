@@ -34,7 +34,8 @@
     "async": "^1.4.0",
     "backbone": "~1.2.1",
     "bootstrap": "^3.3.5",
-    "browserify": "~10.2.4",
+    "bootstrap-datepicker": "^1.4.0",
+    "browserify": "~11.0.1",
     "browsernizr": "^1.0.2",
     "colors": "^1.1.2",
     "d3": "^3.5.6",
@@ -42,7 +43,7 @@
     "escodegen": "^1.6.1",
     "esprima": "^2.4.1",
     "estraverse": "^4.1.0",
-    "factor-bundle": "^2.4.1",
+    "factor-bundle": "~2.5.0",
     "fastclick": "^1.0.6",
     "handlebars": "~1.3.0",
     "hbsfy": "~2.2.1",
@@ -52,6 +53,7 @@
     "intro.js": "^0.9.0",
     "jed": "^1.1.0",
     "jquery": "~2.1.4",
+    "jquery-plainoverlay": "^0.6.2",
     "jquery-slimscroll": "^1.3.6",
     "jquery-sparkline": "^2.3.0",
     "jquery-ui": "^1.10.5",
@@ -70,6 +72,6 @@
     "underscore": "~1.8.3",
     "url": "^0.10.3",
     "video.js": "^4.11.4",
-    "watchify": "^3.2.3"
+    "watchify": "^3.3.1"
   }
 }

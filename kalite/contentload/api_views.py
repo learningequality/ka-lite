@@ -32,7 +32,7 @@ from fle_utils.internet.functions import set_query_params
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.shared.decorators.auth import require_login
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools.content_models import get_content_items
 
 CENTRAL_SERVER_URL = "%s://%s" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST)
 CENTRAL_UPDATE_ALL_PATH = "/api/contentload/update/central/"
@@ -61,7 +61,7 @@ def update_all_distributed_callback(request):
     videos = json.loads(request.POST["video_logs"])
     exercises = json.loads(request.POST["exercise_logs"])
     user = FacilityUser.objects.get(id=request.POST["user_id"])
-    node_cache = get_node_cache()
+    node_ids = [node.get("id") for node in get_content_items()]
     # Save videos
     n_videos_uploaded = 0
     for video in videos:
@@ -69,7 +69,7 @@ def update_all_distributed_callback(request):
         youtube_id = video['youtube_id']
 
         # Only save video logs for videos that we recognize.
-        if video_id not in node_cache["Content"]:
+        if video_id not in node_ids:
             logging.warn("Skipping unknown video %s" % video_id)
             continue
 
@@ -90,7 +90,7 @@ def update_all_distributed_callback(request):
     n_exercises_uploaded = 0
     for exercise in exercises:
         # Only save video logs for videos that we recognize.
-        if exercise['exercise_id'] not in node_cache['Exercise']:
+        if exercise['exercise_id'] not in node_ids:
             logging.warn("Skipping unknown video %s" % exercise['exercise_id'])
             continue
 

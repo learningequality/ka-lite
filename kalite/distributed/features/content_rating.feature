@@ -3,7 +3,7 @@ Feature: Content Rating
 
     @as_learner
     Scenario: User rates an unrated item
-        Given I am on a content page
+        Given I open some available content
         Then I see a feedback form
         When I fill out the form
         Then my feedback is displayed
