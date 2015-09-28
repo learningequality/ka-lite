@@ -3,18 +3,30 @@ machine:
     version: 2.7.9
 
 dependencies:
+  cache_directories:
+    - "content"
+    - "data"
+    - "sc-latest-linux"
   override:
     - pip install -r requirements_test.txt
     - pip install -e .
     - npm install
     - npm install -g jshint
+  post:
+    - if [[ ! -e sc-latest-linux/bin/sc ]]; then wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz && tar -xzf sc-latest-linux.tar.gz &&  mv sc-*-linux sc-latest-linux; fi
 
 test:
   override:
+    - node build.js
+    - kalite manage init_content_items
     - kalite start --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
-    - node build.js --staticfiles
+    - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready > sc_output.txt 2>&1:
+        background: true
+    - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
     - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
         parallel: true
     - jshint kalite/*/static/js/*/
+  post:
+    - killall --wait sc  # wait for Sauce Connect to close the tunnel

@@ -84,6 +84,10 @@ else:
     filedir = os.path.dirname(__file__)
     sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
 
+if sys.version_info >= (3,):
+    sys.stderr.write("Detected incompatible Python version %s.%s.%s\n" % sys.version_info[:3])
+    sys.stderr.write("Please set the KALITE_PYTHON environment variable to a Python 2.7 interpreter.\n")
+    sys.exit(1)
 
 import httplib
 import re
@@ -617,22 +621,67 @@ def stop(args=[], sys_exit=True):
         sys.exit(0)
 
 
+def get_urls():
+    """
+    Fetch a list of urls
+    :returns: STATUS_CODE, ['http://abcd:1234', ...]
+    """
+    try:
+        __, __, port = get_pid()
+        urls = []
+        for addr in get_ip_addresses():
+            urls.append("http://{}:{}/".format(addr, port))
+        return STATUS_RUNNING, urls
+    except NotRunning as e:
+        return e.status_code, []
+
+
+def get_urls_proxy():
+    """
+    Get addresses of the server if we're using settings.PROXY_PORT
+
+    :raises: Exception for sure if django.conf.settings isn't loaded
+    """
+    # Import settings and check if a proxy port exists
+    from django.conf import settings
+    if hasattr(settings, 'PROXY_PORT') and settings.PROXY_PORT:
+        sys.stderr.write(
+            "\nKA Lite configured behind another server, primary "
+            "addresses are:\n\n"
+        )
+        for addr in get_ip_addresses():
+            yield "http://{}:{}/".format(addr, settings.PROXY_PORT)
+
+
 def status():
     """
     Check the server's status. For possible statuses, see the status dictionary
     status.codes
 
+    Status *always* outputs the current status in the first line if stderr.
+    The following lines contain optional information such as the addresses where
+    the server is listening.
+
     :returns: status_code, key has description in status.codes
     """
-    try:
-        __, __, port = get_pid()
+    status_code, urls = get_urls()
+
+    if status_code == STATUS_RUNNING:
         sys.stderr.write("{msg:s} (0)\n".format(msg=status.codes[0]))
         sys.stderr.write("KA Lite running on:\n\n")
-        for addr in get_ip_addresses():
-            sys.stderr.write("\thttp://%s:%s/\n" % (addr, port))
+        for addr in urls:
+            sys.stderr.write("\t{}\n".format(addr))
+        # Import settings and check if a proxy port exists
+        try:
+            for addr in get_urls_proxy():
+                sys.stderr.write("\t{}\n".format(addr))
+        except Exception as e:
+            sys.stderr.write(
+                "\n\nWarning, exception fetching KA Lite settings module:\n\n" +
+                str(e) + "\n\n"
+            )
         return STATUS_RUNNING
-    except NotRunning as e:
-        status_code = e.status_code
+    else:
         verbose_status = status.codes[status_code]
         sys.stderr.write("{msg:s} ({code:d})\n".format(
             code=status_code, msg=verbose_status))
@@ -687,13 +736,11 @@ def diagnose():
     diag("python", sys.version)
     diag("platform", platform.platform())
 
-    try:
-        __, __, port = get_pid()
-        for addr in get_ip_addresses():
-            diag("server address", "http://%s:%s/" % (addr, port))
-        status_code = STATUS_RUNNING
-    except NotRunning as e:
-        status_code = e.status_code
+    status_code, urls = get_urls()
+    for addr in urls:
+        diag("server address", addr)
+    for addr in get_urls_proxy():
+        diag("server proxy", addr)
 
     diag("server status", status.codes[status_code])
 

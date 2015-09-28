@@ -22,6 +22,7 @@ Backbone.ajax = function() {
 var $ = Backbone.$;
 
 require("jquery-ui/autocomplete");
+require("jquery-plainoverlay/jquery.plainoverlay");
 
 /*
  * jQuery UI Autocomplete HTML Extension

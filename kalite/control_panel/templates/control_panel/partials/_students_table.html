@@ -10,6 +10,7 @@
             {% trans "Learners" %}
             <small>
                 <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "This report contains information about recent learner activity." %}'></span>
+                <!---TODO - Radina: implement accessible tooltip. -->
             </small>
         </h2>
     </div>
@@ -21,7 +22,7 @@
                 <div class="form-inline">
                 {% if groups %}
                     <div class="form-group">
-                        <button class="movegroup btn btn-success" disabled="disabled" value="#students">{% trans "Change Learner Groups" %}</button>
+                        <button class="movegroup btn btn-success" id="move-learner-group-btn" disabled="disabled" value="#students">{% trans "Change Learner Groups" %}</button>
                     </div>
                     <div class="form-group">
                         <select class="form-control movegrouplist" value="#students">
@@ -38,7 +39,7 @@
                     </div>
                 {% endif %}
                     <div class="form-group">
-                        <button class="delete btn btn-success" disabled="disabled" value="#students">{% trans "Delete Learners" %}</button>
+                        <button class="delete btn btn-success" id="delete-learners-btn" disabled="disabled" value="#students">{% trans "Delete Learners" %}</button>
                     </div>
                 </div>
             </p>
@@ -61,13 +62,14 @@
                     <tbody>
                         {% for student in student_pages %}
                             <tr class="selectable" value="{{ student.id }}" type="students">
-                                <td><input type="checkbox" value="#students" autocomplete="off"/></td>
+                                <td><input class="student-checkbox" type="checkbox" value="#students" autocomplete="off"/></td>
                                 <td>
                                     {{ student|format_name:"last_first" }}
                                 </td>
                                 <td>
                                     <a class="edit-student" title="{% blocktrans with studentname=student|format_name:"last_first" %}Edit learner {{ studentname }}{% endblocktrans %}" href="{% url 'edit_facility_user' facility_user_id=student.id %}?facility={{ facility_id }}&next={{ request.get_full_path|urlencode }}">
-                                        <span class="glyphicon glyphicon-pencil"></span>
+                                        <span aria-hidden="true"><i class="glyphicon glyphicon-pencil"></i></span>
+                                        <span class="sr-only">{% blocktrans with studentname=student|format_name:"last_first" %}Edit learner {{ studentname }}{% endblocktrans %}</span>
                                     </a>
                                 </td>
 
@@ -84,7 +86,7 @@
                                 <td>
                                     {% if student.group %}
                                         {% if group_id %}
-                                        <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' %}/{{ facility.id }}/{{ student.group.id }}/">
+                                        <a title="{% blocktrans with groupname=student.group.name %}Manage group {{ groupname }}{% endblocktrans %}" href="{% url 'coach_reports' zone_id=zone_id %}/{{ facility.id }}/{{ student.group.id }}/">
                                         {% else %}
                                         <a title="{% blocktrans with groupname=student.group.name %}Coach group {{ groupname }}{% endblocktrans %}" href="{% url 'group_management' zone_id=zone_id facility_id=facility_id group_id=student.group.id %}">
                                         {% endif %}
@@ -113,7 +115,7 @@
     <div class="col-sm-4 col-xs-12">
         <p class="add-new-table-item">
             <a class="create-student" href="{% url 'add_facility_student' %}?facility={{ facility_id }}&group={{ group_id }}&next={{ request.get_full_path|urlencode }}">
-                <span class="glyphicon glyphicon-plus-sign"></span> {% trans 'Add a new learner.' %}
+                <span aria-hidden="true"><i class="glyphicon glyphicon-plus-sign"></i></span> {% trans 'Add a new learner.' %}
             </a>
         </p>
     </div>

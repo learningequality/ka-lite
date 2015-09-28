@@ -1,4 +1,5 @@
 import copy
+import functools
 import json
 import os
 import re
@@ -10,20 +11,29 @@ from threading import Lock
 
 from django.conf import settings as django_settings
 from django.core.management import call_command
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
+
+from optparse import make_option
 
 import kalite.version as version
 
-from kalite.topic_tools import get_content_cache, get_exercise_cache
+from kalite.topic_tools.content_models import get_content_items
+
+from kalite.topic_tools import settings as topic_tools_settings
+
 from kalite.contentload import settings
+
+from fle_utils.general import softload_json
 
 logging = django_settings.LOG
 
-ZIP_FILE_PATH = os.path.join(django_settings.USER_DATA_ROOT, "assessment.zip")
+ZIP_FILE_PATH = os.path.join(django_settings.USER_DATA_ROOT, "{channel}_assessment.zip")
 
 IMAGE_URL_REGEX = re.compile('https?://[\w\.\-\/]+\/(?P<filename>[\w\.\-\%]+\.(png|gif|jpg|jpeg|svg))', flags=re.IGNORECASE)
 
 WEB_GRAPHIE_URL_REGEX = re.compile('web\+graphie://ka\-perseus\-graphie\.s3\.amazonaws\.com\/(?P<filename>\w+)', flags=re.IGNORECASE)
+
+WEB_LOCAL_URL_REGEX = re.compile('web\+local://(?P<filename>\w+)', flags=re.IGNORECASE)
 
 IMAGE_URLS_NOT_TO_REPLACE = set([
     "http://www.dogs.com/photo.jpg",
@@ -47,34 +57,67 @@ CONTENT_LINK_REGEX = re.compile("(?P<prefix>\**\[[^\]\[]+\] ?\(?) ?" + CONTENT_U
 ZIP_WRITE_MUTEX = Lock()
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
 
-    def handle_noargs(self, **options):
+    option_list = BaseCommand.option_list + (
+        make_option("-c", "--channel",
+                    action="store",
+                    dest="channel",
+                    default="khan",
+                    help="Create assessment item zip for a particular channel"),
+    )
+
+    def handle(self, **options):
         logging.info("fetching assessment items")
 
+        channel = options.get("channel")
+
+        json_path = os.path.join(django_settings.CONTENT_DATA_PATH, channel, 'assessmentitems.json')
+
         # load the assessmentitems
-        assessment_items = json.load(open(settings.KHAN_ASSESSMENT_ITEM_JSON_PATH))
+        assessment_items = json.load(open(json_path))
+
+        # delete assessment items that aren't referenced in the exercises list (likely due to blacklisting)
+        dangling_ids = set(assessment_items.keys())
+        exercises = softload_json(topic_tools_settings.EXERCISES_FILEPATH)
+        for ex in exercises.values():
+            for item in ex.get("all_assessment_items", []):
+                item = json.loads(item)
+                if item.get("id") in dangling_ids:
+                    dangling_ids.remove(item.get("id"))
+        for item_id in dangling_ids:
+            del assessment_items[item_id]
 
         image_urls = find_all_image_urls(assessment_items)
         graphie_urls = find_all_graphie_urls(assessment_items)
+        local_urls = find_all_local_urls(assessment_items)
 
         logging.info("rewriting urls")
         new_assessment_items = localize_all_image_urls(assessment_items)
         new_assessment_items = localize_all_content_links(new_assessment_items)
         new_assessment_items = localize_all_graphie_urls(new_assessment_items)
+        new_assessment_items = localize_all_local_urls(new_assessment_items, channel=channel)
 
         # TODO(jamalex): We should migrate this away from direct-to-zip so that we can re-run it
         # without redownloading all files. Not possible currently because ZipFile has no `delete`.
         logging.info("downloading images")
-        with open(ZIP_FILE_PATH, "w") as f:
+        with open(ZIP_FILE_PATH.format(channel=channel), "w") as f:
             zf = zipfile.ZipFile(f, "w")  # zipfile.ZipFile isn't a context manager yet for python 2.6
             write_assessment_item_db_to_zip(zf, new_assessment_items)
             download_urls_to_zip(zf, image_urls)
             download_urls_to_zip(zf, graphie_urls)
+            copy_local_files_to_zip(zf, local_urls)
             write_assessment_item_version_to_zip(zf)
+            if channel:
+                write_channel_info_to_zip(zf, channel=channel)
             zf.close()
 
-        logging.info("Zip File with images placed in %s" % ZIP_FILE_PATH)
+        logging.info("Zip File with images placed in %s" % ZIP_FILE_PATH.format(channel=channel))
+
+
+def write_channel_info_to_zip(zf, channel=None):
+    if channel:
+        zf.writestr("channel.name", channel)
 
 
 def write_assessment_item_version_to_zip(zf, versionnumber=version.SHORTVERSION):
@@ -92,6 +135,31 @@ def write_assessment_item_db_to_zip(zf, assessment_items):
     zf.writestr("assessmentitems.sqlite", db_data)
 
 
+def copy_local_files_to_zip(zf, source_paths):
+
+    source_paths = set(source_paths)
+
+    for source_path in source_paths:
+        copy_local_file_to_zip(zf, source_path)
+
+def copy_local_file_to_zip(zf, source_path):
+    # use a manual mapping if available, otherwise get the filename from the end of the url
+    filename = os.path.basename(source_path)
+    filepath = _get_subpath_from_filename(filename)
+    try:
+        with open(filepath) as f:
+            filecontent = f.read()
+    except Exception as e:
+        # we don't want a failed image request to download, but we
+        # want to inform the user of the error
+        logging.error("Error reading file from location: %s (%s)" % (filepath, e))
+        return
+
+    # Without a mutex, the generated zip files were corrupted when writing with concurrency > 1
+    with ZIP_WRITE_MUTEX:
+        zf.writestr(filepath, filecontent)
+
+
 def download_urls_to_zip(zf, urls):
 
     urls = set(urls)
@@ -99,7 +167,6 @@ def download_urls_to_zip(zf, urls):
     pool = ThreadPool(10)
     download_to_zip_func = lambda url: download_url_to_zip(zf, url)
     pool.map(download_to_zip_func, urls)
-
 
 def download_url_to_zip(zf, url):
     # use a manual mapping if available, otherwise get the filename from the end of the url
@@ -130,7 +197,7 @@ def fetch_file_from_url_or_cache(url):
             out = f.read()
     else:                       # fetch, then write to the cache file
         logging.info("downloading file %s" % url)
-        r = requests.get(url)
+        r = requests.get(url, timeout=10)
         r.raise_for_status()
         with open(cached_file_path, "w") as f:
             f.write(r.content)
@@ -191,6 +258,29 @@ def localize_graphie_urls(item_data):
     return re.sub(WEB_GRAPHIE_URL_REGEX, _old_graphie_url_to_content_url, item_data)
 
 
+def find_all_local_urls(items, channel="khan"):
+
+    for v in items.itervalues():
+        for match in re.finditer(WEB_LOCAL_URL_REGEX, v["item_data"]):
+            filename = str(match.group(0)).replace("web+local://", "") # match.group(0) means get the entire string
+            yield os.path.join(django_settings.ASSESSMENT_ITEM_ROOT, channel, filename)
+
+
+def localize_all_local_urls(items, channel="khan"):
+    # we copy so we make sure we don't modify the items passed in to this function
+    newitems = copy.deepcopy(items)
+
+    for item in newitems.itervalues():
+        item['item_data'] = localize_local_urls(item['item_data'], channel=channel)
+
+    return newitems
+
+
+def localize_local_urls(item_data, channel="khan"):
+    url_function = functools.partial(_old_local_url_to_content_url, channel=channel)
+    return re.sub(WEB_LOCAL_URL_REGEX, url_function, item_data)
+
+
 def convert_urls(item_data):
     """Convert urls in i18n strings into localhost urls.
     This function is used by ka-lite-central/centralserver/i18n/management/commands/update_language_packs.py"""
@@ -198,6 +288,10 @@ def convert_urls(item_data):
     item_data = localize_content_links(item_data)
     item_data = localize_graphie_urls(item_data)
     return item_data
+
+
+def _old_local_url_to_content_url(matchobj, channel="khan"):
+    return _get_path_from_filename(matchobj.group("filename"), channel=channel)
 
 
 def _old_graphie_url_to_content_url(matchobj):
@@ -211,8 +305,8 @@ def _old_image_url_to_content_url(matchobj):
     return _get_path_from_filename(matchobj.group("filename"))
 
 
-def _get_path_from_filename(filename):
-    return "/content/khan/" + _get_subpath_from_filename(filename)
+def _get_path_from_filename(filename, channel="khan"):
+    return "/content/{channel}/".format(channel=channel) + _get_subpath_from_filename(filename)
 
 
 def _get_subpath_from_filename(filename):
@@ -253,7 +347,7 @@ CONTENT_BY_READABLE_ID = None
 def _get_content_by_readable_id(readable_id):
     global CONTENT_BY_READABLE_ID
     if not CONTENT_BY_READABLE_ID:
-        CONTENT_BY_READABLE_ID = dict([(c["readable_id"], c) for c in get_content_cache().values()])
+        CONTENT_BY_READABLE_ID = dict([(c.get("readable_id"), c) for c in get_content_items() if c.get("readable_id")])
     try:
         return CONTENT_BY_READABLE_ID[readable_id]
     except KeyError:
@@ -263,21 +357,21 @@ def _get_content_by_readable_id(readable_id):
 def _list_all_exercises_with_bad_links():
     """This is a standalone helper method used to provide KA with a list of exercises with bad URLs in them."""
     url_pattern = r"https?://www\.khanacademy\.org/[\/\w\-]*/./(?P<slug>[\w\-]+)"
-    assessment_items = json.load(open(settings.KHAN_ASSESSMENT_ITEM_JSON_PATH))
-    for ex in get_exercise_cache().values():
-        checked_urls = []
-        displayed_title = False
-        for aidict in ex.get("all_assessment_items", []):
-            ai = assessment_items[aidict["id"]]
-            for match in re.finditer(url_pattern, ai["item_data"], flags=re.IGNORECASE):
-                url = str(match.group(0))
-                if url in checked_urls:
-                    continue
-                checked_urls.append(url)
-                status_code = requests.get(url).status_code
-                if status_code != 200:
-                    if not displayed_title:
-                        print "EXERCISE: '%s'" % ex["title"], ex["path"]
-                        displayed_title = True
-                    print "\t", status_code, url
-
+    assessment_items = json.load(open(django_settings.KHAN_ASSESSMENT_ITEM_JSON_PATH))
+    for ex in get_content_items():
+        if ex.get("kind") == "Exercise":
+            checked_urls = []
+            displayed_title = False
+            for aidict in ex.get("all_assessment_items", []):
+                ai = assessment_items[aidict["id"]]
+                for match in re.finditer(url_pattern, ai["item_data"], flags=re.IGNORECASE):
+                    url = str(match.group(0))
+                    if url in checked_urls:
+                        continue
+                    checked_urls.append(url)
+                    status_code = requests.get(url).status_code
+                    if status_code != 200:
+                        if not displayed_title:
+                            print "EXERCISE: '%s'" % ex["title"], ex["path"]
+                            displayed_title = True
+                        print "\t", status_code, url

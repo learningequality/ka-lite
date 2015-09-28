@@ -73,6 +73,15 @@ module.exports = Backbone.View.extend({
     },
 
     remove: function() {
+
+        // make sure we never end up removing the same view twice, in case there's weird circularity
+        if (this._removed) return;
+        this._removed = true;
+
+        // remove this view using the default Backbone code, which removes the DOM element
+        Backbone.View.prototype.remove.call(this);
+
+        // recursively remove this view's subviews, to avoid detached views with zombie listeners
         if (this.subviews!==undefined) {
             for (i=0; i < this.subviews.length; i++) {
                 if (_.isFunction(this.subviews[i].close)) {
@@ -82,6 +91,32 @@ module.exports = Backbone.View.extend({
                 }
             }
         }
-        Backbone.View.prototype.remove.call(this);
+    },
+
+    loading: function(element) {
+        if (!this._loading) {
+            this._loading = true;
+            _.bindAll(this, "load_animation");
+            _.delay(this.load_animation, 200, element);
+        }
+    },
+
+    load_animation: function(element) {
+        if (this._loading) {
+            if (element) {
+                $(element).plainOverlay("show", {fillColor: '#c4d7e3', duration: 200});
+            } else {
+                this.$el.plainOverlay("show", {fillColor: '#c4d7e3', duration: 200});
+            }
+        }
+    },
+
+    loaded: function(element) {
+        this._loading = false;
+        if (element) {
+            $(element).plainOverlay("hide", {duration: 200});
+        } else {
+            this.$el.plainOverlay("hide", {duration: 200});
+        }
     }
 });

@@ -120,9 +120,13 @@ var ExerciseView = BaseView.extend({
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         // load the info about the exercise itself
-        this.data_model = new Models.ExerciseDataModel({exercise_id: options.exercise_id});
-        if (this.data_model.exercise_id) {
-            this.data_model.fetch();
+        if (options.data_model) {
+            this.data_model = options.data_model;
+        } else {
+            this.data_model =  new Models.ExerciseDataModel({id: options.id});
+            if (this.data_model.id) {
+                this.data_model.fetch();
+            }
         }
 
         this.Khan = global.Khan;
@@ -207,6 +211,15 @@ var ExerciseView = BaseView.extend({
             if (answerType == "multiple") {
                 answerType = $("span.sol").map(function(index, item){return $(item).attr("data-forms");}).get().join();
             }
+
+            var hints;
+            if (self.data_model.get_framework() == "khan-exercises") {
+                hints = data.hints;
+            } else if (self.data_model.get_framework() == "perseus") {
+                hints = Exercises.PerseusBridge.getNumHints() > 0;
+            }
+
+            self.trigger("hint_available", hints);
 
             var checkVal = /number|decimal|rational|proper|improper|mixed|radical|integer|cuberoot/gi;
 
@@ -501,6 +514,9 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.options = options;
 
+        this.data_model = options.data_model;
+        this.log_model = options.log_model;
+
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         window.statusModel.loaded.then(this.setup_exercise_environment);
@@ -700,7 +716,9 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
     initialize_subviews: function() {
         this.exercise_view = this.add_subview(ExerciseView, {
             el: this.el,
-            exercise_id: this.options.exercise_id
+            exercise_id: this.options.data_model.get("exercise_id"),
+            data_model: this.options.data_model,
+            log_model: this.options.log_model
         });
 
         this.listenTo(this.exercise_view, "ready_for_next_question", this.ready_for_next_question);
@@ -712,20 +730,18 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
         });
 
         this.listenTo(this.exercise_view, "check_answer", this.check_answer);
+
+        this.listenTo(this.exercise_view, "hint_available", this.toggle_hint_view);
     },
 
     load_user_data: function() {
 
-        // load the data about the user's overall progress on the exercise
-        this.log_collection = new Models.ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
-        var log_collection_deferred = this.log_collection.fetch();
-
         // load the last 10 (or however many) specific attempts the user made on this exercise
-        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.exercise_id, context_type__in: ["playlist", "exercise"]});
+        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.data_model.get("exercise_id"), context_type__in: ["playlist", "exercise"]});
         var attempt_collection_deferred = this.attempt_collection.fetch();
 
         // wait until both the exercise and attempt logs have been loaded before continuing
-        this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
+        this.user_data_loaded_deferred = $.when(attempt_collection_deferred);
         this.user_data_loaded_deferred.then(this.user_data_loaded);
 
     },
@@ -737,7 +753,7 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
     user_data_loaded: function() {
 
         // get the exercise log model from the queried collection
-        this.log_model = this.log_collection.get_first_log_or_new_log();
+        this.log_model = this.options.log_model;
 
         this.listenTo(this.log_model, "sync", this.update_total_points);
 
@@ -830,6 +846,14 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
         }
         messages.clear_messages();
         messages.show_message("info", sprintf(msg, context));
+    },
+
+    toggle_hint_view: function(hints) {
+        if (hints) {
+            this.hint_view.$el.show();
+        } else {
+            this.hint_view.$el.hide();
+        }
     }
 
 });

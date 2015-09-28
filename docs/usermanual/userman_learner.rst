@@ -1,11 +1,11 @@
 Learner User Manual
-=======================
+===================
 **Who is a "learner"?**
 
 Anyone who uses KA Lite primarily for learning. Learner accounts will track individual progress through videos and exercises, and learners will only be allowed to view their own data.
 
 Accessing KA Lite
-------------------
+-----------------
 There are two ways KA Lite can be used:
 
 #. **Set up on a network with one main server, having machines connect to this server.** If this is the setup chosen, installation is not necessary on a learner's computer, as it can be accessible through a web browser with the IP address of the server. Simply copy and paste the server's IP address into your web browser any time you'd like to access KA Lite. If you are unsure what the address is, please contact your administrator.
@@ -32,7 +32,7 @@ How to Log In
 
 
 Navigating through Content
--------------------------------------------
+--------------------------
 To begin engaging with the Khan Academy videos and exercises, first make sure you are logged into KA Lite. Upon log in, you should see a green menu on the left that lists the content. If you do not see this green menu, please start by clicking on the "Learn" tab on the home page. 
 
 Start by selecting the subject you'd like to explore. This will expand the side menu, displaying subtopics within that subject. 
@@ -65,9 +65,24 @@ This card allows you to navigate to excercises you have begun; you can also to n
 **Explore:**
 This card recommends content for you based on topics you have completed and begun. This card also recommends random content from our collection of topics to encourage learning from multiple fields.
 
+Content Rating
+^^^^^^^^^^^^^^
+You can leave feedback on each content item.
+When you are logged in, you'll find a rating box below each content item.
+You can rate each content item on *Quality* and *Difficulty* on a 1 to 5 scale by clicking on the star icons.
+1 represents the lowest rating, and 5 represents the highest rating.
+You can alter the ratings at any time by clicking on a different star icon.
+
+After rating *Quality* and *Difficulty* you'll be able to leave any comments you wish.
+Simply click on the text box labeled *Your Comments* and type away!
+You can edit your comments freely.
+
+At this time, you are only able to view your own ratings.
+
+:ref:`Coaches can export the ratings of all users in csv format. <export-content-rating>`
 
 How to Practice Exercises
---------------------------
+-------------------------
 First, please log into KA Lite. Then, navigate to the topic that you'd like to practice exercises for. 
 
 To answer a question, enter the answer in the box on the top right of the module, or select the bubble next to the answer choice in the exercise panel. Once you have decided on your answer, click "Check Answer".
@@ -80,12 +95,12 @@ The bar on the top right will display your progress as you go through the exerci
 	If you are stuck on a problem, you can ask for a hint by clickin on the "Show hints" button! Use your hints wisely, for there are a limited number of them for every section. 
 
 Saved Progress
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
 If at any point during an exercise you wish to watch a video to refresh your memory, feel free to navigate to the video by expanding the green tab which will bring up the content menu. Your progress for that exercise will be saved and you will not lose your work.
 
 
 How to View Your Progress
---------------------------
+-------------------------
 At any point in time, you should be able to view your progress on any topic. In order to do this, 
 
 #. Log into KA Lite.

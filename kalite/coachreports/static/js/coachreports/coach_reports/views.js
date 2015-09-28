@@ -6,8 +6,12 @@ var Backbone = require("base/backbone");
 var messages = require("utils/messages");
 var Models = require("./models");
 var TabularReportViews = require("../tabular_reports/views");
+var d3 = require("d3");
 
 var date_string = require("utils/datestring").date_string;
+var d3 = require("d3");
+
+require("bootstrap-datepicker/dist/js/bootstrap-datepicker");
 
 /*
 Hierarchy of views:
@@ -21,7 +25,7 @@ var TimeSetView = BaseView.extend({
     template: require("./hbtemplates/datepicker.handlebars"),
 
     events: {
-        "click .setrange": "set_range"
+        "click .setrange:not([disabled])": "set_range"
     },
 
     initialize: function () {
@@ -48,12 +52,17 @@ var TimeSetView = BaseView.extend({
 
         format = format.toLowerCase().replace("y", "yy");
 
+        var self = this;
+
         this.datepicker = this.$('.date-range').each(function(){
             $(this).datepicker({
                 format: format,
                 endDate: "0d",
                 todayBtn: "linked",
                 todayHighlight: true
+            });
+            $(this).datepicker().on('changeDate', function() {
+                self.$(".setrange").removeAttr("disabled");
             });
         });
     },
@@ -64,6 +73,7 @@ var TimeSetView = BaseView.extend({
             end_date: this.$("#end").datepicker("getDate")
         });
         this.model.trigger("set_time");
+        this.$(".setrange").attr("disabled", "disabled");
         return false;
     }
 });
@@ -79,12 +89,78 @@ var CoachSummaryView = BaseView.extend({
         "click #show_tabular_report": "toggle_tabular_view"
     },
 
+    /*
+    this function produces a radial graph and inserts it into the target_elem
+    data_sub is a portion of the data, while the data_total param is the total
+    IE time spent doing backflips vs total time spent alive
+    */
+    displayRadialGraph: function(target_elem, data_sub, data_total) {
+        var targetElemBox = $("#" + target_elem).get(0);
+        var targetElemP = $("#" + target_elem + "_p").get(0);
+
+        if(!data_sub || !data_total) {
+            targetElemP.innerHTML = "N/A";
+        } else {
+            var parseData = [
+                //parsing data to 2 decimal positions
+                { label: gettext("Hours spent on content"), count: Math.round((data_sub * 100)/data_total) },
+                { label: gettext("Other activites (exercises, etc.)"), count: Math.round(((data_total - data_sub) * 100)/data_total) }
+            ];
+
+            //adjusting the graph's size based on target_elem's sizing
+            var width = targetElemBox.clientWidth;
+            var height = targetElemBox.clientHeight;
+            var radius = (Math.min(width, height) / 2);
+
+            var color = d3.scale.category20();
+
+            var svg = d3.select("#" + target_elem)
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + (width/2) + "," + (height/2) + ")");
+
+            var arc = d3.svg.arc()
+                .innerRadius(radius - radius/6)
+                .outerRadius(radius);
+
+            var pie = d3.layout.pie()
+                .value(function(d) { return d.count; })
+                .sort(null);
+
+            var path = svg.selectAll("path")
+                .data(pie(parseData))
+                .enter()
+                .append("path")
+                .attr("d", arc)
+                .attr("fill", function(d, i) {
+                    return color(d.data.label);
+                });
+
+            //parsing to 2 decimals
+            var content_percentage = Math.round((data_sub * 100)/data_total);
+            targetElemP.innerHTML = content_percentage + "%";
+
+            //this will display relevant data when you hover over that data's arc on the radial graph
+            path.on('mouseover', function(d) {
+                targetElemP.innerHTML = (d.data.label + ": " + d.data.count + "%");
+            });
+
+            //when not hovering, you'll see the content percentage
+            path.on('mouseout', function() {
+                targetElemP.innerHTML = content_percentage + "%";
+            });
+        }
+    },
+
     initialize: function() {
         _.bindAll(this, "set_data_model", "render");
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
         this.listenTo(this.model, "set_time", this.set_data_model);
         this.set_data_model();
+
     },
 
     set_data_model: function (){
@@ -102,16 +178,69 @@ var CoachSummaryView = BaseView.extend({
                 facility: this.model.get("facility"),
                 group: this.model.get("group"),
                 start_date: date_string(this.model.get("start_date")),
-                end_date: date_string(this.model.get("end_date"))
+                end_date: date_string(this.model.get("end_date")),
+            
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
+                this.loading("#content-container");
                 this.data_model.fetch();
             }
+
         }
     },
 
+    set_progress_bar: function() {
+        
+        var in_progress = this.data_model.get("total_in_progress");
+        var complete = this.data_model.get("total_complete");
+        var struggling = this.data_model.get("total_struggling");
+        var not_attempted = this.data_model.get("total_not_attempted");
+
+        var total = complete + in_progress + struggling;
+
+        var h = 50;
+        var w = 500;
+        var dataset = [struggling/total, complete/total, in_progress/total];
+
+        console.log(dataset);
+        var svg = d3.select("div.progressbar").append("svg").attr("width", w).attr("height", h).
+            attr("class", "col-md-8 innerbar");
+
+        svg.selectAll("rect").data(dataset).enter().append("rect").attr("x", function(d, i){
+                return _.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) * w;
+            }).attr("y", 0).attr("width", function(d) {
+                return d * w;
+            }).attr("height", h).attr("class", "rect").attr("class", function(d, i){
+                switch(i) {
+                    case(0):
+                        return "struggling";
+                    case(1):
+                        return "complete";
+                    case(2):
+                        return "partial";
+                }
+            });
+
+        // Sets the text on the bar itself
+        svg.selectAll("text").data(dataset).enter().append("text").text(function(d, i) {
+            switch(i) {
+                case(0):
+                    return struggling;
+                case(1):
+                    return complete;
+                case(2):
+                    return in_progress;
+            }
+        }).attr("fill", "black").attr("x", function(d, i){
+            return (_.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) + d/2) * w;
+        }).attr("y", h/2).attr("font-size", "12px").style("text-anchor", "middle");
+
+    },
+
     render: function() {
+
+        this.loaded("#content-container");
         this.$el.html(this.template({
             status:this.model.attributes,
             data: this.data_model.attributes,
@@ -128,8 +257,14 @@ var CoachSummaryView = BaseView.extend({
           messages.show_message("warning", gettext("No recent learner data for this group is available."));
         }
 
-        delete this.tabular_report_view;
+        this.set_progress_bar();
 
+        if (this.tabular_report_view) {
+            this.tabular_report_view.remove();
+            delete this.tabular_report_view;
+        }
+
+        this.displayRadialGraph("full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"));
     },
 
     toggle_tabular_view: _.debounce(function() {
@@ -138,8 +273,12 @@ var CoachSummaryView = BaseView.extend({
             this.$("#show_tabular_report").text("Loading");
             this.$("#show_tabular_report").attr("disabled", "disabled");
             this.tabular_report_view = new TabularReportViews.TabularReportView({model: this.model, complete: function() {
-                self.$("#show_tabular_report").text(gettext("Hide Tabular Report"));
-                self.$("#show_tabular_report").removeAttr("disabled");
+                if (self.tabular_report_view) {
+                    // Check that tabular report view still exists, as it is possible for it to have been removed
+                    // by the time this call back gets called.
+                    self.$("#show_tabular_report").text(gettext("Hide Tabular Report"));
+                    self.$("#show_tabular_report").removeAttr("disabled");
+                }
             }});
             this.$("#detailed_report_view").append(this.tabular_report_view.el);
         } else {
@@ -162,7 +301,11 @@ var FacilitySelectView = Backbone.View.extend({
         _.bindAll(this, "render");
         this.facility_list = new Models.FacilityCollection();
         this.listenTo(this.facility_list, 'sync', this.render);
-        this.facility_list.fetch();
+        this.facility_list.fetch({
+                data: $.param({
+                    zone_id: ZONE_ID
+                })
+            });
     },
 
     render: function() {
@@ -301,7 +444,9 @@ var CoachReportView = BaseView.extend({
         this.$('#facility-select-container').append(this.facility_select_view.el);
         this.$("#time-set-container").append(this.time_set_view.el);
         this.$("#student_report_container").append(this.coach_summary_view.el);
-    }
+
+    },
+
 });
 
 module.exports = {

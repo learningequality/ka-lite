@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 
 from kalite.testing.base import KALiteTestCase
 from kalite.updates.models import VideoFile
-from kalite import updates, caching
+from kalite import updates, topic_tools
 
 class CacheInvalidationTestCase(KALiteTestCase):
     """
@@ -25,7 +25,7 @@ class CacheInvalidationTestCase(KALiteTestCase):
         VideoFile.objects.create(youtube_id="blah2", flagged_for_download=False, percent_complete=100)
         post_save.connect(receiver=updates.invalidate_on_video_update, sender=VideoFile)
 
-    @patch('kalite.caching.invalidate_all_caches')
+    @patch('kalite.topic_tools.content_models.annotate_content_models')
     def test_cache_invaldation_occurs_exactly_once(self, mock_func):
         call_command("videoscan")
         actual = mock_func.call_count

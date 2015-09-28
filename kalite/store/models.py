@@ -107,37 +107,3 @@ def handle_exam_unset(sender, **kwargs):
                 except ZeroDivisionError:  # one of the students just hasn't started answering a test when we turn it off
                     continue
                 transaction_log.save()
-
-
-def playlist_group_mapping_reset_for_a_facility(facility_id):
-    from kalite.playlist.models import PlaylistToGroupMapping
-    from kalite.facility.models import FacilityGroup
-
-    groups = FacilityGroup.objects.filter(facility=facility_id).values("id")
-    playlist_group = PlaylistToGroupMapping.objects.all()
-    for group in groups:
-        for assigned_group in playlist_group:
-            if assigned_group.group_id == group['id']:
-                assigned_group.delete()
-
-@receiver(unit_switch, dispatch_uid="unit_switch")
-def handle_unit_switch(sender, **kwargs):
-    old_unit = kwargs.get("old_unit")
-    new_unit = kwargs.get("new_unit")
-    facility_id = kwargs.get("facility_id")
-    facility = Facility.objects.get(pk=facility_id)
-    # Import here to avoid circular import
-    from kalite.distributed.api_views import compute_total_points
-    if old_unit != new_unit:
-        if facility:
-            users = FacilityUser.objects.filter(facility=facility_id)
-            for user in users:
-                old_unit_points = compute_total_points(user) or 0
-                old_unit_transaction_log = StoreTransactionLog(user=user, context_id=old_unit, context_type="unit_points_reset", item="gift_card")
-                old_unit_transaction_log.value = - old_unit_points
-                old_unit_transaction_log.purchased_at = datetime.datetime.now()
-                old_unit_transaction_log.save()
-                new_unit_transaction_log = StoreTransactionLog.objects.filter(user=user, context_id=new_unit, context_type="unit_points_reset", item="gift_card")
-                new_unit_transaction_log.soft_delete()
-
-            playlist_group_mapping_reset_for_a_facility(facility_id)

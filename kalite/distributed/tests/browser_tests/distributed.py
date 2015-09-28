@@ -21,7 +21,6 @@ from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins, CreateFacilityMixin
-from kalite.topic_tools import get_node_cache
 
 logging = settings.LOG
 
@@ -101,65 +100,6 @@ class UserRegistrationCaseTest(BrowserActionMixins, KALiteBrowserTestCase, Creat
         self.browser_logout_user()
 
 
-@unittest.skipIf(getattr(settings, 'HEADLESS', None), "Fails if settings.HEADLESS is set.")
-class StudentExerciseTest(BrowserActionMixins, FacilityMixins, KALiteBrowserTestCase):
-    """
-    Test exercises.
-    """
-    student_username = 'test_student'
-    student_password =  'socrates'
-    EXERCISE_SLUG = 'addition_1'
-    MIN_POINTS = get_node_cache("Exercise")[EXERCISE_SLUG]["basepoints"]
-    MAX_POINTS = 2 * MIN_POINTS
-
-    def setUp(self):
-        """
-        Create a student, log the student in, and go to the exercise page.
-        """
-        super(StudentExerciseTest, self).setUp()
-        self.facility_name = "fac"
-        self.facility = self.create_facility(name=self.facility_name)
-        self.student = self.create_student(username=self.student_username,
-                                           password=self.student_password,
-                                           facility=self.facility)
-        self.browser_login_student(self.student_username, self.student_password, facility_name=self.facility_name)
-
-        self.browse_to(self.live_server_url + reverse("learn") + get_node_cache("Exercise")[self.EXERCISE_SLUG]["path"])
-        self.nanswers = self.browser.execute_script('return window.ExerciseParams.STREAK_CORRECT_NEEDED;')
-
-    def browser_get_current_points(self):
-        """
-        Check the total points a student has accumulated, from an exercise page.
-        """
-        try:
-            points_regexp = r'\((?P<points>\w+) points\)'
-            points_text = self.browser.find_element_by_css_selector('.progress-points').text
-            points = re.match(points_regexp, points_text).group('points')
-            return points
-        except AttributeError:
-            return ""
-
-    def browser_submit_answer(self, answer):
-        """
-        From an exercise page, insert an answer into the text box and submit.
-        """
-        ui.WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_element_located((By.ID, 'solutionarea'))
-        )
-        self.browser.find_element_by_id('solutionarea').find_element_by_css_selector('input[type=text]').click()
-        self.browser_send_keys(unicode(answer))
-        self.browser.find_element_by_id('check-answer-button').click()
-
-        try:
-            ui.WebDriverWait(self.browser, 10).until(
-                expected_conditions.visibility_of_element_located((By.ID, 'next-question-button'))
-            )
-            correct = self.browser.find_element_by_id('next-question-button').get_attribute("value")=="Correct! Next question..."
-        except TimeoutException:
-            correct = False
-        return correct
-
-
 class MainEmptyFormSubmitCaseTest(CreateAdminMixin, BrowserActionMixins, KALiteBrowserTestCase, CreateFacilityMixin):
     """
     Submit forms with no values, make sure there are no errors.
@@ -208,46 +148,6 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         self.browse_to(self.reverse("homepage"))
         self.assertTrue(self.browser_is_logged_in(), "Timeout should not logout teacher")
 
-
-class AdminOnlyTabsNotDisplayedForCoachTest(KALiteBrowserTestCase, BrowserActionMixins, CreateAdminMixin, FacilityMixins):
-    """ Addresses issue #2990. """
-
-    def setUp(self):
-        super(AdminOnlyTabsNotDisplayedForCoachTest, self).setUp()
-        self.create_admin()
-        self.create_facility()
-        self.create_teacher(username="teacher1", password="password")
-        self.browser_login_user(username="teacher1", password="password")
-
-    def test_correct_tabs_are_displayed(self):
-        """Tabs with the class admin-only should not be displayed, and tabs
-        with the class teacher-only should be displayed
-        """
-        try:
-            admin_only_elements = WebDriverWait(self.browser, 10).until(
-                expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "admin-only"))
-            )
-        except TimeoutException:
-            admin_only_elements = []
-        teacher_only_elements = WebDriverWait(self.browser, 10).until(
-            expected_conditions.presence_of_all_elements_located((By.CLASS_NAME, "teacher-only"))
-        )
-        # Make sure nav bar is expanded e.g. in a small screen
-        try:
-            navbar_expand = self.browser.find_element_by_class_name('navbar-toggle')
-            self.browser_activate_element(elem=navbar_expand)
-            # Wait for the animation to finish
-            WebDriverWait(self.browser, 10).until(
-                expected_conditions.visibility_of_element_located((By.CLASS_NAME, "nav"))
-            )
-        except ElementNotVisibleException:
-            # browser_activate_element could throw this, meaning nav bar is already visible
-            pass
-
-        for el in admin_only_elements:
-            self.assertFalse(el.is_displayed(), "Elements with `admin-only` class should not be displayed!")
-        for el in teacher_only_elements:
-            self.assertTrue(el.is_displayed(), "Elements with `teacher-only` class should be displayed!")
 
 class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin, KALiteBrowserTestCase):
 

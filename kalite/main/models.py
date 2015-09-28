@@ -23,12 +23,15 @@ from kalite import i18n
 from kalite.facility.models import FacilityUser
 from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
+from kalite.topic_tools.settings import CHANNEL
+
+from .content_rating_models import ContentRating
 
 
 class VideoLog(DeferredCountSyncedModel):
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=100, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
+    video_id = models.CharField(max_length=200, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
     youtube_id = models.CharField(max_length=20) # metadata only
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
@@ -123,7 +126,7 @@ class VideoLog(DeferredCountSyncedModel):
 
 class ExerciseLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    exercise_id = models.CharField(max_length=100, db_index=True)
+    exercise_id = models.CharField(max_length=200, db_index=True)
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
@@ -489,7 +492,7 @@ class AttemptLog(DeferredCountSyncedModel):
     minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, db_index=True)
-    exercise_id = models.CharField(max_length=100, db_index=True)
+    exercise_id = models.CharField(max_length=200, db_index=True)
     seed = models.IntegerField(default=0)
     answer_given = models.TextField(blank=True) # first answer given to the question
     points = models.IntegerField(default=0)
@@ -516,7 +519,7 @@ class ContentLog(DeferredCountSyncedModel):
     minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    content_id = models.CharField(max_length=100, db_index=True)
+    content_id = models.CharField(max_length=200, db_index=True)
     points = models.IntegerField(default=0)
     language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
     complete = models.BooleanField(default=False)
@@ -526,7 +529,7 @@ class ContentLog(DeferredCountSyncedModel):
     time_spent = models.FloatField(blank=True, null=True)
     progress_timestamp = models.DateTimeField(blank=True, null=True)
     latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
-    content_source = models.CharField(max_length=100, db_index=True, default=settings.CHANNEL)
+    content_source = models.CharField(max_length=100, db_index=True, default=CHANNEL)
     content_kind = models.CharField(max_length=100, db_index=True)
     progress = models.FloatField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)
@@ -547,6 +550,16 @@ class ContentLog(DeferredCountSyncedModel):
         if self.content_id and not self.complete:
             self.progress_timestamp = datetime.now()
         super(ContentLog, self).save(*args, **kwargs)
+
+    def get_uuid(self):
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.content_id is not None, "Content id required for get_uuid"
+        assert self.content_kind is not None, "Content kind required for get_uuid"
+        assert self.content_source is not None, "Content source required for get_uuid"
+
+        namespace = uuid.UUID(self.user.id)
+        hashtext = ":".join([self.__class__.__name__, self.content_source, self.content_kind, self.content_id])
+        return uuid.uuid5(namespace, hashtext.encode("utf-8")).hex
 
 
 @receiver(pre_save, sender=UserLog)

@@ -1,20 +1,73 @@
+@import "../../../../../node_modules/jquery.fancytree/dist/skin-common.less";
+@import "../../../../distributed/static/css/distributed/kalite-base.less";
+
+@fancy-inline-sprites: true;
+@fancy-image-dir: "../../../../../node_modules/jquery.fancytree/dist/skin-lion";
+
 #content_tree .complete span.fancytree-icon {
-    margin-top: 2px;
+    margin-top: 0;
+    vertical-align: middle;
     background: url(/static/images/distributed/circle-complete.png) no-repeat;
 }
 
 #content_tree .partial span.fancytree-icon {
-    margin-top: 2px;
+    margin-top: 0;
+    vertical-align: middle;
     background: url(/static/images/distributed/circle-partial.png) no-repeat;
 }
 
 #content_tree .unstarted span.fancytree-icon {
-    margin-top: 2px;
+    margin-top: 0;
+    vertical-align: middle;
     background: url(/static/images/distributed/circle-empty.png) no-repeat;
 }
 
 .button_text {
     margin-bottom: 0px;
+}
+
+li span.fancytree-selected {
+    border-color: #00CC99;
+    background-color: #00CC99;
+}
+span.fancytree-expanded {
+    border-color: @k-accent-color;
+    background-color: @k-accent-color;
+}
+
+span.fancytree-expanded::before {
+    font-family: "Glyphicons Halflings";
+    content: "\e118  ";
+    font-size: 0.8em;
+    color: white;
+}
+span.fancytree-checkbox {
+    margin-top: 6px;
+}
+span.fancytree-expander {
+    display: none;
+}
+ul.fancytree-container:focus {
+    outline: 0;
+}
+
+.fancytree-node {
+    font-size: 20px;
+    cursor:pointer;
+    background-color: #C4D7E3;
+    border-color: #d0d0d0;
+    border-style: solid;
+    border-width: 5px;
+}
+.fancytree-has-children {
+    border-color: #d0d0d0;
+    background-color: #d0d0d0;
+}
+.fancytree-has-children::before {
+    font-family: "Glyphicons Halflings";
+    content: "\e117  ";
+    font-size: 0.8em;
+    color: grey;
 }
 
 ul.fancytree-container {
@@ -91,4 +144,8 @@ h4.videos {
 
 @media only screen and (max-width: 680px) {
     .download-actions { display: block; float: none; width: 100%; }
+}
+
+.progress-section {
+    width: 100%;
 }
