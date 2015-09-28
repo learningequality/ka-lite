@@ -40,7 +40,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from kalite.facility.models import FacilityUser
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.content_models import get_random_content
 
 # Use these for now, so that we don't DROurselves, but eventually
 # we'll want to move away from mixins.
@@ -302,16 +302,6 @@ def build_url(context, url, params={}):
 
 def go_to_homepage(context):
     url = reverse("homepage")
-    context.browser.get(build_url(context, url))
-
-
-def go_to_content_item(context):
-    """
-    Go to the page for a content item (video, exercise, etc). This method does not care which one, it's to ensure
-    that an instantiated ContentAreaView exists on the page. Not the content item may not be flagged as "available".
-    """
-    content = get_content_cache().itervalues().next()
-    url = urljoin(reverse("learn"), content["path"])
     context.browser.get(build_url(context, url))
 
 

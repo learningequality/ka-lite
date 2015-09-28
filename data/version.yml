@@ -1,3 +1,24 @@
+0.16:
+  release_date:
+  git_commit: ""
+  new_features:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
+  bugs_fixed:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
+  bugs_fixed:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
 0.15:
   release_date:
   git_commit: ""
@@ -19,18 +40,16 @@
     coaches: []
     admins: []
 
-0.14.dev0:
-  release_date:
-  git_commit: ""
+0.14.0:
+  release_date: "2015/08/27"
+  git_commit: "c453dab"
   new_features:
-    all: []
-    students: []
-    coaches: []
-    admins: []
-
-  bugs_fixed:
-    all: []
-    students: []
+    all:
+      - "Installers for OS X and Debian."
+      - "Bundled documentation that's accessible in the nav bar."
+      - "Performance improvements across the board."
+    students:
+      - "Content recommendations in the front page."
     coaches: []
     admins: []
 

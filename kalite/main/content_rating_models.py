@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 
 from kalite.facility.models import FacilityUser
+from kalite.topic_tools.settings import CHANNEL
 
 from securesync.models import DeferredCountSyncedModel
 
@@ -17,7 +18,7 @@ class ContentRating(DeferredCountSyncedModel):
     # Maintain info on content type -- could be video, exercise, etc, but we should be able to uniquely id it
     content_kind = models.CharField(max_length=100, db_index=True, blank=False)
     content_id = models.CharField(max_length=100, db_index=True, blank=False)
-    content_source = models.CharField(max_length=100, db_index=True, default=settings.CHANNEL)
+    content_source = models.CharField(max_length=100, db_index=True, default=CHANNEL)
 
     user = models.ForeignKey(FacilityUser, blank=False)
     quality = models.IntegerField(blank=False, default=0)

@@ -3,7 +3,6 @@
 {% load i18n %}
 {% load i18n_filters %}
 {% load my_filters %}
-{% load compress %}
 
 {% get_current_language as lang_code %}
 <html lang="{{ lang_code }}">
@@ -48,11 +47,12 @@
             <script type="text/javascript" src="{{ settings.CONTENT_URL }}locale/js/i18n/{{ request.language }}.js"></script>
         {% endif %}
 
-        <!-- JS translation file statically included as a back-up, so that if the saved file below isn't available, we don't choke. -->
-        <script type="text/javascript" src="{% static 'js/i18n/en.js' %}"></script>
-
         <script src="{% static 'js/distributed/bundles/bundle_common.js' %}"></script>
         <script src="{% static 'js/distributed/bundles/bundle_base.js' %}"></script>
+
+        {% if settings.INCLUDE_QTIP %}
+            <script src="{% static 'js/distributed/bundles/bundle_qtip.js' %}"></script>
+        {% endif %}
 
         <script>
         window.sessionModel.set({
@@ -64,6 +64,7 @@
           GET_VIDEO_LOGS_URL          : "{% url 'api_dispatch_list' resource_name='videolog' %}",
           GET_EXERCISE_LOGS_URL       : "{% url 'api_dispatch_list' resource_name='exerciselog' %}",
           GET_CONTENT_LOGS_URL        : "{% url 'api_dispatch_list' resource_name='contentlog' %}",
+          GET_ATTEMPT_LOGS_URL        : "{% url 'api_dispatch_list' resource_name='attemptlog' %}",
 
           KHAN_EXERCISES_URL : "{% static 'js/distributed/perseus/ke/' %}",
 

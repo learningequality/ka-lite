@@ -3,6 +3,8 @@
 Setting up your development environment
 =======================================
 
+.. warning::  These directions may be out of date! This page needs to be consolidated with the `Getting Started page on our wiki <https://github.com/learningequality/ka-lite/wiki/Getting-started>`_.
+
 Recommended setup
 _________________
 

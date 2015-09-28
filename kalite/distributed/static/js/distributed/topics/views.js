@@ -6,7 +6,7 @@ var Backbone = require("base/backbone");
 var messages = require("utils/messages");
 var $script = require("scriptjs");
 
-require("../../../css/distributed/sidebar.css");
+require("../../../css/distributed/sidebar.less");
 
 var ContentViews = require("content/views");
 var Models = require("./models");
@@ -56,34 +56,50 @@ var ContentAreaView = BaseView.extend({
         this.$(".content").html("").append(view.$el);
     },
 
+    should_show_rating: function() {
+        /*
+        This function determines whether a rating should be shown for the content item.
+        returns: true or false
+        */
+        var entry_available = (typeof this.model !== "undefined") && !!this.model.get("available");
+        var logged_in = window.statusModel.has("user_id");
+        return logged_in && entry_available;
+    },
+
+    remove_rating_view: function() {
+        // Remove the rating view if it exists.
+        if (typeof this.rating_view !== "undefined") {
+            this.rating_view.remove();
+            delete this.rating_view;
+        }
+    },
+
     show_rating: function() {
-        if( typeof  window.statusModel.get("user_id") === "undefined" ) {
-            // Let this be a no-op if the user isn't logged in, and remove the view if it already exists.
-            if (typeof this.rating_view !== "undefined") {
-                this.rating_view.remove();
-            }
+        // First, determine whether we should show the rating at all.
+        // If it should not be shown, be sure to remove the rating_view; subsequent logic depends on that.
+        if ( !this.should_show_rating() ) {
+            this.remove_rating_view();
             return;
         }
+
+        // Secondly, if the rating_view is previously deleted or never shown before at all, then define it.
         if( typeof this.rating_view === "undefined" ) {
-            this.rating_view = this.add_subview(RatingView, {
-                el: this.$("#rating-container-wrapper"),
-                model: new RatingModel({
-                    "user": window.statusModel.get("user_uri"),
-                    "content_kind": this.model.get("kind"),
-                    "content_id": this.model.get("id")
-                })
-            });
+            this.rating_view = this.add_subview(RatingView, {});
+            this.$("#rating-container-wrapper").append(this.rating_view.el);
         }
-        if( this.rating_view.model.get("content_id") !== this.model.get("id") ) {
+
+        // Finally, handle the actual display logic
+        if( this.rating_view.model === null || this.rating_view.model.get("content_id") !== this.model.get("id") ) {
             var self = this;
             this.content_rating_collection.fetch().done(function(){
+                // Queue up a save on the model we're about to switch out, in case it hasn't been synced.
+                if (self.rating_view.model !== null && self.rating_view.model.hasChanged()) {
+                    self.rating_view.model.debounced_save();
+                }
                 if(self.content_rating_collection.models.length === 1) {
                     self.rating_view.model = self.content_rating_collection.pop();
                     self.rating_view.render();
                 } else if ( self.content_rating_collection.models.length === 0 ) {
-                    // Since RatingModel uses debounced syncing, let's force one immediate sync before switching out
-                    // the model.
-                    self.rating_view.model.save();
                     self.rating_view.model = new RatingModel({
                             "user": window.statusModel.get("user_uri"),
                             "content_kind": self.model.get("kind"),
@@ -92,9 +108,7 @@ var ContentAreaView = BaseView.extend({
                     self.rating_view.render();
                 } else {
                     messages.show_message("error", "Server Error: More than one rating found for this user and content item!", "too-many-ratings-msg");
-                    if (typeof this.rating_view !== "undefined") {
-                        this.rating_view.remove();
-                    }
+                    self.remove_rating_view();
                 }
             }).error(function(){
                 console.log("content rating collection failed to fetch");
@@ -115,8 +129,6 @@ var ContentAreaView = BaseView.extend({
                 this.currently_shown_view.remove();
             }
         }
-
-        this.model.set("active", false);
     }
 
 });
@@ -635,6 +647,10 @@ var TopicContainerOuterView = BaseView.extend({
                 }
             }
         }
+        if (!pruned && (paths.length < check_views.length)) {
+            // Double check that paths and check_views are the same length
+            this.remove_topic_views(check_views.length - paths.length);
+        }
         if (callback) {
             this.stopListening(this, "inner_view_added");
 
@@ -696,48 +712,21 @@ var TopicContainerOuterView = BaseView.extend({
         var kind = entry.get("kind") || entry.get("entity_kind");
         var id = entry.get("id") || entry.get("entity_id");
 
-        var view;
-
         this.content_view.model = entry;
-        // The rating subview depends on the model, but we can't just listen to events on the model since the actual
-        // object is swapped out here.
+        // The rating subview depends on the content_view.model, but we can't just listen to events on the model
+        // to trigger show_rating, since the actual object is swapped out here. We must call it explicitly.
         this.content_view.show_rating();
         var self = this;
-        // Mask "require" with "external" to prevent browserify from bundling what we want to be external dependencies.
-        var external = require;
-        switch(kind) {
 
-            case "Exercise":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    var ExerciseViews = external("exercise");
-                    view = new ExerciseViews.ExercisePracticeView({
-                        exercise_id: id,
-                        context_type: "playlist",
-                        context_id: self.model.get("id")
-                    });
-                    self.content_view.show_view(view);
-                });
-                break;
+        var view = new ContentViews.ContentWrapperView({
+            id: id,
+            kind: kind,
+            context_id: this.model.get("id"),
+            channel: window.channel_router.channel
+        });
 
-            case "Quiz":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    var ExerciseViews = external("exercise");
-                    view = new ExerciseViews.ExerciseQuizView({
-                        quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
-                        context_id: self.model.get("id") // for now, just use the playlist ID as the quiz context_id
-                    });
-                    self.content_view.show_view(view);
-                });
-                break;
+        this.content_view.show_view(view);
 
-            default:
-                view = new ContentViews.ContentWrapperView({
-                    id: id,
-                    context_id: this.model.get("id")
-                });
-                this.content_view.show_view(view);
-                break;
-        }
         this.inner_views.unshift(this.content_view);
         this.trigger("inner_view_added");
         this.state_model.set("content_displayed", true);

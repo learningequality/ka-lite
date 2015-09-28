@@ -216,7 +216,8 @@ $('#beta-checkbox').click(function() {
 //
 
 var languagepack_callbacks = {
-    reset: languagepack_reset_callback
+    reset: languagepack_reset_callback,
+    completed: languagepack_complete_callback
 };
 
 function start_languagepack_download(lang_code) {
@@ -235,6 +236,8 @@ function start_languagepack_download(lang_code) {
         );
     });
 }
+
+window.start_languagepack_download = start_languagepack_download;
 
 // when we make a selection on the language pack select box, enable the 'Get Language' Button
 function select_lang_pack( event ) {
@@ -279,6 +282,11 @@ function languagepack_reset_callback(progress, resp) {
     downloading = false;
 }
 
+function languagepack_complete_callback(progress_log) {
+    // Trigger a reminder to restart server when a language pack is installed.
+    messages.show_message("warning", sprintf(gettext("Server must be restarted to activate language pack %(lang)s."), {lang: process_log.process_name}));
+}
+
 function set_server_language(lang) {
     api.doRequest(Urls.set_default_language(),
               {lang: lang}
@@ -286,6 +294,8 @@ function set_server_language(lang) {
                  window.location.reload();
              });
 }
+
+window.set_server_language = set_server_language;
 
 function update_server_status() {
     connectivity.with_online_status("server", function(server_is_online) {

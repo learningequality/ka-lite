@@ -11,12 +11,13 @@ SCREENSHOTS_EXTENSION = ".png"
 
 SCREENSHOTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "data")
 SCREENSHOTS_JSON_FILE = os.path.join(SCREENSHOTS_JSON_PATH, 'screenshots.json')
-SCREENSHOTS_ROUTER = 'default'
 SQLITE3_ENGINE = 'django.db.backends.sqlite3'
+
+INCLUDE_QTIP = True
 
 # use another sqlite3 database for the screenshots
 DATABASES = {
-    SCREENSHOTS_ROUTER: {
+    'default': {
         "ENGINE": SQLITE3_ENGINE,
         "NAME": ":memory:",
     },

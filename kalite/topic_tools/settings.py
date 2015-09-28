@@ -12,16 +12,26 @@ only on django.conf.settings
 import os
 from django.conf import settings
 
+from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_DATABASE_PATH
+
+CONTENT_DATABASE_PATH = os.path.join(os.path.dirname(KHAN_ASSESSMENT_ITEM_DATABASE_PATH), "content_{channel}_{language}.sqlite")
+
+CHANNEL = getattr(settings, "CHANNEL", "khan")
+
+CHANNEL_DATA_PATH = os.path.join(settings.CONTENT_DATA_PATH, CHANNEL)
+
+# Whether we wanna load the perseus assets. Set to False for testing for now.
+LOAD_KHAN_RESOURCES = getattr(settings, "LOAD_KHAN_RESOURCES", CHANNEL == "khan")
 
 DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = getattr(settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False)
 
-KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "perseus", "ke")
+KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke")
 
 TOPICS_FILEPATHS = {
-    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
+    CHANNEL: os.path.join(CHANNEL_DATA_PATH, "topics.json")
 }
-EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
-CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
-CONTENT_CACHE_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.sqlite")
+EXERCISES_FILEPATH = os.path.join(CHANNEL_DATA_PATH, "exercises.json")
+CONTENT_FILEPATH = os.path.join(CHANNEL_DATA_PATH, "contents.json")
+CONTENT_CACHE_FILEPATH = os.path.join(CHANNEL_DATA_PATH, "contents.sqlite")
 
 TOPIC_RECOMMENDATION_DEPTH = 3

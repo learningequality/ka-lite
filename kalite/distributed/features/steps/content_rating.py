@@ -36,7 +36,7 @@ def impl(context):
 @then(u'I see a feedback form')
 def impl(context):
     feedback_form_container = find_id_with_wait(context, RATING_CONTAINER_ID, wait_time=60)
-    assert elem_is_visible_with_wait(context, feedback_form_container), "Rating form is not visible."
+    assert feedback_form_container.is_displayed(), "Rating form is not visible."
 
 @when(u'I alter a star rating')
 def impl(context):
@@ -63,9 +63,7 @@ def impl(context):
     assert visible_container.is_displayed(),\
         "Element with id '{0}' not visible, but it should be!".format(STAR_CONTAINER_IDS[0])
     for id_ in STAR_CONTAINER_IDS[1:] + (TEXT_CONTAINER_ID, ):
-        el = find_id_with_wait(context, id_)
-        assert el.rect["width"]*el.rect["height"] == 0 or (not el.is_displayed()),\
-            "Element with id '{0}' is visible, but it should NOT be!".format(id_)
+        assert_no_element_by_css_selector(context, "#{id} div".format(id=id_))
 
 @given(u'some user feedback exists')
 def impl(context):
@@ -77,7 +75,9 @@ def impl(context):
         content_kind="Video",
         content_id="abc123",
         user=user,
-        text=context.rating_text
+        text=context.rating_text,
+        quality=1,
+        difficulty=3
     )
     rating.save()
     assert ContentRating.objects.count() != 0, "No ContentRating objects exist to be exported!"
@@ -109,14 +109,11 @@ def impl(context):
     text_feedback = context.text_feedback = "This stuff is great, A+++"
     enter_text_feedback(context, text_feedback)
 
-@given(u'I am on a content page')
-def impl(context):
-    go_to_content_item(context)
 
 @given(u'I have filled out a feedback form')
 def impl(context):
     context.execute_steps(u'''
-        Given I am on a content page
+        Given I open some available content
         When I fill out the form
     ''')
 

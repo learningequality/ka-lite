@@ -1,18 +1,18 @@
 <div id="coach_report_wrapper">
 	<div id="summary_mainview">
-		<h1 class="status_name">{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}{{#if data.learner_events }}<button id="show_tabular_report" class="btn btn-success pull-right">{{_ "Show Tabular Report" }}</button>{{/if}}</h1>
-		<div id="radial_chartblock">
-			<div id="chartcontainer">
-				<h3>{{#if start_date}}{{ start_date }}{{#if end_date }} → {{ end_date }}{{/if}}{{else}}{{_ "This week" }}{{/if}}</h3>
-				<div class="circlechart">
+		<h1 class="status_name">{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}</h1>
+		<h3>{{#if start_date}}{{ start_date }}{{#if end_date }} → {{ end_date }}{{/if}}{{else}}{{_ "This week" }}{{/if}}</h3>
+		<div id="radial_chartblock" class="container">
+			<div id="chartcontainer" class="row">
+				<div class="circlechart" class="col-sm-4">
 					<div id="full_circle1">
-						<p id="full_circle1_p">{{#if data.total_time_logged }}{{_ "Total:" }}<br />{{ data.total_time_logged }}{{else}}{{_ "N/A" }}{{/if}}</p>
+						<p id="full_circle1_p"></p>
 					</div>
 					<div class="charttext">
 						{{_ "Hours spent on content vs total hours logged" }}
 					</div>
 				</div>
-				<div class="circlechart">
+				<div class="circlechart" class="col-sm-4">
 					<div id="full_circle2">
 						<p>{{#if data.exercise_mastery }}{{ data.exercise_mastery }} %{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
@@ -20,7 +20,7 @@
 						{{_ "Average progress in exercises" }}
 					</div>
 				</div>
-				<div class="circlechart">
+				<div class="circlechart" class="col-sm-4">
 					<div id="full_circle3">
 						<p>{{#if data.exercise_attempts }}{{ data.exercise_attempts }}{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
@@ -28,6 +28,26 @@
 						{{_ "Total exercise attempts" }}
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
+				<h5 class="innerbar bartext">
+					<strong>{{_ "Current status of user exercises" }}</strong>
+				</h5>
+				<div class="progressbar">
+					<div class="innerbar col-md-3">
+						<label id="legendMargin" for="legend">Key</label>
+				        <ul id="legend">
+				        	<li class="barlegend"><div class="struggling"></div><span>{{_ "Struggling" }}</span></li>
+				            <li class="barlegend"><div class="complete"></div><span>{{_ "Completed" }}</span></li>
+				       		<li class="barlegend"><div class="partial"></div><span>{{_ "In Progress" }}</span></li>
+			        	</ul>
+		        	</div>
+		        </div>
+		        <div class="button col-md-6">
+        			{{#if data.learner_events }}<button id="show_tabular_report" class="btn btn-success btn-lg">{{_ "Show Tabular Report" }}</button>{{/if}}
+        		</div>
 			</div>
 		</div>
 		{{#if learners }}
@@ -54,7 +74,7 @@
 		</section>
 		{{/if}}
 	</div>
-	<div id="detailed_report_view">
+	<div id="detailed_report_view"> 
 	</div>
 </div>
 

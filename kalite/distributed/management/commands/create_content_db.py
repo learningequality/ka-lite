@@ -1,10 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
+from django.conf import settings as django_settings
+from kalite.topic_tools import settings
 import os
 import json
 from sqlitedict import SqliteDict
 
-logging = settings.LOG
+logging = django_settings.LOG
 
 
 class Command(BaseCommand):
