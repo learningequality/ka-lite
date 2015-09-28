@@ -135,6 +135,9 @@ def gen_data_files(*dirs):
         return os.path.splitext(f)[1] != ".pyc"
 
     for src_dir in dirs:
+        if not os.path.isdir(src_dir):
+            raise RuntimeError("{dir:s} does not exist, cannot continue").format(dir=src_dir)
+
         for root, dirs, files in os.walk(src_dir):
             results.append(
                 (
