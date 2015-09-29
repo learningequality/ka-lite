@@ -7,6 +7,7 @@ from .models import StoreItem, StoreTransactionLog
 
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
+from django.http.response import Http404
 
 
 # class StoreItemResource(ModelResource):
@@ -75,7 +76,7 @@ class StoreItemResource(Resource):
         if storeitem:
             return storeitem
         else:
-            raise NotFound('Test with storeitem_id %s not found' % storeitem_id)
+            raise Http404('Test with storeitem_id %s not found' % storeitem_id)
 
     def obj_create(self, request):
         # logging.warn('==> API create %s -- %s' % (request.user, request.is_teacher,))
@@ -106,8 +107,8 @@ class StoreTransactionLogResource(ModelResource):
         queryset = StoreTransactionLog.objects.all()
         resource_name = 'storetransactionlog'
         filtering = {
-            "item": ('exact', ),
-            "user": ('exact', ),
+            "item": ('exact',),
+            "user": ('exact',),
             "reversible": ('exact',),
         }
         authorization = UserObjectsOnlyAuthorization()
