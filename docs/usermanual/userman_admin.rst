@@ -484,9 +484,9 @@ ___________________________________
 
 If you skipped the step for adding assessment items during install, run the following command (beware it can take a while, the download size is over 500 MB):
 
-``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip -f``
+``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip -f``
 
-As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
+As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
 
 
 Language Packs
@@ -649,7 +649,7 @@ ____________________
       DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
 
 * ``ASSESSMENT_ITEMS_ZIP_URL = "scheme://path/to/assessmentitems.zip"``
-  ``(default=https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip)``
+  ``(default=https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip)``
   This is useful if you need an auto-deployment to fetch assessment items (exercises) from a local source. You can use
   ``kalite manage setup --dl-assessment-items`` to automatically download assessment items.
 * ``TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")``
