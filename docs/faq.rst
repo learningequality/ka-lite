@@ -35,6 +35,50 @@ I would like to download the videos for KA Lite via BitTorrent, is this possible
 
 Yes! Please see the instructions for ":ref:`bulk-video-downloads`".
 
+How can I install a language pack without a reliable internet connection?
+-------------------------------------------------------------------------
+
+To install, a language pack on a computer without internet access, look up the language code for the language you wish to download:
+
+    ================ ======
+     Language name    Code
+    ================ ======
+     Arabic           ar
+     Bulgarian        bg
+     Burmese          my
+     Danish           da
+     English          en
+     French           fr
+     German           de
+     Hindi            hi
+     Kannada          kn
+     Lao              lo
+     Polish           pl
+     Portuguese, BR   pt-BR
+     Spanish          es
+     Swahili          sw
+     Tamil            ta
+     Xhosa            xh
+     Zulu             zul
+    ================ ======
+
+Once you've determined the right language code, you can download the right language pack using this url::
+
+  http://keep.learningequality.org/media/language_packs/0.15/<code>.zip
+
+where <code> is replaced by the right language code. You can now carry around that zip file to computers you want to install the language pack to.
+
+You can install the language pack with the following command (for Debian and OS X)::
+
+  kalite manage languagepackdownload --from-file=<path to zip file> -l<language code> --commandline
+
+Or for Windows::
+
+  <path to KA Lite installation>\bin\windows\kalite.bat languagepackdownload --from-file=<path to zip file> -l<language code> --commandline
+
+
+After starting up your server, you should now see your new language in the Manage > Language page.
+
 Do I need the internet to run KA Lite?
 --------------------------------------
 
