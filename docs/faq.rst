@@ -76,6 +76,10 @@ Or for Windows::
 
   <path to KA Lite installation>\bin\windows\kalite.bat languagepackdownload --from-file=<path to zip file> -l<language code> --commandline
 
+An example invocation for Windows would be::
+
+  C:\Program Files\KA Lite\ka-lite\bin\windows\kalite.bat languagepackdownload --from-file="C:\Downloads\es.zip" -les --commandline
+
 
 After starting up your server, you should now see your new language in the Manage > Language page.
 
