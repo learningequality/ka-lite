@@ -1,6 +1,7 @@
 var $ = require("../base/jQuery");
 
 $(function(){
+    //always looking for style in the localStorage first
     if(localStorage && localStorage.getItem("k-css")){
         var css = localStorage.getItem("k-css"),
             head = document.head || document.getElementsByTagName('head')[0],
@@ -22,6 +23,7 @@ $(function(){
         //need color inputs when channel editor is implemented
     }
 
+    //for prototyping, I use a single button to trigger the less compilation
     $("#change_color_palette").click(function(){
         $('#k-local-css').html(""); //clean the localstorage, which may overwrite the less generated css
 
@@ -38,7 +40,9 @@ $(function(){
 
         //save the less generated css to localstorarge for reuse in later page load
         var css =  $("style[id='less:static-css-distributed-kalite-base']").text();
-        localStorage.setItem("k-css", css);
+        if(localStorage){
+            localStorage.setItem("k-css", css);
+        }
     });
 
 });
