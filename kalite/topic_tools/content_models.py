@@ -283,6 +283,27 @@ def get_content_parents(ids=None, db=None, **kwargs):
 
 @parse_data
 @set_database
+def get_leafed_topics(kinds=None, ids=None, db=None, **kwargs):
+    """
+    Convenience function for returning a set of topic nodes that contain content
+    """
+    if not kinds:
+        kinds = ["Video", "Audio", "Exercise", "Document"]
+    with Using(db, [Item]):
+        Parent = Item.alias()
+        if ids:
+            parent_values = Item.select(
+                Parent
+                ).join(Parent, on=(Item.parent == Parent.pk)).where((Item.id.in_(ids)) & (Item.kind.in_(kinds)))
+        else:
+            parent_values = Item.select(
+                Parent
+                ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.kind.in_(kinds))
+        return parent_values
+
+
+@parse_data
+@set_database
 def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
     """
     Convenience function for returning a set of nodes for a topic
