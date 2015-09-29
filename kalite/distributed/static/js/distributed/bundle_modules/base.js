@@ -33,6 +33,8 @@ require("../../../css/distributed/khan-site.css");
 
 require("../../../css/distributed/khan-lite.less");
 
+require("../color_palette/color_palette");
+
 // Related to showing elements on screen
 $(function(){
 

@@ -14,7 +14,6 @@
         {% block titletag %}
         <title>{% block title %}{% trans "Welcome" %}{% trans title %}{% endblock title %} | KA Lite</title>
         {% endblock %}
-
         <link href="{% static "fonts/style.css" %}" rel="stylesheet" type="text/css">
 
         <!-- CSS for dynamic settings -->
@@ -81,13 +80,15 @@
         <!-- inline help, introjs -->
         <script type="text/javascript" src="{% static 'js/inline/bundle_modules/inline_help.js' %}"></script>
         {% endif %}
+
+        <link rel="stylesheet/less" type="text/css" href="{% static 'css/distributed/kalite-base.less' %}">
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}">
         <div id="wrapper">
-
+<button id="change_color_palette">eli</button>
             {# Header / Navbar #}
-            <div class="navbar kalite-navbar header-footer-bg" role="banner">
+            <div class="navbar kalite-navbar header-footer-bg k-bg-clr" role="banner">
               <div class="container">
                   <div class="row">
                       <div class="navbar-header">

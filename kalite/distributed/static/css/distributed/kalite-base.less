@@ -1,27 +1,51 @@
 /* 
   --- kalite color palette ---
-  please use these color variables across all .less files to keep a consistent looking
+  please use these color class in all DOM elements to keep a consistent looking
 */
 /*
 current color scheme
 */
-@k-bg-color: #C4D7E3;
-@k-headline-color: #3A7AA2;
-@k-bodytext-color: black;
+/*@k-bg-color: #C4D7E3;
 @k-accent-color: #5AA685;
 @k-action-color: #FF0076;
+@k-headline-color: #3A7AA2;
+@k-bodytext-color: black;
 
 @k-error-color: red;
-@k-warn-color: orange;
+@k-warn-color: orange;*/
 
 /*
 experiment color scheme #1
 */
-/*@k-bg-color: #76B6A8;
-@k-headline-color: red;
-@k-bodytext-color: #3A7AA2;
+@k-bg-color: red;
 @k-accent-color: #8670A1;
 @k-action-color: #FF0076;
+@k-headline-color: red;
+@k-bodytext-color: #3A7AA2;
 
 @k-error-color: red;
-@k-warn-color: orange;*/
+@k-warn-color: orange;
+
+
+/*
+color classes (use them to assign colors to your DOM elements)
+*/
+.k-bg-clr {
+  background-color: @k-bg-color;
+}
+
+.k-acn-clr {
+  background-color: @k-accent-color;
+}
+
+.k-act-clr {
+  background-color: @k-action-color;
+}
+
+.k-hln-clr {
+  background-color: @k-headline-color;
+}
+
+.k-byt-clr {
+  background-color: @k-bodytext-color;
+}
