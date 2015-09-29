@@ -187,7 +187,7 @@ How do I find out more?
 To stay up-to-date on all our activities, follow our `blog <https://learningequality.org/blog>`_, `Twitter <https://twitter.com/LearnEQ>`_, and `Facebook <https://www.facebook.com/learningequality>`_!
 
 How does Learning Equality measure the impact of KA Lite?
--------------------------------------------
+---------------------------------------------------------
 
 Because KA Lite is freely available and designed to run offline, collecting impact data can be challenging.
 
