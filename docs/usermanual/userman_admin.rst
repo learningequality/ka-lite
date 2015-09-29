@@ -463,7 +463,7 @@ __________________________
 
 The full set of videos, if downloaded through the KA Lite interface, take over 150GB.
 If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
-the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
+the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.15/content/>`_.
 
 Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, this
 is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
@@ -484,9 +484,9 @@ ___________________________________
 
 If you skipped the step for adding assessment items during install, run the following command (beware it can take a while, the download size is over 500 MB):
 
-``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip -f``
+``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip -f``
 
-As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
+As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
 
 
 Language Packs
@@ -649,7 +649,7 @@ ____________________
       DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
 
 * ``ASSESSMENT_ITEMS_ZIP_URL = "scheme://path/to/assessmentitems.zip"``
-  ``(default=https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip)``
+  ``(default=https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip)``
   This is useful if you need an auto-deployment to fetch assessment items (exercises) from a local source. You can use
   ``kalite manage setup --dl-assessment-items`` to automatically download assessment items.
 * ``TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")``
