@@ -33,7 +33,7 @@ deployment:
     benchmark-hook:
       branch: develop # ignore
       commands:
-        - echo "{'sha': '$CIRCLE_SHA1', 'repo': '$CIRCLE_PR_USERNAME:$CIRCLE_PR_REPONAME', 'results': { 'foo': 'bar'} }" > benchmark_results.json
+        - printf '{"sha":"%s","repo":"%s","results":"%s"}\n' "$CIRCLE_SHA1" "$CIRCLE_PR_USERNAME:$CIRCLE_PR_REPONAME" "{'foo': 'bar'}" > benchmark_results.json
         - curl --data "`cat benchmark_results.json`" https://kalite-benchmark-ci.herokuapp.com/hooks/benchmark
 
 notify:
