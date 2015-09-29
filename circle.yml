@@ -28,3 +28,14 @@ test:
     - jshint kalite/*/static/js/*/
   post:
     - killall --wait sc  # wait for Sauce Connect to close the tunnel
+
+deployment:
+    benchmark-hook:
+      branch: develop # ignore
+      commands:
+        - echo "{'sha': '$CIRCLE_SHA1', 'repo': '$CIRCLE_PR_USERNAME:$CIRCLE_PR_REPONAME', 'results': { 'foo': 'bar'} }" > benchmark_results.json
+        - curl --data "`cat benchmark_results.json`" https://kalite-benchmark-ci.herokuapp.com/hooks/benchmark
+
+notify:
+  webhooks:
+    - url: https://kalite-benchmark-ci.herokuapp.com/hooks/ci_build
