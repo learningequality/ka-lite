@@ -22,7 +22,7 @@
                 <div class="form-inline">
                 {% if groups %}
                     <div class="form-group">
-                        <button class="movegroup btn btn-success" disabled="disabled" value="#students">{% trans "Change Learner Groups" %}</button>
+                        <button class="movegroup btn btn-success" id="move-learner-group-btn" disabled="disabled" value="#students">{% trans "Change Learner Groups" %}</button>
                     </div>
                     <div class="form-group">
                         <select class="form-control movegrouplist" value="#students">
@@ -39,7 +39,7 @@
                     </div>
                 {% endif %}
                     <div class="form-group">
-                        <button class="delete btn btn-success" disabled="disabled" value="#students">{% trans "Delete Learners" %}</button>
+                        <button class="delete btn btn-success" id="delete-learners-btn" disabled="disabled" value="#students">{% trans "Delete Learners" %}</button>
                     </div>
                 </div>
             </p>
@@ -62,7 +62,7 @@
                     <tbody>
                         {% for student in student_pages %}
                             <tr class="selectable" value="{{ student.id }}" type="students">
-                                <td><input type="checkbox" value="#students" autocomplete="off"/></td>
+                                <td><input class="student-checkbox" type="checkbox" value="#students" autocomplete="off"/></td>
                                 <td>
                                     {{ student|format_name:"last_first" }}
                                 </td>

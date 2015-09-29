@@ -51,7 +51,7 @@ from selenium.webdriver.common.by import By
 from . import base
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog
-from kalite.topic_tools import get_node_cache
+from kalite.topic_tools.content_models import get_content_items
 
 
 class HelloWorld(base.Common):
@@ -130,7 +130,7 @@ class OneHundredRandomLogUpdates(base.UserCommon):
     """
     def _setup(self, num_logs=50, **kwargs):
         super(OneHundredRandomLogUpdates, self)._setup(**kwargs)
-        node_cache = get_node_cache()
+        nodes = dict([(node.get("id"), node) for node in get_content_items()])
 
         try:
             self.user = FacilityUser.objects.get(username=self.username)
@@ -144,8 +144,8 @@ class OneHundredRandomLogUpdates(base.UserCommon):
         ExerciseLog.objects.filter(user=self.user).delete()
         for x in range(num_logs):
             while True:
-                ex_idx = int(self.random.random() * len(node_cache["Exercise"].keys()))
-                ex_id = node_cache["Exercise"].keys()[ex_idx]
+                ex_idx = int(self.random.random() * len(nodes.keys()))
+                ex_id = nodes.keys()[ex_idx]
                 if not ExerciseLog.objects.filter(user=self.user, exercise_id=ex_id):
                     break
             ex = ExerciseLog(user=self.user, exercise_id=ex_id)
@@ -156,8 +156,8 @@ class OneHundredRandomLogUpdates(base.UserCommon):
         VideoLog.objects.filter(user=self.user).delete()
         for x in range(num_logs):
             while True:
-                vid_idx = int(self.random.random() * len(node_cache["Content"].keys()))
-                vid_id = node_cache["Content"].keys()[vid_idx]
+                vid_idx = int(self.random.random() * len(nodes.keys()))
+                vid_id = nodes.keys()[vid_idx]
                 if not VideoLog.objects.filter(user=self.user, video_id=vid_id):
                     break
             vid = VideoLog(user=self.user, video_id=vid_id)

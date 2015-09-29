@@ -35,11 +35,11 @@
             {% if not is_central %}
                 {% if not restricted %}
                 <li>
-                    <a class="btn btn-success" href="{% url 'edit_facility_user' id=student.id %}?next={{ request.path }}">{% trans "Edit account preferences" %}</a>
+                    <a class="btn btn-success" role="button" href="{% url 'edit_facility_user' id=student.id %}?next={{ request.path }}">{% trans "Edit account preferences" %}</a>
                 </li>
                 {% endif %}
                 <li class="client-online-only">
-                    <a class="server-online-only btn btn-success" href="{% url 'update_all_distributed' %}">{% trans "Download data from Khan Academy" %}</a>
+                    <a class="server-online-only btn btn-success" role="button" href="{% url 'update_all_distributed' %}">{% trans "Download data from Khan Academy" %}</a>
                 </li>
         </div>
     

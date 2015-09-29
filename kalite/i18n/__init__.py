@@ -401,6 +401,7 @@ def update_jsi18n_file(code="en"):
     logging.info("Writing i18nized js file to {0}".format(output_file))
     with open(output_file, "w") as fp:
         fp.write(output_js)
+    translation.deactivate()
 
 
 # Cache for language selections
