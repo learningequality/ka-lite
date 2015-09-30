@@ -10,11 +10,7 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonRe
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog, AttemptLog, UserLogSummary
 from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
-<<<<<<< HEAD
-from kalite.topic_tools import get_topic_leaves, get_exercise_cache, get_content_cache, get_leafed_topics
-=======
-from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes
->>>>>>> develop
+from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes, get_leafed_topics
 
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
