@@ -1,5 +1,4 @@
 @import "../../../../../node_modules/jquery.fancytree/dist/skin-common.less";
-@import "../../../../distributed/static/css/distributed/kalite-base.less";
 
 @fancy-inline-sprites: true;
 @fancy-image-dir: "../../../../../node_modules/jquery.fancytree/dist/skin-lion";
@@ -26,15 +25,6 @@
     margin-bottom: 0px;
 }
 
-li span.fancytree-selected {
-    border-color: #00CC99;
-    background-color: #00CC99;
-}
-span.fancytree-expanded {
-    border-color: @k-accent-color;
-    background-color: @k-accent-color;
-}
-
 span.fancytree-expanded::before {
     font-family: "Glyphicons Halflings";
     content: "\e118  ";
@@ -54,7 +44,6 @@ ul.fancytree-container:focus {
 .fancytree-node {
     font-size: 20px;
     cursor:pointer;
-    background-color: #C4D7E3;
     border-color: #d0d0d0;
     border-style: solid;
     border-width: 5px;

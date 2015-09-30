@@ -1,4 +1,4 @@
-@import "./kalite-base.less";
+/*@import "./kalite-base.less";*/
 /* Antriksh: changed the dark green #5C8547 to @k-accent-color, a color picked from the KA website */
 
 /* ===================================
@@ -68,11 +68,6 @@ input[type="submit"] {
     border-top: 1px solid #999;
     border-bottom: none;
 }
-/* Controls background of header, footer and all elements with
-   the same colors across the site. */
-.header-footer-bg {
-    background: @k-bg-color;
-}
 .kalite-navbar {
     width: 100%;
     border-radius: 2px 2px 0 0;
@@ -83,9 +78,10 @@ input[type="submit"] {
 .navbar ul li a {
     color: white;
     text-transform: uppercase;
-    border-left: 2px solid @k-accent-color;
-    border-top: 2px solid @k-accent-color;
-    border-right: 2px solid @k-accent-color;
+    border-left: 2px solid;
+    border-top: 2px solid;
+    border-right: 2px solid;
+    border-bottom: 0;
     padding-bottom: 13px;
 }
 .navbar ul li {
@@ -97,7 +93,7 @@ input[type="submit"] {
     top: 5px;
 }
 .navbar ul.nav-tabs {
-    border-bottom: 2px solid @k-accent-color;
+    /*border-bottom: 2px solid @k-accent-color;*/
 }
 .nav-tabs {
     border-bottom: none;
@@ -108,8 +104,6 @@ input[type="submit"] {
     border: 0;
     border-radius: 5px 15px 0 0;
     margin: 0 0 6px 0;
-    background-color: @k-accent-color;
-    color: @k-accent-color;
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
     -o-transition: all 80ms ease-out;
@@ -122,7 +116,7 @@ input[type="submit"] {
 .nav-tabs li a:hover,
 .nav-tabs li.active a {
     background: white !important;
-    color: @k-accent-color !important;
+    /*color: @k-accent-color !important;*/
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
     -o-transition: all 80ms ease-out;
@@ -138,9 +132,10 @@ input[type="submit"] {
 .top-nav li.active a,
 .top-nav li a:active,
 a#user-name-a.dropdown-toggle {
-    border-left: 2px solid @k-accent-color;
-    border-top: 2px solid @k-accent-color;
-    border-right: 2px solid @k-accent-color;
+    border-left: 2px solid;
+    border-top: 2px solid;
+    border-right: 2px solid;
+    border-bottom: 0;
 }
 a#user-name-a.dropdown-toggle {
     margin-bottom: 0px;
@@ -157,9 +152,7 @@ a#user-name-a.dropdown-toggle {
 #points-tab {
     padding: 10px 0px 5px 0px;
 }
-.navbar ul li.dropdown.open a {
-    color: @k-accent-color;
-}
+
 .dropdown-menu {
     min-width: 0;
     text-align: left;
@@ -180,15 +173,17 @@ a#user-name-a.dropdown-toggle {
 }
 .navbar-nav .open .dropdown-menu {
     background: white !important;
-    border-left: 2px solid @k-accent-color;
-    border-bottom: 2px solid @k-accent-color;
-    border-right: 2px solid @k-accent-color;
+    border-left: 2px solid;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+    border-top: 0;
 }
 .nav .open a, .nav .open a:hover, .nav .open a:focus {
     background: white;
-    border-left: 2px solid @k-accent-color;
-    border-top: 2px solid @k-accent-color;
-    border-right: 2px solid @k-accent-color;
+    border-left: 2px solid;
+    border-top: 2px solid;
+    border-right: 2px solid;
+    border-bottom: 0;
 }
 
 .nav li a:hover,
@@ -197,7 +192,7 @@ a#user-name-a.dropdown-toggle {
 .nav li.active a:hover,
 .nav li.active span,
 .nav li.active span:hover {
-    background: @k-accent-color;
+    /*background: @k-accent-color;*/
 }
 .dropdown-menu li a {
     background: white;
@@ -238,7 +233,6 @@ form .input-group {
 }
 #search-button {
     color: #fff !important;
-    background: @k-accent-color !important;
     border-radius: 0px;
 }
 .source {
@@ -263,7 +257,7 @@ form .input-group {
 }
 /* Navbar collapse styles for hamburger */
 .navbar-toggle {
-    background-color: @k-accent-color;
+    /*background-color: @k-accent-color;*/
 }
 .navbar-toggle:hover {
     opacity: 0.7;
@@ -292,7 +286,7 @@ form .input-group {
 =================================== */
 
 .btn-success {
-    background-color: @k-accent-color !important;
+    /*background-color: @k-accent-color !important;*/
     background-image: none !important;
 }
 
@@ -492,7 +486,7 @@ table td.title {
 .panel-body,
 .panel-footer {
     /* background-color: #77b05d; Previous color */
-    background-color: @k-accent-color;
+    /*background-color: @k-accent-color;*/
 }
 .panel-heading h3 {
     margin: 10px 0;
@@ -686,7 +680,7 @@ footer {
         border-top-left-radius: 0px !important; 
         border-top-right-radius: 0px !important;
         margin: 2px 0px !important;
-        border-bottom: 3px solid @k-accent-color;
+        /*border-bottom: 3px solid @k-accent-color;*/
     }
 }
 @media screen and (min-width: 767px) {

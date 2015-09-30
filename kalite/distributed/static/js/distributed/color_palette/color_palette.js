@@ -31,11 +31,11 @@ $(function(){
         var less = require("../../../../../../node_modules/less/less.min.js");
         //update the color palette (these 5 colors will take input from channel editor when it's implemented)
         less.modifyVars({
-            "@k-bg-color": "grey",
-            "@k-accent-color": "orange",
-            "@k-headline-color": "purple",
+            "@k-bg-color": "#C4D7E3",
+            "@k-accent-color": "#5AA685",
+            "@k-headline-color": "#3A7AA2",
             "@k-bodytext-color": "black",
-            "@k-action-color": "red"
+            "@k-action-color": "#FF0076"
         });
 
         //save the less generated css to localstorarge for reuse in later page load
