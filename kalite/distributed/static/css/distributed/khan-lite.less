@@ -2,7 +2,6 @@
 
 @icon-font-path: "/static/fonts/";
 @import "./bootstrap-overrides.less";
-/*@import "./kalite-base.less";*/
 /************** khan-site.css overrides ***************/
 
 .simple-button.green,
@@ -146,7 +145,7 @@ a:hover {
 /********** "Teacher" Sub-Navigation bar ***********/
 .teach-nav {
     width: 100%;
-    /*border-bottom: 4px solid @k-accent-color;*/
+    border-bottom: 4px solid;
     margin-bottom: 25px;
 }
 .teach-nav ul {
@@ -154,12 +153,12 @@ a:hover {
     margin-bottom: 0;
 }
 .teach-nav li {
-    /*background-color: @k-accent-color;*/
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
-/*    border-top: 3px solid @k-accent-color;
-    border-right: 3px solid @k-accent-color;
-    border-left: 3px solid @k-accent-color;*/
+    border-top: 3px solid;
+    border-right: 3px solid;
+    border-left: 3px solid;
+    border-bottom: 0
     width: 130px;
     text-align: center;
     font-weight: bold;
@@ -177,14 +176,10 @@ a:hover {
     margin: -18px 0px -47px -3px;
     padding-top: 5px;
 }
-.teach-nav li div:hover {
-    /*color: @k-accent-color;*/
-}
 .teach-nav li:hover {
     background-color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 16px;
-    /*color: @k-accent-color;*/
     font-weight: bold;
     -webkit-transition: all 115ms ease-out;
     -moz-transition: all 115ms ease-out;
@@ -198,25 +193,22 @@ a:hover {
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
 }
-.teach-nav li a:hover {
-    /*color: @k-accent-color;*/
-}
 .teach-nav i.icon {
     font-size: 40pt;
 }
 .link-width {
     width: 90px;
 }
-.active-nav {
-    /*color: @k-accent-color !important;*/
+/*.active-nav {
+    color: red !important;
     background-color: white;
     border-top-left-radius: 5px;
     border-top-right-radius: 16px;
     font-weight: bold;
-}
-.active-tab div {
-    /*color: @k-accent-color !important;*/
-}
+}*/
+/*.active-tab div {
+    color: red !important;
+}*/
 .reports, .reports:hover, .reports-active,
 .playlist, .playlist:hover, .playlists-active,
 .exams, .exams:hover, .exams-active, 
@@ -279,11 +271,8 @@ a:hover {
     border-top-left-radius: 5px;
     border-top-right-radius: 17px;
 }
-.manage-nav li div:hover {
-    /*color: @k-accent-color;*/
-}
+
 .manage-nav li a:hover {
-    /*color: @k-accent-color;*/
     font-weight: bold;
     text-decoration: none;
 }
@@ -326,17 +315,17 @@ a:hover {
     border: 3px solid #6E9F56;
     margin: -25px 10px 0 10px;
 }
-.subnav li a {
+/*.subnav li a {
     width: 150px;
     height: 80px;
     text-decoration: none;
-    /*color: @k-accent-color;*/
+    color: blue;
     font-weight: bold;
     -webkit-transition: all 115ms ease-out !important;
     -moz-transition: all 115ms ease-out !important;
     -o-transition: all 115ms ease-out !important;
     transition: all 115ms ease-out !important;
-}
+}*/
 .subnav span {
     line-height: 1.6;
     font-size: 17px;

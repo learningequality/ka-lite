@@ -1,4 +1,3 @@
-/*@import "./kalite-base.less";*/
 /* Antriksh: changed the dark green #5C8547 to @k-accent-color, a color picked from the KA website */
 
 /* ===================================
@@ -92,9 +91,7 @@ input[type="submit"] {
     border-bottom: none;
     top: 5px;
 }
-.navbar ul.nav-tabs {
-    /*border-bottom: 2px solid @k-accent-color;*/
-}
+
 .nav-tabs {
     border-bottom: none;
 }
@@ -116,7 +113,6 @@ input[type="submit"] {
 .nav-tabs li a:hover,
 .nav-tabs li.active a {
     background: white !important;
-    /*color: @k-accent-color !important;*/
     -webkit-transition: all 80ms ease-out;
     -moz-transition: all 80ms ease-out;
     -o-transition: all 80ms ease-out;
@@ -186,14 +182,6 @@ a#user-name-a.dropdown-toggle {
     border-bottom: 0;
 }
 
-.nav li a:hover,
-.nav li a:focus,
-.nav li.active a,
-.nav li.active a:hover,
-.nav li.active span,
-.nav li.active span:hover {
-    /*background: @k-accent-color;*/
-}
 .dropdown-menu li a {
     background: white;
     color: black;
@@ -256,9 +244,7 @@ form .input-group {
     margin-left: 10px;
 }
 /* Navbar collapse styles for hamburger */
-.navbar-toggle {
-    /*background-color: @k-accent-color;*/
-}
+
 .navbar-toggle:hover {
     opacity: 0.7;
 }
@@ -284,12 +270,6 @@ form .input-group {
 /* ===================================
     Buttons
 =================================== */
-
-.btn-success {
-    /*background-color: @k-accent-color !important;*/
-    background-image: none !important;
-}
-
 .btn-success:hover,
 .btn-success:active {
     background-color: #40775F !important;
@@ -482,12 +462,12 @@ table td.title {
 .panel-default>.panel-heading {
     border: none;
 }
-.panel-default>.panel-heading,
+/*.panel-default>.panel-heading,
 .panel-body,
-.panel-footer {
-    /* background-color: #77b05d; Previous color */
-    /*background-color: @k-accent-color;*/
-}
+.panel-footer {  no idea where use this rule
+     background-color: #77b05d; Previous color 
+    background-color: @k-accent-color;
+}*/
 .panel-heading h3 {
     margin: 10px 0;
 }
@@ -680,7 +660,6 @@ footer {
         border-top-left-radius: 0px !important; 
         border-top-right-radius: 0px !important;
         margin: 2px 0px !important;
-        /*border-bottom: 3px solid @k-accent-color;*/
     }
 }
 @media screen and (min-width: 767px) {
