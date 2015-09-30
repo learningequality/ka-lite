@@ -219,6 +219,6 @@ I skipped the step for downloading the assessment items during install, how can 
 
 Run the following command (beware it can take a while, the download size is over 500 MB):
 
-``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip -f``
+``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip -f``
 
-As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
+As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.15/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.

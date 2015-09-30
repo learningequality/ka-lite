@@ -1,6 +1,21 @@
 Release Notes
 =============
 
+0.15.0
+------
+
+General
+^^^^^^^
+
+Python 2.6 is no longer supported. It *may* still work, but we are no longer actively supporting it.
+Other known issues:
+
+* On OSX, you must restart the server after downloading videos in order for them to be marked as available.
+* On all platforms, you must restart the server after downloading a language pack in order to use it.
+* You can no longer configure your server using ``local_settings.py``. Instead, custom settings must appear in
+  ``settings.py`` in the user's ``.kalite`` directory.
+
+
 0.14.0
 ------
 

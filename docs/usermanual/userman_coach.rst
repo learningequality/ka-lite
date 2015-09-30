@@ -23,6 +23,7 @@ The Report Page displays an overview of the learners and a tabular report.
     :user-role: coach
     :url: /coachreports/coach/zone/None
     :navigation-steps:
+    :focus: #summary_mainview | After loading, you can view the report summary here.
     :class: screenshot
 
 Overview
