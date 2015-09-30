@@ -27,15 +27,27 @@ $(function(){
     $("#change_color_palette").click(function(){
         $('#k-local-css').html(""); //clean the localstorage, which may overwrite the less generated css
 
-        // var less = require("../../../../../../node_modules/node-lessify/node_modules/less/lib/less-browser")();
+        //get input from color picker
+        var my_background = "#" + $("#my_background").val();
+        var my_accent = "#" + $("#my_accent").val();
+        var my_action = "#" + $("#my_action").val();
+        var my_headline = "#" + $("#my_headline").val();
+        var my_bodytext = "#" + $("#my_bodytext").val();
+
+        // var less = require("../../../../../../node_modules/node-lessify/node_modules/less/dist/less.min.js");
         var less = require("../../../../../../node_modules/less/less.min.js");
         //update the color palette (these 5 colors will take input from channel editor when it's implemented)
         less.modifyVars({
-            "@k-bg-color": "#C4D7E3",
-            "@k-accent-color": "#5AA685",
-            "@k-headline-color": "#3A7AA2",
-            "@k-bodytext-color": "black",
-            "@k-action-color": "#FF0076"
+            // "@k-bg-color": "#C4D7E3",
+            // "@k-accent-color": "#5AA685",
+            // "@k-headline-color": "#3A7AA2",
+            // "@k-bodytext-color": "black",
+            // "@k-action-color": "#FF0076"
+            "@k-bg-color": my_background,
+            "@k-accent-color": my_accent,
+            "@k-headline-color": my_headline,
+            "@k-bodytext-color": my_bodytext,
+            "@k-action-color": my_action
         });
 
         //save the less generated css to localstorarge for reuse in later page load

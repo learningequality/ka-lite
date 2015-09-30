@@ -86,7 +86,13 @@
 
     <body class="{% block bodyclass %}{% endblock %}">
         <div id="wrapper">
-<button id="change_color_palette">eli</button>
+<script type="text/javascript" src="{% static 'js/distributed/color_palette/jscolor/jscolor.js' %}"></script>
+<button id="change_color_palette">set color palette</button>
+<input class="color" id="my_background" value="C4D7E3">
+<input class="color" id="my_accent" value="5AA685">
+<input class="color" id="my_action" value="FF0076">
+<input class="color" id="my_headline" value="3A7AA2">
+<input class="color" id="my_bodytext" value="000000">
             {# Header / Navbar #}
             <div class="navbar kalite-navbar header-footer-bg k-bg-clr" role="banner">
               <div class="container">
