@@ -19,7 +19,7 @@ $(function(){
         head.appendChild(style);
     }else{
         //if no localStorage support, compile the base less on the fly
-        var less = require("../../../../../../node_modules/less/less.min.js");
+        var less = require("../../../../../../node_modules/node-lessify/node_modules/less/dist/less.min.js");
         //need color inputs when channel editor is implemented
     }
 
@@ -34,8 +34,7 @@ $(function(){
         var my_headline = "#" + $("#my_headline").val();
         var my_bodytext = "#" + $("#my_bodytext").val();
 
-        // var less = require("../../../../../../node_modules/node-lessify/node_modules/less/dist/less.min.js");
-        var less = require("../../../../../../node_modules/less/less.min.js");
+        var less = require("../../../../../../node_modules/node-lessify/node_modules/less/dist/less.min.js");
         //update the color palette (these 5 colors will take input from channel editor when it's implemented)
         less.modifyVars({
             // "@k-bg-color": "#C4D7E3",
