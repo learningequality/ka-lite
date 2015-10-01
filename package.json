@@ -30,6 +30,7 @@
     "sinon": "~1.12.2"
   },
   "dependencies": {
+    "simple-color-picker": "0.0.9",
     "JSON2": "^0.1.0",
     "async": "^1.4.0",
     "backbone": "~1.2.1",

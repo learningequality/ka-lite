@@ -1,6 +1,64 @@
 var $ = require("../base/jQuery");
+require("browsernizr/test/inputtypes");
+var Modernizr = require("browsernizr");
+require("./color_palette.css");
 
 $(function(){
+    //if color type not supported(mainly Safari and IE), use jscolor.js
+    if(!Modernizr.inputtypes.color){
+        // require("./jscolor/jscolor.js");
+        // require("./jquery-minicolors/jquery.minicolors.min.js");
+        require('../../../../../../node_modules/simple-color-picker/simple-color-picker.css');
+        var ColorPicker = require('../../../../../../node_modules/simple-color-picker');
+
+        var my_background = new ColorPicker({
+            // el: document.getElementsByClassName("my_background")
+            el: document.getElementById("scp_background"),
+            color: '#C4D7E3',
+            width: 100,
+            height: 60
+        });
+        var my_accent = new ColorPicker({
+            el: document.getElementById("scp_accent"),
+            color: '#5AA685',
+            width: 100,
+            height: 60
+        });
+        var my_action = new ColorPicker({
+            el: document.getElementById("scp_action"),
+            color: '#FF0076',
+            width: 100,
+            height: 60
+        });
+        var my_headline = new ColorPicker({
+            el: document.getElementById("scp_headline"),
+            color: '#3A7AA2',
+            width: 100,
+            height: 60
+        });
+        var my_bodytext = new ColorPicker({
+            el: document.getElementById("scp_bodytext"),
+            color: '#000000',
+            width: 100,
+            height: 60
+        });
+
+        my_background.onChange(function(hexStringColor) {
+            $("#my_background").val(hexStringColor);
+        });
+        my_accent.onChange(function(hexStringColor) {
+            $("#my_accent").val(hexStringColor);
+        });
+        my_action.onChange(function(hexStringColor) {
+            $("#my_action").val(hexStringColor);
+        });
+        my_headline.onChange(function(hexStringColor) {
+            $("#my_headline").val(hexStringColor);
+        });
+        my_bodytext.onChange(function(hexStringColor) {
+            $("#my_bodytext").val(hexStringColor);
+        });
+    }
     //always looking for style in the localStorage first
     if(localStorage && localStorage.getItem("k-css")){
         var css = localStorage.getItem("k-css"),
@@ -28,11 +86,16 @@ $(function(){
         $('#k-local-css').html(""); //clean the localstorage, which may overwrite the less generated css
 
         //get input from color picker
-        var my_background = "#" + $("#my_background").val();
-        var my_accent = "#" + $("#my_accent").val();
-        var my_action = "#" + $("#my_action").val();
-        var my_headline = "#" + $("#my_headline").val();
-        var my_bodytext = "#" + $("#my_bodytext").val();
+        // var my_background = "#" + $("#my_background").val();
+        // var my_accent = "#" + $("#my_accent").val();
+        // var my_action = "#" + $("#my_action").val();
+        // var my_headline = "#" + $("#my_headline").val();
+        // var my_bodytext = "#" + $("#my_bodytext").val();
+        var my_background = $("#my_background").val();
+        var my_accent = $("#my_accent").val();
+        var my_action = $("#my_action").val();
+        var my_headline = $("#my_headline").val();
+        var my_bodytext = $("#my_bodytext").val();
 
         var less = require("../../../../../../node_modules/node-lessify/node_modules/less/dist/less.min.js");
         //update the color palette (these 5 colors will take input from channel editor when it's implemented)

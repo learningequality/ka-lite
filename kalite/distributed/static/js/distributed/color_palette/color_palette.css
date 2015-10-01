@@ -1,0 +1,14 @@
+#scp_background, #scp_accent, #scp_action, #scp_headline, #scp_bodytext {
+  float: left;
+  height: 60px;
+}
+
+#my_background, #my_accent , #my_action , #my_headline , #my_bodytext, #change_color_palette {
+  float: left;
+}
+
+.color_picker_container {
+  position: relative;
+  height: 60px;
+  width: 100%;
+}
