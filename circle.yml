@@ -7,7 +7,7 @@ dependencies:
     - "data"
     - "sc-latest-linux"
   override:
-    - make sdist
+    - make dist
     - pip install -r requirements_test.txt
     - pip install dist/ka-lite-"$(python setup.py --version)".tar.gz
   post:
