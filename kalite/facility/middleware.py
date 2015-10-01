@@ -5,9 +5,28 @@ from django.conf import settings
 from django.db.models import signals
 from django.db.models.signals import post_save
 
+from annoying.decorators import render_to
+
 from .models import Facility
 
 FACILITY_CACHE_STALE = False
+
+@render_to("distributed/homepage.html")
+def error_view(request):
+    return {}
+
+class ErrorMiddleware:
+    def process_response(self, request, response):
+        # could also look at the request object, e.g.
+        # for the request to http://localhost/blah
+        # request['PATH_INFO'] is '/blah'
+        # Could try to create a whitelist or blacklist of paths to redirect.
+        # request['CONTENT_TYPE'] might be helpful -- but not all of our requests might honor it. :(
+        # I like looking at the response content type.
+        if response.get("content-type") == "text/html":
+            return error_view(request)
+        else:
+            return response
 
 def refresh_session_facility_info(request, facility_count):
     # Fix for #1211
