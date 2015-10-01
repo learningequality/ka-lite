@@ -7,9 +7,11 @@ dependencies:
     - "data"
     - "sc-latest-linux"
   override:
-    - pip install -r requirements_dev.txt
-    - make dist
-    - pip install dist/ka-lite-"$(python setup.py --version)".tar.gz
+    - pip install -r requirements_test.txt
+    - pip install -e .
+    # This cannot be done because pip on Circle doesn't understand our sdist
+    # - make sdist
+    # - pip install dist/ka-lite-"$(python setup.py --version)".tar.gz
   post:
     - if [[ ! -e sc-latest-linux/bin/sc ]]; then wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz && tar -xzf sc-latest-linux.tar.gz &&  mv sc-*-linux sc-latest-linux; fi
 
