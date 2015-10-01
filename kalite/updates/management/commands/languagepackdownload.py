@@ -4,23 +4,27 @@ Downloads a language pack, unzips the contents, then moves files accordingly
 import glob
 import os
 import shutil
+import requests
 import zipfile
 from optparse import make_option
 from StringIO import StringIO
 
 from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
-from django.core.management.base import CommandError
-from django.utils.translation import ugettext as _
+import httplib
 
-from .classes import UpdatesStaticCommand
 from ... import REMOTE_VIDEO_SIZE_FILEPATH
+from .classes import UpdatesStaticCommand
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet.download import callback_percent_proxy, download_file
+
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.utils.translation import ugettext as _
 from kalite import caching
-from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath, get_language_pack_url, get_language_name
-from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
+from kalite.i18n import get_language_name, get_language_pack_url, \
+    get_localized_exercise_dirpath, get_po_filepath, get_srt_path, \
+    lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.version import SHORTVERSION
 
 
@@ -112,6 +116,13 @@ def get_language_pack(lang_code, software_version, callback):
     logging.info("Retrieving language pack: %s" % lang_code)
     request_url = get_language_pack_url(lang_code, software_version)
     logging.debug("Downloading zip from %s" % request_url)
+
+    # aron: hack, download_file uses urllib.urlretrieve, which doesn't
+    # return a status code. So before we make the full request, we
+    # check first if the said lang pack url exists. If not, error out.
+    if requests.head(request_url).status_code == 404:
+        raise requests.exceptions.HTTPError("Language pack %s not found. Please double check that it exists." % lang_code)
+
     path, response = download_file(request_url, callback=callback_percent_proxy(callback))
     return path
 
