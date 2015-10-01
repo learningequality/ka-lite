@@ -107,7 +107,7 @@ class Command(UpdatesStaticCommand, CronCommand):
             raise
 
     def cb(self, percent):
-        self.update_stage(stage_percent=percent/100.)
+        self.update_stage(stage_percent=percent / 100.)
 
 def get_language_pack(lang_code, software_version, callback):
     """Download language pack for specified language"""
@@ -133,7 +133,7 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     logging.info("Unpacking new translations")
     ensure_dir(get_po_filepath(lang_code=lang_code))
 
-    ## Unpack into temp dir
+    # # Unpack into temp dir
     z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
     z.extractall(os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code))
 
@@ -155,17 +155,11 @@ def move_dubbed_video_map(lang_code):
             logging.error("Error removing dubbed video directory (%s): %s" % (dubbed_video_dir, e))
 
 def move_video_sizes_file(lang_code):
-    lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
-    filename = os.path.basename(REMOTE_VIDEO_SIZE_FILEPATH)
-    src_path = os.path.join(lang_pack_location, filename)
-    dest_path = REMOTE_VIDEO_SIZE_FILEPATH
-
-    # replace the old remote_video_size json
-    if not os.path.exists(src_path):
-        logging.error("Could not find videos sizes file (%s)" % src_path)
-    else:
-        logging.debug('Moving %s to %s' % (src_path, dest_path))
-        shutil.move(src_path, dest_path)
+    """
+    This is no longer needed. See:
+    https://github.com/learningequality/ka-lite/issues/4538#issuecomment-144560505
+    """
+    return
 
 def move_exercises(lang_code):
     lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
