@@ -23,7 +23,6 @@ from playhouse.shortcuts import model_to_dict
 from .settings import CONTENT_DATABASE_PATH, CHANNEL
 from .annotate import update_content_availability
 
-
 # This BaseItem is used to subclass different Models for different languages.
 # This allows us to use a separate database for each language, so that we
 # can reduce performance cost, and keep queries simple for multiple languages.
@@ -76,11 +75,11 @@ def database_exists(channel="khan", language="en", database_path=None):
 
     return os.path.exists(path)
 
-
 def set_database(function):
     """
     Sets the appropriate database for the ensuing model interactions.
     """
+    
 
     def wrapper(*args, **kwargs):
         # Hardcode the Brazilian Portuguese mapping that only the central server knows about
@@ -126,9 +125,10 @@ def parse_data(function):
 
         if dicts and output:
             if expanded:
-                output = map(unparse_model_data, output.dicts())
+                for dic in output:
+                    output = map(unparse_model_data, output.dicts())
             else:
-                output = [item for item in output.dicts()]
+                    output = [item for item in output.dicts()]
 
         return output
     return wrapper
@@ -171,9 +171,9 @@ def get_content_items(ids=None, db=None, **kwargs):
     """
     with Using(db, [Item]):
         if ids:
-            values = Item.select().where(Item.id.in_(ids))
+            values = Item.select().where(Item.id.in_(ids)).iterator()
         else:
-            values = Item.select()
+            values = Item.select().iterator()
         return values
 
 
@@ -387,7 +387,6 @@ def create_table(db=None, **kwargs):
     with Using(db, [Item]):
         db.create_tables([Item])
 
-
 @set_database
 def annotate_content_models(db=None, channel="khan", language="en", ids=None, **kwargs):
     """
@@ -395,11 +394,21 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
     Our ids can be duplicated at the moment, so this may be several content items per id.
     When a content item has been updated, propagate availability up the topic tree.
     """
-    content_models = get_content_items(ids=ids, channel=channel, language=language)
-    updates_dict = update_content_availability(content_models)
+    def iterator_content_items(ids=None, **kwargs):
+        if ids:
+            items = Item.select().where(Item.id.in_(ids)).dicts().iterator()
+        else:
+            items = Item.select().dicts().iterator()
+
+        mapped_items = itertools.imap(unparse_model_data, items)
+
+        updated_mapped_items = update_content_availability(mapped_items)
+
+        for path, _update in updated_mapped_items.iteritems():
+            yield path, update
 
     with Using(db, [Item]):
-
+        content_models = iterator_content_items(ids=ids, channel=channel, language=language)
         with db.atomic() as transaction:
             def recurse_availability_up_tree(node, available):
                 if not node.parent:
@@ -416,19 +425,14 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
                     recurse_availability_up_tree(parent, available)
 
 
-            for path, update in updates_dict.iteritems():
+            for path, update in content_models:
                 if update:
                     # We have duplicates in the topic tree, make sure the stamping happens to all of them.
-                    items = Item.select().where(Item.path == path)
+                    items = Item.select().where((Item.path == path) & (Item.kind != "Topic"))
+
                     for item in items:
-                        if item.kind != "Topic":
-                            item_data = unparse_model_data(model_to_dict(item, recurse=False))
-                            item_data.update(update)
-                            item_data = parse_model_data(item_data)
-                            for attr, val in item_data.iteritems():
-                                setattr(item, attr, val)
-                            item.save()
-                            recurse_availability_up_tree(item, update.get("available", False))
+        
+                        recurse_availability_up_tree(item, update.get("available", False))
 
 
 @set_database
