@@ -6,8 +6,9 @@ help:
 	@echo "clean-pyc - remove Python file artifacts"
 	@echo "clean-test - remove test and coverage artifacts"
 	@echo "lint - check style with pep8"
-	@echo "test - run tests quickly with the default Python"
-	@echo "test-all - run tests on every Python version with tox DISABLED"
+	@echo "test - run tests the default Python"
+	@echo "test-bdd - run BDD tests only"
+	@echo "test-nobdd - run non-BDD tests only"
 	@echo "assets - build all JS/CSS assets"
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
@@ -39,19 +40,32 @@ clean-test:
 
 lint:
 	pep8 kalite
+	jshint kalite/*/static/js/*/
 
 test:
-	python setup.py test
+	bin/kalite manage test --bdd-only
+
+test-bdd:
+	bin/kalite manage test --bdd-only
+
+test-nobdd:
+	bin/kalite manage test --no-bdd
 
 test-all:
 	@echo "Not supported yet"
 	# tox
 
 coverage:
-	coverage run --source kalite_gtk setup.py test
+	coverage run --source kalite kalitectl.py test
 	coverage report -m
-	coverage html
-	open htmlcov/index.html
+
+coverage-bdd:
+	coverage run --source kalite kalitectl.py test --bdd-only
+	coverage report -m
+
+coverage-nobdd:
+	coverage run --source kalite kalitectl.py test --no-bdd
+	coverage report -m
 
 docs:
 	# rm -f docs/ka-lite.rst

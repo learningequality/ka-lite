@@ -7,24 +7,25 @@ dependencies:
     - "data"
     - "sc-latest-linux"
   override:
+    - make sdist
     - pip install -r requirements_test.txt
-    - pip install -e .
-    - npm install
-    - npm install -g jshint
+    - pip install dist/ka-lite-"$(python setup.py --version)".tar.gz
   post:
     - if [[ ! -e sc-latest-linux/bin/sc ]]; then wget https://saucelabs.com/downloads/sc-latest-linux.tar.gz && tar -xzf sc-latest-linux.tar.gz &&  mv sc-*-linux sc-latest-linux; fi
 
 test:
   override:
-    - node build.js
+    - make assets
     - kalite start --settings=kalite.project.settings.disk_based_cache --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
     - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready > sc_output.txt 2>&1:
         background: true
     - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
-    - case $CIRCLE_NODE_INDEX in 0) kalite manage test --bdd-only ;; 1) kalite manage test --no-bdd;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) make test-bdd ;; 1) make test-nobdd;; esac:
         parallel: true
+    # TODO: replace below with "make link" when we're pep8
+    - npm install -g jshint
     - jshint kalite/*/static/js/*/
   post:
     - killall --wait sc  # wait for Sauce Connect to close the tunnel
