@@ -1,18 +1,37 @@
 var $ = require("../base/jQuery");
 require("browsernizr/test/inputtypes");
 var Modernizr = require("browsernizr");
+var colorPaletteTemplate = require("./hbtemplates/color-palette.handlebars");
+var BaseView = require("../base/baseview");
 require("./color_palette.css");
 
+var ColorPaletteView = BaseView.extend({
+    template: colorPaletteTemplate,
+    tagName: "style", 
+
+    initialize: function() {
+        this.render();
+    },
+
+    render: function(){
+        console.log("render: ", $("#my_accent").val());
+        this.$el.html(this.template({
+            k_bg_clr: $("#my_background").val(),
+            k_acn_clr: $("#my_accent").val(),
+            k_act_clr: $("#my_action").val(),
+            k_hln_clr: $("#my_headline").val(),
+            k_byt_clr: $("#my_bodytext").val(),
+        }));
+    }
+});
+
 $(function(){
-    //if color type not supported(mainly Safari and IE), use jscolor.js
+    //if color type not supported(mainly Safari and IE), fallback to simple-color-picker.js
     if(!Modernizr.inputtypes.color){
-        // require("./jscolor/jscolor.js");
-        // require("./jquery-minicolors/jquery.minicolors.min.js");
         require('../../../../../../node_modules/simple-color-picker/simple-color-picker.css');
         var ColorPicker = require('../../../../../../node_modules/simple-color-picker');
 
         var my_background = new ColorPicker({
-            // el: document.getElementsByClassName("my_background")
             el: document.getElementById("scp_background"),
             color: '#C4D7E3',
             width: 100,
@@ -59,91 +78,32 @@ $(function(){
             $("#my_bodytext").val(hexStringColor);
         });
     }
+
+    var color_palette;
+
     //always looking for style in the localStorage first
     if(localStorage && localStorage.getItem("k-css")){
-        var css = localStorage.getItem("k-css"),
-            head = document.head || document.getElementsByTagName('head')[0],
-            style = document.createElement('style');
-
-// console.log("k-css: ", css);
-        style.type = 'text/css';
-        style.id = 'k-local-css';
-        if (style.styleSheet){
-          style.styleSheet.cssText = css;
-        } else {
-          style.appendChild(document.createTextNode(css));
-        }
-
-        head.appendChild(style);
+        var css = localStorage.getItem("k-css");
+        $("#k-local-css").html(css);
     }else{
-        //if no localStorage support, compile the base less on the fly
-        var less = require("../../../../../../node_modules/node-lessify/node_modules/less/dist/less.min.js");
-        //need color inputs when channel editor is implemented
+        //if no localStorage support or no k-css saved in localStorage, create a new template
+        color_palette = new ColorPaletteView();
+        $("#k-local-css").html(color_palette.$el);
     }
 
-    //for prototyping, I use a single button to trigger the less compilation
+    //for prototyping, I use a single button to trigger color palette update
     $("#change_color_palette").click(function(){
-        $('#k-local-css').html(""); //clean the localstorage, which may overwrite the less generated css
-
-        //get input from color picker
-        // var my_background = "#" + $("#my_background").val();
-        // var my_accent = "#" + $("#my_accent").val();
-        // var my_action = "#" + $("#my_action").val();
-        // var my_headline = "#" + $("#my_headline").val();
-        // var my_bodytext = "#" + $("#my_bodytext").val();
-        var my_background = $("#my_background").val();
-        var my_accent = $("#my_accent").val();
-        var my_action = $("#my_action").val();
-        var my_headline = $("#my_headline").val();
-        var my_bodytext = $("#my_bodytext").val();
-
-        var less = require("../../../../../../node_modules/node-lessify/node_modules/less/dist/less.min.js");
-        //update the color palette (these 5 colors will take input from channel editor when it's implemented)
-        less.modifyVars({
-            // "@k-bg-color": "#C4D7E3",
-            // "@k-accent-color": "#5AA685",
-            // "@k-headline-color": "#3A7AA2",
-            // "@k-bodytext-color": "black",
-            // "@k-action-color": "#FF0076"
-            "@k-bg-color": my_background,
-            "@k-accent-color": my_accent,
-            "@k-headline-color": my_headline,
-            "@k-bodytext-color": my_bodytext,
-            "@k-action-color": my_action
-        });
-
         //save the less generated css to localstorarge for reuse in later page load
-        var css =  $("style[id='less:static-css-distributed-kalite-base']").text();
+        if(typeof color_palette == "undefined"){
+            color_palette = new ColorPaletteView();
+        }else{
+            color_palette.render();
+        }
+        $("#k-local-css").html(color_palette.$el);
+        var css = $("#k-local-css").html();
         if(localStorage){
             localStorage.setItem("k-css", css);
         }
     });
 
 });
-
-
-// function change_k_bg_color() {
-//     $(".k-bg-color").css("background-color", "LightPink");
-// }
-
-// function change_k_accent_color() {
-//     $(".k-accent-color").css({"background-color":"Crimson", "border-left":"3px solid Crimson", "border-top":"3px solid Crimson", "border-right":"3px solid Crimson"});
-//     $(".k-accent-border-bottom").css("border-bottom", "6px solid Crimson");
-//     $(".k-accent-hover").hover(
-//         function(){
-//             $(this).css("color", "Crimson");
-//         },
-//         function(){
-//             $(this).css("color", "white");
-//         }
-//     );
-// }
-
-// function addCSSRule(sheet, selector, rules, index) {
-//     if("insertRule" in sheet) {
-//         sheet.insertRule(selector + "{" + rules + "}", index);
-//     }
-//     else if("addRule" in sheet) {
-//         sheet.addRule(selector, rules, index);
-//     }
-// }
