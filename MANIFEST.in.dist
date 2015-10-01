@@ -22,3 +22,6 @@ recursive-include static-libraries *
 recursive-include data *
 
 recursive-exclude python-packages *pyc
+
+# Docs
+recursive-include docs/_build/html *
