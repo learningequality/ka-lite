@@ -5,9 +5,19 @@ from django.conf import settings
 from django.db.models import signals
 from django.db.models.signals import post_save
 
+from annoying.decorators import render_to
+
 from .models import Facility
 
 FACILITY_CACHE_STALE = False
+
+@render_to("distributed/homepage.html")
+def error_view(request):
+    return {}
+
+class ErrorMiddleware:
+    def process_request(self, request):
+        return error_view(request)
 
 def refresh_session_facility_info(request, facility_count):
     # Fix for #1211
