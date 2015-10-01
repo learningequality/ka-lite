@@ -167,7 +167,7 @@ var StarView = BaseView.extend({
         var val = $(target).attr("data-val");
         this.model.set(this.rating_attr, val);
         this.model.debounced_save();
-    }, 500, true),
+    }, 100, true),
 
     mouse_enter_callback: function(ev) {
         // The target event could be either the .star-rating-option or a child element, so whatever the case get the
