@@ -48,8 +48,15 @@ static-updates
 # Python compiling
 *.pyc
 *.pyo
+
+# Backup files
 *~
+
+# Sublime editor
 *.sublime-*
+
+# Ignore all .zip files!? No comment?? Needs fixing, I guess it's to avoid
+# committing local assessment items.
 *.zip
 
 # Documentation
