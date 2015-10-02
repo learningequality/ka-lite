@@ -11,8 +11,6 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 from securesync.models import Device
 
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.support.ui import WebDriverWait
-
 
 RATING_CONTAINER_ID = "rating-container"
 TEXT_CONTAINER_ID = "text-container"
@@ -169,17 +167,16 @@ def rate_id(context, id_, val=3):
     :return: nothing
     """
 
-    def rate_element(driver):
+    def get_rating_el(driver):
         try:
             container = find_id_with_wait(context, id_)
             els = container.find_elements_by_class_name(STAR_RATING_OPTION_CLASS)
-            rating_el = [el for el in els if int(el.get_attribute("data-val")) == val].pop()
-            rating_el.click()
-            return True
+            return [el for el in els if int(el.get_attribute("data-val")) == val].pop()
         except (NoSuchElementException, StaleElementReferenceException):
             return False
 
-    WebDriverWait(context.browser, 10).until(rate_element)
+    rating_el = WebDriverWait(context.browser, 10).until(get_rating_el)
+    rating_el.click()
 
 
 def enter_text_feedback(context, text_feedback):

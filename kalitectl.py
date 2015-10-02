@@ -569,8 +569,6 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
     except KeyboardInterrupt:
         # Handled in cherrypy by waiting for all threads to join
         pass
-    except SystemExit:
-        print("KA Lite caught system exit signal, quitting.")
 
     print("FINISHED serving HTTP")
 
@@ -581,7 +579,6 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
         from fle_utils.chronograph.management.commands import cronserver_blocking
         cronserver_blocking.shutdown = True
         cron_thread.join()
-        print("Job scheduler terminated.")
 
 
 def stop(args=[], sys_exit=True):
