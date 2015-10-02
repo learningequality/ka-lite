@@ -3,7 +3,6 @@ require("browsernizr/test/inputtypes");
 var Modernizr = require("browsernizr");
 var colorPaletteTemplate = require("./hbtemplates/color-palette.handlebars");
 var BaseView = require("../base/baseview");
-require("./color_palette.css");
 
 var ColorPaletteView = BaseView.extend({
     template: colorPaletteTemplate,
@@ -14,7 +13,6 @@ var ColorPaletteView = BaseView.extend({
     },
 
     render: function(){
-        console.log("render: ", $("#my_accent").val());
         this.$el.html(this.template({
             k_bg_clr: $("#my_background").val(),
             k_acn_clr: $("#my_accent").val(),
@@ -30,33 +28,53 @@ $(function(){
     if(!Modernizr.inputtypes.color){
         require('../../../../../../node_modules/simple-color-picker/simple-color-picker.css');
         var ColorPicker = require('../../../../../../node_modules/simple-color-picker');
+        require("./color_palette.css");
+
+        (function replaceColorTags() {
+            var inputs = document.getElementsByTagName("input");
+            var colors = [];
+
+            for(var i = 0; i < inputs.length; i++) {
+                if(inputs[i].type.toLowerCase() == 'text') {
+                    colors.push(inputs[i]);
+                }
+            }
+
+            for(var r = 0; r < colors.length; r++) {
+                var color = colors[r];
+                var polyfill_color = document.createElement("div");
+                polyfill_color.id = color.id;
+                color.parentNode.insertBefore(polyfill_color, color);
+                color.parentNode.removeChild(color);
+            }
+        })();
 
         var my_background = new ColorPicker({
-            el: document.getElementById("scp_background"),
+            el: document.getElementById("my_background"),
             color: '#C4D7E3',
             width: 100,
             height: 60
         });
         var my_accent = new ColorPicker({
-            el: document.getElementById("scp_accent"),
+            el: document.getElementById("my_accent"),
             color: '#5AA685',
             width: 100,
             height: 60
         });
         var my_action = new ColorPicker({
-            el: document.getElementById("scp_action"),
+            el: document.getElementById("my_action"),
             color: '#FF0076',
             width: 100,
             height: 60
         });
         var my_headline = new ColorPicker({
-            el: document.getElementById("scp_headline"),
+            el: document.getElementById("my_headline"),
             color: '#3A7AA2',
             width: 100,
             height: 60
         });
         var my_bodytext = new ColorPicker({
-            el: document.getElementById("scp_bodytext"),
+            el: document.getElementById("my_bodytext"),
             color: '#000000',
             width: 100,
             height: 60
@@ -100,8 +118,8 @@ $(function(){
             color_palette.render();
         }
         $("#k-local-css").html(color_palette.$el);
-        var css = $("#k-local-css").html();
         if(localStorage){
+            var css = $("#k-local-css").html();
             localStorage.setItem("k-css", css);
         }
     });
