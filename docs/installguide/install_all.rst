@@ -1,15 +1,23 @@
 Windows
 =======
 
-#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-14>`_ installer.
+#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-15>`_ installer.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
+
+Upgrading KA Lite over an existing installation is easy -- just run the installer and follow the prompts!
+You don't need to uninstall your old KA Lite installation first.
 
 Mac/OSX
 =======
 
-#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-14>`_.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
 #. After the download is complete, double click the .dmg file.
 #. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
+
+    .. note::
+        To upgrade an existing KA Lite installation, download the new installer and then drag it over to the "Applications"
+        folder to replace the existing "KA-Lite-Monitor" application.
+        Give confirmation to overwrite the existing app. Then proceed from this step as usual.
 #. Launch "KA-Lite Monitor" from your 'Applications' folder.
 #. On first load, it will check your current environment and show the Preferences dialog.
 #. Input your preferred admin username and password.
@@ -26,7 +34,7 @@ Main method: Ubuntu/Debian .deb
 _______________________________
 
 Download the latest .deb manually from
-`our server <https://learningequality.org/r/deb-bundle-installer-0-14>`_.
+`our server <https://learningequality.org/r/deb-bundle-installer-0-15>`_.
 After that, you can install the .deb file like this::
 
     sudo dpkg -i FILENAME.deb
@@ -73,7 +81,7 @@ It can be installed by downloading the latest .deb on the Pi and installing it::
     # Install dependencies
     sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
     # Fetch the latest .deb
-    sudo wget https://learningequality.org/r/deb-pi-installer-0-14
+    sudo wget https://learningequality.org/r/deb-pi-installer-0-15
     # Install the .deb
     sudo dpkg -i ka-lite-raspberry-pi*.deb
 

@@ -101,7 +101,7 @@ class Command(CronCommand):
             if deleted_video_ids:
                 self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % len(deleted_video_ids))
             return deleted_video_ids
-            pre_delete.connect(receiver=updates.invalidate_on_video_delete, sender=VideoFile)
+
         touched_video_ids += delete_objects_for_missing_videos(youtube_ids_in_filesystem, videos_marked_at_all)
 
         if touched_video_ids:
