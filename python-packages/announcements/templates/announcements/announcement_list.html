@@ -8,7 +8,7 @@
 {% block body_class %}announcements{% endblock %}
 {% block body %}
         <h2>{% trans "Announcements" %}</h2>
-        <a href="{% url "announcements_create" %}" class="btn btn-success">
+        <a href="{% url "announcements_create" %}" class="btn btn-success" role="button">
             {% trans "Add New Announcement" %}
         </a>
         
@@ -16,8 +16,8 @@
             {% for announcement in announcement_list %}
                 <tr>
                     <td>
-                        <a href="{% url "announcements_update" pk=announcement.pk %}" class="btn btn-mini">
-                            <i class="icon icon-pencil"></i>
+                        <a href="{% url "announcements_update" pk=announcement.pk %}" class="btn btn-mini" role="button">
+                            <span aria-hidden="true"><i class="icon icon-pencil"></i></span>
                             {% trans "Edit" %}
                         </a>
                     </td>

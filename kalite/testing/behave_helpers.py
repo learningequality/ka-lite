@@ -40,7 +40,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from kalite.facility.models import FacilityUser
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.content_models import get_random_content
 
 # Use these for now, so that we don't DROurselves, but eventually
 # we'll want to move away from mixins.

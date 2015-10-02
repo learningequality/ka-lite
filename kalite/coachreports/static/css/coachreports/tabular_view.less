@@ -1,0 +1,198 @@
+.student-data:hover {
+	cursor: pointer;
+}
+
+#displaygrid, .top-scroll {
+	overflow: auto;
+	border-right: 1px solid #bbb;
+}
+
+#displaygrid > .users-table{
+    width: 11%;
+    margin-right: 1px;
+    float: left;
+    background: white;
+}
+
+.top-scroll, .scroller {
+    height: 20px;
+}
+
+.top-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.detailspanel{
+    overflow: auto;
+}
+
+.userstatus {
+    overflow: auto;
+    width: 88%;
+    float: right;
+}
+
+.users-table table {
+    width: 100%;
+}
+
+.subtitle.error {
+    margin-left: 4px;
+    margin-top: 15px;
+}
+
+.status {
+    height: 34px;
+	color: #2a6496;
+	font-weight: bold;
+	text-align: center;
+}
+
+th.username span {
+    overflow: hidden;
+    position: absolute;
+    background: white;
+    color: #fff;
+    line-height: normal;
+    width: 97px;
+    height: 37px;
+    padding-top: 0px;
+    border: 1px solid #ddd;
+    margin-left: -2px;
+}
+
+table.tab_report th.username {
+    height: 27px;
+    line-height: 0;
+    padding: 0;
+    color: transparent;
+    border: none;
+    white-space: nowrap;
+}
+
+th.headrow, th.headrow div {
+    width: 80px;
+    table-layout: fixed;
+    font-weight: bold;
+    background-color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th.headrowuser {
+    font-weight: bold;
+    border-top: none;
+    border-right: 0px;
+}
+
+.partial {
+    background-color: #C0E7F3;
+    fill: #C0E7F3;
+}
+
+.partial.selected, .partial:hover{
+    background-color: #749BA7;
+}
+
+.complete {
+    background-color: #5AA685;
+    fill: #5AA685;
+}
+
+.complete.selected, .complete:hover{
+    background-color: #0E5A39;
+}
+
+.struggling {
+    background-color: #FD795B;
+    fill: #FD795B;
+}
+
+.struggling.selected, .struggling:hover{
+    background-color: #CA4628;
+}
+
+.not-attempted {
+	background-color: #eee;
+    fill: #eee;
+}
+
+/* Make this specific to .status to prevent it overriding cells in the details panel table. */
+#displaygrid td.status, #displaygrid th {
+    min-width: 60px;
+    overflow: hidden;
+}
+
+/*#legend a {
+    height:12px;
+    margin:0px;
+    padding:0px;
+}*/   
+
+.student-name, .attempts, .streak_progress, .points, .total_seconds_watched {
+    float:left; 
+    display:none;
+    overflow:hidden;
+    white-space:pre-line;
+    width:100%;
+    margin:0px 5px 0px 3px;
+    padding:0px;
+    text-align:right;
+    vertical-align:middle;
+}
+
+.student-name {
+    text-align: left;
+    display: block;
+    text-overflow: ellipsis;
+}
+
+
+#legend {
+    padding: 6px 0 6px 10px;
+	margin-top: 0;
+	margin-left: 15px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	text-align: center;	
+}
+
+#legendMargin {
+	margin-left: 15px;
+}
+
+.legend {
+    display: inline-block;
+    height: 20px;
+    overflow: hidden;
+    text-align: center;
+    padding-right: 10px;
+}
+
+.legend div {
+    float: left;
+    width: 35px;
+    height: 21px;
+}
+
+.legend span {
+    padding-left: 10px;
+}
+
+.selection {
+    margin-right: 10px;
+}
+
+@media only screen and (max-width: 1199px) {
+    #legend { float: left !important; margin-top: 15px; }
+}
+
+@media only screen and (max-width: 400px) {
+    select#topic { margin-left: 0 !important; }
+    /* Moves "Select Topic" dropdown slightly to the right so that it lines up with "Select Topic" and "Select Report" */
+}
+
+.detail-panel-contents {
+    padding-top: 0.5em;
+}

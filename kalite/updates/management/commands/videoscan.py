@@ -12,8 +12,9 @@ from ...api_views import divide_videos_by_language
 from ...models import VideoFile
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import break_into_chunks
-from kalite import caching, i18n
+from kalite import i18n
 from kalite import updates
+from kalite.topic_tools.content_models import annotate_content_models
 
 
 class Command(CronCommand):
@@ -98,11 +99,10 @@ class Command(CronCommand):
                 deleted_video_ids += [video_file.youtube_id for video_file in video_files_needing_model_deletion]
                 video_files_needing_model_deletion.delete()
             if deleted_video_ids:
-                caching.invalidate_all_caches()
                 self.stdout.write("Deleted %d VideoFile models (because the videos didn't exist in the filesystem)\n" % len(deleted_video_ids))
             return deleted_video_ids
             pre_delete.connect(receiver=updates.invalidate_on_video_delete, sender=VideoFile)
         touched_video_ids += delete_objects_for_missing_videos(youtube_ids_in_filesystem, videos_marked_at_all)
 
-        if options["auto_cache"] and touched_video_ids:
-            caching.invalidate_all_caches()
+        if touched_video_ids:
+            annotate_content_models(ids=touched_video_ids)

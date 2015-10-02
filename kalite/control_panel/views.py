@@ -31,7 +31,6 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 
 
@@ -444,7 +443,6 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # compute period start and end
     # Now compute stats, based on queried data
-    num_exercises = len(get_exercise_cache())
     user_data = OrderedDict()
     group_data = OrderedDict()
 
@@ -507,7 +505,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     for elog in exercise_logs:
         user_data[elog["user__pk"]]["total_exercises"] += 1
-        user_data[elog["user__pk"]]["pct_mastery"] += 1. / num_exercises
+        user_data[elog["user__pk"]]["pct_mastery"] += elog["streak_progress"]
         user_data[elog["user__pk"]]["exercises_mastered"].append(elog["exercise_id"])
 
     for vlog in video_logs:
@@ -539,6 +537,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # Add group data.  Allow a fake group UNGROUPED
     for user in users:
+        user_data[user.pk]["pct_mastery"] = user_data[user.pk]["pct_mastery"]/(user_data[user.pk]["total_exercises"] or 1)
         group_pk = getattr(user.group, "pk", None)
         if group_pk not in group_data:
             logging.error("User %s still in nonexistent group %s!" % (user.id, group_pk))

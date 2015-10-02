@@ -3,10 +3,6 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/distributed/homepage.css' %}">
-{% endblock headcss %}
-
 {% block headjs %}{{ block.super }}
 
     <script src="{% static 'js/distributed/bundles/bundle_homepage.js' %}"></script>
@@ -32,8 +28,8 @@
         <div class="row">
             <div class="col-sm-4 col-sm-push-4 col-xs-10 col-xs-push-1 vertical-shadow suggested-action">
                 <a href="{% url 'learn' %}">
-                     <h3 class="suggested-action-title">{% trans "Learn!" %}</h3>
-                     <img id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/logo_10_enlarged_2.png" alt="{% trans 'Learn with Khan Academy videos and exercises!' %}">
+                     <h2 class="h3 suggested-action-title">{% trans "Learn!" %}</h2>
+                     <img class="img-responsive" id="suggested-action-image-link-homepage" src="/data/{{ channel }}/images/logo_10_enlarged_2.png" alt="{% trans 'Learn with Khan Academy videos and exercises!' %}">
                 </a>
             </div>
         </div>

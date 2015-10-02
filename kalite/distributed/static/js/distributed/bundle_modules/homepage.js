@@ -2,6 +2,8 @@ var $ = require("../base/jQuery");
 var content_rec_views = require("../contentrec/views");
 var user = require("../user/views");
 
+require("../../../css/distributed/homepage.less");
+
 $(function() {
     if (ds.distributed.front_page_welcome_message) {
         show_message("success", ds.distributed.front_page_welcome_message);
