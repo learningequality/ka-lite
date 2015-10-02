@@ -134,7 +134,12 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     ensure_dir(get_po_filepath(lang_code=lang_code))
 
     # # Unpack into temp dir
-    z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
+    try:
+        z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
+    except zipfile.BadZipfile as e:
+        # Need to add more information on the errror message.
+        # See http://stackoverflow.com/questions/6062576/adding-information-to-a-python-exception
+        raise type(e), type(e)(e.message + _("Language pack corrupted. Please try downloading the language pack again in a few minutes."))
     z.extractall(os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code))
 
 def move_dubbed_video_map(lang_code):
