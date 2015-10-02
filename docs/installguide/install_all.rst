@@ -27,6 +27,16 @@ Mac/OSX
 #. When prompted that KA-Lite has been started, click on the logo icon again and select "Open in Browser" menu option - this should launch KA-Lite on your preferred web browser.
 #. Login using the administrator account you have specified during setup.
 
+If the sidebar shows entries that are greyed-out, the child items of the entry may be videos that were not yet downloaded.  If there are assessment items inside, then you need to extract the `assessment.zip` manually:
+
+#. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+#. Click on the app icon at the menu bar.
+#. Click on ``Preferences`` in the menu option.
+#. Go to Advanced tab, click on the ``Extract Assessment`` button, then confirm the action. 
+#. Restart the server, login to the web app, then check the sidebar contents.
+
+This will enable the greyed-out assessment items on the sidebar.
+
 Linux
 =====
 
@@ -120,12 +130,13 @@ Mac OSX
 _______
 
 1. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
-2. Click on ``Preferences`` in the menu option.
-3. Click the ``Reset App`` from The ``Advanced``
-4. You will be prompted that "this will reset app. Are you sure?", just click on ``OK`` button.
-5. Another dialog will appear asking your ``Password`` just click on ``Cancel`` button.
-6. Quit the ``KA-Lite Monitor`` app.
-7. Move ``KA-Lite Monitor`` app to ``Trash``.
+2. Click on the app icon at the menu bar.
+3. Click on ``Preferences`` in the menu option.
+4. Click the ``Reset App`` from the ``Advanced`` tab.
+5. You will be prompted that "This will reset app. Are you sure?", just click on ``OK`` button.
+6. Another dialog will appear asking your ``Password``, type your password then click on ``Ok`` button.
+7. Quit the ``KA-Lite Monitor`` app (do not click the ``Apply`` button!).
+8. Move the ``KA-Lite Monitor`` app to ``Trash``.
 
 
 Linux: Debian/Ubuntu
