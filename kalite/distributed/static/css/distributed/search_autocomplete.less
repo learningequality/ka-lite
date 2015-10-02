@@ -1,0 +1,104 @@
+@import "./kalite-base.less";
+
+.navbar-collapse .autocomplete {
+    cursor: pointer;
+    display: block;
+}
+.navbar-collapse ul.ui-autocomplete  {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin: 0 3px;
+    border-color: rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    z-index: 1500;
+}
+.navbar-collapse .ui-state-hover,
+.navbar-collapse .ui-widget-content .ui-state-hover,
+.navbar-collapse .ui-widget-header .ui-state-hover,
+.navbar-collapse .ui-state-focus,
+.navbar-collapse .ui-widget-content .ui-state-focus,
+.navbar-collapse .ui-widget-header .ui-state-focus {
+    background: @k-accent-color;
+    border: 0;
+    border-radius: 6px;
+    color: white;
+}
+.navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Topic.available,
+.navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Exercise.available,
+.navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Video.available,
+.navbar-collapse a.ui-corner-all.ui-state-focus span.autocomplete.icon-Document.available {
+    color: white;
+}
+.navbar-collapse .ui-menu .ui-menu-item a,
+.navbar-collapse .ui-menu .ui-menu-item a.ui-state-focus {
+    margin: -1px 0 0 0;
+    outline: 0;
+    border-radius: 6px;
+    border: 0px;
+    padding-left: 0.5em;
+    overflow: hidden;
+}
+
+/* ensure these elements have the same height */
+.navbar-collapse .ui-menu .ui-menu-item a,
+.navbar-collapse .ui-menu .ui-menu-item a.ui-state-focus,
+.navbar-collapse .ui-menu .ui-menu-item .dropdown-icon {
+    height: 2em;
+}
+
+.navbar-collapse .ui-menu .ui-menu-item span {
+    font-weight: 300;
+    font-size: 0.95em;
+    padding-right: 0;
+}
+
+/* inner spans */
+.navbar-collapse .ui-menu .ui-menu-item span > span {
+    text-transform: none;
+}
+
+.navbar-collapse .ui-menu .ui-menu-item .dropdown-icon {
+    font-weight: 300;
+    font-size: 1em;
+    padding-right: 16px;
+    float: left;
+    padding-top: 0.3em;
+}
+
+.navbar-collapse .available {
+    color: #000;
+}
+.navbar-collapse .unavailable {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+/* Misc visuals
+----------------------------------*/
+
+/* Corner radius */
+.navbar-collapse .ui-corner-all,
+.navbar-collapse .ui-corner-top,
+.navbar-collapse .ui-corner-left,
+.navbar-collapse .ui-corner-tl {
+    border-top-left-radius: 0;
+}
+.navbar-collapse .ui-corner-all,
+.navbar-collapse .ui-corner-top,
+.navbar-collapse .ui-corner-right,
+.navbar-collapse .ui-corner-tr {
+    border-top-right-radius: 0;
+}
+.navbar-collapse .ui-corner-all,
+.navbar-collapse .ui-corner-bottom,
+.navbar-collapse .ui-corner-left,
+.navbar-collapse .ui-corner-bl {
+    border-bottom-left-radius: 0;
+}
+.navbar-collapse .ui-corner-all,
+.navbar-collapse .ui-corner-bottom,
+.navbar-collapse .ui-corner-right,
+.navbar-collapse .ui-corner-br {
+    border-bottom-right-radius: 0;
+}

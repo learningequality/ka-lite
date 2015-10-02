@@ -2,9 +2,12 @@
 This module contains all tests for the functions invoked to
 get the "Resume" recommendations.
 '''
+import datetime
 
-from kalite.topic_tools.content_recommendation import *
+from kalite.topic_tools.content_recommendation import get_most_recent_incomplete_item
 from kalite.testing.base import KALiteTestCase
+from kalite.facility.models import Facility, FacilityUser
+from kalite.main.models import ExerciseLog
 
 class TestResumeMethods(KALiteTestCase):
 

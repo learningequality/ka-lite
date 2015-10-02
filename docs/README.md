@@ -1,12 +1,12 @@
 ## Requirements
-You need to install following dependecies in order to build the docs in headless mode:
+You need to install following dependencies in order to build the docs in headless mode:
 - xvfb (system package)
 - pyvirtualdisplay (python package)
 
 You'll also need to install `sphinx`.
 
 Execute following commands as root user to install the dependencies.
-For ubuntu users:
+For Debian/Ubuntu users:
 ```
     apt-get install xvfb
 ```
@@ -20,13 +20,14 @@ Then, install following python packages:
     pip install pyvirtualdisplay
     pip install sphinx
 ```
+ 
 
 ## Building Documentation
-Change your current working directory to `sphinx-docs` directory under `ka-lite` root and execute following command:
+Change your current working directory to `docs` directory under `ka-lite` root and execute following command:
 ```
     make html
 ```
-If the above command executes successfully, docs should be found under `sphinx-docs/_build` directory inside `ka-lite`.
+If the above command executes successfully, docs should be found under `docs/_build` directory inside `ka-lite`.
 
 ## Building translated docs
 1. Make sure you have the sphinx-intl dependency (run the command `pip install -r requirements` in this directory).

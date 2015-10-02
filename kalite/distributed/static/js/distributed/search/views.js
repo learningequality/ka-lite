@@ -1,8 +1,19 @@
-window.AutoCompleteView = BaseView.extend({
+var BaseView = require("../base/baseview");
+var Handlebars = require("../base/handlebars");
+var _ = require("underscore");
+var api = require("../utils/api");
+var messages = require("utils/messages");
+var sprintf = require("sprintf-js").sprintf;
 
-    template: HB.template("search/search-bar"),
+require("../../../css/distributed/search_autocomplete.less");
 
-    item_template: HB.template("search/search-item"),
+var SearchBarTemplate = require("./hbtemplates/search-bar.handlebars");
+var SearchBarItemTemplate = require("./hbtemplates/search-item.handlebars");
+var AutoCompleteView = BaseView.extend({
+
+    template: SearchBarTemplate,
+
+    item_template: SearchBarItemTemplate,
 
     tagName: "li", 
 
@@ -14,7 +25,7 @@ window.AutoCompleteView = BaseView.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "fetch_topic_tree", "flatten_nodes", "render", "data_source", "select_item", "input_changed", "submit_form");
 
         this._titles = {};
         this._keywords = {};
@@ -28,7 +39,7 @@ window.AutoCompleteView = BaseView.extend({
     fetch_topic_tree: function () {
         var self = this;
         if (this._nodes===undefined) {
-            doRequest(window.Urls.topic_tree(window.sessionModel.get("CHANNEL")), null, {
+            api.doRequest(window.Urls.topic_tree(window.sessionModel.get("CHANNEL")), null, {
                 cache: true,
                 dataType: "json",
                 ifModified: true
@@ -79,7 +90,7 @@ window.AutoCompleteView = BaseView.extend({
         this.$el.html(this.template({search_url: window.Urls.search()}));
 
         this.$("#search").autocomplete({
-            autoFocus: true,
+            autoFocus: false,
             minLength: 3,
             appendTo: ".navbar-collapse",
             html: true,  // extension allows html-based labels
@@ -93,7 +104,7 @@ window.AutoCompleteView = BaseView.extend({
 
     data_source: function(request, response) {
         var self = this;
-        clear_messages();
+        messages.clear_messages();
 
         // Executed when we're requested to give a list of results
         var titles_filtered = $.ui.autocomplete.filter(_.keys(this._titles), request.term);
@@ -172,7 +183,7 @@ window.AutoCompleteView = BaseView.extend({
     },
 
     input_changed: function() {
-        if (this.$("#search").val() != "") {
+        if (this.$("#search").val() !== "") {
            this.$("#search-button").removeAttr("disabled");
         }else {
            this.$("#search-button").attr('disabled', 'disabled');
@@ -184,3 +195,4 @@ window.AutoCompleteView = BaseView.extend({
     }
 });
 
+module.exports = AutoCompleteView;

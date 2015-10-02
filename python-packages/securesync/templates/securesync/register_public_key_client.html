@@ -1,5 +1,6 @@
 {% extends base_template %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block register_active %}active{% endblock register_active %}
 
@@ -20,31 +21,9 @@
 
 {% block headjs %}{{ block.super }}
     <script>
-
-        function reload() {
-            window.location.reload();
-        }
-
-        $(function() {
-            $(".refresh-link").click(reload);
-        });
-
-        function auto_register() {
-            // Disable and show message
-            $("#one-click-register").toggleClass("disabled", true);
-            show_message("info", "{% trans 'Contacting central server to register; page will reload upon success.' %}");
-
-            doRequest("{{ auto_registration_url }}", null, {dataType: "jsonp"})
-                .success(function() {
-                    show_message("success", "Auto-registered.");
-                    window.location.reload();
-                })
-                .fail(function(a, b) {
-                    // Re-enable
-                    $("#one-click-register").toggleClass("disabled", false);
-                });
-        }
+        window.auto_registration_url = "{{ auto_registration_url }}";
     </script>
+    <script src="{% static 'js/distributed/bundles/bundle_register_public_key_client.js' %}"></script>
 {% endblock headjs %}
 
 {% block content %}
@@ -94,7 +73,7 @@
                 <p>
                     {% trans "This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use." %}
                 </p>
-                <a class="btn btn-success" id="one-click-register" href="javascript:auto_register()">
+                <a class="btn btn-success" id="one-click-register" href="javascript:void(0)">
                     {% trans "One-click registration now!" %}
                 </a>
             </div>

@@ -10,7 +10,7 @@ import sys
 import warnings
 
 from kalite import ROOT_DATA_PATH
-from kalite.shared.warnings import RemovedInKALite_v015_Warning
+from kalite.shared.warnings import RemovedInKALite_v016_Warning
 
 
 # Load local settings first... loading it again later to have the possibility
@@ -40,7 +40,7 @@ try:
         "in the kalite code base but to put the file somewhere else in your "
         "python path, for instance in the current directory when running "
         "'kalite --settings=my_module'.",
-        RemovedInKALite_v015_Warning
+        RemovedInKALite_v016_Warning
     )
 except ImportError:
     local_settings = object()
@@ -150,22 +150,9 @@ else:
 
 _data_path_channels = os.path.join(_data_path, 'data')
 
-CHANNEL = getattr(local_settings, "CHANNEL", "khan")
-
 CONTENT_DATA_PATH = getattr(local_settings, "CONTENT_DATA_PATH", _data_path_channels)
-CHANNEL_DATA_PATH = os.path.join(CONTENT_DATA_PATH, CHANNEL)
 
 CONTENT_DATA_URL = getattr(local_settings, "CONTENT_DATA_URL", "/data/")
-
-# Parsing a whole JSON file just to load the settings is not nice
-try:
-    CHANNEL_DATA = json.load(open(os.path.join(CHANNEL_DATA_PATH, "channel_data.json"), 'r'))
-except IOError:
-    CHANNEL_DATA = {}
-
-# Whether we wanna load the perseus assets. Set to False for testing for now.
-LOAD_KHAN_RESOURCES = getattr(local_settings, "LOAD_KHAN_RESOURCES", CHANNEL == "khan")
-
 
 ###################################################
 # USER DATA
@@ -241,15 +228,6 @@ if not os.path.exists(CONTENT_ROOT):
 CONTENT_URL = getattr(local_settings, "CONTENT_URL", "/content/")
 
 
-# Necessary for Django compressor
-if not DEBUG:
-    STATICFILES_FINDERS = (
-        "django.contrib.staticfiles.finders.FileSystemFinder",
-        "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-        "compressor.finders.CompressorFinder",
-    )
-
-
 # Overwrite stuff from local_settings
 MEDIA_ROOT = getattr(local_settings, "MEDIA_ROOT", MEDIA_ROOT)
 STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
@@ -314,12 +292,29 @@ USE_I18N = getattr(local_settings, "USE_I18N", True)
 USE_L10N = getattr(local_settings, "USE_L10N", False)
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = getattr(local_settings, "SECRET_KEY",
-                     "8qq-!fa$92i=s1gjjitd&%s@4%ka9lj+=@n7a&fzjpwu%3kd#u")
+SECRET_KEY_FILE = getattr(local_settings,
+                          "SECRET_KEY_FILE",
+                          os.path.join(USER_DATA_ROOT, "secretkey.txt"))
+
+
+try:
+    with open(SECRET_KEY_FILE) as f:
+        SECRET_KEY = getattr(local_settings, "SECRET_KEY", f.read())
+except Exception as e:
+    sys.stderr.write("Error reading secret key file. Generating one now. Error was: %s\n" % e)
+
+    from ._utils import generate_secret_key, cache_secret_key
+    SECRET_KEY = generate_secret_key()
+    cache_secret_key(SECRET_KEY, SECRET_KEY_FILE)
 
 LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
+
+from os.path import join, expanduser
+
+BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
+DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -329,15 +324,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.contenttypes',
     'tastypie',
-    'compressor',
     'django_js_reverse',
     'securesync',
     'south',
     'fle_utils.build',
-    'fle_utils.handlebars',
     'fle_utils.django_utils',
     'fle_utils.config',
-    'fle_utils.backbone',
     'fle_utils.chronograph',
     'fle_utils.testing', # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.django_cherrypy_wsgiserver',
@@ -358,6 +350,7 @@ INSTALLED_APPS = [
     'kalite.i18n',
     'kalite.ab_testing',
     'kalite.control_panel',
+    'dbbackup',
 ]
 
 if IS_SOURCE:
@@ -467,9 +460,10 @@ KEY_PREFIX = version.VERSION
 # Separate session caching from file caching.
 SESSION_ENGINE = getattr(
     local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.signed_cookies' + (''))
-    
-# Expire session cookies whenever we close the browser.
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Expire session cookies after 30 minutes, but extend sessions when there's activity from the user.
+SESSION_COOKIE_AGE = 60 * 30     # 30 minutes
+SESSION_SAVE_EVERY_REQUEST = True
 
 # Use our custom message storage to avoid adding duplicate messages
 MESSAGE_STORAGE = 'fle_utils.django_utils.classes.NoDuplicateMessagesSessionStorage'

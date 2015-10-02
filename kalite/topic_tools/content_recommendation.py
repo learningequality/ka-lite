@@ -11,14 +11,15 @@ import collections
 
 from django.db.models import Count
 
-# TODO(benjaoming) this wildcard is crazy, needs to be burned
-from kalite.topic_tools import *
+from kalite.topic_tools import get_content_data, get_exercise_data, get_topic_data, get_topic_exercises, get_topic_tree, get_exercise_cache
 
 from . import settings
 
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
 from kalite.facility.models import FacilityUser
+
+CACHE_VARS = []
 
 def get_resume_recommendations(user, request):
     """Get the recommendation for the Resume section.
@@ -41,6 +42,13 @@ def get_resume_recommendations(user, request):
         return []
 
 
+def get_completed_exercises(user):
+    """Return a list of all completed exercises (ids) by user."""
+
+    exercises_by_user = ExerciseLog.objects.filter(user=user, complete=True).values_list("exercise_id", flat=True)
+ 
+    return exercises_by_user
+
 
 def get_next_recommendations(user, request):
     """Get the recommendations for the Next section, and return them as a list.
@@ -60,6 +68,11 @@ def get_next_recommendations(user, request):
 
     most_recent = get_most_recent_exercises(user)
 
+    complete_exercises = set(get_completed_exercises(user))
+
+    def filter_complete(ex):
+        return ex not in complete_exercises
+
     if len(most_recent) > 0 and most_recent[0] in exercise_parents_table:
         current_subtopic = exercise_parents_table[most_recent[0]]['subtopic_id']
     else:
@@ -73,15 +86,14 @@ def get_next_recommendations(user, request):
         topic_tree_based_data = []
     
     #for checking that only exercises that have not been accessed are returned
-    topic_tree_based_data = [ex for ex in topic_tree_based_data if not ex in most_recent] 
+    topic_tree_based_data = [ex for ex in topic_tree_based_data if ex not in most_recent or filter_complete(ex)]
 
     #logic to generate recommendations based on exercises student is struggling with
-    struggling = get_exercise_prereqs(get_struggling_exercises(user))   
+    struggling = filter(filter_complete, get_exercise_prereqs(get_struggling_exercises(user)))
 
     #logic to get recommendations based on group patterns, if applicable
-    group = get_group_recommendations(user)
-
-   
+    group = filter(filter_complete, get_group_recommendations(user))
+  
     #now append titles and other metadata to each exercise id
     final = [] # final data to return
     for exercise_id in (group[:2] + struggling[:2] + topic_tree_based_data[:1]):  #notice the concatenation

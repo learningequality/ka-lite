@@ -179,7 +179,7 @@ class DjangoTests(DependenciesTests):
 
     def test_django_webserver_can_serve_on_port(self):
         self._log("Testing if Django can serve on %s..." % self.make_url())
-        from kalite.django_cherrypy_wsgiserver.management.commands.runcherrypyserver import port_is_available
+        from kalite.django_cherrypy_wsgiserver.cherrypyserver import port_is_available
         result = port_is_available(self.DJANGO_HOST, self.DJANGO_PRODUCTION_PORT)
         if not result:
             self._fail()
@@ -309,7 +309,7 @@ class PathsTests(DependenciesTests):
     """
 
     JSON_FILES = ("channel_data.json", "contents.json", "exercises.json",
-                  "topic_hierarchy.json", "topics.json",)
+                  "topics.json",)
 
     def test_content_path(self):
         content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))
