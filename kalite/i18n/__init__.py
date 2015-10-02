@@ -47,7 +47,7 @@ class LanguageNotFoundError(Exception):
 
 def get_localized_exercise_dirpath(lang_code):
     ka_lang_code = lang_code.lower()
-    return os.path.join(settings.USER_STATIC_FILES, "perseus", "ke", "exercises", ka_lang_code)  # Translations live in user data space
+    return os.path.join(settings.USER_STATIC_FILES, "js", "distributed", "perseus", "ke", "exercises", ka_lang_code)  # Translations live in user data space
 
 
 def get_locale_path(lang_code=None):
