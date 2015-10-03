@@ -80,25 +80,22 @@ class TestUserManagement(BrowserActionMixins, CreateAdminMixin, FacilityMixins, 
         self.assertEqual(self.browser.find_element_by_xpath("//div[@id='students']/div[@class='col-md-12']/div[@class='table-responsive']/table/tbody/tr/td[5]").text.strip()[:len(user.group.name)], "Test Group", "Does not report user in group.")
 
 
-    @mock.patch.object(urllib, 'urlretrieve')
-    def test_ungrouped_in_non_english(self, urlretrieve_method):
+    def test_ungrouped_number_displays_correctly(self):
+        """
+        Ungrouped # of students wasn't displaying correctly, see: https://github.com/learningequality/ka-lite/pull/2230
+        In particular it seems to have only occurred when a non-english language was set, so this test tried to
+        mock a language pack download -- but that makes the test dependent on languagepackdownload.py details :(
+        """
         facility = self.facility
         params = {
             "zone_id": None,
             "facility_id": facility.id,
             "group_id": "Ungrouped"
         }
-        test_zip_filepath = os.path.join(os.path.dirname(__file__), 'es.zip')
-        urlretrieve_method.return_value = [test_zip_filepath, open(test_zip_filepath)]
         # Login as admin
         self.browser_login_admin(**self.admin_data)
 
-        # Install the language pack
-        if "es" not in get_installed_language_packs(force=True):
-            call_command("languagepackdownload", lang_code="es")
-
         self.register_device()
-        set_default_language("es")
 
         user = FacilityUser(username="test_user", facility=self.facility, group=None)
         user.set_password(raw_password="not-blank")
@@ -108,4 +105,4 @@ class TestUserManagement(BrowserActionMixins, CreateAdminMixin, FacilityMixins, 
         element = WebDriverWait(self.browser, 10).until(
                     EC.presence_of_element_located((By.XPATH, "//div[@id='groups']/div/dl/dd"))
                 )
-        self.assertEqual(element.text, "1", "Does not report one user for From Group.")
+        self.assertEqual(element.text, "1", "Does not report one user for group.")
