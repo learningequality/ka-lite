@@ -1,0 +1,26 @@
+{% load staticfiles %}
+{% load i18n %}
+{% load i18n_filters %}
+{% load my_filters %}
+{% get_current_language as lang_code %}
+<html lang="{{ lang_code }}">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="wot-verification" content=075abe861486e6bb3ab9" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block titletag %}
+        <title>{% block title %}{% trans "Welcome" %}{% trans title %}{% endblock title %} | KA Lite</title>
+        {% endblock %}
+        
+        <link href="{% static "fonts/style.css" %}" rel="stylesheet" type="text/css">
+
+        <!-- CSS for dynamic settings -->
+        <link href="{% url 'dynamic_css' %}" rel="stylesheet" type="text/css">
+        {% block headcss %}{% endblock headcss %}
+    </head>
+<h1> beginning of base_test.html </h1>
+
+
+{% block test %}   
+    <h2> block test inside base_test</h2>
+{% endblock test %}

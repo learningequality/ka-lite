@@ -1,0 +1,29 @@
+{% extends "distributed/base_test.html" %}
+
+
+
+{% block test %}
+
+<h2> block test, inside facility_test.html </h2>
+
+    {% if database %}
+        <h3> database exists </h3>
+    {% endif %}
+{% endblock test %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% if database %}
+    <h1> hey, database exists. </h1>
+
+{% endif %}

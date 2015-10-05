@@ -120,12 +120,7 @@ class ConfigCheck:
             if response['Content-Type'].split(';')[0] == 'text/html':
                 print "text/html is recognized as content-type"
                 test = does_database_exist(request)
-                print "back inside process response, response = "
                 return test
-
-            #if response['Content-Type'].split(';')[0] == 'text/css':
-            else:
-                print "text/css is recognized wauwwwwwwwwwwwww!"
 
         else:
             return HttpResponse("no.")
