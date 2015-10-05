@@ -72,7 +72,7 @@ It can be installed by downloading the latest .deb on the Pi and installing it::
     # Install dependencies
     sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
     # Fetch the latest .deb
-    sudo wget https://learningequality.org/r/deb-pi-installer-0-14
+    sudo wget https://learningequality.org/r/deb-pi-installer-0-14 --no-check-certificate
     # Install the .deb
     sudo dpkg -i ka-lite-raspberry-pi*.deb
 
@@ -80,7 +80,7 @@ You can also add the PPA, see :ref:`ppa-installation`, and then
 run ``sudo apt-get install ka-lite-raspberry-pi``. 
 
 After installing, you can setup a Wifi hotspot using this guide:
-:ref:`raspberry-pi-wifi`_
+:ref:`raspberry-pi-wifi`
 
 
 Other options

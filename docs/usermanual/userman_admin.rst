@@ -31,7 +31,7 @@ Running the KA Lite Server
 ---------------------------
 After a successful installation of KA Lite, the terminal should give you a command to copy. It will look something like the following:
 
-    ``/PATH/TO/KALITE/bin/kalite start``
+    ``kalite start``
 
 The first string will vary depending on which folder you installed KA Lite in. Simply copy and paste the provided string back into the command prompt, and hit enter on your keyboard. You will be asked whether or not you wish to run the KA Lite server in the background automatically every time you start up the computer. Once you answer yes or no, success! The KA Lite server is now running on your computer.
 
@@ -60,7 +60,7 @@ Copy and paste the URL into a web browser. The KA Lite application should show u
     :focus: #id_username | Enter your username and password using this form!
     :class: screenshot
 
-* If you have forgotten the username/password combination, simply run ``bin/kalite manage createsuperuser`` from the kalite directory and then follow the instructions. If it is critical that you are able to login with your credentials, :doc:`../contact` and we can help you manually reset your login information.
+* If you have forgotten the username/password combination, simply run ``kalite manage createsuperuser``  and then follow the instructions.
 
 Once you’ve logged in, the next step in the setup process is registering your device with the KA Lite Hub.
 
@@ -454,17 +454,19 @@ After registering your device:
 5. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 6. Once the download is completed, video content will be ready for Learners to watch!
 
+.. _bulk-video-downloads:
 
 Downloading Videos in Bulk
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If want to download all the videos, you'll need ~33 GB free space. To fetch all
-the videos, `download and open the according torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
+The full set of videos, if downloaded through the KA Lite interface, take over 150GB.
+If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
+the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
 
-Save the videos on the ``CONTENT_ROOT`` of your installation. By default, this
+Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, this
 is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
 
-On Windows, navigate to ``X:\Documents and Settings\<username>\.kalite\content``.
+On Windows, navigate to something like ``C:\Documents and Settings\<username>\.kalite\content``.
 
 .. note:: If the drive where your ``.kalite/`` folder does not have enough free disk space,
           you can change your `Configuration Settings`_, the one named ``CONTENT_ROOT`` and
@@ -563,9 +565,7 @@ Restarting Your Server: Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #. Open up your terminal. For most Linux distributions, you can do this by going to **Menu -> Accessories -> Terminal** or **Applications menu -> System -> Terminal.**
 
-#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
-
-#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
+#. Type in ``kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
@@ -584,12 +584,11 @@ Restarting Your Server: Mac
 .. image:: terminal.png
     :align: center
 
-#. Navigate to the folder that you downloaded KA Lite in. You can do this by typing ``cd <PATH/TO/KALITE/FOLDER>``. Change the path to the path name of the KA Lite folder on your machine.
-
-#. Type in ``bin/kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
+#. Type in ``kalite restart``. This should stop the server, then attempt to restart it again. The process may take up to a few minutes.
 
 #. Once you see the script that begins with ``To access KA Lite from another connected computer, try the following address(es):`` .... you will know that your KA Lite server has been successfully restarted.
 
+.. _configuration-settings:
 
 Configuration Settings
 ----------------------
@@ -601,8 +600,8 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 Running KA Lite with your own settings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate 
-``X:\Documents and Settings\<username>\.kalite``). That file is where you should
+In a text editor, open up ``/home/user/.kalite/settings.py`` (on Windows, locate something like
+``C:\Documents and Settings\<username>\.kalite``). That file is where you should
 put your custom settings, and KA Lite will load them automatically.
 
 You can also run the ``kalite`` with a completely different Python settings
@@ -625,6 +624,7 @@ By default, ``/home/user/.kalite/settings.py`` will load ``kalite.project.settin
 Available settings
 ------------------
 
+See above for instructions on where to configure these settings.
 
 Most common settings
 ^^^^^^^^^^^^^^^^^^^^
@@ -641,7 +641,7 @@ Most common settings
     have downloaded your own assessment items** and you want to keep the
     read-only assessment_items database (~50 MB) together
     with your other media contents (for portability). Example::
-      
+
       from kalite.project.settings.base import *
       CONTENT_ROOT = '/example'
       DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
@@ -667,13 +667,6 @@ User restrictions
   With this setting, users must be logged in order to access videos & exercises
 * ``DISABLE_SELF_ADMIN = <True or False> (default = False)``
   Disables user sign ups.
-
-
-..note:: KA Lite uses caching of web pages, if you change ``LOCKDOWN`` or
-         ``DISABLE_SELF_ADMIN``, you need to flush the cache. To do that, run
-         the following management command::
-         
-             kalite manage cache clearweb
 
 
 Online Synchronization
