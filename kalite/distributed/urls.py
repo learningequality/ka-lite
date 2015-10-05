@@ -102,6 +102,10 @@ urlpatterns += patterns(__package__ + '.views',
     # the following has no "$", and thus catches anything starting with "learn/"
     url(r'^learn/', 'learn', {}, 'learn'),
 )
+# Web-Based Config... move later
+urlpatterns += patterns('',
+    url(r'^facility/', include(kalite.facility.urls)),
+)
 
 if settings.DEBUG:
     urlpatterns += patterns('',

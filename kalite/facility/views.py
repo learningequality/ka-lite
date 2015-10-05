@@ -9,9 +9,10 @@ from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_protect
 
 from .decorators import facility_required
 from .forms import FacilityUserForm, FacilityGroupForm
@@ -188,29 +189,36 @@ def group_edit(request, facility, group_id):
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
-
-#@render_to("facility/config_form.html")
-def does_database_exist(self, request):
+#@ensure_csrf_cookie
+#csrf_protect
+@render_to("facility/download_assessment.html")
+def config_settings(request):
     """
-    Detect if there is an existing database file. If database exists, will 
-    render form that prompts user to keep or delete existing database.
+    request: request body containing form information from user
+    """
     
-    Depending on state of database, renders different form questions.
-    """
+    c = {}
+    c.update( csrf(request) )
+    #return render_to_response("download_assessment.html", c)
+    return c
 
-    # check if database exists
-    database_kind = settings.DATABASES["default"]["ENGINE"]
-    database_file = (
-            "sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
-
-    return HttpResponse("hello, it is not configured. inside does db exist")
     """
-    if database_file and os.path.exists(database_file):
-        return {
-            "database": "exists"
-        }
-    # else:
-    return {
-        "database": "doesn't exist"
-    }
+    if request.database == 'delete':
+        # REMOVE DATABASE INFO  
+        call_command("flush")
+
+        # CHANGE ADMIN USERNAME
+        # if username is left blank, get default username for server 
+        if request.new_username == '':
+            user = User.objects.get(is_superuser=True)
+            user.username = 'Default'  # how to get default ?
+            getpass.getuser().replace("-", "_")
+
+        else:
+            user = User.objects.get(is_superuser=True)
+            user.username = new_username
+
+        user.save()
+        # CHANGE ADMIN PASSWORD 
+        call_command("changepassword")
     """

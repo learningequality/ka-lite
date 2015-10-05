@@ -1,5 +1,9 @@
 """
 """
+import os
+
+from annoying.decorators import render_to
+
 from django.conf import settings
 from django.db.models import signals
 from django.db.models.signals import post_save
@@ -8,9 +12,27 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
 from .models import Facility
-from .views import add_facility_teacher
 
 FACILITY_CACHE_STALE = False
+
+@render_to("facility/facility_test.html")
+def does_database_exist(request):
+    """
+    Detect if there is an existing database file on server. If database exists,
+    will render form that prompts user to keep or delete existing database.
+
+    Depending on state of database, renders different form questions.
+    """
+    database_kind = settings.DATABASES["default"]["ENGINE"]
+    database_file =  (
+            "sqlite" in database_kind \
+                    and settings.DATABASES["default"]["NAME"]) or None
+
+    if database_file and os.path.exists(database_file):
+        print "database file exists! returning true?"
+        return  { "database": True }
+    print "database does not exist, returning False..."
+    return { "database" : False }
 
 def is_configured():
     """
@@ -23,6 +45,7 @@ def is_configured():
         return False
 
     return True
+
 
 def refresh_session_facility_info(request, facility_count):
     # Fix for #1211
@@ -74,20 +97,35 @@ class FacilityCheck:
         Cache facility data in the session,
           while making sure anybody who can create facilities sees the real (non-cached) data
         """
+        
         if not "facility_exists" in request.session or FACILITY_CACHE_STALE:
             # always refresh for admins, or when no facility exists yet.
             refresh_session_facility_info(request, facility_count=Facility.objects.count())
 
 class ConfigCheck:
-    def process_request(self, request):
+    def process_response(self, request, response):
         """
         Display configuration modal if facility does not have all of the
         required settings yet.
         """
-        if is_configured():
-            return None
+        print "\n\n\n------------------- CONFIG CHECK ---------------------\n"
 
-        #does_database_exist(request)
-        #return HttpResponse("not configured.... ")
-        #response = TemplateResponse("not configured")
-        #return response
+        if is_configured():
+            #return None
+            return HttpResponse("it's already configured.")
+
+        # Do not intercept request for form submission
+        if request.path != '/facility/edit_config/' :
+
+            if response['Content-Type'].split(';')[0] == 'text/html':
+                print "text/html is recognized as content-type"
+                test = does_database_exist(request)
+                print "back inside process response, response = "
+                return test
+
+            #if response['Content-Type'].split(';')[0] == 'text/css':
+            else:
+                print "text/css is recognized wauwwwwwwwwwwwww!"
+
+        else:
+            return HttpResponse("no.")
