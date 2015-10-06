@@ -12,14 +12,14 @@ Mac/OSX
 
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
 #. After the download is complete, double click the .dmg file.
-#. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
-#. Launch "KA-Lite Monitor" from your 'Applications' folder.
+#. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
+#. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
 #. On first load, it will check your current environment and show the Preferences dialog.
-#. Input your preferred admin username and password, then click the Apply button in "KA-Lite Preferences" dialog.
-#. You will be prompted that initial setup will take a few minutes, click the "OK" button and wait for the notification that KA-Lite has been setup and can now be started.
-#. Click on the KA-Lite logo icon on the Status Menu Bar and select the "Start KA-Lite" menu option.
-#. Wait for the notification that you can now click on "Open in Browser".
-#. Click on the KA-Lite logo icon on the Status Menu Bar and select "Open in Browser" menu option - this should launch KA-Lite on your preferred web browser.
+#. Input your preferred admin username and password, then click the Apply button in ``KA-Lite Preferences`` dialog.
+#. You will be prompted that initial setup will take a few minutes, click the ``OK`` button and wait for the notification that KA-Lite has been setup and can now be started.
+#. Click on the KA-Lite logo icon on the Status Menu Bar and select the ``Start KA-Lite`` menu option.
+#. Wait for the notification that you can now click on ``Open in Browser``.
+#. Click on the KA-Lite logo icon on the Status Menu Bar and select ``Open in Browser`` menu option - this should launch KA-Lite on your preferred web browser.
 #. Login using the administrator account you have specified during setup.
 
 If the sidebar shows entries that are greyed-out, the child items of the entry may be videos that were not yet downloaded.  If there are assessment items inside, then you need to extract the `assessment.zip` manually:
@@ -31,6 +31,8 @@ If the sidebar shows entries that are greyed-out, the child items of the entry m
 #. Restart the server, login to the web app, then check the sidebar contents.
 
 This will enable the greyed-out assessment items on the sidebar.
+
+**Note:** MAC latest OSX version (EL Capitan) is not yet supported.
 
 Linux
 =====
