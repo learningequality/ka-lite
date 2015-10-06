@@ -59,7 +59,7 @@ Debian, Raspberry Pi, Linux Mint etc.
 You will be prompted to enter some configuration information.
 You should read the on-screen instructions carefully, but some explanation is included here:
 
-1. You will asked to choose to run KA Lite on boot or not. We recommend choosing yes, as it simplifies data management.
+1. You will be asked to choose to run KA Lite on boot or not. We recommend choosing yes, as it simplifies data management.
 If you choose no, you must manually start KA lite every time. Note that running KA Lite as different users creates
 different sets of data files, so it's recommended that you run KA Lite as the same user every time.
 
