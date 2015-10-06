@@ -1,16 +1,16 @@
 
-Admininistrator User Manual
-===========================
+Administrator User Manual
+=========================
 **Who is an "administrator"?**
 
 A person who :
     * helps to plan and oversee a project using KA Lite
     * installs and updates KA Lite
-    * can create coach logins, Learner logins, download videos and language packs
+    * can create Coach logins, Learner logins, download videos and language packs
 
 Administrator Glossary
 ----------------------
-For users that choose to register online, there are some important terms to familiarize yourself with so that you understand how the flow of data works between installations and the online data hub.
+If you choose to register online, these important terms will help you better understand the flow of data between your installations and the online data hub.
 
 **Sharing Network**
     A Sharing Network is a group of devices that share user data. This data is synced to the central server when an Internet connection is available, and then synced down onto other devices in the same Sharing Network.

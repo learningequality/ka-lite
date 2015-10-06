@@ -56,18 +56,20 @@ module.exports = BaseView.extend({
             Then once the user has filled out the rating completely, call renderAll to allow review/editing.
         */
         this.$el.html(this.template());
+        this.$(".rating-delete").hide();
 
         this.star_view_quality = this.add_subview(StarView, {title: gettext("Quality"), el: this.$("#star-container-quality"), model: this.model, rating_attr: "quality", label_values: this.quality_label_values});
 
         var self = this;
-
-        // If the "quality" is already set, display "difficulty" immediately. Otherwise wait.
-        if (parseInt(this.model.get("quality")) === 0) {
-            this.listenToOnce(this.model, "change:quality", function(){
-                self.star_view_difficulty = self.add_subview(StarView, {title: gettext("Difficulty"), el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty", label_values: this.difficulty_label_values});
-            });
-        } else {
+        var callback = function() {
             self.star_view_difficulty = self.add_subview(StarView, {title: gettext("Difficulty"), el: self.$("#star-container-difficulty"), model: self.model, rating_attr: "difficulty", label_values: this.difficulty_label_values});
+            self.$(".rating-delete").show();
+        };
+        // If the "quality" is already set, display "difficulty" immediately. Otherwise wait.
+        if (!this.model.get("quality") || parseInt(this.model.get("quality")) === 0) {
+            this.listenToOnce(this.model, "change:quality", callback);
+        } else {
+            callback();
         }
 
         this.listenToOnce(this.model, "change:difficulty", this.renderAll);
@@ -165,7 +167,7 @@ var StarView = BaseView.extend({
         var val = $(target).attr("data-val");
         this.model.set(this.rating_attr, val);
         this.model.debounced_save();
-    }, 500, true),
+    }, 100, true),
 
     mouse_enter_callback: function(ev) {
         // The target event could be either the .star-rating-option or a child element, so whatever the case get the

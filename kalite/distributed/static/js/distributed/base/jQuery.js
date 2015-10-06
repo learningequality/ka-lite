@@ -4,6 +4,8 @@ var jQuery = require("jquery");
 
 global.$ = global.jQuery = jQuery;
 
+jQuery._ = global.gettext;
+
 require("jquery-ui");
 require("jquery-ui-touch-punch");
 

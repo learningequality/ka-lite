@@ -8,8 +8,24 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing unique constraint on 'ContentRating', fields ['content_kind', 'content_id', 'user']
-        db.delete_unique(u'main_contentrating', ['content_kind', 'content_id', 'user_id'])
+        # Adding model 'ContentRating'
+        db.create_table(u'main_contentrating', (
+            ('id', self.gf('django.db.models.fields.CharField')(max_length=32, primary_key=True)),
+            ('counter', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, blank=True)),
+            ('signature', self.gf('django.db.models.fields.CharField')(max_length=360, null=True, blank=True)),
+            ('signed_version', self.gf('django.db.models.fields.IntegerField')(default=1)),
+            ('signed_by', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Device'])),
+            ('zone_fallback', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='+', null=True, to=orm['securesync.Zone'])),
+            ('deleted', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('content_kind', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
+            ('content_id', self.gf('django.db.models.fields.CharField')(max_length=100, db_index=True)),
+            ('content_source', self.gf('django.db.models.fields.CharField')(default='khan', max_length=100, db_index=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['securesync.FacilityUser'])),
+            ('quality', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('difficulty', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('text', self.gf('django.db.models.fields.TextField')(blank=True)),
+        ))
+        db.send_create_signal(u'main', ['ContentRating'])
 
         # Adding unique constraint on 'ContentRating', fields ['content_source', 'content_kind', 'content_id', 'user']
         db.create_unique(u'main_contentrating', ['content_source', 'content_kind', 'content_id', 'user_id'])
@@ -19,8 +35,8 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'ContentRating', fields ['content_source', 'content_kind', 'content_id', 'user']
         db.delete_unique(u'main_contentrating', ['content_source', 'content_kind', 'content_id', 'user_id'])
 
-        # Adding unique constraint on 'ContentRating', fields ['content_kind', 'content_id', 'user']
-        db.create_unique(u'main_contentrating', ['content_kind', 'content_id', 'user_id'])
+        # Deleting model 'ContentRating'
+        db.delete_table(u'main_contentrating')
 
 
     models = {
@@ -34,7 +50,7 @@ class Migration(SchemaMigration):
             'correct': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'exercise_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
+            'exercise_id': ('django.db.models.fields.CharField', [], {'max_length': '200', 'db_index': 'True'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'blank': 'True'}),
             'points': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
@@ -55,7 +71,7 @@ class Migration(SchemaMigration):
             'complete': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'completion_counter': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'completion_timestamp': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'content_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
+            'content_id': ('django.db.models.fields.CharField', [], {'max_length': '200', 'db_index': 'True'}),
             'content_kind': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
             'content_source': ('django.db.models.fields.CharField', [], {'default': "'khan'", 'max_length': '100', 'db_index': 'True'}),
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
@@ -102,7 +118,7 @@ class Migration(SchemaMigration):
             'completion_timestamp': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'counter': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'exercise_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
+            'exercise_id': ('django.db.models.fields.CharField', [], {'max_length': '200', 'db_index': 'True'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '32', 'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'max_length': '8', 'null': 'True', 'blank': 'True'}),
             'latest_activity_timestamp': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
@@ -161,7 +177,7 @@ class Migration(SchemaMigration):
             'signed_version': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
             'total_seconds_watched': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['securesync.FacilityUser']", 'null': 'True', 'blank': 'True'}),
-            'video_id': ('django.db.models.fields.CharField', [], {'max_length': '100', 'db_index': 'True'}),
+            'video_id': ('django.db.models.fields.CharField', [], {'max_length': '200', 'db_index': 'True'}),
             'youtube_id': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
             'zone_fallback': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'+'", 'null': 'True', 'to': "orm['securesync.Zone']"})
         },
