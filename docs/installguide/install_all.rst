@@ -10,21 +10,23 @@ You don't need to uninstall your old KA Lite installation first.
 Mac/OSX
 =======
 
+**Note:** The latest OSX version (EL Capitan) is not yet supported.
+
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
 #. After the download is complete, double click the .dmg file.
-#. On the .dmg window, drag the "KA-Lite Monitor" app into the "Applications" folder.
+#. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
 
     .. note::
         To upgrade an existing KA Lite installation, download the new installer and then drag it over to the "Applications"
         folder to replace the existing "KA-Lite-Monitor" application.
         Give confirmation to overwrite the existing app. Then proceed from this step as usual.
-#. Launch "KA-Lite Monitor" from your 'Applications' folder.
+#. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
 #. On first load, it will check your current environment and show the Preferences dialog.
-#. Input your preferred admin username and password.
-#. Click on the Apply button.
-#. You will be prompted that initial setup will take a few minutes, click the "OK" button and wait for the notification that KA-Lite has been setup and can now be started.
-#. Click on the KA-Lite logo icon on the Status Menu Bar and select the "Start KA-Lite" menu option.
-#. When prompted that KA-Lite has been started, click on the logo icon again and select "Open in Browser" menu option - this should launch KA-Lite on your preferred web browser.
+#. Input your preferred admin username and password, then click the Apply button in ``KA-Lite Preferences`` dialog.
+#. You will be prompted that initial setup will take a few minutes, click the ``OK`` button and wait for the notification that KA-Lite has been setup and can now be started.
+#. Click on the KA-Lite logo icon on the Status Menu Bar and select the ``Start KA-Lite`` menu option.
+#. Wait for the notification that you can now click on ``Open in Browser`` menu option.
+#. Click on the KA-Lite logo icon on the Status Menu Bar and select ``Open in Browser`` menu option - this should launch KA-Lite in your preferred web browser.
 #. Login using the administrator account you have specified during setup.
 
 If the sidebar shows entries that are greyed-out, the child items of the entry may be videos that were not yet downloaded.  If there are assessment items inside, then you need to extract the `assessment.zip` manually:
