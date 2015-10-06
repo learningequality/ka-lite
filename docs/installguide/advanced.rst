@@ -80,7 +80,7 @@ directory, run::
     $> sudo python setup.py install.
 
 Beware that the PyPi sources do not contain assessment items, you need to
-`download assessment.zip manually <http://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip>`_ (~350 MB).
+`download khan_assessment.zip manually <http://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip>`_ (~350 MB).
 
 
 Specific system setups

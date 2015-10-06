@@ -261,11 +261,10 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         if focus:
             self.browser_wait_for_js_object_exists("$")
             selector = focus['selector']
-            styles = focus['styles']
             try:
-                for key, value in styles.iteritems():
-                    self.browser.execute_script('$("{selector}").css("{key}", "{value}");'
-                                                .format(selector=selector, key=key, value=value))
+                self.browser.execute_script("""
+                    $("{selector}").css("box-shadow", "0 0 3pt 2pt red");
+                """.format(selector=selector))
                 if note:
                     note = re.sub(r"\\s", " ", note)
                     self.browser.execute_script(

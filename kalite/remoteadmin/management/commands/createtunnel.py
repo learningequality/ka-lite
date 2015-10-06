@@ -39,10 +39,10 @@ class Command(BaseCommand):
             try:
                 socket.create_connection((self.server, self.sshport))
                 break
-            except socket.error as e:
+            except socket.error:
                 errcount += 1
                 if errcount > 5:
-                    raise CommandError(_("Can't connect to %(server)s at port %(port)s." % {"server": server, "port": port}))
+                    raise CommandError(_("Can't connect to %(server)s at port %(port)s." % {"server": self.server, "port": self.sshport}))
                 else:
                     time.sleep(5)
 
@@ -90,17 +90,17 @@ class Command(BaseCommand):
             print 'trying to open port %s' % remote_port_mapping
             p = subprocess.Popen([
                 'ssh',
-                '-p', '6060', # remote ssh port
-                "-o", "ExitOnForwardFailure yes", # exit immediately if we cant forward from the given remote port
-                '%s@troy.learningequality.org' % self.username, # username and host
-                '-R', '%s:127.0.0.1:22' % remote_port_mapping, # remote port to local port mapping
-                '-N',       # dont get a remote shell, just establish the remote port forwarding
+                '-p', '6060',  # remote ssh port
+                "-o", "ExitOnForwardFailure yes",  # exit immediately if we cant forward from the given remote port
+                '%s@troy.learningequality.org' % self.username,  # username and host
+                '-R', '%s:127.0.0.1:22' % remote_port_mapping,  # remote port to local port mapping
+                '-N',  # dont get a remote shell, just establish the remote port forwarding
             ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
             stdout, _stderr = p.communicate()
 
             if stdout:
-                if "remote port forwarding failed for listen port" in stdout: # remote port already occupied
+                if "remote port forwarding failed for listen port" in stdout:  # remote port already occupied
                     remote_port_mapping += 1
                     continue
                 else:

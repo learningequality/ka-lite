@@ -1,6 +1,7 @@
 import json
 import time
 import re
+import logging
 
 from selenium.common.exceptions import WebDriverException, TimeoutException
 from selenium.webdriver.common.by import By
@@ -15,6 +16,8 @@ from kalite.facility.models import Facility
 from django.contrib.auth.models import User
 
 from random import choice
+
+from kalite.testing.browser import hacks_for_phantomjs
 
 FIND_ELEMENT_TIMEOUT = 3
 
@@ -425,7 +428,7 @@ class BrowserActionMixins(object):
     def browser_get_points(self):
         # The following commented line of code returns an element with blank text,
         # possibly due to a race condition, hence querying the element with js which "just works"
-        #points_elem = self.browser.find_element_by_id("points")
+        # points_elem = self.browser.find_element_by_id("points")
         # Ensure the element has been populated by triggering an event
         self.browser_wait_for_js_object_exists("window.statusModel");
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
