@@ -1,12 +1,12 @@
 
-Admininistrator User Manual
-===========================
+Administrator User Manual
+=========================
 **Who is an "administrator"?**
 
 A person who :
     * helps to plan and oversee a project using KA Lite
     * installs and updates KA Lite
-    * can create coach logins, Learner logins, download videos and language packs
+    * can create Coach logins, Learner logins, download videos and language packs
 
 Administrator Glossary
 ----------------------
