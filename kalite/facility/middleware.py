@@ -107,20 +107,14 @@ class ConfigCheck:
         Display configuration modal if facility does not have all of the
         required settings yet.
         """
-        print "\n\n\n------------------- CONFIG CHECK ---------------------\n"
-
-        if is_configured():
-            #return None
-            return HttpResponse("it's already configured.")
-
+        if request.path == '/data/khan/images/horizontal-logo-small.png':
+            import pdb; pdb.set_trace();
         # Do not intercept request for form submission
         if request.path != '/facility/edit_config/' :
 
             if response['Content-Type'].split(';')[0] == 'text/html':
                 print "text/html is recognized as content-type"
-                test = does_database_exist(request)
-                print "back inside process response, response = "
-                return test
-
-        else:
-            return HttpResponse("no.")
+                form = config_form(request)
+                return form
+            else:
+                return response

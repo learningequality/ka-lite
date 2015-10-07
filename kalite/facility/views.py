@@ -189,8 +189,6 @@ def group_edit(request, facility, group_id):
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
-#@ensure_csrf_cookie
-#csrf_protect
 @render_to("facility/facility_test2.html")
 def config_settings(request):
     """
@@ -198,8 +196,6 @@ def config_settings(request):
     """
     print "------------------facility/views.py::config_settings-----------------------"    
     print request.POST.get("username")
-#    return HttpResponse("reached kalite/facility/views:: config_settings")
-#    return HttpResponse(request.META)
 
     return HttpResponse(request.POST.get("username")) 
     """

@@ -86,7 +86,6 @@ def learn(request):
 
 
 @check_setup_status
-@decorator_from_middleware(SetupCheck)
 @render_to("distributed/homepage.html")
 def homepage(request):
     """
