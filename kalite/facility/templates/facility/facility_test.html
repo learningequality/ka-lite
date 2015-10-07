@@ -1,29 +1,23 @@
-{% extends "distributed/base_test.html" %}
+{% extends "distributed/base.html" %}
 
+{% block content %}
 
-
-{% block test %}
-
-<h2> block test, inside facility_test.html </h2>
-
+<form action="/facility/edit_config/" method="POST">
+    {% csrf_token %}
     {% if database %}
-        <h3> database exists </h3>
+        <h1> hey, database exists. wanna keep? </h1>
+        <input type="radio" name="database" value="yes"> Yes<br>
+        <input type="radio" name="database" value="no"> No<br><br>
+    {% else %}
+        <h1> hey, database DNE. </h1>
     {% endif %}
-{% endblock test %}
 
+    2) Please choose a username and password for the admin account.<BR>
 
+    Username: <input type="text" name="username"></input><br>
+    Password: <input type="text" name="password"></input><br>
+    Re-type Password: <input type="text" name="retype_password"></input><br><br>
 
-
-
-
-
-
-
-
-
-
-
-{% if database %}
-    <h1> hey, database exists. </h1>
-
-{% endif %}
+    <button type="submit" value="Submit">Submit</button>
+</form>
+{% endblock content %}

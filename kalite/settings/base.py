@@ -364,8 +364,8 @@ MIDDLEWARE_CLASSES = [
     'kalite.distributed.middleware.LockdownCheck',
     'kalite.student_testing.middleware.ExamModeCheck',
     'django.middleware.gzip.GZipMiddleware',
-    'django_snippets.session_timeout_middleware.SessionIdleTimeout',
-    'kalite.facility.middleware.ConfigCheck'
+    'django_snippets.session_timeout_middleware.SessionIdleTimeout'
+    #'kalite.facility.middleware.ConfigCheck'
 ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
 
 TEMPLATE_CONTEXT_PROCESSORS = [

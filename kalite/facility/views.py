@@ -191,17 +191,17 @@ def group_edit(request, facility, group_id):
 
 #@ensure_csrf_cookie
 #csrf_protect
-@render_to("facility/download_assessment.html")
+@render_to("facility/facility_test2.html")
 def config_settings(request):
     """
     request: request body containing form information from user
     """
-    
-    c = {}
-    c.update( csrf(request) )
-    #return render_to_response("download_assessment.html", c)
-    return c
+    print "------------------facility/views.py::config_settings-----------------------"    
+    print request.POST.get("username")
+#    return HttpResponse("reached kalite/facility/views:: config_settings")
+#    return HttpResponse(request.META)
 
+    return HttpResponse(request.POST.get("username")) 
     """
     if request.database == 'delete':
         # REMOVE DATABASE INFO  

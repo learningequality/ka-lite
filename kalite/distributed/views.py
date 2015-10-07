@@ -19,6 +19,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError, HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from django.utils.decorators import decorator_from_middleware
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -29,6 +30,7 @@ from kalite.topic_tools.content_models import search_topic_nodes
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
+from kalite.distributed.middleware import SetupCheck
 from kalite.topic_tools.settings import CHANNEL, LOAD_KHAN_RESOURCES
 import json
 
@@ -84,6 +86,7 @@ def learn(request):
 
 
 @check_setup_status
+@decorator_from_middleware(SetupCheck)
 @render_to("distributed/homepage.html")
 def homepage(request):
     """

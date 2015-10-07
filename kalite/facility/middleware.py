@@ -16,7 +16,7 @@ from .models import Facility
 FACILITY_CACHE_STALE = False
 
 @render_to("facility/facility_test.html")
-def does_database_exist(request):
+def config_form(request):
     """
     Detect if there is an existing database file on server. If database exists,
     will render form that prompts user to keep or delete existing database.
@@ -29,9 +29,8 @@ def does_database_exist(request):
                     and settings.DATABASES["default"]["NAME"]) or None
 
     if database_file and os.path.exists(database_file):
-        print "database file exists! returning true?"
         return  { "database": True }
-    print "database does not exist, returning False..."
+
     return { "database" : False }
 
 def is_configured():
@@ -120,6 +119,7 @@ class ConfigCheck:
             if response['Content-Type'].split(';')[0] == 'text/html':
                 print "text/html is recognized as content-type"
                 test = does_database_exist(request)
+                print "back inside process response, response = "
                 return test
 
         else:

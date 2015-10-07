@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
+
+from kalite.facility.middleware import is_configured, config_form
 
 
 class LockdownCheck:
@@ -16,3 +19,15 @@ class LockdownCheck:
             and not request.path.startswith(settings.STATIC_URL)):
 
             raise PermissionDenied()
+
+class SetupCheck:
+    def process_response(self, request, response):
+
+        if is_configured():
+            return HttpResponse("distributed/middleware::SetupCheck -- is configured")
+        
+        form = config_form(request)
+        return form
+
+
+
