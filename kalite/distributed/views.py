@@ -30,7 +30,6 @@ from kalite.topic_tools.content_models import search_topic_nodes
 from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
-from kalite.distributed.middleware import SetupCheck
 from kalite.topic_tools.settings import CHANNEL, LOAD_KHAN_RESOURCES
 import json
 
