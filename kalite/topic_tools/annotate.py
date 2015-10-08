@@ -30,14 +30,15 @@ def update_content_availability(content_list, language="en"):
     # Loop through all content items and put thumbnail urls, content urls,
     # and subtitle urls on the content dictionary, and list all languages
     # that the content is available in.
+
+    # turn this whole function into a generator
     try:
         contents_folder = os.listdir(django_settings.CONTENT_ROOT)
     except OSError:
         contents_folder = []
 
     subtitle_langs = {}
-
-    updates = {}
+    updates = set()
 
     if os.path.exists(i18n.get_srt_path()):
         for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
@@ -64,7 +65,6 @@ def update_content_availability(content_list, language="en"):
         exercise_templates = []
 
     for content in content_list:
-
         # Some nodes are duplicated, but they require the same information
         # regardless of where they appear in the topic tree
         if content.get("id") not in updates:
@@ -77,9 +77,7 @@ def update_content_availability(content_list, language="en"):
                     continue
                 elif content.get("uses_assessment_items", False):
                     items = []
-
                     assessment_items = content.get("all_assessment_items", [])
-
                     for item in assessment_items:
                         item = json.loads(item)
                         if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
@@ -150,6 +148,6 @@ def update_content_availability(content_list, language="en"):
                 update["available"] = False
 
         # Path is the only unique key available.
-        updates[content.get("path")] = update
-
-    return updates
+        updates.update(content.get("id"))
+    
+    yield content.get("path"),update

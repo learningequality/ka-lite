@@ -16,12 +16,14 @@ import os
 import json
 
 import sqlite3
-
+import itertools
 from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn
 from playhouse.shortcuts import model_to_dict
+from . import settings
 
 from .settings import CONTENT_DATABASE_PATH, CHANNEL
 from .annotate import update_content_availability
+
 
 # This BaseItem is used to subclass different Models for different languages.
 # This allows us to use a separate database for each language, so that we
@@ -394,6 +396,7 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
     Our ids can be duplicated at the moment, so this may be several content items per id.
     When a content item has been updated, propagate availability up the topic tree.
     """
+
     def iterator_content_items(ids=None, **kwargs):
         if ids:
             items = Item.select().where(Item.id.in_(ids)).dicts().iterator()
@@ -401,10 +404,9 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
             items = Item.select().dicts().iterator()
 
         mapped_items = itertools.imap(unparse_model_data, items)
-
         updated_mapped_items = update_content_availability(mapped_items)
 
-        for path, _update in updated_mapped_items.iteritems():
+        for path, update in updated_mapped_items:
             yield path, update
 
     with Using(db, [Item]):
@@ -428,8 +430,9 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
             for path, update in content_models:
                 if update:
                     # We have duplicates in the topic tree, make sure the stamping happens to all of them.
+                    
                     items = Item.select().where((Item.path == path) & (Item.kind != "Topic"))
-
+                    Item.update("available", True).where((Item.path == path) & (Item.kind != "Topic"))
                     for item in items:
         
                         recurse_availability_up_tree(item, update.get("available", False))

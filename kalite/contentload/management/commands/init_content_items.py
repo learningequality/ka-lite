@@ -21,6 +21,7 @@ from kalite.contentload.utils import dedupe_paths
 
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH, CHANNEL_DATA_PATH
 
+
 from kalite import i18n
 from django.utils.translation import gettext as _
 
