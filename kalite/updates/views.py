@@ -1,3 +1,5 @@
+import sys
+
 from annoying.decorators import render_to
 
 from django.utils.translation import ugettext as _, ugettext_lazy
@@ -32,7 +34,7 @@ def update_videos(request, max_to_show=4):
     if getattr(settings, 'USING_RASPBERRY_PI', False):
         messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download less than 25 videos at a time.'))
 
-    if DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+    if DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP or sys.platform == 'darwin':
         messages.warning(request, _('After video download, the server must be restarted for them to be available to users.'))
     context.update({
         "video_count": VideoFile.objects.filter(percent_complete=100).count(),

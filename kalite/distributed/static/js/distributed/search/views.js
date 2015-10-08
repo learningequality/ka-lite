@@ -5,7 +5,7 @@ var api = require("../utils/api");
 var messages = require("utils/messages");
 var sprintf = require("sprintf-js").sprintf;
 
-require("../../../css/distributed/search_autocomplete.css");
+require("../../../css/distributed/search_autocomplete.less");
 
 var SearchBarTemplate = require("./hbtemplates/search-bar.handlebars");
 var SearchBarItemTemplate = require("./hbtemplates/search-item.handlebars");
@@ -90,7 +90,7 @@ var AutoCompleteView = BaseView.extend({
         this.$el.html(this.template({search_url: window.Urls.search()}));
 
         this.$("#search").autocomplete({
-            autoFocus: true,
+            autoFocus: false,
             minLength: 3,
             appendTo: ".navbar-collapse",
             html: true,  // extension allows html-based labels

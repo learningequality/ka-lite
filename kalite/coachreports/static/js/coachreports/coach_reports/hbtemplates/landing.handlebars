@@ -1,10 +1,10 @@
 <div id="coach_report_wrapper">
 	<div id="summary_mainview">
 		<h1 class="status_name">{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}{{#if data.learner_events }}<button id="show_tabular_report" class="btn btn-success pull-right">{{_ "Show Tabular Report" }}</button>{{/if}}</h1>
-		<div id="radial_chartblock">
-			<div id="chartcontainer">
-				<h3>{{#if start_date}}{{ start_date }}{{#if end_date }} → {{ end_date }}{{/if}}{{else}}{{_ "This week" }}{{/if}}</h3>
-				<div class="circlechart">
+		<h3>{{#if start_date}}{{ start_date }}{{#if end_date }} → {{ end_date }}{{/if}}{{else}}{{_ "This week" }}{{/if}}</h3>
+		<div id="radial_chartblock" class="container">
+			<div id="chartcontainer" class="row">
+				<div class="circlechart" class="col-sm-4">
 					<div id="full_circle1">
 						<p id="full_circle1_p"></p>
 					</div>
@@ -12,7 +12,7 @@
 						{{_ "Hours spent on content vs total hours logged" }}
 					</div>
 				</div>
-				<div class="circlechart">
+				<div class="circlechart" class="col-sm-4">
 					<div id="full_circle2">
 						<p>{{#if data.exercise_mastery }}{{ data.exercise_mastery }} %{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>
@@ -20,7 +20,7 @@
 						{{_ "Average progress in exercises" }}
 					</div>
 				</div>
-				<div class="circlechart">
+				<div class="circlechart" class="col-sm-4">
 					<div id="full_circle3">
 						<p>{{#if data.exercise_attempts }}{{ data.exercise_attempts }}{{else}}{{_ "N/A" }}{{/if}}</p>
 					</div>

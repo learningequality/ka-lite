@@ -270,10 +270,13 @@ def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="
 
 
 def softload_sqlite_cache(cache_filepath, raises=False):
+    from django.conf import settings
+    logging = settings.LOG
 
     try:
         return SqliteDict(cache_filepath)
-    except Exception:
+    except Exception as e:
+        logging.error("Error loading sqlite content cache: %s" % e)
         if raises:
             raise
         else:
