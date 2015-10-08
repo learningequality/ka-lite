@@ -10,7 +10,8 @@ You don't need to uninstall your old KA Lite installation first.
 Mac/OSX
 =======
 
-**Note:** The latest OSX version (EL Capitan) is not yet supported.
+.. note::
+    The latest OSX version (EL Capitan) is not yet supported.
 
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
 #. After the download is complete, double click the .dmg file.
