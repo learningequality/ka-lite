@@ -146,7 +146,8 @@ else:
 # ...OR it's been installed in:
 # sys.prefix/share/kalite/content
 # sys.prefix/share/kalite/locales
-
+#
+# It's NOT user-writable -- requires privileges, so any writing must be done at install time.
 
 _data_path_channels = os.path.join(_data_path, 'data')
 

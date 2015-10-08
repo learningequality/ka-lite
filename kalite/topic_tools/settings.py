@@ -32,6 +32,11 @@ TOPICS_FILEPATHS = {
 }
 EXERCISES_FILEPATH = os.path.join(CHANNEL_DATA_PATH, "exercises.json")
 CONTENT_FILEPATH = os.path.join(CHANNEL_DATA_PATH, "contents.json")
-CONTENT_CACHE_FILEPATH = os.path.join(CHANNEL_DATA_PATH, "contents.sqlite")
+
+# User needs write access, since this is generated at runtime. So, put in user data space.
+__cache_data_path = os.path.join(settings.USER_DATA_ROOT, "channel_cache_data")
+if not os.path.exists(__cache_data_path):
+    os.mkdir(__cache_data_path)
+CONTENT_CACHE_FILEPATH = os.path.join(__cache_data_path, "contents.sqlite")
 
 TOPIC_RECOMMENDATION_DEPTH = 3
