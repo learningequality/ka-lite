@@ -1,3 +1,18 @@
+0.14.2:
+  release_date: "2015/10/02"
+  git_commit: "dceccca"
+  new_features:
+    all: []
+    students:
+    coaches: []
+    admins: []
+  bugs_fixed:
+    all:
+      Properly compare language pack versions (#4587).
+    students: []
+    coaches: []
+    admins: []
+
 0.14.1:
   release_date: "2015/10/02"
   git_commit: "0818d65"
