@@ -10,6 +10,8 @@ require("../perseus/lib/mathquill/mathquill-basic.js");
 require("../perseus/lib/mathquill/mathquill.css");
 require("../perseus/lib/kas.js");
 global.Jed = require("jed");
+require("../perseus/ke/local-only/i18n");
+global.$._ = gettext;
 require("qtip2");
 
 var KhanUtil = window.KhanUtil || {};
