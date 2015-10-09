@@ -10,17 +10,11 @@ You don't need to uninstall your old KA Lite installation first.
 Mac/OSX
 =======
 
-.. note::
-    The latest OSX version (EL Capitan) is not yet supported.
+.. warning:: The latest OSX version (EL Capitan) is not yet supported.
 
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
 #. After the download is complete, double click the .dmg file.
 #. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
-
-    .. note::
-        To upgrade an existing KA Lite installation, download the new installer and then drag it over to the "Applications"
-        folder to replace the existing "KA-Lite-Monitor" application.
-        Give confirmation to overwrite the existing app. Then proceed from this step as usual.
 #. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
 #. On first load, it will check your current environment and show the Preferences dialog.
 #. Input your preferred admin username and password, then click the Apply button in ``KA-Lite Preferences`` dialog.
@@ -39,6 +33,15 @@ If the sidebar shows entries that are greyed-out, the child items of the entry m
 #. Restart the server, login to the web app, then check the sidebar contents.
 
 This will enable the greyed-out assessment items on the sidebar.
+
+To upgrade an existing KA Lite installation.
+
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
+#. After the download is complete, double click the .dmg file.
+#. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
+#. Give confirmation to overwrite the existing app.
+#. Launch KA-Lite Monitor from your Applications folder.
+
 
 Linux
 =====
