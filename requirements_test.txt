@@ -1,4 +1,5 @@
 -r requirements.txt
+pyyaml==3.11
 behave==1.2.4
 selenium==2.45.0
 pysparklines==0.9
