@@ -7,18 +7,23 @@ include README.rst
 include setup.cfg
 include requirements.txt
 
-recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.mo *.po *.otf *.svg *.woff *.eot *.ttf *.zip *.json *.handlebars
+recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.otf *.svg *.woff *.eot *.ttf *.zip *.json *.handlebars
 
+# This can be a huge problem when creating an sdist from
+# a local development environment
 recursive-exclude kalite/static *
 
-exclude kalite/local_settings.py
-exclude kalite/settings/local_settings.py
-exclude kalite/private_key.pem
-exclude kalite/secrets.py
+# Not doing this anymore
+# exclude kalite/local_settings.py
+# exclude kalite/settings/local_settings.py
+# exclude kalite/private_key.pem
+# exclude kalite/secrets.py
 
 # Data files, these are not picked up by sdist unless listed here
 recursive-include python-packages *
 recursive-include static-libraries *
 recursive-include data *
 
+# Necessary because it's a data directory so they
+# do not get automatically excluded
 recursive-exclude python-packages *pyc

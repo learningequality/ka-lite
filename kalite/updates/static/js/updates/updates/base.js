@@ -148,7 +148,7 @@ function updatesCheck(process_name, interval) {
                     messages.clear_messages();
                     messages.show_message("success", message);
                     if (process_callbacks[process_name] && process_callbacks[process_name]["completed"]) {
-                        process_callbacks[process_name]["completed"](process_log);
+                        process_callbacks[process_name]["completed"](progress_log);
                     }
                     updatesReset(process_name);
                 } else if (progress_log.completed && progress_log.stage_status == "cancelled") {

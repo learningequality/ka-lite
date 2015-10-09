@@ -358,10 +358,9 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
     # If group_id exists, extract data for that group
     if group_id:
         if group_id == ungrouped_id:
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _(UNGROUPED))
+            group_data = group_data[None]
         else:
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
-        group_data = group_data.values()[group_id_index]
+            group_data = group_data[group_id]
     else:
         group_data = {}
 

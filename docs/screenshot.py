@@ -23,11 +23,6 @@ KALITECTL_PATH = os.path.realpath(os.path.join(os.path.dirname(os.path.abspath(_
 SCREENSHOT_COMMAND = [sys.executable, KALITECTL_PATH, "manage", "screenshots", "--settings=kalite.project.settings.screenshots"]
 SCREENSHOT_COMMAND_OPTS = ["-v0", "--output-dir={0}".format(OUTPUT_PATH)]
 # These keys are css styles but they need to be camelCased
-FOCUS_CSS_STYLES = { "borderStyle": "solid",
-                     "borderColor": "red",
-                     "borderWidth": "4px",
-                     "borderRadius": "8px",
-                   }
 
 def setup(app):
     app.add_directive('screenshot', Screenshot)
@@ -319,7 +314,6 @@ class Screenshot(Image):
         if hasattr(self, "focus_selector"):
             new_arg["focus"] = {}
             new_arg["focus"]["selector"] = self.focus_selector
-            new_arg["focus"]["styles"] = FOCUS_CSS_STYLES
             # replace whitespace with an escape character, so that it can be passed on the command line
             new_arg["notes"] = re.sub(r"\s", "\s", self.focus_annotation) if hasattr(self, "focus_annotation") else ""
         new_arg["registered"] = self.options["registered"]
