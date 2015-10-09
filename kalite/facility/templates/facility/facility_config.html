@@ -1,48 +1,61 @@
 {% extends "distributed/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
 
+{% block content %}
+
+<!-- <form action="/facility/edit_config/" method="POST"> -->
+<form action="/facility/db_config/" method="POST">
+    {% csrf_token %}
+    {% if database %}
+        <h4> hey, database exists. wanna keep? </h4>
+        <input type="radio" name="database" value="yes"> Yes<br>
+        <input type="radio" name="database" value="no"> No<br><br>
+    {% endif %}
+
+    <div id="delete-db-form">
+        <h4>2) Please choose a username and password for the admin account.</h4><BR>
+
+        Username: <input type="text" name="username"></input><br>
+        Password: <input type="text" name="password"></input><br>
+        Re-type Password: <input type="text" name="retype_password"></input><br><br>
+
+        <h4>3) Please enter a hsotname for this server. If left blank, it will default to ...</h4><BR>
+        Hostname: <input type="text" name="hostname"></input><br><br>
+
+        <h4>4) Please enter a one-line description for this server (optional). </h4><BR>
+        Description: <input type="text" name="description"></input><br><br>
+    </div>
+
+
+
+    <div class="progress-bar" role="progressbar" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100">66%
+    </div>
+    <button type="submit" value="Submit">Next</button>
+</form>
+
+
+<!-- loads form depending on what option you select, will migrate this later? -->
 <script>
-    var test = function(){ 
-        console.log("clicked");
-        $.post({
-            url: "/facility/edit_config",
-            data: {
-                "database": "yes",
-            }
-        });
-    };
+$('#delete-db-form').hide();
+$('.progress-bar').hide();
+$("input[name='database']").change(function() {
+    // If user wants to delete database, allow configuration 
+    // of admin account and server hostname/description
+    if ( $(this).val() == 'no' ) {
+        $('#delete-db-form').show();
+    }
+    else { 
+        $('#delete-db-form').hide();
+    }
+
+});
+
+$("input[type='submit']").on('click', function(){
+    console.log("submit clicked");
+    $('.progress-bar').show();
+});
 
 </script>
-
-{% if database %}
-    1) A database exists. Would you like to keep the current existing file?
-{% endif %}
-<div>
-    {% csrf_token %}
-    <input type="radio" name="database" value="yes"> Yes
-    <input type="radio" name="database" value="no"> No
-
-    <br><br>
-
-    2) Please choose a username and password for the admin account on this device. You must remember this login information, as you will need to enter it to administer this installation of KA Lite. <br>
-
-    Username: <input type="text" name="username"></input> <br>
-    Password: <input type="text" name="password"></input> <br>
-    Re-type password: <input type="text" name="retype_password"></input><br><br>
-
-    3) Please enter a hostname for this server. If left blank, it will default to: xxxx.<br>
-    Hostname: <input type="text" name="hostname"></input><br><br>
-
-    4) Please enter a one-line description for this server (optional).<br>
-    Description: <input type="text" name="hostname"></input><br><br>
-
-    5) Do you wish to download the assessment items package now? <br>
-
-    <input type="radio" name="dl_assess" value="yes"> Yes<br>
-    <input type="radio" name="dl_assess" value="no"> No<br>
-    
-    <button type="submit" value="Submit" onclick=test>Submit</button>
-</div>
-
-
-
+{% endblock content %}
 

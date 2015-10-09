@@ -7,6 +7,7 @@ from securesync.devices.views import *  # ARGH! TODO(aron): figure out what thin
 from django import forms
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden, HttpResponse
@@ -189,15 +190,18 @@ def group_edit(request, facility, group_id):
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
-@render_to("facility/facility_test2.html")
-def config_settings(request):
+@render_to("facility/facility_config2.html")
+def edit_config(request):
     """
     request: request body containing form information from user
     """
-    print "------------------facility/views.py::config_settings-----------------------"    
-    print request.POST.get("username")
+    print request.POST
 
-    return HttpResponse(request.POST.get("username")) 
+
+    return {
+        "username" : request.POST.get("username")
+    }
+    #return HttpResponse(request.POST.get("username")) 
     """
     if request.database == 'delete':
         # REMOVE DATABASE INFO  
@@ -218,3 +222,30 @@ def config_settings(request):
         # CHANGE ADMIN PASSWORD 
         call_command("changepassword")
     """
+
+def db_config(request):
+    """
+    Calls command to configure database, admin account, and server info
+    """
+    print "---------------db_config-------------------"
+    print request.POST
+    print "user object?"
+
+    if request.POST.get('database') == 'no':
+        print "DELETE database"
+        
+        if request.POST.get('username') == '':
+            print "user wishes to set default username"
+            user.username = 'Default'
+            getpass.getuser().replace("-", "_")
+
+        else:
+            print "user wants to set username"
+            User.objects.create_superuser(username=request.POST.get('username'),
+                                          password=request.POST.get('password'),
+                                          email='')
+            print "created new superuser i hope"
+        user.save()
+        print "USERNAME = " + user.username
+
+    return None

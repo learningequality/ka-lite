@@ -1,0 +1,30 @@
+{% extends "distributed/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block content %}
+
+    {% csrf_token %}
+    <h4>5) Would you like to download assessment items now? (You can always download later by going to the 'Manage' tab while logged in as an admin)</h4><BR>
+    <input type="radio" name="download-items" value="yes">Yes</input><br>
+    <input type="radio" name="download-items" value="no">No</input><br>
+    <button type="Submit" id="btn">Next</button><BR><BR><BR>
+
+    <div id="temp">
+        <h1> yay downloading progress bar ........ </h1>
+    </div>
+    <script>
+        $('#temp').hide();
+
+        $('#btn').on('click', function() {
+            
+            console.log("button eing clicked");
+            if ( $("input[name='download-items'][value='yes']").is(':checked') ) {
+                $('#temp').show();
+            }
+            else 
+                $('#temp').hide();
+        });
+    </script>
+
+{% endblock content %}

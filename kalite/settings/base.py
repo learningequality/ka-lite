@@ -358,14 +358,14 @@ MIDDLEWARE_CLASSES = [
     'fle_utils.django_utils.middleware.GetNextParam',
     'kalite.facility.middleware.AuthFlags',
     'kalite.facility.middleware.FacilityCheck',
+    'kalite.facility.middleware.ConfigCheck',
     'securesync.middleware.RegisteredCheck',
     'securesync.middleware.DBCheck',
     'django.middleware.common.CommonMiddleware',
     'kalite.distributed.middleware.LockdownCheck',
     'kalite.student_testing.middleware.ExamModeCheck',
     'django.middleware.gzip.GZipMiddleware',
-    'django_snippets.session_timeout_middleware.SessionIdleTimeout',
-    'kalite.facility.middleware.ConfigCheck'
+    'django_snippets.session_timeout_middleware.SessionIdleTimeout'
 ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
 
 TEMPLATE_CONTEXT_PROCESSORS = [

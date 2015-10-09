@@ -5,6 +5,7 @@ import os
 from annoying.decorators import render_to
 
 from django.conf import settings
+from django.db import DatabaseError
 from django.db.models import signals
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
@@ -15,7 +16,7 @@ from .models import Facility
 
 FACILITY_CACHE_STALE = False
 
-@render_to("facility/facility_test.html")
+@render_to("facility/facility_config.html")
 def config_form(request):
     """
     Detect if there is an existing database file on server. If database exists,
@@ -38,10 +39,13 @@ def is_configured():
     Checks whether a system has been configured. For now, it simply 
     checks if a superuser exists.
     """
+    print "is_configured--------------------------"
     try:
         u = User.objects.get(is_superuser=True)
+    #except (ObjectDoesNotExist, DatabaseError) as e:
     except ObjectDoesNotExist:
         return False
+
 
     return True
 
@@ -107,14 +111,11 @@ class ConfigCheck:
         Display configuration modal if facility does not have all of the
         required settings yet.
         """
-        if request.path == '/data/khan/images/horizontal-logo-small.png':
-            import pdb; pdb.set_trace();
-        # Do not intercept request for form submission
-        if request.path != '/facility/edit_config/' :
 
-            if response['Content-Type'].split(';')[0] == 'text/html':
-                print "text/html is recognized as content-type"
+        # Only intercept text/html responses
+        if response['Content-Type'].split(';')[0] == 'text/html':
+        
+            if not is_configured() and request.path != '/facility/edit_config/':
                 form = config_form(request)
                 return form
-            else:
-                return response
+        return response
