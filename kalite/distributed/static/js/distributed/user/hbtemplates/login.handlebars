@@ -19,14 +19,14 @@
             <div class="form-group form-group-lg" id="id_username-container">
               <label class="sr-only control-label h3" for="id_username" id="id_username-addon">{{_ "Username" }}</label>
               <div class="log-input">
-                <input type="text" class="form-control input-lg" id="id_username" placeholder="Username" aria-describedby="id_username-addon">
+                <input type="text" class="form-control input-lg" id="id_username" placeholder={{_ "Username" }} aria-describedby="id_username-addon">
               </div>
             </div>
             </br>
             <div class="form-group form-group-lg" id="id_password-container" {{#if simplified_login}}style="display: none;"{{/if}}>
               <label class="sr-only control-label h3" for="id_password" id="id_password-addon">{{_ "Password" }}</label>
               <div class="log-input">
-                <input type="password" class="form-control input-lg" id="id_password" placeholder="Password" aria-describedby="id_password-addon">
+                <input type="password" class="form-control input-lg" id="id_password" placeholder={{_ "Password" }} aria-describedby="id_password-addon">
               </div>
             </div>
             </br>

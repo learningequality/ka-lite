@@ -9,8 +9,8 @@ from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
 from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
-from kalite.topic_tools import get_exercise_data, get_content_data, get_assessment_item_data
 from kalite.topic_tools.settings import CHANNEL
+from kalite.topic_tools import get_exercise_data, get_content_data, get_assessment_item_data
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 

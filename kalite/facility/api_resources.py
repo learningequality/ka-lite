@@ -54,7 +54,7 @@ class FacilityUserResource(ModelResource):
         }
         exclude = ["password"]
 
-    def override_urls(self):
+    def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/login%s$" %
                 (self._meta.resource_name, trailing_slash()),
@@ -211,4 +211,3 @@ class FacilityUserResource(ModelResource):
             data["username"] = request.user.username
 
         return data
-

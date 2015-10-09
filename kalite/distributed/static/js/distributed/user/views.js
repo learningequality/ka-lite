@@ -526,14 +526,14 @@ ToggleNavbarView = BaseView.extend ({
         if ( !this.model.get("is_logged_in") ) {
             return; // If not logged in, the needed elements won't exist.
         }
-        var data_toggle = document.getElementById("user-name-a");
-        var menu = document.getElementById("user-name");
+        var data_toggle = this.$("#user-name-a");
+        var menu = this.$("#user-name");
         if ( $('body').innerWidth() <= 750 ) {
-            data_toggle.removeAttribute("data-toggle");
-            menu.classList.add("open");
+            data_toggle.removeAttr("data-toggle");
+            menu.addClass("open");
         } else {
-            data_toggle.setAttribute("data-toggle", "dropdown");
-            menu.classList.remove("open");
+            data_toggle.attr("data-toggle", "dropdown");
+            menu.removeClass("open");
         }
     }
 
