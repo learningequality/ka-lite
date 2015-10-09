@@ -45,8 +45,6 @@ def step_impl(context, expected_num):
 @then("an element is highlighted")
 def step_impl(context):
     elem = find_css_class_with_wait(context, HIGHLIGHTED_CLASS)
-    assert elem is not None, "Couldn't find a highlighted element on the page."
-    assert elem.is_displayed(), "The highlighted element exists but is not visible."
 
 
 @then("the modal has a \"next\" button")
