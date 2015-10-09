@@ -14,6 +14,7 @@ Mac/OSX
 
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
 #. After the download is complete, double click the .dmg file.
+#. Click the agree button to accept the LECENSE agreement.
 #. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
 #. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
 #. On first load, it will check your current environment and show the Preferences dialog.
@@ -38,6 +39,7 @@ To upgrade an existing KA Lite installation.
 
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
 #. After the download is complete, double click the .dmg file.
+#. Click the agree button to accept the LECENSE agreement.
 #. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
 #. Give confirmation to overwrite the existing app.
 #. Launch KA-Lite Monitor from your Applications folder.
