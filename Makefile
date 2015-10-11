@@ -75,7 +75,7 @@ docs:
 	$(MAKE) -C docs html
 	# open docs/_build/html/index.html
 
-assets: clean
+assets:
 	# Necessary because NPM may have wrong versions in the cache
 	npm cache clean
 	npm install --production
