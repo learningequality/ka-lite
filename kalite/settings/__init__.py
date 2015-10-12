@@ -25,7 +25,7 @@ ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/%s/co
 from .base import *
 
 
-CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
+CHERRYPY_PORT = HTTP_PORT
 
 ########################
 # IMPORTANT: Do not add new settings below this line
