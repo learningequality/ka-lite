@@ -862,568 +862,588 @@
   {
     "entries": [
       {
-        "entity_id":"Week 19",
-        "entity_kind":"Divider",
+        "entity_id": "/v/introduction-to-fractions/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id":"/v/figuring-out-days-of-the-week/",
-        "entity_kind":"Video",
+        "entity_id": "/e/recognizing_fractions_0.5/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 1
       },
       {
-        "entity_id":"/v/telling-time-exercise-example-1/",
-        "entity_kind":"Video",
+        "entity_id": "/v/numerator-and-denominator-of-a-fraction/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 2
       },
       {
-        "entity_id":"/v/telling-time-exercise-example-2/",
-        "entity_kind":"Video",
+        "entity_id": "/e/recognizing_fractions/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 3
       },
       {
-        "entity_id":"/e/telling_time_0.5/",
-        "entity_kind":"Exercise",
+        "entity_id": "/v/fractions-with-like-denominators-numerators",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 4
       },
       {
-        "entity_id":"Week 20",
-        "entity_kind":"Divider",
+        "entity_id": "/v/comparing-fractions-with-greater-than-and-less-than-symbols/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 5
       },
       {
-        "entity_id":"/e/telling_time/",
-        "entity_kind":"Exercise",
+        "entity_id": "/e/comparing_fractions_1/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 6
       },
       {
-        "entity_id":"/e/telling_time_2/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 7
-      }
-    ],
-    "id": "g4_p12",
-    "show": false,
-    "tag": "Grade 4",
-    "title": "Playlist 12: Telling time"
-  },
-  {
-    "entries": [
-      {
-        "entity_id":"Week 21",
-        "entity_kind":"Divider",
-        "is_essential": true,
-        "sort_order": 0
-      },
-      {
-        "entity_id":"/v/introduction-to-fractions/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 1
-      },
-      {
-        "entity_id":"/v/identifying-fraction-parts/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 2
-      },
-      {
-        "entity_id":"/v/recognizing-fractions-exercise/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 3
-      },
-      {
-        "entity_id":"/e/recognizing_fractions_0.5/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 4
-      },
-      {
-        "entity_id":"/v/numerator-and-denominator-of-a-fraction/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 5
-      },
-      {
-        "entity_id":"/e/recognizing_fractions/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 6
-      },
-      {
-        "entity_id":"/v/plotting-basic-fractions-on-the-number-line/",
-        "entity_kind":"Video",
+        "entity_id": "/e/comparing_fractions_2/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 7
       },
       {
-        "entity_id":"/e/fractions_on_the_number_line_1/",
-        "entity_kind":"Exercise",
+        "entity_id": "/e/ordering_fractions/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 8
       },
       {
-        "entity_id":"/v/fraction-word-problems-1-exercise/",
-        "entity_kind":"Video",
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
         "is_essential": true,
         "sort_order": 9
       },
       {
-        "entity_id":"/e/fraction_word_problems_1/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 10
-      }
-    ],
-    "id": "g4_p13",
-    "show": false,
-    "tag": "Grade 4",
-    "title": "Playlist 13: Understanding fractions"
-  },
-  {
-    "entries": [
-      {
-        "entity_id":"Week 22",
-        "entity_kind":"Divider",
-        "is_essential": true,
-        "sort_order": 0
-      },
-      {
-        "entity_id":"/v/visualizing-equivalent-fractions/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 1
-      },
-      {
-        "entity_id":"/v/equivalent-fraction-word-problem-example/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 2
-      },
-      {
-        "entity_id":"/v/equivalent-fraction-word-problem-example-2/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 3
-      },
-      {
-        "entity_id":"/v/equivalent-fraction-word-problem-example-3/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 4
-      },
-      {
-        "entity_id":"/v/fractions-cut-and-copy-1-exercise/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 5
-      },
-      {
-        "entity_id":"/e/fractions_cut_and_copy_1/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 6
-      },
-      {
-        "entity_id":"/v/comparing-fractions-with-greater-than-and-less-than-symbols/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 7
-      },
-      {
-        "entity_id":"/v/fractions-with-like-denominators-numerators/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 8
-      },
-      {
-        "entity_id":"/v/comparing-fractions/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 9
-      },
-      {
-        "entity_id":"/e/comparing_fractions_1/",
-        "entity_kind":"Exercise",
+        "entity_id": "/v/adding-fractions-with-like-denominators/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 10
       },
       {
-        "entity_id":"/v/decomposing-a-fraction-visually/",
-        "entity_kind":"Video",
+        "entity_id": "/v/adding-fractions-word-problem-1/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 11
       },
       {
-        "entity_id":"/v/decomposing-a-mixed-number/",
-        "entity_kind":"Video",
+        "entity_id": "/e/adding_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 12
       },
       {
-        "entity_id":"/v/adding-up-to-a-fraction-drag-and-drop-example/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 13
-      }
-    ],
-    "id": "g4_p14",
-    "show": false,
-    "tag": "Grade 4",
-    "title": "Playlist 14: Visualizing, comparing & decomposing fractions"
-  },
-  {
-    "entries": [
-      {
-        "entity_id":"Week 23",
-        "entity_kind":"Divider",
-        "is_essential": true,
-        "sort_order": 0
-      },
-      {
-        "entity_id":"/v/adding-fractions-with-like-denominators/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 1
-      },
-      {
-        "entity_id":"/v/subtracting--fractions/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 2
-      },
-      {
-        "entity_id":"/v/adding-and-subtracting-fractions/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 3
-      },
-      {
-        "entity_id":"/e/adding_fractions_with_common_denominators/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 4
-      },
-      {
-        "entity_id":"/e/subtracting_fractions_with_common_denominators/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 5
-      },
-      {
-        "entity_id":"/v/comparing-improper-fractions-and-mixed-numbers/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 6
-      },
-      {
-        "entity_id":"/e/comparing_improper_fractions_and_mixed_numbers/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 7
-      },
-      {
-        "entity_id":"/v/mixed-numbers-and-improper-fractions/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 8
-      },
-      {
-        "entity_id":"/v/proper-and-improper-fractions/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 9
-      },
-      {
-        "entity_id":"Week 24",
-        "entity_kind":"Divider",
-        "is_essential": true,
-        "sort_order": 10
-      },
-      {
-        "entity_id":"/v/converting-mixed-numbers-to-improper-fractions/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 11
-      },
-      {
-        "entity_id":"/e/converting_mixed_numbers_and_improper_fractions/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 12
-      },
-      {
-        "entity_id":"/v/changing-a-mixed-number-to-an-improper-fraction/",
-        "entity_kind":"Video",
+        "entity_id": "/v/adding-up-to-a-fraction-drag-and-drop-example/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 13
       },
       {
-        "entity_id":"/v/changing-an-improper-fraction-to-a-mixed-number/",
-        "entity_kind":"Video",
+        "entity_id": "/v/subtracting--fractions/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 14
       },
       {
-        "entity_id":"/v/postive-improper-fractions-on-the-number-line/",
-        "entity_kind":"Video",
+        "entity_id": "/v/subtracting-fractions-word-problem-1/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 15
       },
       {
-        "entity_id":"/e/fractions_on_the_number_line_2/",
-        "entity_kind":"Exercise",
+        "entity_id": "/e/subtracting_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 16
       },
       {
-        "entity_id":"/v/ordering-improper-fractions-and-mixed-numbers/",
-        "entity_kind":"Video",
+        "entity_id": "/v/proper-and-improper-fractions/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 17
       },
       {
-        "entity_id":"/e/ordering_improper_fractions_and_mixed_numbers/",
-        "entity_kind":"Exercise",
+        "entity_id": "/v/decomposing-a-mixed-number/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 18
       },
       {
-        "entity_id":"/v/fractions-cut-and-copy-2-exercise-example/",
-        "entity_kind":"Video",
+        "entity_id": "Week 3",
+        "entity_kind": "Divider",
         "is_essential": true,
         "sort_order": 19
       },
       {
-        "entity_id":"/v/adding-mixed-numbers/",
-        "entity_kind":"Video",
+        "entity_id": "/v/changing-an-improper-fraction-to-a-mixed-number/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 20
+      },
+      {
+        "entity_id": "/v/changing-a-mixed-number-to-an-improper-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/v/mixed-numbers-and-improper-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 22
+      },
+      {
+        "entity_id": "/e/converting_mixed_numbers_and_improper_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 23
+      },
+      {
+        "entity_id": "/v/postive-improper-fractions-on-the-number-line/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 24
+      },
+      {
+        "entity_id": "/e/fractions_on_the_number_line_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 25
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 26
       }
     ],
-    "id": "g4_p15",
-    "show": false,
+    "id": "g4_p14",
+    "show": true,
     "tag": "Grade 4",
-    "title": "Playlist 15: Adding & subtracting fractions"
+    "title": "Playlist 14: Fractions with Equal Denominators"
   },
   {
     "entries": [
       {
-        "entity_id":"Week 25",
-        "entity_kind":"Divider",
+        "entity_id": "/v/multiplying-fractions-and-whole-numbers/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id":"/v/quadrilateral-overview/",
-        "entity_kind":"Video",
+        "entity_id": "/v/multiplying-fractions-word-problem-3/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 1
       },
       {
-        "entity_id":"/v/quadrilateral-properties/",
-        "entity_kind":"Video",
+        "entity_id": "/e/multiplying_fractions_by_integers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      }
+    ],
+    "id": "g4_p15",
+    "show": true,
+    "tag": "Grade 4",
+    "title": "Playlist 15: Operations on Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/basic-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/multiplication-2--the-multiplication-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/multiplication-3--10-11-12-times-tables/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 2
       },
       {
-        "entity_id":"/v/perimeter-of-a-polygon/",
-        "entity_kind":"Video",
+        "entity_id": "/e/multiplication_0.5/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 3
       },
       {
-        "entity_id":"Week 26",
-        "entity_kind":"Divider",
+        "entity_id": "/v/multiplying-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 4
       },
       {
-        "entity_id":"/v/angle-basics/",
-        "entity_kind":"Video",
+        "entity_id": "/v/division-1/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 5
       },
       {
-        "entity_id":"/v/measuring-angles-in-degrees/",
-        "entity_kind":"Video",
+        "entity_id": "/e/division_1/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 6
       },
       {
-        "entity_id":"/v/using-a-protractor/",
-        "entity_kind":"Video",
+        "entity_id": "/e/division_0.5/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 7
       },
       {
-        "entity_id":"/v/measuring-angles/",
-        "entity_kind":"Video",
+        "entity_id": "/v/dividing-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 8
       },
       {
-        "entity_id":"/e/measuring_angles/",
-        "entity_kind":"Exercise",
+        "entity_id": "/v/multiplying-by-multiples-of-10/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 9
       },
       {
-        "entity_id":"/v/acute-right-and-obtuse-angles/",
-        "entity_kind":"Video",
+        "entity_id": "/e/multiplication_1/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 10
       },
       {
-        "entity_id":"/e/angle_types/",
-        "entity_kind":"Exercise",
+        "entity_id": "/v/4-digit-times-1-digit-example/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 11
       },
       {
-        "entity_id":"/v/vertical--adjacent-and-linearly-paired-angles/",
-        "entity_kind":"Video",
+        "entity_id": "/e/multiplication_2/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 12
       },
       {
-        "entity_id":"/e/exploring_angle_pairs_1/",
-        "entity_kind":"Exercise",
+        "entity_id": "/v/multiplication-6--multiple-digit-numbers/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 13
+      },
+      {
+        "entity_id": "/e/multiplication_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/long-division-with-remainder-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/division-3--more-long-division-and-remainder-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/e/division_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/v/dividing-by-a-two-digit-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/e/division_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/v/multiplication-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/v/division-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 22
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 23
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-t2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 24
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 25
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 26
       }
     ],
     "id": "g4_p16",
-    "show": false,
+    "show": true,
     "tag": "Grade 4",
-    "title": "Playlist 16: Non-standard shapes- angle basics & measurements"
+    "title": "Playlist 16: Multiplication and Division"
   },
   {
     "entries": [
       {
-        "entity_id":"Week 26",
-        "entity_kind":"Divider",
+        "entity_id": "/v/quadrilateral-overview/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 0
       },
       {
-        "entity_id":"/v/conditional-statements-and-deductive-reasoning/",
-        "entity_kind":"Video",
+        "entity_id": "/v/quadrilateral-properties/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 1
       },
       {
-        "entity_id":"/v/conditional-statements-exercise-examples/",
-        "entity_kind":"Video",
+        "entity_id": "/e/quadrilateral_types/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 2
       },
       {
-        "entity_id":"/v/logical-argument-and-deductive-reasoning-exercise-example/",
-        "entity_kind":"Video",
+        "entity_id": "/v/identifying-parallel-and-perpendicular-lines/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 3
       },
       {
-        "entity_id":"/e/conditional_statements_2/",
-        "entity_kind":"Exercise",
+        "entity_id": "/v/angle-basics/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 4
       },
       {
-        "entity_id":"/e/logical_arguments_deductive_reasoning/",
-        "entity_kind":"Exercise",
+        "entity_id": "/v/measuring-angles-in-degrees/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 5
       },
       {
-        "entity_id":"/e/conditional_statements_and_truth_value/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 6
-      }
-    ],
-    "id": "g4_p17",
-    "show": false,
-    "tag": "Grade 4",
-    "title": "Playlist 17: Logical reasoning"
-  },
-  {
-    "entries": [
-      {
-        "entity_id":"Week 27",
-        "entity_kind":"Divider",
-        "is_essential": true,
-        "sort_order": 0
-      },
-      {
-        "entity_id":"/v/subtraction-word-problem/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 1
-      },
-      {
-        "entity_id":"/e/arithmetic_word_problems_1/",
-        "entity_kind":"Exercise",
-        "is_essential": true,
-        "sort_order": 2
-      },
-      {
-        "entity_id":"Week 30",
-        "entity_kind":"Divider",
-        "is_essential": true,
-        "sort_order": 3
-      },
-      {
-        "entity_id":"/v/circles--radius--diameter-and-circumference/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 4
-      },
-      {
-        "entity_id":"/v/parts-of-a-circle/",
-        "entity_kind":"Video",
-        "is_essential": true,
-        "sort_order": 5
-      },
-      {
-        "entity_id":"/e/radius_diameter_and_circumference/",
-        "entity_kind":"Exercise",
+        "entity_id": "/e/measuring_angles/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 6
       },
       {
-        "entity_id":"/v/language-and-notation-of-the-circle/",
-        "entity_kind":"Video",
+        "entity_id": "/v/acute-right-and-obtuse-angles/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 7
       },
       {
-        "entity_id":"/v/circles--radius--diameter-and-circumference/",
-        "entity_kind":"Video",
+        "entity_id": "/e/angle_types/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      }
+    ],
+    "id": "g4_p17",
+    "show": true,
+    "tag": "Grade 4",
+    "title": "Playlist 17: Geometric Figures and Shapes"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/subtraction-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-t2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/multi-step-word-problems-with-whole-numbers-exercise-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/subtracting-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/multiplying-fractions-word-problem-3/",
+        "entity_kind": "Video",
         "is_essential": true,
         "sort_order": 8
       },
       {
-        "entity_id":"/v/parts-of-a-circle/",
-        "entity_kind":"Video",
+        "entity_id": "/e/perimeter_of_squares_and_rectangles/",
+        "entity_kind": "Exercise",
         "is_essential": true,
         "sort_order": 9
       }
     ],
     "id": "g4_p18",
-    "show": false,
+    "show": true,
     "tag": "Grade 4",
-    "title": "Playlist 18: Addition & subtraction word problems- circumference & area of circles"
+    "title": "Playlist 18: Multiplication and Division Word Problems"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/axis-of-symmetry/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/axis_of_symmetry/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      }
+    ],
+    "id": "g4_p19",
+    "show": true,
+    "tag": "Grade 4",
+    "title": "Playlist 19: Symmetry"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/introduction-to-perimeter/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/perimeter-of-a-shape/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/perimeter-of-a-polygon/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/perimeter_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/find-width-from-perimeter/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/perimeter_of_squares_and_rectangles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      }
+    ],
+    "id": "g4_p20",
+    "show": true,
+    "tag": "Grade 4",
+    "title": "Playlist 20: Perimeter"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/circles--radius--diameter-and-circumference/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/parts-of-a-circle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/radius_diameter_and_circumference/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      }
+    ],
+    "id": "g4_p21",
+    "show": true,
+    "tag": "Grade 4",
+    "title": "Playlist 21: Circles"
   },
   {
     "entries": [
@@ -2408,6 +2428,910 @@
   {
     "entries": [
       {
+        "entity_id": "/v/introduction-to-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/recognizing_fractions_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/numerator-and-denominator-of-a-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/recognizing_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/fraction-word-problems-1-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/fraction_word_problems_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/equivalent-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/equivalent-fraction-word-problem-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/equivalent-fractions-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/equivalent_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/visualizing-equivalent-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/equivalent-fraction-word-problem-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/equivalent-fraction-word-problem-example-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/equivalent_fractions_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/fractions-in-lowest-terms/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/comparing-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/e/simplifying_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/v/finding-common-denominators/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/comparing-fractions-with-greater-than-and-less-than-symbols/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/v/fractions-with-like-denominators-numerators/?lang=en",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/e/comparing_fractions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/v/comparing-fractions-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 22
+      },
+      {
+        "entity_id": "/e/comparing_fractions_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 23
+      },
+      {
+        "entity_id": "/v/ordering-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 24
+      },
+      {
+        "entity_id": "/e/ordering_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 25
+      }
+      ],
+    "id": "g5_p13",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 13: Equivalent Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/adding-fractions-with-like-denominators/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/adding_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/adding-up-to-a-fraction-drag-and-drop-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/subtracting--fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/subtracting-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/subtracting_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/adding-fractions-with-unlike-denominators/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/adding-fractions--ex-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/addition-of-rational--numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/adding_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/adding-fractions-with-unlike-denominators-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/subtracting-fractions-with-unlike-denominators/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/subtracting_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/proper-and-improper-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/decomposing-a-mixed-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/postive-improper-fractions-on-the-number-line/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/e/fractions_on_the_number_line_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/v/changing-an-improper-fraction-to-a-mixed-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/changing-a-mixed-number-to-an-improper-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/v/mixed-numbers-and-improper-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/e/converting_mixed_numbers_and_improper_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 22
+      },
+      {
+        "entity_id": "/v/fractions-cut-and-copy-1-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 23
+      },
+      {
+        "entity_id": "/e/fractions_cut_and_copy_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 24
+      }
+      ],
+    "id": "g5_p14",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 14: Adding and Subtracting Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/multiplying-fractions-and-whole-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/multiplying-fractions-word-problem-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/multiplying-fractions-word-problem-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/multiplying-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/multiplying_fractions_by_integers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/multiplying-a-fraction-by-a-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/multiplying-fractions-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/multiplication-as-scaling/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/multiplying_fractions_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/multiplying-fractions-word-problem-4/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/dividing-a-fraction-by-a-whole-number-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/e/dividing_fractions_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/dividing-a-whole-number-by-a-fraction-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/dividing-fractions-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/dividing_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/dividing-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/dividing-fractions-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      }
+    ],
+    "id": "g5_p15",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 15: Multiplication and Division of Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/decimal-place-value/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/expanding-out-a-decimal-by-place-value/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/understanding-decimal-place-value-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/understanding_decimals_place_value/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/comparing-place-values-in-decimals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/decimal-place-value-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/writing-out-a-decimal-in-words/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/decimals-on-a-number-line/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/decimals_on_the_number_line_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/converting_decimals_to_fractions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-2--ex-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/e/converting_decimals_to_fractions_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-2--ex-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/decimals-and-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "Week 3",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/adding-decimals-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/v/adding-decimals-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/e/adding_decimals_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/e/adding_decimals/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 22
+      },
+      {
+        "entity_id": "/v/adding-decimals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 23
+      },
+      {
+        "entity_id": "/e/adding_decimals_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 24
+      },
+      {
+        "entity_id": "/v/subtracting-decimals--old/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 25
+      },
+      {
+        "entity_id": "/v/subtracting-decimals--old/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 26
+      },
+      {
+        "entity_id": "/e/subtracting_decimals_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 27
+      },
+      {
+        "entity_id": "/e/subtracting_decimals/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 28
+      },
+      {
+        "entity_id": "/v/adding-decimals-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 29
+      },
+      {
+        "entity_id": "/v/subtracting-decimals-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 30
+      },
+      {
+        "entity_id": "/e/adding_and_subtracting_decimals_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 31
+      },
+      {
+        "entity_id": "Week 4",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 32
+      },
+      {
+        "entity_id": "/v/multiplying-decimals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 33
+      },
+      {
+        "entity_id": "/v/mulitplyling-decimals-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 34
+      },
+      {
+        "entity_id": "/v/mulitplication-8--multiplying-decimals--old-video/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 35
+      },
+      {
+        "entity_id": "/e/multiplying_decimals/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 36
+      }
+    ],
+    "id": "g5_p16",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 16: Decimal Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/angle-basics/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/measuring-angles-in-degrees/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/using-a-protractor/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/measuring-angles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/measuring_angles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/acute-right-and-obtuse-angles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/angle_types/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/congruent-legs-and-base-angles-of-isosceles-triangles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/equilateral-triangle-sides-and-angles-congruent/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/proof---sum-of-measures-of-angles-in-a-triangle-are-180/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/e/triangle_types/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/e/triangle_angles_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 12
+      }
+    ],
+    "id": "g5_p17",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 17: Geometry: Basic Concepts of Angles and Triangles"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/language-and-notation-of-basic-geometry/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/lines--line-segments--and-rays/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/identifying-rays/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/recognizing_rays_lines_and_line_segments/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/specifying-planes-in-three-dimensions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/points_lines_and_planes/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/identifying-parallel-and-perpendicular-lines/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/drawing-lines-exercise-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/measuring-segments/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/measuring_segments/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/congruent-segments/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/e/congruent_segments/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 12
+      }
+    ],
+    "id": "g5_p18",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 18: Segment: Measurement and Construction"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/quadrilateral-overview/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/quadrilateral-properties/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/kites-as-a-mathematical-shape/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/quadrilateral-types-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/quadrilateral_types/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      }
+    ],
+    "id": "g5_p19",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 19: Properties of rectangles and squares"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/language-and-notation-of-the-circle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/circles--radius--diameter-and-circumference/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/parts-of-a-circle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/radius_diameter_and_circumference/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      }
+    ],
+    "id": "g5_p20",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Playlist 20: Circles"
+  },
+  {
+    "entries": [
+      {
         "entity_id": "/v/divisibility-tests-for-2--3--4--5--6--9--10/",
         "entity_kind": "Video",
         "is_essential": true,
@@ -3334,6 +4258,878 @@
   {
     "entries": [
       {
+        "entity_id": "/v/why-all-the-letters-in-algebra/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/what-is-a-variable/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/variables-expressions-and-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/writing-expressions-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/writing_expressions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/writing-expressions-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/writing-expressions-2-exercise-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/writing_expressions_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/interpreting-linear-expressions-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      }
+    ],
+    "id": "g6_p16",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 16: Use Letters in place of Numbers"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/combining-like-terms-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/combining-like-terms/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/combining-like-terms-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/combining_like_terms_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/terms-coefficients-and-exponents-in-a-polynomial/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/addition-and-subtraction-of-polynomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/simply-a-polynomial/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/variables-and-expressions-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/evaluate-a-formula-using-substitution/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/evaluating-exponential-expressions-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/e/evaluating_expressions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/expressions-with-two-variables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/evaluating-expressions-with-two-variables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/evaluating-a-polynomial-at-a-given-value/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/e/evaluating_expressions_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/variable-expressions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/evaluating-expressions-3-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      }
+    ],
+    "id": "g6_p17",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 17: Algebraic expressions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/combining-like-terms-and-the-distributive-property/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/combining_like_terms_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/adding-polynomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/adding-and-subtracting-polynomials-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/adding-and-subtracting-polynomials-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/adding_and_subtracting_polynomials/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/example--adding-polynomials-with-multiple-variables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/subtracting-polynomials-with-multiple-variables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      }
+    ],
+    "id": "g6_p18",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 18: Addition and Subtraction of Algebraic Expressions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/why-we-do-the-same--thing-to-both-sides--simple-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/representing-a-relationship-with-a-simple-equation/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/one-step-equation-intuition/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/one-step-equation-intuition-exercise-intro/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/one_step_equation_intuition/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/adding-and-subtracting-the-same-thing-from-both-sides/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/solving-one-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/simple-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/one_step_equations/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/solving-one-step-equations-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/one-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/e/linear_equations_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/why-we-do-the-same--thing-to-both-sides--two-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/equations-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/linear_equations_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/why-we-do-the-same--thing-to-both-sides-multi-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/two-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/application-problems-with-equation-in-one-variable/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      }
+    ],
+    "id": "g6_p19",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 19: Equations with One Variable"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/dividing-a-decimal-by-a-whole-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/dividing-a-whole-number-by-a-decimal/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/dividing_decimals_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/dividing-decimals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/dividing-decimal/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/dividing_decimals_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      }
+    ],
+    "id": "g6_p20",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 20: Decimal Fraction Division"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/describing-the-meaning-of-percent/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/describing-the-meaning-of-percent-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/representing-a-number-as-a-decimal--percent--and-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-percents--ex-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-percents--ex-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/converting_decimals_to_percents/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/representing-a-number-as-a-decimal--percent--and-fraction-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/converting-percents-to-decimals--ex-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/converting-percents-to-decimals--ex-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/converting_percents_to_decimals/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/finding-percentages-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/solving-percent-problems-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/percent-word-problems",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/taking-a-percentage-example",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/e/finding_percents/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/growing-by-a-percentage/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/e/discount_tax_and_tip_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/v/another-percent-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/e/markup_and_commission_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 19
+      }
+    ],
+    "id": "g6_p21",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 21: Percentage"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/identifying-parallel-and-perpendicular-lines/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/drawing-lines-exercise-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/specifying-planes-in-three-dimensions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/points_lines_and_planes/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      }
+    ],
+    "id": "g6_p22",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 22: Point, Line, and Plane"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/complementary-and-supplementary-angles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/complementary_and_supplementary_angles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/example-using-algebra-to-find-measure-of-complementary-angles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/example-using-algebra-to-find-measure-of-supplementary-angles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/angle_addition_postulate/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/angles-at-the-intersection-of-two-lines/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/proof-vertical-angles-are-equal/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/vertical_angles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/using-algebra-to-find-the-measures-of-vertical-angles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/vertical_angles_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/vertical--adjacent-and-linearly-paired-angles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/e/exploring_angle_pairs_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/identifying-parallel-and-perpendicular-lines/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/drawing-lines-exercise-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/angles-formed-by-parallel-lines-and-transversals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/e/congruent_angles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/figuring-out-angles-between-transversal-and-parallel-lines/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/v/angles-of-parallel-lines-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/e/parallel_lines_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/v/using-algebra-to-find-measures-of-angles-formed-from-transversal/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/v/ca-geometry--deducing-angle-measures/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/e/parallel_lines_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 22
+      }
+
+    ],
+    "id": "g6_p23",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 23: Angle Pairs"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/circumcenter-of-a-triangle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/point-line-distance-and-angle-bisectors/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/constructing-a-perpendicular-bisector-using-a-compass-and-straightedge/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/constructing-a-perpendicular-line-using-a-compass-and-straightedge/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/constructing-an-angle-bisector-using-a-compass-and-straightedge/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/constructions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/angle-bisector-theorem-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/angle_bisector_theorem/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      }
+    ],
+    "id": "g6_p24",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 24: Geometric Construction"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/congruent-legs-and-base-angles-of-isosceles-triangles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/equilateral-triangle-sides-and-angles-congruent/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/triangle_types/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      }
+
+    ],
+    "id": "g6_p25",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 25: Types of triangles"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/proof---sum-of-measures-of-angles-in-a-triangle-are-180/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/triangle-angle-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/triangle-angle-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/triangle_angles_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/triangle-angle-example-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/angles_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/sum-of-the-exterior-angles-of-convex-polygon/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/angles_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      }
+    ],
+    "id": "g6_p26",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 26: Properties of triangles"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/language-and-notation-of-the-circle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/circles--radius--diameter-and-circumference/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/parts-of-a-circle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/radius_diameter_and_circumference/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      }
+    ],
+    "id": "g6_p27",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Playlist 27: Circles"
+  },
+  {
+    "entries": [
+      {
         "entity_id": "v/recognizing-irrational-numbers/",
         "entity_kind": "Video",
         "is_essential": true,
@@ -3658,5 +5454,835 @@
     "show": true,
     "tag": "Grade 7",
     "title": "Playlist 8: Direct and Inverse Variation"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/square-a-binomial/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/special-products-of-binomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/special-products-of-polynomials-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/multiplying_expressions_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/special-polynomials-products-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      }
+    ],
+    "id": "g7_p9",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 9: Identities"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/adding-and-subtracting-the-same-thing-from-both-sides/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/solving-one-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/simple-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/one_step_equations/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/solving-one-step-equations-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/one-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/linear_equations_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/why-we-do-the-same--thing-to-both-sides--two-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/equations-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/two-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/linear_equations_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/equations-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/why-we-do-the-same--thing-to-both-sides-multi-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/multi-step-equations-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/linear_equations_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/application-problems-with-equation-in-one-variable/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/writing-expressions-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/e/writing_expressions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/writing-expressions-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/v/writing-expressions-2-exercise-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/e/writing_expressions_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/v/interpreting-linear-expressions-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 22
+      },
+      {
+        "entity_id": "/v/multiplying-polynomials-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 23
+      },
+      {
+        "entity_id": "/v/basic-linear-equation-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 24
+      },
+      {
+        "entity_id": "/v/linear-equation-word-problem-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 25
+      },
+      {
+        "entity_id": "/e/linear_equation_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 26
+      },
+      {
+        "entity_id": "/v/ex-1-age-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 27
+      },
+      {
+        "entity_id": "/v/ex-2-age-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 28
+      },
+      {
+        "entity_id": "/v/ex-3-age-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 29
+      },
+      {
+        "entity_id": "/e/age_word_problems/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 30
+      }
+    ],
+    "id": "g7_p10",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 10: Equations with One Variable"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/combining-like-terms-and-the-distributive-property/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/combining_like_terms_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/multiplying-monomials-by-polynomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/multiplying-monomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/multiplying-and-dividing--monomials-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/multiplying_polynomials/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/multiplying-binomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/level-1-multiplying-expressions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/multiplying_expressions_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/multiplying-polynomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+            {
+        "entity_id": "/v/multiplication-of-polynomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/e/multiplying_expressions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/multiplying-polynomials-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/more-multiplying-polynomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/e/multiplying_polynomials/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 15
+      }
+    ],
+    "id": "g7_p11",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 11: Product of algebraic expressions"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/monomial-greatest-common-factor/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/factoring-and-the-distributive-property/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/factoring-linear-binomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/factoring_linear_binomials/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/factor-polynomials-using-the-gcf/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/factoring-and-the-distributive-property-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/factoring-and-the-distributive-property-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "Week 2",
+        "entity_kind": "Divider",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/factoring-trinomials-by-grouping-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/factor-by-grouping-and-factoring-completely/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/factoring-trinomials-with-a-non-1-leading-coefficient-by-grouping/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/factoring-trinomials-by-grouping-5/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/e/factoring_polynomials_by_grouping_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/ex2-factoring-quad/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/u09-l1-t2-we3-factoring-trinomials/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/factoring-trinomials-by-grouping-6/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/factoring-quadratics-with-two-variables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/factoring-quadratics-with-two-variables-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/e/factoring_polynomials_with_two_variables/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 18
+      }
+    ],
+    "id": "g7_p12",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 12: Factors of Algebraic Expressions"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/triangle-medians-and-centroids/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/medians-divide-into-smaller-triangles-of-equal-area/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/exploring-medial-triangles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/median-centroid-right-triangle-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/circumcenter-of-a-triangle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/point-line-distance-and-angle-bisectors/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/constructing-a-perpendicular-bisector-using-a-compass-and-straightedge/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/constructing-a-perpendicular-line-using-a-compass-and-straightedge/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/constructing-an-angle-bisector-using-a-compass-and-straightedge/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/constructions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/angle-bisector-theorem-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/e/angle_bisector_theorem/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 11
+      }
+    ],
+    "id": "g7_p13",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 13: Properties of Triangles"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/pythagorean-theorem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/pythagorean-theorem-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/the-pythagorean-theorem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/pythagorean_theorem_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/pythagorean-theorem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/pythagorean-theorem-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/45-45-90-triangles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/intro-to-30-60-90-triangles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/pythagorean_theorem_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      }
+    ],
+    "id": "g7_p14",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 14: Theorem of Pythagoras"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/proof---sum-of-measures-of-angles-in-a-triangle-are-180/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/another-isosceles-example-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/triangle-angle-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/triangle-angle-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/triangle_angles_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/triangle-angle-example-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/angles_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      }
+    ],
+    "id": "g7_p15",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 15: Construction of Triangles"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/congruent-triangles-and-sss/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/other-triangle-congruence-postulates/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/finding-congruent-triangles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/congruent_triangles_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/congruent_triangles_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/congruent-legs-and-base-angles-of-isosceles-triangles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/equilateral-triangle-sides-and-angles-congruent/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/triangle_types/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      }
+    ],
+    "id": "g7_p16",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 16: Congruence of Angles and Triangles"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/sum-of-interior-angles-of-a-polygon/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/sum-of-the-exterior-angles-of-convex-polygon/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/angles_of_a_polygon/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/quadrilateral-overview/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/quadrilateral-properties/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/kites-as-a-mathematical-shape/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/quadrilateral_angles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/quadrilateral-types-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/rhombus-diagonals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/quadrilateral_types/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/area-of-a-parallelogram/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      }
+    ],
+    "id": "g7_p17",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 17: Quadrilaterals and their types"
+    },
+    {
+    "entries": [
+      {
+        "entity_id": "/v/language-and-notation-of-the-circle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/parts-of-a-circle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/length-of-an-arc-that-subtends-a-central-angle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/finding-central-angle-measure-given-arc-length/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/area-of-a-sector-given-a-central-angle/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/circles_and_arcs/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      }
+    ],
+    "id": "g7_p18",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Playlist 18: Circles"
     }
 ]
