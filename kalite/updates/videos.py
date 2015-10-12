@@ -6,9 +6,6 @@ from django.conf import settings; logging = settings.LOG
 
 from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
-
-# I will have nightmares from this :)
-# Fixing all this in 0.16
 from fle_utils.videos import *  # get all into the current namespace, override some.
 
 from kalite.topic_tools import settings as topic_tools_settings
