@@ -59,14 +59,6 @@ STREAK_CORRECT_NEEDED = getattr(local_settings, 'STREAK_CORRECT_NEEDED', 8)
 ########################
 POINTS_PER_VIDEO = getattr(local_settings, 'POINTS_PER_VIDEO', 750)
 
-########################
-# Ports & Accessibility
-########################
-
-PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", None)
-if not PRODUCTION_PORT:
-    PRODUCTION_PORT = os.environ.get("KALITE_LISTEN_PORT", 8008)
-
 
 ########################
 # RPi features
