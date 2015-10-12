@@ -1,0 +1,84 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="pull-right">
+                        <div class="points-wrapper"></div>
+                        {{!-- TODO-BLOCKER 0.13 rtibbles enable this for other content types. --}}
+                        {{#ifcond kind "==" "Document" }}
+                        <a href="{{ content_urls.stream }}" class="btn btn-primary download-link pull-right">{{_ "Open PDF Reader" }}</a>
+                        {{/ifcond}}
+                        <div class="clear"></div>
+                    </div>
+
+                    {{#if dubs_available }}
+                    <h3>
+                        <select class="content-language-selector">
+                            {{#each availability }}
+                            <option value="{{ @key }}" {{#ifcond @key "==" ../selected_language }}selected{{/ifcond}}>
+                                {{ language_name }}
+                            </option>
+                            {{/each}}
+                        </select>
+                    </h3>
+                    {{/if}}
+
+                    <span class="title">{{ title }}</span>
+                    {{#if organization}}
+                        <span class="organization">{{_ "by:" }} {{ organization }}</span>
+                    {{/if}}
+                    {{#if description }}
+                    <div class="content-description">{{ description }}</div>
+                    {{/if}}
+
+                    <div class="clear"></div>
+
+                    <div class="borderwrapper"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="content-player-container"></div>
+                </div>
+                {{#if related_content}}
+                <div class="panel-footer">
+                    <h3>
+                        {{_ "Related content:" }}
+                    </h3>
+                    <div class="row">
+                        {{#each related_content }}
+                            <div class="col-xs-4">
+                                <a href="/learn/{{ path }}" title="{{description}}" class="btn btn-success btn-related-content">
+                                    <div class="related-content-header">
+                                        <span aria-hidden="true"><i class="icon-{{ kind }}"></i></span>
+                                        <span class="sr-only">{{ kind }}</span>
+                                        <span class="related-content-title">{{ title }}</span>
+                                    </div>
+                                    <div class="related-content-body">
+                                        <p>
+                                            {{#truncate description 100 }}{{/truncate}}
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+                {{#if tags}}
+                <div class="panel-footer">
+                    <h3>
+                        {{_ "Tags:" }}
+                    </h3>
+                    {{#each tags }}
+                        <a href="/search/?query={{ this }}">
+                            <span class="btn btn-tag">
+                            {{ this }}
+                            </span>
+                        </a>
+                    {{/each}}
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>

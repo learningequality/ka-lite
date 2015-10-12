@@ -15,8 +15,9 @@
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
-    <script type="text/javascript" src="{% static 'js/jquery.sparkline.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/control_panel/bundles/bundle_facility_management.js' %}"></script>
     <script type="text/javascript">
+        var $ = require("facility_management").$
         var end_date = new Date("{{ date_range.1 }}");
         var start_date = new Date("{{ date_range.0 }}");
 
@@ -68,11 +69,8 @@
                 $("#date_picker_form").submit()
             });
 
-            $('.sparklines').sparkline('html', { enableTagOptions: true, disableInteraction: true });
-
         });
     </script>
-    <script type="text/javascript" src="{% static 'js/control_panel/facility_management.js' %}"></script>
 {% endblock headjs %}
 
 {% block buttons %}{{ block.super }}
@@ -112,14 +110,12 @@
 {% endblock buttons %}
 
 {% block control_panel_content %}
-    <div class="container">
-        {# Coaches table #}
-        {% include "control_panel/partials/_coaches_table.html" %}
+    {# Coaches table #}
+    {% include "control_panel/partials/_coaches_table.html" %}
 
-        {# Groups table #}
-        {% include "control_panel/partials/_groups_table.html" %}
+    {# Groups table #}
+    {% include "control_panel/partials/_groups_table.html" %}
 
-        {# Students table #}
-        {% include "control_panel/partials/_students_table.html" %}
-    </div> <!-- End Container -->
+    {# Students table #}
+    {% include "control_panel/partials/_students_table.html" %}
 {% endblock control_panel_content %}

@@ -1,8 +1,14 @@
-window.ExtraFieldsBaseModel = Backbone.Model.extend({
+var _ = require("underscore");
+var Backbone = require("base/backbone");
+var get_params = require("utils/get_params");
+var setGetParamDict = get_params.setGetParamDict;
+var sprintf = require("sprintf-js").sprintf;
+
+var ExtraFieldsBaseModel = Backbone.Model.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "parse", "toJSON");
 
     },
 
@@ -33,7 +39,7 @@ window.ExtraFieldsBaseModel = Backbone.Model.extend({
     }
 });
 
-window.ContentDataModel = ExtraFieldsBaseModel.extend({
+var ContentDataModel = ExtraFieldsBaseModel.extend({
     /*
     Contains data about a content resource itself, with no user-specific data.
     */
@@ -46,12 +52,12 @@ window.ContentDataModel = ExtraFieldsBaseModel.extend({
     },
 
     url: function () {
-        return "/api/content/" + this.get("id");
+        return sprintf("/api/content/%s/%s/", this.get("channel"), this.get("id"));
     }
 
 });
 
-window.ContentLogModel = ExtraFieldsBaseModel.extend({
+var ContentLogModel = ExtraFieldsBaseModel.extend({
     /*
     Contains summary data about the user's history of interaction with the current exercise.
     */
@@ -82,7 +88,7 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
     ],
 
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this, "urlRoot", "save", "saveNow", "set_complete");
     },
 
     urlRoot: function() {
@@ -117,7 +123,7 @@ window.ContentLogModel = ExtraFieldsBaseModel.extend({
 });
 
 
-window.ContentLogCollection = Backbone.Collection.extend({
+var ContentLogCollection = Backbone.Collection.extend({
 
     model: ContentLogModel,
 
@@ -156,3 +162,10 @@ window.ContentLogCollection = Backbone.Collection.extend({
     }
 
 });
+
+module.exports = {
+    ExtraFieldsBaseModel: ExtraFieldsBaseModel,
+    ContentDataModel: ContentDataModel,
+    ContentLogModel: ContentLogModel,
+    ContentLogCollection: ContentLogCollection
+};

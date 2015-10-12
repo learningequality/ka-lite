@@ -31,7 +31,6 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 
 
@@ -131,18 +130,19 @@ def zone_management(request, zone_id="None"):
 
         user_activity = UserLogSummary.objects.filter(user__facility=facility)
         exercise_activity = ExerciseLog.objects.filter(user__facility=facility)
-
         facility_data[facility.id] = {
             "name": facility.name,
             "num_users":  FacilityUser.objects.filter(facility=facility).count(),
             "num_groups": FacilityGroup.objects.filter(facility=facility).count(),
             "id": facility.id,
+            "meta_data_in_need": check_meta_data(facility),
             "last_time_used":   exercise_activity.order_by("-completion_timestamp")[0:1] if user_activity.count() == 0 else user_activity.order_by("-last_activity_datetime", "-end_datetime")[0],
         }
 
     context.update({
         "is_headless_zone": is_headless_zone,
         "facilities": facility_data,
+        "missing_meta": any([facility['meta_data_in_need'] for facility in facility_data.values()]),
         "devices": device_data,
         "upload_form": UploadFileForm(),
         "own_device_is_trusted": Device.get_own_device().get_metadata().is_trusted,
@@ -358,10 +358,9 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
     # If group_id exists, extract data for that group
     if group_id:
         if group_id == ungrouped_id:
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _(UNGROUPED))
+            group_data = group_data[None]
         else:
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
-        group_data = group_data.values()[group_id_index]
+            group_data = group_data[group_id]
     else:
         group_data = {}
 
@@ -443,7 +442,6 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # compute period start and end
     # Now compute stats, based on queried data
-    num_exercises = len(get_exercise_cache())
     user_data = OrderedDict()
     group_data = OrderedDict()
 
@@ -506,7 +504,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     for elog in exercise_logs:
         user_data[elog["user__pk"]]["total_exercises"] += 1
-        user_data[elog["user__pk"]]["pct_mastery"] += 1. / num_exercises
+        user_data[elog["user__pk"]]["pct_mastery"] += elog["streak_progress"]
         user_data[elog["user__pk"]]["exercises_mastered"].append(elog["exercise_id"])
 
     for vlog in video_logs:
@@ -538,6 +536,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # Add group data.  Allow a fake group UNGROUPED
     for user in users:
+        user_data[user.pk]["pct_mastery"] = user_data[user.pk]["pct_mastery"]/(user_data[user.pk]["total_exercises"] or 1)
         group_pk = getattr(user.group, "pk", None)
         if group_pk not in group_data:
             logging.error("User %s still in nonexistent group %s!" % (user.id, group_pk))
@@ -556,6 +555,19 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             del group_data[None]
 
     return (user_data, group_data)
+
+
+def check_meta_data(facility):
+    '''Checks whether any metadata is missing for the specified facility.
+
+    Args: 
+      facility (Facility instance): facility to check for missing metadata
+ 
+    Returns:
+      bool: True if one or more metadata fields are missing'''
+
+    check_fields = ['user_count', 'latitude', 'longitude', 'address', 'contact_name', 'contact_phone', 'contact_email']
+    return any([ (getattr(facility, field, None) is None or getattr(facility, field)=='') for field in check_fields])
 
 
 # context functions

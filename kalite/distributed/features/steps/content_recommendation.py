@@ -1,7 +1,7 @@
 from behave import *
 from kalite.testing.behave_helpers import *
 
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.content_models import get_content_item
 
 @then(u'the resume card should be shown on the very left of the page')
 def impl(context):
@@ -17,12 +17,11 @@ def impl(context):
 
 @then(u'the last in-progress video/exercise should be shown')
 def impl(context):
-    assert get_content_cache().get(context.videos[1]).get("path") in context.browser.current_url, "Last in progress video not in %s" % context.browser.current_url
+    assert get_content_item(content_id=context.videos[1].get("id")).get("path") in context.browser.current_url, "Last in progress video not in %s" % context.browser.current_url
 
 @when(u'I click on the right of an exercise suggestion on the next steps card')
 def impl(context):
-    card = find_id_with_wait(context, "nextsteps")
-    element = card.find_elements_by_tag_name("a")[1]
+    element = find_css_class_with_wait(context, "content-nextsteps-topic-link")
     click_and_wait_for_page_load(context, element, wait_time=15)
 
 @then(u'I should be taken to that topic')
@@ -31,8 +30,7 @@ def impl(context):
 
 @when(u'I click in the middle of an exercise suggestion on the next steps card')
 def impl(context):
-    card = find_id_with_wait(context, "nextsteps")
-    element = card.find_elements_by_tag_name("a")[0]
+    element = find_css_class_with_wait(context, "content-nextsteps-lesson-link")
     click_and_wait_for_page_load(context, element, wait_time=15)
 
 @then(u'the content recommendation cards should be shown')
@@ -46,8 +44,7 @@ def impl(context):
 
 @when(u'I click on a suggested topic on the explore card')
 def impl(context):
-    card = find_id_with_wait(context, "explore")
-    element = card.find_element_by_tag_name("a")
+    element = find_css_class_with_wait(context, "content-explore-topic-link")
     click_and_wait_for_page_load(context, element)
 
 @then(u'I should be taken to that exercise')
@@ -56,6 +53,5 @@ def impl(context):
 
 @when(u'I click on the resume card lesson')
 def impl(context):
-    card = find_id_with_wait(context, "resume")
-    element = card.find_element_by_tag_name("a")
+    element = find_css_class_with_wait(context, "content-resume-topic-link")
     click_and_wait_for_page_load(context, element)

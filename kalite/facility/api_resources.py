@@ -1,5 +1,6 @@
 import datetime
 import os
+from dateutil.tz import tzlocal
 
 from tastypie import fields
 from tastypie.http import HttpUnauthorized
@@ -13,6 +14,7 @@ from django.conf import settings; logging = settings.LOG
 from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
@@ -22,6 +24,8 @@ from kalite import version
 from kalite.i18n import lcode_to_django_lang
 from kalite.distributed.api_views import compute_total_points, get_messages_for_api_calls
 from kalite.main.models import UserLog
+
+from securesync.models import Device
 
 
 class FacilityResource(ModelResource):
@@ -50,7 +54,7 @@ class FacilityUserResource(ModelResource):
         }
         exclude = ["password"]
 
-    def override_urls(self):
+    def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/login%s$" %
                 (self._meta.resource_name, trailing_slash()),
@@ -126,7 +130,7 @@ class FacilityUserResource(ModelResource):
             extras = {'success': True}
             if user.is_teacher:
                 extras.update({
-                    "redirect": reverse("coach_reports")
+                    "redirect": reverse("coach_reports", kwargs={"zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")})
                 })
             return self.create_response(request, extras)
 
@@ -179,11 +183,13 @@ class FacilityUserResource(ModelResource):
             "points": 0,
             "current_language": request.session.get(settings.LANGUAGE_COOKIE_NAME),
             "messages": message_dicts,
-            "status_timestamp": datetime.datetime.now(),
+            "status_timestamp": datetime.datetime.now(tzlocal()),
             "version": version.VERSION,
             "facilities": request.session.get("facilities"),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
             "docs_exist": getattr(settings, "DOCS_EXIST", False),
+            "zone_id": getattr(Device.get_own_device().get_zone(), "id", "None"),
+            "has_superuser": User.objects.filter(is_superuser=True).exists(),
         }
 
         # Override properties using facility data
@@ -205,4 +211,3 @@ class FacilityUserResource(ModelResource):
             data["username"] = request.user.username
 
         return data
-

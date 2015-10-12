@@ -6,28 +6,22 @@
 {% block title %}{% trans "Coach Reports" %}{% endblock title %}
 
 {% block headcss %}{{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/base.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/tabular_view.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/events_view.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/coachreports/landing_view.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-datepicker3.min.css' %}" />
 {% endblock headcss %}
 
 {% block headjs %}{{ block.super }}
     <script type="text/javascript">
         var FACILITY_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='facility' %}";
         var GROUP_RESOURCE_URL = "{% url 'api_dispatch_list' resource_name='group' %}";
+        var FACILITY_ID = {% if facility_id %}"{{ facility_id }}"{% else %}undefined{% endif %};
+        var ZONE_ID = "{{ zone_id }}";
     </script>
-    <script src="{% url 'handlebars_templates' module_name='coach_nav' %}"></script>
-    <script src="{% url 'handlebars_templates' module_name='tabular_reports' %}"></script>
-    <script src="{% static 'js/distributed/exercises/models.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/coachreports/coach_reports/models.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/coachreports/coach_reports/router.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/coachreports/coach_reports/views.js' %}"></script>
+    <script src="{% static 'js/coachreports/bundles/bundle_coach_report.js' %}"></script>
+
     <script>
-        $(function() {
-            window.coach_router = new CoachReportRouter();
-            Backbone.history.start({pushState: true, root: "{% url 'coach_reports' %}"});
-        });
+        $(function(){
+            Backbone.history.start({pushState: true, root: "{% url 'coach_reports' zone_id=zone_id %}"});
+        })
     </script>
 {% endblock headjs %}
 

@@ -8,19 +8,19 @@ Three main functions:
 import datetime
 import random
 import collections
+import json
 
 from django.db.models import Count
 
-from kalite.topic_tools import * 
+from kalite.topic_tools.content_models import get_content_item, get_topic_nodes_with_children, get_topic_contents, get_content_items
+
+from . import settings
+
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
 
-from kalite.facility.models import Facility, FacilityUser
+from kalite.facility.models import FacilityUser
 
-TOPICS_FILEPATHS = {
-    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
-}
-
-TOPIC_RECOMMENDATION_DEPTH = 3
+CACHE_VARS = []
 
 def get_resume_recommendations(user, request):
     """Get the recommendation for the Resume section.
@@ -35,13 +35,17 @@ def get_resume_recommendations(user, request):
 
     final = get_most_recent_incomplete_item(user)
     if final:
-        if final.get("kind") == "Content":
-            return [get_content_data(request, final.get("id"))]
-        if final.get("kind") == "Exercise":
-            return [get_exercise_data(request, final.get("id"))]
+        return [get_content_item(language=request.language, channel=getattr(final, "channel", "khan"), content_id=final.get("id"))]
     else:
         return []
 
+
+def get_completed_exercises(user):
+    """Return a list of all completed exercises (ids) by user."""
+
+    exercises_by_user = ExerciseLog.objects.filter(user=user, complete=True).values_list("exercise_id", flat=True)
+ 
+    return exercises_by_user
 
 
 def get_next_recommendations(user, request):
@@ -62,6 +66,11 @@ def get_next_recommendations(user, request):
 
     most_recent = get_most_recent_exercises(user)
 
+    complete_exercises = set(get_completed_exercises(user))
+
+    def filter_complete(ex):
+        return ex not in complete_exercises
+
     if len(most_recent) > 0 and most_recent[0] in exercise_parents_table:
         current_subtopic = exercise_parents_table[most_recent[0]]['subtopic_id']
     else:
@@ -69,29 +78,28 @@ def get_next_recommendations(user, request):
 
     #logic for recommendations based off of the topic tree structure
     if current_subtopic:
-        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:TOPIC_RECOMMENDATION_DEPTH]
+        topic_tree_based_data = generate_recommendation_data()[current_subtopic]['related_subtopics'][:settings.TOPIC_RECOMMENDATION_DEPTH]
         topic_tree_based_data = get_exercises_from_topics(topic_tree_based_data)
     else:
         topic_tree_based_data = []
     
     #for checking that only exercises that have not been accessed are returned
-    topic_tree_based_data = [ex for ex in topic_tree_based_data if not ex in most_recent] 
+    topic_tree_based_data = [ex for ex in topic_tree_based_data if ex not in most_recent or filter_complete(ex)]
 
     #logic to generate recommendations based on exercises student is struggling with
-    struggling = get_exercise_prereqs(get_struggling_exercises(user))   
+    struggling = filter(filter_complete, get_exercise_prereqs(get_struggling_exercises(user)))
 
     #logic to get recommendations based on group patterns, if applicable
-    group = get_group_recommendations(user)
-
-   
+    group = filter(filter_complete, get_group_recommendations(user))
+  
     #now append titles and other metadata to each exercise id
     final = [] # final data to return
     for exercise_id in (group[:2] + struggling[:2] + topic_tree_based_data[:1]):  #notice the concatenation
 
         if exercise_id in exercise_parents_table:
             subtopic_id = exercise_parents_table[exercise_id]['subtopic_id']
-            exercise = get_exercise_data(request, exercise_id)
-            exercise["topic"] = get_topic_data(request, subtopic_id)
+            exercise = get_content_item(language=request.language, content_id=exercise_id)
+            exercise["topic"] = get_content_item(language=request.language, content_id=subtopic_id, topic=True)
             final.append(exercise)
 
 
@@ -149,13 +157,13 @@ def get_struggling_exercises(user):
 
 def get_exercise_prereqs(exercises):
     """Return a list of prequisites (if applicable) for each specified exercise."""
-
-    ex_cache = get_exercise_cache()
+    if exercises:
+        exercises = get_content_items(ids=exercises)
     prereqs = []
     for exercise in exercises:
-        prereqs += ex_cache[exercise]['prerequisites']
+        prereqs += exercise.get('prerequisites', [])
 
-    return prereqs
+    return list(set(prereqs))
 
 
 def get_explore_recommendations(user, request):
@@ -179,7 +187,7 @@ def get_explore_recommendations(user, request):
     recent_subtopics = list(set([exercise_parents_table[ex]['subtopic_id'] for ex in recent_exercises if ex in exercise_parents_table]))
 
     #choose sample number, up to three
-    sampleNum = min(len(recent_subtopics), TOPIC_RECOMMENDATION_DEPTH)
+    sampleNum = min(len(recent_subtopics), settings.TOPIC_RECOMMENDATION_DEPTH)
     
     random_subtopics = random.sample(recent_subtopics, sampleNum)
     added = []                                                      #keep track of what has been added (below)
@@ -194,8 +202,8 @@ def get_explore_recommendations(user, request):
         if recommended_topic:
 
             final.append({
-                'suggested_topic': get_topic_data(request, recommended_topic),
-                'interest_topic': get_topic_data(request, subtopic_id),
+                'suggested_topic': get_content_item(language=request.language, content_id=recommended_topic, topic=True),
+                'interest_topic': get_content_item(language=request.language, content_id=subtopic_id, topic=True),
             })
 
             added.append(recommended_topic)
@@ -213,12 +221,12 @@ def get_exercise_parents_lookup_table():
         return exercise_parents_lookup_table
 
     ### topic tree for traversal###
-    tree = get_topic_tree(parent="root")
+    tree = get_topic_nodes_with_children(parent="root")
 
     #3 possible layers
     for topic in tree:
         for subtopic_id in topic['children']:
-            exercises = get_topic_exercises(subtopic_id)
+            exercises = get_topic_contents(topic_id=subtopic_id, kinds=["Exercise"])
 
             for ex in exercises:
                 if ex['id'] not in exercise_parents_lookup_table:
@@ -234,10 +242,10 @@ def get_exercises_from_topics(topicId_list):
 
     exs = []
     for topic in topicId_list:
-
-        exercises = get_topic_exercises(topic)[:5] #can change this line to allow for more to be returned
-        for e in exercises:
-            exs += [e['id']] #only add the id to the list
+        if topic:
+            exercises = get_topic_contents(topic_id=topic, kinds=["Exercise"])[:5] #can change this line to allow for more to be returned
+            for e in exercises:
+                exs += [e['id']] #only add the id to the list
 
     return exs
 
@@ -293,7 +301,7 @@ def generate_recommendation_data():
         return recommendation_data
 
     ### populate data exploiting structure of topic tree ###
-    tree = get_topic_tree(parent="root")
+    tree = get_topic_nodes_with_children(parent="root")
 
     ######## DYNAMIC ALG #########
 
@@ -346,15 +354,13 @@ def generate_recommendation_data():
         #for this item, loop through all recommendations
         for recc in recommendation_data[subtopic]['related_subtopics']:
             if recc.split(" ")[1] == '4':   #if at dist 4, add to the array
-                at_dist_4.append(recc.split(" ")[0]) 
+                at_dist_4.append(recc.split(" ")[0])
             else:
                 at_dist_lt_4.append(recc.split(" ")[0])
 
        
         sorted_related = at_dist_lt_4 + at_dist_4 #append later items at end of earlier
         recommendation_data[subtopic]['related_subtopics'] = sorted_related
-
-
 
     return recommendation_data
 
@@ -380,7 +386,7 @@ def get_recommendation_tree(data):
             
             #make sure related is not an empty string (shouldn't happen but to be safe)
             if len(rel_subtopic) > 0:
-                exercises = get_topic_exercises(rel_subtopic)
+                exercises = get_topic_contents(topic_id=rel_subtopic, kinds=["Exercise"])
 
                 for ex in exercises:
                     recommendation_tree[str(subtopic)].append(ex['id'])
@@ -405,7 +411,7 @@ def get_neighbors_at_dist_1(topic_index, subtopic_index, topic):
 
     neighbors = []  #neighbor list to be returned
 
-    tree = get_topic_tree(parent="root")
+    tree = get_topic_nodes_with_children(parent="root")
 
     #pointers to the previous and next subtopic (list indices)
     prev = subtopic_index - 1 

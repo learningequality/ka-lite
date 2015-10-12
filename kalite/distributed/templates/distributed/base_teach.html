@@ -16,15 +16,15 @@
     <ul>
         <div class="mobile-nav">
             <li class="reports {% block reports_active %}{% endblock reports_active %}">
-                <a href="{% url 'coach_reports' %}" title="{% trans 'Track the progress of your learners' %}"><div class=""><span class="icon icon-uniE605"></span><br/>{% trans "Reports" %}</div></a>
+                <a href="{% url 'coach_reports' zone_id=zone_id %}" title="{% trans 'Track the progress of your learners' %}"><div class=""><span aria-hidden="true"><i class="icon icon-uniE605"></i></span><br/>{% trans "Reports" %}</div></a>
             </li>
             <li class="playlist {% block playlist_active %}{% endblock playlist_active %}">
-                <a class="link-width" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to learner groups' %}"><div><span class="icon icon-uniE604"></span><br/>{% trans "Playlists" %}</div></a>
+                <a class="link-width" href="{% url 'assign_playlists' %}" title="{% trans 'Assign playlists to learner groups' %}"><div><span aria-hidden="true"><i class="icon icon-uniE604"></i></span><br/>{% trans "Playlists" %}</div></a>
             </li>
         </div>
         <div class="mobile-nav">
             <li class="exams {% block exams-active %}{% endblock exams-active %}">
-                <a href="{% url 'test_list' %}" title="{% trans 'See list of available tests.' %}"><div><span class="icon icon-uniE602"></span><br/>{% trans "Tests" %}</div></a>
+                <a href="{% url 'test_list' %}" title="{% trans 'See list of available tests.' %}"><div><span aria-hidden="true"><i class="icon icon-uniE602"></i></span><br/>{% trans "Tests" %}</div></a>
             </li>
             <li class="teacher-only units {% block current_unit_active %}{% endblock current_unit_active %}">
                 <a href="{% url 'current_unit' %}" id="nav_current_unit" title="{% trans 'See list of current units for the facilities.' %}"><div style="position: relative; top: 56px;">{% trans "Units" %}</div></a>
@@ -32,7 +32,7 @@
         </div>  
         <!-- Jessica: Commenting out for now to put learn back in 1st level navbar
         <li class="learn {% block learn_subnav_active %}{% endblock learn_subnav_active %}">
-            <a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}"><div><span class="icon icon-uniE601"></span><br/>{% trans "Learn" %}</div></a>
+            <a href="{% url 'learn' %}" title="{% trans 'KA Lite Home' %}"><div><span aria-hidden="true"><i class="icon icon-uniE601"></i></span><br/>{% trans "Learn" %}</div></a>
         </li> -->
     </ul>
 </div>

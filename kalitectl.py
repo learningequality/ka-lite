@@ -6,13 +6,14 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [--foreground] [options] [DJANGO_OPTIONS ...]
+  kalite start [--foreground --watch] [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [DJANGO_OPTIONS ...]
   kalite status [options]
   kalite shell [options] [DJANGO_OPTIONS ...]
   kalite test [options] [DJANGO_OPTIONS ...]
   kalite manage [options] COMMAND [DJANGO_OPTIONS ...]
+  kalite diagnose [options]
   kalite -h | --help
   kalite --version
 
@@ -24,6 +25,8 @@ Options:
   --debug               Output debug messages (for development)
   --port=<arg>          Use a non-default port on which to start the HTTP server
                         or to query an existing server (stop/status)
+  --settings=<arg>      Specify Django's settings module. Must follow python's
+                        import syntax.
   --skip-job-scheduler  KA Lite runs a so-called "cronograph", it's own built-in
                         automatic job scheduler required for downloading videos
                         and sync'ing with online sources. If you don't need this
@@ -40,9 +43,12 @@ Examples:
   kalite stop           Stop KA Lite
   kalite shell          Display a Django shell
   kalite manage help    Show the Django management usage dialogue
+  kalite diagnose       Show system information for debugging
 
   kalite start --foreground   Run kalite in the foreground and do not go to
                               daemon mode.
+  kalite start --watch      Set cherrypy to watch for changes to Django code and start
+                            the Watchify process to recompile Javascript dynamically.
 
 Planned features:
   kalite diagnose             Outputs user and copy-paste friendly diagnostics
@@ -57,8 +63,14 @@ Planned features:
 from __future__ import print_function
 # Add distributed python-packages subfolder to current path
 # DO NOT IMPORT BEFORE THIS LIKE
-import sys
+import atexit
+import subprocess
+import platform
 import os
+import socket
+import sys
+import time
+import traceback
 
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
@@ -72,6 +84,10 @@ else:
     filedir = os.path.dirname(__file__)
     sys.path = [os.path.join(filedir, 'python-packages'), os.path.join(filedir, 'kalite')] + sys.path
 
+if sys.version_info >= (3,):
+    sys.stderr.write("Detected incompatible Python version %s.%s.%s\n" % sys.version_info[:3])
+    sys.stderr.write("Please set the KALITE_PYTHON environment variable to a Python 2.7 interpreter.\n")
+    sys.exit(1)
 
 import httplib
 import re
@@ -79,27 +95,27 @@ import cherrypy
 
 # We do not understand --option value, only --option=value.
 # Match all patterns of "--option value" and fail if they exist
-__validate_cmd_options = re.compile(r"--[^\s-]+\s+[^-\s][^-\s]+")
+__validate_cmd_options = re.compile(r"--?[^\s]+\s+(?:(?!--|-[\w]))")
 if __validate_cmd_options.search(" ".join(sys.argv[1:])):
-    sys.stderr.write("Please only use --option=value patterns. The option parser gets confused if you do otherwise.\n")
+    sys.stderr.write("Please only use --option=value or -x123 patterns. No spaces allowed between option and value. The option parser gets confused if you do otherwise.\n\nWill be fixed for next version 0.15")
     sys.exit(1)
 
 from threading import Thread
-from docopt import DocoptExit, printable_usage, parse_defaults,\
-    parse_pattern, formal_usage, parse_argv, TokenStream, Option, AnyOptions,\
+from docopt import DocoptExit, printable_usage, parse_defaults, \
+    parse_pattern, formal_usage, parse_argv, TokenStream, Option, AnyOptions, \
     extras, Dict
 from urllib2 import URLError
 from socket import timeout
 
 from django.core.management import ManagementUtility, get_commands
 
+import kalite
 from kalite.django_cherrypy_wsgiserver.cherrypyserver import DjangoAppPlugin
-from kalite.version import VERSION
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses
 
 # Environment variables that are used by django+kalite
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.base")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.default")
 os.environ.setdefault("KALITE_HOME", os.path.join(os.path.expanduser("~"), ".kalite"))
 os.environ.setdefault("KALITE_LISTEN_PORT", "8008")
 
@@ -110,6 +126,8 @@ SERVER_LOG = os.path.join(KALITE_HOME, "server.log")
 if not os.path.isdir(KALITE_HOME):
     os.mkdir(KALITE_HOME)
 PID_FILE = os.path.join(KALITE_HOME, 'kalite.pid')
+NODE_PID_FILE = os.path.join(KALITE_HOME, 'kalite_node.pid')
+
 STARTUP_LOCK = os.path.join(KALITE_HOME, 'kalite_startup.lock')
 
 # if this environment variable is set, we activate the profiling machinery
@@ -187,6 +205,16 @@ def update_default_args(defaults, updates):
         defined_updates[elm[0]] = elm[1]
     defined_defaults.update(defined_updates)
     return defined_defaults.values()
+
+
+def get_size(start_path):
+    """Utility function, returns the size (bytes) of a folder"""
+    total_size = 0
+    for dirpath, __, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
 
 
 # Utility functions for pinging or killing PIDs
@@ -343,15 +371,11 @@ def get_pid():
 
 class ManageThread(Thread):
 
-    """
-    Runs a command in the background
-    """
-    daemon = True
-
     def __init__(self, command, *args, **kwargs):
         self.command = command
         self.args = kwargs.pop('args', [])
-        return super(ManageThread, self).__init__(*args, **kwargs)
+        super(ManageThread, self).__init__(*args, **kwargs)
+        self.setDaemon(True)
 
     def run(self):
         utility = ManagementUtility([os.path.basename(sys.argv[0]), self.command] + self.args)
@@ -367,10 +391,11 @@ def manage(command, args=[], as_thread=False):
 
     :param command: The django command string identifier, e.g. 'runserver'
     :param args: List of options to parse to the django management command
-    :param as_daemon: Creates a new process for the command
     :param as_thread: Runs command in thread and returns immediately
     """
-    
+
+    args = update_default_args(["--traceback"], args)
+
     if not as_thread:
         if PROFILE:
             profile_memory()
@@ -384,9 +409,45 @@ def manage(command, args=[], as_thread=False):
         get_commands()  # Needed to populate the available commands before issuing one in a thread
         thread = ManageThread(command, args=args, name=" ".join([command] + args))
         thread.start()
+        return thread
 
 
-def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
+# Watchify running code modified from:
+# https://github.com/beaugunderson/django-gulp/blob/master/django_gulp/management/commands/runserver.py
+
+def start_watchify():
+    sys.stdout.write('Starting watchify')
+
+    watchify_process = subprocess.Popen(
+        args='node build.js --debug --watch --staticfiles',
+        shell=True,
+        stdin=subprocess.PIPE,
+        stdout=sys.stdout,
+        stderr=sys.stderr)
+
+    if watchify_process.poll() is not None:
+        raise RuntimeError('watchify failed to start')
+
+    print('Started watchify process on pid {0}'.format(
+        watchify_process.pid))
+
+    with open(NODE_PID_FILE, 'w') as f:
+        f.write("%d" % watchify_process.pid)
+
+    atexit.register(kill_watchify_process)
+
+def kill_watchify_process():
+    pid, __ = read_pid_file(NODE_PID_FILE)
+    # PID file exists, but process is dead
+    if not pid_exists(pid):
+        print('watchify process not running')
+    else:
+        kill_pid(pid)
+        os.unlink(NODE_PID_FILE)
+        sys.stdout.write('watchify process killed')
+
+
+def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon
 
@@ -397,16 +458,16 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
     # TODO: Do we want to fail if running as root?
-    
+
     port = int(port or DEFAULT_LISTEN_PORT)
-    
+
     if not daemonize:
         sys.stderr.write("Running 'kalite start' in foreground...\n")
     else:
         sys.stderr.write("Running 'kalite start' as daemon (system service)\n")
-    
+
     sys.stderr.write("\nStand by while the server loads its data...\n\n")
-    
+
     if os.path.exists(STARTUP_LOCK):
         try:
             pid, __ = read_pid_file(STARTUP_LOCK)
@@ -414,6 +475,7 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
             if pid_exists(pid):
                 sys.stderr.write(
                     "Refusing to start: Start up lock exists: {0:s}\n".format(STARTUP_LOCK))
+                sys.stderr.write("Remove the file and try again.\n")
                 sys.exit(1)
         # Couldn't parse to int
         except TypeError:
@@ -424,42 +486,48 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     try:
         if get_pid():
             sys.stderr.write("Refusing to start: Already running\n")
+            sys.stderr.write("Use 'kalite stop' to stop the instance.\n")
             sys.exit(1)
     except NotRunning:
         pass
 
+    # Check that the port is available by creating a simple socket and see
+    # if it succeeds... if it does, the port is occupied.
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    connection_error = sock.connect_ex(('127.0.0.1', port))
+    if not connection_error:
+        sys.stderr.write(
+            "Port {0} is occupied. Please close the process that is using "
+            "it.\n".format(port)
+        )
+        sys.exit(1)
+
     # Write current PID and optional port to a startup lock file
     with open(STARTUP_LOCK, "w") as f:
         f.write("%s\n%d" % (str(os.getpid()), port))
-    
+
     manage('initialize_kalite')
 
-    # Start the job scheduler (not Celery yet...)
-    # This command is run before starting the server, in case the server
-    # should be configured to not run in daemon mode or in case the
-    # server fails to go to daemon mode.
-    if not skip_job_scheduler:
-        manage(
-            'cronserver_blocking',
-            args=[],
-            as_thread=True
-        )
+    if watch:
+        watchify_thread = Thread(target=start_watchify)
+        watchify_thread.daemon = True
+        watchify_thread.start()
 
     # Remove the startup lock at this point
     if STARTUP_LOCK:
         os.unlink(STARTUP_LOCK)
-    
+
     # Print output to user about where to find the server
     addresses = get_ip_addresses(include_loopback=False)
-    sys.stdout.write("To access KA Lite from another connected computer, try the following address(es):\n")
+    print("To access KA Lite from another connected computer, try the following address(es):")
     for addr in addresses:
-        sys.stdout.write("\thttp://%s:%s/\n" % (addr, port))
-    sys.stdout.write("To access KA Lite from this machine, try the following address:\n")
-    sys.stdout.write("\thttp://127.0.0.1:%s/\n" % port)
-    
+        print("\thttp://%s:%s/" % (addr, port))
+    print("To access KA Lite from this machine, try the following address:")
+    print("\thttp://127.0.0.1:%s/\n" % port)
+
     # Daemonize at this point, no more user output is needed
     if daemonize:
-        
+
         from django.utils.daemonize import become_daemon
         kwargs = {}
         # Truncate the file
@@ -471,7 +539,16 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
         # Write the new PID
         with open(PID_FILE, 'w') as f:
             f.write("%d\n%d" % (os.getpid(), port))
-    
+
+    # Start the job scheduler (not Celery yet...)
+    cron_thread = None
+    if not skip_job_scheduler:
+        cron_thread = manage(
+            'cronserver_blocking',
+            args=[],
+            as_thread=True
+        )
+
     # Start cherrypy service
     cherrypy.config.update({
         'server.socket_host': LISTEN_ADDRESS,
@@ -481,15 +558,30 @@ def start(debug=False, daemonize=True, args=[], skip_job_scheduler=False, port=N
     })
 
     DjangoAppPlugin(cherrypy.engine).subscribe()
-    if not debug:
+    if not watch:
         # cherrypyserver automatically reloads if any modules change
         # Switch-off that functionality here to save cpu cycles
         # http://docs.cherrypy.org/stable/appendix/faq.html
         cherrypy.engine.autoreload.unsubscribe()
-    
-    cherrypy.quickstart()
+
+    try:
+        cherrypy.quickstart()
+    except KeyboardInterrupt:
+        # Handled in cherrypy by waiting for all threads to join
+        pass
+    except SystemExit:
+        print("KA Lite caught system exit signal, quitting.")
 
     print("FINISHED serving HTTP")
+
+    if cron_thread:
+        # Do not exit thread together with the main process, let it finish
+        # cleanly
+        print("Asking KA Lite job scheduler to terminate...")
+        from fle_utils.chronograph.management.commands import cronserver_blocking
+        cronserver_blocking.shutdown = True
+        cron_thread.join()
+        print("Job scheduler terminated.")
 
 
 def stop(args=[], sys_exit=True):
@@ -522,14 +614,46 @@ def stop(args=[], sys_exit=True):
                 sys.stderr.write("Could not find PID in .pid file\n")
             except OSError:  # TODO: More specific exception handling
                 sys.stderr.write("Could not read .pid file\n")
-        if not killed_with_force:
-            if sys_exit:
-                sys.exit(-1)
-            return  # Do not continue because error could not be handled
+            if not killed_with_force:
+                if sys_exit:
+                    sys.exit(-1)
+                return  # Do not continue because error could not be handled
 
     sys.stderr.write("kalite stopped\n")
     if sys_exit:
         sys.exit(0)
+
+
+def get_urls():
+    """
+    Fetch a list of urls
+    :returns: STATUS_CODE, ['http://abcd:1234', ...]
+    """
+    try:
+        __, __, port = get_pid()
+        urls = []
+        for addr in get_ip_addresses():
+            urls.append("http://{}:{}/".format(addr, port))
+        return STATUS_RUNNING, urls
+    except NotRunning as e:
+        return e.status_code, []
+
+
+def get_urls_proxy():
+    """
+    Get addresses of the server if we're using settings.PROXY_PORT
+
+    :raises: Exception for sure if django.conf.settings isn't loaded
+    """
+    # Import settings and check if a proxy port exists
+    from django.conf import settings
+    if hasattr(settings, 'PROXY_PORT') and settings.PROXY_PORT:
+        sys.stderr.write(
+            "\nKA Lite configured behind another server, primary "
+            "addresses are:\n\n"
+        )
+        for addr in get_ip_addresses():
+            yield "http://{}:{}/".format(addr, settings.PROXY_PORT)
 
 
 def status():
@@ -537,17 +661,30 @@ def status():
     Check the server's status. For possible statuses, see the status dictionary
     status.codes
 
+    Status *always* outputs the current status in the first line if stderr.
+    The following lines contain optional information such as the addresses where
+    the server is listening.
+
     :returns: status_code, key has description in status.codes
     """
-    try:
-        __, __, port = get_pid()
+    status_code, urls = get_urls()
+
+    if status_code == STATUS_RUNNING:
         sys.stderr.write("{msg:s} (0)\n".format(msg=status.codes[0]))
         sys.stderr.write("KA Lite running on:\n\n")
-        for addr in get_ip_addresses():
-            sys.stderr.write("\thttp://%s:%s/\n" % (addr, port))
-        return 0
-    except NotRunning as e:
-        status_code = e.status_code
+        for addr in urls:
+            sys.stderr.write("\t{}\n".format(addr))
+        # Import settings and check if a proxy port exists
+        try:
+            for addr in get_urls_proxy():
+                sys.stderr.write("\t{}\n".format(addr))
+        except Exception as e:
+            sys.stderr.write(
+                "\n\nWarning, exception fetching KA Lite settings module:\n\n" +
+                str(e) + "\n\n"
+            )
+        return STATUS_RUNNING
+    else:
         verbose_status = status.codes[status_code]
         sys.stderr.write("{msg:s} ({code:d})\n".format(
             code=status_code, msg=verbose_status))
@@ -565,6 +702,86 @@ status.codes = {
     STATUS_PID_FILE_INVALID: 'Invalid PID file',
     STATUS_UNKNOW: 'Could not determine status',
 }
+
+
+def diagnose():
+    """
+    This command diagnoses an installation of KA Lite
+
+    It has to be able to work with instances of KA Lite that users do not
+    actually own, however it's assumed that the path and the 'kalite' commands
+    are configured and work.
+
+    The function is currently non-robust, meaning that not all aspects of
+    diagnose data collection is guaranteed to succeed, thus the command could
+    potentially fail :(
+
+    Example: KALITE_HOME=/home/otheruser/.kalite kalite diagnose --port=7007
+    """
+
+    print("")
+    print("KA Lite diagnostics")
+    print("")
+
+    # Tell users we are calculating, because checking the size of the
+    # content directory is slow. Flush immediately after.
+    print("Calculating diagnostics...")
+    sys.stdout.flush()
+    print("")
+
+    # Key, value store for diagnostics
+    # Not using OrderedDict because of python 2.6
+    diagnostics = []
+
+    diag = lambda x, y: diagnostics.append((x, y))
+
+    diag("KA Lite version", kalite.__version__)
+    diag("python", sys.version)
+    diag("platform", platform.platform())
+
+    status_code, urls = get_urls()
+    for addr in urls:
+        diag("server address", addr)
+    for addr in get_urls_proxy():
+        diag("server proxy", addr)
+
+    diag("server status", status.codes[status_code])
+
+    settings_imported = True  # Diagnostics from settings
+    try:
+        from django.conf import settings
+        from django.template.defaultfilters import filesizeformat
+    except:
+        settings_imported = False
+        diag("Settings failure", traceback.format_exc())
+
+    if settings_imported:
+        diag("installed in", os.path.dirname(kalite.__file__))
+        diag("content root", settings.CONTENT_ROOT)
+        diag("content size", filesizeformat(get_size(settings.CONTENT_ROOT)))
+        diag("user database", settings.DATABASES['default']['NAME'])
+        diag("assessment database", settings.DATABASES['assessment_items']['NAME'])
+        try:
+            from securesync.models import Device
+            device = Device.get_own_device()
+            sync_sessions = device.client_sessions.all()
+            zone = device.get_zone()
+            diag("device name", str(device.name))
+            diag("device ID", str(device.id))
+            diag("device registered", str(device.is_registered()))
+            diag("synced", str(sync_sessions.latest('timestamp').timestamp if sync_sessions.exists() else "Never"))
+            diag("sync result", ("OK" if sync_sessions.latest('timestamp').errors == 0 else "Error") if sync_sessions.exists() else "-")
+            diag("zone ID", str(zone.id) if zone else "Unset")
+        except:
+            diag("Device failure", traceback.format_exc())
+
+    for k, v in diagnostics:
+
+        # Pad all the values to match the key column
+        values = str(v).split("\n")
+        values = "\n".join([values[0]] + map(lambda x: (" " * 22) + x, values[1:]))
+
+        print((k.upper() + ": ").ljust(21), values)
 
 
 def url():
@@ -589,12 +806,10 @@ def url():
 def profile_memory():
     print("activating profile infrastructure.")
 
-    import atexit
     import csv
     import resource  # @UnresolvedImport
     import signal
     import sparkline
-    import time
 
     starttime = time.time()
 
@@ -660,7 +875,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
         ao.children = list(set(doc_options) - pattern_options)
     extras(help, version, argv, doc)
     __matched, __left, collected = pattern.fix().match(argv)
-    
+
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
@@ -685,11 +900,16 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
 if __name__ == "__main__":
     # Since positional arguments should always come first, we can safely
     # replace " " with "=" to make options "--xy z" same as "--xy=z".
-    arguments = docopt(__doc__, version=str(VERSION), options_first=False)
-    
+    arguments = docopt(__doc__, version=str(kalite.__version__), options_first=False)
+
+    settings_module = arguments.pop('--settings', None)
+    if settings_module:
+        os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
+
     if arguments['start']:
         start(
             debug=arguments['--debug'],
+            watch=arguments['--watch'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
             args=arguments['DJANGO_OPTIONS'],
             daemonize=not arguments['--foreground'],
@@ -701,15 +921,21 @@ if __name__ == "__main__":
 
     elif arguments['restart']:
         stop(args=arguments['DJANGO_OPTIONS'], sys_exit=False)
+        # add a short sleep to ensure port is freed before we try starting up again
+        time.sleep(1)
         start(
             debug=arguments['--debug'],
             skip_job_scheduler=arguments['--skip-job-scheduler'],
-            args=arguments['DJANGO_OPTIONS']
+            args=arguments['DJANGO_OPTIONS'],
+            port=arguments["--port"]
         )
 
     elif arguments['status']:
         status_code = status()
         sys.exit(status_code)
+
+    elif arguments['diagnose']:
+        diagnose()
 
     elif arguments['shell']:
         manage('shell', args=arguments['DJANGO_OPTIONS'])

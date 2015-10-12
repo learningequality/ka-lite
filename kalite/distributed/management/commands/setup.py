@@ -16,6 +16,7 @@ import re
 import shutil
 import sys
 import tempfile
+import subprocess
 from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
@@ -26,13 +27,22 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 import kalite
+from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
+from kalite.topic_tools.settings import CHANNEL
+
+from kalite.shared.warnings import RemovedInKALite_v016_Warning
+
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
-from kalite.version import VERSION
+from kalite.version import VERSION, SHORTVERSION
 from kalite.facility.models import Facility
 from securesync.models import Device
 import warnings
+
+
+# for extracting assessment item resources
+ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/{version}/content/{channel}_assessment.zip".format(version=SHORTVERSION, channel=CHANNEL)
 
 
 def raw_input_yn(prompt):
@@ -130,7 +140,7 @@ def get_assessment_items_filename():
             return False
 
     def find_recommended_file():
-        filename_guess = "assessment.zip"
+        filename_guess = "{channel}_assessment.zip".format(channel=CHANNEL)
         curdir = os.path.abspath(os.curdir)
         pardir = os.path.abspath(os.path.join(curdir, os.pardir))
         while curdir != pardir:
@@ -195,12 +205,17 @@ class Command(BaseCommand):
                     action='store_true',
                     dest='force-assessment-item-dl',
                     default=False,
-                    help='Downloads assessment items from the url specified by settings.ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
+                    help='Downloads assessment items from the url specified by ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
+        make_option('-i', '--no-assessment-items',
+                    action='store_true',
+                    dest='no-assessment-items',
+                    default=False,
+                    help='Skip all steps associating with assessment item downloading or the assessment item database'),
         make_option('-g', '--git-migrate',
                     action='store',
                     dest='git_migrate_path',
                     default=None,
-                    help='Runs the git migrate management command to migrate from previous installations of KA Lite using Git'),
+                    help='Runs the gitmigrate management command to import data and content from previous installations of KA Lite'),
     )
 
     def handle(self, *args, **options):
@@ -208,25 +223,31 @@ class Command(BaseCommand):
             options["hostname"] = options["hostname"] or get_host_name()
 
         # blank allows ansible scripts to dump errors cleanly.
-        print("                                  ")
-        print("  _   __  ___    _     _ _        ")
-        print(" | | / / / _ \  | |   (_) |       ")
-        print(" | |/ / / /_\ \ | |    _| |_ ___  ")
-        print(" |    \ |  _  | | |   | | __/ _ \ ")
-        print(" | |\  \| | | | | |___| | ||  __/ ")
-        print(" \_| \_/\_| |_/ \_____/_|\__\___| ")
-        print("                                  ")
-        print("http://kalite.learningequality.org")
-        print("                                  ")
+        print("                                     ")
+        print("   _   __  ___    _     _ _          ")
+        print("  | | / / / _ \  | |   (_) |         ")
+        print("  | |/ / / /_\ \ | |    _| |_ ___    ")
+        print("  |    \ |  _  | | |   | | __/ _ \   ")
+        print("  | |\  \| | | | | |___| | ||  __/   ")
+        print("  \_| \_/\_| |_/ \_____/_|\__\___|   ")
+        print("                                     ")
+        print("https://learningequality.org/ka-lite/")
+        print("                                     ")
         print("         version %s" % VERSION)
-        print("                                  ")
+        print("                                     ")
 
         if sys.version_info >= (2, 8) or sys.version_info < (2, 6):
             raise CommandError(
-                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %s\n" % str(sys.version_info))
+                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %d.%d.%d\n" % sys.version_info[:3])
         if sys.version_info < (2, 7, 9):
             logging.warning(
-                "It's recommended that you install Python version 2.7.9. Your version is: %s\n" % str(sys.version_info))
+                "It's recommended that you install Python version 2.7.9. Your version is: %d.%d.%d\n" % sys.version_info[:3])
+            if sys.version_info < (2, 7):
+                warnings.warn(
+                    "Support for Python 2.6 will be discontinued in 0.16, please upgrade.",
+                    RemovedInKALite_v016_Warning
+                )
+
 
         if options["interactive"]:
             print(
@@ -257,13 +278,13 @@ class Command(BaseCommand):
         git_migrate_path = options["git_migrate_path"]
 
         if git_migrate_path:
-            call_command("gitmigrate", path=git_migrate_path)
-        
+            call_command("gitmigrate", path=git_migrate_path, interactive=options["interactive"])
+
         # TODO(benjaoming): This is used very loosely, what does it mean?
         # Does it mean that the installation path is clean or does it mean
         # that we should remove (clean) items from a previous installation?
         install_clean = not kalite.is_installed()
-        
+
         database_kind = settings.DATABASES["default"]["ENGINE"]
         database_file = (
             "sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
@@ -310,9 +331,11 @@ class Command(BaseCommand):
             (hostname, description) = get_hostname_and_description(
                 options["hostname"], options["description"])
         else:
-            username = options["username"] = options["username"] or \
-                                             getattr(settings, "INSTALL_ADMIN_USERNAME", None) or \
-                                             get_clean_default_username()
+            username = options["username"] = (
+                options["username"] or
+                getattr(settings, "INSTALL_ADMIN_USERNAME", None) or
+                get_clean_default_username()
+            )
             password = options["password"] or getattr(settings, "INSTALL_ADMIN_PASSWORD", None)
             email = options["email"]  # default is non-empty
             hostname = options["hostname"]
@@ -339,7 +362,7 @@ class Command(BaseCommand):
             # Try locating django
             for dir_to_clean in distributed_packages:
                 clean_pyc(dir_to_clean)
-            
+
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
             # This is an overwrite install; destroy the old db
@@ -357,76 +380,71 @@ class Command(BaseCommand):
         # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
         # Migrate the database
-        call_command(
-            "syncdb", interactive=False, verbosity=options.get("verbosity"))
+        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
         call_command("migrate", merge=True, verbosity=options.get("verbosity"))
-        # Create *.json and friends database
-        call_command("syncdb", interactive=False, verbosity=options.get(
-            "verbosity"), database="assessment_items")
+        Settings.set("database_version", VERSION)
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this
-        # is required for tests.
+        # is required for tests, and does not apply to the central server.
+        if options.get("no-assessment-items", False):
 
-        # Outdated location of assessment items
-        # TODO(benjaoming) for 0.15, remove this
-        writable_assessment_items = os.access(
-            settings.KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
+            logging.warning("Skipping assessment item downloading and configuration.")
 
-        def _move_to_new_location(old, new):
-            if not writable_assessment_items:
-                return
-            if os.path.exists(old):
-                if os.access(settings.KHAN_CONTENT_PATH, os.W_OK):
-                    os.rename(old, new)
-        _move_to_new_location(
-            os.path.join(settings.KHAN_CONTENT_PATH, 'assessmentitems.sqlite'),
-            settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH
-        )
-        _move_to_new_location(
-            os.path.join(
-                settings.KHAN_CONTENT_PATH, 'assessmentitems.version'),
-            settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
-        )
-        _move_to_new_location(
-            os.path.join(
-                settings.USER_DATA_ROOT, "data", "khan", "assessmentitems.json"),
-            settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
-        )
-        if writable_assessment_items and options['force-assessment-item-dl']:
-            call_command(
-                "unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
-        elif options['force-assessment-item-dl']:
-            raise RuntimeError(
-                "Got force-assessment-item-dl but directory not writable")
-        elif writable_assessment_items and not settings.RUNNING_IN_TRAVIS and options['interactive']:
-            print(
-                "\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
-            print(
-                "If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
-            print(
-                "If you have already downloaded the assessment items package, you can specify the file in the next step.")
-            print("Otherwise, we will download it from {url}.".format(
-                url=settings.ASSESSMENT_ITEMS_ZIP_URL))
+        else:
 
-            if raw_input_yn("Do you wish to download the assessment items package now?"):
-                ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
-            elif raw_input_yn("Have you already downloaded the assessment items package?"):
-                ass_item_filename = get_assessment_items_filename()
-            else:
-                ass_item_filename = None
+            call_command("syncdb", interactive=False, verbosity=options.get("verbosity"), database="assessment_items")
 
-            if not ass_item_filename:
+            # Outdated location of assessment items - move assessment items from their
+            # old location (CONTENT_ROOT/khan where they were mixed with other content
+            # items)
+
+            # TODO(benjaoming) for 0.15, remove the "move assessment items"
+            # mechanism
+            writable_assessment_items = os.access(KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
+
+            # Remove old assessment items
+            if os.path.exists(OLD_ASSESSMENT_ITEMS_LOCATION) and os.access(OLD_ASSESSMENT_ITEMS_LOCATION, os.W_OK):
+                logging.info("Deleting old assessment items")
+                shutil.rmtree(OLD_ASSESSMENT_ITEMS_LOCATION)
+
+            if writable_assessment_items and options['force-assessment-item-dl']:
+                call_command(
+                    "unpack_assessment_zip", ASSESSMENT_ITEMS_ZIP_URL)
+            elif options['force-assessment-item-dl']:
+                raise RuntimeError(
+                    "Got force-assessment-item-dl but directory not writable")
+            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE and not settings.RUNNING_IN_TRAVIS and options['interactive']:
+                print(
+                    "\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
+                print(
+                    "If you have an internet connection, you can download the needed package. Warning: this may take a long time!")
+                print(
+                    "If you have already downloaded the assessment items package, you can specify the file in the next step.")
+                print("Otherwise, we will download it from {url}.".format(
+                    url=ASSESSMENT_ITEMS_ZIP_URL))
+
+                if raw_input_yn("Do you wish to download the assessment items package now?"):
+                    ass_item_filename = ASSESSMENT_ITEMS_ZIP_URL
+                elif raw_input_yn("Have you already downloaded the assessment items package?"):
+                    ass_item_filename = get_assessment_items_filename()
+                else:
+                    ass_item_filename = None
+
+                if not ass_item_filename:
+                    logging.warning(
+                        "No assessment items package file given. You will need to download and unpack it later.")
+                else:
+                    call_command("unpack_assessment_zip", ass_item_filename)
+
+            elif options['interactive'] and not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
+                logging.warning(
+                    "Assessment item directory not writable, skipping download.")
+            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
                 logging.warning(
                     "No assessment items package file given. You will need to download and unpack it later.")
             else:
-                call_command("unpack_assessment_zip", ass_item_filename)
-        elif options['interactive']:
-            logging.warning(
-                "Assessment item directory not writable, skipping download.")
-        else:
-            logging.warning(
-                "No assessment items package file given. You will need to download and unpack it later.")
+                print("Found bundled assessment items")
 
         # Individually generate any prerequisite models/state that is missing
         if not Settings.get("private_key"):
@@ -451,6 +469,7 @@ class Command(BaseCommand):
         # Now deploy the static files
         logging.info("Copying static media...")
         call_command("collectstatic", interactive=False, verbosity=0)
+        call_command("collectstatic_js_reverse", interactive=False)
 
         # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
@@ -467,12 +486,16 @@ class Command(BaseCommand):
                 start_script_path = kalite_executable
 
             # Run videoscan, on the distributed server.
-            print("Scanning for video files in the content directory (%s)" %
+            print("Annotating availability of all content, checking for content in this directory: (%s)" %
                   settings.CONTENT_ROOT)
-            call_command("videoscan")
+            call_command("annotate_content_items")
 
             # done; notify the user.
-            print(
-                "CONGRATULATIONS! You've finished setting up the KA Lite server software.")
-            print(
-                "You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+            print("\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
+            print("You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+
+            if options['interactive']:
+                if raw_input_yn("Do you wish to start the server now?"):
+                    print("Running {0} start".format(start_script_path))
+                    p = subprocess.Popen([start_script_path, "start"], env=os.environ)
+                    p.wait()

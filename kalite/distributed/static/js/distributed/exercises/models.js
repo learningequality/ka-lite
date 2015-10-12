@@ -1,13 +1,21 @@
+var Backbone = require("base/backbone");
+var _ = require("underscore");
+var seeded_shuffle = require("utils/shuffle");
+var get_params = require("utils/get_params");
+var seedrandom = require("seedrandom");
+
+var ContentModels = require("content/models");
+
 var ds = window.ds || {};
 
-window.ExerciseParams = {
+var ExerciseParams = {
     STREAK_CORRECT_NEEDED: (ds.distributed || {}).streak_correct_needed || 8,
     STREAK_WINDOW: 10,
     FIXED_BLOCK_EXERCISES: (ds.distributed || {}).fixed_block_exercises || 0
 };
 
 
-window.ExerciseDataModel = Backbone.Model.extend({
+var ExerciseDataModel = ContentModels.ContentDataModel.extend({
     /*
     Contains data about an exercise itself, with no user-specific data.
     */
@@ -25,20 +33,18 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "url", "update_if_needed_then", "as_user_exercise", "get_framework");
+
+        var self = this;
 
         // store the provided seed as an object attribute, so it will be available after a fetch
-        this.listenTo(this, "change:seed", function() { this.seed = this.get("seed") || this.seed; });
+        this.listenTo(this, "change:seed", function() { self.seed = self.get("seed") || self.seed; });
 
-    },
-
-    url: function () {
-        return "/api/exercise/" + this.get("exercise_id");
     },
 
     update_if_needed_then: function(callback) {
         // TODO(jamalex): use a better method for checking status of lazy loading
-        if (this.get("exercise_id") !== this.get("name")) {
+        if (this.get("id") !== this.get("name")) {
             this.fetch().then(callback);
         } else {
             _.defer(callback);
@@ -73,7 +79,7 @@ window.ExerciseDataModel = Backbone.Model.extend({
 
 });
 
-window.AssessmentItemModel = Backbone.Model.extend({
+var AssessmentItemModel = Backbone.Model.extend({
 
     urlRoot: function() {
         return window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL");
@@ -85,7 +91,7 @@ window.AssessmentItemModel = Backbone.Model.extend({
 
 });
 
-window.ExerciseLogModel = Backbone.Model.extend({
+var ExerciseLogModel = Backbone.Model.extend({
     /*
     Contains summary data about the user's history of interaction with the current exercise.
     */
@@ -98,7 +104,7 @@ window.ExerciseLogModel = Backbone.Model.extend({
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "save", "attempts_since_completion", "fixed_block_questions_remaining");
 
     },
 
@@ -138,53 +144,42 @@ window.ExerciseLogModel = Backbone.Model.extend({
         return ExerciseParams.FIXED_BLOCK_EXERCISES - this.attempts_since_completion();
     },
 
-    urlRoot: "/api/exerciselog/"
+    urlRoot: function() {
+        return window.sessionModel.get("GET_EXERCISE_LOGS_URL");
+    },
 
 });
 
 
-window.ExerciseLogCollection = Backbone.Collection.extend({
+var ExerciseLogCollection = ContentModels.ContentLogCollection.extend({
 
     model: ExerciseLogModel,
 
-    initialize: function(models, options) {
-        options = typeof options !== "undefined" && options !== null ? options : {};
-        this.exercise_id = options.exercise_id;
-        this.exercise_ids = options.exercise_ids;
-    },
-
-    url: function() {
-        data = {
-            "user": window.statusModel.get("user_id")
-        };
-        if (typeof this.exercise_id !== "undefined") {
-            data["exercise_id"] = this.exercise_id;
-        } else if (typeof this.exercise_ids !== "undefined") {
-            data["exercise_id__in"] = this.exercise_ids;
-        }
-        return setGetParamDict(this.model.prototype.urlRoot, data);
-    },
+    model_id_key: "exercise_id",
 
     get_first_log_or_new_log: function() {
         if (this.length > 0) {
             return this.at(0);
         } else { // create a new exercise log if none existed
-            return new ExerciseLogModel({
-                "exercise_id": this.exercise_id,
+            var data = {
                 "user": window.statusModel.get("user_uri")
-            });
+            };
+            data[this.model_id_key] = this.content_model.get("id");
+            return new this.model(data);
         }
     }
 
 });
 
 
-window.AttemptLogModel = Backbone.Model.extend({
+var AttemptLogModel = Backbone.Model.extend({
     /*
     Contains data about the user's response to a particular exercise instance.
     */
 
-    urlRoot: "/api/attemptlog/",
+    urlRoot: function() {
+        return window.sessionModel.get("GET_ATTEMPT_LOGS_URL");
+    },
 
     defaults: {
         complete: false,
@@ -230,7 +225,7 @@ window.AttemptLogModel = Backbone.Model.extend({
 });
 
 
-window.AttemptLogCollection = Backbone.Collection.extend({
+var AttemptLogCollection = Backbone.Collection.extend({
 
     model: AttemptLogModel,
 
@@ -242,7 +237,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
     },
 
     url: function() {
-        return "/api/attemptlog/?" + $.param(this.filters, true);
+        return get_params.setGetParamDict(this.model.prototype.urlRoot(), this.filters);
     },
 
     to_objects: function() {
@@ -290,7 +285,7 @@ window.AttemptLogCollection = Backbone.Collection.extend({
 });
 
 
-window.TestDataModel = Backbone.Model.extend({
+var TestDataModel = Backbone.Model.extend({
     /*
     Contains data about a particular student test.
     */
@@ -301,7 +296,7 @@ window.TestDataModel = Backbone.Model.extend({
 });
 
 
-window.TestLogModel = Backbone.Model.extend({
+var TestLogModel = Backbone.Model.extend({
     /*
     Contains summary data about the user's history of interaction with the current test.
     */
@@ -314,9 +309,7 @@ window.TestLogModel = Backbone.Model.extend({
 
     init: function(options) {
 
-        _.bindAll(this);
-
-        var self = this;
+        _.bindAll(this, "get_item_data", "save");
 
     },
 
@@ -336,7 +329,7 @@ window.TestLogModel = Backbone.Model.extend({
         // TODO (rtibbles): qUnit or other javascript unit testing to set up tests for this code.
         if(typeof(test_data_model)==="object"){
 
-            var random = new Math.seedrandom(this.get("user"));
+            var random = seedrandom(this.get("user"));
 
             var items = $.parseJSON(test_data_model.get("ids"));
 
@@ -416,7 +409,7 @@ window.TestLogModel = Backbone.Model.extend({
 });
 
 
-window.TestLogCollection = Backbone.Collection.extend({
+var TestLogCollection = Backbone.Collection.extend({
 
     model: TestLogModel,
 
@@ -473,7 +466,7 @@ var QuizDataModel = Backbone.Model.extend({
 });
 
 
-window.QuizLogModel = Backbone.Model.extend({
+var QuizLogModel = Backbone.Model.extend({
     /*
     Contains summary data about the user's history of interaction with the current test.
     */
@@ -487,7 +480,7 @@ window.QuizLogModel = Backbone.Model.extend({
 
     init: function(options) {
 
-        _.bindAll(this);
+        _.bindAll(this, "get_item_data", "save", "add_response_log_item", "get_latest_response_log_item");
 
         var self = this;
 
@@ -507,13 +500,13 @@ window.QuizLogModel = Backbone.Model.extend({
         */
         if(typeof(quiz_data_model)==="object"){
 
-            var random = new Math.seedrandom(this.get("user") + this.get("attempts"));
+            var random = seedrandom(this.get("user") + this.get("attempts"));
 
             var items = quiz_data_model.get("ids");
 
             var repeats = quiz_data_model.get("repeats");
 
-            var initial_seed = new Math.seedrandom(this.get("user") + this.get("attempts"))()*1000;
+            var initial_seed = seedrandom(this.get("user") + this.get("attempts"))()*1000;
 
             this.item_sequence = [];
 
@@ -615,7 +608,7 @@ window.QuizLogModel = Backbone.Model.extend({
 });
 
 
-window.QuizLogCollection = Backbone.Collection.extend({
+var QuizLogCollection = Backbone.Collection.extend({
 
     model: QuizLogModel,
 
@@ -642,3 +635,19 @@ window.QuizLogCollection = Backbone.Collection.extend({
     }
 
 });
+
+module.exports = {
+    ExerciseParams: ExerciseParams,
+    ExerciseDataModel: ExerciseDataModel,
+    ExerciseLogModel: ExerciseLogModel,
+    ExerciseLogCollection: ExerciseLogCollection,
+    AssessmentItemModel: AssessmentItemModel,
+    AttemptLogModel: AttemptLogModel,
+    AttemptLogCollection: AttemptLogCollection,
+    TestDataModel: TestDataModel,
+    TestLogModel: TestLogModel,
+    TestLogCollection: TestLogCollection,
+    QuizDataModel: QuizDataModel,
+    QuizLogModel: QuizLogModel,
+    QuizLogCollection: QuizLogCollection
+};

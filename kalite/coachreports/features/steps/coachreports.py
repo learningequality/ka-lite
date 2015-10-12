@@ -13,9 +13,10 @@ from kalite.facility.models import FacilityGroup
 
 from kalite.main.models import ExerciseLog, AttemptLog
 
-from kalite.topic_tools import get_exercise_cache
-
 from kalite.testing.mixins.facility_mixins import CreateStudentMixin, CreateGroupMixin
+
+from kalite.topic_tools.content_models import get_random_content
+from securesync.models import Device
 
 colour_legend = {
     "light blue": "#C0E7F3",
@@ -26,13 +27,13 @@ colour_legend = {
 
 @given("I am on the coach report")
 def step_impl(context):
-    url = reverse("coach_reports")
+    url = reverse("coach_reports", kwargs={"zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")})
     context.browser.get(build_url(context, url))
     # TODO(benjaoming) : This takes an awful lot of time to load the first
     # time it's built because of /api/coachreports/summary/?facility_id
     # being super slow
     try:
-        find_id_with_wait(context, "summary_mainview", wait_time=30)
+        find_id_with_wait(context, "summary_mainview", wait_time=60)
     except TimeoutException:
         raise RuntimeError("Could not find element, this was the DOM:\n\n" + context.browser.execute_script("return document.documentElement.outerHTML"))
 
@@ -81,11 +82,39 @@ def impl(context):
 
 @given(u"I am on the tabular report")
 def impl(context):
+    create_some_learner_data()
     context.execute_steps(u"""
         Given I am on the coach report
         When I click on the Show Tabular Report button
         Then I should see the tabular report
         """)
+
+def create_some_learner_data():
+    """
+    Just create a lil' bit-o-data of each type, to populate the table.
+    """
+    user = CreateStudentMixin.create_student()
+    attempt_states = (  # (name, streak_progress, attempt_count)
+        ("not started", 0, 0),
+        ("completed", 100, 15),
+        ("attempted", 50, 10),
+        ("struggling", 30, 25),
+    )
+    exercises = get_random_content(kinds=["Exercise"], limit=len(attempt_states))  # Important they are *distinct*
+    for state in attempt_states:
+        exercise = exercises.pop()
+        log, created = ExerciseLog.objects.get_or_create(exercise_id=exercise.get("id"), user=user)
+        if "not started" != state[0]:
+            log.streak_progress, log.attempts = state[1:]
+            for i in range(0, log.attempts):
+                AttemptLog.objects.get_or_create(
+                    exercise_id=exercise.get("id"),
+                    user=user,
+                    seed=i,
+                    timestamp=datetime.datetime.now()
+                )
+            log.latest_activity_timestamp = datetime.datetime.now()
+            log.save()
 
 @given(u"there are three learners")
 def impl(context):
@@ -129,7 +158,7 @@ def impl(context, exercise, learner, progress_text, progress_colour):
 @when(u"I click on the learner name")
 def impl(context):
     student_name = find_css_class_with_wait(context, "student-name")
-    click_and_wait_for_page_load(context, student_name.find_element_by_tag_name("a"))
+    click_and_wait_for_page_load(context, student_name)
 
 @then(u"I should be taken to that exercise within the Learn tab")
 def impl(context):
@@ -164,17 +193,17 @@ def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    find_id_with_wait(context, "show_tabular_report", wait_time=30).click()
+    find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30).click()
 
 @then(u"I should see the list of two groups that I teach")
 def impl(context):
     dropdown = Select(find_id_with_wait(context, "group-select"))
-    assert len(dropdown.options) == 3, "Only {n} displayed".format(n=len(dropdown.options))
+    assert len(dropdown.options) == 4, "Only {n} displayed".format(n=len(dropdown.options))
 
 @then(u"there should be ten exercise columns displayed")
 def impl(context):
     find_css_class_with_wait(context, "headrow")
-    assert len(context.browser.find_elements_by_css_selector(".headrow.data")) == 10
+    assert len(context.browser.find_elements_by_css_selector(".headrow.data")) == 10, len(context.browser.find_elements_by_css_selector(".headrow.data"))
 
 @when(u"I click on the dropdown button under the Group label")
 def impl(context):
@@ -187,11 +216,11 @@ def impl(context):
 
 @given(u"all learners have completed ten exercises")
 def impl(context):
-    exercises = random.sample(get_exercise_cache().keys(), 10)
+    exercises = get_random_content(kinds=["Exercise"], limit=10)
     for user in FacilityUser.objects.all():
         for exercise in exercises:
             log, created = ExerciseLog.objects.get_or_create(
-                exercise_id=exercise,
+                exercise_id=exercise.get("id"),
                 user=user,
                 streak_progress=100,
                 attempts=15,
@@ -219,14 +248,15 @@ def impl(context):
 
 @when(u"I click on the partial colored cell")
 def impl(context):
-    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.partial"), "details-panel-view")
+    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.partial"), "details-panel-view",
+                                    wait_time=30)
 
 @then(u"I should see a Hide Tabular Report button")
 def impl(context):
     # TODO(benjaoming): For whatever reason, we have to wait an awful lot
     # of time for this to show up because
     # /api/coachreports/summary/?facility_id=XXX is super slow
-    tab_button = find_id_with_wait(context, "show_tabular_report", wait_time=30)
+    tab_button = find_clickable_id_with_wait(context, "show_tabular_report", wait_time=30)
     assert tab_button.text == "Hide Tabular Report"
 
 @then(u"I should see the tabular report")
@@ -241,4 +271,4 @@ def impl(context):
 
 @when(u"I click on the completed colored cell")
 def impl(context):
-    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.complete[value=subtraction_1]"), "details-panel-view")
+    click_and_wait_for_id_to_appear(context, find_css_with_wait(context, "td.complete"), "details-panel-view")

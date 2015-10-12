@@ -230,7 +230,7 @@ class my_install_scripts(install_scripts):
 if STATIC_BUILD:
     
     manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
-    manifest_content += "\n" + "recursive-include dist-packages *"
+    manifest_content += "\n" + "recursive-include dist-packages *\nrecursive-exclude dist-packages *pyc"
     file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
     
     sys.stderr.write(
@@ -304,14 +304,32 @@ else:
             DIST_NAME = 'ka-lite-static'
             
             if "ka-lite" in get_installed_packages():
-                raise RuntimeError("Already installed ka-lite so cannot install ka-lite-static")
+                raise RuntimeError(
+                    "Already installed ka-lite so cannot install ka-lite-static. "
+                    "Remove existing ka-lite-static packages, for instance using \n"
+                    "\n"
+                    "    pip uninstall ka-lite-static  # Standard\n"
+                    "    sudo apt-get remove ka-lite  # Ubuntu/Debian\n"
+                    "\n"
+                    "...or other possible installation mechanisms you may have "
+                    "been using."
+                )
     
     # No dist-packages/ and not building, so must be installing the dynamic
     # version
     elif not DIST_BUILDING_COMMAND:
         # Check that static version is not already installed
         if "ka-lite-static" in get_installed_packages():
-            raise RuntimeError("Already installed ka-lite-static so cannot install ka-lite")
+                raise RuntimeError(
+                    "Already installed ka-lite-static so cannot install ka-lite. "
+                    "Remove existing ka-lite-static packages, for instance using \n"
+                    "\n"
+                    "    pip uninstall ka-lite  # Standard\n"
+                    "    sudo apt-get remove ka-lite  # Ubuntu/Debian\n"
+                    "\n"
+                    "...or other possible installation mechanisms you may have "
+                    "been using."
+                )
 
     if os.path.exists(os.path.join(where_am_i, 'MANIFEST.in.dist')):
         manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
@@ -334,7 +352,7 @@ setup(
     author_email="info@learningequality.org",
     url="https://www.learningequality.org",
     description=DIST_DESCRIPTION,
-    license="GPLv3",
+    license="MIT",
     keywords=("khan academy", "offline", "education", "OER"),
     scripts=['bin/kalite'],
     packages=find_packages(exclude=["python-packages"]),
@@ -343,7 +361,7 @@ setup(
     install_requires=DIST_REQUIREMENTS,
     classifiers=[
         'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: MIT License',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',

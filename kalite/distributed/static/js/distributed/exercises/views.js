@@ -1,10 +1,25 @@
-window.ExerciseHintView = BaseView.extend({
+var _ = require("underscore");
+var BaseView = require("base/baseview");
+var Khan = require("./perseus-helpers").Khan;
+var KhanUtils = require("./perseus-helpers").KhanUtils;
+var Exercises = require("./perseus-helpers").Exercises;
+var SoftwareKeyboardView = require("./software-keyboard");
+var Models = require("./models");
+var messages = require("utils/messages");
+var $ = require("base/jQuery");
+var $script = require("scriptjs");
+var KhanExercises = require("../perseus/ke/khan-exercise");
+var sprintf = require("sprintf-js").sprintf;
 
-    template: HB.template("exercise/exercise-hint"),
+require("qtip2");
+
+var ExerciseHintView = BaseView.extend({
+
+    template: require("./hbtemplates/exercise-hint.handlebars"),
 
     initialize: function() {
 
-        _.bindAll(this);
+        _.bindAll(this, "render");
 
         this.render();
 
@@ -17,18 +32,18 @@ window.ExerciseHintView = BaseView.extend({
 });
 
 
-window.ExerciseProgressView = BaseView.extend({
+var ExerciseProgressView = BaseView.extend({
 
-    template: HB.template("exercise/exercise-progress"),
+    template: require("./hbtemplates/exercise-progress.handlebars"),
 
     initialize: function() {
 
-            _.bindAll(this);
+        _.bindAll(this, "render", "update_streak_bar", "update_attempt_display");
 
-            this.render();
+        this.render();
 
-            this.listenTo(this.model, "change", this.update_streak_bar);
-            this.listenTo(this.collection, "add", this.update_attempt_display);
+        this.listenTo(this.model, "change", this.update_streak_bar);
+        this.listenTo(this.collection, "add", this.update_attempt_display);
 
     },
 
@@ -64,9 +79,9 @@ window.ExerciseProgressView = BaseView.extend({
 });
 
 
-window.ExerciseRelatedVideoView = BaseView.extend({
+var ExerciseRelatedVideoView = BaseView.extend({
 
-    template: HB.template("exercise/exercise-related-videos"),
+    template: require("./hbtemplates/exercise-related-videos.handlebars"),
 
     render: function(data) {
 
@@ -96,21 +111,28 @@ window.ExerciseRelatedVideoView = BaseView.extend({
 });
 
 
-window.ExerciseView = BaseView.extend({
+var ExerciseView = BaseView.extend({
 
-    template: HB.template("exercise/exercise"),
+    template: require("./hbtemplates/exercise.handlebars"),
 
-    initialize: function() {
+    initialize: function(options) {
 
-        _.bindAll(this);
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         // load the info about the exercise itself
-        this.data_model = new ExerciseDataModel({exercise_id: this.options.exercise_id});
-        if (this.data_model.exercise_id) {
-            this.data_model.fetch();
+        if (options.data_model) {
+            this.data_model = options.data_model;
+        } else {
+            this.data_model =  new Models.ExerciseDataModel({id: options.id});
+            if (this.data_model.id) {
+                this.data_model.fetch();
+            }
         }
+
+        this.Khan = global.Khan;
+        this.Exercises = global.Exercises;
         // Solved the issue: https://github.com/learningequality/ka-lite/issues/2127.
-        Khan.query.debug = null;
+        this.Khan.query.debug = null;
         this.render();
 
         _.defer(this.initialize_khan_exercises_listeners);
@@ -142,9 +164,7 @@ window.ExerciseView = BaseView.extend({
 
     render: function() {
 
-        var data = $.extend(this.data_model.attributes, {test_id: this.options.test_id});
-
-        this.$el.html(this.template(data));
+        this.$el.html(this.template(this.data_model.attributes));
 
         this.initialize_listeners();
 
@@ -171,8 +191,8 @@ window.ExerciseView = BaseView.extend({
         var self = this;
 
         // TODO-BLOCKER(jamalex): does this need to wait on something, to avoid race conditions?
-        if(Khan.loaded) {
-            Khan.loaded.then(this.khan_loaded);
+        if(this.Khan.loaded) {
+            this.Khan.loaded.then(this.khan_loaded);
         } else {
             _.defer(this.khan_loaded);
         }
@@ -191,6 +211,15 @@ window.ExerciseView = BaseView.extend({
             if (answerType == "multiple") {
                 answerType = $("span.sol").map(function(index, item){return $(item).attr("data-forms");}).get().join();
             }
+
+            var hints;
+            if (self.data_model.get_framework() == "khan-exercises") {
+                hints = data.hints;
+            } else if (self.data_model.get_framework() == "perseus") {
+                hints = Exercises.PerseusBridge.getNumHints() > 0;
+            }
+
+            self.trigger("hint_available", hints);
 
             var checkVal = /number|decimal|rational|proper|improper|mixed|radical|integer|cuberoot/gi;
 
@@ -227,7 +256,8 @@ window.ExerciseView = BaseView.extend({
 
     load_exercises_when_ready: function() {
         var self = this;
-        Khan.loaded.then(function() {
+
+        this.Khan.loaded.then(function() {
 
             var userExercise = self.data_model.as_user_exercise();
             $(Exercises).trigger("readyForNextProblem", {userExercise: userExercise});
@@ -279,9 +309,8 @@ window.ExerciseView = BaseView.extend({
 
             if (framework == "khan-exercises") {
 
-
-                if (Khan.loaded === undefined) {
-                    require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], self.load_exercises_when_ready);
+                if (self.Khan.loaded === undefined) {
+                    $script(window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL") + "khan-exercises.js", self.load_exercises_when_ready);
                 } else {
                     self.load_exercises_when_ready();
                 }
@@ -299,7 +328,7 @@ window.ExerciseView = BaseView.extend({
     },
 
     warn_exercise_not_available: function () {
-        show_message("warning", gettext("This content was not found! Please contact your coach or an admin to have it downloaded."));
+        messages.show_message("warning", gettext("This content was not found! Please contact your coach or an admin to have it downloaded."));
         this.$("#workarea").html("");
         return false;
     },
@@ -335,9 +364,9 @@ window.ExerciseView = BaseView.extend({
 
         $(Exercises).trigger("clearExistingProblem");
 
-        var item = new AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
+        var item = new Models.AssessmentItemModel({id: self.data_model.get("assessment_item_id")});
 
-        clear_messages();
+        messages.clear_messages();
 
 
         // Do this in this way, so that if the view is closed prior to the fetch completing
@@ -353,7 +382,7 @@ window.ExerciseView = BaseView.extend({
 
     render_perseus_exercise: function(item) {
         var self = this;
-        require([window.sessionModel.get("KHAN_EXERCISES_SCRIPT_URL")], function() {
+        // $script(window.sessionModel.get("KHAN_EXERCISES_URL") + "khan-exercise.js", function() {
             // The exercise view can get closed before these loads finish happening, so check
             // that it is still open before proceeding - otherwise, errors can ensue.
             if (!self.closed) {
@@ -367,13 +396,13 @@ window.ExerciseView = BaseView.extend({
                     }
                 });
             }
-        });
+        // });
     },
 
     check_answer: function() {
         var data;
         if (this.data_model.get_framework() == "khan-exercises") {
-            data = Khan.scoreInput();
+            data = this.Khan.scoreInput();
         } else {
             data = Exercises.PerseusBridge.scoreInput();
         }
@@ -451,7 +480,7 @@ window.ExerciseView = BaseView.extend({
 
 });
 
-window.ExerciseWrapperBaseView = BaseView.extend({
+var ExerciseWrapperBaseView = BaseView.extend({
 
     /**
     * This base class is intended to be extended by all wrappers for the ExerciseView defined above.
@@ -481,24 +510,31 @@ window.ExerciseWrapperBaseView = BaseView.extend({
     * correct_updates - any updates to make if the question is answered correctly.
     */
 
-    initialize: function() {
+    initialize: function(options) {
 
-        var self = this;
+        this.options = options;
 
-        _.bindAll(this);
+        this.data_model = options.data_model;
+        this.log_model = options.log_model;
 
-        window.statusModel.loaded.then(function() {
+        _.bindAll.apply(_, [this].concat(_.functions(this)));
 
-            if (self.initialize_subviews) {
-                self.initialize_subviews();
-            }
+        window.statusModel.loaded.then(this.setup_exercise_environment);
+    },
 
-            if (window.statusModel.get("is_logged_in")) {
+    setup_exercise_environment: function() {
 
-                self.load_user_data();
+        if (this.initialize_subviews) {
+            this.initialize_subviews();
+        }
 
-            }
-        });
+        if (window.statusModel.get("is_logged_in")) {
+
+            this.load_user_data();
+
+        }
+
+        this.listenToOnce(window.statusModel, "change:is_logged_in", this.setup_exercise_environment);
     },
 
     initialize_new_attempt_log: function(data) {
@@ -526,7 +562,7 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 
         data = $.extend(defaults, data);
 
-        this.current_attempt_log = new AttemptLogModel(data);
+        this.current_attempt_log = new Models.AttemptLogModel(data);
 
         this.attempt_collection.add(this.current_attempt_log);
 
@@ -568,6 +604,10 @@ window.ExerciseWrapperBaseView = BaseView.extend({
                         context_type: self.options.context_type
                     });
 
+                    if (self.display_message) {
+                        self.display_message();
+                    }
+
                 } else { // use the seed already established for this attempt
                     self.exercise_view.load_question({
                         seed: self.current_attempt_log.get("seed"),
@@ -582,6 +622,10 @@ window.ExerciseWrapperBaseView = BaseView.extend({
         } else { // not logged in, but just load the next question, for kicks
 
             self.exercise_view.load_question();
+
+            if (self.display_message) {
+                self.display_message();
+            }
 
         }
 
@@ -667,12 +711,14 @@ window.ExerciseWrapperBaseView = BaseView.extend({
 });
 
 
-window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
+var ExercisePracticeView = ExerciseWrapperBaseView.extend({
 
     initialize_subviews: function() {
         this.exercise_view = this.add_subview(ExerciseView, {
             el: this.el,
-            exercise_id: this.options.exercise_id
+            exercise_id: this.options.data_model.get("exercise_id"),
+            data_model: this.options.data_model,
+            log_model: this.options.log_model
         });
 
         this.listenTo(this.exercise_view, "ready_for_next_question", this.ready_for_next_question);
@@ -684,20 +730,18 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
         });
 
         this.listenTo(this.exercise_view, "check_answer", this.check_answer);
+
+        this.listenTo(this.exercise_view, "hint_available", this.toggle_hint_view);
     },
 
     load_user_data: function() {
 
-        // load the data about the user's overall progress on the exercise
-        this.log_collection = new ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
-        var log_collection_deferred = this.log_collection.fetch();
-
         // load the last 10 (or however many) specific attempts the user made on this exercise
-        this.attempt_collection = new AttemptLogCollection([], {exercise_id: this.options.exercise_id, context_type__in: ["playlist", "exercise"]});
+        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.data_model.get("exercise_id"), context_type__in: ["playlist", "exercise"]});
         var attempt_collection_deferred = this.attempt_collection.fetch();
 
         // wait until both the exercise and attempt logs have been loaded before continuing
-        this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
+        this.user_data_loaded_deferred = $.when(attempt_collection_deferred);
         this.user_data_loaded_deferred.then(this.user_data_loaded);
 
     },
@@ -709,13 +753,13 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
     user_data_loaded: function() {
 
         // get the exercise log model from the queried collection
-        this.log_model = this.log_collection.get_first_log_or_new_log();
+        this.log_model = this.options.log_model;
 
         this.listenTo(this.log_model, "sync", this.update_total_points);
 
         // add some dummy attempt logs if needed, to match it up with the exercise log
         // (this is needed because attempt logs were not added until 0.13.0, so many older users have only exercise logs)
-        if (this.attempt_collection.length < ExerciseParams.STREAK_WINDOW) {
+        if (this.attempt_collection.length < Models.ExerciseParams.STREAK_WINDOW) {
             var exercise_log_streak_progress = Math.min(this.log_model.get("streak_progress"), 100);
             while (this.attempt_collection.get_streak_progress_percent() < exercise_log_streak_progress) {
                 this.attempt_collection.add({correct: true, complete: true, points: this.get_points_per_question()});
@@ -740,8 +784,6 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
                 collection: this.attempt_collection
             });
         }
-
-        this.display_message();
 
     },
 
@@ -783,41 +825,56 @@ window.ExercisePracticeView = ExerciseWrapperBaseView.extend({
         var msg;
 
         var context = {
-            numerator: ExerciseParams.STREAK_CORRECT_NEEDED,
-            denominator: ExerciseParams.STREAK_WINDOW
+            numerator: Models.ExerciseParams.STREAK_CORRECT_NEEDED,
+            denominator: Models.ExerciseParams.STREAK_WINDOW
         };
-
-        if (!this.log_model.get("complete")) {
-            if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
-                msg = "";
+        if (this.log_model) {
+            if (!this.log_model.get("complete")) {
+                if (this.log_model.get("attempts") > 0) { // don't display a message if the user is already partway into the streak
+                    msg = "";
+                } else {
+                    if (window.statusModel.is_student()) {
+                        msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+                    } else {
+                        // TODO (rtibbles): Display a meaningful message to admins and coaches here.
+                        msg = "";
+                    }
+                }
             } else {
-                msg = gettext("Answer %(numerator)d out of the last %(denominator)d questions correctly to complete your streak.");
+                msg = gettext("You have finished this exercise!");
             }
-        } else {
-            msg = gettext("You have finished this exercise!");
         }
-        show_message("info", sprintf(msg, context));
+        messages.clear_messages();
+        messages.show_message("info", sprintf(msg, context));
+    },
+
+    toggle_hint_view: function(hints) {
+        if (hints) {
+            this.hint_view.$el.show();
+        } else {
+            this.hint_view.$el.hide();
+        }
     }
 
 });
 
 
-window.ExerciseTestView = ExerciseWrapperBaseView.extend({
+var ExerciseTestView = ExerciseWrapperBaseView.extend({
 
-    start_template: HB.template("exercise/test-start"),
+    start_template: require("./hbtemplates/test-start.handlebars"),
 
-    stop_template: HB.template("exercise/test-stop"),
+    stop_template: require("./hbtemplates/test-stop.handlebars"),
 
     load_user_data: function() {
 
         // load the data about this particular test
-        this.test_model = new TestDataModel({test_id: this.options.test_id});
+        this.test_model = new Models.TestDataModel({test_id: this.options.test_id});
         var test_model_deferred = this.test_model.fetch();
 
-        this.attempt_collection = new AttemptLogCollection();
+        this.attempt_collection = new Models.AttemptLogCollection();
 
         // load the data about the user's overall progress on the test
-        this.log_collection = new TestLogCollection([], {test_id: this.options.test_id});
+        this.log_collection = new Models.TestLogCollection([], {test_id: this.options.test_id});
         var log_collection_deferred = this.log_collection.fetch();
 
         this.user_data_loaded_deferred = $.when(log_collection_deferred, test_model_deferred).then(this.user_data_loaded);
@@ -921,18 +978,18 @@ window.ExerciseTestView = ExerciseWrapperBaseView.extend({
 });
 
 
-window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
+var ExerciseQuizView = ExerciseWrapperBaseView.extend({
 
-    stop_template: HB.template("exercise/quiz-stop"),
+    stop_template: require("./hbtemplates/quiz-stop.handlebars"),
 
     load_user_data: function() {
 
-        this.quiz_model = options.quiz_model;
+        this.quiz_model = this.options.quiz_model;
 
-        this.attempt_collection = new AttemptLogCollection();
+        this.attempt_collection = new Models.AttemptLogCollection();
 
         // load the data about the user's overall progress on the test
-        this.log_collection = new QuizLogCollection([], {quiz: this.options.context_id});
+        this.log_collection = new Models.QuizLogCollection([], {quiz: this.options.context_id});
         var log_collection_deferred = this.log_collection.fetch();
 
         this.user_data_loaded_deferred = log_collection_deferred.then(this.user_data_loaded);
@@ -998,22 +1055,13 @@ window.ExerciseQuizView = ExerciseWrapperBaseView.extend({
 
 });
 
-
-function seeded_shuffle(source_array, random) {
-    var array = source_array.slice(0);
-    var m = array.length, t, i;
-
-    // While there remain elements to shuffle…
-    while (m) {
-
-        // Pick a remaining element…
-        i = Math.floor(random() * m--);
-
-        // And swap it with the current element.
-        t = array[m];
-        array[m] = array[i];
-        array[i] = t;
-    }
-
-    return array;
-}
+module.exports = {
+    ExerciseView: ExerciseView,
+    ExerciseHintView: ExerciseHintView,
+    ExerciseProgressView: ExerciseProgressView,
+    ExerciseQuizView: ExerciseQuizView,
+    ExerciseTestView: ExerciseTestView,
+    ExercisePracticeView: ExercisePracticeView,
+    ExerciseRelatedVideoView: ExerciseRelatedVideoView,
+    ExerciseWrapperBaseView: ExerciseWrapperBaseView
+};

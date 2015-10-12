@@ -9,12 +9,10 @@ from django.core.cache import cache, InvalidCacheBackendError
 from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 from django.core.urlresolvers import reverse
-from django.db.models.signals import post_save, pre_delete
-from django.dispatch import receiver
 from django.http import HttpRequest
 from django.test.client import Client
 from django.utils import translation
-from django.utils.cache import get_cache_key as django_get_cache_key, get_cache, _generate_cache_key
+from django.utils.cache import get_cache_key as django_get_cache_key, get_cache
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import condition
@@ -66,7 +64,7 @@ def backend_cache_page(handler, cache_time=None, cache_name=None):
         cache_time = settings.CACHE_TIME
 
     if not cache_name:
-        cache_name = settings.CACHE_NAME
+        cache_name = "default"
 
     if caching_is_enabled():
         @condition(last_modified_func=partial(calc_last_modified, cache_name=cache_name))
@@ -89,7 +87,7 @@ def caching_is_enabled():
     return settings.CACHE_TIME != 0
 
 def get_web_cache():
-    return get_cache(settings.CACHE_NAME) if caching_is_enabled() else None
+    return get_cache('default') if caching_is_enabled() else None
 
 
 def get_cache_key(path=None, url_name=None, cache=None, failure_ok=False):

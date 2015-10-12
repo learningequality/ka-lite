@@ -27,7 +27,7 @@
     {% if clock_set %}
         {% include_block "control_panel/snippets/clock_set.html" "headjs" %}
     {% endif %}
-    <script type="text/javascript" src="{% static 'js/control_panel/zone_management.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/control_panel/bundles/bundle_zone_management.js' %}"></script>
 {% endblock headjs %}
 
 {% block buttons %}
@@ -36,20 +36,16 @@
 
             {% block download_button %}
                 <!--li>
-                    <a class="btn btn-success" href="#">{% trans "Sync via USB" %}</a>
+                    <a class="btn btn-success" role="button" href="#">{% trans "Sync via USB" %}</a>
                 </li-->
             {% endblock download_button %}
-            <a href="{% url 'data_export' %}{% if zone_id != "None" %}?zone_id={{ zone_id }}{% endif %}" class="btn btn-success">{% trans "Export Data" %}</a>
+            <a href="{% url 'data_export' %}{% if zone_id != "None" %}?zone_id={{ zone_id }}{% endif %}" role="button" class="btn btn-success">{% trans "Export Data" %}</a>
 {% endblock buttons %}
 
 {% block control_panel_content %}
-
-<div class="container">
     {# Facilities Section #}
     {% include "control_panel/partials/_facility_table.html" %}
 
     {# Device Section #}
     {% include "control_panel/partials/_device_table.html" %}
-
-</div> <!-- End container -->
 {% endblock control_panel_content %}

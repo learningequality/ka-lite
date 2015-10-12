@@ -1,0 +1,7 @@
+<label for="time-set">{{_ "Date Range" }}&nbsp;&nbsp;&nbsp;</label>
+<div class="input-daterange input-group" id="datepicker">
+    <input type="text" id="start" class="form-control date-range" value={{ start_date }} name="start" />
+    <span class="input-group-addon">→</span>
+    <input type="text" id="end" class="form-control date-range" value={{ end_date }} name="end" />
+    <span class="input-group-addon btn btn-success setrange" role="button"><span aria-hidden="true"><i class="glyphicon glyphicon-refresh"></i></span><span class="sr-only">{{_ "Refresh" }}</span></span>
+</div>

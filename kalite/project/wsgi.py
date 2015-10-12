@@ -19,11 +19,12 @@ sys.path = [
     PROJECT_PATH,
     os.path.join(PROJECT_PATH, "../../"),
     os.path.join(PROJECT_PATH, "../../python-packages/"),
+    os.path.join(PROJECT_PATH, "../../dist-packages/"),
 ] + sys.path
 
 # We set the variable directly because of how mod_wsgi uses a thread pool
 # with shared ENVs which will break when running on multiple django vhosts.
-os.environ['DJANGO_SETTINGS_MODULE'] = 'kalite.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'kalite.project.settings.default'
 application = WSGIHandler()
 
 # Django 1.8:

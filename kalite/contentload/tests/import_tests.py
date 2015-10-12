@@ -12,6 +12,7 @@ from kalite.main.tests.base import MainTestCase
 from kalite.contentload.management.commands.channels import import_channel, base
 
 from fle_utils.general import ensure_dir
+import unittest
 
 
 class TestContentImportTopicTree(MainTestCase):

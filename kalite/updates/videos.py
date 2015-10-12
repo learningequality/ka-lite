@@ -6,10 +6,15 @@ from django.conf import settings; logging = settings.LOG
 
 from fle_utils import videos  # keep access to all functions
 from fle_utils.general import softload_json
+
+# I will have nightmares from this :)
+# Fixing all this in 0.16
 from fle_utils.videos import *  # get all into the current namespace, override some.
 
-REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(settings.UPDATES_DATA_PATH, "video_file_sizes.json")
-AVERAGE_VIDEO_SIZE = 14000000
+from kalite.topic_tools import settings as topic_tools_settings
+
+REMOTE_VIDEO_SIZE_FILEPATH = os.path.join(topic_tools_settings.CHANNEL_DATA_PATH, "video_file_sizes.json")
+AVERAGE_VIDEO_SIZE = 21135632
 
 REMOTE_VIDEO_SIZES = None
 def get_remote_video_size(youtube_id, default=AVERAGE_VIDEO_SIZE, force=False):
