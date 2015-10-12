@@ -52,7 +52,7 @@ class DependenciesTests(unittest2.TestCase):
     DJANGO_VERSION_STR = "1.5.1.final.0"
 
     DJANGO_HOST = '127.0.0.1'
-    DJANGO_PRODUCTION_PORT = getattr(settings, "PRODUCTION_PORT", 8008)
+    DJANGO_PRODUCTION_PORT = getattr(settings, "HTTP_PORT", 8008)
 
     PSUTIL_MIN_VERSION = "2.0"
 
