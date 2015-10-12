@@ -46,25 +46,6 @@ if CONFIG_PACKAGE:
         RemovedInKALite_v016_Warning
     )
 
-# Config for Raspberry Pi distributed server
-if package_selected("RPi"):
-
-    # nginx proxy will normally be on 8008 and production port on 7007
-    # If ports are overridden in local_settings, run the optimizerpi script
-    PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
-    PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
-    assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
-    #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
-    #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
-
-    PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", 2000)
-    PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 500)
-
-    ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
-
-    USING_RASPBERRY_PI = True
-
-
 if package_selected("nalanda"):
     TURN_OFF_MOTIVATIONAL_FEATURES = True
     RESTRICTED_TEACHER_PERMISSIONS = True
