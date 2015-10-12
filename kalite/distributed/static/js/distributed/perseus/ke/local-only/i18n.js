@@ -104,6 +104,8 @@
             str = str.messages[0];
         }
 
+        str = gettext(str);
+
         return interpolateStringToArray(str, options).join("");
     };
 
