@@ -7,37 +7,50 @@ Windows
 Upgrading KA Lite over an existing installation is easy -- just run the installer and follow the prompts!
 You don't need to uninstall your old KA Lite installation first.
 
-Mac/OSX
-=======
+Mac OS X
+========
 
-**Note:** The latest OSX version (EL Capitan) is not yet supported.
+.. warning:: The latest OS X version (EL Capitan) is not yet supported.
+
+Installation
+____________
 
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
 #. After the download is complete, double click the .dmg file.
+#. Click the ``Agree`` button to accept the LICENSE agreement.
 #. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
-
-    .. note::
-        To upgrade an existing KA Lite installation, download the new installer and then drag it over to the "Applications"
-        folder to replace the existing "KA-Lite-Monitor" application.
-        Give confirmation to overwrite the existing app. Then proceed from this step as usual.
 #. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
 #. On first load, it will check your current environment and show the Preferences dialog.
-#. Input your preferred admin username and password, then click the Apply button in ``KA-Lite Preferences`` dialog.
+#. Input your preferred administrator username and password, then click the ``Apply`` button in ``KA-Lite Preferences`` dialog.
 #. You will be prompted that initial setup will take a few minutes, click the ``OK`` button and wait for the notification that KA-Lite has been setup and can now be started.
-#. Click on the KA-Lite logo icon on the Status Menu Bar and select the ``Start KA-Lite`` menu option.
+#. Click on the KA-Lite logo icon on the menu bar and select the ``Start KA-Lite`` menu option.
 #. Wait for the notification that you can now click on ``Open in Browser`` menu option.
-#. Click on the KA-Lite logo icon on the Status Menu Bar and select ``Open in Browser`` menu option - this should launch KA-Lite in your preferred web browser.
+#. Click on the KA-Lite logo icon on the menu bar and select ``Open in Browser`` menu option - this should launch KA-Lite in your preferred web browser.
 #. Login using the administrator account you have specified during setup.
 
-If the sidebar shows entries that are greyed-out, the child items of the entry may be videos that were not yet downloaded.  If there are assessment items inside, then you need to extract the `assessment.zip` manually:
+Upgrade
+_______
 
+To upgrade an existing KA Lite installation.
+
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
+#. After the download is complete, double click the .dmg file.
+#. Click the ``Agree`` button to accept the LICENSE agreement.
+#. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
+#. Give confirmation to overwrite the existing app.
 #. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
-#. Click on the app icon at the menu bar.
-#. Click on ``Preferences`` in the menu option.
-#. Go to Advanced tab, click on the ``Extract Assessment`` button, then confirm the action. 
-#. Restart the server, login to the web app, then check the sidebar contents.
 
-This will enable the greyed-out assessment items on the sidebar.
+.. tip::
+    If the sidebar shows entries that are greyed-out, the child items of the entry may be videos that were not yet downloaded.  If there are assessment items inside, then you need to extract the `assessment.zip` manually:
+
+    #. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+    #. Click on the app icon at the menu bar.
+    #. Click on ``Preferences`` in the menu option.
+    #. Go to ``Advanced`` tab, click on the ``Extract Assessment`` button, then confirm the action. 
+    #. Restart the server, login to the web app, then check the sidebar contents.
+
+    This will enable the greyed-out assessment items on the sidebar.
+
 
 Linux
 =====
