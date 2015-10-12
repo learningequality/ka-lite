@@ -1,6 +1,6 @@
 var api = require("utils/api");
 var sprintf = require("sprintf-js").sprintf;
-var messages = require("messages");
+var messages = require("utils/messages");
 
 module.exports = function force_sync(zone_id, device_id) {
     // Simple function that calls the API endpoint to force a data sync,
