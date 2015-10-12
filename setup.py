@@ -173,7 +173,7 @@ data_files += map(
 
 data_files += map(
     lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
-    gen_data_files('docs/_build/html', optional=True)
+    gen_data_files(os.path.join('docs', '_build', 'html'), optional=True)
 )
 
 # For now, just disguise the kalitectl.py script here as it's only to be accessed
