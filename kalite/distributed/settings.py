@@ -15,10 +15,13 @@ except ImportError:
 # Functions, for support
 ########################
 
-def USER_FACING_PORT():
-    global PROXY_PORT
-    global PRODUCTION_PORT
-    return PROXY_PORT or PRODUCTION_PORT
+# This defaults to 8008, which is also the default of kalitectl.py which should
+# always set KALITE_LISTEN_PORT
+HTTP_PORT = os.environ.get('KALITE_LISTEN_PORT', 8008)
+
+# This can be configured differently in case proxy is used. When communicating
+# kalite's port, always use this variable, not HTTP_PORT.
+USER_FACING_PORT = HTTP_PORT
 
 
 ##############################
@@ -64,12 +67,6 @@ PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", None)
 if not PRODUCTION_PORT:
     PRODUCTION_PORT = os.environ.get("KALITE_LISTEN_PORT", 8008)
 
-#proxy port is used by nginx and is used by Raspberry Pi optimizations
-PROXY_PORT = getattr(local_settings, "PROXY_PORT", None)
-
-HTTP_PROXY     = getattr(local_settings, "HTTP_PROXY", None)
-HTTPS_PROXY     = getattr(local_settings, "HTTPS_PROXY", None)
-
 
 ########################
 # RPi features
@@ -84,7 +81,7 @@ ENABLE_CLOCK_SET = False
 # Zero-config options
 ########################
 
-ZERO_CONFIG   = getattr(local_settings, "ZERO_CONFIG", False)
+ZERO_CONFIG = getattr(local_settings, "ZERO_CONFIG", False)
 
 # With zero config, no admin (by default)
 INSTALL_ADMIN_USERNAME = getattr(local_settings, "INSTALL_ADMIN_USERNAME", None)
