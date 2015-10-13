@@ -101,7 +101,8 @@ class Command(UpdatesStaticCommand, CronCommand):
             self.next_stage(_("Invalidate caches"))
             caching.invalidate_all_caches()
 
-            self.complete(_("Finished processing language pack %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
+            self.complete((_("Finished processing language pack %(lang_name)s.") % {"lang_name": get_language_name(lang_code)}) +
+                " Please restart the server to complete installation of the language pack.")
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": unicode(e)})
             raise
