@@ -18,7 +18,6 @@
     students:
     coaches: []
     admins: []
-
   bugs_fixed:
     all:
       Properly compare language pack versions (#4587).
