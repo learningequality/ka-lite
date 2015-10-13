@@ -19,6 +19,7 @@ For any app implementing cacheable data or writing to the web cache, the app sho
 """
 import os
 import glob
+import sys
 
 from django.conf import settings; logging = settings.LOG
 from django.core.urlresolvers import reverse
@@ -26,7 +27,8 @@ from django.test.client import Client
 
 from fle_utils.internet.webcache import get_web_cache, has_cache_key, expire_page, caching_is_enabled, invalidate_web_cache
 from kalite import i18n, topic_tools
-from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP
+from kalite.topic_tools.settings import DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP, CHANNEL_DATA_PATH, CONTENT_CACHE_FILEPATH
+
 
 def create_cache_entry(path=None, url_name=None, cache=None, force=False):
     """Create a cache entry"""
@@ -76,10 +78,12 @@ def invalidate_all_caches():
         # We defer the regeneration of these caches to next system startup, by deleting the existing disk based
         # copies of these caches.
         # This will prompt the caches to be recreated at next system start up, and the disk based copies to be rewritten.
-        
-        for filename in glob.glob(os.path.join(settings.CHANNEL_DATA_PATH, "*.cache")):
+
+        for filename in glob.glob(os.path.join(CHANNEL_DATA_PATH, "*.cache")) + [CONTENT_CACHE_FILEPATH]:
             os.remove(filename)
-    else:
+    elif sys.platform != 'darwin':
+        # Macs have to run video download in a subprocess, and as this is only ever called during runtime from
+        # video download or the videoscan subprocess, this never actually affects variables in the main KA Lite thread.
         initialize_content_caches(force=True)
     if caching_is_enabled():
         invalidate_web_cache()

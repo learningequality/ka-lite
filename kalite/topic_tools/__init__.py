@@ -29,10 +29,11 @@ from django.conf import settings as django_settings
 logging = django_settings.LOG
 
 from django.contrib import messages
+from django.core.management import call_command
 from django.db import DatabaseError
 from django.utils.translation import gettext as _
 
-from fle_utils.general import softload_json, json_ascii_decoder
+from fle_utils.general import softload_json, softload_sqlite_cache, json_ascii_decoder
 from kalite import i18n
 
 from . import models as main_models
@@ -42,8 +43,8 @@ from . import settings
 CACHE_VARS = []
 
 
-if not os.path.exists(django_settings.CHANNEL_DATA_PATH):
-    logging.warning("Channel {channel} does not exist.".format(channel=django_settings.CHANNEL))
+if not os.path.exists(settings.CHANNEL_DATA_PATH):
+    logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
 
 def cache_file_path(basename):
@@ -68,7 +69,7 @@ def get_topic_tree(force=False, annotate=False, channel=None, language=None, par
         language = "pt"
 
     if not channel:
-        channel = django_settings.CHANNEL
+        channel = settings.CHANNEL
 
     if not language:
         language = django_settings.LANGUAGE_CODE
@@ -239,7 +240,7 @@ def get_exercise_cache(force=False, language=None):
             else:
                 exercise_template = os.path.join(exercise_lang, exercise_file)
 
-            with i18n.translate_block(exercise_lang):
+            with i18n.translate_block(language):
                 exercise["available"] = available
                 exercise["lang"] = exercise_lang
                 exercise["template"] = exercise_template
@@ -291,16 +292,17 @@ def get_content_cache(force=False, annotate=False, language=None):
     if CONTENT.get(language) is None:
         content = None
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP and not force:
-            content = softload_json(
-                cache_file_path("content_{0}.json".format(language)),
-                logger=logging.debug,
-                raises=False
-            )
+            content = softload_sqlite_cache(settings.CONTENT_CACHE_FILEPATH)
         if content:
             CONTENT[language] = content
             return CONTENT[language]
         else:
-            CONTENT[language] = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+            if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
+                call_command("create_content_db")
+                content = softload_sqlite_cache(settings.CONTENT_CACHE_FILEPATH)
+            else:
+                content = softload_json(settings.CONTENT_FILEPATH, logger=logging.debug, raises=False)
+            CONTENT[language] = content
             annotate = True
 
     if annotate:
@@ -326,7 +328,7 @@ def get_content_cache(force=False, annotate=False, language=None):
                         else:
                             subtitle_langs[filename] = [lc]
 
-        for content in CONTENT[language].values():
+        for key, content in CONTENT[language].iteritems():
             default_thumbnail = create_thumbnail_url(content.get("id"))
             dubmap = i18n.get_id2oklang_map(content.get("id"))
             if dubmap:
@@ -369,15 +371,16 @@ def get_content_cache(force=False, annotate=False, language=None):
             # Sort all subtitle URLs by language code
             content["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
-            with i18n.translate_block(content_lang):
+            with i18n.translate_block(language):
                 content["selected_language"] = content_lang
                 content["title"] = _(content["title"])
                 content["description"] = _(content.get("description")) if content.get("description") else ""
 
+            CONTENT[language][key] = content
+
         if settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP:
             try:
-                with open(cache_file_path("content_{0}.json".format(language)), "w") as f:
-                    json.dump(CONTENT[language], f)
+                CONTENT[language].commit()
             except IOError as e:
                 logging.warn("Annotated content cache file failed in saving with error {e}".format(e=e))
 

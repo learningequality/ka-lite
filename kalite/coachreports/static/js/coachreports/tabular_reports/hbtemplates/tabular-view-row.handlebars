@@ -1,0 +1,5 @@
+<th class="username">
+    <span title="{{ first_name }} {{last_name}}({{ username }})">
+        <a class="student-name" href="{{ url "student_view" }}?user={{ pk }}">{{#ifcond first_name "||" last_name }}{{ first_name }}<br>{{last_name}}{{else}}{{username}}{{/ifcond}}</a>
+    </span>
+</th>

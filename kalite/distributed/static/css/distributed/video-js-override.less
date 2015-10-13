@@ -1,0 +1,50 @@
+/* Responsive content display for tablets */
+/* Jessica TODO: take off !important tags */
+
+@import "../../../../../node_modules/video.js/dist/video-js/video-js.less";
+
+@vjs-font-path: "/static/css/distributed/font/";
+
+@font-face{
+  font-family: 'VideoJS';
+  src: url('/static/css/distributed/font/vjs.eot');
+  src: url('/static/css/distributed/font/vjs.eot?#iefix') format('embedded-opentype'),
+  url('/static/css/distributed/font/vjs.woff') format('woff'),
+  url('/static/css/distributed/font/vjs.ttf') format('truetype'),
+  url('/static/css/distributed/font/vjs.svg#icomoon') format('svg');
+
+  font-weight: normal;
+  font-style: normal;
+}
+
+#video-player {
+    height: 500px;
+}
+div.video-player {
+    width: 100% !important;
+    margin: auto !important;
+}
+.vjs-default-skin .vjs-big-play-button {
+    margin: auto !important;
+    position: relative !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important; 
+}
+.video-js.vjs-fullscreen {
+	position: relative !important;
+}
+
+@media screen and (max-width: 1000px) , screen and (max-height: 610px) {
+	.kalite-navbar {
+		margin-bottom: 0px;
+	}
+	#content-container {
+		width: 100%;
+	}
+	.content-description {
+		padding: 0px;
+	}
+	.top-nav {
+		padding-right: 0px;
+	}
+}

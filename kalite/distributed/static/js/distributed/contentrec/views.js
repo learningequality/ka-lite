@@ -1,18 +1,23 @@
 // Views
+var _ = require("underscore");
+var models = require("./models");
+var BaseView = require("../base/baseview");
+
+require("../../../css/distributed/content_recommendation.less");
 
 /*All 3 cards go into this wrapper, which makes the page responsive*/
-window.HomepageWrapper = BaseView.extend({
+var HomepageWrapper = BaseView.extend({
 
-    template: HB.template("contentrec/content-rec-wrapper"),
+    template: require("./hbtemplates/content-rec-wrapper.handlebars"),
     
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this, "set_collection", "data_load");
         this.set_collection();
         this.listenTo(window.statusModel, "change:user_id", this.set_collection);
     },
 
     set_collection: function() {
-        this.collection = new window.SuggestedContentCollection([], {
+        this.collection = new models.SuggestedContentCollection([], {
             resume: true,
             next: true,
             explore: true
@@ -40,11 +45,11 @@ window.HomepageWrapper = BaseView.extend({
     },
 
     data_load: function() {
-        var resumeCollection = new window.SuggestedContentCollection(this.collection.where({resume:true}));
+        var resumeCollection = new models.SuggestedContentCollection(this.collection.where({resume:true}));
         
-        var nextStepsCollection = new window.SuggestedContentCollection(this.collection.where({next:true}));
+        var nextStepsCollection = new models.SuggestedContentCollection(this.collection.where({next:true}));
         
-        var exploreCollection = new window.SuggestedContentCollection(this.collection.where({explore:true}));
+        var exploreCollection = new models.SuggestedContentCollection(this.collection.where({explore:true}));
         
         if (resumeCollection.length > 0) {
             this.content_resume = new ContentResumeView({
@@ -73,11 +78,13 @@ window.HomepageWrapper = BaseView.extend({
  */
 window.ContentResumeView = BaseView.extend({
 
-    template: HB.template("contentrec/content-resume"),
+    template: require("./hbtemplates/content-resume.handlebars"),
     
     initialize: function() {
+        _.bindAll(this, "render");
+
         if (typeof this.collection === "undefined") {
-            this.collection = new SuggestedContentCollection([], {resume: true});
+            this.collection = new models.SuggestedContentCollection([], {resume: true});
             this.listenTo(this.collection, "sync", this.render);
             this.collection.fetch();
         } else {
@@ -97,7 +104,7 @@ window.ContentResumeView = BaseView.extend({
  */
 window.ContentNextStepsLessonView = BaseView.extend({
 
-    template: HB.template("contentrec/content-nextsteps-lesson"),
+    template: require("./hbtemplates/content-nextsteps-lesson.handlebars"),
 
     initialize: function() {
         this.render();
@@ -114,11 +121,13 @@ window.ContentNextStepsLessonView = BaseView.extend({
  */
 window.ContentNextStepsView = BaseView.extend({
 
-    template: HB.template("contentrec/content-nextsteps"),
+    template: require("./hbtemplates/content-nextsteps.handlebars"),
     
     initialize: function() {
+        _.bindAll(this, "render");
+        
         if (typeof this.collection === "undefined") {
-            this.collection = new SuggestedContentCollection([], {next: true});
+            this.collection = new models.SuggestedContentCollection([], {next: true});
             this.listenTo(this.collection, "sync", this.render);
             this.collection.fetch();
         } else {
@@ -149,7 +158,7 @@ window.ContentNextStepsView = BaseView.extend({
  */
 window.ContentExploreTopicView = BaseView.extend({
 
-    template: HB.template("contentrec/content-explore-topic"),
+    template: require("./hbtemplates/content-explore-topic.handlebars"),
 
     initialize: function() {
         this.render();
@@ -166,12 +175,12 @@ window.ContentExploreTopicView = BaseView.extend({
  */
 window.ContentExploreView = BaseView.extend({
 
-    template: HB.template("contentrec/content-explore"),
+    template: require("./hbtemplates/content-explore.handlebars"),
 
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this, "render");
         if (typeof this.collection === "undefined") {
-            this.collection = new SuggestedContentCollection([], {explore: true});
+            this.collection = new models.SuggestedContentCollection([], {explore: true});
             this.listenTo(this.collection, "sync", this.render);
             this.collection.fetch();
         } else {
@@ -198,5 +207,11 @@ window.ContentExploreView = BaseView.extend({
 
 });
 
-
-
+module.exports = {
+    HomepageWrapper: HomepageWrapper,
+    ContentExploreView: ContentExploreView,
+    ContentResumeView: ContentResumeView,
+    ContentNextStepsView: ContentNextStepsView,
+    ContentExploreTopicView: ContentExploreTopicView,
+    ContentNextStepsLessonView: ContentNextStepsLessonView
+};

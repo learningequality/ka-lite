@@ -35,7 +35,6 @@ class VideoScanTests(MainTestCase):
         out = call_command("videoscan")
         self.assertEqual(VideoFile.objects.all().count(), 1, "Make sure there is now one VideoFile object.")
         self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.youtube_id, "Make sure the video is the one we created.")
-        self.assertTrue(self.is_cache_empty(), "Check that cache is empty.")
 
 
     @unittest.skipIf(True, "Failing test that I'm tired of debugging.")  # TODO(bcipolli): re-enable when we need to be able to auto-cache
@@ -47,15 +46,12 @@ class VideoScanTests(MainTestCase):
         out = call_command("videoscan", auto_cache=True)
         self.assertEqual(VideoFile.objects.all().count(), 1, "Make sure there is now one VideoFile object.")
         self.assertEqual(VideoFile.objects.all()[0].youtube_id, self.youtube_id, "Make sure the video is the one we created.")
-        self.assertTrue(self.get_num_cache_entries() > 0, "Check that cache is not empty.")
-
 
     def test_video_deleted_no_cache(self):
         """
         Run videoscan with a video file, but no cache items
         """
         self.test_video_added_no_cache()
-        self.assertTrue(self.is_cache_empty(), "Check that cache is empty.")
         self.assertTrue(os.path.exists(self.fake_video_file), "Check that video file exists.")
 
         # Remove the video
@@ -65,9 +61,6 @@ class VideoScanTests(MainTestCase):
         # Call videoscan, and validate.
         out = call_command("videoscan")
         self.assertEqual(VideoFile.objects.all().count(), 0, "Make sure there are now no VideoFile objects.")
-        self.assertTrue(self.is_cache_empty(), "Check that cache is empty.")
-
-
 
     def test_video_deleted_with_cache(self):
         """

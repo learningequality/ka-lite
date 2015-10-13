@@ -1,5 +1,10 @@
 Feature: Search Autocomplete on Homepage
 
+    Scenario: Search button is disabled with no input
+        Given I am on the homepage
+        And I enter nothing in the search bar
+        Then The search button is disabled
+
     Scenario: Search for 'Math'
         Given I am on the homepage
         When I search for 'Math'

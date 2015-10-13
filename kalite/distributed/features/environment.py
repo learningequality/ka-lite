@@ -1,7 +1,7 @@
 """
 environment.py specific to the this app
 """
-from kalite.testing.base_environment import before_all, after_all, before_feature as base_before_feature, after_feature
+from kalite.testing.base_environment import before_all, after_all, before_feature, after_feature, before_scenario as base_before_scenario, after_scenario
 
 import random
 import datetime
@@ -11,10 +11,10 @@ from kalite.main.models import ExerciseLog, VideoLog
 from kalite.topic_tools import get_exercise_cache, get_content_cache
 
 
-def before_feature(context, feature):
-    base_before_feature(context, feature)
+def before_scenario(context, scenario):
+    base_before_scenario(context, scenario)
 
-    if "with_progress" in feature.tags:
+    if "with_progress" in context.tags:
         user = FacilityUser.objects.get(username=context.user, facility=getattr(context, "facility", None))
         exercises = random.sample(get_exercise_cache().keys(), 2)
         for exercise in exercises:

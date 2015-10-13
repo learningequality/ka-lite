@@ -1,0 +1,77 @@
+@import "../../../../distributed/static/css/distributed/kalite-base.less";
+
+.container-margin-bottom {
+    margin-bottom: 50px;
+}
+
+.table.details-table {
+    width: inherit;
+}
+
+.detail-tab.correct,
+.detail-tab.correct a,
+.detail-tab.correct.active a {
+    color: #669966 !important;
+}
+
+.detail-tab.incorrect,
+.detail-tab.incorrect a,
+.detail-tab.incorrect.active a {
+    color: #FD795B !important; /*red*/
+}
+.detail-tab.incorrect a,
+.detail-tab.incorrect.active a {
+    font-weight: bold;
+}
+
+.coach-reports-row {
+    border-bottom: 3px solid @k-accent-color;
+    padding: 20px 0;
+    margin-bottom: 3%;
+    max-width: 95%;
+}
+
+#display-topic-report {
+    margin-top: 22px;
+}
+
+#display-coach-report {
+    margin-top: 20px;
+    margin-left: 16px;
+}
+
+#display-topic-report {
+    margin-top: 35px;
+    margin-left: 16px;
+}
+
+@media (min-width: 768px) {
+    #display-coach-report {
+        margin-top: 35px;
+        margin-left: 10px;
+    }
+
+    #display-topic-report {
+        margin-top: 35px;
+        margin-left: 0px;
+    }
+}
+
+.subtitle {
+    font-size: 1.15em;
+    font-weight: bold;
+}
+
+.mastered {
+	background-color: #669966; 
+	}
+.inprogress {
+	background-color: #B1DDF3; 
+	}
+.struggling {
+	background-color: #FD795B; 
+	}
+
+@import "./tabular_view.less";
+@import "./events_view.less";
+@import "./landing_view.less";

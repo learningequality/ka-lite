@@ -2,6 +2,9 @@
 # File created by Coverage
 .coverage
 
+# PyCharm
+.idea
+
 # Eclipse
 .project
 .pydevproject
@@ -42,17 +45,32 @@ static-updates
 # Python compiling
 *.pyc
 *.pyo
+
+# Backup files
 *~
+
+# Sublime editor
 *.sublime-*
+
+# Ignore all .zip files!? No comment?? Needs fixing, I guess it's to avoid
+# committing local assessment items.
 *.zip
 
 # Documentation
 docs/_build
 docs/images/*
+docs/kalite.1.gz
 
 # oh-my-zsh convention for automatically
 # switching on a venv
 .venv
+venv/
+
+# Ignore built javascript files
+/kalite/*/static/js/*/bundles
+
+# Ignore changes to Perseus and Khan Exercises that do not come from intentional edits
+/kalite/distributed/static/js/distributed/perseus
 
 # Lacks documentation
 locale/

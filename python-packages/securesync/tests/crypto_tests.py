@@ -171,11 +171,12 @@ class TestExistingKeysAndSignatures(unittest.TestCase):
 class TestSignLargeFile(SecuresyncTestCase):
     """Special code for signing large files.  Test that it works!"""
     def setUp(self):
-        self.filename = tempfile.mkstemp()[1]
+        self.file_descriptor, self.filename = tempfile.mkstemp()
         self.key = Device.get_own_device().get_key()
 
     def tearDown(self):
-        if os.path.exists(self.filename):
+        if self.file_descriptor:
+            os.close(self.file_descriptor)
             os.remove(self.filename)
 
     def test_valid_empty_file(self):

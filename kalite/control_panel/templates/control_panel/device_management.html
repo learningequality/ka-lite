@@ -48,7 +48,7 @@
 {% block buttons %}{{ block.super }}
     {% if is_own_device %}
         <div class="server-online-only">
-            <a class="registered-only btn btn-success" href="javascript:force_sync()">{% trans "Sync to central server!" %}</a>
+            <a id="force-sync" class="registered-only btn btn-success">{% trans "Sync to central server!" %}</a>
             <a class="not-registered-only btn btn-success" href="{% url 'register_public_key' %}">{% trans "Register" %}</a>
         </div>
     {% endif %}

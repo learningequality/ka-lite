@@ -1,3 +1,15 @@
+0.15:
+  release_date:
+  git_commit: ""
+  new_features:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
+  bugs_fixed:
+    all: []
+
 0.14.2:
   release_date: "2015/10/02"
   git_commit: "dceccca"
