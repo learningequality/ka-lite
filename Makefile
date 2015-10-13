@@ -73,6 +73,7 @@ docs:
 	# sphinx-apidoc -o docs/ ka-lite-gtk
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
+	cli2man bin/kalite -o docs/kalite.1.gz
 	# open docs/_build/html/index.html
 
 assets:
