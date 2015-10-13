@@ -20,7 +20,6 @@ test:
   override:
     - make assets
     - kalite start --traceback -v2
-    - kalite start --settings=kalite.project.settings.disk_based_cache --traceback -v2
     - kalite status
     - kalite stop --traceback -v2
     - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready > sc_output.txt 2>&1:
