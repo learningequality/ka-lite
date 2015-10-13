@@ -208,8 +208,10 @@ var AttemptLogModel = Backbone.Model.extend({
     },
 
     parse: function(response) {
-        if (response.response_log) {
-            response.response_log = JSON.parse(response.response_log);
+        if (response) {
+            if (response.response_log) {
+                response.response_log = JSON.parse(response.response_log);
+            }
         }
         return response;
     },
