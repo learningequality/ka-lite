@@ -675,6 +675,12 @@ ____________________
   If you set this to False, our web server will make some optimizations so as to avoid loading internationalization tools. Things might run a little faster, but you won't have support for translated content.
 * ``USE_L10N = <True or False> (default = False)``
   By default, this is set to False. If you set this to True, Django will format dates, numbers and calendars according to the current locale. For example, January 5, 2000 would be 1/5/2000 if locale = "en-us" and 5/1/2000 if locale = "en-gb"
+* ``USER_FACING_PORT = 123``
+  When KA Lite is running behind a proxy (for instance Nginx or Apache), you
+  probably want users to be accessing KA Lite from a different port than the
+  service itself is running from. Setting this option will change certain
+  system messages to use a different port. It does not affect the port that
+  KA Lite is using.
 
 
 User restrictions
