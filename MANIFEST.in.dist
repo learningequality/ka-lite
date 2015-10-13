@@ -27,3 +27,6 @@ recursive-include data *
 # Necessary because it's a data directory so they
 # do not get automatically excluded
 recursive-exclude python-packages *pyc
+
+# Docs
+recursive-include docs/_build/html *
