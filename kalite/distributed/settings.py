@@ -61,15 +61,6 @@ POINTS_PER_VIDEO = getattr(local_settings, 'POINTS_PER_VIDEO', 750)
 
 
 ########################
-# RPi features
-########################
-
-# Clock Setting disabled by default unless overriden.
-# Note: This will only work on Linux systems where the server is running as root.
-ENABLE_CLOCK_SET = False
-
-
-########################
 # Zero-config options
 ########################
 

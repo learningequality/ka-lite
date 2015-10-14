@@ -16,10 +16,6 @@ USER_FACING_PORT = 8008
 PASSWORD_ITERATIONS_TEACHER = 2000
 PASSWORD_ITERATIONS_STUDENT = 500
 
-# Enables a user to set the clock from the control panel.
-# TODO: Verify that this still works
-ENABLE_CLOCK_SET = True
-
 # This no-op option is used for a couple of views that have user information
 # specifically targeted the RPi users.
 USING_RASPBERRY_PI = True
