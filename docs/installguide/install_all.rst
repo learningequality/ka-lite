@@ -39,6 +39,7 @@ To upgrade an existing KA Lite installation.
 #. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
 #. Give confirmation to overwrite the existing app.
 #. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+#. On the ``KA-Lite Preferences`` dialog ``Advanced`` tab click the ``setup`` button to run the ``kalite manage setup`` command.
 
 .. tip::
     If the sidebar shows entries that are greyed-out, the child items of the entry may be videos that were not yet downloaded.  If there are assessment items inside, then you need to extract the `assessment.zip` manually:
