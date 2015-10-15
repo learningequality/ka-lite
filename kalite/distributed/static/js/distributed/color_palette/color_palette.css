@@ -1,10 +1,18 @@
 #my_background, #my_accent , #my_action , #my_headline , #my_bodytext, #change_color_palette {
 	display: inline-block;
   	position: relative;
+}
+div#my_background, div#my_accent , div#my_action , div#my_headline , div#my_bodytext, div#change_color_palette {
   	height: 60px;
 }
 
-#change_color_palette {
+#save_color_palette {
 	top:-26px;
 	margin-bottom: -58px;
+}
+
+.color_palette_view {
+	bottom: 0;
+	position: absolute;
+	z-index: 9999;
 }

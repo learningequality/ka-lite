@@ -2,34 +2,37 @@ var $ = require("../base/jQuery");
 require("browsernizr/test/inputtypes");
 var Modernizr = require("browsernizr");
 var colorPaletteTemplate = require("./hbtemplates/color-palette.handlebars");
+var colorPickerTemplate = require("./hbtemplates/color-picker.handlebars");
 var BaseView = require("../base/baseview");
+require("./color_palette.css");
 
 var bg_clr, acn_clr, act_clr, hln_clr, byt_clr;
 var local_css_container;
 
 module.exports = BaseView.extend({
     template: colorPaletteTemplate,
+    color_picker_template: colorPickerTemplate,
 
     events: {
-        "change": "render"
+        "change": "render",
+        "click #save_color_palette": "save_palette"
     },
 
     initialize: function(options) {
+        this.$el.html(this.color_picker_template);
         //check if color type available
         this.polyfill_verify();
 
         //retrieve the DOM elements
-        local_css_container = $(options.local_css_container);
-        bg_clr = $(options.bg_clr);
-        acn_clr = $(options.acn_clr);
-        act_clr = $(options.act_clr);
-        hln_clr = $(options.hln_clr);
-        byt_clr = $(options.byt_clr);
+        local_css_container = $("#k-local-css");
+        bg_clr = $("#my_background");
+        acn_clr = $("#my_accent");
+        act_clr = $("#my_action");
+        hln_clr = $("#my_headline");
+        byt_clr = $("#my_bodytext");
 
         //if not, fallback to simple-color-picker
         this.polyfill_color_picker();
-
-        this.set_save_btn_listener($(options.save_color_palette_btn));
 
         //always looking for style in the localStorage first
         if(localStorage && localStorage.getItem("k-css")){
@@ -53,13 +56,11 @@ module.exports = BaseView.extend({
         );
     },
 
-    set_save_btn_listener: function(save_color_palette_btn){
-        save_color_palette_btn.click(function(){
-            if(localStorage){
-                var css = local_css_container.html();
-                localStorage.setItem("k-css", css);
-            }
-        });
+    save_palette: function(){
+        if(localStorage){
+            var css = local_css_container.html();
+            localStorage.setItem("k-css", css);
+        }
     },
 
     polyfill_verify: function() {
@@ -91,7 +92,6 @@ module.exports = BaseView.extend({
         if(!Modernizr.inputtypes.color){
             require('../../../../../../node_modules/simple-color-picker/simple-color-picker.css');
             var ColorPicker = require('../../../../../../node_modules/simple-color-picker');
-            require("./color_palette.css");
 
             var my_background = new ColorPicker({
                 el: bg_clr[0],

@@ -39,14 +39,7 @@ var ColorPalette = require("../color_palette/color_palette");
 $(function(){
     
     new ColorPalette({
-        el:".color_palette_view",
-        local_css_container: "#k-local-css",
-        save_color_palette_btn: "#save_color_palette",
-        bg_clr:"#my_background",
-        acn_clr:"#my_accent",
-        act_clr:"#my_action",
-        hln_clr:"#my_headline",
-        byt_clr:"#my_bodytext"
+        el:".color_palette_view"
     });
 
     if (!Modernizr.canvas) {
