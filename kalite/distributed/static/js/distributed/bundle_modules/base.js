@@ -33,10 +33,21 @@ require("../../../css/distributed/khan-site.css");
 
 require("../../../css/distributed/khan-lite.less");
 
-require("../color_palette/color_palette");
+var ColorPalette = require("../color_palette/color_palette");
 
 // Related to showing elements on screen
 $(function(){
+    
+    new ColorPalette({
+        el:".color_palette_view",
+        local_css_container: "#k-local-css",
+        save_color_palette_btn: "#save_color_palette",
+        bg_clr:"#my_background",
+        acn_clr:"#my_accent",
+        act_clr:"#my_action",
+        hln_clr:"#my_headline",
+        byt_clr:"#my_bodytext"
+    });
 
     if (!Modernizr.canvas) {
         $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_compatilibity.js");
