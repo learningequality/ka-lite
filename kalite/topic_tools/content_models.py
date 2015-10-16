@@ -44,6 +44,11 @@ class Item(Model):
         kwargs = parse_model_data(kwargs)
         super(Item, self).__init__(*args, **kwargs)
 
+class AssessmentItem(Model):
+    id = CharField(max_length=50, primary_key=True)
+    item_data = TextField()  # A serialized JSON blob
+    author_names = CharField(max_length=200)  # A serialized JSON list
+
 
 def parse_model_data(item):
     extra_fields = item.get("extra_fields", {})
@@ -384,8 +389,8 @@ def create_table(db=None, **kwargs):
     """
     Create a table in the database.
     """
-    with Using(db, [Item]):
-        db.create_tables([Item])
+    with Using(db, [Item, AssessmentItem]):
+        db.create_tables([Item, AssessmentItem])
 
 
 @set_database
@@ -454,3 +459,10 @@ def update_parents(db=None, parent_mapping=None, channel="khan", language="en", 
                         if item and parent:
                             item.parent = parent
                             item.save()
+
+
+@set_database
+def get_assessment_item_data(db=None, channel="khan", language="en", assessment_item_id=None):
+    with Using(db, [AssessmentItem]):
+        assessment_item = AssessmentItem.get(AssessmentItem.id == assessment_item_id)
+        return model_to_dict(assessment_item)

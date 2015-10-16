@@ -39,27 +39,6 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
 
-def get_assessment_item_data(request, assessment_item_id=None):
-    try:
-        assessment_item = main_models.AssessmentItem.objects.get(id=assessment_item_id)
-    except main_models.AssessmentItem.DoesNotExist:
-        return None
-    except DatabaseError:
-        return None
-
-    try:
-        item_data = json.loads(assessment_item.item_data, object_hook=json_ascii_decoder)
-        item_data = smart_translate_item_data(item_data)
-        item_data = json.dumps(item_data)
-    except KeyError as e:
-        logging.error("Assessment item did not have the expected key %s. Assessment item: \n %s" % (e, assessment_item))
-
-    #  Expects a dict
-    return {
-        "id": assessment_item.id,
-        "item_data": item_data,
-        "author_names": assessment_item.author_names,
-    }
 
 
 def smart_translate_item_data(item_data):

@@ -260,12 +260,6 @@ DATABASES = getattr(local_settings, "DATABASES", {
         "OPTIONS": {
             "timeout": 60,
         },
-    },
-    "assessment_items": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": __assessment_items_database_path,
-        "OPTIONS": {
-        },
     }
 })
 
