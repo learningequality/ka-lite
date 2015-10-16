@@ -29,7 +29,6 @@ from django.utils.translation import gettext as _
 
 from fle_utils.general import json_ascii_decoder
 
-from . import models as main_models
 from . import settings
 
 CACHE_VARS = []
@@ -44,7 +43,7 @@ def database_exists(channel="khan", language="en", database_path=None):
 
     return os.path.exists(path)
 
-def available_content_databases:
+def available_content_databases():
     """
     Generator to return the channel and language for every content database that exists in the system.
     """
@@ -53,7 +52,6 @@ def available_content_databases:
         match = pattern.search(filename)
         if match:
             yield match.group(1, 2)
-
 
 
 def smart_translate_item_data(item_data):

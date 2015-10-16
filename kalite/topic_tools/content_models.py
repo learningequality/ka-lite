@@ -466,7 +466,7 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
                     parent.available = available
                 if parent.remote_size != child_remote:
                     parent.remote_size = child_remote
-                if parent.size_on_disk != child_on_disk
+                if parent.size_on_disk != child_on_disk:
                     parent.size_on_disk = child_on_disk
                 if parent.is_dirty():
                     parent.save()
