@@ -1,7 +1,7 @@
 from django.utils import unittest
 
 from ..models import VideoLog, ExerciseLog
-from kalite import i18n
+from kalite.i18n.base import get_video_id
 from kalite.facility.models import Facility, FacilityUser
 from kalite.testing.base import KALiteTestCase
 
@@ -80,7 +80,7 @@ class TestVideoLogs(KALiteTestCase):
     NEW_POINTS = 22
     NEW_SECONDS_WATCHED = 5
     YOUTUBE_ID = "aNqG4ChKShI"
-    VIDEO_ID = i18n.get_video_id(YOUTUBE_ID) or "dummy"
+    VIDEO_ID = get_video_id(YOUTUBE_ID) or "dummy"
 
     def setUp(self):
         super(TestVideoLogs, self).setUp()

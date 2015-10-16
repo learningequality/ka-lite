@@ -21,7 +21,7 @@ from kalite.contentload.utils import dedupe_paths
 
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH, CHANNEL_DATA_PATH
 
-from kalite import i18n
+from kalite.i18n.base import translate_block
 from django.utils.translation import gettext as _
 
 
@@ -77,7 +77,7 @@ def generate_topic_tree_items(channel="khan", language="en"):
         node["available"] = False
 
         # Translate everything for good measure
-        with i18n.translate_block(language):
+        with translate_block(language):
             node["title"] = _(node.get("title", ""))
             node["description"] = _(node.get("description", "")) if node.get("description") else ""
 

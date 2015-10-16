@@ -28,7 +28,6 @@ from django.db import DatabaseError
 from django.utils.translation import gettext as _
 
 from fle_utils.general import json_ascii_decoder
-from kalite import i18n
 
 from . import models as main_models
 from . import settings

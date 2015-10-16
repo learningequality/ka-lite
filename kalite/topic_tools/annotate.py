@@ -4,7 +4,7 @@ import json
 from django.conf import settings as django_settings
 logging = django_settings.LOG
 
-from kalite import i18n
+from kalite.i18n.base import get_srt_path, get_language_name
 
 from . import settings
 from .base import database_exists
@@ -39,8 +39,8 @@ def update_content_availability(content_list, language="en", channel="khan"):
 
     updates = {}
 
-    if os.path.exists(i18n.get_srt_path()):
-        for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
+    if os.path.exists(get_srt_path()):
+        for (dirpath, dirnames, filenames) in os.walk(get_srt_path()):
             # Only both looking at files that are inside a 'subtitles' directory
             if os.path.basename(dirpath) == "subtitles":
                 lc = os.path.basename(os.path.dirname(dirpath))
@@ -109,7 +109,7 @@ def update_content_availability(content_list, language="en", channel="khan"):
                     subtitle_urls = [{
                         "code": lc,
                         "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
-                        "name": i18n.get_language_name(lc)
+                        "name": get_language_name(lc)
                         } for lc in subtitle_lang_codes]
 
                     # Sort all subtitle URLs by language code

@@ -15,7 +15,7 @@ from ... import download_video, DownloadCancelled, URLNotFound
 from ...models import VideoFile
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
-from kalite import i18n
+from kalite.i18n.base import get_video_id
 from kalite.topic_tools.content_models import get_content_item, annotate_content_models
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
@@ -39,7 +39,7 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
 
 def get_video_node_by_youtube_id(youtube_id):
     """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
-    video_id = i18n.get_video_id(youtube_id=youtube_id)
+    video_id = get_video_id(youtube_id=youtube_id)
     return get_content_item(content_id=video_id)
 
 

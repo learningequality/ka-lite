@@ -1,7 +1,7 @@
 """
 """
 from ..models import VideoLog, ExerciseLog
-from kalite import i18n
+from kalite.i18n.base import get_video_id
 from kalite.facility.models import Facility, FacilityUser
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.client import KALiteClient
@@ -131,9 +131,9 @@ class TestSaveVideoLog(KALiteTestCase):
     NEW_POINTS = 32
     NEW_SECONDS_WATCHED = 15
     YOUTUBE_ID = "aNqG4ChKShI"
-    VIDEO_ID = i18n.get_video_id(YOUTUBE_ID) or "dummy"
+    VIDEO_ID = get_video_id(YOUTUBE_ID) or "dummy"
     YOUTUBE_ID2 = "b22tMEc6Kko"
-    VIDEO_ID2 = i18n.get_video_id(YOUTUBE_ID2) or "dummy2"
+    VIDEO_ID2 = get_video_id(YOUTUBE_ID2) or "dummy2"
     USERNAME = "testuser"
     PASSWORD = "dummies"
 

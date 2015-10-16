@@ -13,7 +13,6 @@ from kalite.contentload import settings
 
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH
 
-from kalite import i18n
 from django.utils.translation import gettext as _
 
 

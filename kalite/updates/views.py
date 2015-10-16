@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.conf import settings
 
 from .models import VideoFile
-from kalite.i18n import get_installed_language_packs
+from kalite.i18n.base import get_installed_language_packs
 from kalite.shared.decorators.auth import require_admin
 from securesync.models import Device
 from securesync.devices.decorators import require_registration

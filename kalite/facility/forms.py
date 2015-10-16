@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
 from fle_utils.django_utils.users import verify_raw_password
-from kalite.i18n import get_installed_language_packs, get_language_name, get_default_language
+from kalite.i18n.base import get_installed_language_packs, get_language_name, get_default_language
 
 
 class FacilityUserForm(forms.ModelForm):

@@ -12,8 +12,7 @@ from ...api_views import divide_videos_by_language
 from ...models import VideoFile
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import break_into_chunks
-from kalite import i18n
-from kalite import updates
+from kalite.i18n.base import get_video_id
 from kalite.topic_tools.content_models import annotate_content_models
 
 
@@ -48,7 +47,7 @@ class Command(CronCommand):
         def delete_objects_for_incomplete_videos():
             # delete VideoFile objects that are not marked as in progress, but are neither 0% nor 100% done; they're broken
             video_files_to_delete = VideoFile.objects.filter(download_in_progress=False, percent_complete__gt=0, percent_complete__lt=100)
-            deleted_video_ids = [i18n.get_video_id(video_file.youtube_id) for video_file in video_files_to_delete]
+            deleted_video_ids = [get_video_id(video_file.youtube_id) for video_file in video_files_to_delete]
             video_files_to_delete.delete()
             if deleted_video_ids:
                 self.stdout.write("Deleted %d VideoFile models (to mark them as not downloaded, since they were in a bad state)\n" % len(deleted_video_ids))
@@ -70,7 +69,7 @@ class Command(CronCommand):
                     new_video_files += lang_video_files
                 self.stdout.write("Created %d VideoFile models (and marked them as complete, since the files exist)\n" % len(new_video_files))
 
-            return [i18n.get_video_id(video_file.youtube_id) for video_file in new_video_files]
+            return [get_video_id(video_file.youtube_id) for video_file in new_video_files]
 
         touched_video_ids += add_missing_objects_to_db(youtube_ids_in_filesystem, videos_marked_at_all)
 
@@ -81,7 +80,7 @@ class Command(CronCommand):
                 video_files_needing_model_update = VideoFile.objects.filter(percent_complete=0, download_in_progress=False, youtube_id__in=chunk)
                 video_files_needing_model_update.update(percent_complete=100, flagged_for_download=False)
 
-                updated_video_ids += [i18n.get_video_id(video_file.youtube_id) for video_file in video_files_needing_model_update]
+                updated_video_ids += [get_video_id(video_file.youtube_id) for video_file in video_files_needing_model_update]
 
             if updated_video_ids:
                 self.stdout.write("Updated %d VideoFile models (to mark them as complete, since the files exist)\n" % len(updated_video_ids))
