@@ -6,8 +6,11 @@ from django.conf import settings; logging = settings.LOG
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from fle_utils.django_utils.classes import ExtendedModel
+from fle_utils.chronograph.models import Job
 
 
 class UpdateProgressLog(ExtendedModel):
@@ -207,3 +210,15 @@ class VideoFile(ExtendedModel):
         else:
             status = "not downloaded"
         return u"id: %s (%s)" % (self.youtube_id, status)
+
+
+# Signals
+
+@receiver(post_save, sender=Job)
+def my_handler(sender, **kwargs):
+    job = kwargs['instance']
+    if not job.is_running:
+        # Update progress log to be cancelled as well.
+        UpdateProgressLog.objects \
+            .filter(process_name=job.command, completed=False) \
+            .update(completed=True)
