@@ -35,6 +35,8 @@ from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
 from kalite.version import VERSION
 
+from kalite.topic_tools import content_models
+
 CACHE_VARS = []
 
 
@@ -65,56 +67,6 @@ def get_po_filepath(lang_code, filename=None):
     return (filename and os.path.join(base_dirpath, filename)) or base_dirpath
 
 
-DUBBED_VIDEO_MAP_RAW = None
-CACHE_VARS.append("DUBBED_VIDEO_MAP_RAW")
-DUBBED_VIDEO_MAP = None
-CACHE_VARS.append("DUBBED_VIDEO_MAP")
-def get_dubbed_video_map(lang_code=None, force=False):
-    """
-    Stores a key per language.  Value is a dictionary between video_id and (dubbed) youtube_id
-    """
-    global DUBBED_VIDEO_MAP, DUBBED_VIDEO_MAP_RAW
-
-    if DUBBED_VIDEO_MAP is None or force:
-        try:
-            if not os.path.exists(settings.DUBBED_VIDEOS_MAPPING_FILEPATH) or force:
-                try:
-                    # Never call commands that could fail from the distributed server.
-                    #   Always create a central server API to abstract things
-                    response = requests.get("%s://%s/api/i18n/videos/dubbed_video_map" % (settings.SECURESYNC_PROTOCOL, settings.CENTRAL_SERVER_HOST))
-                    response.raise_for_status()
-                    with open(settings.DUBBED_VIDEOS_MAPPING_FILEPATH, "wb") as fp:
-                        fp.write(response.content.decode('utf-8'))  # wait until content has been confirmed before opening file.
-                except Exception as e:
-                    if not os.path.exists(settings.DUBBED_VIDEOS_MAPPING_FILEPATH):
-                        # Unrecoverable error, so raise
-                        raise
-                    elif DUBBED_VIDEO_MAP:
-                        # No need to recover--allow the downstream dude to catch the error.
-                        raise
-                    else:
-                        # We can recover by NOT forcing reload.
-                        logging.warn("%s" % e)
-
-            DUBBED_VIDEO_MAP_RAW = softload_json(settings.DUBBED_VIDEOS_MAPPING_FILEPATH, raises=True)
-        except Exception as e:
-            logging.info("Failed to get dubbed video mappings; defaulting to empty.")
-            DUBBED_VIDEO_MAP_RAW = {}  # setting this will avoid triggering reload on every call
-
-        DUBBED_VIDEO_MAP = {}
-        for lang_name, video_map in DUBBED_VIDEO_MAP_RAW.iteritems():
-            if lang_name:
-                logging.debug("Adding dubbed video map entry for %s (name=%s)" % (get_langcode_map(lang_name), lang_name))
-                DUBBED_VIDEO_MAP[get_langcode_map(lang_name)] = video_map
-
-    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
-    # TODO(jamalex): BURN IT ALL DOWN!
-    if lang_code == "pt-BR":
-        lang_code = "pt"
-
-    return DUBBED_VIDEO_MAP.get(lang_code, {}) if lang_code else DUBBED_VIDEO_MAP
-
-
 LANG2CODE_MAP = None
 CACHE_VARS.append("LANG2CODE_MAP")
 def get_langcode_map(lang_name=None, force=False):
@@ -133,39 +85,6 @@ def get_langcode_map(lang_name=None, force=False):
     return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
 
 
-YT2ID_MAP = None
-CACHE_VARS.append("YT2ID_MAP")
-def get_file2id_map(force=False):
-    global YT2ID_MAP
-    if YT2ID_MAP is None or force:
-        YT2ID_MAP = {}
-        for lang_code, dic in get_dubbed_video_map().iteritems():
-            for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                if dubbed_youtube_id in YT2ID_MAP:
-                    logging.debug("conflicting entry of dubbed_youtube_id %s in %s dubbed video map" % (dubbed_youtube_id, lang_code))
-                YT2ID_MAP[dubbed_youtube_id] = english_youtube_id  # assumes video id is the english youtube_id
-    return YT2ID_MAP
-
-
-ID2OKLANG_MAP = None
-CACHE_VARS.append("ID2OKLANG_MAP")
-def get_id2oklang_map(video_id, force=False):
-    global ID2OKLANG_MAP
-    if ID2OKLANG_MAP is None or force:
-        ID2OKLANG_MAP = {}
-        for lang_code, dic in get_dubbed_video_map().iteritems():
-            if lang_code and dic:
-                for english_youtube_id, dubbed_youtube_id in dic.iteritems():
-                    cur_video_id = get_video_id(english_youtube_id)
-                    ID2OKLANG_MAP[cur_video_id] = ID2OKLANG_MAP.get(english_youtube_id, {})
-                    ID2OKLANG_MAP[cur_video_id][lang_code] = dubbed_youtube_id
-    if video_id:
-        # Not all IDs made it into the spreadsheet, so by default, use the video_id as the youtube_id
-        return ID2OKLANG_MAP.get(video_id, {"en": get_youtube_id(video_id, None)})
-    else:
-        return ID2OKLANG_MAP
-
-
 def get_youtube_id(video_id, lang_code=None):
     """Given a video ID, return the youtube ID for the given language.
     If lang_code is None, return the base / default youtube_id for the given video_id.
@@ -178,39 +97,16 @@ def get_youtube_id(video_id, lang_code=None):
 
     if not lang_code or lang_code == "en":  # looking for the base/default youtube_id
         return video_id
-    return get_dubbed_video_map(lcode_to_ietf(lang_code)).get(video_id)
+    video = content_models.get_content_item(id=video_id, language=lang_code)
+    return video.get("youtube_id") if video else None
 
 
 def get_video_id(youtube_id):
     """
     Youtube ID is assumed to be the non-english
     """
-    return get_file2id_map().get(youtube_id, youtube_id)
-
-
-YT2LANG_MAP = None
-CACHE_VARS.append("YT2LANG_MAP")
-def get_file2lang_map(force=False):
-    """Map from youtube_id to language code"""
-    global YT2LANG_MAP
-    if YT2LANG_MAP is None or force:
-        YT2LANG_MAP = {}
-        for lang_code, dic in get_dubbed_video_map().iteritems():
-            for dubbed_youtube_id in dic.values():
-                if dubbed_youtube_id.startswith("#") or len(dubbed_youtube_id) != 11:
-                    # Handle bad cells from the mapping spreadsheet by skipping them
-                    continue
-                if dubbed_youtube_id in YT2LANG_MAP and YT2LANG_MAP[dubbed_youtube_id] != lang_code:
-                    # Sanity check, but must be failsafe, since we don't control these data
-                    logging.error("Conflicting entry found in language map for video %s; overwriting previous entry of %s to %s." % (dubbed_youtube_id, YT2LANG_MAP[dubbed_youtube_id], lang_code))
-                YT2LANG_MAP[dubbed_youtube_id] = lang_code
-    return YT2LANG_MAP
-
-
-def get_video_language(youtube_id, force=False):
-    lang_code = get_file2lang_map(force=force).get(youtube_id)
-    logging.debug("%s mapped to language %s" % (youtube_id, lang_code))
-    return lang_code or "en"  # default to "en"
+    video = content_models.get_video_from_youtube_id(youtube_id)
+    return video.get("id") if video else youtube_id
 
 
 def get_srt_url(youtube_id, code):

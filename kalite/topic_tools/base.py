@@ -45,6 +45,16 @@ def database_exists(channel="khan", language="en", database_path=None):
 
     return os.path.exists(path)
 
+def available_content_databases:
+    """
+    Generator to return the channel and language for every content database that exists in the system.
+    """
+    pattern = re.compile("content_([^_]+)_([^_]).sqlite")
+    for filename in glob.iglob(settings.CONTENT_DATABASE_ROOT):
+        match = pattern.search(filename)
+        if match:
+            yield match.group(1, 2)
+
 
 
 def smart_translate_item_data(item_data):

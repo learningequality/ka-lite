@@ -17,7 +17,7 @@ from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from . import delete_downloaded_files, get_local_video_size, get_remote_video_size
+from .videos import delete_downloaded_files, get_local_video_size, get_remote_video_size
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from fle_utils.chronograph.utils import force_job
@@ -26,22 +26,9 @@ from fle_utils.general import isnumeric, break_into_chunks, softload_json
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language, get_language_name
+from kalite.i18n import get_youtube_id, lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.settings import TOPICS_FILEPATHS, CHANNEL
-
-
-
-def divide_videos_by_language(youtube_ids):
-    """Utility function for separating a list of youtube ids
-    into a dictionary of lists, separated by video language
-    (as determined by the current dubbed video map)
-    """
-
-    buckets_by_lang = defaultdict(lambda: [])
-    for y_id in youtube_ids:
-        buckets_by_lang[get_video_language(y_id)].append(y_id)
-    return buckets_by_lang
 
 
 def process_log_from_request(handler):

@@ -17,14 +17,15 @@ import json
 
 import sqlite3
 
-from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn
+from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn, IntegerField
 from playhouse.shortcuts import model_to_dict
 
+from .base import available_content_databases
 from .settings import CONTENT_DATABASE_PATH, CHANNEL
 from .annotate import update_content_availability
 
 
-# This BaseItem is used to subclass different Models for different languages.
+# This Item is defined without a database.
 # This allows us to use a separate database for each language, so that we
 # can reduce performance cost, and keep queries simple for multiple languages.
 # In addition, we can distribute databases separately for each language pack.
@@ -39,6 +40,7 @@ class Item(Model):
     slug = CharField()
     path = CharField(index=True, unique=True)
     extra_fields = CharField(null=True)
+    youtube_id = CharField(null=True)
 
     def __init__(self, *args, **kwargs):
         kwargs = parse_model_data(kwargs)
@@ -293,6 +295,25 @@ def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
             if not kinds:
                 kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
             return Item.select(Item).where(Item.kind.in_(kinds), Item.path.contains(topic_node.path))
+
+
+def get_video_from_youtube_id(youtube_id):
+    for channel, language in available_content_databases():
+        video = _get_video_from_youtube_id(channel=channel, language=language, youtube_id=youtube_id)
+        if video:
+            return video
+
+
+@parse_data
+@set_database
+def _get_video_from_youtube_id(youtube_id=None, db=None, **kwargs):
+    """
+    Convenience function for returning a fully fleshed out video content node from youtube_id
+    """
+    if youtube_id:
+        with Using(db, [Item]):
+            value = Item.get(Item.youtube_id == youtube_id, Item.kind == "Video")
+            return model_to_dict(value)
 
 
 @set_database
