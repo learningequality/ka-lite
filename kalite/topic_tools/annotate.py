@@ -9,7 +9,7 @@ from django.utils.translation import gettext as _
 from kalite import i18n
 
 from . import settings
-from .base import get_assessment_item_data
+from .base import database_exists
 
 
 def is_content_on_disk(content_id, format="mp4", content_path=None):
@@ -50,19 +50,6 @@ def update_content_availability(content_list, language="en"):
                     else:
                         subtitle_langs[filename] = [lc]
 
-    # English-language exercises live in application space, translations in user space
-    if language == "en":
-        exercise_root = os.path.join(settings.KHAN_EXERCISES_DIRPATH, "exercises")
-    else:
-        exercise_root = i18n.get_localized_exercise_dirpath(language)
-    if os.path.exists(exercise_root):
-        try:
-            exercise_templates = os.listdir(exercise_root)
-        except OSError:
-            exercise_templates = []
-    else:
-        exercise_templates = []
-
     for content in content_list:
 
         # Some nodes are duplicated, but they require the same information
@@ -72,33 +59,9 @@ def update_content_availability(content_list, language="en"):
 
             if content.get("kind") == "Exercise":
 
-                # The central server doesn't have an assessment item database
-                if django_settings.CENTRAL_SERVER:
-                    continue
-                elif content.get("uses_assessment_items", False):
-                    items = []
-
-                    assessment_items = content.get("all_assessment_items", [])
-
-                    for item in assessment_items:
-                        item = json.loads(item)
-                        if get_assessment_item_data(request=None, assessment_item_id=item.get("id")):
-                            items.append(item)
-                            update["available"] = True
-                    update["all_assessment_items"] = items
-                else:
-                    exercise_file = content.get("name", "") + ".html"
-
-                    if language == "en":
-                        exercise_template = exercise_file
-                        if exercise_template in exercise_templates:
-                            update["available"] = True
-                            update["template"] = exercise_template
-                    else:
-                        exercise_template = os.path.join(language, exercise_file)
-                        if exercise_template in exercise_templates:
-                            update["available"] = True
-                            update["template"] = exercise_template
+                # Databases have been pre-filtered to only contain existing exercises
+                if database_exists(language=language, channel=channel):
+                    update["available"] = True
 
             elif content.get("kind") == "Topic":
                 # Ignore topics, as we only want to update their availability after we have updated the rest.

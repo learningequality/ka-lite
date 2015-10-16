@@ -76,12 +76,6 @@ def unparse_model_data(item):
     return item
 
 
-def database_exists(channel="khan", language="en", database_path=None):
-    path = database_path or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
-
-    return os.path.exists(path)
-
-
 def set_database(function):
     """
     Sets the appropriate database for the ensuing model interactions.

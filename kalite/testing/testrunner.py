@@ -21,7 +21,7 @@ from selenium import webdriver
 from optparse import make_option
 
 from kalite.testing.base import DjangoBehaveTestCase
-from kalite.topic_tools.content_models import database_exists
+from kalite.topic_tools.base import database_exists
 
 
 def get_app_dir(app_module):

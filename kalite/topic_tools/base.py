@@ -18,6 +18,7 @@ import os
 import re
 import json
 import copy
+import glob
 
 from django.conf import settings as django_settings
 logging = django_settings.LOG
@@ -38,6 +39,11 @@ CACHE_VARS = []
 if not os.path.exists(settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
+
+def database_exists(channel="khan", language="en", database_path=None):
+    path = database_path or settings.CONTENT_DATABASE_PATH.format(channel=channel, language=language)
+
+    return os.path.exists(path)
 
 
 

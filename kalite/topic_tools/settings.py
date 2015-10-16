@@ -14,12 +14,15 @@ from django.conf import settings
 
 from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_DATABASE_PATH
 
-CONTENT_DATABASE_PATH = os.path.join(os.path.dirname(KHAN_ASSESSMENT_ITEM_DATABASE_PATH), "content_{channel}_{language}.sqlite")
+CONTENT_DATABASE_ROOT = os.path.join(settings.USER_DATA_ROOT, "content_databases")
+if not os.path.exists(CONTENT_DATABASE_ROOT):
+    os.mkdir(CONTENT_DATABASE_ROOT)
+
+CONTENT_DATABASE_PATH = os.path.join(CONTENT_DATABASE_ROOT, "content_{channel}_{language}.sqlite")
 
 CHANNEL = getattr(settings, "CHANNEL", "khan")
 
 CHANNEL_DATA_PATH = os.path.join(settings.CONTENT_DATA_PATH, CHANNEL)
-
 
 KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke")
 
