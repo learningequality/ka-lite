@@ -76,7 +76,6 @@ def learn(request):
     Render the all-in-one sidebar navigation/content-viewing app.
     """
     context = {
-        "load_perseus_assets": LOAD_KHAN_RESOURCES,
         "channel": CHANNEL,
         "pdfjs": settings.PDFJS,
     }
