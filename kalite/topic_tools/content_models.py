@@ -41,6 +41,9 @@ class Item(Model):
     path = CharField(index=True, unique=True)
     extra_fields = CharField(null=True)
     youtube_id = CharField(null=True)
+    size_on_disk = IntegerField(default=0)
+    remote_size = IntegerField(default=0)
+
 
     def __init__(self, *args, **kwargs):
         kwargs = parse_model_data(kwargs)
@@ -216,6 +219,32 @@ def get_topic_nodes(parent=None, ids=None, db=None, **kwargs):
                 Item.path,
                 Item.slug,
                 ).where(Item.id.in_(ids))
+            return values
+
+
+@parse_data
+@set_database
+def get_topic_update_nodes(parent=None, db=None, **kwargs):
+    """
+    Convenience function for returning a set of topic nodes with limited fields for rendering the update topic tree
+    """
+    if parent:
+        with Using(db, [Item]):
+            Parent = Item.alias()
+            if parent == "root":
+                selector = Parent.parent.is_null()
+            else:
+                selector = Parent.id == parent
+            values = Item.select(
+                Item.title,
+                Item.description,
+                Item.available,
+                Item.kind,
+                Item.youtube_id,
+                Item.pk,
+                Item.size_on_disk,
+                Item.remote_size,
+                ).join(Parent, on=(Item.parent == Parent.pk)).where((selector) & (Item.kind != "Exercise"))
             return values
 
 
@@ -426,12 +455,20 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
                     return
                 else:
                     parent = node.parent
+                children = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk)
                 if not available:
                     Parent = Item.alias()
-                    children_available = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk, Item.available == True).count() > 0
+                    children_available = children.where(Item.available == True).count() > 0
                     available = children_available
+                child_remote = children.where(((Item.available == False) & (Item.kind != "Topic")) | (Item.kind == "Topic")).aggregate(fn.SUM(Item.remote_size))
+                child_on_disk = children.aggregate(fn.SUM(Item.size_on_disk))
                 if parent.available != available:
                     parent.available = available
+                if parent.remote_size != child_remote:
+                    parent.remote_size = child_remote
+                if parent.size_on_disk != child_on_disk
+                    parent.size_on_disk = child_on_disk
+                if parent.is_dirty():
                     parent.save()
                     recurse_availability_up_tree(parent, available)
 

@@ -29,6 +29,7 @@ from fle_utils.orderedset import OrderedSet
 from kalite.i18n import get_youtube_id, lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.settings import TOPICS_FILEPATHS, CHANNEL
+from kalite.topic_tools.content_models import get_topic_update_nodes
 
 
 def process_log_from_request(handler):
@@ -127,10 +128,6 @@ def start_video_download(request):
     # One query per video (slow)
     video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
 
-    # OK to do bulk_create; cache invalidation triggered via save download
-    for lang_code, lang_youtube_ids in divide_videos_by_language(video_files_to_create).iteritems():
-        VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True, language=lang_code) for id in lang_youtube_ids])
-
     # OK to update all, since we're not setting all props above.
     # One query per chunk
     for chunk in break_into_chunks(youtube_ids):
@@ -222,99 +219,14 @@ def delete_language_pack(request):
     return JsonResponse({"success": _("Successfully deleted language pack for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)}})
 
 
-def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=None):
-    # Not needed when on an api request (since translation.activate is already called),
-    #   but just to do things right / in an encapsulated way...
-    # Though to be honest, this isn't quite right; we should be DE-activating translation
-    #   at the end.  But with so many function exit-points... just a nightmare.
-
-    if not lang_code:
-        lang_code = settings.LANGUAGE_CODE
-
-    if level == 0:
-        translation.activate(lang_code)
-
-    if not statusdict:
-        statusdict = {}
-
-    if node["kind"] == "Topic":
-        if "Video" not in node["contains"]:
-            return None
-
-        children = []
-        unstarted = True
-        complete = True
-
-        for child_node in node["children"]:
-            child = annotate_topic_tree(child_node, level=level + 1, statusdict=statusdict, lang_code=lang_code)
-            if not child:
-                continue
-            elif child["extraClasses"] == "unstarted":
-                complete = False
-            elif child["extraClasses"] == "partial":
-                complete = False
-                unstarted = False
-            elif child["extraClasses"] == "complete":
-                unstarted = False
-            children.append(child)
-
-        if not children:
-            # All children were eliminated; so eliminate self.
-            return None
-
-        return {
-            "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
-            "folder": True,
-            "key": node["id"],
-            "children": children,
-            "extraClasses": complete and "complete" or unstarted and "unstarted" or "partial",
-            "expanded": level < 1,
-        }
-
-    elif node["kind"] == "Video":
-        video_id = node.get("youtube_id", node.get("id"))
-        youtube_id = get_youtube_id(video_id, lang_code=lang_code)
-
-        if not youtube_id:
-            # This video doesn't exist in this language, so remove from the topic tree.
-            return None
-
-        # statusdict contains an item for each video registered in the database
-        # will be {} (empty dict) if there are no videos downloaded yet
-        percent = statusdict.get(youtube_id, 0)
-        vid_size = None
-        status = None
-
-        if not percent:
-            status = "unstarted"
-            vid_size = get_remote_video_size(youtube_id) / float(2 ** 20)  # express in MB
-        elif percent == 100:
-            status = "complete"
-            vid_size = get_local_video_size(youtube_id, 0) / float(2 ** 20)  # express in MB
-        else:
-            status = "partial"
-
-        return {
-            "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
-            "key": youtube_id,
-            "extraClasses": status,
-            "size": vid_size,
-        }
-
-    return None
-
-
 @require_admin
 @api_handle_error_with_json
-def get_annotated_topic_tree(request, lang_code=None):
-    call_command("videoscan")  # Could potentially be very slow, blocking request... but at least it's via an API request!
+def get_update_topic_tree(request, lang_code=None):
 
+    parent = request.GET.get("parent")
     lang_code = lang_code or request.language      # Get annotations for the current language.
-    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
 
-    return JsonResponse(annotate_topic_tree(softload_json(TOPICS_FILEPATHS.get(CHANNEL), logger=logging.debug, raises=False), statusdict=statusdict, lang_code=lang_code))
+    return JsonResponse(get_topic_update_nodes(parent=parent, language=lang_code))
 
 
 """
