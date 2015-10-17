@@ -191,61 +191,50 @@ def group_edit(request, facility, group_id):
     }
 
 @render_to("facility/facility_config2.html")
-def edit_config(request):
-    """
-    request: request body containing form information from user
-    """
-    print request.POST
-
-
-    return {
-        "username" : request.POST.get("username")
-    }
-    #return HttpResponse(request.POST.get("username")) 
-    """
-    if request.database == 'delete':
-        # REMOVE DATABASE INFO  
-        call_command("flush")
-
-        # CHANGE ADMIN USERNAME
-        # if username is left blank, get default username for server 
-        if request.new_username == '':
-            user = User.objects.get(is_superuser=True)
-            user.username = 'Default'  # how to get default ?
-            getpass.getuser().replace("-", "_")
-
-        else:
-            user = User.objects.get(is_superuser=True)
-            user.username = new_username
-
-        user.save()
-        # CHANGE ADMIN PASSWORD 
-        call_command("changepassword")
-    """
-
-def db_config(request):
+def config(request):
     """
     Calls command to configure database, admin account, and server info
     """
     print "---------------db_config-------------------"
     print request.POST
-    print "user object?"
 
-    if request.POST.get('database') == 'no':
-        print "DELETE database"
+    # User will have option to set admin account and server info if they
+    # choose to remove database when upgrading, or if no superuser detected.
+    # Password field must always be filled out, so we will check if no 
+    # superuser is detected by checking existence of password field. 
+    if request.POST.get('keep_db') == 'no' or request.POST.get('password'):
+        print "don't keep database, OR, password field has been filled out" 
         
-        if request.POST.get('username') == '':
-            print "user wishes to set default username"
-            user.username = 'Default'
-            getpass.getuser().replace("-", "_")
+        name = "default" #getpass.getuser().replace("-", "_")
+        if request.POST.get('name'):
+            print "user wishes to set their username"
+            name = request.POST.get('name')
+        
+        User.objects.create_superuser(
+                username=name, password=request.POST.get('password'), email='')
 
-        else:
-            print "user wants to set username"
-            User.objects.create_superuser(username=request.POST.get('username'),
-                                          password=request.POST.get('password'),
-                                          email='')
-            print "created new superuser i hope"
-        user.save()
+        user = User.objects.get(is_superuser=True)
+        print "created new superuser i hope"
         print "USERNAME = " + user.username
 
-    return None
+    return { "username" : name }
+
+@render_to("facility/test.html")
+def dl_assess(request):
+    print "dl_assess view-----------------"
+    print request.POST
+
+    return {"nothing": "nothing"}
+
+    """
+    if request.POST.get('download-items') == 'yes':
+        call_command("unpack_assessment_zip")
+
+
+        return HttpResponse("yay download for u")
+    else:
+        return HttpResponse("ok no download for you")
+
+
+    return HttpResponse("temporary")
+    """

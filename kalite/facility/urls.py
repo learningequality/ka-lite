@@ -13,8 +13,8 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'^group/$', 'group_edit', {'group_id': 'new'}, 'add_group'),
     url(r'^group/(?P<group_id>\w+)/edit/$', 'group_edit', {'facility': None}, 'group_edit'),
 
-    url(r'^edit_config/$', 'edit_config'),
-    url(r'^db_config/$', 'db_config')
+    url(r'^config/$', 'config'),
+    url(r'^dl_assess/$', 'dl_assess')
    
 )
 

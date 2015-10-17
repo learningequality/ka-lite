@@ -4,41 +4,64 @@
 
 {% block content %}
 
-<!-- <form action="/facility/edit_config/" method="POST"> -->
-<form action="/facility/db_config/" method="POST">
+<form action="/facility/config/" method="POST">
     {% csrf_token %}
-    {% if database %}
-        <h4> hey, database exists. wanna keep? </h4>
-        <input type="radio" name="database" value="yes"> Yes<br>
-        <input type="radio" name="database" value="no"> No<br><br>
+
+
+    {% if need_update %}
+        <h4> There is an update available. Would you like to upgrade your version of KA Lite?</h4>
+        <h6> You will be given the option to keep all your current data if you choose to update.</h6> 
+        <input type="radio" name="upgrade" value="yes"> Yes<br>
+        <input type="radio" name="upgrade" value="no"> No<br><br>
+
+        <div id="keep_db_question">
+        <h4> Would you like to keep your existing database? It will be migrated over to the new, updated version of KA Lite.</h4>
+        <input type="radio" name="keep_db" value="yes"> Yes<br>
+        <input type="radio" name="keep_db" value="no"> No<br><br>
+        </div>
     {% endif %}
 
-    <div id="delete-db-form">
-        <h4>2) Please choose a username and password for the admin account.</h4><BR>
+    {% if not superuser %}
+        <div id="get_admin_server">
+        <h4>Choose a username and password for the admin account.</h4>
 
-        Username: <input type="text" name="username"></input><br>
-        Password: <input type="text" name="password"></input><br>
+        Username: <input type="text" name="name"></input><br>
+        Password: <input type="password" name="password"></input><br>
         Re-type Password: <input type="text" name="retype_password"></input><br><br>
 
-        <h4>3) Please enter a hsotname for this server. If left blank, it will default to ...</h4><BR>
+        <h4>Enter a hostname for this server. If left blank, it will default to {{ default_hostname }}</h4>
         Hostname: <input type="text" name="hostname"></input><br><br>
 
-        <h4>4) Please enter a one-line description for this server (optional). </h4><BR>
+        <h4>Enter a one-line description for this server (optional). </h4>
         Description: <input type="text" name="description"></input><br><br>
-    </div>
-
-
+        </div>
+    {% endif %}
 
     <div class="progress-bar" role="progressbar" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100">66%
     </div>
+    <Br>
     <button type="submit" value="Submit">Next</button>
 </form>
 
 
 <!-- loads form depending on what option you select, will migrate this later? -->
 <script>
-$('#delete-db-form').hide();
+$('#keep_db_question').hide();
+$("input[name='keep_db']").on('click', function() {
+    if ( $(this).val() == 'no' ) {
+        $('#keep_db_question').show();
+    }
+    else { 
+        $('#keep_db_question').hide();
+    }
+
+});
+
+//$('#get_admin_server').hide();
 $('.progress-bar').hide();
+
+
+
 $("input[name='database']").change(function() {
     // If user wants to delete database, allow configuration 
     // of admin account and server hostname/description
@@ -56,6 +79,8 @@ $("input[type='submit']").on('click', function(){
     $('.progress-bar').show();
 });
 
+
 </script>
+
 {% endblock content %}
 

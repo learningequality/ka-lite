@@ -211,3 +211,9 @@ class FacilityUserResource(ModelResource):
             data["username"] = request.user.username
 
         return data
+
+
+# come back to this later...
+class AssessmentDownloadPogress(ModelResource):
+    class Meta:
+        resource_name = 'assessment_item'

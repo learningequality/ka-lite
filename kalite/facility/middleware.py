@@ -5,49 +5,92 @@ import os
 from annoying.decorators import render_to
 
 from django.conf import settings
-from django.db import DatabaseError
+from django.core.management import call_command
+from django.db import DatabaseError, connection
 from django.db.models import signals
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.template.response import TemplateResponse
 
 from .models import Facility
+
+from fle_utils.config.models import Settings
+from fle_utils.general import get_host_name
 
 FACILITY_CACHE_STALE = False
 
 @render_to("facility/facility_config.html")
-def config_form(request):
+def config_form(request, database):
+    print "about to render config_form.... "
     """
     Detect if there is an existing database file on server. If database exists,
     will render form that prompts user to keep or delete existing database.
 
     Depending on state of database, renders different form questions.
     """
-    database_kind = settings.DATABASES["default"]["ENGINE"]
-    database_file =  (
-            "sqlite" in database_kind \
-                    and settings.DATABASES["default"]["NAME"]) or None
-
-    if database_file and os.path.exists(database_file):
-        return  { "database": True }
-
-    return { "database" : False }
+    print database
+    return database 
 
 def is_configured():
     """
     Checks whether a system has been configured. For now, it simply 
     checks if a superuser exists.
     """
-    print "is_configured--------------------------"
-    try:
-        u = User.objects.get(is_superuser=True)
-    #except (ObjectDoesNotExist, DatabaseError) as e:
-    except ObjectDoesNotExist:
-        return False
+    print "-----------IS_CONFIGURED--------------------------"
+    database = False
+    superuser = False
+    need_update = False
 
+    # Check if database file exists
+    database_kind = settings.DATABASES["default"]["ENGINE"]
+    database_file =  (
+        "sqlite" in database_kind \
+                and settings.DATABASES["default"]["NAME"]) or None
 
-    return True
+    if database_file and os.path.exists(database_file):
+        print "DATABASE EXISTS................"
+        database = True
+
+        # Check for database version, if mismatch, ask user to update
+        try:
+            from kalite.version import VERSION
+
+            # If version in database not set, it is probably the first
+            # time a user is using this version of KA Lite, but they
+            # haven't run the "setup" command.
+            if not Settings.get("database_version"):
+                print "not database version"
+                Settings.set("database_version", VERSION)
+
+            # Otherwise, if database is already versioned, check
+            # to see if it matches most updated version available
+            assert Settings.get("database_version") == VERSION
+
+        except DatabaseError as e:
+            print "DatabaseError, syncdb and migrate running"
+            call_command("syncdb", interactive=False)
+            call_command("migrate", interactive=False)
+        except AssertionError:
+            need_update = True
+
+        # Check if superuser exists
+        try:
+            u = User.objects.get(is_superuser=True)
+            superuser = True
+        except ObjectDoesNotExist:
+            print "superuser DNE" 
+
+    # If database does not exist, sync and migrate
+    else:
+        call_command("syncdb", interactive=False)
+        call_command("migrate", interactive=False)
+        print "DATABASE does not exist"
+
+    return { "need_update" : need_update,
+             "superuser" : superuser,
+             "default_hostname" : get_host_name() }
 
 
 def refresh_session_facility_info(request, facility_count):
@@ -107,15 +150,18 @@ class FacilityCheck:
 
 class ConfigCheck:
     def process_response(self, request, response):
-        """
-        Display configuration modal if facility does not have all of the
-        required settings yet.
-        """
+        #Display configuration modal if facility does not have all of the
+        #required settings yet.
 
         # Only intercept text/html responses
-        if response['Content-Type'].split(';')[0] == 'text/html':
-        
-            if not is_configured() and request.path != '/facility/edit_config/':
-                form = config_form(request)
+        if response['Content-Type'].split(';')[0] == 'text/html': 
+            db_exists = is_configured()
+            print db_exists
+
+        # if db_exists['database'] and \
+        # request.path != '/facility/edit_config/':
+            if request.path != '/facility/config/':
+                print "requst path not form page"
+                form = config_form(request, db_exists)
                 return form
         return response

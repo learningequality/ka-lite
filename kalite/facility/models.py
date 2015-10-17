@@ -307,3 +307,8 @@ class CachedPassword(models.Model):
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
+
+
+class DownloadAssessmentProgress(models.Model):
+    progress = models.IntegerField(default=0)
+
