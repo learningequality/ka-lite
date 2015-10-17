@@ -34,7 +34,7 @@ from django.db import transaction
 from fle_utils.general import datediff
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, AttemptLog
-from kalite.content_models import get_topic_contents
+from kalite.topic_tools.content_models import get_topic_contents
 
 
 firstnames = ["Vuzy", "Liz", "Ben", "Richard", "Kwame", "Jamie", "Alison", "Nadia", "Zenab", "Guan", "Dylan", "Vicky",
@@ -235,7 +235,7 @@ def generate_fake_exercise_logs(facility_user=None, topics=topics, start_date=da
 
         for topic in topics:
             # Get all exercises related to the topic
-            exercises = get_topic_contents(topic_id=topic_id, kinds=["Exercise"])
+            exercises = get_topic_contents(topic_id=topic, kinds=["Exercise"])
 
             # Problem:
             #   Not realistic for students to have lots of unfinished exercises.
@@ -374,13 +374,9 @@ def generate_fake_video_logs(facility_user=None, topics=topics, start_date=datet
                 else:      # Slower students will use videos more.  Effort also important.
                     pct_completed = 100. * min(1., sqrt(random.random() * sqrt(user_settings["effort_level"] * user_settings["time_in_program"] / sqrt(user_settings["speed_of_learning"]))))
 
-                # get the video duration on the video cache
+                # get the video duration on the video
                 video_id = video.get("id", "")
-                video_duration = 0
-                if video_id and video_cache:
-                    video_item = video_cache.get(video_id, None)
-                    if video_item:
-                        video_duration = video_item.get("duration", 0)
+                video_duration = video.get("duration", 0)
 
                 # Compute quantities based on sample
                 total_seconds_watched = int(video_duration * pct_completed / 100.)
