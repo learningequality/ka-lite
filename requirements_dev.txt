@@ -3,4 +3,4 @@ werkzeug # Not sure about version
 django-debug-toolbar # Version was not described in previously bundled files, used by kalite.testing app
 pep8
 sphinx
-cli2man
+#cli2man
