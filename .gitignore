@@ -41,6 +41,7 @@ static-updates
 *.patch
 *.pid
 *.prof
+secretkey.txt
 
 # Python compiling
 *.pyc
