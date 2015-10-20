@@ -173,9 +173,9 @@ def get_content_items(ids=None, db=None, **kwargs):
     """
     with Using(db, [Item]):
         if ids:
-            values = Item.select().where(Item.id.in_(ids)).iterator()
+            values = Item.select().where(Item.id.in_(ids))
         else:
-            values = Item.select().iterator()
+            values = Item.select()
         return values
 
 
@@ -430,11 +430,14 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
             for path, update in content_models:
                 if update:
                     # We have duplicates in the topic tree, make sure the stamping happens to all of them.
-                    
-                    items = Item.select().where((Item.path == path) & (Item.kind != "Topic"))
-                    Item.update("available", True).where((Item.path == path) & (Item.kind != "Topic"))
-                    for item in items:
-        
+                    item = Item.get().where(Item.path == path)
+                    if item.kind != "Topic":
+                        item_data = unparse_model_data(model_to_dict(item, recurse=False))
+                        item_data.update(update)
+                        item_data = parse_model_data(item_data)
+                        for attr, val in item_data.iteritems():
+                            setattr(item, attr, val)
+                        item.save()
                         recurse_availability_up_tree(item, update.get("available", False))
 
 

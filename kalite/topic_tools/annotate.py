@@ -38,7 +38,6 @@ def update_content_availability(content_list, language="en"):
         contents_folder = []
 
     subtitle_langs = {}
-    updates = set()
 
     if os.path.exists(i18n.get_srt_path()):
         for (dirpath, dirnames, filenames) in os.walk(i18n.get_srt_path()):
@@ -67,7 +66,6 @@ def update_content_availability(content_list, language="en"):
     for content in content_list:
         # Some nodes are duplicated, but they require the same information
         # regardless of where they appear in the topic tree
-        if content.get("id") not in updates:
             update = {}
 
             if content.get("kind") == "Exercise":
@@ -146,8 +144,5 @@ def update_content_availability(content_list, language="en"):
             # Content is currently flagged as available, but is not. Flag as unavailable.
             if content.get("available") and "available" not in update:
                 update["available"] = False
-
-        # Path is the only unique key available.
-        updates.update(content.get("id"))
     
     yield content.get("path"),update

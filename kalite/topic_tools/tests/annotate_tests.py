@@ -6,6 +6,8 @@ from kalite.topic_tools.content_models import Item, annotate_content_models, set
 from . import settings 
 from peewee import Using
 from playhouse.shortcuts import model_to_dict
+import json
+
 class AnnotateTestCase(TestCase):
   TITLE = "testing "
   AVAILABLE = False
@@ -35,9 +37,7 @@ class AnnotateTestCase(TestCase):
  u'{"sha": "849c88aa2122ea5a40bb39540acf551d3ac67728", "live": true, "id": "x3f2d3b6cb53f67a4"}',
  u'{"sha": "a9197ffb73ad014d477c7eb1eed41f9ea025774b", "live": true, "id": "xb6e923d2f396f5ab"}',
  u'{"sha": "446eef76c02fc29049012312c704c12b4b54ba8d", "live": true, "id": "x9ef4ca7e914c87ec"}']
-    import json
     stuff = json.dumps(thedict)
-    import pdb; pdb.set_trace()
     with Using(db, [Item], with_transaction = False):
       self.item = Item(title= self.TITLE, available= self.AVAILABLE, kind = self.KIND , description = "test", id = "counting-out-1-20-objects", slug = "test", path = "thepath", extra_fields = stuff, all_assessment_items = thestuff)
       self.item.save()
