@@ -14,7 +14,8 @@ urlpatterns = patterns(__package__ + '.views',
     url(r'^group/(?P<group_id>\w+)/edit/$', 'group_edit', {'facility': None}, 'group_edit'),
 
     url(r'^config/$', 'config'),
-    url(r'^dl_assess/$', 'dl_assess')
+    url(r'^dl_assess/$', 'dl_assess'),
+    url(r'^testing/$', include(api_urls))
    
 )
 

@@ -12,6 +12,7 @@ import kalite.i18n.api_urls
 import kalite.coachreports.api_urls
 import kalite.control_panel.api_urls
 import kalite.contentload.api_urls
+import kalite.facility.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
 import kalite.store.api_urls
@@ -25,6 +26,10 @@ urlpatterns = patterns(__package__ + '.api_views',
 ############ Inline narratives ############################################
 urlpatterns += patterns('',
     url(r'^inline/narrative/', include(kalite.inline.api_urls))
+)
+
+urlpatterns += patterns('', 
+    url(r'^facility/', include(kalite.facility.api_urls))
 )
 
 # Let user to create the super user from browser

@@ -19,4 +19,8 @@ urlpatterns = patterns(__package__ + '.api_views',
 
     # For user management (not yet used, but needed here to enable URI for tastypie exercise logging endpoints)
     url(r'^', include(FacilityUserResource().urls)),
+
+    # For downloading assessments
+    url(r'^(?P<request_id>[\w/]+)', 'dl_progress_view', name="dl_progress"),
+    url(r'^testing/', 'dl_progress_view', name="dl_progress")
 )
