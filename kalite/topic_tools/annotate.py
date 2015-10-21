@@ -145,4 +145,4 @@ def update_content_availability(content_list, language="en"):
             if content.get("available") and "available" not in update:
                 update["available"] = False
     
-    yield content.get("path"),update
+    yield content.get("path"), update

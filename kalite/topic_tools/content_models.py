@@ -66,6 +66,7 @@ def parse_model_data(item):
 
 
 def unparse_model_data(item):
+
     extra_fields = json.loads(item.get("extra_fields", "{}"))
 
     item.update(extra_fields)
@@ -127,11 +128,10 @@ def parse_data(function):
 
         if dicts and output:
             if expanded:
-                for dic in output:
-                    output = map(unparse_model_data, output.dicts())
+                output = map(unparse_model_data, output.dicts())
             else:
-                    output = [item for item in output.dicts()]
-
+                output = [item for item in output.dicts()]
+        
         return output
     return wrapper
 
