@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet.decorators import api_response_causes_reload
-from fle_utils.internet.classes import JsonResponseMessageSuccess, JsonResponseMessageError
+from fle_utils.internet.classes import JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponse
 from kalite.shared.decorators.auth import require_authorized_admin
 
 
@@ -80,4 +80,4 @@ def dl_progress_view(request, request_id):
     :param request_id: sent in with url request
     """
     print "\n\nREACHED DL_PROGRESS_VIEW\n\n"
-    return { "name" : "download_progress" }
+    return JsonResponse({ "name" : "download_progress" })
