@@ -19,7 +19,7 @@ from django.dispatch import receiver
 
 from fle_utils.django_utils.classes import ExtendedModel
 from fle_utils.general import datediff, isnumeric
-from kalite.i18n.base import get_video_id
+from kalite.topic_tools.content_models import get_video_from_youtube_id
 from kalite.facility.models import FacilityUser
 from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
@@ -65,7 +65,8 @@ class VideoLog(DeferredCountSyncedModel):
         if not self.video_id:
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
-            self.video_id = get_video_id(self.youtube_id) or self.youtube_id  # for unknown videos, default to the youtube_id
+            video = get_video_from_youtube_id(vlog.youtube_id)
+            self.video_id = video.get("id", self.youtube_id) if video else self.youtube_id  # for unknown videos, default to the youtube_id
 
         if not kwargs.get("imported", False):
             self.full_clean()

@@ -14,18 +14,9 @@ from contextlib import contextmanager
 
 from kalite.version import SHORTVERSION
 
-################################################
-###                                          ###
-###   NOTE TO US:                            ###
-###   main migrations import this file, so   ###
-###   we CANNOT import main.models in here.  ###
-###                                          ###
-################################################
 from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
 from kalite.version import VERSION
-
-from kalite.topic_tools import content_models
 
 CACHE_VARS = []
 
@@ -73,30 +64,6 @@ def get_langcode_map(lang_name=None, force=False):
                     LANG2CODE_MAP[lang.lower()] = lcode_to_ietf(code)
 
     return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
-
-
-def get_youtube_id(video_id, lang_code=None):
-    """Given a video ID, return the youtube ID for the given language.
-    If lang_code is None, return the base / default youtube_id for the given video_id.
-    If youtube_id for the given lang_code is not found, function returns None.
-    Accepts lang_code in ietf format
-    """
-
-    if not lang_code:
-        lang_code = settings.LANGUAGE_CODE
-
-    if not lang_code or lang_code == "en":  # looking for the base/default youtube_id
-        return video_id
-    video = content_models.get_content_item(id=video_id, language=lang_code)
-    return video.get("youtube_id") if video else None
-
-
-def get_video_id(youtube_id):
-    """
-    Youtube ID is assumed to be the non-english
-    """
-    video = content_models.get_video_from_youtube_id(youtube_id)
-    return video.get("id") if video else youtube_id
 
 
 def get_srt_url(youtube_id, code):

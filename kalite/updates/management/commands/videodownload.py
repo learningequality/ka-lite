@@ -15,8 +15,7 @@ from ... import download_video, DownloadCancelled, URLNotFound
 from ...models import VideoFile
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
-from kalite.i18n.base import get_video_id
-from kalite.topic_tools.content_models import get_content_item, annotate_content_models
+from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
@@ -35,12 +34,6 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
     if callback:
         yt_dl.add_progress_hook(callback)
     yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
-
-
-def get_video_node_by_youtube_id(youtube_id):
-    """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
-    video_id = get_video_id(youtube_id=youtube_id)
-    return get_content_item(content_id=video_id)
 
 
 class Command(UpdatesDynamicCommand, CronCommand):
@@ -92,7 +85,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     self.video.save()
 
                 # update progress data
-                video_node = get_video_node_by_youtube_id(self.video.youtube_id)
+                video_node = get_video_from_youtube_id(self.video.youtube_id)
                 video_title = (video_node and _(video_node["title"])) or self.video.youtube_id
 
                 # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.

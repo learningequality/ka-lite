@@ -4,7 +4,7 @@ from django.conf import settings; logging = settings.LOG
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 
-from . import get_default_language, set_default_language, set_request_language
+from .base import get_default_language, set_default_language, set_request_language
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 from fle_utils.internet.decorators import api_handle_error_with_json
 

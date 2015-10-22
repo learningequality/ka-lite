@@ -17,7 +17,7 @@ from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from .videos import delete_downloaded_files, get_local_video_size, get_remote_video_size
+from .videos import delete_downloaded_files
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
 from fle_utils.chronograph.utils import force_job
@@ -26,9 +26,9 @@ from fle_utils.general import isnumeric, break_into_chunks, softload_json
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from kalite.i18n.base import get_youtube_id, lcode_to_ietf, delete_language, get_language_name
+from kalite.i18n.base import lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools.settings import TOPICS_FILEPATHS, CHANNEL
+from kalite.topic_tools.settings import CHANNEL
 from kalite.topic_tools.content_models import get_topic_update_nodes
 
 

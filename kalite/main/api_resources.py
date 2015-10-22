@@ -6,7 +6,6 @@ from django.conf.urls import url
 from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
-from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
 from kalite.topic_tools.settings import CHANNEL
@@ -95,7 +94,6 @@ class VideoLogResource(ModelResource):
 class AssessmentItemResource(ModelResource):
     class Meta:
         resource_name = 'assessment_item'
-        queryset = AssessmentItem.objects.all()
 
     def prepend_urls(self):
         return [

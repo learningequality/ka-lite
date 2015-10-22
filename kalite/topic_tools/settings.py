@@ -12,8 +12,6 @@ only on django.conf.settings
 import os
 from django.conf import settings
 
-from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_DATABASE_PATH
-
 CONTENT_DATABASE_ROOT = os.path.join(settings.USER_DATA_ROOT, "content_databases")
 if not os.path.exists(CONTENT_DATABASE_ROOT):
     os.mkdir(CONTENT_DATABASE_ROOT)
@@ -25,10 +23,5 @@ CHANNEL = getattr(settings, "CHANNEL", "khan")
 CHANNEL_DATA_PATH = os.path.join(settings.CONTENT_DATA_PATH, CHANNEL)
 
 KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke")
-
-TOPICS_FILEPATHS = {
-    CHANNEL: os.path.join(CHANNEL_DATA_PATH, "topics.json")
-}
-EXERCISES_FILEPATH = os.path.join(CHANNEL_DATA_PATH, "exercises.json")
 
 TOPIC_RECOMMENDATION_DEPTH = 3

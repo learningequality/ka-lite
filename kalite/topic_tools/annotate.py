@@ -9,7 +9,7 @@ from kalite.i18n.base import get_srt_path, get_language_name
 from . import settings
 from .base import database_exists
 
-from kalite.update.videos import get_local_video_size
+from kalite.updates.videos import get_local_video_size
 
 
 def is_content_on_disk(content_id, format="mp4", content_path=None):
