@@ -9,7 +9,7 @@ def group_by_slug(count_dict, item):
 
 def dedupe_paths(topic_tree):
 
-    def recurse_nodes(node, parent_path=""):
+    def recurse_nodes(node):
 
         children = node.get("children", [])
 
@@ -24,9 +24,9 @@ def dedupe_paths(topic_tree):
                         if item.get("kind") != "Video":
                             # Don't change video slugs, as that will break internal links from KA.
                             item["slug"] = item["slug"] + "_{i}".format(i=i)
-                            item["path"] = parent_path + item["slug"] + "/"
+                            item["path"] = node.get("path") + item["slug"] + "/"
                             i += 1
         for child in children:
-            recurse_nodes(child, node.get("path"))
+            recurse_nodes(child)
 
     recurse_nodes(topic_tree)

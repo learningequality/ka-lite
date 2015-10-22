@@ -1,16 +1,16 @@
 
-Admininistrator User Manual
-===========================
+Administrator User Manual
+=========================
 **Who is an "administrator"?**
 
 A person who :
     * helps to plan and oversee a project using KA Lite
     * installs and updates KA Lite
-    * can create coach logins, Learner logins, download videos and language packs
+    * can create Coach logins, Learner logins, download videos and language packs
 
 Administrator Glossary
 ----------------------
-For users that choose to register online, there are some important terms to familiarize yourself with so that you understand how the flow of data works between installations and the online data hub.
+If you choose to register online, these important terms will help you better understand the flow of data between your installations and the online data hub.
 
 **Sharing Network**
     A Sharing Network is a group of devices that share user data. This data is synced to the central server when an Internet connection is available, and then synced down onto other devices in the same Sharing Network.
@@ -463,7 +463,7 @@ __________________________
 
 The full set of videos, if downloaded through the KA Lite interface, take over 150GB.
 If you want to download all the videos, we also have torrent files with resized videos (~33 GB for English). To fetch all
-the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.14/content/>`_.
+the videos, `download and open the appropriate torrent file <https://learningequality.org/downloads/ka-lite/0.15/content/>`_.
 
 Save the videos in the ``CONTENT_ROOT`` directory of your installation. By default, this
 is the ``.kalite/content/`` folder in the *home directory* of the user running KA Lite.
@@ -484,9 +484,9 @@ ___________________________________
 
 If you skipped the step for adding assessment items during install, run the following command (beware it can take a while, the download size is over 500 MB):
 
-``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip -f``
+``kalite manage unpack_assessment_zip https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip -f``
 
-As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
+As an alternative, you can download the zip file from https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip and run the command on your local copy. This is useful if you're deploying KA Lite on multiple computers.
 
 
 Language Packs
@@ -649,7 +649,7 @@ ____________________
       DATABASES['assessment_items']['NAME'] = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
 
 * ``ASSESSMENT_ITEMS_ZIP_URL = "scheme://path/to/assessmentitems.zip"``
-  ``(default=https://learningequality.org/downloads/ka-lite/0.14/content/assessment.zip)``
+  ``(default=https://learningequality.org/downloads/ka-lite/0.15/content/khan_assessment.zip)``
   This is useful if you need an auto-deployment to fetch assessment items (exercises) from a local source. You can use
   ``kalite manage setup --dl-assessment-items`` to automatically download assessment items.
 * ``TIME_ZONE = <desired time zone>  (default = "America/Los_Angeles")``

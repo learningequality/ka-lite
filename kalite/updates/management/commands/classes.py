@@ -1,5 +1,6 @@
 """
 """
+from datetime import datetime
 
 from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
@@ -84,9 +85,9 @@ class UpdatesDynamicCommand(UpdatesCommand):
 
     def check_if_cancel_requested(self):
         if self.progress_log.cancel_requested:
-            self.progress_log.end_time = datetime.datetime.now()
+            self.progress_log.end_time = datetime.now()
             self.progress_log.save()
-            raise CommandException("Process cancelled.")
+            raise RuntimeError("Process cancelled.")
 
 
 class UpdatesStaticCommand(UpdatesCommand):

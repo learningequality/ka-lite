@@ -10,12 +10,18 @@ var installed_languages = [];
 var downloading = false;
 
 function version_comparison(v1, v2) {
-    // compare two version strings and return 1 if the first is higher than the second,
-    // -1 if the first is lower than the second, and 0 if they are equal
+    /*
+    compare two version strings and return 1 if the first is higher than the second,
+    -1 if the first is lower than the second, and 0 if they are equal.
+
+    :params v1, v2: Version strings expected format is either "N.N.N" or "N.N", where N is a positive integer.
+    If both strings have the same format, they're compared using a lexical order.
+    If one string is shorter than the other, then the other is truncated and then compared using lexical order.
+    */
     var v1parts = v1.split('.'), v2parts = v2.split('.');
-    var maxLen = Math.max(v1parts.length, v2parts.length);
+    var minLen = Math.min(v1parts.length, v2parts.length);
     var part1, part2;
-    for(var i = 0; i < maxLen; i++) {
+    for(var i = 0; i < minLen; i++) {
         part1 = parseInt(v1parts[i], 10) || 0;
         part2 = parseInt(v2parts[i], 10) || 0;
         if (part1 > part2) return 1;
@@ -284,7 +290,7 @@ function languagepack_reset_callback(progress, resp) {
 
 function languagepack_complete_callback(progress_log) {
     // Trigger a reminder to restart server when a language pack is installed.
-    messages.show_message("warning", sprintf(gettext("Server must be restarted to activate language pack %(lang)s."), {lang: process_log.process_name}));
+    messages.show_message("warning", sprintf(gettext("Server must be restarted to activate language pack %(lang)s."), {lang: progress_log.process_name}));
 }
 
 function set_server_language(lang) {

@@ -4,22 +4,25 @@ Downloads a language pack, unzips the contents, then moves files accordingly
 import glob
 import os
 import shutil
+import requests
 import zipfile
 from optparse import make_option
 from StringIO import StringIO
 
 from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
-from django.core.management.base import CommandError
-from django.utils.translation import ugettext as _
+import httplib
 
-from .classes import UpdatesStaticCommand
 from ... import REMOTE_VIDEO_SIZE_FILEPATH
+from .classes import UpdatesStaticCommand
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet.download import callback_percent_proxy, download_file
-from kalite.i18n import get_localized_exercise_dirpath, get_srt_path, get_po_filepath, get_language_pack_url, get_language_name
-from kalite.i18n import lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.utils.translation import ugettext as _
+from kalite.i18n import get_language_name, get_language_pack_url, \
+    get_localized_exercise_dirpath, get_po_filepath, get_srt_path, \
+    lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.version import SHORTVERSION
 
 
@@ -99,7 +102,7 @@ class Command(UpdatesStaticCommand, CronCommand):
             raise
 
     def cb(self, percent):
-        self.update_stage(stage_percent=percent/100.)
+        self.update_stage(stage_percent=percent / 100.)
 
 def get_language_pack(lang_code, software_version, callback):
     """Download language pack for specified language"""
@@ -108,6 +111,13 @@ def get_language_pack(lang_code, software_version, callback):
     logging.info("Retrieving language pack: %s" % lang_code)
     request_url = get_language_pack_url(lang_code, software_version)
     logging.debug("Downloading zip from %s" % request_url)
+
+    # aron: hack, download_file uses urllib.urlretrieve, which doesn't
+    # return a status code. So before we make the full request, we
+    # check first if the said lang pack url exists. If not, error out.
+    if requests.head(request_url).status_code == 404:
+        raise requests.exceptions.HTTPError("Language pack %s not found. Please double check that it exists." % lang_code)
+
     path, response = download_file(request_url, callback=callback_percent_proxy(callback))
     return path
 
@@ -118,8 +128,13 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     logging.info("Unpacking new translations")
     ensure_dir(get_po_filepath(lang_code=lang_code))
 
-    ## Unpack into temp dir
-    z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
+    # # Unpack into temp dir
+    try:
+        z = zipfile.ZipFile(zip_fp or (zip_data and StringIO(zip_data)) or open(zip_filepath, "rb"))
+    except zipfile.BadZipfile as e:
+        # Need to add more information on the errror message.
+        # See http://stackoverflow.com/questions/6062576/adding-information-to-a-python-exception
+        raise type(e), type(e)(e.message + _("Language pack corrupted. Please try downloading the language pack again in a few minutes."))
     z.extractall(os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code))
 
 def move_dubbed_video_map(lang_code):
@@ -140,17 +155,11 @@ def move_dubbed_video_map(lang_code):
             logging.error("Error removing dubbed video directory (%s): %s" % (dubbed_video_dir, e))
 
 def move_video_sizes_file(lang_code):
-    lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
-    filename = os.path.basename(REMOTE_VIDEO_SIZE_FILEPATH)
-    src_path = os.path.join(lang_pack_location, filename)
-    dest_path = REMOTE_VIDEO_SIZE_FILEPATH
-
-    # replace the old remote_video_size json
-    if not os.path.exists(src_path):
-        logging.error("Could not find videos sizes file (%s)" % src_path)
-    else:
-        logging.debug('Moving %s to %s' % (src_path, dest_path))
-        shutil.move(src_path, dest_path)
+    """
+    This is no longer needed. See:
+    https://github.com/learningequality/ka-lite/issues/4538#issuecomment-144560505
+    """
+    return
 
 def move_exercises(lang_code):
     lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
