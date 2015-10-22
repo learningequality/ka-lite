@@ -393,8 +393,6 @@ class Command(BaseCommand):
 
         else:
 
-            call_command("syncdb", interactive=False, verbosity=options.get("verbosity"), database="assessment_items")
-
             # Outdated location of assessment items - move assessment items from their
             # old location (CONTENT_ROOT/khan where they were mixed with other content
             # items)
@@ -414,7 +412,7 @@ class Command(BaseCommand):
             elif options['force-assessment-item-dl']:
                 raise RuntimeError(
                     "Got force-assessment-item-dl but directory not writable")
-            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE and not settings.RUNNING_IN_TRAVIS and options['interactive']:
+            elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
                 print(
                     "\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
                 print(
@@ -437,12 +435,9 @@ class Command(BaseCommand):
                 else:
                     call_command("unpack_assessment_zip", ass_item_filename)
 
-            elif options['interactive'] and not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
+            elif options['interactive']:
                 logging.warning(
                     "Assessment item directory not writable, skipping download.")
-            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
-                logging.warning(
-                    "No assessment items package file given. You will need to download and unpack it later.")
             else:
                 print("Found bundled assessment items")
 

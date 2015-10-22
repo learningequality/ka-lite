@@ -17,12 +17,14 @@ import json
 
 import sqlite3
 
-from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn, IntegerField
+from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn, IntegerField, OperationalError
 from playhouse.shortcuts import model_to_dict
 
 from .base import available_content_databases
 from .settings import CONTENT_DATABASE_PATH, CHANNEL
 from .annotate import update_content_availability
+
+from django.conf import settings; logging = settings.LOG
 
 
 # This Item is defined without a database.
@@ -129,11 +131,14 @@ def parse_data(function):
         output = function(*args, **kwargs)
 
         if dicts and output:
-            if expanded:
-                output = map(unparse_model_data, output.dicts())
-            else:
-                output = [item for item in output.dicts()]
-
+            try:
+                if expanded:
+                    output = map(unparse_model_data, output.dicts())
+                else:
+                    output = [item for item in output.dicts()]
+            except (TypeError, OperationalError) as e:
+                logging.warn("No content database file found")
+                output = []
         return output
     return wrapper
 
