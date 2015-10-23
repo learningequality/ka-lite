@@ -460,9 +460,9 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
                     return
                 else:
                     parent = node.parent
+                Parent = Item.alias()
                 children = Item.select().join(Parent, on=(Item.parent == Parent.pk)).where(Item.parent == parent.pk)
                 if not available:
-                    Parent = Item.alias()
                     children_available = children.where(Item.available == True).count() > 0
                     available = children_available
                 child_remote = children.where(((Item.available == False) & (Item.kind != "Topic")) | (Item.kind == "Topic")).aggregate(fn.SUM(Item.remote_size))
