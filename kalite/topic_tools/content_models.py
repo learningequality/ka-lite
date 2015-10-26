@@ -430,7 +430,7 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
             for path, update in content_models:
                 if update:
                     # We have duplicates in the topic tree, make sure the stamping happens to all of them.
-                    item = Item.get().where(Item.path == path)
+                    item = Item.get(Item.path == path)
                     if item.kind != "Topic":
                         item_data = unparse_model_data(model_to_dict(item, recurse=False))
                         item_data.update(update)
