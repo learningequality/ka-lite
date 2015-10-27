@@ -30,14 +30,14 @@ def update_content_availability(content_list, language="en", channel="khan"):
     # Loop through all content items and put thumbnail urls, content urls,
     # and subtitle urls on the content dictionary, and list all languages
     # that the content is available in.
+
+    # turn this whole function into a generator
     try:
         contents_folder = os.listdir(django_settings.CONTENT_ROOT)
     except OSError:
         contents_folder = []
 
     subtitle_langs = {}
-
-    updates = {}
 
     if os.path.exists(get_srt_path()):
         for (dirpath, dirnames, filenames) in os.walk(get_srt_path()):
@@ -51,75 +51,71 @@ def update_content_availability(content_list, language="en", channel="khan"):
                         subtitle_langs[filename] = [lc]
 
     for content in content_list:
-
         # Some nodes are duplicated, but they require the same information
         # regardless of where they appear in the topic tree
-        if content.get("id") not in updates:
-            update = {}
 
-            if content.get("kind") == "Exercise":
+        update = {}
 
-                # Databases have been pre-filtered to only contain existing exercises
-                if database_exists(language=language, channel=channel):
-                    update["available"] = True
+        if content.get("kind") == "Exercise":
 
-            elif content.get("kind") == "Topic":
-                # Ignore topics, as we only want to update their availability after we have updated the rest.
-                continue
-            else:
-                file_id = content.get("youtube_id", content.get("id"))
-                default_thumbnail = create_thumbnail_url(content.get("id"))
-                format = content.get("format", "")
-                filename = file_id + "." + format
+            # Databases have been pre-filtered to only contain existing exercises
+            if database_exists(language=language, channel=channel):
+                update["available"] = True
 
-                # Get list of subtitle language codes currently available
-                subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.get("id")), [])
+        elif content.get("kind") == "Topic":
+            # Ignore topics, as we only want to update their availability after we have updated the rest.
+            continue
+        else:
+            file_id = content.get("youtube_id", content.get("id"))
+            default_thumbnail = create_thumbnail_url(content.get("id"))
+            format = content.get("format", "")
+            filename = file_id + "." + format
 
-                if (filename) in contents_folder or language in subtitle_lang_codes:
-                    if (not (filename) in contents_folder) and language in subtitle_lang_codes:
-                        # The file is not available, but it might be available in English and can be subtitled
-                        if content.get("id") + "." + format in contents_folder:
-                            file_id = content.get("id")
-                            filename = file_id + "." + format
-                        else:
-                            file_id = None
+            # Get list of subtitle language codes currently available
+            subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.get("id")), [])
+
+            if (filename) in contents_folder or language in subtitle_lang_codes:
+                if (not (filename) in contents_folder) and language in subtitle_lang_codes:
+                    # The file is not available, but it might be available in English and can be subtitled
+                    if content.get("id") + "." + format in contents_folder:
+                        file_id = content.get("id")
+                        filename = file_id + "." + format
                     else:
-                        # File for this language is available and downloaded, so let's stamp the file size on it!
-                        update["size_on_disk"] = get_local_video_size(content.get("youtube_id"))
-                    if file_id:
-                        update["available"] = True
-                        thumbnail = create_thumbnail_url(file_id) or default_thumbnail
-                        update["content_urls"] = {
-                            "stream": django_settings.CONTENT_URL + filename,
-                            "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
-                            "thumbnail": thumbnail,
-                        }
-                elif django_settings.BACKUP_VIDEO_SOURCE:
+                        file_id = None
+                else:
+                    # File for this language is available and downloaded, so let's stamp the file size on it!
+                    update["size_on_disk"] = get_local_video_size(content.get("youtube_id"))
+                if file_id:
                     update["available"] = True
+                    thumbnail = create_thumbnail_url(file_id) or default_thumbnail
                     update["content_urls"] = {
-                        "stream": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
+                        "stream": django_settings.CONTENT_URL + filename,
                         "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
-                        "thumbnail": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
+                        "thumbnail": thumbnail,
                     }
+            elif django_settings.BACKUP_VIDEO_SOURCE:
+                update["available"] = True
+                update["content_urls"] = {
+                    "stream": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
+                    "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
+                    "thumbnail": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
+                }
 
-                if update.get("available"):
-                    # Don't bother doing this work if the video is not available at all
+            if update.get("available"):
+                # Don't bother doing this work if the video is not available at all
 
-                    # Generate subtitle URLs for any subtitles that do exist for this content item
-                    subtitle_urls = [{
-                        "code": lc,
-                        "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
-                        "name": get_language_name(lc)
-                        } for lc in subtitle_lang_codes]
+                # Generate subtitle URLs for any subtitles that do exist for this content item
+                subtitle_urls = [{
+                    "code": lc,
+                    "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
+                    "name": get_language_name(lc)
+                    } for lc in subtitle_lang_codes]
 
-                    # Sort all subtitle URLs by language code
-                    update["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
+                # Sort all subtitle URLs by language code
+                update["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
-            # Content is currently flagged as available, but is not. Flag as unavailable.
-            if content.get("available") and "available" not in update:
-                update["available"] = False
+        # Content is currently flagged as available, but is not. Flag as unavailable.
+        if content.get("available") and "available" not in update:
+            update["available"] = False
 
-        # Path is the only unique key available.
-        updates[content.get("path")] = update
-
-    return updates
+        yield content.get("path"), update
