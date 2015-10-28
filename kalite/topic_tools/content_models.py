@@ -446,6 +446,7 @@ def create_table(db=None, **kwargs):
     with Using(db, [Item, AssessmentItem]):
         db.create_tables([Item, AssessmentItem])
 
+
 @set_database
 def annotate_content_models(db=None, channel="khan", language="en", ids=None, **kwargs):
     """
@@ -481,16 +482,18 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
                     available = children_available
                 child_remote = children.where(((Item.available == False) & (Item.kind != "Topic")) | (Item.kind == "Topic")).aggregate(fn.SUM(Item.remote_size))
                 child_on_disk = children.aggregate(fn.SUM(Item.size_on_disk))
+
                 if parent.available != available:
                     parent.available = available
-                if parent.remote_size != child_remote:
+                # Ensure that the aggregate sizes are not None
+                if parent.remote_size != child_remote and child_remote:
                     parent.remote_size = child_remote
-                if parent.size_on_disk != child_on_disk:
+                # Ensure that the aggregate sizes are not None
+                if parent.size_on_disk != child_on_disk and child_on_disk:
                     parent.size_on_disk = child_on_disk
                 if parent.is_dirty():
                     parent.save()
                     recurse_availability_up_tree(parent, available)
-
 
             for path, update in content_models:
                 if update:
