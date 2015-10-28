@@ -105,9 +105,9 @@ class Command(BaseCommand):
                     dest="database_path",
                     default="",
                     help="Override the destination path for the content item DB file"),
-        make_option("-b", "--no-bulk-create",
+        make_option("-b", "--bulk-create",
                     action="store_true",
-                    dest="no_bulk_create",
+                    dest="bulk_create",
                     default=False,
                     help="Create the records in bulk (warning: will delete destination DB first)"),
         make_option("-c", "--channel",
@@ -133,7 +133,7 @@ class Command(BaseCommand):
         channel = kwargs["channel"]
         # temporarily swap out the database path for the desired target
         database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
-        bulk_create = not kwargs["no_bulk_create"]
+        bulk_create = kwargs["bulk_create"]
 
         if bulk_create and os.path.isfile(database_path):
             if kwargs["overwrite"]:
