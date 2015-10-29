@@ -73,8 +73,12 @@ docs:
 	# sphinx-apidoc -o docs/ ka-lite-gtk
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	cli2man bin/kalite -o docs/kalite.1.gz
 	# open docs/_build/html/index.html
+
+
+# Runs separately from the docs command for now because of Windows issues
+man:
+	cli2man bin/kalite -o docs/kalite.1.gz
 
 assets:
 	# Necessary because NPM may have wrong versions in the cache
