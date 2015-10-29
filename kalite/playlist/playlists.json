@@ -1448,6 +1448,64 @@
   {
     "entries": [
       {
+        "entity_id": "/v/place-value-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/place_value/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/comparing_whole_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      }
+    ],
+    "id": "g4_p22",
+    "show": true,
+    "tag": "Grade 4",
+    "title": "Basic Skills 1: Place Value"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/e/addition_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/subtraction_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/addition_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/subtraction_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      }
+    ],
+    "id": "g4_p23",
+    "show": true,
+    "tag": "Grade 4",
+    "title": "Basic Skills 2: Addition and Subtraction"
+  },
+  {
+    "entries": [
+      {
         "entity_id": "/v/subtraction-2/",
         "entity_kind": "Video",
         "is_essential": true,
@@ -3332,6 +3390,512 @@
   {
     "entries": [
       {
+        "entity_id": "/v/place-value-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/place-value-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/place_value/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/place-value-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/representing-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/comparing-place-values/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/place-value-relationships-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/understanding-place-value-1-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/comparing_whole_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      }
+    ],
+    "id": "g5_p21",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Basic Skills 1: Place Value"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/e/addition_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/subtraction_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/addition_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/subtraction_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/carrying-when-adding-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/addition_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/example-adding-with-carrying/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/addition_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/basic-regrouping-or-borrowing-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/regrouping-from-0-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/subtraction_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/borrowing-once-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/regrouping--borrowing--twice-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/subtraction_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/subtraction-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 15
+      }
+    ],
+    "id": "g5_p22",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Basic Skills 2: Addition and Subtraction"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/basic-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/multiplication-2--the-multiplication-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/multiplication-3--10-11-12-times-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/multiplication_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/multiplying-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/multiplying-by-multiples-of-10/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/multiplication_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/4-digit-times-1-digit-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/multiplication_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/multiplication-6--multiple-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/multiplication_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/multiplication-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/division-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/division_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/division_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/dividing-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/long-division-with-remainder-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/division-3--more-long-division-and-remainder-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/e/division_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/dividing-by-a-two-digit-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/e/division_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/v/division-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 22
+      }
+    ],
+    "id": "g5_p23",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Basic Skills 3: Multiplication and Division"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/telling-time-exercise-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/telling_time_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/telling_time_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/telling-time-exercise-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/telling_time/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      }
+    ],
+    "id": "g5_p24",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Basic Skills 4: Telling Time"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/introduction-to-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/recognizing_fractions_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/numerator-and-denominator-of-a-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/recognizing_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/adding-fractions-with-like-denominators/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/adding_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/subtracting--fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/subtracting-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/subtracting_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g5_p25",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Basic Skills 5: Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/perimeter-of-a-polygon/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/perimeter_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      }
+    ],
+    "id": "g5_p26",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Basic Skills 6: Perimeter"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/reading-pictographs/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/reading_pictographs_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/reading_pictographs_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/reading-bar-graphs/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/reading-bar-charts-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/reading_bar_charts_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/creating-bar-charts-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/creating_bar_charts_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/reading-bar-charts-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/reading_bar_charts_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g5_p27",
+    "show": true,
+    "tag": "Grade 5",
+    "title": "Basic Skills 7: Pictorial Information"
+  },
+  {
+    "entries": [
+      {
         "entity_id": "/v/divisibility-tests-for-2--3--4--5--6--9--10/",
         "entity_kind": "Video",
         "is_essential": true,
@@ -5130,6 +5694,624 @@
   {
     "entries": [
       {
+        "entity_id": "/v/place-value-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/place-value-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/place_value/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/place-value-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/representing-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/comparing-place-values/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/place-value-relationships-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/understanding-place-value-1-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/comparing_whole_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      }
+    ],
+    "id": "g6_p28",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 1: Place Value"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/e/addition_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/subtraction_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/addition_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/subtraction_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/carrying-when-adding-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/addition_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/example-adding-with-carrying/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/addition_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/basic-regrouping-or-borrowing-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/regrouping-from-0-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/subtraction_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/borrowing-once-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/regrouping--borrowing--twice-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/subtraction_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/subtraction-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 15
+      }
+    ],
+    "id": "g6_p29",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 2: Addition and Subtraction"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/basic-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/multiplication-2--the-multiplication-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/multiplication-3--10-11-12-times-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/multiplication_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/multiplying-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/multiplying-by-multiples-of-10/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/multiplication_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/4-digit-times-1-digit-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/multiplication_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/multiplication-6--multiple-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/multiplication_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/multiplication-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/division-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/division_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/division_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/dividing-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/long-division-with-remainder-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/division-3--more-long-division-and-remainder-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/e/division_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/dividing-by-a-two-digit-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/e/division_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/v/division-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 22
+      }
+    ],
+    "id": "g6_p30",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 3: Multiplication and Division"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/telling-time-exercise-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/telling_time_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/telling_time_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/telling-time-exercise-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/telling_time/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      }
+    ],
+    "id": "g6_p31",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 4: Telling Time"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/introduction-to-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/recognizing_fractions_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/numerator-and-denominator-of-a-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/recognizing_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/adding-fractions-with-like-denominators/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/adding_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/subtracting--fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/subtracting-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/subtracting_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g6_p32",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 5: Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/changing-an-improper-fraction-to-a-mixed-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/changing-a-mixed-number-to-an-improper-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/mixed-numbers-and-improper-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/converting_mixed_numbers_and_improper_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/postive-improper-fractions-on-the-number-line/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/fractions_on_the_number_line_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      }
+    ],
+    "id": "g6_p33",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 6: Improper Fractions and Mixed Numbers"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/introduction-to-perimeter/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/perimeter-of-a-shape/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/perimeter-of-a-polygon/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/perimeter_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/find-width-from-perimeter/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/perimeter_of_squares_and_rectangles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      }
+    ],
+    "id": "g6_p34",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 7: Perimeter"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/rectangle-area-as-product-of-dimensions-same-as-counting-unit-squares/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/area_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/comparing-areas-of-plots-of-land/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/calculating-the-square-footage-of-a-house/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/area_of_squares_and_rectangles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      }
+    ],
+    "id": "g6_p35",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 8: Area"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/reading-pictographs/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/reading_pictographs_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/reading_pictographs_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/reading-bar-graphs/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/reading-bar-charts-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/reading_bar_charts_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/creating-bar-charts-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/creating_bar_charts_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/reading-bar-charts-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/reading_bar_charts_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g6_p36",
+    "show": true,
+    "tag": "Grade 6",
+    "title": "Basic Skills 9: Pictorial Information"
+  },
+  {
+    "entries": [
+      {
         "entity_id": "v/recognizing-irrational-numbers/",
         "entity_kind": "Video",
         "is_essential": true,
@@ -6284,5 +7466,985 @@
     "show": true,
     "tag": "Grade 7",
     "title": "Playlist 18: Circles"
-    }
+    },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/place-value-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/place-value-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/place_value/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/place-value-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/representing-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/comparing-place-values/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/place-value-relationships-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/understanding-place-value-1-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/comparing_whole_numbers/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      }
+    ],
+    "id": "g7_p19",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 1: Place Value"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/e/addition_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/subtraction_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/addition_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/subtraction_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/carrying-when-adding-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/addition_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/example-adding-with-carrying/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/addition_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/basic-regrouping-or-borrowing-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/regrouping-from-0-when-subtracting-three-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/subtraction_3/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/borrowing-once-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/regrouping--borrowing--twice-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/subtraction_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/subtraction-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 15
+      }
+    ],
+    "id": "g7_p20",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 2: Addition and Subtraction"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/basic-multiplication/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/multiplication-2--the-multiplication-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/multiplication-3--10-11-12-times-tables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/multiplication_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/multiplying-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/multiplying-by-multiples-of-10/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/multiplication_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/4-digit-times-1-digit-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/multiplication_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/multiplication-6--multiple-digit-numbers/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/e/multiplication_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/multiplication-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/division-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/division_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/division_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/dividing-whole-numbers-and-applications-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/long-division-with-remainder-example/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/division-3--more-long-division-and-remainder-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/e/division_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/dividing-by-a-two-digit-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/e/division_4/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/v/division-word-problem-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/e/arithmetic_word_problems_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 22
+      }
+    ],
+    "id": "g7_p21",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 3: Multiplication and Division"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/telling-time-exercise-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/telling_time_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/telling_time_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/telling-time-exercise-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/telling_time/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      }
+    ],
+    "id": "g7_p22",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 4: Telling Time"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/introduction-to-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/recognizing_fractions_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/numerator-and-denominator-of-a-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/recognizing_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/adding-fractions-with-like-denominators/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/e/adding_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/subtracting--fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/subtracting-fractions-word-problem-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/subtracting_fractions_with_common_denominators/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g7_p23",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 5: Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/changing-an-improper-fraction-to-a-mixed-number/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/changing-a-mixed-number-to-an-improper-fraction/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/mixed-numbers-and-improper-fractions/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/converting_mixed_numbers_and_improper_fractions/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/postive-improper-fractions-on-the-number-line/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/fractions_on_the_number_line_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/adding-fractions-word-problem-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      }
+    ],
+    "id": "g7_p24",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 6: Improper Fractions and Mixed Numbers"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/decimal-place-value/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/expanding-out-a-decimal-by-place-value/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/understanding-decimal-place-value-exercise/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/understanding_decimals_place_value/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/comparing-place-values-in-decimals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/decimal-place-value-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/writing-out-a-decimal-in-words/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/v/decimals-on-a-number-line/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/e/decimals_on_the_number_line_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-1--ex-3/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/e/converting_decimals_to_fractions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/v/converting-decimals-to-fractions-2--ex-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/e/converting_decimals_to_fractions_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/adding-decimals-example-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/v/adding-decimals-example-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/e/adding_decimals_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/e/adding_decimals/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/v/adding-decimals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 19
+      },
+      {
+        "entity_id": "/e/adding_decimals_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 20
+      },
+      {
+        "entity_id": "/v/subtracting-decimals/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 21
+      },
+      {
+        "entity_id": "/v/subtracting-decimals--old/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 22
+      },
+      {
+        "entity_id": "/e/subtracting_decimals_0.5/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 23
+      },
+      {
+        "entity_id": "/e/subtracting_decimals/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 24
+      },
+      {
+        "entity_id": "/v/adding-decimals-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 25
+      },
+      {
+        "entity_id": "/v/subtracting-decimals-word-problem/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 26
+      }
+    ],
+    "id": "g7_p25",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 7: Decimal Fractions"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/introduction-to-perimeter/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/perimeter-of-a-shape/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/perimeter-of-a-polygon/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/perimeter_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/find-width-from-perimeter/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/perimeter_of_squares_and_rectangles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      }
+    ],
+    "id": "g7_p26",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 8: Perimeter"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/rectangle-area-as-product-of-dimensions-same-as-counting-unit-squares/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/area_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/comparing-areas-of-plots-of-land/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/calculating-the-square-footage-of-a-house/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/e/area_of_squares_and_rectangles/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 4
+      }
+    ],
+    "id": "g7_p27",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 9: Area"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/how-we-measure-volume/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/measuring-volume-with-unit-cubes/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/volume_with_unit_cubes/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/measuring-volume-as-area-times-length/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/volume-of-a-rectangular-prism-or-box-examples/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/volume_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      }
+    ],
+    "id": "g7_p28",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 10: Volume"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/acute-right-and-obtuse-angles/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/angle_types/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      }
+    ],
+    "id": "g7_p29",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 11: Angles"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/variables-and-expressions-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/v/evaluate-a-formula-using-substitution/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/v/evaluating-exponential-expressions-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/e/evaluating_expressions_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/expressions-with-two-variables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/v/evaluating-expressions-with-two-variables/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/evaluating-a-polynomial-at-a-given-value/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/evaluating_expressions_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/one-step-equation-intuition-exercise-intro/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/one_step_equation_intuition/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      },
+      {
+        "entity_id": "/v/adding-and-subtracting-the-same-thing-from-both-sides/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 10
+      },
+      {
+        "entity_id": "/v/solving-one-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 11
+      },
+      {
+        "entity_id": "/v/simple-equations/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 12
+      },
+      {
+        "entity_id": "/e/one_step_equations/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 13
+      },
+      {
+        "entity_id": "/v/solving-one-step-equations-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 14
+      },
+      {
+        "entity_id": "/v/one-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 15
+      },
+      {
+        "entity_id": "/e/linear_equations_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 16
+      },
+      {
+        "entity_id": "/v/why-we-do-the-same--thing-to-both-sides--two-step-equations/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 17
+      },
+      {
+        "entity_id": "/v/equations-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 18
+      },
+      {
+        "entity_id": "/e/linear_equations_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 19
+      }
+    ],
+    "id": "g7_p30",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 12: Expressions and Equations"
+  },
+  {
+    "entries": [
+      {
+        "entity_id": "/v/reading-pictographs/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 0
+      },
+      {
+        "entity_id": "/e/reading_pictographs_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 1
+      },
+      {
+        "entity_id": "/e/reading_pictographs_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 2
+      },
+      {
+        "entity_id": "/v/reading-bar-graphs/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 3
+      },
+      {
+        "entity_id": "/v/reading-bar-charts-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 4
+      },
+      {
+        "entity_id": "/e/reading_bar_charts_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 5
+      },
+      {
+        "entity_id": "/v/creating-bar-charts-1/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 6
+      },
+      {
+        "entity_id": "/e/creating_bar_charts_1/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 7
+      },
+      {
+        "entity_id": "/v/reading-bar-charts-2/",
+        "entity_kind": "Video",
+        "is_essential": true,
+        "sort_order": 8
+      },
+      {
+        "entity_id": "/e/reading_bar_charts_2/",
+        "entity_kind": "Exercise",
+        "is_essential": true,
+        "sort_order": 9
+      }
+    ],
+    "id": "g7_p31",
+    "show": true,
+    "tag": "Grade 7",
+    "title": "Basic Skills 13: Pictorial Information"
+  }
 ]
