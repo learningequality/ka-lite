@@ -75,6 +75,11 @@ docs:
 	$(MAKE) -C docs html
 	# open docs/_build/html/index.html
 
+
+# Runs separately from the docs command for now because of Windows issues
+man:
+	cli2man bin/kalite -o docs/kalite.1.gz
+
 assets:
 	# Necessary because NPM may have wrong versions in the cache
 	npm cache clean
