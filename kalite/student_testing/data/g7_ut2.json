@@ -1,0 +1,14 @@
+{
+  "id": "g7_ut2",
+  "title": "Grade 7 - Unit 2",
+  "seed": 4758,
+  "playlist_ids": ["g7_p5", "g7_p6", "g7_p8" ],
+  "repeats": "2",
+  "ids": [
+    "area_1", "area_of_squares_and_rectangles", "volume_with_unit_cubes", "volume_1", "volume_2",
+    "solid_geometry", "direct_and_inverse_variation"
+  ],
+  "is_practice": false,
+  "grade": 7,
+  "show": true
+}

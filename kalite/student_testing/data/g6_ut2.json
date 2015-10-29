@@ -1,0 +1,17 @@
+{
+  "id": "g6_ut2",
+  "title": "Grade 6 - Unit 2",
+  "seed": 2232,
+  "playlist_ids": ["g6_p10", "g6_p11", "g6_p13", "g6_p14", "g6_p15"],
+  "repeats": "2",
+  "ids": [
+    "perimeter_1", "perimeter_of_squares_and_rectangles",
+    "area_1", "area_of_squares_and_rectangles",
+    "volume_with_unit_cubes", "volume_1", "volume_2",
+    "expressing_ratios_as_fractions", "ratio_word_problems",
+    "writing_proportions", "proportions_1", "proportions_2"
+  ],
+  "is_practice": false,
+  "grade": 6,
+  "show": true
+}
