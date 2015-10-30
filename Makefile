@@ -24,6 +24,7 @@ clean-build:
 	rm -fr .eggs/
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
+	rm -f kalite/database/data.sqlite
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -87,6 +88,8 @@ assets:
 	node build.js
 	bin/kalite manage compileymltojson
 	bin/kalite manage init_content_items
+	bin/kalite manage syncdb --noinput
+	bin/kalite manage migrate
 
 release: clean docs assets
 	python setup.py sdist --formats=gztar,zip upload --sign

@@ -358,6 +358,7 @@ if os.listdir(STATIC_DIST_PACKAGES):
         gen_data_files('dist-packages')
     )
 
+data_files += [(os.path.join(kalite.ROOT_DATA_PATH, "database"), [os.path.join("kalite", "database", "data.sqlite")])]
 
 setup(
     name=DIST_NAME,

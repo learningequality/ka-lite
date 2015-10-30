@@ -379,9 +379,14 @@ class Command(BaseCommand):
         # Should clean_pyc for (clean) reinstall purposes
         # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
 
-        # Migrate the database
-        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
-        call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+        # If a db template exists, copy it instead of creating a new one, since migrations take a long time.
+        if settings.DB_TEMPLATE_FILE and not os.path.isfile(settings.DEFAULT_DATABASE_PATH):
+            print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH))
+            shutil.copy(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH)
+        else:
+            print("Baking a fresh database from scratch.")
+            call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
+            call_command("migrate", merge=True, verbosity=options.get("verbosity"))
         Settings.set("database_version", VERSION)
 
         # download assessment items
