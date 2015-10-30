@@ -28,7 +28,7 @@ How do I change the directory where *all* of KA Lite's runtime files go, includi
 
 You can change this directory by setting the ``KALITE_HOME`` environment variable to the path of your choice.
 
-If the variable is left unset (default), KA Lite's runtime files will be placed in your user's home directory under the ``.kalite`` subdirectory. Typically, it is ``/home/user/.kalite/settings.py`` (on Windows, locate something like
+If the variable is left unset (default), KA Lite's runtime files will be placed in your user's home directory under the ``.kalite`` subdirectory. Typically, it is ``/home/user/.kalite/`` (on Windows, locate something like
 ``C:\Documents and Settings\<username>\.kalite``).
 
 There are many ways to set an environment variable either temporarily or permanently. To start ``kalite`` on OSX or Linux with a different home, run::
