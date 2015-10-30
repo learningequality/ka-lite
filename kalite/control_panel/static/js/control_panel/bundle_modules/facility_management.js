@@ -2,7 +2,7 @@ var $ = require("base/jQuery");
 var _ = require("underscore");
 var get_params = require("utils/get_params");
 var api = require("utils/api");
-require("jquery-sparkline");
+//require("jquery-sparkline");
 
 function getSelectedItems(select) {
     // Retrieve a list of selected users.

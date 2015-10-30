@@ -82,6 +82,12 @@ def learn(request):
     }
     return context
 
+@render_to("distributed/vector_video_test.html")
+def vectorvideo(request):
+    """
+    Vector video
+    """
+    return {}
 
 @check_setup_status
 @render_to("distributed/homepage.html")
