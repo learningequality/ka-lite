@@ -1,0 +1,1 @@
+module.exports = require("vectorvideo/views");

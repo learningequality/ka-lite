@@ -1,0 +1,40 @@
+{% extends "distributed/base.html" %}
+{% load my_filters i18n i18n_filters staticfiles %}
+
+{% block title %}{% trans "Learn" %}{% endblock title %}
+
+{% block headcss %}{{ block.super }}
+
+    <style id="exercise-inline-style"></style> <!-- Used by KA to dynamically add styling to the exercise -->
+
+    <!-- This CSS seems to be malformed, so let the browser sort it out for now -->
+    <link rel="stylesheet" type="text/css" href="{% static 'js/distributed/perseus/ke/css/khan-exercise.css' True %}">
+ 
+{% endblock headcss %}
+
+{% block headjs %}{{ block.super }}
+
+    <script>
+        window.ALL_TOPICS_URL = "{% url 'topic_tree' channel='%(channel_name)s' %}"; 
+    </script>
+    
+    <script src="{% static 'js/distributed/bundles/bundle_learn.js' %}"></script>
+    <script src="{% static "js/distributed/perseus/ke/third_party/MathJax/2.1/MathJax.js" True %}?config={% static "js/distributed/perseus/ke/third_party/MathJax/2.1/config/KAthJax-eaf1d9cafdc2fc68897cf72d30d67d5a" %}"></script>
+
+    <script type="text/javascript">
+        var bundle = require("vectorvideo");
+        //bundle.$(function() {
+            //window.channel_router = new bundle.TopicChannelRouter({default_channel: "{{ channel }}"})
+            //bundle.Backbone.history.start({pushState: true, root: "{% url 'learn' %}"});
+        //});
+    </script>
+
+{% endblock headjs %}
+
+{% block content %}
+    {{ block.super }}
+    <div id="content-area">
+    </div>
+    <div id="sidebar-container">
+    </div>
+{% endblock content %}
