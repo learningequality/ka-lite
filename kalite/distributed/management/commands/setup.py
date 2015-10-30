@@ -480,7 +480,7 @@ class Command(BaseCommand):
             else:
                 start_script_path = kalite_executable
 
-            # Run videoscan, on the distributed server.
+            # Run annotate_content_items, on the distributed server.
             print("Annotating availability of all content, checking for content in this directory: (%s)" %
                   settings.CONTENT_ROOT)
             call_command("annotate_content_items")

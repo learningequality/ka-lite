@@ -30,7 +30,7 @@ class MainTestCase(KALiteTestCase):
         """
         Set up a location for the content folder that won't mess with the actual application.
         Because we're using call_command, the value of settings should persist
-        into the videoscan command.
+        into the annotate_content_items command.
         """
         settings.CONTENT_ROOT = self.content_root
 
