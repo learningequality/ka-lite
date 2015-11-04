@@ -89,6 +89,24 @@ var CoachSummaryView = BaseView.extend({
         "click #show_tabular_report": "toggle_tabular_view"
     },
 
+
+    /*
+    this function populates the topic selection list
+    */
+    appendTopicList: function() {
+        var parseData = this.data_model.get("available_topics");
+        var targetElem = $("#topic-list").get(0);
+        var frag = document.createDocumentFragment();
+
+        parseData.forEach(function(datum, index) {
+            var opt = document.createElement("option");
+            opt.innerHTML = datum.title;
+            opt.value = datum.title;
+            frag.appendChild(opt);
+        });
+        targetElem.appendChild(frag);
+    }, 
+
     /*
     this function produces a radial graph and inserts it into the target_elem
     data_sub is a portion of the data, while the data_total param is the total
@@ -265,6 +283,10 @@ var CoachSummaryView = BaseView.extend({
         }
 
         this.displayRadialGraph("full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"));
+
+        this.appendTopicList();
+
+        console.log(this.data_model);
     },
 
     toggle_tabular_view: _.debounce(function() {

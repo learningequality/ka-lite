@@ -272,15 +272,31 @@ def get_topic_nodes_with_children(parent=None, db=None, **kwargs):
 @set_database
 def get_content_parents(ids=None, db=None, **kwargs):
     """
-    Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
+    Convenience function for returning parent nodes of a set of content items
     """
     if ids:
         with Using(db, [Item]):
             Parent = Item.alias()
             parent_values = Item.select(
                 Parent
-                ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids))
+                ).join(Parent, on=(Item.parent == Parent.pk)).where((Item.id.in_(ids)) & (Item.kind.in_(["Video", "Audio", "Exercise", "Document"]))).distinct()
             return parent_values
+
+
+@parse_data
+@set_database
+def get_leafed_topics(kinds=None, db=None, **kwargs):
+    """
+    Convenience function for returning a set of topic nodes that contain content
+    """
+    if not kinds:
+        kinds = ["Video", "Audio", "Exercise", "Document"]
+    with Using(db, [Item]):
+        Parent = Item.alias()
+        parent_values = Item.select(
+            Parent
+            ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.kind.in_(kinds)).distinct()
+        return parent_values
 
 
 @parse_data
