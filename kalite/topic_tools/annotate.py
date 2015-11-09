@@ -114,6 +114,8 @@ def update_content_availability(content_list, language="en", channel="khan"):
                 # Sort all subtitle URLs by language code
                 update["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))
 
+                update["files_complete"] = 1
+
         # Content is currently flagged as available, but is not. Flag as unavailable.
         if content.get("available") and "available" not in update:
             update["available"] = False

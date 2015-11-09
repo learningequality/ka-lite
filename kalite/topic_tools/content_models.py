@@ -38,6 +38,8 @@ class Item(Model):
     title = CharField()
     description = TextField()
     available = BooleanField()
+    files_complete = IntegerField(default=0)
+    total_files = IntegerField(default=0)
     kind = CharField()
     parent = ForeignKeyField("self", null=True, index=True, related_name="children")
     id = CharField(index=True)
@@ -250,11 +252,14 @@ def get_topic_update_nodes(parent=None, db=None, **kwargs):
                 Item.description,
                 Item.available,
                 Item.kind,
-                Item.youtube_id,
                 Item.pk,
                 Item.size_on_disk,
                 Item.remote_size,
-                ).join(Parent, on=(Item.parent == Parent.pk)).where((selector) & (Item.kind != "Exercise"))
+                Item.files_complete,
+                Item.total_files,
+                Item.id,
+                Item.path,
+                ).join(Parent, on=(Item.parent == Parent.pk)).where((selector) & (Item.total_files != 0))
             return values
 
 
@@ -480,11 +485,16 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, **
                 if not available:
                     children_available = children.where(Item.available == True).count() > 0
                     available = children_available
+
+                files_complete = children.aggregate(fn.SUM(Item.files_complete))
+
                 child_remote = children.where(((Item.available == False) & (Item.kind != "Topic")) | (Item.kind == "Topic")).aggregate(fn.SUM(Item.remote_size))
                 child_on_disk = children.aggregate(fn.SUM(Item.size_on_disk))
 
                 if parent.available != available:
                     parent.available = available
+                if parent.files_complete != files_complete:
+                    parent.files_complete = files_complete
                 # Ensure that the aggregate sizes are not None
                 if parent.remote_size != child_remote and child_remote:
                     parent.remote_size = child_remote
@@ -528,7 +538,7 @@ def update_parents(db=None, parent_mapping=None, channel="khan", language="en", 
                             parent = Item.get(Item.id == value, Item.kind == "Topic")
                             item = Item.get(Item.path == key)
                         except DoesNotExist:
-                            print(key, value, "Parent not found" if not parent else "Item not found")
+                            print(key, value, "Parent or Item not found")
                         if item and parent:
                             item.parent = parent
                             item.save()
