@@ -341,6 +341,22 @@ def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
             return Item.select(Item).where(Item.kind.in_(kinds), Item.path.contains(topic_node.path))
 
 
+@set_database
+def get_download_youtube_ids(paths=None, db=None, **kwargs):
+    """
+    Convenience function for taking a list of content ids and returning
+    all associated youtube_ids for downloads, regardless of whether the input
+    ids are ids for content nodes or topic nodes
+    """
+    if paths:
+        with Using(db, [Item]):
+            youtube_ids = set()
+            for path in paths:
+                youtube_ids.update(set([path for path, in Item.select(Item.youtube_id).where((Item.kind != "Topic") & Item.path.contains(path)).tuples()]))
+
+            return list(youtube_ids)
+
+
 def get_video_from_youtube_id(youtube_id):
     for channel, language in available_content_databases():
         video = _get_video_from_youtube_id(channel=channel, language=language, youtube_id=youtube_id)
@@ -443,6 +459,32 @@ def update(update=None, select=None, **kwargs):
             query.execute()
 
 
+def iterator_content_items(ids=None, **kwargs):
+    if ids:
+        items = Item.select().where(Item.id.in_(ids)).dicts().iterator()
+    else:
+        items = Item.select().dicts().iterator()
+
+    mapped_items = itertools.imap(unparse_model_data, items)
+    updated_mapped_items = update_content_availability(mapped_items)
+
+    for path, update in updated_mapped_items:
+        yield path, update
+
+
+def iterator_content_items_by_youtube_id(ids=None, **kwargs):
+    if ids:
+        items = Item.select().where(Item.youtube_id.in_(ids)).dicts().iterator()
+    else:
+        items = Item.select().dicts().iterator()
+
+    mapped_items = itertools.imap(unparse_model_data, items)
+    updated_mapped_items = update_content_availability(mapped_items)
+
+    for path, update in updated_mapped_items:
+        yield path, update
+
+
 @set_database
 def create_table(db=None, **kwargs):
     """
@@ -452,28 +494,20 @@ def create_table(db=None, **kwargs):
         db.create_tables([Item, AssessmentItem])
 
 
+def annotate_content_models_by_youtube_id(channel="khan", language="en", youtube_ids=None):
+    annotate_content_models(channel=channel, language=language, ids=youtube_ids, iterator_content_items=iterator_content_items_by_youtube_id)
+
+
 @set_database
-def annotate_content_models(db=None, channel="khan", language="en", ids=None, **kwargs):
+def annotate_content_models(db=None, channel="khan", language="en", ids=None, iterator_content_items=iterator_content_items, **kwargs):
     """
     Annotate content models that have the ids specified in a list.
     Our ids can be duplicated at the moment, so this may be several content items per id.
     When a content item has been updated, propagate availability up the topic tree.
     """
 
-    def iterator_content_items(ids=None, **kwargs):
-        if ids:
-            items = Item.select().where(Item.id.in_(ids)).dicts().iterator()
-        else:
-            items = Item.select().dicts().iterator()
-
-        mapped_items = itertools.imap(unparse_model_data, items)
-        updated_mapped_items = update_content_availability(mapped_items)
-
-        for path, update in updated_mapped_items:
-            yield path, update
-
     with Using(db, [Item]):
-        content_models = iterator_content_items(ids=ids, channel=channel, language=language)
+        content_models = iterator_content_items(ids=ids)
         with db.atomic() as transaction:
             def recurse_availability_up_tree(node, available):
                 if not node.parent:
@@ -549,4 +583,3 @@ def get_assessment_item_data(db=None, channel="khan", language="en", assessment_
     with Using(db, [AssessmentItem]):
         assessment_item = AssessmentItem.get(AssessmentItem.id == assessment_item_id)
         return model_to_dict(assessment_item)
-

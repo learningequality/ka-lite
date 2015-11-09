@@ -29,7 +29,7 @@ from fle_utils.orderedset import OrderedSet
 from kalite.i18n.base import lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.settings import CHANNEL
-from kalite.topic_tools.content_models import get_topic_update_nodes
+from kalite.topic_tools.content_models import get_topic_update_nodes, get_download_youtube_ids, annotate_content_models_by_youtube_id
 
 
 def process_log_from_request(handler):
@@ -123,10 +123,9 @@ def start_video_download(request):
     """
     API endpoint for launching the videodownload job.
     """
-    youtube_ids = OrderedSet(simplejson.loads(request.body or "{}").get("youtube_ids", []))
+    paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
 
-    # One query per video (slow)
-    video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
+    youtube_ids = get_download_youtube_ids(paths)
 
     # OK to update all, since we're not setting all props above.
     # One query per chunk
@@ -157,13 +156,17 @@ def delete_videos(request):
     """
     API endpoint for deleting videos.
     """
-    youtube_ids = simplejson.loads(request.body or "{}").get("youtube_ids", [])
+    paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
+
+    youtube_ids = get_download_youtube_ids(paths)
+
     num_deleted = 0
 
     for id in youtube_ids:
         # Delete the file on disk
         delete_downloaded_files(id)
 
+    annotate_content_models_by_youtube_id(ids=youtube_ids, language=request.language)
         # Delete the file in the database
         found_videos = VideoFile.objects.filter(youtube_id=id)
         num_deleted += found_videos.count()
