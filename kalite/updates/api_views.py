@@ -153,7 +153,7 @@ def delete_videos(request):
         # Delete the file on disk
         delete_downloaded_files(id)
 
-    annotate_content_models_by_youtube_id(ids=youtube_ids, language=request.language)
+    annotate_content_models_by_youtube_id(youtube_ids=youtube_ids, language=request.language)
 
     return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 

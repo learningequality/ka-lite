@@ -29,7 +29,7 @@ class TestAdminApiCalls(MainTestCase):
         admin_user.save()
 
         # Choose, and create, a video
-        self.fake_video_file, self.video_id, self.youtube_id = self.create_random_content_file()
+        self.fake_video_file, self.video_id, self.youtube_id, self.path = self.create_random_content_file()
 
         # login
         self.client = KALiteClient()
@@ -53,7 +53,7 @@ class TestAdminApiCalls(MainTestCase):
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
         # Delete a video file, make sure
-        result = self.client.delete_videos(youtube_ids=[self.youtube_id])
+        result = self.client.delete_videos(paths=[self.path])
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
@@ -65,7 +65,7 @@ class TestAdminApiCalls(MainTestCase):
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
         # Delete a video file, make sure
-        result = self.client.delete_videos(youtube_ids=[self.youtube_id])
+        result = self.client.delete_videos(paths=[self.path])
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
@@ -77,6 +77,6 @@ class TestAdminApiCalls(MainTestCase):
         self.assertTrue(os.path.exists(self.fake_video_file), "Video file should exist on disk.")
 
         # Delete a video file, make sure
-        result = self.client.delete_videos(youtube_ids=[self.youtube_id])
+        result = self.client.delete_videos(paths=[self.path])
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
