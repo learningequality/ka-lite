@@ -31,6 +31,9 @@ require("bootstrap/dist/js/npm.js");
 
 require("../../../css/distributed/khan-site.css");
 
+// We override introjs.css in khan-lite.less, so load before.
+require("intro.js/introjs.css");
+
 require("../../../css/distributed/khan-lite.less");
 
 // Related to showing elements on screen
