@@ -18,7 +18,7 @@ from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from .videos import delete_downloaded_files
-from .models import UpdateProgressLog, VideoFile
+from .models import UpdateProgressLog
 from .views import get_installed_language_packs
 from .download_track import VideoQueue
 from fle_utils.chronograph.utils import force_job

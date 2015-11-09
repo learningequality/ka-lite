@@ -13,10 +13,6 @@
     <script type="text/javascript" src="{% static 'js/updates/bundles/bundle_update_videos.js' %}"></script>
 {% endblock headjs %}
 
-{% block ga_setmetrics %}
-    ga('set', 'metric1', {{ video_count }});
-{% endblock ga_setmetrics %}
-
 {% block content %}
 
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}

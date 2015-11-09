@@ -184,34 +184,6 @@ class UpdateProgressLog(ExtendedModel):
         return log
 
 
-class VideoFile(ExtendedModel):
-    """
-    Used exclusively for downloading files, and in conjunction with files on disk
-    to determine what videos are available to users.
-    """
-    youtube_id = models.CharField(max_length=20, primary_key=True)
-    flagged_for_download = models.BooleanField(default=False)
-    download_in_progress = models.BooleanField(default=False)
-    priority = models.IntegerField(default=0)
-    percent_complete = models.IntegerField(default=0)
-    cancel_download = models.BooleanField(default=False)
-    language=models.CharField(max_length=8, default=settings.LANGUAGE_CODE)
-
-    class Meta:
-        ordering = ["priority", "youtube_id"]
-
-    def __unicode__(self):
-        if self.download_in_progress:
-            status = "downloading (%d%%)" % self.percent_complete
-        elif self.flagged_for_download:
-            status = "waiting to download"
-        elif self.percent_complete == 100:
-            status = "downloaded"
-        else:
-            status = "not downloaded"
-        return u"id: %s (%s)" % (self.youtube_id, status)
-
-
 # Signals
 
 @receiver(post_save, sender=Job)

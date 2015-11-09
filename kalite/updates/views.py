@@ -6,7 +6,6 @@ from django.utils.translation import ugettext as _, ugettext_lazy
 from django.contrib import messages
 from django.conf import settings
 
-from .models import VideoFile
 from kalite.i18n.base import get_installed_language_packs
 from kalite.shared.decorators.auth import require_admin
 from securesync.models import Device
@@ -32,9 +31,6 @@ def update_videos(request, max_to_show=4):
     if getattr(settings, 'USING_RASPBERRY_PI', False):
         messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download less than 25 videos at a time.'))
 
-    context.update({
-        "video_count": VideoFile.objects.filter(percent_complete=100).count(),
-    })
     return context
 
 
