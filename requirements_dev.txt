@@ -1,6 +1,8 @@
 -r requirements_test.txt
 werkzeug # Not sure about version
-django-debug-toolbar # Version was not described in previously bundled files, used by kalite.testing app
+# Latest version of django-debug-toolbar that supports Django 1.5
+django-debug-toolbar==1.3.2
+django-extensions==1.5.9  # Found in installed apps in kalite.project.settings.dev
 pep8
 sphinx
 #cli2man
