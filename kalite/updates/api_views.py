@@ -20,6 +20,7 @@ from django.utils.translation import ugettext as _
 from .videos import delete_downloaded_files
 from .models import UpdateProgressLog, VideoFile
 from .views import get_installed_language_packs
+from .download_track import VideoQueue
 from fle_utils.chronograph.utils import force_job
 from fle_utils.django_utils.command import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks, softload_json
@@ -127,24 +128,10 @@ def start_video_download(request):
 
     youtube_ids = get_download_youtube_ids(paths)
 
-    # OK to update all, since we're not setting all props above.
-    # One query per chunk
-    for chunk in break_into_chunks(youtube_ids):
-        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
-        video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
+    queue = VideoQueue()
 
-    force_job("videodownload", _("Download Videos"), locale=request.language)
+    queue.add_files(youtube_ids, language=request.language)
 
-    return JsonResponseMessageSuccess(_("Launched video download process successfully."))
-
-
-@require_admin
-@api_handle_error_with_json
-def retry_video_download(request):
-    """
-    Clear any video still accidentally marked as in-progress, and restart the download job.
-    """
-    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
     force_job("videodownload", _("Download Videos"), locale=request.language)
 
     return JsonResponseMessageSuccess(_("Launched video download process successfully."))
@@ -167,10 +154,6 @@ def delete_videos(request):
         delete_downloaded_files(id)
 
     annotate_content_models_by_youtube_id(ids=youtube_ids, language=request.language)
-        # Delete the file in the database
-        found_videos = VideoFile.objects.filter(youtube_id=id)
-        num_deleted += found_videos.count()
-        found_videos.delete()
 
     return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 
@@ -179,13 +162,11 @@ def delete_videos(request):
 @api_handle_error_with_json
 def cancel_video_download(request):
 
-    # clear all download in progress flags, to make sure new downloads will go through
-    VideoFile.objects.all().update(download_in_progress=False)
-
-    # unflag all video downloads
-    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False, download_in_progress=False)
-
     force_job("videodownload", stop=True, locale=request.language)
+
+    queue = VideoQueue()
+
+    queue.clear()
 
     return JsonResponseMessageSuccess(_("Cancelled video download process successfully."))
 
