@@ -14,7 +14,6 @@ require("../../../css/updates/update_videos.less");
 var lastKey = null;
 var nErrors = 0;
 var videos_downloading = false;
-var numVideos = null;
 var downloading_node = null;
 
 function video_start_callback(progress_log, resp) {
@@ -49,7 +48,7 @@ function video_check_callback(progress_log, resp) {
 
         if (keyCompleted) {
             if (!status) {
-                setNodeClass(keyCompleted, "complete");
+                setNodeClass(tree.getNodeByKey(keyCompleted), "complete");
             } else if (status == "error") {
                 // update # errors
                 nErrors++;
@@ -69,7 +68,7 @@ function video_check_callback(progress_log, resp) {
                 return;
 
             } else if (lastKey != currentKey) {
-                setNodeClass(currentKey, "partial");
+                setNodeClass(tree.getNodeByKey(currentKey), "partial");
             }
 
         } else if (progress_log.completed) {
@@ -79,7 +78,7 @@ function video_check_callback(progress_log, resp) {
             $("#download-videos").removeAttr("disabled");
         } else {
             // Everything's good for now!
-            setNodeClass(currentKey, "partial");
+            setNodeClass(tree.getNodeByKey(currentKey), "partial");
             $("#retry-video-download").hide();
             $("#cancel-download").show();
             $("#download-videos").removeAttr("disabled");
@@ -103,101 +102,107 @@ var tree;
 
 $(function() {
 
-    api.doRequest(window.Urls.get_annotated_topic_tree(), {})
-        .success(function(treeData) {
-            $("#content_tree").html("");
+    $("#content_tree").html("");
 
-            if (treeData === null) {
-                messages.show_message("warning", gettext("Apologies, but there are no videos available for this language."));
+    $("#content_tree").fancytree({
+        autoCollapse: true,
+        aria: true, // Enable WAI-ARIA support.
+        checkbox: true, // Show checkboxes.
+        debugLevel: 0, // 0:quiet, 1:normal, 2:debug
+        selectMode: 3,
+        source: {
+            url: window.Urls.get_update_topic_tree(),
+            data: { parent: "root"},
+            cache: false
+        },
+        postProcess: function(event, data) {
+            data.response = _.map(data.response, function(node) {
+                if (node.files_complete === 0) {
+                    node["extraClasses"] = "unstarted";
+                } else if (node.files_complete < node.total_files) {
+                    node["extraClasses"] = "partial";
+                } else {
+                    node["extraClasses"] = "complete";
+                }
+                if (node.kind == "Topic") {
+                    node["lazy"] = true;
+                    node["folder"] = true;
+                }
+                node["key"] = node["id"];
+            });
+        },
+        lazyLoad: function(event, data){
+            var node = data.node;
+            data.result = {
+              url: window.Urls.get_update_topic_tree(),
+              data:{ parent: node.key},
+              cache: false
+            };
+        },
+        select: function(event, node) {
+
+            var videoMetadata = tree.getSelectedNodes(true);
+            var newVideoCount    = _.reduce(videoMetadata, function(memo, meta) {
+                return memo + (meta.data.total_files - meta.data.files_complete);
+            }, 0);
+            var oldVideoCount    = _.reduce(videoMetadata, function(memo, meta) {
+                return memo + meta.data.files_complete;
+            }, 0);
+            var newVideoSize     = _(videoMetadata).reduce(function(memo, meta) {
+                // Reduce to compute sum
+                return memo + meta.data.remote_size;
+            }, 0);
+            var oldVideoSize     = _(videoMetadata).reduce(function(memo, meta) {
+                return memo + meta.data.size_on_disk;
+            }, 0);
+
+            $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) === 0);
+
+            if (newVideoCount === 0) {
+                $("#download-videos").hide();
             } else {
-
-                $("#content_tree").fancytree({
-                    autoCollapse: true,
-                    aria: true, // Enable WAI-ARIA support.
-                    checkbox: true, // Show checkboxes.
-                    debugLevel: 0, // 0:quiet, 1:normal, 2:debug
-                    selectMode: 3,
-                    source: [treeData],
-                    click: function(event, data) {
-                        if (data.targetType === "checkbox"){
-                            return true;
-                        }else{
-                            if(data.node.hasChildren()){
-                                data.node.toggleExpanded();
-                            }else{
-                                data.node.toggleSelected();
-                            }
-                            return false;
-                        }
-                    },
-                    dblclick: function(event, data) {
-                        data.node.toggleSelected();
-                        return false;
-                    },
-                    select: function(event, node) {
-
-                        var newVideoMetadata = getSelectedIncompleteMetadata();
-                        var oldVideoMetadata = getSelectedStartedMetadata();
-                        var newVideoCount    = newVideoMetadata.length;
-                        var oldVideoCount    = oldVideoMetadata.length;
-                        var newVideoSize     = _(newVideoMetadata).reduce(function(memo, meta) {
-                            // Reduce to compute sum
-                            return memo + meta.size;
-                        }, 0);
-                        var oldVideoSize     = _(oldVideoMetadata).reduce(function(memo, meta) {
-                            return memo + meta.size;
-                        }, 0);
-
-                        $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) === 0);
-
-                        if (newVideoCount === 0) {
-                            $("#download-videos").hide();
-                        } else {
-                            $("#download-videos-text").text(sprintf(gettext("Download %(vid_count)d new selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
-                                vid_count: newVideoCount,
-                                vid_size: (newVideoSize < Math.pow(2, 10)) ? newVideoSize : newVideoSize / Math.pow(2, 10),
-                                vid_size_units: (newVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
-                            }));
-                            $("#download-videos").toggle($("#download-videos").attr("disabled") === undefined); // only show if we're not currently downloading
-                        }
-                        if (oldVideoCount === 0) {
-                            $("#delete-videos").hide();
-                        } else {
-                            $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
-                                vid_count: oldVideoCount,
-                                vid_size: (oldVideoSize < Math.pow(2, 10)) ? oldVideoSize : oldVideoSize / Math.pow(2, 10),
-                                vid_size_units: (oldVideoSize < Math.pow(2, 10)) ? "MB" : "GB"
-                            }));
-                            $("#delete-videos").show();
-                        }
-                    },
-                    init: function(event, data) {
-                        tree = data.tree;
-                        connectivity.with_online_status("server", function(server_is_online) {
-                            // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
-                            // Best to assume offline, as online check returns much faster than offline check.
-                            if(server_is_online){
-                                $(".enable-when-server-online").removeAttr("disabled");
-                                base.updatesStart("videodownload", 5000, video_callbacks);
-                            } else {
-                                messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
-                            }
-                        });
-                    }
-                });
+                $("#download-videos-text").text(sprintf(gettext("Download %(vid_count)d new selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
+                    vid_count: newVideoCount,
+                    vid_size: (newVideoSize < Math.pow(2, 30)) ? newVideoSize / Math.pow(2, 20) : newVideoSize / Math.pow(2, 30),
+                    vid_size_units: (newVideoSize < Math.pow(2, 30)) ? "MB" : "GB"
+                }));
+                $("#download-videos").toggle($("#download-videos").attr("disabled") === undefined); // only show if we're not currently downloading
             }
-        });
+            if (oldVideoCount === 0) {
+                $("#delete-videos").hide();
+            } else {
+                $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
+                    vid_count: oldVideoCount,
+                    vid_size: (oldVideoSize < Math.pow(2, 30)) ? oldVideoSize / Math.pow(2, 20) : oldVideoSize / Math.pow(2, 30),
+                    vid_size_units: (oldVideoSize < Math.pow(2, 30)) ? "MB" : "GB"
+                }));
+                $("#delete-videos").show();
+            }
+        },
+        init: function(event, data) {
+            tree = data.tree;
+            connectivity.with_online_status("server", function(server_is_online) {
+                // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
+                // Best to assume offline, as online check returns much faster than offline check.
+                if(server_is_online){
+                    $(".enable-when-server-online").removeAttr("disabled");
+                    base.updatesStart("videodownload", 5000, video_callbacks);
+                } else {
+                    messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
+                }
+            });
+        }
+    });
 
     $("#download-videos").click(function() {
         messages.clear_messages();
 
         // Prep
         // Get all videos to download
-        var youtube_ids = getSelectedIncompleteMetadata("youtube_id");
-        numVideos = youtube_ids.length;
+        var paths = _.map(tree.getSelectedNodes(true), function(node) { return node.data.path; });
 
         // Do the request
-        api.doRequest(window.Urls.start_video_download(), {youtube_ids: youtube_ids})
+        api.doRequest(window.Urls.start_video_download(), {paths: paths})
             .success(function() {
                 base.updatesStart("videodownload", 2000, video_callbacks);
             })
@@ -213,7 +218,7 @@ $(function() {
         $("#download-videos").attr("disabled", "disabled");
 
         // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-        ga_track("send", "event", "update", "click-download-videos", "Download Videos", youtube_ids.length);
+        ga_track("send", "event", "update", "click-download-videos", "Download Videos", downloading_node.length);
     });
 
     // Delete existing videos
@@ -236,20 +241,17 @@ $(function() {
                     // Get all videos marked for download
 
                     //keep a copy of the selected node
-                    downloading_node = tree.getSelectedNodes();
+                    downloading_node = tree.getSelectedNodes(true);
 
-                    var youtube_ids = getSelectedStartedMetadata("youtube_id");
+                    var paths = _.map(tree.getSelectedNodes(true), function(node) { return node.data.path; });
                     // Do the request
-                    api.doRequest(window.Urls.delete_videos(), {youtube_ids: youtube_ids})
+                    api.doRequest(window.Urls.delete_videos(), {paths: paths})
                         .success(function() {
                             //update fancytree to reflect the current status of the videos
                             $.each(downloading_node, function(ind, node) {
                                 updateNodeCompleteness(node, "unstarted");
                             });
 
-                            $.each(youtube_ids, function(ind, id) {
-                                setNodeClass(id, "unstarted");
-                            });
                         })
                         .fail(function(resp) {
                             $(".progress-waiting").hide();
@@ -333,7 +335,7 @@ function show_language_selector() {
 
 /* script functions for doing stuff with the topic tree*/
 function unselectAllNodes() {
-    $.each(tree.getSelectedNodes(), function(ind, node) {
+    $.each(tree.getSelectedNodes(true), function(ind, node) {
         node.setSelected(false);
     });
 }
@@ -345,7 +347,7 @@ function getSelectedVideos(vid_type) {
         case "incomplete": avoid_type ="complete"; break;
         default: assert(false, sprintf("Unknown vid type: %s", vid_type)); break;
     }
-    var arr = tree.getSelectedNodes();
+    var arr = tree.getSelectedNodes(true);
     var vids = _.uniq($.grep(arr, function(node) {
         return node.extraClasses != avoid_type && node.children === null;
     }));
@@ -383,26 +385,13 @@ function getSelectedStartedMetadata(data_type) {
     return getSelectedMetadata("started", data_type);
 }
 
-function withNodes(nodeKey, callback, currentNode) {
-    if (!currentNode) {
-        currentNode = tree.rootNode.children[0];
-    }
-    $.each(currentNode.children || [], function(ind, child) {
-        if (child.data.key == nodeKey) {
-            callback(child);
-        }
-        withNodes(nodeKey, callback, child);
-    });
-}
-
-function setNodeClass(nodeKey, className) {
-    withNodes(nodeKey, function(node) {
-        // $(node.span).removeClass("unstarted partial complete").extraClasses(className);  no idea why run this here?
+function setNodeClass(node, className) {
+    if (node.extraClasses != className) {
         node.extraClasses = className;
         if (node.parent) {
             updateNodeClass(node.parent);
         }
-    });
+    }
 }
 
 function updateNodeClass(node) {
@@ -419,11 +408,11 @@ function updateNodeClass(node) {
             }
         }
         if (complete) {
-            setNodeClass(node.data.key, "complete");
+            setNodeClass(node, "complete");
         } else if (unstarted) {
-            setNodeClass(node.data.key, "unstarted");
+            setNodeClass(node, "unstarted");
         } else {
-            setNodeClass(node.data.key, "partial");
+            setNodeClass(node, "partial");
         }
     }
 }
