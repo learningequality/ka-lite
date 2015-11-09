@@ -106,7 +106,7 @@ var ButtonView = BaseView.extend({
                 var value = attribute[key];
 
                 if (key === "text") {
-                    step["intro"] = value;
+                    step["intro"] = gettext(value);
                 } else if (key === "position") {
                     step["position"] = value;
                 } else if (key === "step") {
