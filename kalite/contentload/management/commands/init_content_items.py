@@ -56,14 +56,11 @@ def generate_topic_tree_items(channel="khan", language="en"):
 
         node.pop("child_data", None)
 
-        child_availability = []
-
-        child_ids = [child.get("id") for child in node.get("children", [])]
+        total_files = 0
 
         # Do the recursion
         for child in node.get("children", []):
-            recurse_nodes(child, node.get("id"))
-            child_availability.append(child.get("available", False))
+            total_files += recurse_nodes(child, node.get("id"))
 
         node.pop("children", None)
 
@@ -73,8 +70,12 @@ def generate_topic_tree_items(channel="khan", language="en"):
                 data = exercise_cache.get(node.get("id"), {})
             else:
                 data = content_cache.get(node.get("id"), {})
+                total_files = 1
 
             node = dict(data, **node)
+
+        node["total_files"] = total_files
+
         node["available"] = False
 
         # Translate everything for good measure
@@ -83,6 +84,7 @@ def generate_topic_tree_items(channel="khan", language="en"):
             node["description"] = _(node.get("description", "")) if node.get("description") else ""
 
         flat_topic_tree.append(node)
+        return total_files
 
     dedupe_paths(topic_tree)
 
@@ -135,7 +137,7 @@ class Command(BaseCommand):
         database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
         bulk_create = kwargs["bulk_create"]
 
-        if bulk_create and os.path.isfile(database_path):
+        if os.path.isfile(database_path):
             if kwargs["overwrite"]:
                 os.remove(database_path)
             else:
