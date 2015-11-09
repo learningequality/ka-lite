@@ -74,8 +74,8 @@ def update_content_availability(content_list, language="en", channel="khan"):
             # Get list of subtitle language codes currently available
             subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.get("id")), [])
 
-            if (filename) in contents_folder or language in subtitle_lang_codes:
-                if (not (filename) in contents_folder) and language in subtitle_lang_codes:
+            if filename in contents_folder or language in subtitle_lang_codes:
+                if (filename not in contents_folder) and language in subtitle_lang_codes:
                     # The file is not available, but it might be available in English and can be subtitled
                     if content.get("id") + "." + format in contents_folder:
                         file_id = content.get("id")
