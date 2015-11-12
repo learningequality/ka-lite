@@ -1,5 +1,6 @@
 from math import ceil
 import datetime
+import json
 
 from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
@@ -135,7 +136,7 @@ def aggregate_learner_logs(request):
 
     end_date = request.GET.get("end_date", None)
 
-    topic_ids = request.GET.getlist("topic_id", [])
+    topic_ids = json.loads(request.GET.get("topic_ids", "[]"))
 
     log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
 

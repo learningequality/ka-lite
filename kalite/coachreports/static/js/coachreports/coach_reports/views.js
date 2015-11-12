@@ -12,6 +12,7 @@ var date_string = require("utils/datestring").date_string;
 var d3 = require("d3");
 
 require("bootstrap-datepicker/dist/js/bootstrap-datepicker");
+require("bootstrap-multiselect/dist/js/bootstrap-multiselect");
 
 /*
 Hierarchy of views:
@@ -86,7 +87,9 @@ var CoachSummaryView = BaseView.extend({
     template: require("./hbtemplates/landing.handlebars"),
 
     events: {
-        "click #show_tabular_report": "toggle_tabular_view"
+        "click #show_tabular_report": "toggle_tabular_view",
+        //"change #topic-list" : "set_data_model"
+        "click #topic-list-submit": "set_data_model"
     },
 
 
@@ -101,7 +104,7 @@ var CoachSummaryView = BaseView.extend({
         parseData.forEach(function(datum, index) {
             var opt = document.createElement("option");
             opt.innerHTML = datum.title;
-            opt.value = datum.title;
+            opt.value = datum.id;
             frag.appendChild(opt);
         });
         targetElem.appendChild(frag);
@@ -192,12 +195,14 @@ var CoachSummaryView = BaseView.extend({
         }
 
         if (!this.data_model) {
+            var topic_ids = _.map(this.$("#topic-list option:checked"), function (node) {return node.value;});
+            console.log(topic_ids);
             this.data_model = new Models.CoachReportAggregateModel({
                 facility: this.model.get("facility"),
                 group: this.model.get("group"),
                 start_date: date_string(this.model.get("start_date")),
                 end_date: date_string(this.model.get("end_date")),
-            
+                topic_ids: JSON.stringify(topic_ids)
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
@@ -286,7 +291,8 @@ var CoachSummaryView = BaseView.extend({
 
         this.appendTopicList();
 
-        console.log(this.data_model);
+        $('#topic-list').multiselect();
+
     },
 
     toggle_tabular_view: _.debounce(function() {

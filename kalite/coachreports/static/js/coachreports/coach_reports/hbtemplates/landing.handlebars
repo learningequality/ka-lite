@@ -2,10 +2,11 @@
 	<div id="summary_mainview">
 		<h1 class="status_name">{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}</h1>
 		<div class="topic-row">
-			<div class="col-sm-3">
+			<div class="col-sm-4">
 				<label for="topic-list">Topic</label>
-				<select id="topic-list" class="reports-select form-control">
+				<select id="topic-list" multiple="multiple">
 				</select>
+				<button id="topic-list-submit" type="button" class="btn btn-primary btn-md">Submit</button>
 			</div>
 		</div>
 		<h3>{{#if start_date}}{{ start_date }}{{#if end_date }} → {{ end_date }}{{/if}}{{else}}{{_ "This week" }}{{/if}}</h3>
