@@ -10,14 +10,14 @@ from kalite.topic_tools.content_models import annotate_content_models
 
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH
 
-from kalite.updates.management.commands.classes import UpdatesStaticCommand
+from django.core.management.base import BaseCommand
 
 from django.utils.translation import gettext as _
 
 
-class Command(UpdatesStaticCommand):
+class Command(BaseCommand):
 
-    option_list = UpdatesStaticCommand.option_list + (
+    option_list = (
         make_option("-d", "--database-path",
                     action="store",
                     dest="database_path",
@@ -35,10 +35,6 @@ class Command(UpdatesStaticCommand):
                     help="Language to annotate database for."),
     )
 
-    stages = (
-        "annotate_content_models",
-    )
-
     def handle(self, *args, **kwargs):
 
         language = kwargs["language"]
@@ -46,11 +42,11 @@ class Command(UpdatesStaticCommand):
         # temporarily swap out the database path for the desired target
         database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
 
-        self.start(_("Annotating content for language: {language}, channel: {channel}").format(
+        logging.info("Annotating content for language: {language}, channel: {channel}".format(
             language=language,
             channel=channel))
         annotate_content_models(database_path=database_path, channel=channel, language=language)
 
-        self.complete(_("Annotation complete for language: {language}, channel: {channel}").format(
+        logging.info("Annotation complete for language: {language}, channel: {channel}".format(
             language=language,
             channel=channel))

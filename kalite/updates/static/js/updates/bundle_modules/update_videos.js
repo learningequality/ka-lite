@@ -335,7 +335,7 @@ $(function() {
         // Do the request
         api.doRequest(window.Urls.video_scan())
             .success(function() {
-                base.updatesStart("annotate_content_items", 2000, scan_callbacks);
+                base.updatesStart("videoscan", 2000, scan_callbacks);
 
                 // Update the UI
                 $("#download-videos").attr("disabled", "disabled");

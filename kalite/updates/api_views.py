@@ -175,9 +175,9 @@ def cancel_video_download(request):
 @api_handle_error_with_json
 def video_scan(request):
 
-    force_job("annotate_content_items", _("Scan for Videos"), language=request.language)
+    force_job("videoscan", _("Scan for Videos"), language=request.language)
 
-    return JsonResponseMessageSuccess(_("Scanning for videos initiated."))
+    return JsonResponseMessageSuccess(_("Scanning for videos started."))
 
 
 @api_handle_error_with_json
