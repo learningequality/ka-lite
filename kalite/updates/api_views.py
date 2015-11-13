@@ -143,6 +143,7 @@ def delete_videos(request):
     """
     API endpoint for deleting videos.
     """
+
     paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
 
     youtube_ids = get_download_youtube_ids(paths)
@@ -151,9 +152,10 @@ def delete_videos(request):
 
     for id in youtube_ids:
         # Delete the file on disk
-        delete_downloaded_files(id)
+        if delete_downloaded_files(id):
+            num_deleted += 1
 
-    annotate_content_models_by_youtube_id(youtube_ids=youtube_ids, language=request.language)
+    annotate_content_models_by_youtube_id(youtube_ids=youtube_ids.keys(), language=request.language)
 
     return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 

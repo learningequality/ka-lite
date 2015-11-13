@@ -352,7 +352,9 @@ def get_download_youtube_ids(paths=None, db=None, **kwargs):
         with Using(db, [Item]):
             youtube_ids = dict()
             for path in paths:
-                youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where((Item.kind != "Topic") & Item.path.contains(path)).tuples()]))
+                selector = (Item.kind != "Topic") & (Item.path.contains(path)) & (Item.youtube_id.is_null(False))
+
+                youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
 
             return youtube_ids
 

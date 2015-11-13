@@ -274,7 +274,9 @@ $(function() {
                         unselectAllNodes();
 
                         // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-                        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", youtube_ids.length);
+                        ga_track("send", "event", "update", "click-delete-videos", "Delete Videos", _.reduce(downloading_node, function(memo, meta) {
+                            return memo + meta.data.files_complete;
+                        }, 0));
 
                         $(this).dialog("close");
                     }

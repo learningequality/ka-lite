@@ -17,7 +17,7 @@ from django.utils.translation import gettext as _
 
 class Command(BaseCommand):
 
-    option_list = (
+    option_list = BaseCommand.option_list + (
         make_option("-d", "--database-path",
                     action="store",
                     dest="database_path",
