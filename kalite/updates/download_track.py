@@ -5,7 +5,7 @@ logging = settings.LOG
 
 from .settings import VIDEO_DOWNLOAD_QUEUE_FILE
 
-class VideoQueue:
+class VideoQueue(object):
     """
     This class handles queueing of videos for download.
     It is written to by functions that manipulate the queue,

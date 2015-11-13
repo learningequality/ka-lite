@@ -73,23 +73,19 @@ function video_check_callback(progress_log, resp) {
 
         } else if (progress_log.completed) {
             // Completed without 100% done means the videos were cancelled.
-            $("#retry-video-download").hide();
             $("#cancel-download").hide();
             $("#download-videos").removeAttr("disabled");
         } else {
             // Everything's good for now!
             setNodeClass(tree.getNodeByKey(currentKey), "partial");
-            $("#retry-video-download").hide();
             $("#cancel-download").show();
-            $("#download-videos").removeAttr("disabled");
         }
 
         lastKey = currentKey;
-
-    } else { // check failed.
-        $("#download-videos").removeAttr("disabled");
     }
 }
+
+var tree;
 
 var video_callbacks = {
     start: video_start_callback,
@@ -97,7 +93,17 @@ var video_callbacks = {
     reset: video_reset_callback
 };
 
-var tree;
+var scan_callbacks = {
+    start: function() {},
+    check: function(progress_log, resp) {
+        if (progress_log.completed) {
+            base.updatesReset(progress_log.process_name);
+            messages.show_message("success", progress_log.notes);
+            tree.reload();
+            tree.options.select();
+        }
+    }
+};
 
 
 $(function() {
@@ -140,43 +146,48 @@ $(function() {
             };
         },
         select: function(event, node) {
+            // only allow selection if we're not currently downloading
+            if (!videos_downloading) {
 
-            var videoMetadata = tree.getSelectedNodes(true);
-            var newVideoCount    = _.reduce(videoMetadata, function(memo, meta) {
-                return memo + (meta.data.total_files - meta.data.files_complete);
-            }, 0);
-            var oldVideoCount    = _.reduce(videoMetadata, function(memo, meta) {
-                return memo + meta.data.files_complete;
-            }, 0);
-            var newVideoSize     = _(videoMetadata).reduce(function(memo, meta) {
-                // Reduce to compute sum
-                return memo + meta.data.remote_size;
-            }, 0);
-            var oldVideoSize     = _(videoMetadata).reduce(function(memo, meta) {
-                return memo + meta.data.size_on_disk;
-            }, 0);
+                var videoMetadata = tree.getSelectedNodes(true);
+                var newVideoCount    = _.reduce(videoMetadata, function(memo, meta) {
+                    return memo + (meta.data.total_files - meta.data.files_complete);
+                }, 0);
+                var oldVideoCount    = _.reduce(videoMetadata, function(memo, meta) {
+                    return memo + meta.data.files_complete;
+                }, 0);
+                var newVideoSize     = _(videoMetadata).reduce(function(memo, meta) {
+                    // Reduce to compute sum
+                    return memo + meta.data.remote_size;
+                }, 0);
+                var oldVideoSize     = _(videoMetadata).reduce(function(memo, meta) {
+                    return memo + meta.data.size_on_disk;
+                }, 0);
 
-            $("#download-legend-unselected").toggle((newVideoCount + oldVideoCount) === 0);
-
-            if (newVideoCount === 0) {
-                $("#download-videos").hide();
+                if (newVideoCount === 0) {
+                    $("#download-videos").attr("disabled", "disabled");
+                    $("#download-videos-text").text(gettext("Please select videos to download (below)"));
+                } else {
+                    $("#download-videos-text").text(sprintf(gettext("Download %(vid_count)d new selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
+                        vid_count: newVideoCount,
+                        vid_size: (newVideoSize < Math.pow(2, 30)) ? newVideoSize / Math.pow(2, 20) : newVideoSize / Math.pow(2, 30),
+                        vid_size_units: (newVideoSize < Math.pow(2, 30)) ? "MB" : "GB"
+                    }));
+                    $("#download-videos").removeAttr("disabled");
+                }
+                if (oldVideoCount === 0) {
+                    $("#delete-videos").attr("disabled", "disabled");
+                    $("#delete-videos-text").text(gettext("Please select videos to delete (below)"));
+                } else {
+                    $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
+                        vid_count: oldVideoCount,
+                        vid_size: (oldVideoSize < Math.pow(2, 30)) ? oldVideoSize / Math.pow(2, 20) : oldVideoSize / Math.pow(2, 30),
+                        vid_size_units: (oldVideoSize < Math.pow(2, 30)) ? "MB" : "GB"
+                    }));
+                    $("#delete-videos").removeAttr("disabled");
+                }
             } else {
-                $("#download-videos-text").text(sprintf(gettext("Download %(vid_count)d new selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
-                    vid_count: newVideoCount,
-                    vid_size: (newVideoSize < Math.pow(2, 30)) ? newVideoSize / Math.pow(2, 20) : newVideoSize / Math.pow(2, 30),
-                    vid_size_units: (newVideoSize < Math.pow(2, 30)) ? "MB" : "GB"
-                }));
-                $("#download-videos").toggle($("#download-videos").attr("disabled") === undefined); // only show if we're not currently downloading
-            }
-            if (oldVideoCount === 0) {
-                $("#delete-videos").hide();
-            } else {
-                $("#delete-videos-text").text(sprintf(gettext("Delete %(vid_count)d selected video(s)") + " (%(vid_size).1f %(vid_size_units)s)", {
-                    vid_count: oldVideoCount,
-                    vid_size: (oldVideoSize < Math.pow(2, 30)) ? oldVideoSize / Math.pow(2, 20) : oldVideoSize / Math.pow(2, 30),
-                    vid_size_units: (oldVideoSize < Math.pow(2, 30)) ? "MB" : "GB"
-                }));
-                $("#delete-videos").show();
+                return false;
             }
         },
         init: function(event, data) {
@@ -185,7 +196,6 @@ $(function() {
                 // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
                 // Best to assume offline, as online check returns much faster than offline check.
                 if(server_is_online){
-                    $(".enable-when-server-online").removeAttr("disabled");
                     base.updatesStart("videodownload", 5000, video_callbacks);
                 } else {
                     messages.show_message("error", gettext("Could not connect to the central server; videos cannot be downloaded at this time."));
@@ -196,6 +206,7 @@ $(function() {
 
     $("#download-videos").click(function() {
         messages.clear_messages();
+        $("#download-videos").attr("disabled", "disabled");
 
         // Prep
         // Get all videos to download
@@ -212,13 +223,15 @@ $(function() {
 
         //keep a copy of the selected node
         downloading_node = tree.getSelectedNodes();
+        var number_of_videos = _.reduce(tree.getSelectedNodes(true), function(memo, meta) {
+            return memo + (meta.data.total_files - meta.data.files_complete);
+        }, 0);
         // Update the UI
         unselectAllNodes();
         $("#cancel-download").show();
-        $("#download-videos").attr("disabled", "disabled");
 
         // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-        ga_track("send", "event", "update", "click-download-videos", "Download Videos", downloading_node.length);
+        ga_track("send", "event", "update", "click-download-videos", "Download Videos", number_of_videos);
     });
 
     // Delete existing videos
@@ -302,21 +315,6 @@ $(function() {
         ga_track("send", "event", "update", "click-cancel-downloads", "Cancel Downloads");
     });
 
-    // Retry video download
-    $("#retry-video-download").click(function() {
-        // Prep
-
-        // Do the request
-        api.doRequest(window.Urls.start_video_download(), {});
-
-        // Update the UI
-        $(this).attr("disabled", "disabled");
-
-        // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
-        ga_track("send", "event", "update", "click-retry-download", "Retry Download");
-    });
-
-
     if ($("#download_language_selector option").length > 1) {
         show_language_selector();
     }
@@ -324,6 +322,29 @@ $(function() {
     $("#download_language_selector").change(function() {
          var lang_code = $("#download_language_selector option:selected")[0].value;
          window.location.href = get_params.setGetParam(window.location.href, "lang", lang_code);
+    });
+
+    // Cancel current downloads
+    $("#scan-videos").click(function() {
+        messages.clear_messages();
+
+        // Prep
+        $("#scan-videos").attr("disabled", "disabled");
+
+        // Do the request
+        api.doRequest(window.Urls.video_scan())
+            .success(function() {
+                base.updatesStart("annotate_content_items", 2000, scan_callbacks);
+
+                // Update the UI
+                $("#download-videos").attr("disabled", "disabled");
+                $("#delete-videos").attr("disabled", "disabled");
+            });
+
+        // Update the UI
+
+        // Send event.  NOTE: DO NOT WRAP STRINGS ON THIS CALL!!
+        ga_track("send", "event", "update", "click-cancel-downloads", "Cancel Downloads");
     });
     // end onload functions
 });

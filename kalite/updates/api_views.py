@@ -171,6 +171,15 @@ def cancel_video_download(request):
     return JsonResponseMessageSuccess(_("Cancelled video download process successfully."))
 
 
+@require_admin
+@api_handle_error_with_json
+def video_scan(request):
+
+    force_job("annotate_content_items", _("Scan for Videos"), language=request.language)
+
+    return JsonResponseMessageSuccess(_("Scanning for videos initiated."))
+
+
 @api_handle_error_with_json
 def installed_language_packs(request):
     return JsonResponse(get_installed_language_packs(force=True).values())

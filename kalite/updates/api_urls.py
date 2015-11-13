@@ -5,6 +5,7 @@ urlpatterns = patterns('kalite.updates.api_views',
     url(r'^videos/start$', 'start_video_download', {}, 'start_video_download'),
     url(r'^videos/delete$', 'delete_videos', {}, 'delete_videos'),
     url(r'^videos/cancel$', 'cancel_video_download', {}, 'cancel_video_download'),
+    url(r'^videos/scan$', 'video_scan', {}, 'video_scan'),
 
     url(r'^languagepacks/start$', 'start_languagepack_download', {}, 'start_languagepack_download'),
     url(r'^languagepacks/installed$', 'installed_language_packs', {}, 'installed_language_packs'),

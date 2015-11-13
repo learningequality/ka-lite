@@ -10,6 +10,7 @@ from . import settings
 from .base import database_exists
 
 from kalite.updates.videos import get_local_video_size
+from kalite.contentload import settings as contentload_settings
 
 
 def is_content_on_disk(content_id, format="mp4", content_path=None):
@@ -59,7 +60,8 @@ def update_content_availability(content_list, language="en", channel="khan"):
         if content.get("kind") == "Exercise":
 
             # Databases have been pre-filtered to only contain existing exercises
-            if database_exists(language=language, channel=channel):
+            # Assume if the assessment items have been downloaded, then everything is hunky dory.
+            if os.path.exists(contentload_settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
                 update["available"] = True
 
         elif content.get("kind") == "Topic":
