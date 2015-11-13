@@ -116,6 +116,7 @@ $(function() {
         checkbox: true, // Show checkboxes.
         debugLevel: 0, // 0:quiet, 1:normal, 2:debug
         selectMode: 3,
+        clickFolderMode: 2,
         source: {
             url: window.Urls.get_update_topic_tree(),
             data: { parent: "root"},

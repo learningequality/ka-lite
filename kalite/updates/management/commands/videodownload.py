@@ -80,7 +80,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
                 # update progress data
                 video_node = get_video_from_youtube_id(self.video.get("youtube_id"))
-                video_title = (video_node and video_node.get("title")) or self.video.get("youtube_id")
+                video_title = (video_node and video_node.get("title")) or self.video.get("title")
 
                 # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.
                 self.update_stage(stage_name=self.video.get("youtube_id"), stage_percent=percent/100., notes=_("Downloading '%(video_title)s'") % {"video_title": _(video_title)})

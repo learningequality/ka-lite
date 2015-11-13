@@ -22,7 +22,7 @@ class VideoQueue(object):
         Add files to the queue - this should be a list of youtube_ids
         and optionally, the language of the video.
         """
-        files = [{"youtube_id": filename, "language": language} for filename in reversed(files)]
+        files = [{"youtube_id": key, "title": value, "language": language} for key, value in files.items()]
         files.extend(self.queue)
         self.queue = files
         self.save()
