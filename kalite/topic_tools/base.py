@@ -46,8 +46,9 @@ def database_exists(channel="khan", language="en", database_path=None):
 def available_content_databases():
     """
     Generator to return the channel and language for every content database that exists in the system.
+    @return: iterator over (channel, language) values
     """
-    pattern = re.compile("content_([^_]+)_([^_]).sqlite")
+    pattern = re.compile("content_(?P<channel>[^_]+)_(?P<language>[^_]+).sqlite")
     for filename in glob.iglob(settings.CONTENT_DATABASE_ROOT):
         match = pattern.search(filename)
         if match:

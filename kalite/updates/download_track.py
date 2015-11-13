@@ -29,8 +29,11 @@ class VideoQueue(object):
 
     def save(self):
         """Save the current queue to disk"""
-        with open(VIDEO_DOWNLOAD_QUEUE_FILE, "w") as f:
-            json.dump(self.queue, f)
+        try:
+            with open(VIDEO_DOWNLOAD_QUEUE_FILE, "w") as f:
+                json.dump(self.queue, f)
+        except IOError:
+            logging.warn("Failed to save video queue file.")
 
     def load(self):
         """Load the queue from disk, or default to an empty list"""
