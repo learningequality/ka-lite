@@ -2,6 +2,7 @@ System requirements
 ===================
 
 .. note::
+    Currently OSX versions 10.7.x - 10.10.x are supported.
     The latest OSX version (EL Capitan) is not yet supported.
 
 Supported Browsers
