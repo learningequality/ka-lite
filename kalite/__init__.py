@@ -6,13 +6,8 @@ from version import *
 
 __version__ = VERSION
 
-
-# ROOT_DATA_PATH should point to the directory where the source files live, including the "docs" dir
-# TODO-BLOCKER(MCGallaspy): Use setuptools in the windows installer to avoid this nonsense.
-ROOT_DATA_PATH = os.environ.get(
-    "KALITE_ROOT_DATA_PATH",
-    os.path.join(sys.prefix, 'share', 'kalite')
-)
+# ROOT_DATA_PATH is *not* where the source files live. It's a place where non-user-writable data files may be written.
+ROOT_DATA_PATH = os.path.join(sys.prefix, 'share', 'kalite')
 
 
 # TODO: Burn down this function, the name is weird, it just checks if a
