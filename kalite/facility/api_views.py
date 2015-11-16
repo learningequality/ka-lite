@@ -74,10 +74,14 @@ def group_delete(request, group_id=None):
     return JsonResponseMessageSuccess(_("Deleted %(num_groups)d group(s) successfully.") % {"num_groups": count})
 
 
-def dl_progress_view(request, request_id):
+def dl_progress_view(request):
     """
     :param request: the request
     :param request_id: sent in with url request
     """
     print "\n\nREACHED DL_PROGRESS_VIEW\n\n"
+
+    # create async process to udpate the model and start download process
+    download_progress = DownloadAssessmentProgress.objects.get(something)
+    # get data from django model 
     return JsonResponse({ "name" : "download_progress" })

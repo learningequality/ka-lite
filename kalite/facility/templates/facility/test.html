@@ -1,15 +1,10 @@
-<!DOCTYPE HTML>
-
+{% extends "distributed/base.html" %}
 {% load staticfiles %}
-<HTML>
 
-<head>
-    <!-- <script src="../../static/js/facility/views.js"></script> -->
+{% block headjs %}
     <script src="{% static 'js/facility/bundles/bundle_facility.js' %}"></script>
-</head>
+{% endblock headjs %}
 
-<body>
-    how do body body
-</body>
+{% block content %}
 
-</HTML>
+{% endblock content %}

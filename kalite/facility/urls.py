@@ -15,7 +15,6 @@ urlpatterns = patterns(__package__ + '.views',
 
     url(r'^config/$', 'config'),
     url(r'^dl_assess/$', 'dl_assess'),
-    url(r'^testing/$', include(api_urls))
    
 )
 

@@ -16,6 +16,10 @@ from fle_utils.django_utils.users import verify_raw_password
 from securesync.models import DeviceZone
 from securesync.engine.models import DeferredCountSyncedModel
 
+import os
+import subprocess
+
+from kalite import ROOT_DATA_PATH
 
 class Facility(DeferredCountSyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that learners/coaches will see when choosing their facility; it can be in the local language.)"), max_length=100)
@@ -309,6 +313,29 @@ class CachedPassword(models.Model):
         app_label = "securesync"  # for back-compat reasons
 
 
-class DownloadAssessmentProgress(models.Model):
+class AssessmentItemsDownloadProgress(models.Model):
+    """
+    Model representing the download/installation process for assessment items.
+    When created, should be associated with a process to download/install
+    assessment items. The process will update the model's progress field.
+    When deleted, should kill the process. 
+    """
     progress = models.IntegerField(default=0)
+    
+    def save(self, *args, **kwargs):
+        # start a new process which starts the d
+        path = os.path.abspath(__file__).rsplit("/",1)[0]
+        self.process = subprocess.Popen(["python", 
+                                         os.path.join(path, "dl_assess.py")])
+        
+        super(AssessmentItemsDownloadProgress, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.process.poll()
+        
+        if not self.process.returncode:
+            self.process.kill()
+
+        super(AssessmentItemsDownloadProgress, self).delete(*args, **kwargs)
+
 

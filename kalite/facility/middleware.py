@@ -23,14 +23,12 @@ FACILITY_CACHE_STALE = False
 
 @render_to("facility/facility_config.html")
 def config_form(request, database):
-    print "about to render config_form.... "
     """
     Detect if there is an existing database file on server. If database exists,
     will render form that prompts user to keep or delete existing database.
 
     Depending on state of database, renders different form questions.
     """
-    print database
     return database 
 
 def is_configured():
@@ -50,7 +48,7 @@ def is_configured():
                 and settings.DATABASES["default"]["NAME"]) or None
 
     if database_file and os.path.exists(database_file):
-        print "DATABASE EXISTS................"
+        print "Database exists!"
         database = True
 
         # Check for database version, if mismatch, ask user to update
@@ -61,7 +59,6 @@ def is_configured():
             # time a user is using this version of KA Lite, but they
             # haven't run the "setup" command.
             if not Settings.get("database_version"):
-                print "not database version"
                 Settings.set("database_version", VERSION)
 
             # Otherwise, if database is already versioned, check
@@ -69,7 +66,6 @@ def is_configured():
             assert Settings.get("database_version") == VERSION
 
         except DatabaseError as e:
-            print "DatabaseError, syncdb and migrate running"
             call_command("syncdb", interactive=False)
             call_command("migrate", interactive=False)
         except AssertionError:
@@ -80,13 +76,12 @@ def is_configured():
             u = User.objects.get(is_superuser=True)
             superuser = True
         except ObjectDoesNotExist:
-            print "superuser DNE" 
+            print "Superuser DNE" 
 
     # If database does not exist, sync and migrate
     else:
         call_command("syncdb", interactive=False)
         call_command("migrate", interactive=False)
-        print "DATABASE does not exist"
 
     return { "need_update" : need_update,
              "superuser" : superuser,
@@ -156,12 +151,12 @@ class ConfigCheck:
         # Only intercept text/html responses
         if response['Content-Type'].split(';')[0] == 'text/html': 
             db_exists = is_configured()
+            print "Configuration is currently as below:"
             print db_exists
+            if db_exists['superuser'] and not db_exists['need_update']:
+                return response
 
-        # if db_exists['database'] and \
-        # request.path != '/facility/edit_config/':
             if request.path != '/facility/config/':
-                print "requst path not form page"
                 form = config_form(request, db_exists)
                 return form
         return response

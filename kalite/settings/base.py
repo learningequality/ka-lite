@@ -369,7 +369,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'fle_utils.django_utils.middleware.GetNextParam',
-    #'kalite.facility.middleware.ConfigCheck',
+    'kalite.facility.middleware.ConfigCheck',
     'kalite.facility.middleware.AuthFlags',
     'kalite.facility.middleware.FacilityCheck',
     'securesync.middleware.RegisteredCheck',

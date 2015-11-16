@@ -203,25 +203,22 @@ def config(request):
     # Password field must always be filled out, so we will check if no 
     # superuser is detected by checking existence of password field. 
     if request.POST.get('keep_db') == 'no' or request.POST.get('password'):
-        print "don't keep database, OR, password field has been filled out" 
+        #print "don't keep database, OR, password field has been filled out" 
         
         name = "default" #getpass.getuser().replace("-", "_")
         if request.POST.get('name'):
-            print "user wishes to set their username"
             name = request.POST.get('name')
         
         User.objects.create_superuser(
                 username=name, password=request.POST.get('password'), email='')
 
         user = User.objects.get(is_superuser=True)
-        print "created new superuser i hope"
-        print "USERNAME = " + user.username
 
     return { "username" : name }
 
 @render_to("facility/test.html")
 def dl_assess(request):
-    print "dl_assess view-----------------"
+    print "clicked dl assess button, dl_assess view-----------------"
     print request.POST
 
     return {"nothing": "nothing"}

@@ -2,8 +2,12 @@
 {% load i18n %}
 {% load staticfiles %}
 
+{% block headjs %}
+    <script src="{% static 'js/facility/bundles/bundle_facility.js' %}"> </script>
+{% endblock headjs %}
 {% block content %}
 
+<!--
 <form action="/facility/config/" method="POST">
     {% csrf_token %}
 
@@ -37,50 +41,11 @@
         </div>
     {% endif %}
 
-    <div class="progress-bar" role="progressbar" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100">66%
-    </div>
     <Br>
     <button type="submit" value="Submit">Next</button>
 </form>
+-->
 
-
-<!-- loads form depending on what option you select, will migrate this later? -->
-<script>
-$('#keep_db_question').hide();
-$("input[name='keep_db']").on('click', function() {
-    if ( $(this).val() == 'no' ) {
-        $('#keep_db_question').show();
-    }
-    else { 
-        $('#keep_db_question').hide();
-    }
-
-});
-
-//$('#get_admin_server').hide();
-$('.progress-bar').hide();
-
-
-
-$("input[name='database']").change(function() {
-    // If user wants to delete database, allow configuration 
-    // of admin account and server hostname/description
-    if ( $(this).val() == 'no' ) {
-        $('#delete-db-form').show();
-    }
-    else { 
-        $('#delete-db-form').hide();
-    }
-
-});
-
-$("input[type='submit']").on('click', function(){
-    console.log("submit clicked");
-    $('.progress-bar').show();
-});
-
-
-</script>
 
 {% endblock content %}
 
