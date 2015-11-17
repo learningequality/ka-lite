@@ -88,7 +88,6 @@ var CoachSummaryView = BaseView.extend({
 
     events: {
         "click #show_tabular_report": "toggle_tabular_view",
-        //"change #topic-list" : "set_data_model"
         "click #topic-list-submit": "set_data_model"
     },
 
@@ -101,8 +100,18 @@ var CoachSummaryView = BaseView.extend({
         var targetElem = $("#topic-list").get(0);
         var frag = document.createDocumentFragment();
 
+        var tids = this.data_model.get("topic_ids");
+
         parseData.forEach(function(datum, index) {
             var opt = document.createElement("option");
+            /*
+            if(tids.length !== 0) {
+                if(datum.id in tids) {
+                    opt.selected = "selected";
+                    delete tids[datum.id];
+                }
+            }
+            */
             opt.innerHTML = datum.title;
             opt.value = datum.id;
             frag.appendChild(opt);
@@ -291,7 +300,12 @@ var CoachSummaryView = BaseView.extend({
 
         this.appendTopicList();
 
-        $('#topic-list').multiselect();
+
+        $('#topic-list').multiselect({
+            nonSelectedText: 'Default: Overview',
+            buttonWidth: '75%',
+            numberDisplayed: 2
+        });
 
     },
 

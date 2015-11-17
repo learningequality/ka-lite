@@ -2,10 +2,12 @@
 	<div id="summary_mainview">
 		<h1 class="status_name">{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}</h1>
 		<div class="topic-row">
-			<div class="col-sm-4">
-				<label for="topic-list">Topic</label>
-				<select id="topic-list" multiple="multiple">
-				</select>
+			<div class="col-sm-6">
+				<label for="topic-list">Topic: </label>
+				<div id="topic-list-div">
+					<select id="topic-list" multiple="multiple">
+					</select>
+				</div>
 				<button id="topic-list-submit" type="button" class="btn btn-primary btn-md">Submit</button>
 			</div>
 		</div>
