@@ -101,17 +101,21 @@ var CoachSummaryView = BaseView.extend({
         var frag = document.createDocumentFragment();
 
         var tids = this.data_model.get("topic_ids");
+        var ctr = -1;
+        console.log("getting tids:");
+        console.log(tids);
 
         parseData.forEach(function(datum, index) {
             var opt = document.createElement("option");
-            /*
             if(tids.length !== 0) {
-                if(datum.id in tids) {
+                console.log("tids > 0");
+                ctr = tids.indexOf(datum.id);
+                if(ctr !== -1){
+                    console.log(datum.id);
                     opt.selected = "selected";
-                    delete tids[datum.id];
+                    delete tids[ctr];
                 }
             }
-            */
             opt.innerHTML = datum.title;
             opt.value = datum.id;
             frag.appendChild(opt);
@@ -306,6 +310,8 @@ var CoachSummaryView = BaseView.extend({
             buttonWidth: '75%',
             numberDisplayed: 2
         });
+
+        $('#topic-list-div > .btn-group > button').css({'width': '100%'});
 
     },
 
