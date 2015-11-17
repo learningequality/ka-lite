@@ -1,8 +1,11 @@
 """Classes used by the student progress tastypie API"""
 import json
+from fle_utils.config.models import Settings
 
+from django.conf import settings
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext as _
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
@@ -59,12 +62,16 @@ class PlaylistProgress(PlaylistProgressParent):
             setattr(self, k, v)
 
     @classmethod
-    def user_progress(cls, user_id):
+    def user_progress(cls, user_id, language=None):
         """
         Return a list of PlaylistProgress objects associated with the user.
         """
+
+        if not language:
+            language = Settings.get("default_language") or settings.LANGUAGE_CODE
+
         user = FacilityUser.objects.get(id=user_id)
-        all_playlists = get_leafed_topics()
+        all_playlists = get_leafed_topics(language=language)
 
         # Retrieve video, exercise, and quiz logs that appear in this playlist
         user_vid_logs, user_ex_logs = cls.get_user_logs(user)
@@ -200,11 +207,14 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         return entry
 
     @classmethod
-    def user_progress_detail(cls, user_id, playlist_id):
+    def user_progress_detail(cls, user_id, playlist_id, language=None):
         """
         Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
         """
+        if not language:
+            language = settings.LANGUAGE_CODE
+
         user = FacilityUser.objects.get(id=user_id)
         playlist = next((pl for pl in get_leafed_topics() if pl.get("id") == playlist_id), None)
 
@@ -221,7 +231,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         progress_details = list()
         for entity_id in playlist.get("children"):
             entry = {}
-            leaf_node = get_content_cache().get(entity_id, get_exercise_cache().get(entity_id, {}))
+            leaf_node = get_content_cache(language=language).get(entity_id) or get_exercise_cache(language=language).get(entity_id) or {}
             kind = leaf_node.get("kind")
 
             if kind == "Video":
