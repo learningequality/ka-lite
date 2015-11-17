@@ -213,7 +213,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         objects associated with a specific user and playlist ID.
         """
         if not language:
-            language = settings.LANGUAGE_CODE
+            language = Settings.get("default_language") or settings.LANGUAGE_CODE
 
         user = FacilityUser.objects.get(id=user_id)
         playlist = next((pl for pl in get_leafed_topics() if pl.get("id") == playlist_id), None)
