@@ -565,7 +565,7 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
     problem_loaded: function(data) {
         this.current_attempt_log.add_response_log_event({
-            type: "loaded"
+            type: gettext("loaded")
         });
         // if the question hasn't yet been answered (and hence saved), mark the current time as the question load time
         if (this.current_attempt_log.isNew()) {
