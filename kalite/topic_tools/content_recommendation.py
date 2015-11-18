@@ -157,13 +157,18 @@ def get_struggling_exercises(user):
 
     return struggles
 
-def get_exercise_prereqs(exercises):
-    """Return a list of prequisites (if applicable) for each specified exercise."""
+def get_exercise_prereqs(exercise_ids):
+    """
+    Return a list of prequisites (if applicable) for each specified exercise.
 
+    :param exercise_ids: A list of exercise ids.
+    :return: A list of prerequisite exercises (as dicts), if any are known.
+    """
     ex_cache = get_exercise_cache()
     prereqs = []
-    for exercise in exercises:
-        prereqs += ex_cache[exercise]['prerequisites']
+    for exercise_id in exercise_ids:
+        exercise = ex_cache.get(exercise_id)
+        prereqs += exercise['prerequisites'] if exercise else []
 
     return prereqs
 
@@ -199,16 +204,13 @@ def get_explore_recommendations(user, request):
 
         related_subtopics = data[subtopic_id]['related_subtopics'][2:7] #get recommendations based on this, can tweak numbers!
 
-        recommended_topic = next(topic for topic in related_subtopics if not topic in added and not topic in recent_subtopics)
-
-        if recommended_topic:
-
-            final.append({
-                'suggested_topic': get_topic_data(request, recommended_topic),
-                'interest_topic': get_topic_data(request, subtopic_id),
-            })
-
-            added.append(recommended_topic)
+        for topic in related_subtopics:
+            if topic not in added and topic not in recent_subtopics:
+                final.append({
+                    'suggested_topic': get_topic_data(request, topic),
+                    'interest_topic': get_topic_data(request, subtopic_id),
+                })
+                added.append(topic)
 
     return final
 

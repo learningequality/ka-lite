@@ -110,9 +110,9 @@ class PlaylistProgress(PlaylistProgressParent):
             n_ex_started = len([ex for ex in pl_ex_logs if ex["attempts"] > 0])
             n_ex_incomplete = len([ex for ex in pl_ex_logs if (ex["attempts"] > 0 and not ex["complete"])])
             n_ex_struggling = len([ex for ex in pl_ex_logs if ex["struggling"]])
-            ex_pct_mastered = int(float(n_ex_mastered) / n_pl_exercises * 100)
-            ex_pct_incomplete = int(float(n_ex_incomplete) / n_pl_exercises * 100)
-            ex_pct_struggling = int(float(n_ex_struggling) / n_pl_exercises * 100)
+            ex_pct_mastered = int(float(n_ex_mastered) / (n_pl_exercises or 1) * 100)
+            ex_pct_incomplete = int(float(n_ex_incomplete) / (n_pl_exercises or 1) * 100)
+            ex_pct_struggling = int(float(n_ex_struggling) / (n_pl_exercises or 1) * 100)
             if not n_ex_started:
                 ex_status = "notstarted"
             elif ex_pct_struggling > 0:
