@@ -85,8 +85,10 @@ def unparse_model_data(item):
 
     extra_fields = json.loads(item.get("extra_fields", "{}"))
 
-    item.update(extra_fields)
-    return item
+    # Do this to ensure any model fields that have accidentally
+    # been folded into extra fields are not overwritten on output
+    extra_fields.update(item)
+    return extra_fields
 
 
 def set_database(function):
@@ -447,18 +449,23 @@ def get_or_create(item, db=None, **kwargs):
 
 
 @set_database
-def update(update=None, select=None, **kwargs):
+def update_item(db=None, update=None, path=None, **kwargs):
     """
-    Think wrapper around update to select database.
+    Select an item by path, update fields and save.
     """
-    if update:
+    if update and path:
         with Using(db, [Item]):
-            if select:
-                query = Item.update(**update).select(select)
+            item = Item.get(Item.path == path)
+            if any([key not in Item._meta.fields for key in update]):
+                item_data = unparse_model_data(item)
+                item_data.update(update)
+                for key, value in parse_model_data(item_data).iteritems():
+                    setattr(item, key, value)
             else:
-                query = Item.update(**update)
+                for key, value in update.iteritems():
+                    setattr(item, key, value)
 
-            query.execute()
+            item.save()
 
 
 def iterator_content_items(ids=None, **kwargs):
@@ -583,5 +590,8 @@ def update_parents(db=None, parent_mapping=None, channel="khan", language="en", 
 @set_database
 def get_assessment_item_data(db=None, channel="khan", language="en", assessment_item_id=None):
     with Using(db, [AssessmentItem]):
-        assessment_item = AssessmentItem.get(AssessmentItem.id == assessment_item_id)
-        return model_to_dict(assessment_item)
+        try:
+            assessment_item = AssessmentItem.get(AssessmentItem.id == assessment_item_id)
+            return model_to_dict(assessment_item)
+        except OperationalError:
+            return {}
