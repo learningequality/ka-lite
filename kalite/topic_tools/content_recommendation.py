@@ -6,6 +6,7 @@ Three main functions:
     - get_explore_recommendations(user)
 '''
 import datetime
+import itertools
 import random
 import collections
 
@@ -108,6 +109,7 @@ def get_next_recommendations(user, request):
     #final recommendations are a combination of struggling, group filtering, and topic_tree filtering
     return final
 
+
 def get_group_recommendations(user):
     """Returns a list of exercises immediately tackled by other individuals in the same group."""
 
@@ -123,12 +125,11 @@ def get_group_recommendations(user):
             .extra(select={'null_complete': "completion_timestamp is null"},
                 order_by=["-null_complete", "-completion_timestamp"])
     
-        exercise_counts = collections.defaultdict(lambda :0)
+        exercise_counts = collections.defaultdict(lambda: 0)
 
         for user in user_list:
-            user_logs = user_exercises.filter(user=user)
-            for i, log in enumerate(user_logs[1:]):
-                prev_log = user_logs[i]
+            logs = list(user_exercises.filter(user=user))
+            for log, prev_log in itertools.izip(logs[1:], logs):
                 if log.exercise_id in recent_exercises:
                     exercise_counts[prev_log.exercise_id] += 1
 
