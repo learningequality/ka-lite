@@ -180,7 +180,7 @@ def find_css_class_with_wait(context, css_class, **kwargs):
     css_class: A string with the css class (no leading .)
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.CLASS_NAME, css_class), **kwargs)
 
@@ -223,7 +223,7 @@ def find_xpath_with_wait(context, id_str, **kwargs):
     id_str: A string with the XPATH (no leading #)
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.XPATH, id_str), **kwargs)
 
@@ -233,7 +233,7 @@ def find_css_with_wait(context, id_str, **kwargs):
     id_str: A string with the CSS Selector
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.CSS_SELECTOR, id_str), **kwargs)
 

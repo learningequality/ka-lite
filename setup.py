@@ -358,7 +358,6 @@ if os.listdir(STATIC_DIST_PACKAGES):
         gen_data_files('dist-packages')
     )
 
-
 setup(
     name=DIST_NAME,
     version=kalite.VERSION,

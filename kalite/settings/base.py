@@ -98,6 +98,10 @@ IS_SOURCE = (
 )
 SOURCE_DIR = None
 
+# DB_TEMPLATE_FILE should point to a pre-generated database with no rows.
+# If it exists and DATABASES["default"]["name"] file does not, then the latter will be copied from the former
+# in the setup mgmt command.
+DB_TEMPLATE_FILE = None
 
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
@@ -127,6 +131,14 @@ if IS_SOURCE:
 
 else:
     _data_path = os.path.join(ROOT_DATA_PATH,)
+
+    # If we're not running as source, then we should include a blank, pre-migrated db in this location,
+    # to be copied to user's KALITE_HOME.
+    DB_TEMPLATE_FILE = os.path.join(
+        ROOT_DATA_PATH,
+        "database",
+        "data.sqlite",
+    )
 
     # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
     PROJECT_PATH = os.environ.get(
