@@ -140,7 +140,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
     @classmethod
     def create_empty_entry(cls, entity_id, kind, playlist):
         if kind != "Quiz":
-            topic_node = get_topic_node(content_id=entity_id)
+            topic_node = get_topic_node(content_id=entity_id, topic=False)
             title = topic_node["title"]
             path = topic_node["path"]
         else:
@@ -176,7 +176,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         progress_details = list()
         for entity_id in playlist.get("children"):
             entry = {}
-            leaf_node = get_topic_node(content_id=entity_id)
+            leaf_node = get_topic_node(content_id=entity_id, topic=False)
             kind = leaf_node.get("kind")
 
             if kind == "Video":
