@@ -122,6 +122,9 @@ def set_database(function):
             except DoesNotExist:
                 output = None
 
+            except OperationalError:
+                logging.error("No content database file found")
+                raise
         db.close()
 
         return output

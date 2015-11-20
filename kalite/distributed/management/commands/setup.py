@@ -20,6 +20,7 @@ import subprocess
 from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
+from peewee import OperationalError
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -492,7 +493,10 @@ class Command(BaseCommand):
             # Run annotate_content_items, on the distributed server.
             print("Annotating availability of all content, checking for content in this directory: (%s)" %
                   settings.CONTENT_ROOT)
-            call_command("annotate_content_items")
+            try:
+                call_command("annotate_content_items")
+            except OperationalError:
+                pass
 
             # done; notify the user.
             print("\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
