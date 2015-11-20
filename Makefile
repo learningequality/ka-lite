@@ -24,6 +24,7 @@ clean-build:
 	rm -fr .eggs/
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
+	rm -f kalite/database/data.sqlite
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -73,8 +74,12 @@ docs:
 	# sphinx-apidoc -o docs/ ka-lite-gtk
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	cli2man bin/kalite -o docs/kalite.1.gz
 	# open docs/_build/html/index.html
+
+
+# Runs separately from the docs command for now because of Windows issues
+man:
+	cli2man bin/kalite -o docs/kalite.1.gz
 
 assets:
 	# Necessary because NPM may have wrong versions in the cache
@@ -83,6 +88,8 @@ assets:
 	node build.js
 	bin/kalite manage compileymltojson
 	bin/kalite manage init_content_items
+	bin/kalite manage syncdb --noinput
+	bin/kalite manage migrate
 
 release: clean docs assets
 	python setup.py sdist --formats=gztar,zip upload --sign
