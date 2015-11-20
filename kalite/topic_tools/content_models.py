@@ -156,7 +156,7 @@ def parse_data(function):
 
 @parse_data
 @set_database
-def get_random_content(kinds=None, limit=1):
+def get_random_content(kinds=None, limit=1, **kwargs):
     """
     Convenience function for returning random content nodes for use in testing
     :param kinds: A list of node kinds to select from.
@@ -652,7 +652,7 @@ def update_parents(parent_mapping=None, **kwargs):
 
 
 @set_database
-def get_assessment_item_data(assessment_item_id=None):
+def get_assessment_item_data(assessment_item_id=None, **kwargs):
     """
     Wrapper function to return assessment_item from database as a dictionary.
     :param assessment_item_id: id of the assessment item to return.
