@@ -113,12 +113,16 @@ def set_database(function):
 
         db.connect()
 
-        try:
+        # This should contain all models in the database to make them available to the wrapped function
 
-            output = function(*args, **kwargs)
+        with Using(db, [Item, AssessmentItem]):
 
-        except DoesNotExist:
-            output = None
+            try:
+
+                output = function(*args, **kwargs)
+
+            except DoesNotExist:
+                output = None
 
         db.close()
 
@@ -154,119 +158,113 @@ def parse_data(function):
 
 @parse_data
 @set_database
-def get_random_content(kinds=None, limit=1, db=None):
+def get_random_content(kinds=None, limit=1):
     """
     Convenience function for returning random content nodes for use in testing
     """
-    with Using(db, [Item]):
-        if not kinds:
-            kinds = ["Video", "Audio", "Exercise", "Document"]
-        return Item.select().where(Item.kind.in_(kinds)).order_by(fn.Random()).limit(limit)
+    if not kinds:
+        kinds = ["Video", "Audio", "Exercise", "Document"]
+    return Item.select().where(Item.kind.in_(kinds)).order_by(fn.Random()).limit(limit)
 
 
 @set_database
-def get_content_item(content_id=None, db=None, topic=False, **kwargs):
+def get_content_item(content_id=None, topic=False, **kwargs):
     """
     Convenience function for returning a fully fleshed out content node for use in rendering content
     To save server processing, the extra_fields are fleshed out on the client side.
     By default, don't return topic nodes to avoid id collisions.
     """
     if content_id:
-        with Using(db, [Item]):
-            # Ignore topics in case of id collision.
-            if topic:
-                value = Item.get(Item.id == content_id, Item.kind == "Topic")
-            else:
-                value = Item.get(Item.id == content_id, Item.kind != "Topic")
-            return model_to_dict(value)
+        # Ignore topics in case of id collision.
+        if topic:
+            value = Item.get(Item.id == content_id, Item.kind == "Topic")
+        else:
+            value = Item.get(Item.id == content_id, Item.kind != "Topic")
+        return model_to_dict(value)
 
 
 @parse_data
 @set_database
-def get_content_items(ids=None, db=None, **kwargs):
+def get_content_items(ids=None, **kwargs):
     """
     Convenience function for returning multiple topic tree nodes for use in rendering content
     """
-    with Using(db, [Item]):
-        if ids:
-            values = Item.select().where(Item.id.in_(ids))
-        else:
-            values = Item.select()
-        return values
+    if ids:
+        values = Item.select().where(Item.id.in_(ids))
+    else:
+        values = Item.select()
+    return values
 
 
 @parse_data
 @set_database
-def get_topic_nodes(parent=None, ids=None, db=None, **kwargs):
+def get_topic_nodes(parent=None, ids=None, **kwargs):
     """
     Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
     Can either pass in the parent id to return all the immediate children of a node,
     or a list of ids to return an arbitrary set of nodes with limited fields.
     """
     if parent:
-        with Using(db, [Item]):
-            Parent = Item.alias()
-            if parent == "root":
-                selector = Parent.parent.is_null()
-            else:
-                selector = Parent.id == parent
-            values = Item.select(
-                Item.title,
-                Item.description,
-                Item.available,
-                Item.kind,
-                Item.children,
-                Item.id,
-                Item.path,
-                Item.slug,
-                ).join(Parent, on=(Item.parent == Parent.pk)).where(selector)
-            return values
+        Parent = Item.alias()
+        if parent == "root":
+            selector = Parent.parent.is_null()
+        else:
+            selector = Parent.id == parent
+        values = Item.select(
+            Item.title,
+            Item.description,
+            Item.available,
+            Item.kind,
+            Item.children,
+            Item.id,
+            Item.path,
+            Item.slug,
+            ).join(Parent, on=(Item.parent == Parent.pk)).where(selector)
+        return values
     elif ids:
-        with Using(db, [Item]):
-            values = Item.select(
-                Item.title,
-                Item.description,
-                Item.available,
-                Item.kind,
-                Item.children,
-                Item.id,
-                Item.path,
-                Item.slug,
-                ).where(Item.id.in_(ids))
-            return values
+        values = Item.select(
+            Item.title,
+            Item.description,
+            Item.available,
+            Item.kind,
+            Item.children,
+            Item.id,
+            Item.path,
+            Item.slug,
+            ).where(Item.id.in_(ids))
+        return values
 
 
 @parse_data
 @set_database
-def get_topic_update_nodes(parent=None, db=None, **kwargs):
+def get_topic_update_nodes(parent=None, **kwargs):
     """
     Convenience function for returning a set of topic nodes with limited fields for rendering the update topic tree
     """
     if parent:
-        with Using(db, [Item]):
-            Parent = Item.alias()
-            if parent == "root":
-                selector = Parent.parent.is_null()
-            else:
-                selector = Parent.id == parent
-            values = Item.select(
-                Item.title,
-                Item.description,
-                Item.available,
-                Item.kind,
-                Item.pk,
-                Item.size_on_disk,
-                Item.remote_size,
-                Item.files_complete,
-                Item.total_files,
-                Item.id,
-                Item.path,
-                ).join(Parent, on=(Item.parent == Parent.pk)).where((selector) & (Item.total_files != 0))
-            return values
+        Parent = Item.alias()
+        if parent == "root":
+            selector = Parent.parent.is_null()
+        else:
+            selector = Parent.id == parent
+        values = Item.select(
+            Item.title,
+            Item.description,
+            Item.available,
+            Item.kind,
+            Item.pk,
+            Item.size_on_disk,
+            Item.remote_size,
+            Item.files_complete,
+            Item.total_files,
+            Item.id,
+            Item.path,
+            ).join(Parent, on=(Item.parent == Parent.pk)).where((selector) & (Item.total_files != 0))
+        return values
 
 
 @set_database
-def get_topic_node(content_id=None, db=None, **kwargs):
+def get_topic_node(content_id=None, **kwargs):
     """
     Convenience function for returning a topic/content node with limited fields
     """
@@ -286,79 +284,75 @@ def get_topic_node(content_id=None, db=None, **kwargs):
 
 
 @set_database
-def get_topic_nodes_with_children(parent=None, db=None, **kwargs):
+def get_topic_nodes_with_children(parent=None, **kwargs):
     """
     Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
     """
     if parent:
-        with Using(db, [Item]):
-            Parent = Item.alias()
-            Child = Item.alias()
-            if parent == "root":
-                selector = Parent.parent.is_null()
-            else:
-                selector = Parent.id == parent
-            child_values = [item for item in Item.select(
-                Child
-                ).join(Child, on=(Child.parent == Item.pk)).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
-            parent_values = [item for item in Item.select(
-                Item
-                ).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
-            topics = []
-            for topic in parent_values:
-                output = {}
-                output.update(topic)
-                output["children"] = [child["id"] for child in child_values if child["parent"] == topic["pk"]]
-                topics.append(output)
-            return topics
+        Parent = Item.alias()
+        Child = Item.alias()
+        if parent == "root":
+            selector = Parent.parent.is_null()
+        else:
+            selector = Parent.id == parent
+        child_values = [item for item in Item.select(
+            Child
+            ).join(Child, on=(Child.parent == Item.pk)).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
+        parent_values = [item for item in Item.select(
+            Item
+            ).join(Parent, on=(Item.parent == Parent.pk)).where(selector).dicts()]
+        topics = []
+        for topic in parent_values:
+            output = {}
+            output.update(topic)
+            output["children"] = [child["id"] for child in child_values if child["parent"] == topic["pk"]]
+            topics.append(output)
+        return topics
 
 
 @parse_data
 @set_database
-def get_content_parents(ids=None, db=None, **kwargs):
+def get_content_parents(ids=None, **kwargs):
     """
     Convenience function for returning a set of topic nodes with limited fields for rendering the topic tree
     """
     if ids:
-        with Using(db, [Item]):
-            Parent = Item.alias()
-            parent_values = Item.select(
-                Parent
-                ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids))
-            return parent_values
+        Parent = Item.alias()
+        parent_values = Item.select(
+            Parent
+            ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids))
+        return parent_values
 
 
 @parse_data
 @set_database
-def get_topic_contents(kinds=None, topic_id=None, db=None, **kwargs):
+def get_topic_contents(kinds=None, topic_id=None, **kwargs):
     """
     Convenience function for returning a set of nodes for a topic
     """
     if topic_id:
-        with Using(db, [Item]):
-            topic_node = Item.get(Item.id == topic_id)
+        topic_node = Item.get(Item.id == topic_id)
 
-            if not kinds:
-                kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
-            return Item.select(Item).where(Item.kind.in_(kinds), Item.path.contains(topic_node.path))
+        if not kinds:
+            kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
+        return Item.select(Item).where(Item.kind.in_(kinds), Item.path.contains(topic_node.path))
 
 
 @set_database
-def get_download_youtube_ids(paths=None, db=None, **kwargs):
+def get_download_youtube_ids(paths=None, **kwargs):
     """
     Convenience function for taking a list of content ids and returning
     all associated youtube_ids for downloads, regardless of whether the input
     ids are ids for content nodes or topic nodes
     """
     if paths:
-        with Using(db, [Item]):
-            youtube_ids = dict()
-            for path in paths:
-                selector = (Item.kind != "Topic") & (Item.path.contains(path)) & (Item.youtube_id.is_null(False))
+        youtube_ids = dict()
+        for path in paths:
+            selector = (Item.kind != "Topic") & (Item.path.contains(path)) & (Item.youtube_id.is_null(False))
 
-                youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
+            youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
 
-            return youtube_ids
+        return youtube_ids
 
 
 def get_video_from_youtube_id(youtube_id):
@@ -370,43 +364,25 @@ def get_video_from_youtube_id(youtube_id):
 
 @parse_data
 @set_database
-def _get_video_from_youtube_id(youtube_id=None, db=None, **kwargs):
+def _get_video_from_youtube_id(youtube_id=None, **kwargs):
     """
     Convenience function for returning a fully fleshed out video content node from youtube_id
     """
     if youtube_id:
-        with Using(db, [Item]):
-            value = Item.get(Item.youtube_id == youtube_id, Item.kind == "Video")
-            return model_to_dict(value)
+        value = Item.get(Item.youtube_id == youtube_id, Item.kind == "Video")
+        return model_to_dict(value)
 
 
 @set_database
-def search_topic_nodes(kinds=None, query=None, db=None, page=1, items_per_page=10, exact=True, **kwargs):
+def search_topic_nodes(kinds=None, query=None, page=1, items_per_page=10, exact=True, **kwargs):
     """
     Search all nodes and return limited fields.
     """
     if query:
-        with Using(db, [Item]):
-            if not kinds:
-                kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
-            try:
-                topic_node = Item.select(
-                    Item.title,
-                    Item.description,
-                    Item.available,
-                    Item.kind,
-                    Item.id,
-                    Item.path,
-                    Item.slug,
-                ).where((fn.Lower(Item.title) == query) & (Item.kind.in_(kinds))).get()
-                if exact:
-                    # If allowing an exact match, just return that one match and we're done!
-                    return [model_to_dict(topic_node)], True, None
-            except DoesNotExist:
-                topic_node = {}
-                pass
-            # For efficiency, don't do substring matches when we've got lots of results
-            topic_nodes = Item.select(
+        if not kinds:
+            kinds = ["Video", "Audio", "Exercise", "Document", "Topic"]
+        try:
+            topic_node = Item.select(
                 Item.title,
                 Item.description,
                 Item.available,
@@ -414,58 +390,73 @@ def search_topic_nodes(kinds=None, query=None, db=None, page=1, items_per_page=1
                 Item.id,
                 Item.path,
                 Item.slug,
-                ).where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query))))
-            pages = topic_nodes.count()/items_per_page
-            topic_nodes = [item for item in topic_nodes.paginate(page, items_per_page).dicts()]
-            if topic_node:
-                # If we got an exact match, show it first.
-                topic_nodes = [model_to_dict(topic_node)] + topic_nodes
-            return topic_nodes, False, pages
+            ).where((fn.Lower(Item.title) == query) & (Item.kind.in_(kinds))).get()
+            if exact:
+                # If allowing an exact match, just return that one match and we're done!
+                return [model_to_dict(topic_node)], True, None
+        except DoesNotExist:
+            topic_node = {}
+            pass
+        # For efficiency, don't do substring matches when we've got lots of results
+        topic_nodes = Item.select(
+            Item.title,
+            Item.description,
+            Item.available,
+            Item.kind,
+            Item.id,
+            Item.path,
+            Item.slug,
+            ).where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query))))
+        pages = topic_nodes.count()/items_per_page
+        topic_nodes = [item for item in topic_nodes.paginate(page, items_per_page).dicts()]
+        if topic_node:
+            # If we got an exact match, show it first.
+            topic_nodes = [model_to_dict(topic_node)] + topic_nodes
+        return topic_nodes, False, pages
 
 
 @set_database
-def bulk_insert(items, db=None, **kwargs):
+def bulk_insert(items, **kwargs):
     """
     Insert many rows into the database at once.
     Limit to 500 items at a time for performance reasons.
     """
     if items:
+        db = kwargs.get("db")
         items = map(parse_model_data, items)
-        with Using(db, [Item]):
+        if db:
             with db.atomic():
                 for idx in range(0, len(items), 500):
                     Item.insert_many(map(parse_model_data, items[idx:idx+500])).execute()
 
 
 @set_database
-def get_or_create(item, db=None, **kwargs):
+def get_or_create(item, **kwargs):
     """
     Wrapper around get or create that allows us to specify a database
     and also parse the model data to compress extra fields.
     """
     if item:
-        with Using(db, [Item]):
-            Item.create_or_get(**parse_model_data(item))
+        Item.create_or_get(**parse_model_data(item))
 
 
 @set_database
-def update_item(db=None, update=None, path=None, **kwargs):
+def update_item(update=None, path=None, **kwargs):
     """
     Select an item by path, update fields and save.
     """
     if update and path:
-        with Using(db, [Item]):
-            item = Item.get(Item.path == path)
-            if any([key not in Item._meta.fields for key in update]):
-                item_data = unparse_model_data(item)
-                item_data.update(update)
-                for key, value in parse_model_data(item_data).iteritems():
-                    setattr(item, key, value)
-            else:
-                for key, value in update.iteritems():
-                    setattr(item, key, value)
+        item = Item.get(Item.path == path)
+        if any([key not in Item._meta.fields for key in update]):
+            item_data = unparse_model_data(item)
+            item_data.update(update)
+            for key, value in parse_model_data(item_data).iteritems():
+                setattr(item, key, value)
+        else:
+            for key, value in update.iteritems():
+                setattr(item, key, value)
 
-            item.save()
+        item.save()
 
 
 def iterator_content_items(ids=None, **kwargs):
@@ -495,11 +486,12 @@ def iterator_content_items_by_youtube_id(ids=None, **kwargs):
 
 
 @set_database
-def create_table(db=None, **kwargs):
+def create_table(**kwargs):
     """
     Create a table in the database.
     """
-    with Using(db, [Item, AssessmentItem]):
+    db = kwargs.get("db")
+    if db:
         db.create_tables([Item, AssessmentItem])
 
 
@@ -508,14 +500,15 @@ def annotate_content_models_by_youtube_id(channel="khan", language="en", youtube
 
 
 @set_database
-def annotate_content_models(db=None, channel="khan", language="en", ids=None, iterator_content_items=iterator_content_items, **kwargs):
+def annotate_content_models(channel="khan", language="en", ids=None, iterator_content_items=iterator_content_items, **kwargs):
     """
     Annotate content models that have the ids specified in a list.
     Our ids can be duplicated at the moment, so this may be several content items per id.
     When a content item has been updated, propagate availability up the topic tree.
     """
 
-    with Using(db, [Item]):
+    db = kwargs.get("db")
+    if db:
         content_models = iterator_content_items(ids=ids)
         with db.atomic() as transaction:
             def recurse_availability_up_tree(node, available):
@@ -563,7 +556,7 @@ def annotate_content_models(db=None, channel="khan", language="en", ids=None, it
 
 
 @set_database
-def update_parents(db=None, parent_mapping=None, channel="khan", language="en", **kwargs):
+def update_parents(parent_mapping=None, channel="khan", language="en", **kwargs):
     """
     Convenience function to add parent nodes to other nodes in the database.
     Needs a mapping from item path to parent id.
@@ -571,8 +564,8 @@ def update_parents(db=None, parent_mapping=None, channel="khan", language="en", 
     """
 
     if parent_mapping:
-        with Using(db, [Item]):
-
+        db = kwargs.get("db")
+        if db:
             with db.atomic() as transaction:
                 for key, value in parent_mapping.iteritems():
                     if value:
@@ -588,10 +581,9 @@ def update_parents(db=None, parent_mapping=None, channel="khan", language="en", 
 
 
 @set_database
-def get_assessment_item_data(db=None, channel="khan", language="en", assessment_item_id=None):
-    with Using(db, [AssessmentItem]):
-        try:
-            assessment_item = AssessmentItem.get(AssessmentItem.id == assessment_item_id)
-            return model_to_dict(assessment_item)
-        except OperationalError:
-            return {}
+def get_assessment_item_data(channel="khan", language="en", assessment_item_id=None):
+    try:
+        assessment_item = AssessmentItem.get(AssessmentItem.id == assessment_item_id)
+        return model_to_dict(assessment_item)
+    except OperationalError:
+        return {}
