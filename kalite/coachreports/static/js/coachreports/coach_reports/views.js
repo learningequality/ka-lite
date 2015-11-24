@@ -102,16 +102,14 @@ var CoachSummaryView = BaseView.extend({
 
         var tids = this.data_model.get("topic_ids");
         var ctr = -1;
-        console.log("getting tids:");
-        console.log(tids);
 
         parseData.forEach(function(datum, index) {
             var opt = document.createElement("option");
+            //this part maintains any currently selected
+            //options as checked instead of reverting to default
             if(tids.length !== 0) {
-                console.log("tids > 0");
                 ctr = tids.indexOf(datum.id);
                 if(ctr !== -1){
-                    console.log(datum.id);
                     opt.selected = "selected";
                     delete tids[ctr];
                 }
