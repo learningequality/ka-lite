@@ -2,8 +2,12 @@ from behave import *
 
 from django.core.urlresolvers import reverse
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.wait import WebDriverWait
+import selenium.webdriver.support.expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
 
-from kalite.testing.behave_helpers import build_url, find_css_class_with_wait, find_id_with_wait, elem_is_invisible_with_wait
+from kalite.testing.behave_helpers import build_url, find_css_class_with_wait, find_id_with_wait,\
+    elem_is_invisible_with_wait, go_to_homepage
 
 
 # Id for the clickable element that starts an intro
@@ -11,7 +15,7 @@ STARTING_POINT_ID = "inline-btn"
 # Classes for the introjs modal and associated elements
 MODAL_CLASS = "introjs-tooltip"
 STEP_NUMBER_CLASS = "introjs-helperNumberLayer"
-HIGHLIGHTED_CLASS = "introjs-tooltipReferenceLayer"
+HIGHLIGHTED_CLASS = "introjs-showElement"
 NEXT_BUTTON_CLASS = "introjs-nextbutton"
 BACK_BUTTON_CLASS = "introjs-prevbutton"
 SKIP_BUTTON_CLASS = "introjs-skipbutton"
@@ -29,15 +33,18 @@ def step_impl(context):
 
 @then("I see a modal with step number {expected_num:d}")
 def step_impl(context, expected_num):
-    actual_num = get_modal_step_number(context)
-    assert actual_num == expected_num, "Unexpected step number '%s' found. Expected: %s" % (actual_num, expected_num)
+
+    def condition(driver):
+        number_el = driver.find_element_by_class_name(STEP_NUMBER_CLASS)
+        actual_num_text = number_el.text
+        return int(actual_num_text) == expected_num if actual_num_text else False
+
+    WebDriverWait(context.browser, 30, ignored_exceptions=NoSuchElementException).until(condition)
 
 
 @then("an element is highlighted")
 def step_impl(context):
     elem = find_css_class_with_wait(context, HIGHLIGHTED_CLASS)
-    assert elem is not None, "Couldn't find a highlighted element on the page."
-    assert elem.is_displayed(), "The highlighted element exists but is not visible."
 
 
 @then("the modal has a \"next\" button")
@@ -63,7 +70,7 @@ def step_impl(context):
     """ Start the intro and add some elements to the context. """
     go_to_manage_page(context)
     start_intro(context)
-    modal = context.modal = find_css_class_with_wait(context, MODAL_CLASS)
+    modal = context.modal = find_css_class_with_wait(context, MODAL_CLASS, wait_time=30)
     context.skip_button = modal.find_element_by_class_name(SKIP_BUTTON_CLASS)
     context.next_button = modal.find_element_by_class_name(NEXT_BUTTON_CLASS)
     context.back_button = modal.find_element_by_class_name(BACK_BUTTON_CLASS)
@@ -71,17 +78,17 @@ def step_impl(context):
 
 @then("the modal disappears")
 def step_impl(context):
-    assert elem_is_invisible_with_wait(context, context.modal), "The modal should not be visible."
+    assert elem_is_invisible_with_wait(context, context.modal, wait_time=60), "The modal should not be visible."
 
 
 @then("the back button is disabled")
 def step_impl(context):
-    assert not context.modal.back_button.is_enabled(), "The back button should be disabled!"
+    assert "introjs-disabled" in context.back_button.get_attribute("class")
 
 
 @given("I'm on a page with no intro")
 def step_impl(context):
-    assert False, "Not yet implemented"
+    go_to_homepage(context)
 
 
 @then("I should not see the starting point")
@@ -93,26 +100,11 @@ def step_impl(context):
         pass
 
 
-@when("I click outside the modal")
-def step_impl(context):
-    elem = find_css_class_with_wait(context, STEP_NUMBER_CLASS)
-    actions = ActionChains(context.browser)
-    # Move the mouse postion to the top left of the element, and
-    # then offset the position. Should lay outside of the element.
-    actions.move_to_element_with_offset(elem, -50, -50)
-    actions.click()
-    actions.peform()
-
-
-def get_modal_step_number(context):
-    return int(find_css_class_with_wait(context, STEP_NUMBER_CLASS).text)
-
-
 def go_to_manage_page(context):
     url = reverse("zone_redirect")
     context.browser.get(build_url(context, url))
 
 
 def start_intro(context):
-    sp_elem = find_id_with_wait(context, STARTING_POINT_ID) #WebElement
+    sp_elem = find_id_with_wait(context, STARTING_POINT_ID, wait_time=30) #WebElement
     sp_elem.click()

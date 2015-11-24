@@ -50,7 +50,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 # Maximum time to wait when trying to find elements
-MAX_WAIT_TIME = 10
+MAX_WAIT_TIME = 30
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 5
 
@@ -137,12 +137,15 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     wait_time: sets the max wait time. Optional, but has a default value.
     Returns True if the element is invisible or stale, otherwise waits and returns False
     """
-    if elem.get_attribute("id"):
-        by = (By.ID, elem.get_attribute("id"))
-    elif elem.get_attribute("class"):
-        by = (By.CLASS_NAME, elem.get_attribute("class"))
-    else:
-        assert False, "No way to select element."
+    try:
+        if elem.get_attribute("id"):
+            by = (By.ID, elem.get_attribute("id"))
+        elif elem.get_attribute("class"):
+            by = (By.CLASS_NAME, elem.get_attribute("class"))
+        else:
+            assert False, "No way to select element."
+    except StaleElementReferenceException:
+        return True
     try:
         WebDriverWait(context.browser, wait_time).until(
             EC.invisibility_of_element_located(by)
@@ -180,7 +183,7 @@ def find_css_class_with_wait(context, css_class, **kwargs):
     css_class: A string with the css class (no leading .)
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.CLASS_NAME, css_class), **kwargs)
 
@@ -223,7 +226,7 @@ def find_xpath_with_wait(context, id_str, **kwargs):
     id_str: A string with the XPATH (no leading #)
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.XPATH, id_str), **kwargs)
 
@@ -233,7 +236,7 @@ def find_css_with_wait(context, id_str, **kwargs):
     id_str: A string with the CSS Selector
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.CSS_SELECTOR, id_str), **kwargs)
 

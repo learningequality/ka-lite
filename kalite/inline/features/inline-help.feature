@@ -30,8 +30,3 @@ Feature: Inline help
     Scenario: The page has no intro! Oh no!
         Given I'm on a page with no intro
         Then I should not see the starting point
-
-    Scenario: I click outside the modal
-        Given I've started the intro
-        When I click outside the modal
-        Then the modal disappears
