@@ -121,5 +121,7 @@ def update_content_availability(content_list, language="en", channel="khan"):
         # Content is currently flagged as available, but is not. Flag as unavailable.
         if content.get("available") and "available" not in update:
             update["available"] = False
+            update["files_complete"] = 0
+            update["size_on_disk"] = 0
 
         yield content.get("path"), update

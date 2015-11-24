@@ -62,8 +62,10 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
         self.video = videofile
 
+        video_queue = VideoQueue()
+
         try:
-            if not self.video_queue.count():
+            if not video_queue.count():
                 raise DownloadCancelled()
 
             else:
@@ -107,20 +109,21 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
         set_process_priority.lowest(logging=settings.LOG)
 
-        self.video_queue = VideoQueue()
-
         try:
-            while True: # loop until the method is aborted
+            while True:
+                # loop until the method is aborted
                 # Grab any video that hasn't been tried yet
 
-                video_count = self.video_queue.count()
+                video_queue = VideoQueue()
+
+                video_count = video_queue.count()
                 if video_count == 0:
                     self.stdout.write(_("Nothing to download; exiting.") + "\n")
                     break
 
                 # Grab a video as OURS to handle, set fields to indicate to others that we're on it!
                 # Update the video logging
-                video = self.video_queue.next()
+                video = video_queue.next()
 
                 video["download_in_progress"] = True
                 video["percent_complete"] = 0
@@ -160,20 +163,20 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     except IOError as e:
                         logging.exception(e)
                         failed_youtube_ids.append(video.get("youtube_id"))
-                        self.video_queue.remove_file(video.get("youtube_id"))
+                        video_queue.remove_file(video.get("youtube_id"))
                         time.sleep(10)
                         continue
 
                     # If we got here, we downloaded ... somehow :)
                     handled_youtube_ids.append(video.get("youtube_id"))
-                    self.video_queue.remove_file(video.get("youtube_id"))
+                    video_queue.remove_file(video.get("youtube_id"))
                     self.stdout.write(_("Download is complete!") + "\n")
 
                     annotate_content_models_by_youtube_id(youtube_ids=[video.get("youtube_id")], language=video.get("language"))
 
                 except DownloadCancelled:
                     # Cancellation event
-                    self.video_queue.remove_file(video.get("youtube_id"))
+                    video_queue.clear()
                     failed_youtube_ids.append(video.get("youtube_id"))
 
                 except Exception as e:
@@ -193,7 +196,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     # Rather than getting stuck on one video, continue to the next video.
                     self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
                     failed_youtube_ids.append(video.get("youtube_id"))
-                    self.video_queue.remove_file(video.get("youtube_id"))
+                    video_queue.remove_file(video.get("youtube_id"))
                     continue
 
             # Update

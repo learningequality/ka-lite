@@ -101,6 +101,7 @@ var scan_callbacks = {
             messages.show_message("success", progress_log.notes);
             tree.reload();
             tree.options.select();
+            $("#scan-videos").removeAttr("disabled");
         }
     }
 };
@@ -444,6 +445,11 @@ function updateNodeClass(node) {
 function updateNodeCompleteness(node, tobe_class){
     //update the selected node
     node.extraClasses = tobe_class;
+    if (tobe_class == "unstarted") {
+        // Node has been deleted, set its data to no files complete, and no size.
+        node.data.size_on_disk = 0;
+        node.data.files_complete = 0;
+    }
     node.renderStatus();
     //1. update the selected node's ancestors
     if (node.parent) {

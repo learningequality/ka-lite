@@ -5,6 +5,7 @@ from django.core.management import call_command
 
 from kalite.main.tests.base import MainTestCase
 from kalite.testing.client import KALiteClient
+from kalite.topic_tools.content_models import get_content_item
 
 
 class TestAdminApiCalls(MainTestCase):
@@ -57,18 +58,6 @@ class TestAdminApiCalls(MainTestCase):
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
 
-    def test_delete_existing_video_object(self):
-        """
-        Delete a video through the API, when only the videofile object exists
-        """
-        os.remove(self.fake_video_file)
-        self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
-
-        # Delete a video file, make sure
-        result = self.client.delete_videos(paths=[self.path])
-        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
-        self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
-
 
     def test_delete_existing_video_file(self):
         """
@@ -80,3 +69,7 @@ class TestAdminApiCalls(MainTestCase):
         result = self.client.delete_videos(paths=[self.path])
         self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
+        videofile = get_content_item(content_id=self.video_id)
+        self.assertFalse(videofile.get("available"))
+        assert videofile.get("size_on_disk") == 0
+        assert videofile.get("files_complete") == 0
