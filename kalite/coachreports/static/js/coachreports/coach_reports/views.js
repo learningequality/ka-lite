@@ -100,18 +100,19 @@ var CoachSummaryView = BaseView.extend({
         var targetElem = $("#topic-list").get(0);
         var frag = document.createDocumentFragment();
 
-        var tids = this.data_model.get("topic_ids");
+        var tids = $.parseJSON(this.data_model.get("topic_ids"));
         var ctr = -1;
 
         parseData.forEach(function(datum, index) {
             var opt = document.createElement("option");
             //this part maintains any currently selected
             //options as checked instead of reverting to default
-            if(tids.length !== 0) {
+            if(tids.length > 0) {
                 ctr = tids.indexOf(datum.id);
                 if(ctr !== -1){
                     opt.selected = "selected";
                     delete tids[ctr];
+                    ctr = -1;
                 }
             }
             opt.innerHTML = datum.title;
