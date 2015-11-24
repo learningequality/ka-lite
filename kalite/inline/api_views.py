@@ -24,4 +24,5 @@ def narrative_view(request, narrative_id):
         if exp.search(narrative_id):
             the_narrative[key] = narr
             break
+
     return JsonResponse(the_narrative)
