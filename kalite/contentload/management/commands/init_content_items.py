@@ -21,8 +21,8 @@ from kalite.contentload.utils import dedupe_paths
 
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH, CHANNEL_DATA_PATH
 
+from kalite.i18n.base import translate_block
 
-from kalite import i18n
 from django.utils.translation import gettext as _
 
 
@@ -56,14 +56,11 @@ def generate_topic_tree_items(channel="khan", language="en"):
 
         node.pop("child_data", None)
 
-        child_availability = []
-
-        child_ids = [child.get("id") for child in node.get("children", [])]
+        total_files = 0
 
         # Do the recursion
         for child in node.get("children", []):
-            recurse_nodes(child, node.get("id"))
-            child_availability.append(child.get("available", False))
+            total_files += recurse_nodes(child, node.get("id"))
 
         node.pop("children", None)
 
@@ -73,16 +70,21 @@ def generate_topic_tree_items(channel="khan", language="en"):
                 data = exercise_cache.get(node.get("id"), {})
             else:
                 data = content_cache.get(node.get("id"), {})
+                total_files = 1
 
             node = dict(data, **node)
+
+        node["total_files"] = total_files
+
         node["available"] = False
 
         # Translate everything for good measure
-        with i18n.translate_block(language):
+        with translate_block(language):
             node["title"] = _(node.get("title", ""))
             node["description"] = _(node.get("description", "")) if node.get("description") else ""
 
         flat_topic_tree.append(node)
+        return total_files
 
     dedupe_paths(topic_tree)
 
@@ -105,9 +107,9 @@ class Command(BaseCommand):
                     dest="database_path",
                     default="",
                     help="Override the destination path for the content item DB file"),
-        make_option("-b", "--no-bulk-create",
+        make_option("-b", "--bulk-create",
                     action="store_true",
-                    dest="no_bulk_create",
+                    dest="bulk_create",
                     default=False,
                     help="Create the records in bulk (warning: will delete destination DB first)"),
         make_option("-c", "--channel",
@@ -133,9 +135,9 @@ class Command(BaseCommand):
         channel = kwargs["channel"]
         # temporarily swap out the database path for the desired target
         database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
-        bulk_create = not kwargs["no_bulk_create"]
+        bulk_create = kwargs["bulk_create"]
 
-        if bulk_create and os.path.isfile(database_path):
+        if os.path.isfile(database_path):
             if kwargs["overwrite"]:
                 os.remove(database_path)
             else:

@@ -68,8 +68,8 @@ class Command(BaseCommand):
 def should_upgrade_assessment_items():
     # if assessmentitems.version doesn't exist, then we assume
     # that they haven't got assessment items EVER
-    if not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH) or not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
-        logging.debug("%s does not exist; downloading assessment items" % settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH)
+    if not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
+        logging.debug("%s does not exist; downloading assessment items" % settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH)
         return True
 
     with open(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH) as f:
@@ -100,10 +100,6 @@ def unpack_zipfile_to_content_folder(zf):
     shutil.move(
         os.path.join(folder, 'assessmentitems.version'),
         settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
-    )
-    shutil.move(
-        os.path.join(folder, 'assessmentitems.sqlite'),
-        settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH
     )
     # JSON file is apparrently not required (not in the test at least)
     if os.path.isfile(os.path.join(folder, 'assessmentitems.json')):

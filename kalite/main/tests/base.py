@@ -30,7 +30,7 @@ class MainTestCase(KALiteTestCase):
         """
         Set up a location for the content folder that won't mess with the actual application.
         Because we're using call_command, the value of settings should persist
-        into the videoscan command.
+        into the annotate_content_items command.
         """
         settings.CONTENT_ROOT = self.content_root
 
@@ -52,8 +52,9 @@ class MainTestCase(KALiteTestCase):
         """
         content = get_random_content(kinds=["Video"], limit=1)[0]
         youtube_id = content["id"]
+        path = content["path"]
         fake_content_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
         with open(fake_content_file, "w") as fh:
             fh.write("")
         self.assertTrue(os.path.exists(fake_content_file), "Make sure the content file was created, youtube_id='%s'." % youtube_id)
-        return (fake_content_file, content["id"], youtube_id)
+        return (fake_content_file, content["id"], youtube_id, path)

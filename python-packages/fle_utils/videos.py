@@ -59,8 +59,12 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
         raise
 
 def delete_downloaded_files(youtube_id, download_path):
+    files_deleted = 0
     for filepath in glob.glob(os.path.join(download_path, youtube_id + ".*")):
         try:
             os.remove(filepath)
+            files_deleted += 1
         except OSError:
             pass
+    if files_deleted:
+        return True

@@ -11,12 +11,11 @@ from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 
 from .classes import UpdatesDynamicCommand
-from ... import download_video, DownloadCancelled, URLNotFound
-from ...models import VideoFile
+from ...videos import download_video, DownloadCancelled, URLNotFound
+from ...download_track import VideoQueue
 from fle_utils import set_process_priority
 from fle_utils.chronograph.management.croncommand import CronCommand
-from kalite import i18n
-from kalite.topic_tools.content_models import get_content_item, annotate_content_models
+from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models_by_youtube_id
 
 def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=None):
     """
@@ -37,12 +36,6 @@ def scrape_video(youtube_id, format="mp4", force=False, quiet=False, callback=No
     yt_dl.extract_info('www.youtube.com/watch?v=%s' % youtube_id, download=True)
 
 
-def get_video_node_by_youtube_id(youtube_id):
-    """Returns the video node corresponding to the video_id of the given youtube_id, or None"""
-    video_id = i18n.get_video_id(youtube_id=youtube_id)
-    return get_content_item(content_id=video_id)
-
-
 class Command(UpdatesDynamicCommand, CronCommand):
     help = _("Download all videos marked to be downloaded")
 
@@ -60,64 +53,56 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
     def download_progress_callback(self, videofile, percent):
 
-        video_changed = (not self.video) or self.video.pk != videofile.pk
+        video_changed = (not self.video) or self.video.get("youtube_id") != videofile.get("youtube_id")
         video_done = self.video and percent == 100
-        video_error = self.video and not video_changed and (percent - self.video.percent_complete > 50)
+        video_error = self.video and not video_changed and (percent - self.video.get("percent_complete", 0) > 50)
 
-        if self.video and (percent - self.video.percent_complete) < 1 and not video_done and not video_changed and not video_error:
+        if self.video and (percent - self.video.get("percent_complete", 0)) < 1 and not video_done and not video_changed and not video_error:
             return
 
-        self.video = VideoFile.objects.get(pk=videofile.pk)
+        self.video = videofile
+
+        video_queue = VideoQueue()
 
         try:
-            if self.video.cancel_download:
+            if not video_queue.count():
                 raise DownloadCancelled()
 
             else:
                 if video_error:
-                    self.video.percent_complete = 0
-                    self.video.save()
+                    self.video["percent_complete"] = 0
                     return
 
-                elif (percent - self.video.percent_complete) >= 1 or video_done or video_changed:
+                elif (percent - self.video.get("percent_complete", 0)) >= 1 or video_done or video_changed:
                     # Update to output (saved in chronograph log, so be a bit more efficient
                     if int(percent) % 5 == 0 or percent == 100:
                         self.stdout.write("%d\n" % percent)
 
-                    # Update video data in the database
-                    if percent == 100:
-                        self.video.flagged_for_download = False
-                        self.video.download_in_progress = False
-                    self.video.percent_complete = percent
-                    self.video.save()
+                    self.video["percent_complete"] = percent
 
                 # update progress data
-                video_node = get_video_node_by_youtube_id(self.video.youtube_id)
-                video_title = (video_node and _(video_node["title"])) or self.video.youtube_id
+                video_node = get_video_from_youtube_id(self.video.get("youtube_id"))
+                video_title = (video_node and video_node.get("title")) or self.video.get("title")
 
                 # Calling update_stage, instead of next_stage when stage changes, will auto-call next_stage appropriately.
-                self.update_stage(stage_name=self.video.youtube_id, stage_percent=percent/100., notes=_("Downloading '%(video_title)s'") % {"video_title": _(video_title)})
+                self.update_stage(stage_name=self.video.get("youtube_id"), stage_percent=percent/100., notes=_("Downloading '%(video_title)s'") % {"video_title": _(video_title)})
 
                 if percent == 100:
-                    self.video = None
+                    self.video = {}
 
         except DownloadCancelled as de:
             if self.video:
                 self.stdout.write(_("Download cancelled!") + "\n")
 
-                # Update video info
-                self.video.percent_complete = 0
-                self.video.flagged_for_download = False
-                self.video.download_in_progress = False
-                self.video.save()
-                self.video = None
+                self.video = {}
 
             # Progress info will be updated when this exception is caught.
             raise
 
 
     def handle(self, *args, **options):
-        self.video = None
+        self.stdout.write(_("Nothing to download; exiting.") + "\n")
+        self.video = {}
 
         handled_youtube_ids = []  # stored to deal with caching
         failed_youtube_ids = []  # stored to avoid requerying failures.
@@ -125,28 +110,29 @@ class Command(UpdatesDynamicCommand, CronCommand):
         set_process_priority.lowest(logging=settings.LOG)
 
         try:
-            while True: # loop until the method is aborted
+            while True:
+                # loop until the method is aborted
                 # Grab any video that hasn't been tried yet
-                videos = VideoFile.objects \
-                    .filter(flagged_for_download=True, download_in_progress=False) \
-                    .exclude(youtube_id__in=failed_youtube_ids)
-                video_count = videos.count()
+
+                video_queue = VideoQueue()
+
+                video_count = video_queue.count()
                 if video_count == 0:
                     self.stdout.write(_("Nothing to download; exiting.") + "\n")
                     break
 
                 # Grab a video as OURS to handle, set fields to indicate to others that we're on it!
                 # Update the video logging
-                video = videos[0]
-                video.download_in_progress = True
-                video.percent_complete = 0
-                video.save()
-                self.stdout.write((_("Downloading video '%(youtube_id)s'...") + "\n") % {"youtube_id": video.youtube_id})
+                video = video_queue.next()
+
+                video["download_in_progress"] = True
+                video["percent_complete"] = 0
+                self.stdout.write((_("Downloading video '%(youtube_id)s'...") + "\n") % {"youtube_id": video.get("youtube_id")})
 
                 # Update the progress logging
                 self.set_stages(num_stages=video_count + len(handled_youtube_ids) + len(failed_youtube_ids) + int(options["auto_cache"]))
                 if not self.started():
-                    self.start(stage_name=video.youtube_id)
+                    self.start(stage_name=video.get("youtube_id"))
 
                 # Initiate the download process
                 try:
@@ -154,7 +140,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     progress_callback = partial(self.download_progress_callback, video)
                     try:
                         # Download via urllib
-                        download_video(video.youtube_id, callback=progress_callback)
+                        download_video(video.get("youtube_id"), callback=progress_callback)
 
                     except URLNotFound:
                         # Video was not found on amazon cloud service,
@@ -162,7 +148,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
                         #   that it's a dubbed video.
                         #
                         # We can use youtube-dl to get that video!!
-                        logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.youtube_id})
+                        logging.debug(_("Retrieving youtube video %(youtube_id)s via youtube-dl") % {"youtube_id": video.get("youtube_id")})
 
                         def youtube_dl_cb(stats, progress_callback, *args, **kwargs):
                             if stats['status'] == "finished":
@@ -172,34 +158,31 @@ class Command(UpdatesDynamicCommand, CronCommand):
                             else:
                                 percent = 0.
                             progress_callback(percent=percent)
-                        scrape_video(video.youtube_id, quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
+                        scrape_video(video.get("youtube_id"), quiet=not settings.DEBUG, callback=partial(youtube_dl_cb, progress_callback=progress_callback))
 
                     except IOError as e:
                         logging.exception(e)
-                        video.download_in_progress = False
-                        video.save()
-                        failed_youtube_ids.append(video.youtube_id)
+                        failed_youtube_ids.append(video.get("youtube_id"))
+                        video_queue.remove_file(video.get("youtube_id"))
                         time.sleep(10)
                         continue
 
                     # If we got here, we downloaded ... somehow :)
-                    handled_youtube_ids.append(video.youtube_id)
+                    handled_youtube_ids.append(video.get("youtube_id"))
+                    video_queue.remove_file(video.get("youtube_id"))
                     self.stdout.write(_("Download is complete!") + "\n")
 
-                    annotate_content_models(ids=[video.youtube_id])
+                    annotate_content_models_by_youtube_id(youtube_ids=[video.get("youtube_id")], language=video.get("language"))
 
                 except DownloadCancelled:
                     # Cancellation event
-                    video.percent_complete = 0
-                    video.flagged_for_download = False
-                    video.download_in_progress = False
-                    video.save()
-                    failed_youtube_ids.append(video.youtube_id)
+                    video_queue.clear()
+                    failed_youtube_ids.append(video.get("youtube_id"))
 
                 except Exception as e:
                     # On error, report the error, mark the video as not downloaded,
                     #   and allow the loop to try other videos.
-                    msg = _("Error in downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.youtube_id, "error_msg": unicode(e)}
+                    msg = _("Error in downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.get("youtube_id"), "error_msg": unicode(e)}
                     self.stderr.write("%s\n" % msg)
 
                     # If a connection error, we should retry.
@@ -210,13 +193,10 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     else:
                         connection_error = False
 
-                    video.download_in_progress = False
-                    video.flagged_for_download = connection_error  # Any error other than a connection error is fatal.
-                    video.save()
-
                     # Rather than getting stuck on one video, continue to the next video.
                     self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
-                    failed_youtube_ids.append(video.youtube_id)
+                    failed_youtube_ids.append(video.get("youtube_id"))
+                    video_queue.remove_file(video.get("youtube_id"))
                     continue
 
             # Update

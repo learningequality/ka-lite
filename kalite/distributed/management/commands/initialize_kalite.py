@@ -35,18 +35,7 @@ class Command(BaseCommand):
             # Double check the setup process worked ok.
             assert Settings.get("database_version") == VERSION, "There was an error configuring the server. Please report the output of this command to Learning Equality."
 
-    def reinitialize_server(self):
-        """Reset the server state."""
-
-        # Next, call videoscan.
-        logging.info("Running videoscan.")
-        call_command("videoscan")
-
 
     def handle(self, *args, **options):
 
         self.setup_server_if_needed()
-
-        # we do this on every server request,
-        # as we don't know what happens when we're not looking.
-        self.reinitialize_server()

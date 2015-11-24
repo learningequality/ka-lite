@@ -9,7 +9,6 @@ import os
 import errno
 
 from distutils.version import StrictVersion
-from sqlitedict import SqliteDict
 
 
 class InvalidDateFormat(Exception):
@@ -267,20 +266,6 @@ def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="
         if raises:
             raise
         return default
-
-
-def softload_sqlite_cache(cache_filepath, raises=False):
-    from django.conf import settings
-    logging = settings.LOG
-
-    try:
-        return SqliteDict(cache_filepath)
-    except Exception as e:
-        logging.error("Error loading sqlite content cache: %s" % e)
-        if raises:
-            raise
-        else:
-            return None
 
 
 def sort_version_list(version_list, reverse):
