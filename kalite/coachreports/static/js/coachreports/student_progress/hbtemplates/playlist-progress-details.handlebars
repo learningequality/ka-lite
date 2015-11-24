@@ -15,10 +15,10 @@
             {{#ifcond attributes.status "===" "struggling"}}
                 {{_ " Struggling. " }}
             {{/ifcond}}
-            
+
             {{#ifcond attributes.status "===" "notstarted"}}
                 {{_ " Not started. " }}
-            {{/ifcond}}                
+            {{/ifcond}}
         </div>
         <div>
             {{!-- Score info for sr-user. --}}
@@ -41,26 +41,26 @@
 {{!-- Whole section is rendered invisible to screen readers --}}
 <div class="col-sm-1 progress-block" aria-hidden="true" role="presentation">
     <a href="/learn/{{attributes.path}}">
-    <div 
+    <div
         class="progress-indicator progress-indicator-sm {{attributes.status}}"
-        data-toggle="popover" data-placement="top" 
-        
+        data-toggle="popover" data-placement="top"
+
         {{!-- Video --}}
         {{#ifcond attributes.kind "===" "Video"}}
             title="{{attributes.title}}"
-            data-content="% Complete: {{attributes.score}}"
+            data-content="{{_ "% Complete:" }} {{attributes.score}}"
         {{/ifcond}}
 
         {{!-- Exercise --}}
         {{#ifcond attributes.kind "===" "Exercise"}}
             title="{{attributes.title}}"
-            data-content="Streak: {{attributes.score}}%"
+            data-content="{{_ "Streak" }}: {{attributes.score}}%"
         {{/ifcond}}
 
         {{!-- Quiz --}}
         {{#ifcond attributes.kind "===" "Quiz"}}
             title="Quiz for {{attributes.title}}"
-            data-content="Score: {{attributes.score}}%"
+            data-content="{{_ "Score" }}: {{attributes.score}}%"
         {{/ifcond}}
     > {{!-- Close starting div --}}
         <div class="sidebar-icon icon-{{ attributes.kind }} icon-label icon-label-sm"></div>

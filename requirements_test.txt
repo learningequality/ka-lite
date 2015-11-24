@@ -8,3 +8,7 @@ hachoir-core==1.3.3
 hachoir-parser==1.3.4
 hachoir-metadata==1.3.3
 sauceclient==0.2.1
+
+# Used for building assets, which is necessary for testing
+pyyaml==3.11
+

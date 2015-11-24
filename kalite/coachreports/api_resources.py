@@ -9,7 +9,7 @@ from .models import PlaylistProgress, PlaylistProgressDetail
 
 class CoachReportBaseResource(Resource):
     """
-    A base resource that houses shared code between the resources we actually use 
+    A base resource that houses shared code between the resources we actually use
     in the API
     """
 
@@ -54,7 +54,7 @@ class PlaylistProgressResource(CoachReportBaseResource):
 
     def get_object_list(self, request):
         user_id = request.GET.get('user_id')
-        result = PlaylistProgress.user_progress(user_id=user_id)
+        result = PlaylistProgress.user_progress(user_id=user_id, language=request.language)
         return result
 
 class PlaylistProgressDetailResource(CoachReportBaseResource):
@@ -72,8 +72,8 @@ class PlaylistProgressDetailResource(CoachReportBaseResource):
     def get_object_list(self, request):
         user_id = request.GET.get("user_id")
         playlist_id = request.GET.get("playlist_id")
-        result = PlaylistProgressDetail.user_progress_detail(user_id=user_id, playlist_id=playlist_id)
+        language = request.language
+        result = PlaylistProgressDetail.user_progress_detail(user_id=user_id, playlist_id=playlist_id, language=language)
         if not result:
-            raise NotFound("User playlist progress details with user ID '%s' and playlist ID '%s' were not found." % (user_id, playlist_id))        
+            raise NotFound("User playlist progress details with user ID '%s' and playlist ID '%s' were not found." % (user_id, playlist_id))
         return result
-

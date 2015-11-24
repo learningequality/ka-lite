@@ -1,4 +1,6 @@
 -r requirements_test.txt
 werkzeug # Not sure about version
 django-debug-toolbar # Version was not described in previously bundled files, used by kalite.testing app
-pyyaml==3.11
+pep8
+sphinx
+cli2man

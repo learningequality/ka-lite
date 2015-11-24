@@ -61,6 +61,7 @@ def return_log_type_details(log_type, topic_ids=None):
 @require_admin
 def learner_logs(request):
 
+    lang = request.language
     page = request.GET.get("page", 1)
 
     limit = request.GET.get("limit", 50)
@@ -100,7 +101,7 @@ def learner_logs(request):
             topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date, latest_activity_timestamp__lte=end_date)
             if topic_objects.count() == 0:
                 topic_objects = log_objects
-            objects = dict([(obj[id_field], get_content_cache().get(obj[id_field], get_exercise_cache().get(obj[id_field]))) for obj in topic_objects]).values()
+            objects = dict([(obj[id_field], get_content_cache(language=lang).get(obj[id_field], get_exercise_cache(language=lang).get(obj[id_field]))) for obj in topic_objects]).values()
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
@@ -122,6 +123,7 @@ def learner_logs(request):
 @require_admin
 def aggregate_learner_logs(request):
 
+    lang = request.language
     learners = get_learners_from_GET(request)
 
     event_limit = request.GET.get("event_limit", 10)
@@ -144,7 +146,7 @@ def aggregate_learner_logs(request):
         "exercise_attempts": 0,
         "exercise_mastery": None,
     }
-    
+
     end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
 
     start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
@@ -179,7 +181,7 @@ def aggregate_learner_logs(request):
         "complete": log.complete,
         "struggling": getattr(log, "struggling", None),
         "progress": getattr(log, "streak_progress", getattr(log, "progress", None)),
-        "content": get_exercise_cache().get(getattr(log, "exercise_id", ""), get_content_cache().get(getattr(log, "video_id", getattr(log, "content_id", "")), {})),
+        "content": get_exercise_cache(language=lang).get(getattr(log, "exercise_id", "")) or get_content_cache(language=lang).get(getattr(log, "video_id", None) or getattr(log, "content_id", "")) or {}
         } for log in output_logs[:event_limit]]
     output_dict["total_time_logged"] = round((UserLogSummary.objects\
         .filter(user__in=learners, start_datetime__gte=start_date, start_datetime__lte=end_date)\

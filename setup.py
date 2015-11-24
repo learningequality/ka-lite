@@ -123,17 +123,26 @@ def get_installed_packages():
 # site-packages directory.
 
 
-def gen_data_files(*dirs):
+def gen_data_files(*dirs, **kwargs):
     """
     We can only link files, not directories. Therefore, we use an approach
     that scans all files to pass them to the data_files kwarg for setup().
     Thanks: http://stackoverflow.com/a/7288382/405682
     """
     results = []
-    
-    filter_illegal_extensions = lambda f: os.path.splitext(f)[1] != ".pyc"
-    
+
+    optional = kwargs.pop('optional', False)
+
+    def filter_illegal_extensions(f):
+        return os.path.splitext(f)[1] != ".pyc"
+
     for src_dir in dirs:
+        if not os.path.isdir(src_dir):
+            if optional:
+                continue
+            else:
+                raise RuntimeError("{dir:s} does not exist, cannot continue".format(dir=src_dir))
+
         for root, dirs, files in os.walk(src_dir):
             results.append(
                 (
@@ -160,6 +169,11 @@ data_files += map(
 data_files += map(
     lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
     gen_data_files('static-libraries')
+)
+
+data_files += map(
+    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
+    gen_data_files(os.path.join('docs', '_build', 'html'), optional=True)
 )
 
 # For now, just disguise the kalitectl.py script here as it's only to be accessed
@@ -228,37 +242,37 @@ class my_install_scripts(install_scripts):
 # If it's a static build, we invoke pip to bundle dependencies in python-packages
 # This would be the case for commands "bdist" and "sdist"
 if STATIC_BUILD:
-    
+
     manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
     manifest_content += "\n" + "recursive-include dist-packages *\nrecursive-exclude dist-packages *pyc"
     file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-    
+
     sys.stderr.write(
         "This is a static build... invoking pip to put static dependencies in "
         "dist-packages/\n"
     )
-    
+
     STATIC_DIST_PACKAGES_DOWNLOAD_CACHE = os.path.join(where_am_i, 'dist-packages-downloads')
     STATIC_DIST_PACKAGES_TEMP = os.path.join(where_am_i, 'dist-packages-temp')
-    
+
     # Create directory where dynamically created dependencies are put
     if not os.path.exists(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE):
         os.mkdir(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE)
-    
+
     # Should remove the temporary directory always
     if os.path.exists(STATIC_DIST_PACKAGES_TEMP):
         print("Removing previous temporary sources for pip {}".format(STATIC_DIST_PACKAGES_TEMP))
         shutil.rmtree(STATIC_DIST_PACKAGES_TEMP)
-    
+
     # Install from pip
-    
+
     # Code modified from this example:
     # http://threebean.org/blog/2011/06/06/installing-from-pip-inside-python-or-a-simple-pip-api/
     import pip.commands.install
-    
+
     # Ensure we get output from pip
     enable_log_to_stdout('pip.commands.install')
-    
+
     def install_distributions(distributions):
         command = pip.commands.install.InstallCommand()
         opts, ___ = command.parser.parse_args([])
@@ -273,17 +287,17 @@ if STATIC_BUILD:
         command.run(opts, distributions)
         # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
         # requirement_set.install(opts)
-    
+
     # Install requirements into dist-packages
     if DIST_BUILDING_COMMAND:
         install_distributions(STATIC_REQUIREMENTS)
-    
+
     # Empty the requirements.txt file
 
 
 # It's not a build command with --static or it's not a build command at all
 else:
-    
+
     # If the dist-packages directory is non-empty
     if os.listdir(STATIC_DIST_PACKAGES):
         # If we are building something or running from the source
@@ -302,7 +316,7 @@ else:
             # everything in the requirements.txt file
             DIST_REQUIREMENTS = []
             DIST_NAME = 'ka-lite-static'
-            
+
             if "ka-lite" in get_installed_packages():
                 raise RuntimeError(
                     "Already installed ka-lite so cannot install ka-lite-static. "
@@ -314,7 +328,7 @@ else:
                     "...or other possible installation mechanisms you may have "
                     "been using."
                 )
-    
+
     # No dist-packages/ and not building, so must be installing the dynamic
     # version
     elif not DIST_BUILDING_COMMAND:
@@ -335,7 +349,7 @@ else:
         manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
         manifest_content += "\n" + "recursive-include dist-packages *"
         file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-    
+
 
 # All files from dist-packages are included if the directory exists
 if os.listdir(STATIC_DIST_PACKAGES):
