@@ -155,6 +155,7 @@ var VectorVideoView = ContentBaseView.extend({
         window.ContentBaseView.prototype.close.apply(this);
     }
 
+   
 
 });
 
