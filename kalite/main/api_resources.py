@@ -6,11 +6,10 @@ from django.conf.urls import url
 from django.conf import settings
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
-from kalite.topic_tools.models import AssessmentItem
 
 from kalite.distributed.api_views import get_messages_for_api_calls
 from kalite.topic_tools.settings import CHANNEL
-from kalite.topic_tools.base import get_assessment_item_data
+from kalite.topic_tools.content_models import get_assessment_item_data
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
@@ -95,7 +94,6 @@ class VideoLogResource(ModelResource):
 class AssessmentItemResource(ModelResource):
     class Meta:
         resource_name = 'assessment_item'
-        queryset = AssessmentItem.objects.all()
 
     def prepend_urls(self):
         return [
@@ -107,7 +105,7 @@ class AssessmentItemResource(ModelResource):
 
     def obj_get(self, bundle, **kwargs):
         id = kwargs.get("id", None)
-        assessment_item = get_assessment_item_data(bundle.request, id)
+        assessment_item = get_assessment_item_data(channel=getattr(bundle.request, "channel", "khan"), language=getattr(bundle.request, "language", "en"), assessment_item_id=id)
         if assessment_item:
             return AssessmentItem(**assessment_item)
         else:

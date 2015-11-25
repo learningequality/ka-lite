@@ -18,7 +18,7 @@ from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.facility.models import FacilityGroup, FacilityUser
-from kalite.i18n import get_installed_language_packs, set_default_language
+from kalite.i18n.base import get_installed_language_packs, set_default_language
 
 
 @unittest.skipIf(getattr(settings, 'HEADLESS', None), "Doesn't work on HEADLESS.")
