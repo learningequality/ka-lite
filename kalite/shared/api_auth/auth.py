@@ -34,7 +34,7 @@ class UserObjectsOnlyAuthorization(Authorization):
     def _get_user(self, bundle):
         """Convenience method to extract current user from bundle."""
 
-        return bundle.request.session.get("facility_user", None)
+        return bundle.request.session.get("facility_user")
 
     def _user_matches_query(self, bundle):
         """Returns True if and only if the user id in the query is the id of the currently logged in user."""
@@ -44,7 +44,7 @@ class UserObjectsOnlyAuthorization(Authorization):
         if not user_actual:
             return False
 
-        user_queried = bundle.request.GET.get("user", None)
+        user_queried = bundle.request.GET.get("user")
 
         if not user_queried:
             return False
@@ -131,7 +131,7 @@ class AdminReadWriteAndStudentReadOnlyAuthorization(Authorization):
     def _get_user(self, bundle):
         """Convenience method to extract current user from bundle."""
 
-        return bundle.request.session.get("facility_user", None)
+        return bundle.request.session.get("facility_user")
 
     def read_list(self, object_list, bundle):
         return object_list

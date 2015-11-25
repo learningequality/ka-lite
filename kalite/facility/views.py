@@ -140,7 +140,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
     # in all other cases, we are creating a new user
     else:
         form = FacilityUserForm(facility, initial={
-            "group": request.GET.get("group", None),
+            "group": request.GET.get("group"),
             "is_teacher": is_teacher,
             "default_language": get_default_language(),
         })

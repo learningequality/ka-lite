@@ -22,14 +22,16 @@ def retrieve_API_data(channel=None):
     return topic_tree, exercises, assessment_items, content
 
 
-def whitewash_node_data(node, path="", channel_data={}):
+def whitewash_node_data(node, path="", channel_data=None):
     """
     Utility function to convert nodes into the format used by KA Lite.
     Extracted from other functions so as to be reused by both the denormed
     and fully inflated exercise and video nodes.
     """
+    if not channel_data:
+        channel_data = {}
 
-    kind = node.get("kind", None)
+    kind = node.get("kind")
 
     if not kind:
         return node
@@ -120,7 +122,7 @@ def rebuild_topictree(
             children_to_delete = []
             child_kinds = set()
             for i, child in enumerate(node.get("children", [])):
-                child_kind = child.get("kind", None)
+                child_kind = child.get("kind")
 
                 if child_kind == "Video" or child_kind == "Exercise":
                     children_to_delete.append(i)
@@ -158,7 +160,7 @@ def rebuild_topictree(
         children_to_delete = []
         child_kinds = set()
         for i, child in enumerate(node.get("children", [])):
-            child_kind = child.get("kind", None)
+            child_kind = child.get("kind")
 
             # Blacklisted--remove
             if child_kind in channel_data["kind_blacklist"]:

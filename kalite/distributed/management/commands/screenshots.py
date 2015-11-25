@@ -156,6 +156,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
     verbosity = 1
     output_path = None
 
+    @staticmethod
     def _fake_test():
         # Fools django.utils.unittest.case.TestCase.__init__
         # See the small novel comment under __init__ below

@@ -289,7 +289,7 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
         return None
 
 
-def build_url(context, url, params={}):
+def build_url(context, url, params=None):
     """
     Build a full url given a relative url, using the test server's address & port
     :param context: behave context
@@ -297,6 +297,9 @@ def build_url(context, url, params={}):
     :param params: a dictionary of GET parameters, which will be appended to the url. If empty, nothing changes.
     :return: The full url
     """
+    if not params:
+        params = {}
+
     url = urljoin(context.config.server_url, url)
     if params:
         url += "?" + urllib.urlencode(params)

@@ -22,7 +22,7 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
 
     def get_user_from_request_wrapper_fn(request, *args, **kwargs):
         user = get_object_or_None(FacilityUser, id=request.REQUEST["user"]) if "user" in request.REQUEST else None  # don't hit DB if we don't have to
-        user = user or request.session.get("facility_user", None)
+        user = user or request.session.get("facility_user")
         return handler(request, *args, user=user, **kwargs)
     return get_user_from_request_wrapper_fn if not request else get_user_from_request_wrapper_fn(request=request, *args, **kwargs)
 
@@ -54,9 +54,9 @@ def require_admin(handler):
         if (settings.CENTRAL_SERVER and request.user.is_authenticated()) or getattr(request, "is_admin", False):
             return handler(request, *args, **kwargs)
 
-        # Allow users to edit themselves 
-        facility_user_id = kwargs.get("facility_user_id", None)
-        if facility_user_id == request.session.get('facility_user').id:
+        # Allow users to edit themselves
+        facility_user_id = kwargs.get("facility_user_id")
+        if request.session.get('facility_user') and facility_user_id == request.session.get('facility_user').id:
             return handler(request, *args, **kwargs)
 
         # Only here if user is not authenticated.
@@ -92,7 +92,7 @@ def require_authorized_access_to_student_data(handler):
                 return handler(request, *args, **kwargs)
             else:
                 user = get_user_from_request(request=request)
-                if request.session.get("facility_user", None) == user:
+                if request.session.get("facility_user") == user:
                     return handler(request, *args, **kwargs)
                 else:
                     raise PermissionDenied(_("You requested information for a user that you are not authorized to view."))
@@ -131,10 +131,13 @@ def require_authorized_admin(handler):
 
 
         # Objects we're looking to verify
-        org = None; org_id      = kwargs.get("org_id", None)
-        zone = None; zone_id     = kwargs.get("zone_id", None)
+        org = None
+        org_id = kwargs.get("org_id")
+        zone = None
+        zone_id = kwargs.get("zone_id")
         facility = facility_from_request(request=request, *args, **kwargs)
-        device = None; device_id   = kwargs.get("device_id", None)
+        device = None
+        device_id = kwargs.get("device_id")
         user = get_user_from_request(request=request, *args, **kwargs)
 
         # Validate user through facility

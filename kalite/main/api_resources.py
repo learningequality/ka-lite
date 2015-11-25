@@ -104,7 +104,7 @@ class AssessmentItemResource(ModelResource):
 
 
     def obj_get(self, bundle, **kwargs):
-        id = kwargs.get("id", None)
+        id = kwargs.get("id")
         assessment_item = get_assessment_item_data(channel=getattr(bundle.request, "channel", "khan"), language=getattr(bundle.request, "language", "en"), assessment_item_id=id)
         if assessment_item:
             return AssessmentItem(**assessment_item)

@@ -76,12 +76,12 @@ class BrowserActionMixins(object):
         so find another way when that becomes an issue.
         """
         browser = kwargs.get("browser", self.browser)
-        elem = kwargs.get("elem", None)
-        id = kwargs.get("id", None)
-        name = kwargs.get("name", None)
-        tag_name = kwargs.get("tag_name", None)
-        css_class = kwargs.get("css_class", None)
-        xpath = kwargs.get("xpath", None)
+        elem = kwargs.get("elem")
+        id = kwargs.get("id")
+        name = kwargs.get("name")
+        tag_name = kwargs.get("tag_name")
+        css_class = kwargs.get("css_class")
+        xpath = kwargs.get("xpath")
         max_wait = kwargs.get("max_wait", FIND_ELEMENT_TIMEOUT)
         try:
             if not elem:

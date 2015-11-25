@@ -35,14 +35,14 @@ from kalite.topic_tools.content_models import get_topic_update_nodes, get_downlo
 
 def process_log_from_request(handler):
     def wrapper_fn_pfr(request, *args, **kwargs):
-        if request.GET.get("process_id", None):
+        if request.GET.get("process_id"):
             # Get by ID--direct!
             if not isnumeric(request.GET["process_id"]):
                 return JsonResponseMessageError(_("process_id is not numeric."), status=400)
             else:
                 process_log = get_object_or_404(UpdateProgressLog, id=request.GET["process_id"])
 
-        elif request.GET.get("process_name", None):
+        elif request.GET.get("process_name"):
             process_name = request.GET["process_name"]
             if "start_time" not in request.GET:
                 start_time = datetime.datetime.now()

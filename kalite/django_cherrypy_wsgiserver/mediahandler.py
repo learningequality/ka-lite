@@ -76,7 +76,7 @@ class MediaHandler( object ):
 
         mtime = http_date( os.stat(file_path)[stat.ST_MTIME] )
         headers = {'Last-Modified': mtime}
-        if environ.get('HTTP_IF_MODIFIED_SINCE', None) == mtime:
+        if environ.get('HTTP_IF_MODIFIED_SINCE') == mtime:
             status = '304 NOT MODIFIED'
             output = []
         else:
