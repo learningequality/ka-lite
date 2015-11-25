@@ -21,7 +21,7 @@ OLD_ASSESSMENT_ITEMS_LOCATION = os.path.join(settings.CONTENT_ROOT, "khan")
 
 
 # Are assessment items distributed in the system-wide data directory?
-if settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
+if os.path.isdir(os.path.join(ROOT_DATA_PATH, 'assessment', 'khan')):
     ASSESSMENT_ITEM_ROOT = os.path.join(ROOT_DATA_PATH, 'assessment')
     KHAN_ASSESSMENT_ITEM_ROOT = os.path.join(ASSESSMENT_ITEM_ROOT, 'khan')
 else:
@@ -36,10 +36,6 @@ else:
     if not os.path.exists(KHAN_ASSESSMENT_ITEM_ROOT):
         os.mkdir(KHAN_ASSESSMENT_ITEM_ROOT)
 
-# This one should always the settings because it is part of settings.DATABASES
-KHAN_ASSESSMENT_ITEM_DATABASE_PATH = settings.DATABASES['assessment_items']['NAME']
-
 # Default locations of specific elements from the assessment items bundle.
 # Files will be forced into this location when running unpack_assessment_zip
 KHAN_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.version')
-KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(KHAN_ASSESSMENT_ITEM_ROOT, 'assessmentitems.json')

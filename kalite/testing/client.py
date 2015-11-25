@@ -93,8 +93,8 @@ class KALiteClient(Client):
 
         return self.post(path or reverse(url_name), data=data, content_type="application/json")
 
-    def delete_videos(self, youtube_ids):
-        return self.post_json(url_name="delete_videos", data={"youtube_ids": youtube_ids})
+    def delete_videos(self, paths):
+        return self.post_json(url_name="delete_videos", data={"paths": paths})
 
     def convert_user_name_to_resource_uri(self, data):
         if data.get("user"):

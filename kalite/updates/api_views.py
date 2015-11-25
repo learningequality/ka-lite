@@ -17,31 +17,20 @@ from django.utils.timezone import get_current_timezone, make_naive
 from django.utils import translation
 from django.utils.translation import ugettext as _
 
-from . import delete_downloaded_files, get_local_video_size, get_remote_video_size
-from .models import UpdateProgressLog, VideoFile
+from .videos import delete_downloaded_files
+from .models import UpdateProgressLog
 from .views import get_installed_language_packs
+from .download_track import VideoQueue
 from fle_utils.chronograph.utils import force_job
 from fle_utils.django_utils.command import call_command_async
 from fle_utils.general import isnumeric, break_into_chunks, softload_json
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
-from kalite.i18n import get_youtube_id, get_video_language, lcode_to_ietf, delete_language, get_language_name
+from kalite.i18n.base import lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools.settings import TOPICS_FILEPATHS, CHANNEL
-
-
-
-def divide_videos_by_language(youtube_ids):
-    """Utility function for separating a list of youtube ids
-    into a dictionary of lists, separated by video language
-    (as determined by the current dubbed video map)
-    """
-
-    buckets_by_lang = defaultdict(lambda: [])
-    for y_id in youtube_ids:
-        buckets_by_lang[get_video_language(y_id)].append(y_id)
-    return buckets_by_lang
+from kalite.topic_tools.settings import CHANNEL
+from kalite.topic_tools.content_models import get_topic_update_nodes, get_download_youtube_ids, annotate_content_models_by_youtube_id
 
 
 def process_log_from_request(handler):
@@ -135,33 +124,14 @@ def start_video_download(request):
     """
     API endpoint for launching the videodownload job.
     """
-    youtube_ids = OrderedSet(simplejson.loads(request.body or "{}").get("youtube_ids", []))
+    paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
 
-    # One query per video (slow)
-    video_files_to_create = [id for id in youtube_ids if not get_object_or_None(VideoFile, youtube_id=id)]
+    youtube_ids = get_download_youtube_ids(paths)
 
-    # OK to do bulk_create; cache invalidation triggered via save download
-    for lang_code, lang_youtube_ids in divide_videos_by_language(video_files_to_create).iteritems():
-        VideoFile.objects.bulk_create([VideoFile(youtube_id=id, flagged_for_download=True, language=lang_code) for id in lang_youtube_ids])
+    queue = VideoQueue()
 
-    # OK to update all, since we're not setting all props above.
-    # One query per chunk
-    for chunk in break_into_chunks(youtube_ids):
-        video_files_needing_model_update = VideoFile.objects.filter(download_in_progress=False, youtube_id__in=chunk).exclude(percent_complete=100)
-        video_files_needing_model_update.update(percent_complete=0, cancel_download=False, flagged_for_download=True)
+    queue.add_files(youtube_ids, language=request.language)
 
-    force_job("videodownload", _("Download Videos"), locale=request.language)
-
-    return JsonResponseMessageSuccess(_("Launched video download process successfully."))
-
-
-@require_admin
-@api_handle_error_with_json
-def retry_video_download(request):
-    """
-    Clear any video still accidentally marked as in-progress, and restart the download job.
-    """
-    VideoFile.objects.filter(download_in_progress=True).update(download_in_progress=False, percent_complete=0)
     force_job("videodownload", _("Download Videos"), locale=request.language)
 
     return JsonResponseMessageSuccess(_("Launched video download process successfully."))
@@ -173,17 +143,19 @@ def delete_videos(request):
     """
     API endpoint for deleting videos.
     """
-    youtube_ids = simplejson.loads(request.body or "{}").get("youtube_ids", [])
+
+    paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
+
+    youtube_ids = get_download_youtube_ids(paths)
+
     num_deleted = 0
 
     for id in youtube_ids:
         # Delete the file on disk
-        delete_downloaded_files(id)
+        if delete_downloaded_files(id):
+            num_deleted += 1
 
-        # Delete the file in the database
-        found_videos = VideoFile.objects.filter(youtube_id=id)
-        num_deleted += found_videos.count()
-        found_videos.delete()
+    annotate_content_models_by_youtube_id(youtube_ids=youtube_ids.keys(), language=request.language)
 
     return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 
@@ -192,15 +164,22 @@ def delete_videos(request):
 @api_handle_error_with_json
 def cancel_video_download(request):
 
-    # clear all download in progress flags, to make sure new downloads will go through
-    VideoFile.objects.all().update(download_in_progress=False)
-
-    # unflag all video downloads
-    VideoFile.objects.filter(flagged_for_download=True).update(cancel_download=True, flagged_for_download=False, download_in_progress=False)
-
     force_job("videodownload", stop=True, locale=request.language)
 
+    queue = VideoQueue()
+
+    queue.clear()
+
     return JsonResponseMessageSuccess(_("Cancelled video download process successfully."))
+
+
+@require_admin
+@api_handle_error_with_json
+def video_scan(request):
+
+    force_job("videoscan", _("Scan for Videos"), language=request.language)
+
+    return JsonResponseMessageSuccess(_("Scanning for videos started."))
 
 
 @api_handle_error_with_json
@@ -235,99 +214,14 @@ def delete_language_pack(request):
     return JsonResponse({"success": _("Successfully deleted language pack for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)}})
 
 
-def annotate_topic_tree(node, level=0, statusdict=None, remote_sizes=None, lang_code=None):
-    # Not needed when on an api request (since translation.activate is already called),
-    #   but just to do things right / in an encapsulated way...
-    # Though to be honest, this isn't quite right; we should be DE-activating translation
-    #   at the end.  But with so many function exit-points... just a nightmare.
-
-    if not lang_code:
-        lang_code = settings.LANGUAGE_CODE
-
-    if level == 0:
-        translation.activate(lang_code)
-
-    if not statusdict:
-        statusdict = {}
-
-    if node["kind"] == "Topic":
-        if "Video" not in node["contains"]:
-            return None
-
-        children = []
-        unstarted = True
-        complete = True
-
-        for child_node in node["children"]:
-            child = annotate_topic_tree(child_node, level=level + 1, statusdict=statusdict, lang_code=lang_code)
-            if not child:
-                continue
-            elif child["extraClasses"] == "unstarted":
-                complete = False
-            elif child["extraClasses"] == "partial":
-                complete = False
-                unstarted = False
-            elif child["extraClasses"] == "complete":
-                unstarted = False
-            children.append(child)
-
-        if not children:
-            # All children were eliminated; so eliminate self.
-            return None
-
-        return {
-            "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
-            "folder": True,
-            "key": node["id"],
-            "children": children,
-            "extraClasses": complete and "complete" or unstarted and "unstarted" or "partial",
-            "expanded": level < 1,
-        }
-
-    elif node["kind"] == "Video":
-        video_id = node.get("youtube_id", node.get("id"))
-        youtube_id = get_youtube_id(video_id, lang_code=lang_code)
-
-        if not youtube_id:
-            # This video doesn't exist in this language, so remove from the topic tree.
-            return None
-
-        # statusdict contains an item for each video registered in the database
-        # will be {} (empty dict) if there are no videos downloaded yet
-        percent = statusdict.get(youtube_id, 0)
-        vid_size = None
-        status = None
-
-        if not percent:
-            status = "unstarted"
-            vid_size = get_remote_video_size(youtube_id) / float(2 ** 20)  # express in MB
-        elif percent == 100:
-            status = "complete"
-            vid_size = get_local_video_size(youtube_id, 0) / float(2 ** 20)  # express in MB
-        else:
-            status = "partial"
-
-        return {
-            "title": _(node["title"]),
-            "tooltip": re.sub(r'<[^>]*?>', '', _(node.get("description")) or ""),
-            "key": youtube_id,
-            "extraClasses": status,
-            "size": vid_size,
-        }
-
-    return None
-
-
 @require_admin
 @api_handle_error_with_json
-def get_annotated_topic_tree(request, lang_code=None):
-    call_command("videoscan")  # Could potentially be very slow, blocking request... but at least it's via an API request!
+def get_update_topic_tree(request, lang_code=None):
 
+    parent = request.GET.get("parent")
     lang_code = lang_code or request.language      # Get annotations for the current language.
-    statusdict = dict(VideoFile.objects.values_list("youtube_id", "percent_complete"))
 
-    return JsonResponse(annotate_topic_tree(softload_json(TOPICS_FILEPATHS.get(CHANNEL), logger=logging.debug, raises=False), statusdict=statusdict, lang_code=lang_code))
+    return JsonResponse(get_topic_update_nodes(parent=parent, language=lang_code))
 
 
 """

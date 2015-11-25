@@ -126,13 +126,8 @@ def write_assessment_item_version_to_zip(zf, versionnumber=version.SHORTVERSION)
 
 def write_assessment_item_db_to_zip(zf, assessment_items):
     temp_json_file = os.path.join(tempfile.gettempdir(), "assessmentitems.json")
-    temp_database_file = os.path.join(tempfile.gettempdir(), "assessmentitems.sqlite")
     with open(temp_json_file, "w") as f:
         json.dump(assessment_items, f)
-    call_command("init_assessment_items", assessment_items_filepath=temp_json_file, database_path=temp_database_file, bulk_create=True)
-    with open(temp_database_file) as f:
-        db_data = f.read()
-    zf.writestr("assessmentitems.sqlite", db_data)
 
 
 def copy_local_files_to_zip(zf, source_paths):

@@ -21,7 +21,7 @@ from selenium import webdriver
 from optparse import make_option
 
 from kalite.testing.base import DjangoBehaveTestCase
-from kalite.topic_tools.content_models import database_exists
+from kalite.topic_tools.base import database_exists
 
 
 def get_app_dir(app_module):
@@ -125,9 +125,6 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         ensure_dir(os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js"))
         shutil.copy2(os.path.join(settings.STATIC_ROOT, "django_js_reverse", "js", "reverse.js"),
             os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js", "reverse.js"))
-
-        if os.environ.get("TRAVIS"):
-            settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
 
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 

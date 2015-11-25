@@ -13,10 +13,6 @@
     <script type="text/javascript" src="{% static 'js/updates/bundles/bundle_update_videos.js' %}"></script>
 {% endblock headjs %}
 
-{% block ga_setmetrics %}
-    ga('set', 'metric1', {{ video_count }});
-{% endblock ga_setmetrics %}
-
 {% block content %}
 
 {% block subnavbar %}{{block.super}}{% endblock subnavbar %}
@@ -41,19 +37,22 @@
                 </select>
             </h4>
 
-            <h5 id="download-legend-unselected" class="button_text">
-                {% trans "Please select videos to download (below)" %}
-            </h5>
+            <div class="btn-group-vertical" role="group">
 
-            <button id="download-videos" type="button" class="enable-when-server-online btn btn-success">
-                <span id="download-videos-text" class="new-video-count"></span>
-            </button>
+                <button id="download-videos" type="button" class="enable-when-server-online btn btn-success" aria-label="{% trans "Download Videos" %}" disabled="disabled">
+                    <span id="download-videos-text" class="new-video-count">{% trans "Please select videos to download (below)" %}</span>
+                </button>
 
-            <button id="delete-videos" type="button">
-                <div id="modal_dialog">
-                </div>
-                <span id="delete-videos-text" class="old-video-count"></span>
-            </button>
+                <button id="delete-videos" class="btn btn-danger" type="button" aria-label="{% trans "Delete Videos" %}" disabled="disabled">
+                    <div id="modal_dialog">
+                    </div>
+                    <span id="delete-videos-text" class="old-video-count">{% trans "Please select videos to delete (below)" %}</span>
+                </button>
+                <button id="scan-videos" type="button" class="btn btn-info" aria-label="{% trans "Scan for Videos" %}">
+                    <span id="scan-videos-text">{% trans "Scan content folder for videos" %}</span>
+                </button>
+
+            </div>
         </div>
 
 
@@ -76,7 +75,6 @@
         <!-- note: id must match the "updates" app process name -->
         <div id="videodownload-progressbar">
             {% include "updates/progress-bar.html" %}
-            <button id="retry-video-download" type="button">{% trans "Video download error... click to retry" %}</button>
         </div>
 
         <div>

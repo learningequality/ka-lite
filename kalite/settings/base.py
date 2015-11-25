@@ -250,21 +250,6 @@ STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
 
 DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
 
-# This database is located in the content root because then it can be copied
-# together with the other media files located there.
-# Users changing CONTENT_ROOT have to change DATABASES['assessment_items']['NAME']
-# to match
-__assessment_items_database_path = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
-
-# Are assessment items distributed in the system-wide data directory?
-# TODO: This is hard-coded as we do not expect users setting their own CONTENT_ROOT
-# to deviate from the system wide location
-ASSESSMENT_ITEMS_SYSTEM_WIDE = os.path.isfile(os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite'))
-
-if ASSESSMENT_ITEMS_SYSTEM_WIDE:
-    __assessment_items_database_path = os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite')
-
-
 DATABASES = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
@@ -272,16 +257,8 @@ DATABASES = getattr(local_settings, "DATABASES", {
         "OPTIONS": {
             "timeout": 60,
         },
-    },
-    "assessment_items": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": __assessment_items_database_path,
-        "OPTIONS": {
-        },
     }
 })
-
-DATABASE_ROUTERS = ["kalite.router.TopicToolsRouter", ]
 
 INTERNAL_IPS = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])

@@ -451,7 +451,7 @@ After registering your device:
     :focus: li.video
     :class: screenshot
 
-3. View subtopics by clicking on the '+' symbol to the left of a subject of your choice. You can close them by clicking on the '-' symbol.
+3. View subtopics by clicking on the subject of your choice. You can close them by clicking on the subject again.
 4. Mark the content you wish to download by clicking the checkbox to the left of the content name.
 5. Click the green "Download" button in the top left box of the page. The button should also show you the total number of videos you have selected to download, as well as the total size of the content.
 6. Once the download is completed, video content will be ready for Learners to watch!
@@ -477,6 +477,21 @@ On Windows, navigate to something like ``C:\Documents and Settings\<username>\.k
 
 .. note:: The ``.kalite`` folder is hidden on some systems, so if you are in a
           file browser, you have to enable showing hidden files and folders.
+
+When you have copied in the files, to register them with KA Lite, follow the following steps.
+
+1. Click the "Manage" tab at the top of the page.
+2. Click on the "Videos" tab.
+
+.. screenshot::
+    :user-role: admin
+    :url: /management/zone/
+    :navigation-steps:
+    :focus: li.video
+    :class: screenshot
+
+3. Click the blue "Scan content folder for videos" button in the top left box of the page.
+4. Once the scan is completed, video content will be ready for Learners to watch!
 
 
 Adding assessment items (exercises)
