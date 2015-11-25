@@ -15,7 +15,6 @@ from kalite.facility.utils import get_accessible_objects_from_logged_in_user
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 from kalite.main.models import AttemptLog, ExerciseLog, ContentRating
 from kalite.shared.api_auth.auth import ObjectAdminAuthorization
-from kalite.store.models import StoreTransactionLog, StoreItem
 from kalite.student_testing.models import TestLog
 from kalite.topic_tools.content_models import get_content_item
 
@@ -317,47 +316,6 @@ class DeviceLogResource(ParentFacilityUserResource):
             last_sync = "Never" if not all_sessions else all_sessions.order_by("-timestamp")[0].timestamp
             bundle.data["last_sync"] = last_sync
             bundle.data["total_sync_sessions"] = len(all_sessions)
-
-        return to_be_serialized
-
-
-class StoreTransactionLogResource(ParentFacilityUserResource):
-
-    _facility_users = None
-
-    user = fields.ForeignKey(FacilityUserResource, 'user', full=True)
-
-    class Meta:
-        queryset = StoreTransactionLog.objects.all()
-        resource_name = 'store_transaction_log_csv'
-        authorization = ObjectAdminAuthorization()
-        excludes = ['signed_version', 'counter', 'signature', 'deleted', 'reversible']
-        serializer = CSVSerializer()
-        limit = 0
-        max_limit = 0
-
-    def obj_get_list(self, bundle, **kwargs):
-        self._facility_users = self._get_facility_users(bundle)
-        store_logs = StoreTransactionLog.objects.filter(user__id__in=self._facility_users.keys()).exclude(context_type="unit_points_reset")
-        return super(StoreTransactionLogResource, self).authorized_read_list(store_logs, bundle)
-
-    def alter_list_data_to_serialize(self, request, to_be_serialized):
-        """Add username, user ID, facility name, and facility ID to responses"""
-        store_items = StoreItem.all()
-        for bundle in to_be_serialized["objects"]:
-            user_id = bundle.data["user"].data["id"]
-            user = self._facility_users.get(user_id)
-            bundle.data["user_id"] = user_id
-            bundle.data["person_name"] = user.get_name()
-            bundle.data["username"] = user.username
-            bundle.data["facility_name"] = user.facility.name
-            bundle.data["facility_id"] = user.facility.id
-            bundle.data["is_teacher"] = user.is_teacher
-            item_id = bundle.data["item"].strip("/").split("/")[-1]
-            bundle.data["item"] = item_id
-            item = store_items.get(item_id)
-            bundle.data["item_name"] = item.title if item else None
-            bundle.data.pop("user")
 
         return to_be_serialized
 
