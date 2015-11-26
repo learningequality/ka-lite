@@ -347,6 +347,8 @@ def get_content_parents(ids=None, **kwargs):
         ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids))
         return parent_values
 
+
+
 @parse_data
 @set_database
 def get_leafed_topics(kinds=None, db=None, **kwargs):
@@ -355,12 +357,12 @@ def get_leafed_topics(kinds=None, db=None, **kwargs):
     """
     if not kinds:
         kinds = ["Video", "Audio", "Exercise", "Document"]
-    with Using(db, [Item]):
-        Parent = Item.alias()
-        parent_values = Item.select(
-            Parent
-            ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.kind.in_(kinds)).distinct()
-        return parent_values 
+
+    Parent = Item.alias()
+    parent_values = Item.select(
+        Parent
+        ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.kind.in_(kinds)).distinct()
+    return parent_values
 
 
 @parse_data

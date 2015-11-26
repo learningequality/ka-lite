@@ -2,6 +2,8 @@ from math import ceil
 import datetime
 import json
 
+import pdb
+
 from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 from django.db.models import Q, Sum, Avg

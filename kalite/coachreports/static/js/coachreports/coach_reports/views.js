@@ -139,7 +139,7 @@ var CoachSummaryView = BaseView.extend({
                 { label: gettext("Hours spent on content"), count: Math.round((data_sub * 100)/data_total) },
                 { label: gettext("Other activites (exercises, etc.)"), count: Math.round(((data_total - data_sub) * 100)/data_total) }
             ];
-            
+
             //adjusting the graph's size based on target_elem's sizing
             var width = targetElemBox.clientWidth;
             var height = targetElemBox.clientHeight;
