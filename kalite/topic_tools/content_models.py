@@ -360,7 +360,7 @@ def get_leafed_topics(kinds=None, db=None, **kwargs):
         parent_values = Item.select(
             Parent
             ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.kind.in_(kinds)).distinct()
-        return parent_values
+        return parent_values 
 
 
 @parse_data

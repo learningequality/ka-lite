@@ -183,7 +183,7 @@ def aggregate_learner_logs(request):
             output_dict["total_in_progress"] += log_objects.filter(complete=False, struggling=False).count()
             output_dict["exercise_attempts"] = AttemptLog.objects.filter(user__in=learners,
                 timestamp__gte=start_date,
-                timestamp__lte=end_date).count()
+                timestamp__lte=end_date, **obj_ids).count()
             if log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"] is not None:
                 output_dict["exercise_mastery"] = round(log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"])
         output_logs.extend(log_objects)
