@@ -6,7 +6,7 @@ import re
 import os
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from collections_local_copy import OrderedDict
+from fle_utils.collections_local_copy import OrderedDict
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
