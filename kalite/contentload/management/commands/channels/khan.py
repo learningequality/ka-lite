@@ -5,7 +5,7 @@ import requests
 import threading
 import time
 
-from collections_local_copy import OrderedDict
+from fle_utils.collections_local_copy import OrderedDict
 from fle_utils.general import ensure_dir
 from functools import partial
 from khan_api_python.api_models import Khan, APIError

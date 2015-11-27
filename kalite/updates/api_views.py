@@ -7,7 +7,7 @@ import os
 import re
 import math
 from annoying.functions import get_object_or_None
-from collections_local_copy import defaultdict
+from fle_utils.collections_local_copy import defaultdict
 
 from django.conf import settings; logging = settings.LOG
 from django.core.management import call_command
