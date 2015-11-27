@@ -206,7 +206,6 @@ class PackagesTests(DependenciesTests):
         "announcements": "1.0.2",
         "annoying": NO_VERSION,
         "async": NO_VERSION,
-        "cherrypy": "3.2.2",
         "contextlib2": NO_VERSION,
         "dateutil": "1.5",
         "django": DependenciesTests.DJANGO_VERSION_STR,
