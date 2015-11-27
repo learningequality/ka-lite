@@ -5,15 +5,16 @@ import youtube_dl
 import time
 from functools import partial
 from optparse import make_option
-from youtube_dl.utils import DownloadError
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 from django.utils.translation import ugettext as _
 
 from .classes import UpdatesDynamicCommand
-from ...videos import download_video, DownloadCancelled, URLNotFound
+from ...videos import download_video
 from ...download_track import VideoQueue
 from fle_utils import set_process_priority
+from fle_utils.videos import DownloadCancelled, URLNotFound
 from fle_utils.chronograph.management.croncommand import CronCommand
 from kalite.topic_tools.content_models import get_video_from_youtube_id, annotate_content_models_by_youtube_id
 
@@ -184,14 +185,6 @@ class Command(UpdatesDynamicCommand, CronCommand):
                     #   and allow the loop to try other videos.
                     msg = _("Error in downloading %(youtube_id)s: %(error_msg)s") % {"youtube_id": video.get("youtube_id"), "error_msg": unicode(e)}
                     self.stderr.write("%s\n" % msg)
-
-                    # If a connection error, we should retry.
-                    if isinstance(e, DownloadError):
-                        connection_error = "[Errno 8]" in e.args[0]
-                    elif isinstance(e, IOError) and hasattr(e, "strerror"):
-                        connection_error = e.strerror[0] == 8
-                    else:
-                        connection_error = False
 
                     # Rather than getting stuck on one video, continue to the next video.
                     self.update_stage(stage_status="error", notes=_("%(error_msg)s; continuing to next video.") % {"error_msg": msg})
