@@ -5,3 +5,4 @@ pep8
 sphinx
 django_extensions
 #cli2man
+xlrd # used for management command convert_xls_to_items
