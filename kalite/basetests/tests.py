@@ -216,7 +216,6 @@ class PackagesTests(DependenciesTests):
         "gitdb": "0.5.4",
         "httplib2": "0.8",
         "ifcfg": NO_VERSION,
-        "importlib": NO_VERSION,
         "iso8601": NO_VERSION,
         "kaa": "0.99.2dev",
         "khan_api_python": NO_VERSION,
