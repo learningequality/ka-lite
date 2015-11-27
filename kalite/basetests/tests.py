@@ -232,7 +232,6 @@ class PackagesTests(DependenciesTests):
         "mimeparse": "0.1.4",
         "oauth": "1.0",
         "pbkdf2": "1.3",
-        "polib": "1.0.3",
         "six": "1.8.0",
     }
     INSTALLED_APPS = getattr(settings, "INSTALLED_APPS", [])
