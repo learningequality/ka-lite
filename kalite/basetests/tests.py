@@ -228,7 +228,6 @@ class PackagesTests(DependenciesTests):
         "tastypie": "0.11.0",
         "youtube_dl": "2014.12.10.3",
         "collections_local_copy": NO_VERSION,
-        "memory_profiler": "0.26",
         "mimeparse": "0.1.4",
         "oauth": "1.0",
         "pbkdf2": "1.3",
