@@ -6,7 +6,7 @@ that. Make sure you have internet!
 
 """
 
-import accenting
+from .. import accenting
 import json
 import os
 import polib
