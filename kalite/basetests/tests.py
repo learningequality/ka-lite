@@ -219,7 +219,6 @@ class PackagesTests(DependenciesTests):
         "importlib": NO_VERSION,
         "iso8601": NO_VERSION,
         "kaa": "0.99.2dev",
-        "khan_api_python": NO_VERSION,
         "khanacademy": NO_VERSION,
         "pyasn1": "0.1.4",
         "requests": "0.14.2",
