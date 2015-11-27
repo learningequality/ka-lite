@@ -224,7 +224,6 @@ class PackagesTests(DependenciesTests):
         "pyasn1": "0.1.4",
         "requests": "0.14.2",
         "rsa": "3.1.1",
-        "smmap": "0.8.2",
         "tastypie": "0.11.0",
         "youtube_dl": "2014.12.10.3",
         "collections_local_copy": NO_VERSION,
