@@ -35,8 +35,7 @@
                     facility_id: "{{ facility_id }}", 
                     // b/c we hardcode in template, initialize this for state model
                     resource_id: "facility_user",  
-                    is_central: {{ is_central|lower }},
-                    is_nalanda: ds.ab_testing.is_config_package_nalanda
+                    is_central: {{ is_central|lower }}
                 }),
                 org_id: "{{ org_id }}"
             });
