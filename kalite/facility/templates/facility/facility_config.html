@@ -2,6 +2,10 @@
 {% load i18n %}
 {% load staticfiles %}
 
+{% block headcss %}
+    <link rel="stylesheet" href="{% static 'css/facility/config_form.css' %}">
+{% endblock headcss %}
+
 {% block headjs %}
     <script src="{% static 'js/facility/bundles/bundle_facility.js' %}"> </script>
 {% endblock headjs %}

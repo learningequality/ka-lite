@@ -31,14 +31,6 @@ var CreateDeviceAndUserView = BaseView.extend({
         this.model.device_desc = "";
         this.model.device_name = "";
 **/
-        // listen to user form field changes. 
-        $("#username, #password, #password_confirm").change(function() {
-            if ($("#username, #password, #password_confirm").val().length > 1) {
-                // display device field?
-            }
-        });
-
-        //this.render();
     },
 
     render: function(){
@@ -51,23 +43,24 @@ var CreateDeviceAndUserView = BaseView.extend({
                                       'name="csrfmiddlewaretoken" ' + 
                                       'value="' + this.csrf_token + '">');
     },
-/**
-    update: function() {
-        var form = $(this.el).find('#create-user-form');
-        console.log("this is form:");
-        console.log(form);
 
-        this.model.set({
-            this.model.username = form.find('#username').val();
-            password = form.find('#passowrd').val();
-            //device_name = form.find('#username').val();
-            //device_desc = form.find('#username').val();
-        });
+    events: {
+        'change .user': 'on_user_attributes_change',
     },
-**/
+
     on_user_attributes_change: function() {
         console.log("CreateDeviceAndUserView: on_user_attributes_change");
- 
+
+        var username = $('input[name="username"]').val().length;
+        var pw = $('input[name="password"]').val().length;
+        var pw_confirm = $('input[name="password_confirm"]').val().length;
+
+        // display device configuration form inputs if superuser fields filled
+        if (username > 0 && pw > 0 && pw_confirm > 0) {
+            $("#device-config").show();
+        }
+        //do we even need to set attributes for this model VV ?
+        /**
         var form = $(this.el).find('#create-user-form');
         console.log("this is form:");
         console.log(form);
@@ -78,7 +71,7 @@ var CreateDeviceAndUserView = BaseView.extend({
             password: form.find('#password').val(),
             //device_name = form.find('#username').val();
             //device_desc = form.find('#username').val();
-        });
+        }); **/
     },
 
     // pressing the "next" button should trigger on_complete
@@ -104,11 +97,10 @@ var ConfigSettingsView = BaseView.extend({
             this.updateVersionView.render();
         }
 
-        this.createDeviceAndUserView = this.add_subview(CreateDeviceAndUserView, 
-                                                        options);
+        this.createDeviceAndUserView = this.add_subview(CreateDeviceAndUserView, options);
         this.dlAssessProgView = this.add_subview(DownloadAssessmentProgressView);
         
-//        this.listenTo(this.createDeviceAndUserView, 'request', this.tester);
+        // add listener for subview when complete
         this.render();
     },
 
