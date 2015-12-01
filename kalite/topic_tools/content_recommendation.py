@@ -6,6 +6,7 @@ Three main functions:
     - get_explore_recommendations(user)
 '''
 import datetime
+import itertools
 import random
 import collections
 
@@ -108,6 +109,7 @@ def get_next_recommendations(user, request):
     #final recommendations are a combination of struggling, group filtering, and topic_tree filtering
     return final
 
+
 def get_group_recommendations(user):
     """Returns a list of exercises immediately tackled by other individuals in the same group."""
 
@@ -123,12 +125,11 @@ def get_group_recommendations(user):
             .extra(select={'null_complete': "completion_timestamp is null"},
                 order_by=["-null_complete", "-completion_timestamp"])
     
-        exercise_counts = collections.defaultdict(lambda :0)
+        exercise_counts = collections.defaultdict(lambda: 0)
 
         for user in user_list:
-            user_logs = user_exercises.filter(user=user)
-            for i, log in enumerate(user_logs[1:]):
-                prev_log = user_logs[i]
+            logs = list(user_exercises.filter(user=user))
+            for log, prev_log in itertools.izip(logs[1:], logs):
                 if log.exercise_id in recent_exercises:
                     exercise_counts[prev_log.exercise_id] += 1
 
@@ -157,13 +158,18 @@ def get_struggling_exercises(user):
 
     return struggles
 
-def get_exercise_prereqs(exercises):
-    """Return a list of prequisites (if applicable) for each specified exercise."""
+def get_exercise_prereqs(exercise_ids):
+    """
+    Return a list of prequisites (if applicable) for each specified exercise.
 
+    :param exercise_ids: A list of exercise ids.
+    :return: A list of prerequisite exercises (as dicts), if any are known.
+    """
     ex_cache = get_exercise_cache()
     prereqs = []
-    for exercise in exercises:
-        prereqs += ex_cache[exercise]['prerequisites']
+    for exercise_id in exercise_ids:
+        exercise = ex_cache.get(exercise_id)
+        prereqs += exercise['prerequisites'] if exercise else []
 
     return prereqs
 
@@ -199,16 +205,13 @@ def get_explore_recommendations(user, request):
 
         related_subtopics = data[subtopic_id]['related_subtopics'][2:7] #get recommendations based on this, can tweak numbers!
 
-        recommended_topic = next(topic for topic in related_subtopics if not topic in added and not topic in recent_subtopics)
-
-        if recommended_topic:
-
-            final.append({
-                'suggested_topic': get_topic_data(request, recommended_topic),
-                'interest_topic': get_topic_data(request, subtopic_id),
-            })
-
-            added.append(recommended_topic)
+        for topic in related_subtopics:
+            if topic not in added and topic not in recent_subtopics:
+                final.append({
+                    'suggested_topic': get_topic_data(request, topic),
+                    'interest_topic': get_topic_data(request, subtopic_id),
+                })
+                added.append(topic)
 
     return final
 

@@ -1,4 +1,18 @@
-0.15:
+0.15.1:
+  release_date: "2015/12/01"
+  git_commit: "746d0d"
+  new_features:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
+  bugs_fixed:
+    all:
+      - Fix some i18n issues (#4673)
+      - Fix some content recommendation bugs (#4675)
+
+0.15.0:
   release_date:
   git_commit: ""
   new_features:

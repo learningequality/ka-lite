@@ -167,7 +167,7 @@ def get_node_cache(node_type=None, force=False, language=None):
 
     global NODE_CACHE
     if NODE_CACHE is None or force:
-        NODE_CACHE = generate_node_cache()
+        NODE_CACHE = generate_node_cache(language=language)
     if node_type is None:
         return NODE_CACHE
     else:
