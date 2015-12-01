@@ -5,16 +5,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from kalite.testing.behave_helpers import *
+from kalite.topic_tools.content_models import update_item
 
 TIMEOUT = 3
 
 @given("I open some unavailable content")
 def step_impl(context):
+    update_item(path="khan/math/early-math/cc-early-math-counting-topic/cc-early-math-counting/counting-with-small-numbers/", update={"available": False})
     context.browser.get(build_url(context, reverse("learn") + "khan/math/early-math/cc-early-math-counting-topic/cc-early-math-counting/counting-with-small-numbers/"))
 
 @given("I open some available content")
 def step_impl(context):
-	# Hard code to visit a Khan Exercise page, which will always be available.
+    update_item(path="khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/", update={"available": True})
     context.browser.get(build_url(context, reverse("learn") + "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/"))
 
 @then("I should see an alert")

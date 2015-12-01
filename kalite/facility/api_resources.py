@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from kalite import version
-from kalite.i18n import lcode_to_django_lang
+from kalite.i18n.base import lcode_to_django_lang
 from kalite.distributed.api_views import compute_total_points, get_messages_for_api_calls
 from kalite.facility.models import AssessmentItemsDownloadProgress
 from kalite.main.models import UserLog
