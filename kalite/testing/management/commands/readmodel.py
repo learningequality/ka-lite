@@ -28,7 +28,7 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        if (len(args) == 0):
+        if not args:
             raise CommandError("Please specify model class name.")
 
         model_path = args[0]

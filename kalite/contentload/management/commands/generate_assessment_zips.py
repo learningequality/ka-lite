@@ -346,7 +346,7 @@ def _get_content_by_readable_id(readable_id):
     try:
         return CONTENT_BY_READABLE_ID[readable_id]
     except KeyError:
-        return CONTENT_BY_READABLE_ID.get(re.sub("\-+", "-", readable_id).lower(), None)
+        return CONTENT_BY_READABLE_ID.get(re.sub("\-+", "-", readable_id).lower())
 
 
 def _list_all_exercises_with_bad_links():

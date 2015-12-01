@@ -385,7 +385,7 @@ class ManageThread(Thread):
         utility.execute()
 
 
-def manage(command, args=[], as_thread=False):
+def manage(command, args=None, as_thread=False):
     """
     Run a django command on the kalite project
 
@@ -393,6 +393,9 @@ def manage(command, args=[], as_thread=False):
     :param args: List of options to parse to the django management command
     :param as_thread: Runs command in thread and returns immediately
     """
+
+    if not args:
+        args = []
 
     args = update_default_args(["--traceback"], args)
 

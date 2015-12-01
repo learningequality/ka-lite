@@ -253,31 +253,6 @@ class PackagesTests(DependenciesTests):
         else:
             self._pass("\n...Result: all apps can be imported...")
 
-    def test_required_packages_and_versions(self):
-        # Don't do this, we are cleaning up dependency management and will
-        # not need to test things this way anymore
-        return
-        try:
-            self._log("Testing required Python packages and their versions...")
-            fail_count = 0
-
-            for package, version in sorted(self.PACKAGES.iteritems()):
-                self._log("\n...importing %s..." % package)
-                p = __import__(package)
-                imported_version = self.get_version(p)
-                self._log("need version %s, found %s..." % (version, imported_version,))
-                if self.check_versions_are_equal(version, imported_version):
-                    self._log(" %s" % self.OK)
-                else:
-                    fail_count += 1
-                    self._fail(raise_fail=False, end_chars="")
-            if fail_count > 0:
-                self._fail("\n...Result: %s required Python package/s failed import..." % fail_count)
-            else:
-                self._pass("\n...Result: all required Python packages can be imported...")
-        except ImportError as exc:
-            self._fail("Exception: %s" % exc)
-
     def test_psutil(self):
         """
         From `fle_utils.set_process_priority.py`:

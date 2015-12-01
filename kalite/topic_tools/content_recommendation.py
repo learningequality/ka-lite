@@ -391,7 +391,7 @@ def get_recommendation_tree(data):
         for rel_subtopic in related_subtopics:
             
             #make sure related is not an empty string (shouldn't happen but to be safe)
-            if len(rel_subtopic) > 0:
+            if rel_subtopic:
                 exercises = get_topic_contents(topic_id=rel_subtopic, kinds=["Exercise"])
 
                 for ex in exercises:

@@ -88,7 +88,8 @@ if package_selected("UserRestricted"):
 try:
     DEFAULT_ENCODING = DEFAULT_ENCODING
 except NameError:
-    from django.conf.settings import DEFAULT_ENCODING  # @UnresolvedImport
+    from django.conf import settings
+    DEFAULT_ENCODING = settings.DEFAULT_ENCODING
 
 if sys.getdefaultencoding() != DEFAULT_ENCODING:
     reload(sys)

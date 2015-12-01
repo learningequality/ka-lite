@@ -329,14 +329,12 @@ INSTALLED_APPS = [
     'kalite.updates',
     'kalite.facility',
     'kalite.student_testing',
-    'kalite.store',
     'kalite.topic_tools',
     'kalite.contentload',
     'kalite.dynamic_assets',
     'kalite.remoteadmin',
     'kalite.inline',
     'kalite.i18n',
-    'kalite.ab_testing',
     'kalite.control_panel',
     'dbbackup',
 ]
@@ -364,7 +362,6 @@ MIDDLEWARE_CLASSES = [
     'securesync.middleware.DBCheck',
     'django.middleware.common.CommonMiddleware',
     'kalite.distributed.middleware.LockdownCheck',
-    'kalite.student_testing.middleware.ExamModeCheck',
     'django.middleware.gzip.GZipMiddleware',
     'django_snippets.session_timeout_middleware.SessionIdleTimeout'
 ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
@@ -488,7 +485,6 @@ from securesync.settings import *
 from fle_utils.chronograph.settings import *
 from kalite.facility.settings import *
 from kalite.main.settings import *
-from kalite.student_testing.settings import *
 
 # Import from applications with problematic __init__.py files
 from kalite.legacy.i18n_settings import *

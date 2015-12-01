@@ -101,8 +101,8 @@ for key, value in file_kind_dictionary.items():
 
 file_meta_data_map = {
     "duration": lambda x: getattr(x, "length", None),
-    "video_codec": lambda x: getattr(x, "video", [{}])[0].get("codec", None),
-    "audio_codec": lambda x: getattr(x, "audio", [{}])[0].get("codec", None),
+    "video_codec": lambda x: getattr(x, "video", [{}])[0].get("codec"),
+    "audio_codec": lambda x: getattr(x, "audio", [{}])[0].get("codec"),
     "title": lambda x: getattr(x, "title", None),
     "language": lambda x: getattr(x, "langcode", None),
     "keywords": lambda x: getattr(x, "keywords", None),
@@ -169,7 +169,7 @@ def construct_node(location, parent_path, node_cache, channel):
 
     else:
         extension = base_name.split(".")[-1]
-        kind = file_kind_map.get(extension, None)
+        kind = file_kind_map.get(extension)
 
         if not kind:
             return None
@@ -187,7 +187,7 @@ def construct_node(location, parent_path, node_cache, channel):
                 for meta_key, data_fn in file_meta_data_map.items():
                     if data_fn(info):
                         data_meta[meta_key] = data_fn(info)
-                if data_meta.get("codec", None):
+                if data_meta.get("codec"):
                     data_meta["{kind}_codec".format(kind=kind.lower())] = data_meta["codec"]
                     del data_meta["codec"]
                 data_meta.update(meta_data)

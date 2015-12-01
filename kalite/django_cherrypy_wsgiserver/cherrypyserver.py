@@ -171,7 +171,7 @@ def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=Fal
         # stop_server(pidfile)
 
         from django.utils.daemonize import become_daemon
-        kalite_home = os.environ.get("KALITE_HOME", None)
+        kalite_home = os.environ.get("KALITE_HOME")
         logfile = os.path.join(kalite_home, "kalite.log") if (kalite_home and os.environ.get("NAIVE_LOGGING", False)) else None
         if logfile:
             become_daemon(out_log=logfile, err_log=logfile)

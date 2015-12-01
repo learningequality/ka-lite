@@ -69,9 +69,9 @@ def learner_logs(request):
     # Look back a week by default
     time_window = request.GET.get("time_window", 7)
 
-    start_date = request.GET.get("start_date", None)
+    start_date = request.GET.get("start_date")
 
-    end_date = request.GET.get("end_date", None)
+    end_date = request.GET.get("end_date")
 
     topic_ids = request.GET.getlist("topic_id", [])
 
@@ -131,9 +131,9 @@ def aggregate_learner_logs(request):
     # Look back a week by default
     time_window = request.GET.get("time_window", 7)
 
-    start_date = request.GET.get("start_date", None)
+    start_date = request.GET.get("start_date")
 
-    end_date = request.GET.get("end_date", None)
+    end_date = request.GET.get("end_date")
 
     topic_ids = request.GET.getlist("topic_id", [])
 

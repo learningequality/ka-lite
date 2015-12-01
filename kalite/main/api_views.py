@@ -70,7 +70,7 @@ def content_item(request, channel, content_id):
 def content_recommender(request):
     """Populate response with recommendation(s)"""
 
-    user_id = request.GET.get('user', None)
+    user_id = request.GET.get('user')
     user = request.session.get('facility_user')
 
     if not user:
@@ -79,9 +79,9 @@ def content_recommender(request):
         else:
             return JsonResponseMessageError("You are not authorized to view these recommendations.", status=401)
 
-    resume = request.GET.get('resume', None)
-    next = request.GET.get('next', None)
-    explore = request.GET.get('explore', None)
+    resume = request.GET.get('resume')
+    next = request.GET.get('next')
+    explore = request.GET.get('explore')
 
     def set_bool_flag(flag_name, rec_dict):
         rec_dict[flag_name] = True

@@ -119,7 +119,7 @@ class Command(BaseCommand):
     }
 
     def handle(self, *args, **options):
-        if len(args) < 1:
+        if not args:
             raise CommandError("Must specify the benchmark type.")
 
         print "Running %s %s times in %s clients" % (args[0], options["niters"], options["nclients"])
