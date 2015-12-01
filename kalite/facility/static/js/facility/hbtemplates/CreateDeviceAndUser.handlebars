@@ -1,0 +1,20 @@
+
+
+
+
+<div id="create-user">
+    <form id="create-user-form" method="post" action="/facility/config/" class="basic-form">
+        <h4>Choose a username and password for the admin account.</h4>
+
+        Username:<input type="text" name="username">
+        Password:<input type="password" name="password">
+        Re-type Password:<input type="password" name="retype_password"><BR>
+
+        <h4>Enter a hostname for this server. If left blank, it will default to {{ default_hostname }}</h4>
+        Hostname: <input type="text" name="hostname"><br>
+
+        <h4>Enter a one-line description for this server (optional). </h4>
+        Description: <input type="text" name="description"><br>
+        <button type="submit" value="Submit">Next</button>
+    </form>
+</div>

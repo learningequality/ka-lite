@@ -12,7 +12,10 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.template.response import TemplateResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import Facility
 
@@ -21,6 +24,7 @@ from fle_utils.general import get_host_name
 
 FACILITY_CACHE_STALE = False
 
+@ensure_csrf_cookie
 @render_to("facility/facility_config.html")
 def config_form(request, database):
     """
@@ -29,7 +33,7 @@ def config_form(request, database):
 
     Depending on state of database, renders different form questions.
     """
-    return database 
+    return database
 
 def is_configured():
     """
@@ -138,17 +142,19 @@ class FacilityCheck:
         Cache facility data in the session,
           while making sure anybody who can create facilities sees the real (non-cached) data
         """
-        
         if not "facility_exists" in request.session or FACILITY_CACHE_STALE:
             # always refresh for admins, or when no facility exists yet.
             refresh_session_facility_info(request, facility_count=Facility.objects.count())
 
 class ConfigCheck:
     def process_response(self, request, response):
-        #Display configuration modal if facility does not have all of the
-        #required settings yet.
+        """
+        Display configuration page if facility does not have a superuser, 
+        or if there are updates available. 
+        """
 
-        # Only intercept text/html responses
+        # Only intercept text/html responses to prevent interfering with
+        # static files
         if response['Content-Type'].split(';')[0] == 'text/html': 
             db_exists = is_configured()
             print "Configuration is currently as below:"
@@ -156,7 +162,9 @@ class ConfigCheck:
             if db_exists['superuser'] and not db_exists['need_update']:
                 return response
 
+            # If device isn't configured, and user is trying to access KA Lite 
+            # for the first time, load the form page to configure settings
             if request.path != '/facility/config/':
-                form = config_form(request, db_exists)
-                return form
+                return config_form(request, db_exists)
+
         return response

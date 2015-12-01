@@ -5,47 +5,15 @@
 {% block headjs %}
     <script src="{% static 'js/facility/bundles/bundle_facility.js' %}"> </script>
 {% endblock headjs %}
+
 {% block content %}
 
-<!--
-<form action="/facility/config/" method="POST">
-    {% csrf_token %}
-
-
-    {% if need_update %}
-        <h4> There is an update available. Would you like to upgrade your version of KA Lite?</h4>
-        <h6> You will be given the option to keep all your current data if you choose to update.</h6> 
-        <input type="radio" name="upgrade" value="yes"> Yes<br>
-        <input type="radio" name="upgrade" value="no"> No<br><br>
-
-        <div id="keep_db_question">
-        <h4> Would you like to keep your existing database? It will be migrated over to the new, updated version of KA Lite.</h4>
-        <input type="radio" name="keep_db" value="yes"> Yes<br>
-        <input type="radio" name="keep_db" value="no"> No<br><br>
-        </div>
-    {% endif %}
-
-    {% if not superuser %}
-        <div id="get_admin_server">
-        <h4>Choose a username and password for the admin account.</h4>
-
-        Username: <input type="text" name="name"></input><br>
-        Password: <input type="password" name="password"></input><br>
-        Re-type Password: <input type="text" name="retype_password"></input><br><br>
-
-        <h4>Enter a hostname for this server. If left blank, it will default to {{ default_hostname }}</h4>
-        Hostname: <input type="text" name="hostname"></input><br><br>
-
-        <h4>Enter a one-line description for this server (optional). </h4>
-        Description: <input type="text" name="description"></input><br><br>
-        </div>
-    {% endif %}
-
-    <Br>
-    <button type="submit" value="Submit">Next</button>
-</form>
--->
-
+{% csrf_token %}
+<script type="text/javascript">
+    var need_update = "{{ need_update }}";
+    var default_hostname = "{{ default_hostname }}";
+    var csrftoken = "{{ csrf_token }}";
+</script>
 
 {% endblock content %}
 
