@@ -96,7 +96,9 @@ var CoachSummaryView = BaseView.extend({
     this function populates the topic selection list
     */
     appendTopicList: function() {
-        var parseData = this.data_model.get("available_topics");
+        //var parseData = this.data_model.get("available_topics");
+        var parseData = this.data_model.get("content_parents");
+        console.log(parseData);
         var targetElem = $("#topic-list").get(0);
         var frag = document.createDocumentFragment();
 
@@ -115,7 +117,12 @@ var CoachSummaryView = BaseView.extend({
                     ctr = -1;
                 }
             }
-            opt.innerHTML = datum.title;
+            if(datum.id.includes('pre-alg')) {
+                opt.innerHTML = "Pre Alg: " + datum.title;
+            } else {
+                opt.innerHTML = datum.title;
+            }
+
             opt.value = datum.id;
             frag.appendChild(opt);
         });
@@ -307,7 +314,10 @@ var CoachSummaryView = BaseView.extend({
         $('#topic-list').multiselect({
             nonSelectedText: 'Default: Overview',
             buttonWidth: '75%',
-            numberDisplayed: 2
+            numberDisplayed: 2,
+            maxHeight: 350,
+            disableIfEmpty: true,
+            enableCaseInsensitiveFiltering: true
         });
 
         $('#topic-list-div > .btn-group > button').css({'width': '100%'});

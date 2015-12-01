@@ -344,7 +344,7 @@ def get_content_parents(ids=None, **kwargs):
         Parent = Item.alias()
         parent_values = Item.select(
             Parent
-        ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids))
+        ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids)).distinct()
         return parent_values
 
 
@@ -361,7 +361,7 @@ def get_leafed_topics(kinds=None, db=None, **kwargs):
     Parent = Item.alias()
     parent_values = Item.select(
         Parent
-        ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.kind.in_(kinds)).distinct()
+    ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.kind.in_(kinds)).distinct()
     return parent_values
 
 
