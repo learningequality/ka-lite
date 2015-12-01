@@ -385,11 +385,8 @@ class Command(BaseCommand):
         if settings.DB_TEMPLATE_FILE and not database_exists:
             print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH))
             shutil.copy(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH)
-        elif database_exists:
-            print("Migrating existing database.")
-            call_command("migrate", merge=True, verbosity=options.get("verbosity"))
         else:
-            print("Baking a fresh database from scratch.")
+            print("Baking a fresh database from scratch or upgrading existing database.")
             call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
             call_command("migrate", merge=True, verbosity=options.get("verbosity"))
         Settings.set("database_version", VERSION)
