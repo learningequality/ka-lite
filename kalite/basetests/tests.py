@@ -211,7 +211,6 @@ class PackagesTests(DependenciesTests):
         "gitdb": "0.5.4",
         "kaa": "0.99.2dev",
         "requests": "0.14.2",
-        "tastypie": "0.11.0",
         "youtube_dl": "2014.12.10.3",
         "oauth": "1.0",
         "six": "1.8.0",
