@@ -210,7 +210,6 @@ class PackagesTests(DependenciesTests):
         "git": "0.3.2 RC1",
         "gitdb": "0.5.4",
         "kaa": "0.99.2dev",
-        "khanacademy": NO_VERSION,
         "pyasn1": "0.1.4",
         "requests": "0.14.2",
         "rsa": "3.1.1",
