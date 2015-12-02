@@ -217,7 +217,6 @@ class PackagesTests(DependenciesTests):
         "tastypie": "0.11.0",
         "youtube_dl": "2014.12.10.3",
         "oauth": "1.0",
-        "pbkdf2": "1.3",
         "polib": "1.0.3",
         "six": "1.8.0",
     }
