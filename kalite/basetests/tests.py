@@ -203,7 +203,6 @@ class PackagesTests(DependenciesTests):
     # but not this way.
     PACKAGES = {
         "annoying": NO_VERSION,
-        "async": NO_VERSION,
         "cherrypy": "3.2.2",
         "contextlib2": NO_VERSION,
         "dateutil": "1.5",
