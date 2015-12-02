@@ -74,24 +74,16 @@ def rgba_to_hex(rgba_string):
 
 def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
     """
-    Raises a TimeoutException if the element is found, and does not become stale in the wait_time.
+    Raises a TimeoutException if the element is *still* found after wait_time seconds.
+
     :param context: A behave context
     :param by: selenium.webdriver.common.by.By constant
     :param value: A value to go with by, to build a locator
-    :param wait_time: The wait time in seconds. Could wait up to twice this time, since we first wait to find an
-        element, then wait for it to get stale.
+    :param wait_time: The wait time in seconds.
     :return: Nothing, or raises a TimeoutException.
     """
-    # First try to find the element.
-    try:
-        elem = WebDriverWait(context.browser, wait_time).until(
-            EC.presence_of_element_located((by, value))
-        )
-    except TimeoutException:
-        return  # If we can't find it, the assertion passes!
-
-    WebDriverWait(context.browser, wait_time).until(
-        EC.staleness_of(elem)
+    WebDriverWait(context.browser, wait_time).until_not(
+        EC.presence_of_element_located((by, value))
     )
 
 
