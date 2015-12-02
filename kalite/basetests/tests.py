@@ -203,7 +203,6 @@ class PackagesTests(DependenciesTests):
     # but not this way.
     PACKAGES = {
         "annoying": NO_VERSION,
-        "contextlib2": NO_VERSION,
         "dateutil": "1.5",
         "django": DependenciesTests.DJANGO_VERSION_STR,
         "django_snippets": "1.0.1",
