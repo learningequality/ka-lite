@@ -209,7 +209,6 @@ class PackagesTests(DependenciesTests):
         "fle_utils": NO_VERSION,
         "git": "0.3.2 RC1",
         "gitdb": "0.5.4",
-        "ifcfg": NO_VERSION,
         "importlib": NO_VERSION,
         "iso8601": NO_VERSION,
         "kaa": "0.99.2dev",
