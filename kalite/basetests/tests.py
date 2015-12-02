@@ -191,7 +191,6 @@ class PackagesTests(DependenciesTests):
     TODO(cpauya): We can improve this with version checks like how pip does
     it with it's `requirements.txt`.  Example:
     ...
-        "announcements==1.0.2",
         "django>=1.5.1"
     ...
     This way it's quite easy to add more package dependencies here.
@@ -203,7 +202,6 @@ class PackagesTests(DependenciesTests):
     # out requirements.txt and we should detect conflicts from dependencies
     # but not this way.
     PACKAGES = {
-        "announcements": "1.0.2",
         "annoying": NO_VERSION,
         "async": NO_VERSION,
         "cherrypy": "3.2.2",
