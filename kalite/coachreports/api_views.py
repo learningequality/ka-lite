@@ -2,8 +2,6 @@ from math import ceil
 import datetime
 import json
 
-import pdb
-
 from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 from django.db.models import Q, Sum, Avg
@@ -144,8 +142,6 @@ def aggregate_learner_logs(request):
 
     output_logs = []
 
-    all_topics = map(lambda x: {"id": x.get("id"), "title": x.get("title")}, get_leafed_topics())
-
     output_dict = {
         "content_time_spent": 0,
         "exercise_attempts": 0,
@@ -154,8 +150,7 @@ def aggregate_learner_logs(request):
         "total_complete": 0,
         "total_struggling": 0,
         "total_not_attempted": 0,
-        "available_topics": all_topics,
-        "content_parents": [],
+        "available_topics": [],
     }
     
     end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
@@ -204,7 +199,7 @@ def aggregate_learner_logs(request):
         elif len(object_buffer) == 1:
             all_object_ids.add(object_buffer)
     if len(all_object_ids) > 0:
-        output_dict["content_parents"] = map(lambda x: {"id": x.get("id"), "title": x.get("title")}, get_content_parents(ids=list(all_object_ids)))
+        output_dict["available_topics"] = map(lambda x: {"id": x.get("id"), "title": x.get("title")}, get_content_parents(ids=list(all_object_ids)))
     output_dict["total_not_attempted"] = number_content*len(learners) - (
         output_dict["total_complete"] + output_dict["total_struggling"] + output_dict["total_in_progress"])
     # Report total time in hours

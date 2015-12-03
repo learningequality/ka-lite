@@ -96,9 +96,7 @@ var CoachSummaryView = BaseView.extend({
     this function populates the topic selection list
     */
     appendTopicList: function() {
-        //var parseData = this.data_model.get("available_topics");
-        var parseData = this.data_model.get("content_parents");
-        console.log(parseData);
+        var parseData = this.data_model.get("available_topics");
         var targetElem = $("#topic-list").get(0);
         var frag = document.createDocumentFragment();
 
@@ -215,7 +213,6 @@ var CoachSummaryView = BaseView.extend({
 
         if (!this.data_model) {
             var topic_ids = _.map(this.$("#topic-list option:checked"), function (node) {return node.value;});
-            console.log(topic_ids);
             this.data_model = new Models.CoachReportAggregateModel({
                 facility: this.model.get("facility"),
                 group: this.model.get("group"),
