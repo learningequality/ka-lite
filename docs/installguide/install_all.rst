@@ -108,7 +108,7 @@ It can be installed by downloading the latest .deb on the Pi and installing it::
     # Fetch the latest .deb
     sudo wget https://learningequality.org/r/deb-pi-installer-0-15 --no-check-certificate
     # Install the .deb
-    sudo dpkg -i ka-lite-raspberry-pi*.deb
+    sudo dpkg -i deb-pi-installer*
 
 You can also add the PPA, see :ref:`ppa-installation`, and then
 run ``sudo apt-get install ka-lite-raspberry-pi``. 
