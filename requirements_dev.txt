@@ -6,3 +6,4 @@ sphinx
 django_extensions
 #cli2man
 polib # used for our own makemessages
+xlrd # used for management command convert_xls_to_items
