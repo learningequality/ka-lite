@@ -10,4 +10,9 @@ django-appconf==1.0.1
 peewee==2.6.3
 python-dateutil==2.4.2
 django-dbbackup==2.3.2
-django-tastypie==0.12.2
+
+
+# There is still no release of this
+# fixed issue:
+# django-tastypie==0.12.2
+https://github.com/django-tastypie/django-tastypie/archive/e6bc34bea83d53552c7fc9dfa696ed7693fe22ab.zip
