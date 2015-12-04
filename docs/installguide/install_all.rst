@@ -64,6 +64,15 @@ After that, you can install the .deb file like this::
 
     sudo dpkg -i FILENAME.deb
 
+.. warning::
+    Double-clicking the .deb in Ubuntu will open it in Ubuntu Software Center.
+    This will fail on a default installation due to
+    `a bug <https://bugs.launchpad.net/ubuntu/+source/software-center/+bug/1389582>`_
+    in Ubuntu. To make it work, you need to install ``libgtk2-perl``, for
+    instance by running ``sudo apt-get install libgtk2-perl``. After that, make
+    sure Software Center is closed and double-click the .deb file.
+
+
 
 ``FILENAME`` should be replaced with the name of the file you downloaded.
 The file may be named as if it was intended for Ubuntu but works just as well for any other Debian-based systems like
@@ -106,7 +115,7 @@ It can be installed by downloading the latest .deb on the Pi and installing it::
     # Install dependencies
     sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
     # Fetch the latest .deb
-    sudo wget https://learningequality.org/r/deb-pi-installer-0-15 --no-check-certificate
+    sudo wget https://learningequality.org/r/deb-pi-installer-0-15 --no-check-certificate --content-disposition 
     # Install the .deb
     sudo dpkg -i ka-lite-raspberry-pi*.deb
 
