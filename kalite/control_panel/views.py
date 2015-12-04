@@ -548,9 +548,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         group_data[group_pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
 
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
-        group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
+        group_data[group_pk]["pct_mastery"] = total_mastery_so_far / group_data[group_pk]["total_users"]
 
-    if len(group_data) == 1 and group_data.has_key(None):
+    if len(group_data) == 1 and None in group_data:
         if not group_data[None]["total_users"]:
             del group_data[None]
 
@@ -560,14 +560,14 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 def check_meta_data(facility):
     '''Checks whether any metadata is missing for the specified facility.
 
-    Args: 
+    Args:
       facility (Facility instance): facility to check for missing metadata
- 
+
     Returns:
       bool: True if one or more metadata fields are missing'''
 
     check_fields = ['user_count', 'latitude', 'longitude', 'address', 'contact_name', 'contact_phone', 'contact_email']
-    return any([ (getattr(facility, field, None) is None or getattr(facility, field)=='') for field in check_fields])
+    return any([(getattr(facility, field, None) is None or getattr(facility, field) == '') for field in check_fields])
 
 
 # context functions

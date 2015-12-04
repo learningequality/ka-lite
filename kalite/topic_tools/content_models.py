@@ -21,7 +21,6 @@ import itertools
 from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn, IntegerField, OperationalError
 
 from playhouse.shortcuts import model_to_dict
-from . import settings
 
 from .base import available_content_databases
 from .settings import CONTENT_DATABASE_PATH, CHANNEL
@@ -456,7 +455,7 @@ def search_topic_nodes(kinds=None, query=None, page=1, items_per_page=10, exact=
         topic_nodes = [item for item in topic_nodes.paginate(page, items_per_page).dicts()]
         if topic_node:
             # If we got an exact match, show it first.
-            topic_nodes = [model_to_dict(topic_node)] + topic_nodes
+            topic_nodes.insert(0, model_to_dict(topic_node))
         return topic_nodes, False, pages
 
 
@@ -491,21 +490,26 @@ def get_or_create(item, **kwargs):
 def update_item(update=None, path=None, **kwargs):
     """
     Select an item by path, update fields and save.
+    Updates all items that have the same id as well.
+    Ids are not unique due to denormalization, yet items with the same id should have the same info.
+
     :param update: Dictionary of attributes to update on the model.
-    :param path: Unique path for the content node to be updated.
+    :param path: Unique path for the content node to be updated. Also updates nodes with the same id.
     """
     if update and path:
-        item = Item.get(Item.path == path)
-        if any([key not in Item._meta.fields for key in update]):
-            item_data = unparse_model_data(item)
-            item_data.update(update)
-            for key, value in parse_model_data(item_data).iteritems():
-                setattr(item, key, value)
-        else:
-            for key, value in update.iteritems():
-                setattr(item, key, value)
+        base_item = Item.get(Item.path == path)
+        items = Item.select().where((Item.id == base_item.id) & (Item.kind == base_item.kind))
+        for item in items:
+            if any(key not in Item._meta.fields for key in update):
+                item_data = unparse_model_data(item)
+                item_data.update(update)
+                for key, value in parse_model_data(item_data).iteritems():
+                    setattr(item, key, value)
+            else:
+                for key, value in update.iteritems():
+                    setattr(item, key, value)
 
-        item.save()
+            item.save()
 
 
 def iterator_content_items(ids=None, **kwargs):

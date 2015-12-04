@@ -81,7 +81,10 @@ class KALiteClient(Client):
     def is_logged_out(self):
         return not self.is_logged_in()
 
-    def post_json(self, path="", url_name="", data={}):
+    def post_json(self, path="", url_name="", data=None):
+
+        if not data:
+            data = {}
 
         assert path or url_name and not (path and url_name), \
             "You must provide either a path or a reversible url_name!"

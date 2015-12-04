@@ -20,7 +20,7 @@ class MainTestCase(KALiteTestCase):
     def __init__(self, *args, **kwargs):
         self.content_root = tempfile.mkdtemp() + "/"
 
-        return super(MainTestCase, self).__init__(*args, **kwargs)
+        super(MainTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self, *args, **kwargs):
         self.setUp_fake_contentroot()
