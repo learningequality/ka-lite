@@ -211,16 +211,6 @@ class PackagesTests(DependenciesTests):
         "gitdb": "0.5.4",
         "kaa": "0.99.2dev",
         "requests": "0.14.2",
-<<<<<<< HEAD
-        "youtube_dl": "2014.12.10.3",
-=======
-        "rsa": "3.1.1",
-        "smmap": "0.8.2",
-        "tastypie": "0.11.0",
-        "collections_local_copy": NO_VERSION,
-        "memory_profiler": "0.26",
-        "mimeparse": "0.1.4",
->>>>>>> undbundle-youtubedl
         "oauth": "1.0",
         "six": "1.8.0",
     }
