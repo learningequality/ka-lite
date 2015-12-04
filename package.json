@@ -63,6 +63,7 @@
     "katex": "0.5.1",
     "minifyify": "7.0.5",
     "node-lessify": "0.0.10",
+    "paper": "0.9.25",
     "qtip2": "2.2.0",
     "react": "0.14.7",
     "react-addons-clone-with-props": "0.14.7",

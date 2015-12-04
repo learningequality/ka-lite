@@ -2,6 +2,8 @@ var soundManager = require("soundmanager2").soundManager;
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 
+require("../../../../../../bower_components/paper/dist/paper-full.min.js");
+
 require("../../../css/distributed/vectorvideo.css");
 
 var VectorVideoView = ContentBaseView.extend({
@@ -23,6 +25,8 @@ var VectorVideoView = ContentBaseView.extend({
 
     render: function() {
 
+        //_.bindAll(this, "on_resize");
+
         this.$el.html(this.template(this.data_model.attributes));
 
         this.initialize_sound_manager();
@@ -35,6 +39,7 @@ var VectorVideoView = ContentBaseView.extend({
           preferFlash: false,
           onready: self.create_audio_object
         });
+        //this.on_resize();
     },
 
     create_audio_object: function () {
@@ -51,6 +56,37 @@ var VectorVideoView = ContentBaseView.extend({
         this.initialize_listeners();
     },
 
+    /*on_resize: _.throttle(function() {
+        var available_width = $(".content-player-container").width();
+        var available_height = $(window).height() * 0.9;
+        this.set_container_size(available_width, available_height);
+    }, 500),
+
+    set_container_size: function(container_width, container_height) {
+
+        var container_ratio = container_width / container_height;
+
+        var width = container_width;
+        var height = container_height;
+
+        var ratio = this.data_model.get("width") / this.data_model.get("height");
+
+        console.log(ratio);
+
+        if (container_ratio > ratio) {
+            width = container_height * ratio;
+        } else {
+            height = container_width / ratio;
+        }
+
+        if (this.player) {
+            console.log("meep");
+            this.player.width(width).height(height);
+        }
+
+        this.$("#video-player").height(height);
+    },
+*/
     initialize_listeners: function() {
 
         var self = this;
@@ -65,6 +101,8 @@ var VectorVideoView = ContentBaseView.extend({
                 self.progress_track_clicked({offsetX: self.$(".sm2-progress-ball").position().left});
             }
         }).css("position", "absolute");
+
+        //$(window).resize(this.on_resize);
 
 
     },
@@ -134,6 +172,10 @@ var VectorVideoView = ContentBaseView.extend({
 
     get_position_percent: function(percent) {
         return this.audio_object.position / this.audio_object.duration;
+    },
+
+    get_position: function() {
+        return this.audio_object.position;
     },
 
     get_time: function(msec, use_string) {
