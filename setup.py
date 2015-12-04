@@ -49,8 +49,6 @@ def filter_requirement_statements(req):
 raw_requirements = map(filter_requirement_statements, raw_requirements)
 raw_requirements = filter(lambda x: bool(x), raw_requirements)
 
-print(raw_requirements)
-
 # Special parser for http://blah#egg=asdasd-1.2.3
 DIST_REQUIREMENTS = []
 DEPENDENCY_LINKS = []
@@ -62,7 +60,6 @@ for req in raw_requirements:
         version = dashed_components[-1]
         req_name = "-".join(dashed_components[:-1])
         req = "{req:s}=={version:s}".format(req=req_name, version=version)
-    print(req)
     DIST_REQUIREMENTS.append(req)
 
 # Requirements if doing a build with --static
