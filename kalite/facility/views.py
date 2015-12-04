@@ -9,6 +9,7 @@ from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -198,21 +199,21 @@ def config(request):
     print "---------------db_config-------------------"
     print request.POST
 
-    # User will have option to set admin account and server info if they
-    # choose to remove database when upgrading, or if no superuser detected.
-    # Password field must always be filled out, so we will check if no 
-    # superuser is detected by checking existence of password field. 
-    if request.POST.get('keep_db') == 'no' or request.POST.get('password'):
-        #print "don't keep database, OR, password field has been filled out" 
-        
+    # Form is not complete unless password field is filled out
+    if request.POST.get('password'):
         name = "default" #getpass.getuser().replace("-", "_")
-        if request.POST.get('name'):
-            name = request.POST.get('name')
-        
-        User.objects.create_superuser(
-                username=name, password=request.POST.get('password'), email='')
 
-        user = User.objects.get(is_superuser=True)
+        if request.POST.get('username'):
+            name = request.POST.get('username')
+        
+            call_command("createsuperuser", username=name, 
+                         email='',interactive=False)
+
+            admin = User.objects.get(username=name)
+            admin.set_password(password)
+            admin.save()
+
+        #user = User.objects.get(is_superuser=True)
 
     return { "username" : name }
 
