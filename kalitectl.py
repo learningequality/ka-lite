@@ -527,6 +527,8 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
         print("\thttp://%s:%s/" % (addr, port))
     print("To access KA Lite from this machine, try the following address:")
     print("\thttp://127.0.0.1:%s/\n" % port)
+    for addr in get_urls_proxy(output_pipe=sys.stdout):
+        sys.stdout.write("\t{}\n".format(addr))
 
     # Daemonize at this point, no more user output is needed
     if daemonize:
@@ -642,21 +644,30 @@ def get_urls():
         return e.status_code, []
 
 
-def get_urls_proxy():
+def get_urls_proxy(output_pipe=sys.stderr):
     """
     Get addresses of the server if we're using settings.PROXY_PORT
 
     :raises: Exception for sure if django.conf.settings isn't loaded
     """
     # Import settings and check if a proxy port exists
-    from django.conf import settings
-    if hasattr(settings, 'PROXY_PORT') and settings.PROXY_PORT:
-        sys.stderr.write(
+    try:
+        from django.conf import settings
+    except Exception as e:
+        output_pipe.write(
+            "\n\nWarning, exception fetching KA Lite settings module:\n\n" +
+            str(e) + "\n\n"
+        )
+        return
+    if hasattr(settings, 'USER_FACING_PORT') and settings.USER_FACING_PORT and \
+       hasattr(settings, 'HTTP_PORT') and \
+       not settings.USER_FACING_PORT == settings.HTTP_PORT:
+        output_pipe.write(
             "\nKA Lite configured behind another server, primary "
             "addresses are:\n\n"
         )
         for addr in get_ip_addresses():
-            yield "http://{}:{}/".format(addr, settings.PROXY_PORT)
+            yield "http://{}:{}/".format(addr, settings.USER_FACING_PORT)
 
 
 def status():
@@ -677,15 +688,8 @@ def status():
         sys.stderr.write("KA Lite running on:\n\n")
         for addr in urls:
             sys.stderr.write("\t{}\n".format(addr))
-        # Import settings and check if a proxy port exists
-        try:
-            for addr in get_urls_proxy():
-                sys.stderr.write("\t{}\n".format(addr))
-        except Exception as e:
-            sys.stderr.write(
-                "\n\nWarning, exception fetching KA Lite settings module:\n\n" +
-                str(e) + "\n\n"
-            )
+        for addr in get_urls_proxy():
+            sys.stderr.write("\t{}\n".format(addr))
         return STATUS_RUNNING
     else:
         verbose_status = status.codes[status_code]
