@@ -6,3 +6,4 @@ kalite/distributed/static/js/distributed/perseus/**/*
 kalite/*/static/js/*/bundles/*
 static-libraries/**
 kalite/i18n/static/js/i18n
+bower_components/**

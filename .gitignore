@@ -76,6 +76,7 @@ venv/
 # Lacks documentation
 locale/
 node_modules/
+bower_components/
 tmp/
 virtualenv/
 writeup/
