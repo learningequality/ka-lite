@@ -30,14 +30,15 @@ if 'bdist_wheel' in sys.argv:
 where_am_i = os.path.dirname(os.path.realpath(__file__))
 
 # Handle requirements
-DIST_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
-
+raw_requirements = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
 
 def filter_requirement_statements(req):
     """Filter comments and blank lines from a requirements.txt like file
     content to feed pip"""
-    # Strip comments and empty lines
-    req_pattern = re.compile(r'^\s*([^\#]+)')
+    # Strip comments and empty lines, but '#' is allowed in a URL!
+    if req.startswith('http'):
+        return req
+    req_pattern = re.compile(r'^(\s*)([^\#]+)')
 
     m = req_pattern.search(req)
     if m:
@@ -45,8 +46,24 @@ def filter_requirement_statements(req):
 
 
 # Filter out comments from requirements
-DIST_REQUIREMENTS = map(filter_requirement_statements, DIST_REQUIREMENTS)
-DIST_REQUIREMENTS = filter(lambda x: bool(x), DIST_REQUIREMENTS)
+raw_requirements = map(filter_requirement_statements, raw_requirements)
+raw_requirements = filter(lambda x: bool(x), raw_requirements)
+
+print(raw_requirements)
+
+# Special parser for http://blah#egg=asdasd-1.2.3
+DIST_REQUIREMENTS = []
+DEPENDENCY_LINKS = []
+for req in raw_requirements:
+    if req.startswith("https://"):
+        DEPENDENCY_LINKS.append(req)
+        __, req = req.split("#egg=")
+        dashed_components = req.split("-")
+        version = dashed_components[-1]
+        req_name = "-".join(dashed_components[:-1])
+        req = "{req:s}=={version:s}".format(req=req_name, version=version)
+    print(req)
+    DIST_REQUIREMENTS.append(req)
 
 # Requirements if doing a build with --static
 STATIC_REQUIREMENTS = []
@@ -372,6 +389,7 @@ setup(
     data_files=data_files,
     zip_safe=False,
     install_requires=DIST_REQUIREMENTS,
+    dependency_links=DEPENDENCY_LINKS,
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
