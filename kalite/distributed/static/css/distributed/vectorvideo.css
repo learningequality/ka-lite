@@ -1,6 +1,6 @@
 .video-player {
     background-color: black;
-    height: 500px;
+    height: 750px;
     width: 100%;
 }
 
@@ -536,8 +536,8 @@
 }
 
 .sm2-volume-control {
- background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/volume.png);
- background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/volume.svg);
+ background-image: url(../images/distributed/volume.png);
+ background-image: none, url(../images/distributed/volume.svg);
 }
 
 .sm2-volume-control,
@@ -550,8 +550,8 @@
  filter: alpha(opacity=33); /* <= IE 8 */
  opacity: 0.33;
 /* -webkit-filter: invert(1);*/
- background-image: url(../image/icomoon/entypo-25px-000000/PNG/volume.png);
- background-image: none, url(../image/icomoon/entypo-25px-000000/SVG/volume.svg);
+ background-image: url(../images/distributed/volume.png);
+ background-image: none, url(../images/distributed/volume.svg);
 }
 
 .menu {
