@@ -318,7 +318,6 @@ INSTALLED_APPS = [
     'fle_utils.config',
     'fle_utils.chronograph',
     'fle_utils.testing',  # needed to get the "runcode" command, which we sometimes tell users to run
-    'kalite.django_cherrypy_wsgiserver',
     'kalite.coachreports',
     'kalite.distributed',
     'kalite.main',
@@ -465,6 +464,8 @@ SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 LOGIN_URL = "/?login=true"
 LOGOUT_URL = "/securesync/api/user/logout/"
 
+# 18 threads seems a sweet spot
+CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
 
 ########################
 # After all settings, but before config packages,
@@ -476,7 +477,6 @@ LOGOUT_URL = "/securesync/api/user/logout/"
 ########################
 
 from kalite.distributed.settings import *
-from kalite.django_cherrypy_wsgiserver.settings import *
 from securesync.settings import *
 from fle_utils.chronograph.settings import *
 from kalite.facility.settings import *
