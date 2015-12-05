@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import imp
-import os, time, signal, errno
-import socket
+import os
 import urlparse
 
 import cherrypy
@@ -92,111 +91,5 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         try:
             return imp.load_module(mod, fd, path, description)
         finally:
-            if fd: fd.close()
-
-# TODO: This is not used anymore and does not comply with OS agnostic ideals
-# /benjaoming
-def poll_process(pid):
-    """
-    Poll for process with given pid up to 10 times waiting .25 seconds in between each poll.
-    Returns False if the process no longer exists otherwise, True.
-    """
-    for n in range(10):
-        time.sleep(0.25)
-        try:
-            # poll the process state
-            os.kill(pid, 0)
-        except OSError, e:
-            if e[0] == errno.ESRCH:
-                # process has died
-                return False
-            else:
-                raise Exception
-    return True
-
-# TODO: This is not used anymore and does not comply with OS agnostic ideals
-# /benjaoming
-def stop_server(pidfile):
-    """
-    Stop process whose pid was written to supplied pidfile.
-    First try SIGTERM and if it fails, SIGKILL. If process is still running, an exception is raised.
-    """
-    if os.path.exists(pidfile):
-        pid = int(open(pidfile).read())
-        try:
-            os.kill(pid, signal.SIGTERM)
-        except OSError:  # process does not exist
-            os.remove(pidfile)
-            return
-        if poll_process(pid):
-            # process didn't exit cleanly, make one last effort to kill it
-            os.kill(pid, signal.SIGKILL)
-            # if still_alive(pid):
-            if poll_process(pid):
-                raise OSError, "Process %s did not stop."
-        os.remove(pidfile)
-
-
-def port_is_available(host, port):
-    """
-    Validates if the cherrypy server port is free;  This is needed in case the PID file
-    for a currently running process does not exist or has the incorrect process ID recorded.
-    """
-    if int(port) < 1024 and hasattr(os, "geteuid") and os.geteuid() != 0:
-        raise Exception("Port %s is less than 1024: you must be root to do this" % port)
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ip = socket.gethostbyname(host)
-    result = sock.connect_ex((ip, int(port)))
-    sock.close()
-    if result != 0:
-        cherrypy.log("Port %s is available" % port)
-        return True
-    else:
-        cherrypy.log("Port %s is busy" % port)
-        return False
-
-
-def run_cherrypy_server(host="127.0.0.1", port=None, threads=None, daemonize=False, pidfile=None, autoreload=False, startuplock=None):
-    port = port
-    threads = threads or getattr(settings, "CHERRYPY_THREAD_COUNT", 18)
-
-    if daemonize:
-        if not pidfile:
-            pidfile = '~/cpwsgi_%d.pid' % port
-
-        # benjaoming: stopping the server is an explicit logic that has already
-        # been implemented other places. Killing some process related to a
-        # possibly out-dated pidfile is not exactly best practice
-        # stop_server(pidfile)
-
-        from django.utils.daemonize import become_daemon
-        kalite_home = os.environ.get("KALITE_HOME")
-        logfile = os.path.join(kalite_home, "kalite.log") if (kalite_home and os.environ.get("NAIVE_LOGGING", False)) else None
-        if logfile:
-            become_daemon(out_log=logfile, err_log=logfile)
-        else:
-            become_daemon()
-
-        with open(pidfile, 'w') as f:
-            f.write("%d\n" % os.getpid())
-            f.write(port)
-
-    cherrypy.config.update({
-        'server.socket_host': host,
-        'server.socket_port': int(port),
-        'server.thread_pool': int(threads),
-        'checker.on': False,
-    })
-
-    DjangoAppPlugin(cherrypy.engine).subscribe()
-    if not autoreload:
-        # cherrypyserver automatically reloads if any modules change
-        # Switch-off that functionality here to save cpu cycles
-        # http://docs.cherrypy.org/stable/appendix/faq.html
-        cherrypy.engine.autoreload.unsubscribe()
-
-    cherrypy.quickstart()
-    if pidfile:
-        stop_server(pidfile)
-
+            if fd:
+                fd.close()
