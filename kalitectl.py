@@ -110,7 +110,7 @@ from socket import timeout
 from django.core.management import ManagementUtility, get_commands
 
 import kalite
-from kalite.django_cherrypy_wsgiserver.cherrypyserver import DjangoAppPlugin
+from kalite.distributed.cherrypyserver import DjangoAppPlugin
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses
 
