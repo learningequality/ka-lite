@@ -159,33 +159,6 @@ class SqliteTests(DependenciesTests):
             self._pass(msg='%s set to "%s" when running tests...' % (msg, self.SQLITE_ON_MEMORY,))
 
 
-class DjangoTests(DependenciesTests):
-
-    def test_django_is_installed(self):
-        self._log("Testing if Django is installed...")
-        try:
-            import django
-            self._pass()
-        except ImportError:
-            self._fail()
-
-    def test_minimum_python_version(self):
-        self._log("Testing minimum Python version %s for Django version %s..." %
-                  (self.MINIMUM_PYTHON_VERSION_STR, self.DJANGO_VERSION_STR,))
-        if sys.version_info >= self.MINIMUM_PYTHON_VERSION:
-            self._pass()
-        else:
-            self._fail(" found version %s instead..." % (_tuple_to_str(sys.version_info),))
-
-    def test_django_webserver_can_serve_on_port(self):
-        self._log("Testing if Django can serve on %s..." % self.make_url())
-        from kalite.django_cherrypy_wsgiserver.cherrypyserver import port_is_available
-        result = port_is_available(self.DJANGO_HOST, self.DJANGO_PRODUCTION_PORT)
-        if not result:
-            self._fail()
-        self._pass()
-
-
 class PackagesTests(DependenciesTests):
     """
     TODO(cpauya): We can improve this with version checks like how pip does
