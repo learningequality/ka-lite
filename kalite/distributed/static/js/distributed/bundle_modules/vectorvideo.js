@@ -1,4 +1,4 @@
-var $ = require("base/jquery");
+var $ = require("base/jQuery");
 var file = require("vectorvideo/views");
 var Paper = require("../../../../../../bower_components/paper/dist/paper-full.min.js");
 var Models = require("content/models");
