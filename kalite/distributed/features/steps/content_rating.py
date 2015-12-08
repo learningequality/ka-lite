@@ -191,9 +191,9 @@ def rate_id(context, id_, val=3):
             return False
 
     try:
-        WebDriverWait(context.browser, 10).until(rate_element)
+        WebDriverWait(context.browser, 30).until(rate_element)
     except TimeoutException:
-        raise Exception("Did not find rating for {id:s}".format(id=id_))
+        raise Exception("Unable to enter rating for container with id '{id:s}'".format(id=id_))
 
 
 def enter_text_feedback(context, text_feedback):
