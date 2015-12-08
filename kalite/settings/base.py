@@ -205,7 +205,7 @@ else:
     # If we're not running as source, then we should include a blank, pre-migrated db in this location,
     # to be copied to user's KALITE_HOME.
     DB_TEMPLATE_FILE = os.path.join(
-        ROOT_DATA_PATH,
+        os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
         "database",
         "data.sqlite",
     )
