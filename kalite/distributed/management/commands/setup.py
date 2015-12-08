@@ -288,7 +288,7 @@ class Command(BaseCommand):
 
         database_kind = settings.DATABASES["default"]["ENGINE"]
         database_file = (
-            "sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
+            "sqlite" in database_kind and settings.DATABASES["default"]["NAME"])
 
         if database_file and os.path.exists(database_file):
             # We found an existing database file.  By default,
