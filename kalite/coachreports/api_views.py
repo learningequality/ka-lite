@@ -152,7 +152,7 @@ def aggregate_learner_logs(request):
         "total_not_attempted": 0,
         "available_topics": [],
     }
-    
+
     end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
 
     start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
