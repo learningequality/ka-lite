@@ -18,6 +18,7 @@ import os
 import re
 import json
 import copy
+import glob
 
 from django.conf import settings as django_settings
 logging = django_settings.LOG
@@ -27,9 +28,7 @@ from django.db import DatabaseError
 from django.utils.translation import gettext as _
 
 from fle_utils.general import json_ascii_decoder
-from kalite import i18n
 
-from . import models as main_models
 from . import settings
 
 CACHE_VARS = []
@@ -39,27 +38,21 @@ if not os.path.exists(settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
 
 
-def get_assessment_item_data(request, assessment_item_id=None):
-    try:
-        assessment_item = main_models.AssessmentItem.objects.get(id=assessment_item_id)
-    except main_models.AssessmentItem.DoesNotExist:
-        return None
-    except DatabaseError:
-        return None
+def database_exists(channel="khan", language="en", database_path=None):
+    path = database_path or settings.CONTENT_DATABASE_PATH.format(channel=channel, language=language)
 
-    try:
-        item_data = json.loads(assessment_item.item_data, object_hook=json_ascii_decoder)
-        item_data = smart_translate_item_data(item_data)
-        item_data = json.dumps(item_data)
-    except KeyError as e:
-        logging.error("Assessment item did not have the expected key %s. Assessment item: \n %s" % (e, assessment_item))
+    return os.path.exists(path)
 
-    #  Expects a dict
-    return {
-        "id": assessment_item.id,
-        "item_data": item_data,
-        "author_names": assessment_item.author_names,
-    }
+def available_content_databases():
+    """
+    Generator to return the channel and language for every content database that exists in the system.
+    @return: iterator over (channel, language) values
+    """
+    pattern = re.compile("content_(?P<channel>[^_]+)_(?P<language>[^_]+).sqlite")
+    for filename in glob.iglob(settings.CONTENT_DATABASE_ROOT):
+        match = pattern.search(filename)
+        if match:
+            yield match.group(1, 2)
 
 
 def smart_translate_item_data(item_data):

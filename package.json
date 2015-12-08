@@ -36,6 +36,7 @@
     "bootstrap": "^3.3.5",
     "bootstrap-datepicker": "^1.4.0",
     "bower": "^1.6.9",
+    "bootstrap-multiselect": "^0.9.13-1",
     "browserify": "~11.0.1",
     "browsernizr": "^1.0.2",
     "colors": "^1.1.2",

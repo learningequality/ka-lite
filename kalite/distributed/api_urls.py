@@ -14,7 +14,6 @@ import kalite.control_panel.api_urls
 import kalite.contentload.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
-import kalite.store.api_urls
 import kalite.inline.api_urls
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -68,12 +67,6 @@ urlpatterns += patterns('kalite.coachreports.api_views',
 urlpatterns += patterns('kalite.i18n.api_views',
     url(r'^i18n/', include(kalite.i18n.api_urls)),
 )
-
-# store allows purchasing of user items with points
-urlpatterns += patterns('',
-    url(r'^store/', include(kalite.store.api_urls)),
-)
-
 
 urlpatterns += patterns('',
     # toss out any requests made to actual KA site urls

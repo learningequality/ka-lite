@@ -9,7 +9,7 @@ from mock import patch
 from django.core.management import call_command
 from django.test import TestCase
 
-from .. import get_installed_language_packs, delete_language
+from ..base import get_installed_language_packs, delete_language
 
 
 class I18nTestCase(TestCase):

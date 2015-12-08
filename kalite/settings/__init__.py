@@ -62,7 +62,6 @@ if package_selected("RPi"):
 
     ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
 
-    DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
     USING_RASPBERRY_PI = True
 
 
@@ -89,7 +88,8 @@ if package_selected("UserRestricted"):
 try:
     DEFAULT_ENCODING = DEFAULT_ENCODING
 except NameError:
-    from django.conf.settings import DEFAULT_ENCODING  # @UnresolvedImport
+    from django.conf import settings
+    DEFAULT_ENCODING = settings.DEFAULT_ENCODING
 
 if sys.getdefaultencoding() != DEFAULT_ENCODING:
     reload(sys)

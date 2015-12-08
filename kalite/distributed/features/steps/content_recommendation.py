@@ -22,7 +22,7 @@ def impl(context):
 @when(u'I click on the right of an exercise suggestion on the next steps card')
 def impl(context):
     element = find_css_class_with_wait(context, "content-nextsteps-topic-link")
-    click_and_wait_for_page_load(context, element, wait_time=15)
+    click_and_wait_for_page_load(context, element.find_element_by_xpath(".//div"), wait_time=15)
 
 @then(u'I should be taken to that topic')
 def impl(context):
@@ -31,12 +31,12 @@ def impl(context):
 @when(u'I click in the middle of an exercise suggestion on the next steps card')
 def impl(context):
     element = find_css_class_with_wait(context, "content-nextsteps-lesson-link")
-    click_and_wait_for_page_load(context, element, wait_time=15)
+    click_and_wait_for_page_load(context, element.find_element_by_xpath(".//div[2]"), wait_time=15)
 
 @then(u'the content recommendation cards should be shown')
 def impl(context):
     # Note: First load from the content recommendation API endpoint is longer, as a cache item gets built.
-    assert find_id_with_wait(context, "content-rec-wrapper", wait_time=15), "Content Recommendation cards not displayed!"
+    find_id_with_wait(context, "content-rec-wrapper", wait_time=60)
 
 @when(u'the home page is loaded')
 def impl(context):

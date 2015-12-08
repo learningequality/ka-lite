@@ -24,13 +24,13 @@
                     {{/unless}}
                 {{/if}}
                 {{#if vid_pct_complete}}
-                    <div class="progress-bar progress-bar-success" title="% Completed" style="width: {{vid_pct_complete}}%">
+                  <div class="progress-bar progress-bar-success" title={{_ "% Completed" }} style="width: {{vid_pct_complete}}%">
                         <span class="sr-only">{{_ "Of those you have completed " }}</span>
                         <span>{{vid_pct_complete}}%</span>
                     </div>
                 {{/if}}
                 {{#if vid_pct_started}}
-                    <div class="progress-bar inprogress" title="% In-Progress" style="width: {{vid_pct_started}}%">
+                  <div class="progress-bar inprogress" title={{_ "% In-Progress"}} style="width: {{vid_pct_started}}%">
                     {{#ifcond vid_pct_started "<" 100}}
                         <span class="sr-only">{{_ "You are still working on " }}</span>
                         <span>{{vid_pct_started}}%</span>

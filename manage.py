@@ -17,24 +17,10 @@ except ImportError:
 
 if __name__ == "__main__":
     import warnings
-    
+
     # We are overriding a few packages (like Django) from the system path.
     #   Suppress those warnings
     warnings.filterwarnings('ignore', message=r'Module .*? is being added to sys\.path', append=True)
-    
-    ########################
-    # kaserve
-    ########################
-
-    # Force all commands to run through our own serve command, which does auto-config if necessary
-    # TODO(bcipolli): simplify start scripts, just force everything through kaserve directly.
-    if "runserver" in sys.argv:
-        logging.info("You requested to run runserver; instead, we're funneling you through our 'kaserve' command.")
-        sys.argv[sys.argv.index("runserver")] = "kaserve"
-
-    elif "runcherrypyserver" in sys.argv and "stop" not in sys.argv:
-        logging.info("You requested to run runcherrypyserver; instead, we're funneling you through our 'kaserve' command.")
-        sys.argv[sys.argv.index("runcherrypyserver")] = "kaserve"
 
     ########################
     # Run it.

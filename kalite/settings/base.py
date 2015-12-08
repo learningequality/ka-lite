@@ -98,6 +98,10 @@ IS_SOURCE = (
 )
 SOURCE_DIR = None
 
+# DB_TEMPLATE_FILE should point to a pre-generated database with no rows.
+# If it exists and DATABASES["default"]["name"] file does not, then the latter will be copied from the former
+# in the setup mgmt command.
+DB_TEMPLATE_FILE = None
 
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
@@ -127,6 +131,14 @@ if IS_SOURCE:
 
 else:
     _data_path = os.path.join(ROOT_DATA_PATH,)
+
+    # If we're not running as source, then we should include a blank, pre-migrated db in this location,
+    # to be copied to user's KALITE_HOME.
+    DB_TEMPLATE_FILE = os.path.join(
+        ROOT_DATA_PATH,
+        "database",
+        "data.sqlite",
+    )
 
     # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
     PROJECT_PATH = os.environ.get(
@@ -238,21 +250,6 @@ STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
 
 DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
 
-# This database is located in the content root because then it can be copied
-# together with the other media files located there.
-# Users changing CONTENT_ROOT have to change DATABASES['assessment_items']['NAME']
-# to match
-__assessment_items_database_path = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
-
-# Are assessment items distributed in the system-wide data directory?
-# TODO: This is hard-coded as we do not expect users setting their own CONTENT_ROOT
-# to deviate from the system wide location
-ASSESSMENT_ITEMS_SYSTEM_WIDE = os.path.isfile(os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite'))
-
-if ASSESSMENT_ITEMS_SYSTEM_WIDE:
-    __assessment_items_database_path = os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite')
-
-
 DATABASES = getattr(local_settings, "DATABASES", {
     "default": {
         "ENGINE": getattr(local_settings, "DATABASE_TYPE", "django.db.backends.sqlite3"),
@@ -260,16 +257,8 @@ DATABASES = getattr(local_settings, "DATABASES", {
         "OPTIONS": {
             "timeout": 60,
         },
-    },
-    "assessment_items": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": __assessment_items_database_path,
-        "OPTIONS": {
-        },
     }
 })
-
-DATABASE_ROUTERS = ["kalite.router.TopicToolsRouter", ]
 
 INTERNAL_IPS = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
@@ -340,14 +329,12 @@ INSTALLED_APPS = [
     'kalite.updates',
     'kalite.facility',
     'kalite.student_testing',
-    'kalite.store',
     'kalite.topic_tools',
     'kalite.contentload',
     'kalite.dynamic_assets',
     'kalite.remoteadmin',
     'kalite.inline',
     'kalite.i18n',
-    'kalite.ab_testing',
     'kalite.control_panel',
     'dbbackup',
 ]
@@ -375,7 +362,6 @@ MIDDLEWARE_CLASSES = [
     'securesync.middleware.DBCheck',
     'django.middleware.common.CommonMiddleware',
     'kalite.distributed.middleware.LockdownCheck',
-    'kalite.student_testing.middleware.ExamModeCheck',
     'django.middleware.gzip.GZipMiddleware',
     'django_snippets.session_timeout_middleware.SessionIdleTimeout'
 ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
@@ -499,7 +485,6 @@ from securesync.settings import *
 from fle_utils.chronograph.settings import *
 from kalite.facility.settings import *
 from kalite.main.settings import *
-from kalite.student_testing.settings import *
 
 # Import from applications with problematic __init__.py files
 from kalite.legacy.i18n_settings import *

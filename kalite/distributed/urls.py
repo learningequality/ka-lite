@@ -17,8 +17,6 @@ import kalite.coachreports.urls
 import kalite.control_panel.urls
 import kalite.facility.urls
 import kalite.updates.urls
-import kalite.student_testing.urls
-import kalite.store.urls
 import securesync.urls
 
 from kalite.contentload import settings as contentload_settings
@@ -91,9 +89,6 @@ if "kalite.testing.loadtesting" in settings.INSTALLED_APPS:
 urlpatterns += patterns(__package__ + '.views',
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^search/$', 'search', {}, 'search'),
-    url(r'^test/', include(kalite.student_testing.urls)),
-
-    url(r'^store/', include(kalite.store.urls)),
     # the following pattern is a catch-all, so keep it last:
 
     # Allows remote admin of the distributed server

@@ -23,6 +23,20 @@ How do I change KA Lite's content folder?
 
 If you want to change your installation's content folder from the default (say, to point to a shared folder across installations), see how to configure CONTENT_ROOT in the ":ref:`configuration-settings`" section.
 
+How do I change the directory where *all* of KA Lite's runtime files go, including content?
+-------------------------------------------------------------------------------------------
+
+You can change this directory by setting the ``KALITE_HOME`` environment variable to the path of your choice.
+
+If the variable is left unset (default), KA Lite's runtime files will be placed in your user's home directory under the ``.kalite`` subdirectory. Typically, it is ``/home/user/.kalite/`` (on Windows, locate something like
+``C:\Documents and Settings\<username>\.kalite``).
+
+There are many ways to set an environment variable either temporarily or permanently. To start ``kalite`` on OSX or Linux with a different home, run::
+
+    KALITE_HOME=/path/to/home kalite start
+
+The change requires that you first stop the server, change the ``KALITE_HOME`` environment variable, and then copy the contents from the default ``.kalite`` directory to the new directory you just specified. When you start the server again, all your files should be seamlessly detected at that location.
+
 Is there somewhere I can find Spanish language content organized by topic?
 --------------------------------------------------------------------------
 

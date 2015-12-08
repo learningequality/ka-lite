@@ -40,7 +40,6 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from kalite.facility.models import FacilityUser
-from kalite.topic_tools.content_models import get_random_content
 
 # Use these for now, so that we don't DROurselves, but eventually
 # we'll want to move away from mixins.
@@ -50,9 +49,10 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 # Maximum time to wait when trying to find elements
-MAX_WAIT_TIME = 10
+MAX_WAIT_TIME = 30
 # Maximum time to wait for a page to load.
 MAX_PAGE_LOAD_TIME = 5
+
 
 def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
     try:
@@ -63,43 +63,46 @@ def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
     except TimeoutException:
         return False
 
+
 def rgba_to_hex(rgba_string):
     """
     Returns an uppercase HEX representation of an rgba(xxx, yyy, zzz, a) string
     """
     return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
 
-def assert_no_element_by_css_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+
+def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Raises a TimeoutException if the element is *still* found after wait_time seconds.
+
+    :param context: A behave context
+    :param by: selenium.webdriver.common.by.By constant
+    :param value: A value to go with by, to build a locator
+    :param wait_time: The wait time in seconds.
+    :return: Nothing, or raises a TimeoutException.
+    """
+    WebDriverWait(context.browser, wait_time).until_not(
+        EC.presence_of_element_located((by, value))
+    )
+
+
+def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_PAGE_LOAD_TIME):
     """
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
     Finds the element using a CSS Selector.
     """
-    try:
-        wait_elem = context.browser.find_element_by_css_selector(elem)
-        WebDriverWait(context.browser, wait_time).until(
-            EC.staleness_of(wait_elem)
-        )
-    except NoSuchElementException:
-        pass
-    with context._runner.test_case.assertRaises(NoSuchElementException):
-        context.browser.find_element_by_css_selector(elem)
+    _assert_no_element_by(context, By.CSS_SELECTOR, css_value, wait_time)
 
-def assert_no_element_by_xpath_selector(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
+
+def assert_no_element_by_xpath_selector(context, xpath, wait_time=MAX_PAGE_LOAD_TIME):
     """
     Assert that no element is found. Use a wait in case the element currently exists
     on the page, and we want to wait for it to disappear before doing the assert.
     Finds the element using XPATH.
     """
-    try:
-        wait_elem = context.browser.find_element_by_xpath(elem)
-        WebDriverWait(context.browser, wait_time).until(
-            EC.staleness_of(wait_elem)
-        )
-    except NoSuchElementException:
-        pass
-    with context._runner.test_case.assertRaises(NoSuchElementException):
-        context.browser.find_element_by_xpath(elem)
+    _assert_no_element_by(context, By.XPATH, xpath, wait_time)
+
 
 def click_and_wait_for_page_load(context, elem, wait_time=MAX_PAGE_LOAD_TIME):
     """ Click an element and then wait for the page to load. Does this by
@@ -137,12 +140,15 @@ def elem_is_invisible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     wait_time: sets the max wait time. Optional, but has a default value.
     Returns True if the element is invisible or stale, otherwise waits and returns False
     """
-    if elem.get_attribute("id"):
-        by = (By.ID, elem.get_attribute("id"))
-    elif elem.get_attribute("class"):
-        by = (By.CLASS_NAME, elem.get_attribute("class"))
-    else:
-        assert False, "No way to select element."
+    try:
+        if elem.get_attribute("id"):
+            by = (By.ID, elem.get_attribute("id"))
+        elif elem.get_attribute("class"):
+            by = (By.CLASS_NAME, elem.get_attribute("class"))
+        else:
+            assert False, "No way to select element."
+    except StaleElementReferenceException:
+        return True
     try:
         WebDriverWait(context.browser, wait_time).until(
             EC.invisibility_of_element_located(by)
@@ -180,7 +186,7 @@ def find_css_class_with_wait(context, css_class, **kwargs):
     css_class: A string with the css class (no leading .)
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.CLASS_NAME, css_class), **kwargs)
 
@@ -206,6 +212,7 @@ def find_id_with_wait(context, id_str, **kwargs):
     """
     return _find_elem_with_wait(context, (By.ID, id_str), **kwargs)
 
+
 def id_shown_with_wait(context, id_str, **kwargs):
     """ Tries to find an element with given id with an explicit timeout.
     context: a behave context
@@ -223,9 +230,10 @@ def find_xpath_with_wait(context, id_str, **kwargs):
     id_str: A string with the XPATH (no leading #)
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.XPATH, id_str), **kwargs)
+
 
 def find_css_with_wait(context, id_str, **kwargs):
     """ Tries to find an element with given css selector with an explicit timeout.
@@ -233,9 +241,10 @@ def find_css_with_wait(context, id_str, **kwargs):
     id_str: A string with the CSS Selector
     kwargs: can optionally pass "wait_time", which will be the max wait time in
         seconds. Default is defined by behave_helpers.py
-    Returns the element if found or None
+    Returns the element if found or raises TimeoutException
     """
     return _find_elem_with_wait(context, (By.CSS_SELECTOR, id_str), **kwargs)
+
 
 def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
@@ -249,6 +258,7 @@ def _find_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
         EC.presence_of_element_located(by)
     )
 
+
 def _find_clickable_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an enabled element with an explicit timeout.
     "Private" function to hide Selenium details.
@@ -260,6 +270,7 @@ def _find_clickable_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     return WebDriverWait(context.browser, wait_time).until(
         EC.element_to_be_clickable(by)
     )
+
 
 def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     """ Tries to find an element with an explicit timeout.
@@ -286,7 +297,7 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
         return None
 
 
-def build_url(context, url, params={}):
+def build_url(context, url, params=None):
     """
     Build a full url given a relative url, using the test server's address & port
     :param context: behave context
@@ -294,6 +305,9 @@ def build_url(context, url, params={}):
     :param params: a dictionary of GET parameters, which will be appended to the url. If empty, nothing changes.
     :return: The full url
     """
+    if not params:
+        params = {}
+
     url = urljoin(context.config.server_url, url)
     if params:
         url += "?" + urllib.urlencode(params)
@@ -319,6 +333,7 @@ def _login_user(context, username, password, facility=None):
     context.user = username
     assert resp, "Login failed. url: %s\ndata: %s" % (url, data)
 
+
 def login_as_learner(context, learner_name="mrpibb", learner_pass="abc123"):
     """ Log in as a learner specified by the optional arguments, or create
     such a user and log in if it doesn't exist.
@@ -334,7 +349,6 @@ def login_as_learner(context, learner_name="mrpibb", learner_pass="abc123"):
         context_wm.create_student(username=learner_name, password=learner_pass)
     facility = FacilityUser.objects.get(username=learner_name).facility.id
     _login_user(context, learner_name, learner_pass, facility=facility)
-
 
 
 def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
