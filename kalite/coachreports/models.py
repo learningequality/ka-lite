@@ -144,6 +144,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         self.score = kwargs.get("score")
         self.path = kwargs.get("path")
 
+    def user_progress_detail(cls, user_id, playlist_id):
         """
         Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
