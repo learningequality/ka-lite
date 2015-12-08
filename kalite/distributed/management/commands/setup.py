@@ -291,8 +291,14 @@ class Command(BaseCommand):
         else:
             database_file = None
 
+        database_exists = database_file and os.path.isfile(database_file)
+
+        # An empty file is created automatically even when the database dosn't
+        # exist. But if it's empty, it's safe to overwrite.
+        database_exists = database_exists and os.path.getsize(database_file) > 0
+
         if database_file:
-            if not os.path.exists(database_file):
+            if not database_exists:
                 install_clean = True
             else:
                 # We found an existing database file.  By default,
@@ -370,26 +376,12 @@ class Command(BaseCommand):
 
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
-            # This is an overwrite install; destroy the old db
-            dest_file = tempfile.mkstemp()[1]
-            print(
-                "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
-            shutil.move(database_file, dest_file)
-
-        # benjaoming: Commented out, this hits the wrong directories currently
-        # and should not be necessary.
-        # If we have problems with pyc files, we're doing something else wrong.
-        # See https://github.com/learningequality/ka-lite/issues/3487
-
-        # Should clean_pyc for (clean) reinstall purposes
-        # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
-
-        # If a db template exists, copy it instead of creating a new one, since migrations take a long time.
-        database_exists = os.path.isfile(settings.DEFAULT_DATABASE_PATH)
-
-        # An empty file is created automatically even when the database dosn't
-        # exist. But if it's empty, it's safe to overwrite.
-        database_exists = database_exists and os.path.getsize(settings.DEFAULT_DATABASE_PATH) > 0
+            if not settings.DB_TEMPLATE_FILE or database_file != settings.DB_TEMPLATE_FILE:
+                # This is an overwrite install; destroy the old db
+                dest_file = tempfile.mkstemp()[1]
+                print(
+                    "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
+                shutil.move(database_file, dest_file)
 
         if settings.DB_TEMPLATE_FILE and not database_exists:
             print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH))
