@@ -1,11 +1,7 @@
 import time
-import tempfile
-import getpass
 from kalite import version
-import hashlib
 import logging
 import os
-import json
 import sys
 import warnings
 
@@ -130,15 +126,7 @@ if IS_SOURCE:
     )
 
 else:
-    _data_path = os.path.join(ROOT_DATA_PATH,)
-
-    # If we're not running as source, then we should include a blank, pre-migrated db in this location,
-    # to be copied to user's KALITE_HOME.
-    DB_TEMPLATE_FILE = os.path.join(
-        ROOT_DATA_PATH,
-        "database",
-        "data.sqlite",
-    )
+    _data_path = ROOT_DATA_PATH
 
     # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
     PROJECT_PATH = os.environ.get(
@@ -213,6 +201,14 @@ else:
         os.mkdir(DEFAULT_DATABASE_PATH)
 
     DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'data.sqlite')
+
+    # If we're not running as source, then we should include a blank, pre-migrated db in this location,
+    # to be copied to user's KALITE_HOME.
+    DB_TEMPLATE_FILE = os.path.join(
+        ROOT_DATA_PATH,
+        "database",
+        "data.sqlite",
+    )
 
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security
@@ -301,7 +297,7 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
-from os.path import join, expanduser
+from os.path import expanduser
 
 BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
 DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
@@ -321,7 +317,7 @@ INSTALLED_APPS = [
     'fle_utils.django_utils',
     'fle_utils.config',
     'fle_utils.chronograph',
-    'fle_utils.testing', # needed to get the "runcode" command, which we sometimes tell users to run
+    'fle_utils.testing',  # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.django_cherrypy_wsgiserver',
     'kalite.coachreports',
     'kalite.distributed',
