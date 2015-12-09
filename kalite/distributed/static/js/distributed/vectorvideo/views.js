@@ -114,7 +114,7 @@ var VectorVideoView = ContentBaseView.extend({
         this.log_model.set("last_percent", percent);
 
         var progress = this.log_model.get("time_spent") / (this.audio_object.duration / 1000);
-
+console.log("here" + progress);
         return progress;
 
     },
@@ -197,7 +197,7 @@ var VectorVideoView = ContentBaseView.extend({
         window.ContentBaseView.prototype.close.apply(this);
     }
 
-   
+
 
 });
 
