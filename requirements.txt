@@ -22,4 +22,4 @@ youtube-dl==2015.11.24
 # fixed issue:
 # https://github.com/django-tastypie/django-tastypie/issues/1005
 # django-tastypie==0.12.2
-https://github.com/django-tastypie/django-tastypie/archive/e6bc34bea83d53552c7fc9dfa696ed7693fe22ab.zip#egg=django-tastypie-0.12.2dev0
+https://github.com/django-tastypie/django-tastypie/archive/e6bc34bea83d53552c7fc9dfa696ed7693fe22ab.zip#egg=django-tastypie-0.12.2
