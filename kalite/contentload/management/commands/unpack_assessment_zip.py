@@ -36,7 +36,7 @@ class Command(BaseCommand):
         ziplocation = args[0]
 
         if not should_upgrade_assessment_items() and not kwargs['force_download']:
-            logging.debug("Assessment item resources are in the right version. Skipping download;")
+            logging.debug("Assessment item resources are in the right version. Doing nothing.")
             return
 
         if is_valid_url(ziplocation):  # url; download the zip
@@ -110,4 +110,5 @@ def unpack_zipfile_to_content_folder(zf):
 
 def is_valid_url(url):
     parsed_url = urlparse.urlparse(url)
-    return bool(parsed_url.scheme)
+    allowed_methods = ("http", "https")  # urlparse("C:\folder") results in scheme = "c", so use a whitelist
+    return bool(parsed_url.scheme in allowed_methods)
