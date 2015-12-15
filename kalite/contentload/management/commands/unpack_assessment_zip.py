@@ -5,6 +5,8 @@ import zipfile
 import tempfile
 import sys
 import shutil
+import threading
+import time
 from distutils.version import StrictVersion
 from fle_utils.general import ensure_dir
 from optparse import make_option
@@ -61,9 +63,19 @@ class Command(BaseCommand):
         else:                   # file; just open it normally
             f = open(ziplocation, "rb")
 
+        def unpack():
+            zf = zipfile.ZipFile(f, "r")
+            unpack_zipfile_to_content_folder(zf)
+
+        unpack_thread = threading.Thread(target=unpack)
+        unpack_thread.daemon = True
+        unpack_thread.start()
         logging.info("Unpacking...")
-        zf = zipfile.ZipFile(f, "r")
-        unpack_zipfile_to_content_folder(zf)
+        while unpack_thread.is_alive():
+            time.sleep(1)
+            sys.stdout.write(".")
+            sys.stdout.flush()
+        unpack_thread.join()
 
         logging.info("Scanning items and updating content db...")
         call_command("annotate_content_items")
