@@ -35,5 +35,5 @@ module.exports = {
 	DataExportStateModel: DataExportStateModel,
 	ZoneCollection: ZoneCollection,
 	FacilityCollection: FacilityCollection,
-	GroupCollection: GroupCollection,
+	GroupCollection: GroupCollection
 };

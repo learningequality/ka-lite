@@ -197,6 +197,7 @@ def data_export(request):
         "all_zones_url": all_zones_url,
         "org": org,
         "zone": zone,
+        "is_facility_user": "true" if "facility_user" in request.session else "false",
     }
 
     return context
