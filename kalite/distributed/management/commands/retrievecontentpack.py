@@ -8,6 +8,8 @@ Usage:
   contentpackretrieve -h | --help
 
 """
+import json
+import os
 import urllib
 import tempfile
 import shutil
@@ -15,6 +17,9 @@ import zipfile
 
 from django.core.management.base import BaseCommand
 
+from fle_utils.general import ensure_dir
+
+from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path
 from kalite.topic_tools import settings
 
 from kalite.version import SHORTVERSION
@@ -36,8 +41,26 @@ class Command(BaseCommand):
         with tempfile.NamedTemporaryFile() as f:
             zf = download_content_pack(f, lang)
 
-            extract_catalog_files(zf)
+            extract_catalog_files(zf, lang)
             extract_content_db(zf, lang)
+            extract_content_pack_metadata(zf, lang)
+
+
+def extract_content_pack_metadata(zf, lang):
+    # stub for now, until we implement metadata creation on the maker side.
+    metadata_path = os.path.join(get_locale_path(lang), "{lang}_metadata.json".format(lang=lang))
+    barebones_metadata = {
+        "code": lang,
+        'software_version': SHORTVERSION,
+        'language_pack_version': 1,
+        'percent_translated': 100,
+        'subtitle_count': 0,
+        "name": "DEBUG",
+        'native_name': 'DEBUG',
+    }
+
+    with open(metadata_path, "wb") as f:
+        json.dump(barebones_metadata, f)
 
 
 def download_content_pack(fobj, lang):
@@ -52,8 +75,20 @@ def download_content_pack(fobj, lang):
     return zf
 
 
-def extract_catalog_files(zf):
-    pass
+def extract_catalog_files(zf, lang):
+    lang = lcode_to_django_lang(lang)
+    modir = get_po_filepath(lang)
+    ensure_dir(modir)
+
+    filename_mapping = {"frontend.mo": "djangojs.mo",
+                        "backend.mo": "django.mo"}
+
+    for zipmo, djangomo in filename_mapping.items():
+        zipmof = zf.open(zipmo)
+        mopath = os.path.join(modir, djangomo)
+        print("writing to %s" % mopath)
+        with open(mopath, "wb") as djangomof:
+            shutil.copyfileobj(zipmof, djangomof)
 
 
 def extract_content_db(zf, lang):
