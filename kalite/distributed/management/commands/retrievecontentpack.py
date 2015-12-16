@@ -20,7 +20,8 @@ from django.core.management import call_command
 
 from fle_utils.general import ensure_dir
 
-from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path
+from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
+    update_jsi18n_file
 from kalite.topic_tools import settings
 
 from kalite.version import SHORTVERSION
@@ -63,6 +64,7 @@ class Command(BaseCommand):
     def process_content_pack(self, zf, lang):
 
         extract_catalog_files(zf, lang)
+        update_jsi18n_file(lang)
         extract_content_db(zf, lang)
         extract_content_pack_metadata(zf, lang)
 
