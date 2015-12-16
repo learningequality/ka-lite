@@ -68,7 +68,7 @@ class Command(BaseCommand):
         extract_content_db(zf, lang)
         extract_content_pack_metadata(zf, lang)
 
-        call_command("annotate_content_items")
+        call_command("annotate_content_items", language=lang)
 
 
 def extract_content_pack_metadata(zf, lang):
