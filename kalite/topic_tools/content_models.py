@@ -231,6 +231,7 @@ def get_topic_nodes(parent=None, ids=None, **kwargs):
             Item.path,
             Item.slug,
         ).join(Parent, on=(Item.parent == Parent.pk)).where(selector)
+        return values
     elif ids:
         values = Item.select(
             Item.title,
@@ -242,8 +243,7 @@ def get_topic_nodes(parent=None, ids=None, **kwargs):
             Item.path,
             Item.slug,
         ).where(Item.id.in_(ids))
-
-    return values
+        return values
 
 
 @parse_data
