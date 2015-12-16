@@ -98,7 +98,6 @@ release: clean docs assets
 
 dist: clean docs assets
 	python setup.py sdist --formats=gztar,zip
-	python setup.py sdist --formats=gztar,zip --static
 	ls -l dist
 
 install: clean
