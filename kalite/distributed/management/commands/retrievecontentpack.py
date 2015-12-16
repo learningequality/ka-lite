@@ -15,7 +15,7 @@ import tempfile
 import shutil
 import zipfile
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
 from fle_utils.general import ensure_dir
@@ -33,20 +33,40 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        # TODO: change the codepath depending on whether they want to download
-        # or simply extract a content pack.
+        operation = args[0]
 
-        # parse out the options and raise errors if necessary
-        lang = args[0]
+        if operation == "download":
+            self.download(*args, **options)
+        elif operation == "retrieve":
+            self.retrieve(*args, **options)
+        else:
+            raise CommandError("Unknown operation: %s" % operation)
+
+    def download(self, *args, **options):
+
+        lang = args[1]
 
         with tempfile.NamedTemporaryFile() as f:
             zf = download_content_pack(f, lang)
+            self.process_content_pack(zf, lang)
 
-            extract_catalog_files(zf, lang)
-            extract_content_db(zf, lang)
-            extract_content_pack_metadata(zf, lang)
+    def retrieve(self, *args, **options):
 
-            call_command("annotate_content_items")
+        lang = args[1]
+        zippath = args[2]
+
+        assert os.path.isfile(zippath), "%s doesn't seem to be a file." % zippath
+
+        with zipfile.ZipFile(zippath) as zf:
+            self.process_content_pack(zf, lang)
+
+    def process_content_pack(self, zf, lang):
+
+        extract_catalog_files(zf, lang)
+        extract_content_db(zf, lang)
+        extract_content_pack_metadata(zf, lang)
+
+        call_command("annotate_content_items")
 
 
 def extract_content_pack_metadata(zf, lang):
