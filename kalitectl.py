@@ -95,9 +95,9 @@ import cherrypy
 
 # We do not understand --option value, only --option=value.
 # Match all patterns of "--option value" and fail if they exist
-__validate_cmd_options = re.compile(r"--?[^\s]+\s+(?:(?!--|-[\w]))")
+__validate_cmd_options = re.compile(r"-[^\s-]\s+")
 if __validate_cmd_options.search(" ".join(sys.argv[1:])):
-    sys.stderr.write("Please only use --option=value or -x123 patterns. No spaces allowed between option and value. The option parser gets confused if you do otherwise.\n\nWill be fixed in a future release.")
+    sys.stderr.write("Please only use the -x123 pattern. No spaces allowed between option and value with short-form options. The option parser gets confused if you do otherwise.\n\nWill be fixed in a future release.")
     sys.exit(1)
 
 from threading import Thread
@@ -866,6 +866,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
     the end (for proxying django options)."""
     if argv is None:
         argv = sys.argv[1:]
+    raw_argv = argv[:]
 
     DocoptExit.usage = printable_usage(doc)
     options = parse_defaults(doc)
@@ -882,10 +883,31 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):  # @Re
     # if matched and left == []:  # better error message if left?
     if collected:  # better error message if left?
         result = Dict((a.name, a.value) for a in (pattern.flat() + collected))
-        collected_django_options = len(result.get('DJANGO_OPTIONS', []))
+        # For every collected item, prune it from raw_argv and we'll deal with what's left
+        # A couple of special cases to watch for
+        for item in collected:
+            raw_argv_copy = raw_argv[:]
+            for index, arg in enumerate(raw_argv_copy):
+                try:
+                    if arg.startswith(item.name):
+                        # Two cases:
+                        # 1. raw_argv looks like: ['--port', '8010'] and item is Option(None, '--port', 1, '8010')
+                        #    Then remove both the option and its value from raw_argv
+                        # 2. raw_argv looks like: ['--port'] and item is Option(None, '--port', 0, None), i.e. --port takes no arguments
+                        #    Then just remove the --port option.
+                        try:
+                            if str(item.value) == raw_argv_copy[index+1]:
+                                raw_argv.pop(raw_argv.index(str(item.value)))
+                        except IndexError:
+                            pass
+                        raw_argv.pop(raw_argv.index(arg))
+                    elif type(item.value) in (str, unicode, tuple) and arg.startswith(item.value):
+                        # Happens when item is Argument("COMMAND", "foo") and argv is ["kalite", "manage", "foo"]
+                        raw_argv.pop(raw_argv.index(arg))
+                except ValueError:
+                    pass  # In vase we try to remove the same value from raw_argv too many times
         result['DJANGO_OPTIONS'] = (
-            result.get('DJANGO_OPTIONS', []) +
-            sys.argv[len(collected) + (collected_django_options or 1):]
+            [arg for arg in raw_argv if arg not in result.get('DJANGO_OPTIONS', [])] + result.get('DJANGO_OPTIONS', [])
         )
         # If any of the collected arguments are also in the DJANGO_OPTIONS,
         # then exit because we don't want users to have put options for kalite
