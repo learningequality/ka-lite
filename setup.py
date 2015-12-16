@@ -30,7 +30,7 @@ if 'bdist_wheel' in sys.argv:
 where_am_i = os.path.dirname(os.path.realpath(__file__))
 
 # Handle requirements
-raw_requirements = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
+RAW_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
 
 def filter_requirement_statements(req):
     """Filter comments and blank lines from a requirements.txt like file
@@ -46,13 +46,13 @@ def filter_requirement_statements(req):
 
 
 # Filter out comments from requirements
-raw_requirements = map(filter_requirement_statements, raw_requirements)
-raw_requirements = filter(lambda x: bool(x), raw_requirements)
+RAW_REQUIREMENTS = map(filter_requirement_statements, RAW_REQUIREMENTS)
+RAW_REQUIREMENTS = filter(lambda x: bool(x), RAW_REQUIREMENTS)
 
 # Special parser for http://blah#egg=asdasd-1.2.3
 DIST_REQUIREMENTS = []
 DEPENDENCY_LINKS = []
-for req in raw_requirements:
+for req in RAW_REQUIREMENTS:
     if req.startswith("https://"):
         DEPENDENCY_LINKS.append(req)
         __, req = req.split("#egg=")
@@ -298,13 +298,17 @@ if STATIC_BUILD:
         opts.ignore_dependencies = True
         opts.use_wheel = False
         opts.no_clean = False
+        # Hotfix for the one single tastypie dependency link. Not nice.
+        # To be removed as soon as an upstream tastypie fixes our
+        # Django 1.5 issue
+        opts.process_dependency_links = True
         command.run(opts, distributions)
         # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
         # requirement_set.install(opts)
 
     # Install requirements into dist-packages
     if DIST_BUILDING_COMMAND:
-        install_distributions(STATIC_REQUIREMENTS)
+        install_distributions(RAW_REQUIREMENTS)
 
     # Empty the requirements.txt file
 
