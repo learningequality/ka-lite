@@ -4,7 +4,7 @@ contents to their correct locations.
 
 Usage:
   contentpackretrieve download <lang>
-  contentpackretrieve retrieve <lang> <packpath>
+  contentpackretrieve local <lang> <packpath>
   contentpackretrieve -h | --help
 
 """
@@ -38,8 +38,8 @@ class Command(BaseCommand):
 
         if operation == "download":
             self.download(*args, **options)
-        elif operation == "retrieve":
-            self.retrieve(*args, **options)
+        elif operation == "local":
+            self.local(*args, **options)
         else:
             raise CommandError("Unknown operation: %s" % operation)
 
@@ -51,7 +51,7 @@ class Command(BaseCommand):
             zf = download_content_pack(f, lang)
             self.process_content_pack(zf, lang)
 
-    def retrieve(self, *args, **options):
+    def local(self, *args, **options):
 
         lang = args[1]
         zippath = args[2]
