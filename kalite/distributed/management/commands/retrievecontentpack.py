@@ -16,6 +16,7 @@ import shutil
 import zipfile
 
 from django.core.management.base import BaseCommand
+from django.core.management import call_command
 
 from fle_utils.general import ensure_dir
 
@@ -44,6 +45,8 @@ class Command(BaseCommand):
             extract_catalog_files(zf, lang)
             extract_content_db(zf, lang)
             extract_content_pack_metadata(zf, lang)
+
+            call_command("annotate_content_items")
 
 
 def extract_content_pack_metadata(zf, lang):
