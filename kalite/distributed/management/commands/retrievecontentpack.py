@@ -15,14 +15,19 @@ import tempfile
 import shutil
 import zipfile
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 from django.core.management import call_command
+from django.utils.translation import ugettext as _
+
+from django.conf import settings as django_settings
+logging = django_settings.LOG
 
 from fle_utils.general import ensure_dir
 
 from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
     update_jsi18n_file
 from kalite.topic_tools import settings
+from kalite.updates.management.commands.classes import UpdatesStaticCommand
 
 from kalite.version import SHORTVERSION
 
@@ -30,15 +35,23 @@ CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads" +
                              "/ka-lite/{version}/content/contentpacks/{code}.zip")
 
 
-class Command(BaseCommand):
+class Command(UpdatesStaticCommand):
+
+    stages = (
+        "retrieve_language_pack",
+        "extract_files",
+        "check_availability",
+    )
 
     def handle(self, *args, **options):
 
         operation = args[0]
 
         if operation == "download":
+            self.start(_("Downloading content pack."))
             self.download(*args, **options)
         elif operation == "local":
+            self.start(_("Installing a local content pack."))
             self.local(*args, **options)
         else:
             raise CommandError("Unknown operation: %s" % operation)
@@ -63,12 +76,16 @@ class Command(BaseCommand):
 
     def process_content_pack(self, zf, lang):
 
+        self.next_stage(_("Moving content files to the right place."))
         extract_catalog_files(zf, lang)
         update_jsi18n_file(lang)
         extract_content_db(zf, lang)
         extract_content_pack_metadata(zf, lang)
 
+        self.next_stage(_("Looking for available content items."))
         call_command("annotate_content_items", language=lang)
+
+        self.complete(_("Finished processing content pack."))
 
 
 def extract_content_pack_metadata(zf, lang):
@@ -111,7 +128,7 @@ def extract_catalog_files(zf, lang):
     for zipmo, djangomo in filename_mapping.items():
         zipmof = zf.open(zipmo)
         mopath = os.path.join(modir, djangomo)
-        print("writing to %s" % mopath)
+        logging.debug("writing to %s" % mopath)
         with open(mopath, "wb") as djangomof:
             shutil.copyfileobj(zipmof, djangomof)
 
