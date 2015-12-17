@@ -21,7 +21,7 @@ from kalite.updates.management.commands.classes import UpdatesStaticCommand
 
 from kalite.version import SHORTVERSION
 
-CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads" +
+CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
                              "/ka-lite/{version}/content/contentpacks/{code}.zip")
 
 
