@@ -3,9 +3,9 @@ Management command for downloading a language pack and extracting the
 contents to their correct locations.
 
 Usage:
-  contentpackretrieve download <lang>
-  contentpackretrieve local <lang> <packpath>
-  contentpackretrieve -h | --help
+  kalite manage retrievecontentpack download <lang>
+  kalite manage retrievecontentpack local <lang> <packpath>
+  kalite manage retrievecontentpack -h | --help
 
 """
 import json
