@@ -1,13 +1,3 @@
-"""
-Management command for downloading a language pack and extracting the
-contents to their correct locations.
-
-Usage:
-  kalite manage retrievecontentpack download <lang>
-  kalite manage retrievecontentpack local <lang> <packpath>
-  kalite manage retrievecontentpack -h | --help
-
-"""
 import json
 import os
 import urllib
@@ -36,6 +26,18 @@ CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads" +
 
 
 class Command(UpdatesStaticCommand):
+    """
+    Management command for downloading a language pack and extracting the
+    contents to their correct locations.
+
+    Usage:
+    kalite manage retrievecontentpack download <lang>
+    kalite manage retrievecontentpack local <lang> <packpath>
+    kalite manage retrievecontentpack -h | --help
+
+    """
+
+    help = __doc__
 
     stages = (
         "retrieve_language_pack",
