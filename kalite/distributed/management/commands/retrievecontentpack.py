@@ -121,8 +121,13 @@ def download_content_pack(fobj, lang):
         code=lang,
     )
 
-    urllib.urlretrieve(url, filename=fobj.name)
-    zf = zipfile.ZipFile(fobj.name)
+    httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
+
+    shutil.copyfileobj(httpf, fobj)
+    fobj.seek(0)
+    zf = zipfile.ZipFile(fobj)
+
+    httpf.close()
 
     return zf
 
