@@ -65,6 +65,7 @@ class Command(UpdatesStaticCommand):
         with tempfile.NamedTemporaryFile() as f:
             zf = download_content_pack(f, lang)
             self.process_content_pack(zf, lang)
+            zf.close()
 
     def local(self, *args, **options):
 
