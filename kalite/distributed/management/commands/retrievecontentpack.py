@@ -1,13 +1,3 @@
-"""
-Management command for downloading a language pack and extracting the
-contents to their correct locations.
-
-Usage:
-  contentpackretrieve download <lang>
-  contentpackretrieve retrieve <lang> <packpath>
-  contentpackretrieve -h | --help
-
-"""
 import json
 import os
 import urllib
@@ -15,42 +5,101 @@ import tempfile
 import shutil
 import zipfile
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import CommandError
 from django.core.management import call_command
+from django.utils.translation import ugettext as _
+
+from django.conf import settings as django_settings
+logging = django_settings.LOG
 
 from fle_utils.general import ensure_dir
 
-from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path
+from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
+    update_jsi18n_file
 from kalite.topic_tools import settings
+from kalite.updates.management.commands.classes import UpdatesStaticCommand
 
 from kalite.version import SHORTVERSION
 
-CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads" +
+CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
                              "/ka-lite/{version}/content/contentpacks/{code}.zip")
 
 
-class Command(BaseCommand):
+class Command(UpdatesStaticCommand):
+    """
+    Management command for downloading a language pack and extracting the
+    contents to their correct locations.
+
+    Usage:
+    kalite manage retrievecontentpack download <lang>
+    kalite manage retrievecontentpack local <lang> <packpath>
+    kalite manage retrievecontentpack -h | --help
+
+    """
+
+    help = __doc__
+
+    stages = (
+        "retrieve_language_pack",
+        "extract_files",
+        "check_availability",
+    )
 
     def handle(self, *args, **options):
 
-        # TODO: change the codepath depending on whether they want to download
-        # or simply extract a content pack.
+        operation = args[0]
 
-        # parse out the options and raise errors if necessary
-        lang = args[0]
+        if operation == "download":
+            self.start(_("Downloading content pack."))
+            self.download(*args, **options)
+        elif operation == "local":
+            self.start(_("Installing a local content pack."))
+            self.local(*args, **options)
+        else:
+            raise CommandError("Unknown operation: %s" % operation)
+
+    def download(self, *args, **options):
+
+        lang = args[1]
 
         with tempfile.NamedTemporaryFile() as f:
             zf = download_content_pack(f, lang)
+            self.process_content_pack(zf, lang)
+            zf.close()
 
-            extract_catalog_files(zf, lang)
-            extract_content_db(zf, lang)
-            extract_content_pack_metadata(zf, lang)
+    def local(self, *args, **options):
 
-            call_command("annotate_content_items")
+        lang = args[1]
+        zippath = args[2]
+
+        assert os.path.isfile(zippath), "%s doesn't seem to be a file." % zippath
+
+        with zipfile.ZipFile(zippath) as zf:
+            self.process_content_pack(zf, lang)
+
+    def process_content_pack(self, zf, lang):
+
+        self.next_stage(_("Moving content files to the right place."))
+        extract_catalog_files(zf, lang)
+        update_jsi18n_file(lang)
+        extract_content_db(zf, lang)
+        extract_content_pack_metadata(zf, lang)
+
+        self.next_stage(_("Looking for available content items."))
+        call_command("annotate_content_items", language=lang)
+
+        self.complete(_("Finished processing content pack."))
 
 
 def extract_content_pack_metadata(zf, lang):
-    # stub for now, until we implement metadata creation on the maker side.
+    # NOTE (aronasorman): For KA Lite to detect and display a new language
+    # there has to be a metadata file present in the content pack. However I
+    # have not implemented the metadata generation on the content-pack-maker
+    # repo yet. To get around that and allow non-english language packs to be
+    # detected this function generates a fake metadata file.
+
+    # the eventual goal of this function is, as indicated by the function name,
+    # to extract the soon-to-be present metadata file into the right directory.
     metadata_path = os.path.join(get_locale_path(lang), "{lang}_metadata.json".format(lang=lang))
     barebones_metadata = {
         "code": lang,
@@ -72,8 +121,13 @@ def download_content_pack(fobj, lang):
         code=lang,
     )
 
-    urllib.urlretrieve(url, filename=fobj.name)
-    zf = zipfile.ZipFile(fobj.name)
+    httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
+
+    shutil.copyfileobj(httpf, fobj)
+    fobj.seek(0)
+    zf = zipfile.ZipFile(fobj)
+
+    httpf.close()
 
     return zf
 
@@ -89,7 +143,7 @@ def extract_catalog_files(zf, lang):
     for zipmo, djangomo in filename_mapping.items():
         zipmof = zf.open(zipmo)
         mopath = os.path.join(modir, djangomo)
-        print("writing to %s" % mopath)
+        logging.debug("writing to %s" % mopath)
         with open(mopath, "wb") as djangomof:
             shutil.copyfileobj(zipmof, djangomof)
 
