@@ -315,18 +315,24 @@ class CachedPassword(models.Model):
 
 class AssessmentItemsDownloadProgress(models.Model):
     """
-    Model representing the download/installation process for assessment items.
-    When created, should be associated with a process to download/install
+    Model representing the download process for assessment items.
+    When created, should be associated with a process to download
     assessment items. The process will update the model's progress field.
     When deleted, should kill the process. 
     """
     progress = models.IntegerField(default=0)
     
     def save(self, *args, **kwargs):
-        # start a new process which starts the d
+        # start a new process which starts the dl
         path = os.path.abspath(__file__).rsplit("/",1)[0]
+
+        # spawn new process with current working directory set to parent
+        # directory, so that it can import all of the appropriate modules
+        new_cwd = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+         
         self.process = subprocess.Popen(["python", 
-                                         os.path.join(path, "dl_assess.py")])
+                                         os.path.join(path, "dl_assess.py")],
+                                        cwd=new_cwd)
         
         super(AssessmentItemsDownloadProgress, self).save(*args, **kwargs)
 

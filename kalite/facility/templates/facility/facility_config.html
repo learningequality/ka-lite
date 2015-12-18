@@ -7,17 +7,18 @@
 {% endblock headcss %}
 
 {% block headjs %}
+    <script type="text/javascript">
+        var need_update = "{{ need_update }}";
+        var default_hostname = "{{ default_hostname }}";
+        var csrftoken = "{{ csrf_token }}";
+    </script>
+
     <script src="{% static 'js/facility/bundles/bundle_facility.js' %}"> </script>
 {% endblock headjs %}
 
 {% block content %}
 
 {% csrf_token %}
-<script type="text/javascript">
-    var need_update = "{{ need_update }}";
-    var default_hostname = "{{ default_hostname }}";
-    var csrftoken = "{{ csrf_token }}";
-</script>
 
 {% endblock content %}
 

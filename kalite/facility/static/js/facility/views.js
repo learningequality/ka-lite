@@ -1,5 +1,9 @@
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
+var DownloadAssessmentProgressModel = require("./models").DownloadAssessmentProgressModel;
+
+require("../../css/facility/config_form.less");
+
 
 var UpdateVersionView = BaseView.extend({
     template: require("./hbtemplates/UpdateVersion.handlebars"),
@@ -15,80 +19,12 @@ var UpdateVersionView = BaseView.extend({
 
 });
 
-var CreateDeviceAndUserView = BaseView.extend({
-    template: require("./hbtemplates/CreateDeviceAndUser.handlebars"),
-
-    initialize: function(options) {
-        console.log("create device and users view initialized");
-        _.bindAll(this, "render");
-        this.csrf_token = options.data.split("csrftoken=");
-        this.csrf_token = this.csrf_token[1];
-
-/**
-        this.model.username = "";
-        this.model.password = "";
-        this.model.password_confirm = "";
-        this.model.device_desc = "";
-        this.model.device_name = "";
-**/
-    },
-
-    render: function(){
-        this.$el.html(this.template());
-        $('#content-container').append(this.el);    //is there a way to do this
-                                                    //while referencing the config
-                                                    //settings view?? 
-
-        $('#create-user-form').append('<input type="hidden" ' +
-                                      'name="csrfmiddlewaretoken" ' + 
-                                      'value="' + this.csrf_token + '">');
-    },
-
-    events: {
-        'change .user': 'on_user_attributes_change',
-    },
-
-    on_user_attributes_change: function() {
-        console.log("CreateDeviceAndUserView: on_user_attributes_change");
-
-        var username = $('input[name="username"]').val().length;
-        var pw = $('input[name="password"]').val().length;
-        var pw_confirm = $('input[name="password_confirm"]').val().length;
-
-        // display device configuration form inputs if superuser fields filled
-        if (username > 0 && pw > 0 && pw_confirm > 0) {
-            $("#device-config").show();
-        }
-        //do we even need to set attributes for this model VV ?
-        /**
-        var form = $(this.el).find('#create-user-form');
-        console.log("this is form:");
-        console.log(form);
-
-        // if all attributes are okay, set model, then show device prompts
-        this.model.set({
-            username: form.find('#username').val(),
-            password: form.find('#password').val(),
-            //device_name = form.find('#username').val();
-            //device_desc = form.find('#username').val();
-        }); **/
-    },
-
-    // pressing the "next" button should trigger on_complete
-    on_complete: function() {
-        console.log("CreateDeviceAndUserView: on_complete: make post request" +
-            "to endpoint which creates the user and sets device info.");
-    }
-}); 
 
 var ConfigSettingsView = BaseView.extend({
     el: '#content-container',
 
     initialize: function(options) {
         _.bindAll(this, "render");
-
-        this.csrf_token = options.data.split("csrftoken=");
-        this.csrf_token = this.csrf_token[1];
 
         // display option to update if available -- need to work on this, after
         if (need_update === "True") {
@@ -98,74 +34,145 @@ var ConfigSettingsView = BaseView.extend({
         }
 
         this.createDeviceAndUserView = this.add_subview(CreateDeviceAndUserView, options);
-        this.dlAssessProgView = this.add_subview(DownloadAssessmentProgressView);
+
+        var downloadProgressModel = new DownloadAssessmentProgressModel();
+        this.dlAssessProgView = this.add_subview(DownloadAssessmentProgressView, 
+                                                    { model: downloadProgressModel });
         
         // add listener for subview when complete
-        this.render();
+        this.listenTo(this.createDeviceAndUserView, 'complete', this.render);
+
+        this.render(options);
     },
 
-    tester: function() {
-        console.log("create device and user view was clicked, so this fires");
+    render: function(options) {
+        if (options){
+            this.createDeviceAndUserView.render(options);
+        }
+        else {
+            console.log("else render dl assess view");
+            this.dlAssessProgView.render();
+        }
+    }
+}); 
+
+
+var CreateDeviceAndUserView = BaseView.extend({
+    template: require("./hbtemplates/CreateDeviceAndUser.handlebars"),
+
+    initialize: function(options) {
+        _.bindAll(this, "render");
+
+        this.options = options;
+        this.csrf_token = options.csrftoken;
     },
 
-    render: function() {
-        // render the fist subview -- CreateDeviceAndUser
-        //this.$el.append(this.createDeviceAndUserView.$el);
+    render: function(options){
+        this.$el.html(this.template(options));
+        $('#content-container').append(this.el);    //is there a way to do this
+                                                    //while referencing the config
+                                                    //settings view's "el"?? 
 
-        this.createDeviceAndUserView.render();
+        $('#config-form').append('<input type="hidden" ' +
+                                      'name="csrfmiddlewaretoken" ' + 
+                                      'value="' + this.csrf_token + '">');
+    },
+
+    events: {
+        'change .user-config': 'on_user_attributes_change',
+        'click button': 'submit_form'
+    },
+
+    on_user_attributes_change: function() {
+        var username = $('input[name="username"]').val();
+        var pw = $('input[name="password"]').val();
+        var pw_confirm = $('input[name="pw_confirm"]').val();
+
+        // display device configuration form inputs once superuser fields filled,
+        // and only if the password fields match
+        if (username.length > 0 && pw.length > 0 && pw_confirm.length > 0) {
+            if (pw !== pw_confirm) {
+                //make it red
+                $('#pw_error').append('* Passwords do not match.');
+            }
+            else {
+                $('#pw_error').empty();
+                $(".device-form").show();
+            }
+        }
+    },
+
+    submit_form: function(e) {
+        var options = {
+            "username": $('input[name="username"]').val(),
+            "pw": $('input[name="password"]').val(),
+            "pw_confirm": $('input[name="pw_confirm"]').val(),
+            "hostname":  $('input[name="hostname"]').val(),
+            "host_descrip": $('input[name="decsription"]').val(),
+        };
+
+        var that = this;
+        $.ajax({
+            type: "POST",
+            url: "/facility/config/",
+            data: options,
+
+            // on success, hide form and signal to ConfigView that form has been complete
+            success: function(data){
+                console.log("post request success, emptying form to make room for next part");
+                $('#config-form').empty();
+                that.trigger("complete");
+            }
+        }); 
+
+        // prevents the page from refreshing after POST
+        e.preventDefault();
     }
 }); 
 
 
 var DownloadAssessmentProgressView = BaseView.extend({
-    template: require("./hbtemplates/test.handlebars"),
+    template: require("./hbtemplates/DownloadAssessment.handlebars"),
 
     initialize: function() {
-        console.log("download assessment progress view initialized");
         _.bindAll(this, "render");
         //this.render();
     },
+    
+    render: function() {
+        this.$el.html(this.template());
+        $("#content-container").append(this.el);
+    },
 
     events: {
-        "click": function() {
-            console.log("I was clicked, model is:" + this.model.urlRoot);
-            $.ajax({
-                url: "/securesync/api/dl_progress/",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({"progress": 0})
-            });
-            console.log("Fetching model after posting");
+        'click #download': 'download' 
+    },
+
+    download: function() {
+        console.log("download assessment button clicked");
+        console.log(this.model.urlRoot);
+        
+        $.ajax({
+            url: this.model.urlRoot,//"/securesync/api/dl_progress/",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({"progress": 0})
+        });
+        console.log("Fetching model after posting");
+        /*
+        //fetch progress model every x seconds to update display
+        /**setInterval(function() {
+            console.log("fetching model...");
             this.model.fetch({
                 success: function(model, response, options){
                     console.log("Fetch model success.");
-                    console.log(response);
-                    console.log("model fetched:");
-                    console.log(model);
                 },
                 error: function(model, response, options){
                     console.log("UNABLE TO FETCH MODEL.");
                 }
             });
-            //fetch progress model every x seconds to update display
-            /**setInterval(function() {
-                console.log("fetching model...");
-                this.model.fetch({
-                    success: function(model, response, options){
-                        console.log("Fetch model success.");
-                    },
-                    error: function(model, response, options){
-                        console.log("UNABLE TO FETCH MODEL.");
-                    }
-                });
-            }, 1000);
-            **/ 
-        }
-    },
-
-    render: function() {
-        this.$el.html(this.template());
-        $("#content-container").append(this.el);
+        }, 1000);
+        **/ 
     }
 });
 

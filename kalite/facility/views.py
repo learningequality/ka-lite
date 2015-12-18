@@ -191,34 +191,37 @@ def group_edit(request, facility, group_id):
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
-@render_to("facility/facility_config2.html")
+#@render_to("facility/facility_config2.html")
+# we don't necessarily have to render anything on django end because
+# all you need to return is just some http response and the front end
+# will the render whatever subview it does in facility/views.js
 def config(request):
     """
     Calls command to configure database, admin account, and server info
     """
-    print "---------------db_config-------------------"
-    print request.POST
-
+    print "REACHED CONFIG, SERVER--------------"
+    name = "Bob the Builder"
     # Form is not complete unless password field is filled out
+    """
     if request.POST.get('password'):
         name = "default" #getpass.getuser().replace("-", "_")
-
+        
         if request.POST.get('username'):
             name = request.POST.get('username')
         
-            call_command("createsuperuser", username=name, 
-                         email='',interactive=False)
+            call_command("createsuperuser", username=name,
+                          email="dummy@learningequality.org", 
+                          interactive=False)
 
             admin = User.objects.get(username=name)
-            admin.set_password(password)
+            admin.set_password(request.POST.get('password'))
             admin.save()
-
-        #user = User.objects.get(is_superuser=True)
-
-    return { "username" : name }
+    """
+    #return { "username" : name }
+    return HttpResponse("rudolph the rednose reindeer")
 
 @render_to("facility/test.html")
-def dl_assess(request):
+def dl_progress(request):
     print "clicked dl assess button, dl_assess view-----------------"
     print request.POST
 

@@ -1,17 +1,39 @@
+    <form id="config-form" method="post" class="basic-form">
+        <div class="user-form">
+            <h4>Choose a username and password for the admin account.</h4>
+            <div class="user-config row">
+                <div class="col-md-2 col-xs-3">Username:</div>
+                <div class="col-md-10"><input class="user-input" type="text" name="username" ></div>
+            </div>
 
-    <form id="create-user-form" method="post" action="/facility/config/" class="basic-form">
-        <h4>Choose a username and password for the admin account.</h4>
+            <div class="user-config row">
+                <div class="col-md-2 col-xs-3">Password:</div> 
+                <div class="col-md-10"><input class="user-input" type="password" name="password"></div>
+            </div>
 
-        Username:<input type="text" name="username" class="user">
-        Password:<input type="password" name="password" class="user">
-        Re-type Password:<input type="password" name="password_confirm" class="user"><BR>
+            <div class="user-config row">
+                <div class="col-md-2 col-xs-3">Re-type Password:</div>
+                <div class="col-md-10"><input class="user-input" type="password" name="pw_confirm"></div>
+                <div id="pw_error"></div>
+            </div>
+        </div>
 
-        <div id="device-config">
-           <h4>Enter a hostname for this server. If left blank, it will default to {{ default_hostname }}</h4>
-            Hostname: <input type="text" name="hostname"><br>
+        <div class="device-form">
+            <h4>Enter a hostname for this server. If left blank, it will default to {{ default_hostname }}</h4>
+    
+            <div class="device-config row">
+                <div class="col-md-2 col-xs-3">Hostname:</div>
+                <div class="col-md-10"><input type="text" name="hostname"></div>
+            </div>
 
             <h4>Enter a one-line description for this server (optional). </h4>
-            Description: <input type="text" name="description"><br>
-            <button type="submit" value="Submit">Next</button>
-        </div>
+
+            <div class="device-config row">
+                <div class="col-md-2 col-xs-3">Description:</div>
+                <div class="col-md-10"><input type="text" name="description"></div>
+            </div>
+            <button id="submit">Next</button>
+
+        </div> 
+    
     </form>

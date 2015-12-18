@@ -40,7 +40,6 @@ def is_configured():
     Checks whether a system has been configured. For now, it simply 
     checks if a superuser exists.
     """
-    print "-----------IS_CONFIGURED--------------------------"
     database = False
     superuser = False
     need_update = False
@@ -52,7 +51,6 @@ def is_configured():
                 and settings.DATABASES["default"]["NAME"]) or None
 
     if database_file and os.path.exists(database_file):
-        print "Database exists!"
         database = True
 
         # Check for database version, if mismatch, ask user to update
@@ -69,7 +67,7 @@ def is_configured():
             # to see if it matches most updated version available
             assert Settings.get("database_version") == VERSION
 
-        except DatabaseError as e:
+        except DatabaseError as e: # -------------------------- remove
             call_command("syncdb", interactive=False)
             call_command("migrate", interactive=False)
         except AssertionError:
@@ -82,7 +80,7 @@ def is_configured():
         except ObjectDoesNotExist:
             print "Superuser DNE" 
 
-    # If database does not exist, sync and migrate
+    # If database does not exist, sync and migrate ----------- remove
     else:
         call_command("syncdb", interactive=False)
         call_command("migrate", interactive=False)
@@ -157,14 +155,14 @@ class ConfigCheck:
         # static files
         if response['Content-Type'].split(';')[0] == 'text/html': 
             db_exists = is_configured()
-            print "Configuration is currently as below:"
-            print db_exists
             if db_exists['superuser'] and not db_exists['need_update']:
                 return response
 
             # If device isn't configured, and user is trying to access KA Lite 
             # for the first time, load the form page to configure settings
-            if request.path != '/facility/config/':
+            if request.path != '/facility/config/' and \
+                    request.path != '/securesync/api/dl_progress':
+            
                 return config_form(request, db_exists)
 
         return response
