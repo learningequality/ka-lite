@@ -9,10 +9,9 @@ import zipfile
 from optparse import make_option
 from StringIO import StringIO
 
-from django.conf import settings; logging = settings.LOG
-import httplib
+from django.conf import settings
+logging = settings.LOG
 
-from ... import REMOTE_VIDEO_SIZE_FILEPATH
 from .classes import UpdatesStaticCommand
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
@@ -85,7 +84,6 @@ class Command(UpdatesStaticCommand, CronCommand):
             #
             self.next_stage(_("Creating static files for language pack '%(lang_code)s'") % {"lang_code": lang_code})
             update_jsi18n_file(lang_code)
-
 
             self.next_stage(_("Moving files to their appropriate local disk locations."))
             move_dubbed_video_map(lang_code)

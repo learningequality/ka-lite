@@ -1,8 +1,11 @@
 """Classes used by the student progress tastypie API"""
 import json
+from fle_utils.config.models import Settings
 
+from django.conf import settings
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext as _
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
@@ -44,10 +47,14 @@ class PlaylistProgress(PlaylistProgressParent):
             setattr(self, k, v)
 
     @classmethod
-    def user_progress(cls, user_id):
+    def user_progress(cls, user_id, language=None):
         """
         Return a list of PlaylistProgress objects associated with the user.
         """
+
+        if not language:
+            language = Settings.get("default_language") or settings.LANGUAGE_CODE
+
         user = FacilityUser.objects.get(id=user_id)
 
         # Retrieve video, exercise, and quiz logs that appear in this playlist
@@ -137,32 +144,14 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         self.score = kwargs.get("score")
         self.path = kwargs.get("path")
 
-    @classmethod
-    def create_empty_entry(cls, entity_id, kind, playlist):
-        if kind != "Quiz":
-            topic_node = get_topic_node(content_id=entity_id, topic=False)
-            title = topic_node["title"]
-            path = topic_node["path"]
-        else:
-            title = playlist["title"]
-            path = ""
-        entry = {
-            "id": entity_id,
-            "kind": kind,
-            "status": "notstarted",
-            "score": 0,
-            "title": title,
-            "path": path,
-        }
-
-        return entry
-
-    @classmethod
     def user_progress_detail(cls, user_id, playlist_id):
         """
         Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
         """
+        if not language:
+            language = Settings.get("default_language") or settings.LANGUAGE_CODE
+
         user = FacilityUser.objects.get(id=user_id)
         playlist = get_topic_node(content_id=playlist_id)
 
@@ -176,8 +165,10 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         progress_details = list()
         for entity_id in playlist.get("children"):
             entry = {}
-            leaf_node = get_topic_node(content_id=entity_id, topic=False)
             kind = leaf_node.get("kind")
+
+            status = "notstarted"
+            score = 0
 
             if kind == "Video":
                 vid_log = next((vid_log for vid_log in user_vid_logs if vid_log["video_id"] == entity_id), None)
@@ -186,17 +177,8 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                         status = "complete"
                     elif vid_log.get("total_seconds_watched"):
                         status = "inprogress"
-                    else:
-                        status = "notstarted"
 
-                    entry = {
-                        "id": entity_id,
-                        "kind": kind,
-                        "status": status,
-                        "score": int(float(vid_log.get("points")) / float(750) * 100),
-                        "title": leaf_node["title"],
-                        "path": leaf_node["path"],
-                    }
+                    score = int(float(vid_log.get("points")) / float(750) * 100)
 
             elif kind == "Exercise":
                 ex_log = next((ex_log for ex_log in user_ex_logs if ex_log["exercise_id"] == entity_id), None)
@@ -208,17 +190,8 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                     elif ex_log.get("attempts"):
                         status = "inprogress"
 
-                    entry = {
-                        "id": entity_id,
-                        "kind": kind,
-                        "status": status,
-                        "score": ex_log.get("streak_progress"),
-                        "title": leaf_node["title"],
-                        "path": leaf_node["path"],
-                    }
+                    score = ex_log.get('streak_progress')
 
-            if not entry:
-                entry = cls.create_empty_entry(entity_id, kind, playlist)
 
             progress_details.append(cls(**entry))
 

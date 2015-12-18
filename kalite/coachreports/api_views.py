@@ -1,5 +1,6 @@
 from math import ceil
 import datetime
+import json
 
 from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
@@ -10,7 +11,7 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonRe
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog, AttemptLog, UserLogSummary
 from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes
+from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes, get_leafed_topics, get_content_parents
 
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
@@ -135,7 +136,7 @@ def aggregate_learner_logs(request):
 
     end_date = request.GET.get("end_date")
 
-    topic_ids = request.GET.getlist("topic_id", [])
+    topic_ids = json.loads(request.GET.get("topic_ids", "[]"))
 
     log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
 
@@ -149,13 +150,16 @@ def aggregate_learner_logs(request):
         "total_complete": 0,
         "total_struggling": 0,
         "total_not_attempted": 0,
+        "available_topics": [],
     }
-    
+
     end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
 
     start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
 
     number_content = 0
+
+    all_object_ids = set()
 
     for log_type in log_types:
 
@@ -179,11 +183,23 @@ def aggregate_learner_logs(request):
             output_dict["total_in_progress"] += log_objects.filter(complete=False, struggling=False).count()
             output_dict["exercise_attempts"] = AttemptLog.objects.filter(user__in=learners,
                 timestamp__gte=start_date,
-                timestamp__lte=end_date).count()
+                timestamp__lte=end_date, **obj_ids).count()
             if log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"] is not None:
                 output_dict["exercise_mastery"] = round(log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"])
         output_logs.extend(log_objects)
         output_dict["total_complete"] += log_objects.filter(complete=True).count()
+
+        object_buffer = LogModel.objects.filter(
+            user__in=learners,
+            latest_activity_timestamp__gte=start_date,
+            latest_activity_timestamp__lte=end_date).values_list(id_field, flat=True)
+
+        if len(object_buffer) > 1:
+            all_object_ids.update(object_buffer)
+        elif len(object_buffer) == 1:
+            all_object_ids.add(object_buffer)
+    if len(all_object_ids) > 0:
+        output_dict["available_topics"] = map(lambda x: {"id": x.get("id"), "title": x.get("title")}, get_content_parents(ids=list(all_object_ids)))
     output_dict["total_not_attempted"] = number_content*len(learners) - (
         output_dict["total_complete"] + output_dict["total_struggling"] + output_dict["total_in_progress"])
     # Report total time in hours

@@ -12,6 +12,7 @@ var date_string = require("utils/datestring").date_string;
 var d3 = require("d3");
 
 require("bootstrap-datepicker/dist/js/bootstrap-datepicker");
+require("bootstrap-multiselect/dist/js/bootstrap-multiselect");
 
 /*
 Hierarchy of views:
@@ -86,8 +87,45 @@ var CoachSummaryView = BaseView.extend({
     template: require("./hbtemplates/landing.handlebars"),
 
     events: {
-        "click #show_tabular_report": "toggle_tabular_view"
+        "click #show_tabular_report": "toggle_tabular_view",
+        "click #topic-list-submit": "set_data_model"
     },
+
+
+    /*
+    this function populates the topic selection list
+    */
+    appendTopicList: function() {
+        var parseData = this.data_model.get("available_topics");
+        var targetElem = $("#topic-list").get(0);
+        var frag = document.createDocumentFragment();
+
+        var tids = $.parseJSON(this.data_model.get("topic_ids"));
+        var ctr = -1;
+
+        parseData.forEach(function(datum, index) {
+            var opt = document.createElement("option");
+            //this part maintains any currently selected
+            //options as checked instead of reverting to default
+            if(tids.length > 0) {
+                ctr = tids.indexOf(datum.id);
+                if(ctr !== -1){
+                    opt.selected = "selected";
+                    delete tids[ctr];
+                    ctr = -1;
+                }
+            }
+            if(datum.id.includes('pre-alg')) {
+                opt.innerHTML = "Pre Alg: " + datum.title;
+            } else {
+                opt.innerHTML = datum.title;
+            }
+
+            opt.value = datum.id;
+            frag.appendChild(opt);
+        });
+        targetElem.appendChild(frag);
+    }, 
 
     /*
     this function produces a radial graph and inserts it into the target_elem
@@ -174,12 +212,13 @@ var CoachSummaryView = BaseView.extend({
         }
 
         if (!this.data_model) {
+            var topic_ids = _.map(this.$("#topic-list option:checked"), function (node) {return node.value;});
             this.data_model = new Models.CoachReportAggregateModel({
                 facility: this.model.get("facility"),
                 group: this.model.get("group"),
                 start_date: date_string(this.model.get("start_date")),
                 end_date: date_string(this.model.get("end_date")),
-            
+                topic_ids: JSON.stringify(topic_ids)
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
@@ -265,6 +304,21 @@ var CoachSummaryView = BaseView.extend({
         }
 
         this.displayRadialGraph("full_circle1", this.data_model.get("content_time_spent"), this.data_model.get("total_time_logged"));
+
+        this.appendTopicList();
+
+
+        $('#topic-list').multiselect({
+            nonSelectedText: 'Default: Overview',
+            buttonWidth: '75%',
+            numberDisplayed: 2,
+            maxHeight: 350,
+            disableIfEmpty: true,
+            enableCaseInsensitiveFiltering: true
+        });
+
+        $('#topic-list-div > .btn-group > button').css({'width': '100%'});
+
     },
 
     toggle_tabular_view: _.debounce(function() {
