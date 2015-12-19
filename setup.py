@@ -16,6 +16,32 @@ from setuptools.command.install_scripts import install_scripts
 
 import kalite
 
+try:
+    # There's an issue on the OSX build server -- sys.stdout and sys.stderr are non-blocking by default,
+    # which can result in IOError: [Errno 35] Resource temporarily unavailable
+    # See similar issue here: http://trac.edgewall.org/ticket/2066#comment:1
+    # So we just make them blocking.
+    import fcntl
+
+    def make_blocking(fd):
+        """
+        Takes a file descriptor, fd, and checks its flags. Unsets O_NONBLOCK if it's set.
+        This makes the file blocking, so that there are no race conditions if several threads try to access it at once.
+        """
+        flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+        if flags & os.O_NONBLOCK:
+            sys.stderr.write("Setting to blocking...\n")
+            fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
+        else:
+            sys.stderr.write("Already blocking...\n")
+        sys.stderr.flush()
+
+    make_blocking(sys.stdout.fileno())
+    make_blocking(sys.stderr.fileno())
+except ImportError:
+    pass
+
+
 # Since pip 7.0.1, bdist_wheel has started to be called automatically when
 # the sdist was being installed. Let's not have that.
 # By raising an exception,
