@@ -13,9 +13,11 @@
 
             <div class="user-config row">
                 <div class="col-md-2 col-xs-3">Re-type Password:</div>
-                <div class="col-md-10"><input class="user-input" type="password" name="pw_confirm"></div>
-                <div id="pw_error"></div>
+                <div class="col-md-2"><input class="user-input" type="password" name="pw_confirm"></div>
+                <div class="col-md-4" id="pw_error">* Passwords do not match</div>
             </div>
+
+            <button id="load-device-form" type="button">Next</button>
         </div>
 
         <div class="device-form">
@@ -32,7 +34,7 @@
                 <div class="col-md-2 col-xs-3">Description:</div>
                 <div class="col-md-10"><input type="text" name="description"></div>
             </div>
-            <button id="submit">Next</button>
+            <button id="submit" type="button">Next</button>
 
         </div> 
     

@@ -28,17 +28,21 @@ FACILITY_CACHE_STALE = False
 @render_to("facility/facility_config.html")
 def config_form(request, database):
     """
-    Detect if there is an existing database file on server. If database exists,
-    will render form that prompts user to keep or delete existing database.
-
-    Depending on state of database, renders different form questions.
+    Render the template for configuration form, passing in database information
+    
+    @param database: a dictionary containing the following info:
+        { "need_update" : does the user need an update?
+          "superuser" : does the superuser exist?
+          "default_hostname" : what will the hostname default to, if User
+                               chooses not to configure one? 
+        }
     """
     return database
 
 def is_configured():
     """
-    Checks whether a system has been configured. For now, it simply 
-    checks if a superuser exists.
+    Checks whether a system has been configured. For now, being configured
+    simply means that a superuser exists. 
     """
     database = False
     superuser = False
@@ -50,40 +54,22 @@ def is_configured():
         "sqlite" in database_kind \
                 and settings.DATABASES["default"]["NAME"]) or None
 
+
     if database_file and os.path.exists(database_file):
         database = True
 
         # Check for database version, if mismatch, ask user to update
-        try:
-            from kalite.version import VERSION
+        # try:
+    from kalite.version import VERSION
 
-            # If version in database not set, it is probably the first
-            # time a user is using this version of KA Lite, but they
-            # haven't run the "setup" command.
-            if not Settings.get("database_version"):
-                Settings.set("database_version", VERSION)
+    # If version in database not set, it is probably the first
+    # time running this version of KA Lite, but they haven't run setup
+    if not Settings.get("database_version"):
+        Settings.set("database_version", VERSION)
 
-            # Otherwise, if database is already versioned, check
-            # to see if it matches most updated version available
-            assert Settings.get("database_version") == VERSION
-
-        except DatabaseError as e: # -------------------------- remove
-            call_command("syncdb", interactive=False)
-            call_command("migrate", interactive=False)
-        except AssertionError:
-            need_update = True
-
-        # Check if superuser exists
-        try:
-            u = User.objects.get(is_superuser=True)
-            superuser = True
-        except ObjectDoesNotExist:
-            print "Superuser DNE" 
-
-    # If database does not exist, sync and migrate ----------- remove
-    else:
-        call_command("syncdb", interactive=False)
-        call_command("migrate", interactive=False)
+    # Otherwise, if database is already versioned, check
+    # to see if it matches most updated version available
+    assert Settings.get("database_version") == VERSION
 
     return { "need_update" : need_update,
              "superuser" : superuser,

@@ -199,8 +199,12 @@ def config(request):
     """
     Calls command to configure database, admin account, and server info
     """
-    print "REACHED CONFIG, SERVER--------------"
-    name = "Bob the Builder"
+
+    # Commented out for testing. We don't want to actually create a superuser
+    # for testing, because then we won't have to go and delete the database
+    # every time if we want to load the server for testing
+    # Uncomment during actual user testing
+
     # Form is not complete unless password field is filled out
     """
     if request.POST.get('password'):
@@ -222,7 +226,6 @@ def config(request):
 
 @render_to("facility/test.html")
 def dl_progress(request):
-    print "clicked dl assess button, dl_assess view-----------------"
     print request.POST
 
     return {"nothing": "nothing"}

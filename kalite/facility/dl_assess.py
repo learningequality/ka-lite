@@ -1,11 +1,10 @@
-#from kalite import ROOT_DATA_PATH
-#from kalite.topic_tools.settings import CHANNEL
-#from kalite.version import VERSION, SHORTVERSION
 import os
 
-def begin_download():
-    print "dl_assess.py invoked"
+from kalite import ROOT_DATA_PATH
+from kalite.topic_tools.settings import CHANNEL
+from kalite.version import VERSION, SHORTVERSION
 
+def begin_download():
     # for extracting assessment item resources
     ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org.downloads/ka-lite/{version}/content/{channel}_assessment.zip".format(version=SHORTVERSION, channel=CHANNEL)
 
@@ -14,7 +13,9 @@ import sys
 print "sys.path is: "
 print sys.path
 print "\n\n\ncurrent working directory: " + os.getcwd()
+print "\n\n\n\n"
 
 if __name__ == "__main__":
-    import version
+    #from kalite import version
     #begin_download()
+    console.log("ayeeee iz happenin")

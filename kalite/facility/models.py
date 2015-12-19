@@ -328,11 +328,22 @@ class AssessmentItemsDownloadProgress(models.Model):
 
         # spawn new process with current working directory set to parent
         # directory, so that it can import all of the appropriate modules
-        new_cwd = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-         
+        # we want it to be the ka-lite directory
+        new_cwd = os.path.dirname(os.path.dirname(path))
+
+        print "HERE ARE os.environ: "
+        print os.environ
+        print "\n\n"
+
+        print "os.environ.get('PYTHONPATH'): "
+        print os.environ.get('PYTHONPATH')
+        print "\n\n"
+
         self.process = subprocess.Popen(["python", 
                                          os.path.join(path, "dl_assess.py")],
-                                        cwd=new_cwd)
+                                        #cwd=new_cwd)
+                                        env={'PYTHONPATH': new_cwd})
+                                        #env=dict(os.environ, PYTHONPATH=new_cwd) )
         
         super(AssessmentItemsDownloadProgress, self).save(*args, **kwargs)
 

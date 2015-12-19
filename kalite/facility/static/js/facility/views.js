@@ -79,11 +79,11 @@ var CreateDeviceAndUserView = BaseView.extend({
     },
 
     events: {
-        'change .user-config': 'on_user_attributes_change',
-        'click button': 'submit_form'
+        'click #load-device-form': 'on_user_fields_submit',
+        'click #submit': 'submit_form'
     },
 
-    on_user_attributes_change: function() {
+    on_user_fields_submit: function() {
         var username = $('input[name="username"]').val();
         var pw = $('input[name="password"]').val();
         var pw_confirm = $('input[name="pw_confirm"]').val();
@@ -92,17 +92,26 @@ var CreateDeviceAndUserView = BaseView.extend({
         // and only if the password fields match
         if (username.length > 0 && pw.length > 0 && pw_confirm.length > 0) {
             if (pw !== pw_confirm) {
-                //make it red
-                $('#pw_error').append('* Passwords do not match.');
+                $("#pw_error").show();
             }
             else {
-                $('#pw_error').empty();
+                $("#pw_error").hide();
+                $("#load-device-form").hide();
                 $(".device-form").show();
             }
         }
     },
 
     submit_form: function(e) {
+
+        // check if all form fields valid first before submitting form
+        this.on_user_fields_submit();
+
+        // do not submit form if passwords don't match
+        if ( $("#pw_error").is(":visible") ) {
+            return;
+        }
+
         var options = {
             "username": $('input[name="username"]').val(),
             "pw": $('input[name="password"]').val(),
@@ -117,9 +126,8 @@ var CreateDeviceAndUserView = BaseView.extend({
             url: "/facility/config/",
             data: options,
 
-            // on success, hide form and signal to ConfigView that form has been complete
+            // hide form and signal to parent view this part is complete
             success: function(data){
-                console.log("post request success, emptying form to make room for next part");
                 $('#config-form').empty();
                 that.trigger("complete");
             }
@@ -153,7 +161,7 @@ var DownloadAssessmentProgressView = BaseView.extend({
         console.log(this.model.urlRoot);
         
         $.ajax({
-            url: this.model.urlRoot,//"/securesync/api/dl_progress/",
+            url: this.model.urlRoot,
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({"progress": 0})
