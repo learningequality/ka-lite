@@ -25,6 +25,7 @@ STAR_INNER_WRAPPER_CLASS = "star-rating-inner-wrapper"
 TEXT_INPUT_CLASS = "rating-text-feedback"
 DELETE_BTN_CLASS = "rating-delete"
 
+
 @then(u'my feedback is displayed')
 def impl(context):
     for star_id in STAR_CONTAINER_IDS:
@@ -35,28 +36,30 @@ def impl(context):
     assert actual == expected, "Expected:\n\t '{expected}'\n but saw\n\t '{actual}'\n in feedback form".format(
         expected=expected, actual=actual)
 
+
 @then(u'I see a feedback form')
 def impl(context):
     feedback_form_container = find_id_with_wait(context, RATING_CONTAINER_ID, wait_time=60)
     assert feedback_form_container.is_displayed(), "Rating form is not visible."
 
+
 @when(u'I alter a star rating')
 def impl(context):
-    inner_wrapper = find_css_class_with_wait(context, STAR_INNER_WRAPPER_CLASS)
-    options = context.options = inner_wrapper.find_elements_by_class_name(STAR_RATING_OPTION_CLASS)
-    cur_val = context.old_val = len([el for el in options if "activated" in el.get_attribute("class")])
-    new_val = cur_val + 1 if cur_val < 5 else 1  # Keep the new value between 1 and 5
-    new_option_el = [el for el in options if int(el.get_attribute("data-val")) == new_val].pop()
-    new_option_el.click()
+    context.old_val = 3
+    enter_star_ratings(context, val=4)
+
 
 @then(u'the altered rating is displayed')
 def impl(context):
-    new_val = len([el for el in context.options if "activated" in el.get_attribute("class")])
+    inner_wrapper = find_css_class_with_wait(context, STAR_INNER_WRAPPER_CLASS)
+    options = inner_wrapper.find_elements_by_class_name(STAR_RATING_OPTION_CLASS)
+    new_val = len([el for el in options if "activated" in el.get_attribute("class")])
     assert context.old_val != new_val, \
         "Star rating has value {new_val}, which should be different from the old value {old_val}".format(
             old_val=context.old_val,
             new_val=new_val,
         )
+
 
 @then(u'I see a new form')
 def impl(context):
@@ -66,6 +69,7 @@ def impl(context):
         "Element with id '{0}' not visible, but it should be!".format(STAR_CONTAINER_IDS[0])
     for id_ in STAR_CONTAINER_IDS[1:] + (TEXT_CONTAINER_ID, ):
         assert_no_element_by_css_selector(context, "#{id} div".format(id=id_))
+
 
 @given(u'some user feedback exists')
 def impl(context):
@@ -83,6 +87,7 @@ def impl(context):
     )
     rating.save()
     assert ContentRating.objects.count() != 0, "No ContentRating objects exist to be exported!"
+
 
 @then(u'the user feedback is present')
 def impl(context):
@@ -105,6 +110,7 @@ def impl(context):
 
     os.chdir(old_cwd)
 
+
 @when(u'I fill out the form')
 def impl(context):
     enter_star_ratings(context)
@@ -119,14 +125,17 @@ def impl(context):
         When I fill out the form
     ''')
 
+
 @then(u'I see a delete button')
 def impl(context):
     context.delete_btn = find_css_class_with_wait(context, DELETE_BTN_CLASS)
     assert context.delete_btn.is_displayed()
 
+
 @when(u'I delete my feedback')
 def impl(context):
     context.delete_btn.click()
+
 
 @when(u'I export csv data')
 def impl(context):
@@ -138,11 +147,13 @@ def impl(context):
     export_btn = find_id_with_wait(context, "export-button")
     export_btn.click()
 
+
 @when(u'I change the text')
 def impl(context):
     new_text = "Once upon a midnight dreary"
     context.new_text = get_text_feedback(context) + new_text
     enter_text_feedback(context, new_text)
+
 
 @then(u'the altered text is displayed')
 def impl(context):
@@ -151,14 +162,15 @@ def impl(context):
     assert actual == expected, \
         "Expected text: {exp}\nActual text: {act}".format(exp=expected, act=actual)
 
-def enter_star_ratings(context):
+
+def enter_star_ratings(context, val=3):
     """
     Enters a value for all three star rating forms, on a new form
     :param context: behave context
     :return: nothing
     """
     for id_ in STAR_CONTAINER_IDS:
-        rate_id(context, id_)
+        rate_id(context, id_, val=val)
 
 
 def rate_id(context, id_, val=3):
@@ -179,9 +191,9 @@ def rate_id(context, id_, val=3):
             return False
 
     try:
-        WebDriverWait(context.browser, 10).until(rate_element)
+        WebDriverWait(context.browser, 30).until(rate_element)
     except TimeoutException:
-        raise Exception("Did not find rating for {id:s}".format(id=id_))
+        raise Exception("Unable to enter rating for container with id '{id:s}'".format(id=id_))
 
 
 def enter_text_feedback(context, text_feedback):
