@@ -44,7 +44,7 @@ lint:
 	jshint kalite/*/static/js/*/
 
 test:
-	bin/kalite manage test --bdd-only
+	bin/kalite manage test $(KALITE_TEST_LABELS) --bdd-only
 
 test-bdd:
 	bin/kalite manage test --bdd-only
