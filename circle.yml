@@ -25,7 +25,7 @@ test:
     - cd sc-*-linux && ./bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --tunnel-identifier $CIRCLE_BUILD_NUM-$CIRCLE_NODE_INDEX --readyfile ~/sauce_is_ready > sc_output.txt 2>&1:
         background: true
     - while [ ! -e ~/sauce_is_ready ]; do sleep 1; done
-    - case $CIRCLE_NODE_INDEX in 0) make test-bdd ;; 1) make test-nobdd;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) KALITE_TEST_LABELS=distributed make test-bdd ;; 1) KALITE_TEST_LABELS="coachreports facility" make test-bdd ;; 2) KALITE_TEST_LABELS="control_panel inline" make test-bdd ;; 3) make test-nobdd ;; esac:
         parallel: true
     # TODO: replace below with "make lint" when we're pep8
     - npm install -g jshint

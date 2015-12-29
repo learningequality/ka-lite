@@ -44,13 +44,13 @@ lint:
 	jshint kalite/*/static/js/*/
 
 test:
-	bin/kalite manage test --bdd-only
+	bin/kalite manage test $(KALITE_TEST_LABELS) --bdd-only
 
 test-bdd:
-	bin/kalite manage test --bdd-only
+	bin/kalite manage test $(KALITE_TEST_LABELS) --bdd-only
 
 test-nobdd:
-	bin/kalite manage test --no-bdd
+	bin/kalite manage test $(KALITE_TEST_LABELS) --no-bdd
 
 test-all:
 	@echo "Not supported yet"
