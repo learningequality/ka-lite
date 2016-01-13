@@ -78,6 +78,9 @@ venv/
 # Ignore file used to store queued video download info.
 videos_to_download.json
 
+# Ignore django-reverse-js file that gets copied during testing.
+kalite/distributed/static/django_js_reverse/js/reverse.js
+
 # Lacks documentation
 locale/
 node_modules/
