@@ -249,7 +249,6 @@ class Command(BaseCommand):
                     RemovedInKALite_v016_Warning
                 )
 
-
         if options["interactive"]:
             print(
                 "--------------------------------------------------------------------------------")
@@ -287,30 +286,41 @@ class Command(BaseCommand):
         install_clean = not kalite.is_installed()
 
         database_kind = settings.DATABASES["default"]["ENGINE"]
-        database_file = (
-            "sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
+        if "sqlite" in database_kind:
+            database_file = settings.DATABASES["default"]["NAME"]
+        else:
+            database_file = None
 
-        if database_file and os.path.exists(database_file):
-            # We found an existing database file.  By default,
-            #   we will upgrade it; users really need to work hard
-            #   to delete the file (but it's possible, which is nice).
-            print(
-                "-------------------------------------------------------------------")
-            print("WARNING: Database file already exists!")
-            print(
-                "-------------------------------------------------------------------")
-            if not options["interactive"] \
-               or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
-               or not raw_input_yn("Remove database file '%s' now? " % database_file) \
-               or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
-                install_clean = False
-                print("Upgrading database to KA Lite version %s" % VERSION)
-            else:
+        database_exists = database_file and os.path.isfile(database_file)
+
+        # An empty file is created automatically even when the database dosn't
+        # exist. But if it's empty, it's safe to overwrite.
+        database_exists = database_exists and os.path.getsize(database_file) > 0
+
+        if database_file:
+            if not database_exists:
                 install_clean = True
-                print("OK.  We will run a clean install; ")
-                # After all, don't delete--just move.
+            else:
+                # We found an existing database file.  By default,
+                #   we will upgrade it; users really need to work hard
+                #   to delete the file (but it's possible, which is nice).
                 print(
-                    "the database file will be moved to a deletable location.")
+                    "-------------------------------------------------------------------")
+                print("WARNING: Database file already exists!")
+                print(
+                    "-------------------------------------------------------------------")
+                if not options["interactive"] \
+                   or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
+                   or not raw_input_yn("Remove database file '%s' now? " % database_file) \
+                   or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
+                    install_clean = False
+                    print("Upgrading database to KA Lite version %s" % VERSION)
+                else:
+                    install_clean = True
+                    print("OK.  We will run a clean install; ")
+                    # After all, don't delete--just move.
+                    print(
+                        "the database file will be moved to a deletable location.")
 
         if not install_clean and not database_file and not kalite.is_installed():
             # Make sure that, for non-sqlite installs, the database exists.
@@ -366,22 +376,13 @@ class Command(BaseCommand):
 
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
-            # This is an overwrite install; destroy the old db
-            dest_file = tempfile.mkstemp()[1]
-            print(
-                "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
-            shutil.move(database_file, dest_file)
+            if not settings.DB_TEMPLATE_FILE or database_file != settings.DB_TEMPLATE_FILE:
+                # This is an overwrite install; destroy the old db
+                dest_file = tempfile.mkstemp()[1]
+                print(
+                    "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
+                shutil.move(database_file, dest_file)
 
-        # benjaoming: Commented out, this hits the wrong directories currently
-        # and should not be necessary.
-        # If we have problems with pyc files, we're doing something else wrong.
-        # See https://github.com/learningequality/ka-lite/issues/3487
-
-        # Should clean_pyc for (clean) reinstall purposes
-        # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
-
-        # If a db template exists, copy it instead of creating a new one, since migrations take a long time.
-        database_exists = os.path.isfile(settings.DEFAULT_DATABASE_PATH)
         if settings.DB_TEMPLATE_FILE and not database_exists:
             print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH))
             shutil.copy(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH)

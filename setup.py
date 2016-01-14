@@ -30,14 +30,15 @@ if 'bdist_wheel' in sys.argv:
 where_am_i = os.path.dirname(os.path.realpath(__file__))
 
 # Handle requirements
-DIST_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
-
+RAW_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
 
 def filter_requirement_statements(req):
     """Filter comments and blank lines from a requirements.txt like file
     content to feed pip"""
-    # Strip comments and empty lines
-    req_pattern = re.compile(r'^\s*([^\#]+)')
+    # Strip comments and empty lines, but '#' is allowed in a URL!
+    if req.startswith('http'):
+        return req
+    req_pattern = re.compile(r'^(\s*)([^\#]+)')
 
     m = req_pattern.search(req)
     if m:
@@ -45,8 +46,21 @@ def filter_requirement_statements(req):
 
 
 # Filter out comments from requirements
-DIST_REQUIREMENTS = map(filter_requirement_statements, DIST_REQUIREMENTS)
-DIST_REQUIREMENTS = filter(lambda x: bool(x), DIST_REQUIREMENTS)
+RAW_REQUIREMENTS = map(filter_requirement_statements, RAW_REQUIREMENTS)
+RAW_REQUIREMENTS = filter(lambda x: bool(x), RAW_REQUIREMENTS)
+
+# Special parser for http://blah#egg=asdasd-1.2.3
+DIST_REQUIREMENTS = []
+DEPENDENCY_LINKS = []
+for req in RAW_REQUIREMENTS:
+    if req.startswith("https://"):
+        DEPENDENCY_LINKS.append(req)
+        __, req = req.split("#egg=")
+        dashed_components = req.split("-")
+        version = dashed_components[-1]
+        req_name = "-".join(dashed_components[:-1])
+        req = "{req:s}=={version:s}".format(req=req_name, version=version)
+    DIST_REQUIREMENTS.append(req)
 
 # Requirements if doing a build with --static
 STATIC_REQUIREMENTS = []
@@ -284,13 +298,17 @@ if STATIC_BUILD:
         opts.ignore_dependencies = True
         opts.use_wheel = False
         opts.no_clean = False
+        # Hotfix for the one single tastypie dependency link. Not nice.
+        # To be removed as soon as an upstream tastypie fixes our
+        # Django 1.5 issue
+        opts.process_dependency_links = True
         command.run(opts, distributions)
         # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
         # requirement_set.install(opts)
 
     # Install requirements into dist-packages
     if DIST_BUILDING_COMMAND:
-        install_distributions(STATIC_REQUIREMENTS)
+        install_distributions(RAW_REQUIREMENTS)
 
     # Empty the requirements.txt file
 
@@ -372,6 +390,7 @@ setup(
     data_files=data_files,
     zip_safe=False,
     install_requires=DIST_REQUIREMENTS,
+    dependency_links=DEPENDENCY_LINKS,
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',

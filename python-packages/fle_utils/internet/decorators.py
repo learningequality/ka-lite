@@ -1,7 +1,7 @@
 import csv
 import json
 from annoying.decorators import wraps
-from collections_local_copy import OrderedDict
+from fle_utils.collections_local_copy import OrderedDict
 from cStringIO import StringIO
 
 from django.contrib import messages
