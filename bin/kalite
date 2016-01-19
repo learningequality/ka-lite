@@ -131,8 +131,12 @@ else:
 # Path for manage.py
 manage_py = os.path.join(kalite_path, 'kalitectl.py')
 
+benchmark_py = os.path.join(kalite_path, 'benchmark.py')
+
 # Arguments to proxy
 args = sys.argv[1:]
+
+
 
 # Open up a process and proxy both the process' stdout and stderr
 p = subprocess.Popen(

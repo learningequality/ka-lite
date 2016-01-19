@@ -29,12 +29,12 @@ from .annotate import update_content_availability
 
 from django.conf import settings; logging = settings.LOG
 
-
 # This Item is defined without a database.
 # This allows us to use a separate database for each language, so that we
 # can reduce performance cost, and keep queries simple for multiple languages.
 # In addition, we can distribute databases separately for each language pack.
 class Item(Model):
+
     title = CharField()
     description = TextField()
     available = BooleanField()
@@ -50,6 +50,8 @@ class Item(Model):
     youtube_id = CharField(null=True)
     size_on_disk = IntegerField(default=0)
     remote_size = IntegerField(default=0)
+    __slots__ = ["title","description","available","files_complete","total_files","kind",
+    "parent","id","pk","slug","path","extra_fields","youtube_id","size_on_disk","remote_size"]
 
 
     def __init__(self, *args, **kwargs):
@@ -60,6 +62,7 @@ class AssessmentItem(Model):
     id = CharField(max_length=50, primary_key=True)
     item_data = TextField()  # A serialized JSON blob
     author_names = CharField(max_length=200)  # A serialized JSON list
+    __slots__ = ["id","item_data","author_names"]
 
 
 def parse_model_data(item):
@@ -458,14 +461,14 @@ def update(update=None, select=None, **kwargs):
 
             query.execute()
 
-
 def iterator_content_items(ids=None, **kwargs):
     if ids:
         items = Item.select().where(Item.id.in_(ids)).dicts().iterator()
     else:
         items = Item.select().dicts().iterator()
 
-    mapped_items = itertools.imap(unparse_model_data, items)
+    imap = itertools.imap
+    mapped_items = imap(unparse_model_data, items)
     updated_mapped_items = update_content_availability(mapped_items)
 
     for path, update in updated_mapped_items:
@@ -478,7 +481,8 @@ def iterator_content_items_by_youtube_id(ids=None, **kwargs):
     else:
         items = Item.select().dicts().iterator()
 
-    mapped_items = itertools.imap(unparse_model_data, items)
+    imap = itertools.imap
+    mapped_items = imap(unparse_model_data, items)
     updated_mapped_items = update_content_availability(mapped_items)
 
     for path, update in updated_mapped_items:
@@ -496,7 +500,6 @@ def create_table(db=None, **kwargs):
 
 def annotate_content_models_by_youtube_id(channel="khan", language="en", youtube_ids=None):
     annotate_content_models(channel=channel, language=language, ids=youtube_ids, iterator_content_items=iterator_content_items_by_youtube_id)
-
 
 @set_database
 def annotate_content_models(db=None, channel="khan", language="en", ids=None, iterator_content_items=iterator_content_items, **kwargs):
