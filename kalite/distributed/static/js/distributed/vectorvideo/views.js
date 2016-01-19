@@ -2,7 +2,7 @@ var soundManager = require("soundmanager2").soundManager;
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 
-require("../../../../../../bower_components/paper/dist/paper-full.min.js");
+require("../../../../../../node_modules/paper/dist/paper-full.min.js");
 
 require("../../../css/distributed/vectorvideo.css");
 
@@ -20,6 +20,8 @@ var VectorVideoView = ContentBaseView.extend({
         ContentBaseView.prototype.initialize.call(this, options);
 
         _.bindAll(this, "create_audio_object");
+
+        this.render();
 
     },
 
@@ -189,6 +191,23 @@ console.log("here" + progress);
 
         return (use_string ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + ( sec < 10 ? '0' + sec : sec ) ) : { 'min': min, 'sec': sec });
 
+    },
+
+    draw_all: function() {
+
+        current_time = (parseInt(this.get_position()))/1000;
+        if(current_time > past_time){
+            //console.log(past_object);
+            //console.log(current_object);
+            var temp_current_object = current_object;
+            for(var x = past_object; x <= temp_current_object; x++){
+                if (parseInt(json_data.operations[x].start) < current_time) {
+                    //console.log("drawing");
+                    draw_object(json_data.operations[x]);
+                }
+            }
+            past_time = current_time;
+        }
     },
 
     close: function() {

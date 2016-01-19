@@ -1,11 +1,11 @@
 var $ = require("base/jQuery");
 var file = require("vectorvideo/views");
-var Paper = require("../../../../../../bower_components/paper/dist/paper-full.min.js");
+var Paper = require("../../../../../../node_modules/paper/dist/paper-full.js");
 var Models = require("content/models");
 var data_model = new Models.ContentDataModel({content_urls: {stream: "https://raw.githubusercontent.com/christianmemije/audio_file/master/audio.mp3"}});
 var log_model = new Models.ContentLogModel();
 window.vectorVideoView = new file.VectorVideoView({data_model: data_model, log_model: log_model});
-vectorVideoView.render();
+//vectorVideoView.render();
 //console.log(vectorVideoView);
 
 
