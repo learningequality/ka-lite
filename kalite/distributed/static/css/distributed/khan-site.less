@@ -1,3 +1,4 @@
+@import "./kalite-base.less";
 /* http://meyerweb.com/eric/tools/css/reset/
      v2.0 | 20110126
      License: none (public domain)
@@ -79,9 +80,9 @@ em { font-style: italic; }*/
 hr {
     background: #CCC;
     border: none;
-    -moz-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.075);
-    -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.075);
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: @hrboxshadow;
+    -webkit-box-shadow: @hrboxshadow;
+    box-shadow: @hrboxshadow;
     clear: both;
     color: #CCC;
     display: block;
@@ -214,8 +215,7 @@ article, section {
         display: block;
         color: #777;
         margin-bottom: 10px;
-    }
-        .info-box .info-box-sub-description strong {
+        strong {
             color: #444;
             font-style: italic;
         }
@@ -367,12 +367,12 @@ article, section {
     border-color: #76a005 !important;
     border-bottom-color: #526f03 !important;
     background-color: #7fac05;
-    background-image: -moz-linear-gradient(top, #8aba08, #6e9700);
-    background-image: -ms-linear-gradient(top, #8aba08, #6e9700);
+    background-image: -moz-@primary;
+    background-image: -ms-@primary;
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8aba08), to(#6e9700));
-    background-image: -webkit-linear-gradient(top, #8aba08, #6e9700);
-    background-image: -o-linear-gradient(top, #8aba08, #6e9700);
-    background-image: linear-gradient(top, #8aba08, #6e9700);
+    background-image: -webkit-@primary;
+    background-image: -o-@primary;
+    background-image: @primary;
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#8aba08', endColorstr='#6e9700', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
@@ -402,12 +402,12 @@ article, section {
     border-color: #bf4f04 !important;
     border-bottom-color: #8d3a03 !important;
     background-color: #d55704;
-    background-image: -moz-linear-gradient(top, #e35d04, #bf4f04);
-    background-image: -ms-linear-gradient(top, #e35d04, #bf4f04);
+    background-image: -moz-@warning;
+    background-image: -ms-@warning;
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#e35d04), to(#bf4f04));
-    background-image: -webkit-linear-gradient(top, #e35d04, #bf4f04);
-    background-image: -o-linear-gradient(top, #e35d04, #bf4f04);
-    background-image: linear-gradient(top, #e35d04, #bf4f04);
+    background-image: -webkit-@warning;
+    background-image: -o-@warning;
+    background-image: @warning;
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e35d04', endColorstr='#bf4f04', GradientType=0);
     filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
@@ -499,21 +499,18 @@ a.big-button:active > div {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-}
-.exercises-card {
     width: 86%;
 }
 .current-card {
     position: relative;
     margin-bottom: 20px;
-}
-.current-card #answer_area_wrap {
-    margin: 10px -8px 0 0;
-}
-.current-card #answer_area .info-box {
-    overflow: visible;
-}
-.current-card .info-box:before {
+    #answer_area_wrap {
+        margin: 10px -8px 0 0;
+    }
+    #answer_area .info-box {
+        overflow: visible;
+    }
+    .info-box:before {
     content: " ";
     display: block;
     border-right: 7px solid transparent;
@@ -523,13 +520,13 @@ a.big-button:active > div {
     position: absolute;
     right: -1px;
     top: -16px;
-}
-
-.current-card #problemarea {
+    }
+    #problemarea {
     margin-top: 35px;
-}
-.current-card #answer_area_wrap {
+    }
+    #answer_area_wrap {
     margin-top: 52px;
+    }
 }
 
 /**
@@ -545,4 +542,5 @@ a.big-button:active > div {
 
 #scratchpad-btn-container {
     margin-top: 10px;
+}
 }

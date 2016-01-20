@@ -29,7 +29,7 @@ require("jquery-ui/themes/base/jquery-ui.css");
 
 require("bootstrap/dist/js/npm.js");
 
-require("../../../css/distributed/khan-site.css");
+require("../../../css/distributed/khan-site.less");
 
 // We override introjs.css in khan-lite.less, so load before.
 require("intro.js/introjs.css");

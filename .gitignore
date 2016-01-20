@@ -1,3 +1,4 @@
+.gitignore
 # Ignore this
 # File created by Coverage
 .coverage
@@ -127,3 +128,16 @@ ghostdriver.log
 *.swp
 /data/khan/assessmentitems.json.version
 file_map.json
+kalite/bin/*
+kalite/lib/*
+kalite/cherrypy/*
+kalite/.Python
+kalite/etc/bash_completion.d/youtube-dl.bash-completion
+kalite/etc/fish/completions/youtube-dl.fish
+kalite/include/python2.7
+kalite/pip-selfcheck.json
+kalite/selenium/webdriver/firefox/amd64/x_ignore_nofocus.so
+kalite/selenium/webdriver/firefox/x86/x_ignore_nofocus.so
+kalite/share/doc/youtube_dl/README.txt
+kalite/share/man/man1/youtube-dl.1
+
