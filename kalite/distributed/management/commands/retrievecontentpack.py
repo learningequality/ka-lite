@@ -1,4 +1,3 @@
-import json
 import os
 import urllib
 import tempfile
