@@ -39,7 +39,7 @@ urlpatterns += patterns('',
 
 # TODO: This should only be in DEBUG settings and the HTTP server should be
 # serving it otherwise. Cherrypy is currently serving it through modifications
-# in kalite/django_cherrypy_wsgiserver/cherrypyserver.py
+# in kalite/distributed/cherrypyserver.py
 urlpatterns += patterns('',
     url(r'^%skhan/(?P<path>.*)$' % settings.CONTENT_URL[1:], 'django.views.static.serve', {
         'document_root': contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT,
