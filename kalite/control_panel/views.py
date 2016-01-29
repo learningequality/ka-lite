@@ -37,11 +37,6 @@ from kalite.version import VERSION, VERSION_INFO
 UNGROUPED = "Ungrouped"
 
 
-def set_clock_context(request):
-    return {
-        "clock_set": getattr(settings, "ENABLE_CLOCK_SET", False),
-    }
-
 def sync_now_context(request):
     return {
         "in_a_zone":  Device.get_own_device().get_zone() is not None,
@@ -149,7 +144,6 @@ def zone_management(request, zone_id="None"):
     })
     if not settings.CENTRAL_SERVER:
         context["base_template"] = "distributed/base_manage.html"
-    context.update(set_clock_context(request))
 
     return context
 
@@ -206,7 +200,7 @@ def data_export(request):
 def device_management(request, device_id, zone_id=None, per_page=None, cur_page=None):
     context = control_panel_context(request, zone_id=zone_id, device_id=device_id)
 
-    #Get pagination details
+    # Get pagination details
     cur_page = cur_page or request.REQUEST.get("cur_page", "1")
     per_page = per_page or request.REQUEST.get("per_page", "10")
 
@@ -241,7 +235,7 @@ def device_management(request, device_id, zone_id=None, per_page=None, cur_page=
             ).get("release_date", "Unknown"),
             "install_dir": settings.SOURCE_DIR if settings.IS_SOURCE else "Not applicable (not a source installation)",
             "database_last_updated": datetime.datetime.fromtimestamp(os.path.getctime(database_path)),
-            "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024**2),
+            "database_size": os.stat(settings.DATABASES["default"]["NAME"]).st_size / float(1024 ** 2),
         })
 
     return context
@@ -327,7 +321,7 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
 
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
 
-    #Get pagination details
+    # Get pagination details
     coach_page = request.REQUEST.get("coaches_page", "1")
     coach_per_page = request.REQUEST.get("coaches_per_page", "5")
     student_page = request.REQUEST.get("students_page", "1")
@@ -370,7 +364,7 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
         "group": group,
         "group_id": group_id,
         "group_data": group_data,
-        "groups": groups, # sends dict if group page, list of group data otherwise
+        "groups": groups,  # sends dict if group page, list of group data otherwise
         "student_pages": student_pages,  # paginated data
         "coach_pages": coach_pages,  # paginated data
         "ds": ds,
@@ -490,9 +484,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         user_data[user.pk]["username"] = user.username
         user_data[user.pk]["group"] = user.group
 
-        user_data[user.pk]["total_report_views"] = 0#report_stats["count__sum"] or 0
-        user_data[user.pk]["total_logins"] =0# login_stats["count__sum"] or 0
-        user_data[user.pk]["total_hours"] = 0#login_stats["total_seconds__sum"] or 0)/3600.
+        user_data[user.pk]["total_report_views"] = 0  # report_stats["count__sum"] or 0
+        user_data[user.pk]["total_logins"] = 0  # login_stats["count__sum"] or 0
+        user_data[user.pk]["total_hours"] = 0  # login_stats["total_seconds__sum"] or 0)/3600.
 
         user_data[user.pk]["total_exercises"] = 0
         user_data[user.pk]["pct_mastery"] = 0.
@@ -518,7 +512,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_hours"] += (llog["total_seconds"]) / 3600.
             user_data[llog["user__pk"]]["total_logins"] += 1
 
-    for group in list(groups) + [None]*(group_id==None or group_id==UNGROUPED):  # None for ungrouped, if no group_id passed.
+    for group in list(groups) + [None] * (group_id == None or group_id == UNGROUPED):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _(UNGROUPED))
         group_title = getattr(group, "title", _(UNGROUPED))
@@ -536,7 +530,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # Add group data.  Allow a fake group UNGROUPED
     for user in users:
-        user_data[user.pk]["pct_mastery"] = user_data[user.pk]["pct_mastery"]/(user_data[user.pk]["total_exercises"] or 1)
+        user_data[user.pk]["pct_mastery"] = user_data[user.pk]["pct_mastery"] / (user_data[user.pk]["total_exercises"] or 1)
         group_pk = getattr(user.group, "pk", None)
         if group_pk not in group_data:
             logging.error("User %s still in nonexistent group %s!" % (user.id, group_pk))

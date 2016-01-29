@@ -73,15 +73,6 @@
                                             {% trans "Register device" %}
                                         </a>
                                     {% endif %}
-                                        {% if clock_set %}
-                                        /
-                                            <a onclick="$('#clock_set').show()">
-                                                {% trans "set clock" %}
-                                            </a>
-                                            <div id="clock_set" style="display:none">
-                                                {% include_block "control_panel/snippets/clock_set.html" "content" %}
-                                            </div>
-                                        {% endif %}
                                     {% endif %}
                                 </td>
                             </tr>
