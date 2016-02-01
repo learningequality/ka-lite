@@ -4,8 +4,13 @@ Windows
 #. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-15>`_ installer.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
-Upgrading KA Lite over an existing installation is easy -- just run the installer and follow the prompts!
+Upgrade
+_______
+
+Upgrading KA Lite in Windows over an existing installation is easy -- just run the installer and follow the prompts!
 You don't need to uninstall your old KA Lite installation first.
+You can follow the prompts to either keep your existing data or delete old data and start over.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 Mac OS X
 ========
@@ -50,6 +55,8 @@ To upgrade an existing KA Lite installation.
     #. Restart the server, login to the web app, then check the sidebar contents.
 
     This will enable the greyed-out assessment items on the sidebar.
+
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 
 Linux
@@ -132,6 +139,12 @@ _____________
 KA Lite is available for all platforms (e.g. non-Debian compatible platforms)
 through PyPi. See :ref:`pip-installation`.
 
+Upgrade
+_______
+
+To upgrade KA Lite on Linux, simply download the latest deb file and follow the instructions above for installation.
+Your existing data will be preserved by default.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 Configuration after installation or update
 __________________________________________
