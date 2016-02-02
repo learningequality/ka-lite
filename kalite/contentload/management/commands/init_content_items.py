@@ -128,6 +128,9 @@ class Command(BaseCommand):
         database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
         bulk_create = kwargs["bulk_create"]
 
+        if not os.path.exists(django_settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+            os.makedirs(django_settings.DB_CONTENT_ITEM_TEMPLATE_DIR)
+
         if os.path.isfile(database_path):
             if kwargs["overwrite"]:
                 os.remove(database_path)

@@ -490,10 +490,10 @@ def bulk_insert(items, **kwargs):
     if items:
         db = kwargs.get("db")
         items = map(parse_model_data, items)
+        print items[0].keys()
         if db:
             with db.atomic():
-                for idx in range(0, len(items), 500):
-                    Item.insert_many(map(parse_model_data, items[idx:idx + 500])).execute()
+                Item.insert_many(items).execute()
 
 
 @set_database

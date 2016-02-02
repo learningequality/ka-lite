@@ -376,21 +376,26 @@ class Command(BaseCommand):
 
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
-            if not settings.DB_TEMPLATE_FILE or database_file != settings.DB_TEMPLATE_FILE:
+            if not settings.DB_TEMPLATE_DEFAULT or database_file != settings.DB_TEMPLATE_DEFAULT:
                 # This is an overwrite install; destroy the old db
                 dest_file = tempfile.mkstemp()[1]
                 print(
                     "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
                 shutil.move(database_file, dest_file)
 
-        if settings.DB_TEMPLATE_FILE and not database_exists:
-            print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH))
-            shutil.copy(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH)
+        if settings.DB_TEMPLATE_DEFAULT and not database_exists:
+            print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH))
+            shutil.copy(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH)
         else:
             print("Baking a fresh database from scratch or upgrading existing database.")
             call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
             call_command("migrate", merge=True, verbosity=options.get("verbosity"))
         Settings.set("database_version", VERSION)
+
+        # Copy all content item db
+        for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+            if file_name.endswith("sqlite"):
+                print("Should now copy", file_name)
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this
