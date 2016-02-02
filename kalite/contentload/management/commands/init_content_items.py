@@ -5,9 +5,7 @@ and turn them into a single database file
 
 import os
 
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from django.db import connections
 from fle_utils.general import softload_json
 from optparse import make_option
 
@@ -16,7 +14,6 @@ logging = django_settings.LOG
 
 from kalite.topic_tools.content_models import bulk_insert, get_or_create, create_table, update_parents
 
-from kalite.contentload import settings
 from kalite.contentload.utils import dedupe_paths
 
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH, CHANNEL_DATA_PATH
@@ -40,7 +37,7 @@ def generate_topic_tree_items(channel="khan", language="en"):
 
     parental_units = {}
 
-    channel_data_path = os.path.join(django_settings.CONTENT_DATA_PATH, channel)
+    channel_data_path = CHANNEL_DATA_PATH
 
     topic_tree = softload_json(os.path.join(channel_data_path, "topics.json"), logger=logging.debug, raises=False)
     content_cache = softload_json(os.path.join(channel_data_path, "contents.json"), logger=logging.debug, raises=False)
@@ -93,15 +90,9 @@ def generate_topic_tree_items(channel="khan", language="en"):
     return flat_topic_tree, parental_units
 
 
-
 class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
-        make_option("-f", "--content-items-folderpath",
-                    action="store",
-                    dest="content_items_filepath",
-                    default=CHANNEL_DATA_PATH,
-                    help="Override the JSON data source to import assessment items from"),
         make_option("-d", "--database-path",
                     action="store",
                     dest="database_path",
@@ -147,8 +138,6 @@ class Command(BaseCommand):
         if not os.path.isfile(database_path):
             logging.info("Creating database file at {path}".format(path=database_path))
             create_table(database_path=database_path)
-
-        channel_data_path = kwargs.get("content_items_filepath")
 
         logging.info("Generating flattened topic tree for import")
 
