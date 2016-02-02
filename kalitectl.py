@@ -38,7 +38,6 @@ Options:
 
 Examples:
   kalite start          Start KA Lite
-  kalite url            Tell me where KA Lite is available from
   kalite status         How is KA Lite doing?
   kalite stop           Stop KA Lite
   kalite shell          Display a Django shell
@@ -51,10 +50,6 @@ Examples:
                             the Watchify process to recompile Javascript dynamically.
 
 Planned features:
-  kalite diagnose             Outputs user and copy-paste friendly diagnostics
-  kalite query [COMMAND ...]  A query method for external UIs etc. to send
-                              commands and obtain data from kalite.
-
   Universal --verbose option and --debug option. Shows INFO level and DEBUG
   level from logging.. depends on proper logging being introduced and
   settings.LOGGERS. Currently, --debug just tells cherrypy to do "debug" mode.
