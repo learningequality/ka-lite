@@ -65,7 +65,7 @@ class Command(NoArgsCommand):
         # Basic options
         make_option('-c', '--channel',
             dest='channel',
-            default="khan",
+            default=None,
             help='Create content files for a channel. Value of argument is the name of the channel.'),
         make_option('-i', '--import',
             action='store',
@@ -90,12 +90,15 @@ class Command(NoArgsCommand):
         if options["import_files"]:
             channel = "import_channel"
 
+        if not channel:
+            raise Exception("Channel must be specified or imported")        
+
         channel_tools = importlib.import_module("kalite.contentload.management.commands.channels.{channel}".format(channel=channel))
 
         if options["import_files"]:
             # Specifies where the files are coming from
             channel_tools.path = options["import_files"]
-            if not channel_name or channel_name=="khan":
+            if not channel_name:
                 channel_name = os.path.basename(options["import_files"])
 
         assert channel_name, "Channel name must not be empty. Make sure you used correct arguments."
