@@ -159,7 +159,8 @@ if IS_SOURCE:
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 
     # This is the legacy location kalite/database/data.sqlite
-    DEFAULT_DATABASE_PATH = os.path.join(_data_path, "kalite", "database", "data.sqlite")
+    DEFAULT_DATABASE_DIR = os.path.join(_data_path, "kalite", "database")
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, "data.sqlite")
 
     MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
     STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
@@ -179,11 +180,11 @@ else:
     if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
         os.mkdir(USER_WRITABLE_LOCALE_DIR)
 
-    DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
-    if not os.path.exists(DEFAULT_DATABASE_PATH):
-        os.mkdir(DEFAULT_DATABASE_PATH)
+    DEFAULT_DATABASE_DIR = os.path.join(USER_DATA_ROOT, "database",)
+    if not os.path.exists(DEFAULT_DATABASE_DIR):
+        os.mkdir(DEFAULT_DATABASE_DIR)
 
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'data.sqlite')
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, 'data.sqlite')
 
     # If we're not running as source, then we should include a blank, pre-migrated db in this location,
     # to be copied to user's KALITE_HOME.

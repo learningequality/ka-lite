@@ -12,11 +12,7 @@ only on django.conf.settings
 import os
 from django.conf import settings
 
-CONTENT_DATABASE_ROOT = os.path.join(settings.USER_DATA_ROOT, "content_databases")
-if not os.path.exists(CONTENT_DATABASE_ROOT):
-    os.mkdir(CONTENT_DATABASE_ROOT)
-
-CONTENT_DATABASE_PATH = os.path.join(CONTENT_DATABASE_ROOT, "content_{channel}_{language}.sqlite")
+CONTENT_DATABASE_PATH = os.path.join(settings.DEFAULT_DATABASE_DIR, "content_{channel}_{language}.sqlite")
 
 CHANNEL = getattr(settings, "CHANNEL", "khan")
 
