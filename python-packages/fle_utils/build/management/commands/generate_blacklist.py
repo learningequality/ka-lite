@@ -63,7 +63,6 @@ def get_blacklist(removeunused=False, exclude_patterns=[], removestatic=False, r
         blacklist += [
             "python-packages/postmark"
             "python-packages/fle_utils/feeds",
-            "python-packages/announcements",
             "python-packages/tastypie/templates",
             "python-packages/tastypie/management",
             "python-packages/django/contrib/admindocs",

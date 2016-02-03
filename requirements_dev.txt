@@ -6,3 +6,5 @@ django-extensions==1.5.9  # Found in installed apps in kalite.project.settings.d
 pep8
 sphinx
 #cli2man
+polib # used for our own makemessages
+xlrd # used for management command convert_xls_to_items
