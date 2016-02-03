@@ -12,11 +12,11 @@ from optparse import make_option
 from django.conf import settings as django_settings
 logging = django_settings.LOG
 
-from kalite.topic_tools.content_models import bulk_insert, get_or_create, create_table, update_parents
+from kalite.topic_tools.content_models import bulk_insert, create_table, update_parents
 
 from kalite.contentload.utils import dedupe_paths
 
-from kalite.topic_tools.settings import CONTENT_DATABASE_PATH, CHANNEL_DATA_PATH
+from kalite.topic_tools.settings import CONTENT_DATABASE_TEMPLATE_PATH, CHANNEL_DATA_PATH
 
 from kalite.i18n.base import translate_block
 
@@ -93,16 +93,6 @@ def generate_topic_tree_items(channel="khan", language="en"):
 class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
-        make_option("-d", "--database-path",
-                    action="store",
-                    dest="database_path",
-                    default="",
-                    help="Override the destination path for the content item DB file"),
-        make_option("-b", "--bulk-create",
-                    action="store_true",
-                    dest="bulk_create",
-                    default=False,
-                    help="Create the records in bulk (warning: will delete destination DB first)"),
         make_option("-c", "--channel",
                     action="store",
                     dest="channel",
@@ -125,8 +115,7 @@ class Command(BaseCommand):
         language = kwargs["language"]
         channel = kwargs["channel"]
         # temporarily swap out the database path for the desired target
-        database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
-        bulk_create = kwargs["bulk_create"]
+        database_path = CONTENT_DATABASE_TEMPLATE_PATH.format(channel=channel, language=language)
 
         if not os.path.exists(django_settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
             os.makedirs(django_settings.DB_CONTENT_ITEM_TEMPLATE_DIR)
@@ -146,13 +135,8 @@ class Command(BaseCommand):
 
         items, parental_units = generate_topic_tree_items(channel=channel, language=language)
 
-        if bulk_create:
-            logging.info("Bulk creating {number} topic and content items".format(number=len(items)))
-            bulk_insert(items, database_path=database_path)
-        else:
-            logging.info("Individually creating {number} topic and content items".format(number=len(items)))
-            for item in items:
-                get_or_create(item, database_path=database_path)
+        logging.info("Bulk creating {number} topic and content items".format(number=len(items)))
+        bulk_insert(items, database_path=database_path)
 
         logging.info("Adding parent mapping information to nodes")
         update_parents(parent_mapping=parental_units, database_path=database_path)
