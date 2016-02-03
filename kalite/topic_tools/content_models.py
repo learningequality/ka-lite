@@ -39,13 +39,13 @@ class Item(Model):
     files_complete = IntegerField(default=0)
     total_files = IntegerField(default=0)
     kind = CharField()
-    parent = ForeignKeyField("self", null=True, index=True, related_name="children")
+    parent = ForeignKeyField("self", default=None, null=True, index=True, related_name="children")
     id = CharField(index=True)
     pk = PrimaryKeyField(primary_key=True)
     slug = CharField()
     path = CharField(index=True, unique=True)
-    extra_fields = CharField(null=True)
-    youtube_id = CharField(null=True)
+    extra_fields = CharField(null=True, default="")
+    youtube_id = CharField(null=True, default="")
     size_on_disk = IntegerField(default=0)
     remote_size = IntegerField(default=0)
 
@@ -490,10 +490,10 @@ def bulk_insert(items, **kwargs):
     if items:
         db = kwargs.get("db")
         items = map(parse_model_data, items)
-        print items[0].keys()
         if db:
             with db.atomic():
-                Item.insert_many(items).execute()
+                for idx in range(0, len(items), 500):
+                    Item.insert_many(items[idx:idx + 500]).execute()
 
 
 @set_database
