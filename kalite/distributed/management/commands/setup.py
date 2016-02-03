@@ -392,10 +392,16 @@ class Command(BaseCommand):
             call_command("migrate", merge=True, verbosity=options.get("verbosity"))
         Settings.set("database_version", VERSION)
 
-        # Copy all content item db
+        # Copy all content item db templates
         for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
             if file_name.endswith("sqlite"):
-                print("Should now copy", file_name)
+                template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
+                dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
+                if install_clean or not os.path.exists(dest_database):
+                    print("Copying {} to {}".format(template_path, dest_database))
+                    shutil.copy(template_path, dest_database)
+                else:
+                    print("Skipping {}".format(template_path))
 
         # download assessment items
         # This can take a long time and lead to Travis stalling. None of this
