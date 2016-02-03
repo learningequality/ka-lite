@@ -97,10 +97,22 @@ IS_SOURCE = (
 )
 SOURCE_DIR = None
 
-# DB_TEMPLATE_FILE should point to a pre-generated database with no rows.
-# If it exists and DATABASES["default"]["name"] file does not, then the latter will be copied from the former
-# in the setup mgmt command.
-DB_TEMPLATE_FILE = None
+DB_TEMPLATE_DIR = os.path.join(
+    os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
+    "database",
+    "templates"
+)
+
+DB_CONTENT_ITEM_TEMPLATE_DIR = os.path.join(
+    DB_TEMPLATE_DIR,
+    "content_items",
+)
+
+# DB_TEMPLATE_DEFAULT SHOULD POINT TO A PRE-GENERATED DATABASE WITH NO ROWS.
+# IF IT EXISTS AND DATABASES["DEFAULT"]["NAME"] FILE DOES NOT, THEN THE LATTER WILL BE COPIED FROM THE FORMER
+# IN THE SETUP MGMT COMMAND.
+DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
+
 
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
@@ -179,7 +191,8 @@ if IS_SOURCE:
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 
     # This is the legacy location kalite/database/data.sqlite
-    DEFAULT_DATABASE_PATH = os.path.join(_data_path, "kalite", "database", "data.sqlite")
+    DEFAULT_DATABASE_DIR = os.path.join(_data_path, "kalite", "database")
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, "data.sqlite")
 
     MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
     STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
@@ -199,19 +212,11 @@ else:
     if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
         os.mkdir(USER_WRITABLE_LOCALE_DIR)
 
-    DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
-    if not os.path.exists(DEFAULT_DATABASE_PATH):
-        os.mkdir(DEFAULT_DATABASE_PATH)
+    DEFAULT_DATABASE_DIR = os.path.join(USER_DATA_ROOT, "database",)
+    if not os.path.exists(DEFAULT_DATABASE_DIR):
+        os.mkdir(DEFAULT_DATABASE_DIR)
 
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'data.sqlite')
-
-    # If we're not running as source, then we should include a blank, pre-migrated db in this location,
-    # to be copied to user's KALITE_HOME.
-    DB_TEMPLATE_FILE = os.path.join(
-        os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
-        "database",
-        "data.sqlite",
-    )
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, 'data.sqlite')
 
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security
