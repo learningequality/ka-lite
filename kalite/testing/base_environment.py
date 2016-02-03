@@ -7,6 +7,7 @@ import os
 import tempfile
 import shutil
 import sauceclient as sc
+import socket
 
 from behave import *
 from httplib import CannotSendRequest
@@ -23,17 +24,22 @@ from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout
 
 from securesync.models import Zone, Device, DeviceZone
 
+
 def before_all(context):
     pass
+
 
 def after_all(context):
     pass
 
+
 def before_feature(context, feature):
     pass
 
+
 def after_feature(context, feature):
     pass
+
 
 def setup_sauce_browser(context):
     """
@@ -69,7 +75,7 @@ def setup_sauce_browser(context):
             context.browser = webdriver.Remote(desired_capabilities=desired_capabilities,
                                                browser_profile=profile,
                                                command_executor=sauce_url)
-        except WebDriverException:
+        except (WebDriverException, socket.timeout):  # socket.timeout thrown occasionally, Selenium doesn't handle it
             print("Couldn't establish a connection to saucelabs. Using a local Firefox WebDriver instance.")
             del context.sauce
             context.browser = webdriver.Firefox(firefox_profile=profile)

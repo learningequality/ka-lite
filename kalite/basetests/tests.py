@@ -274,11 +274,6 @@ class PathsTests(DependenciesTests):
         else:
             self._pass("\n...Result: all json file/s are ok...")
 
-    def test_scripts_path(self):
-        scripts_path = os.path.realpath(os.path.join(PROJECT_PATH, "scripts"))
-        msg = 'Testing execute access for the scripts folder "%s"...' % scripts_path
-        self.check_path(scripts_path, os.X_OK, msg=msg)
-
 
 # NOTE: Enable these if we want to run the tests in specified order.
 # TEST_CASES = (SqliteTests, DjangoTests, PathsTests, PackagesTests)

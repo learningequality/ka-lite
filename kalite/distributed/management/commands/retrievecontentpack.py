@@ -1,4 +1,3 @@
-import json
 import os
 import urllib
 import tempfile
@@ -92,27 +91,11 @@ class Command(UpdatesStaticCommand):
 
 
 def extract_content_pack_metadata(zf, lang):
-    # NOTE (aronasorman): For KA Lite to detect and display a new language
-    # there has to be a metadata file present in the content pack. However I
-    # have not implemented the metadata generation on the content-pack-maker
-    # repo yet. To get around that and allow non-english language packs to be
-    # detected this function generates a fake metadata file.
-
-    # the eventual goal of this function is, as indicated by the function name,
-    # to extract the soon-to-be present metadata file into the right directory.
     metadata_path = os.path.join(get_locale_path(lang), "{lang}_metadata.json".format(lang=lang))
-    barebones_metadata = {
-        "code": lang,
-        'software_version': SHORTVERSION,
-        'language_pack_version': 1,
-        'percent_translated': 100,
-        'subtitle_count': 0,
-        "name": "DEBUG",
-        'native_name': 'DEBUG',
-    }
+    pack_metadata_name = "metadata.json"
 
-    with open(metadata_path, "wb") as f:
-        json.dump(barebones_metadata, f)
+    with open(metadata_path, "wb") as f, zf.open(pack_metadata_name) as mf:
+        shutil.copyfileobj(mf, f)
 
 
 def download_content_pack(fobj, lang):

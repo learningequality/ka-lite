@@ -65,8 +65,11 @@ if DEBUG:
 LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.INFO)
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
 
-logging.basicConfig()
 LOG.setLevel(LOGGING_LEVEL)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(levelname)s:%(name)s: %(message)s')
+ch.setFormatter(formatter)
+LOG.addHandler(ch)
 
 logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
