@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import time
 from kalite import version
 import logging
@@ -245,6 +246,18 @@ MEDIA_ROOT = getattr(local_settings, "MEDIA_ROOT", MEDIA_ROOT)
 STATIC_ROOT = getattr(local_settings, "STATIC_ROOT", STATIC_ROOT)
 MEDIA_URL = getattr(local_settings, "MEDIA_URL", "/media/")
 STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
+
+
+# Context data included by ka lite's context processor
+KALITE_CHANNEL_CONTEXT_DATA = {
+    "channel_name": u"KA Lite",
+    "head_line": u"A free world-class education for anyone anywhere.",
+    "tag_line": u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection.",
+    "channel_license": u"CC-BY-NC-SA",
+    "footer_text": u"Videos © 2015 Khan Academy (Creative Commons) // Exercises © 2015 Khan Academy",
+    "header_logo": os.path.join(STATIC_URL, 'images', 'horizontal-logo-small.png'),
+    "frontpage_splash": os.path.join(STATIC_URL, 'images', 'logo_10_enlarged_2.png'),
+}
 
 
 DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
