@@ -2,12 +2,10 @@ var soundManager = require("soundmanager2").soundManager;
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 
-var array = [];
-var past_time = 0;
-var past_object = 0;
-var current_time = 0;
-var current_object = 0;
-var isPlaying = false; //change to with underscore
+ //var past_time = 0;
+ //var past_object = 0;
+ //var current_object = 0;
+// var is_playing = false; 
 
 var Paper = require("../../../../../../node_modules/paper/dist/paper-full.min.js");
 
@@ -157,13 +155,13 @@ var VectorVideoView = ContentBaseView.extend({
     played: function() {
         this.$el.addClass("playing");
         this.activate();
-        isPlaying = true;
+        this.data_model.set("is_playing", true);
     },
 
     paused: function() {
         this.$el.removeClass("playing");
         this.deactivate();
-        isPlaying = false;
+        this.data_model.set("is_playing", false);
     },
 
     finished: function() {
@@ -225,10 +223,13 @@ var VectorVideoView = ContentBaseView.extend({
 
         //console.log("drawing all objects");
 
-        current_time = (parseInt(this.get_position()))/1000;
+        var current_time = (parseInt(this.get_position()))/1000;
+        var past_time = this.data_model.get("past_time");
+        var past_object = this.data_model.get("past_object");
         if(current_time > past_time){
             //console.log(past_object);
             //console.log(current_object);
+            var current_object = this.data_model.get("current_object");
             var temp_current_object = current_object;
             for(var x = past_object; x <= temp_current_object; x++){
                 if (parseInt(this.json_data.operations[x].start) < current_time) {
@@ -236,14 +237,16 @@ var VectorVideoView = ContentBaseView.extend({
                     this.draw_object(this.json_data.operations[x]);
                 }
             }
-            past_time = current_time;
+            this.data_model.set("past_time", current_time);
+            //past_time = current_time;
         }
     },
 
     draw_object: function(one_object) {
 
-        past_object = current_object;
-        current_object++;
+        var current_object = this.data_model.get("current_object");
+        this.data_model.set("past_object", current_object);
+        this.data_model.set("current_object", current_object++);
         var object_start_x = parseInt(one_object.offset_x);
         var object_start_y = parseInt(one_object.offset_y);
         var color_r = parseInt(one_object.color[0]);
@@ -277,7 +280,7 @@ var VectorVideoView = ContentBaseView.extend({
             Paper.paper.view.update();
             console.log("one sub stroke");
         }
-        array.push(stroke);
+        //array.push(stroke);
     },
 
     loop: function() {
@@ -285,14 +288,15 @@ var VectorVideoView = ContentBaseView.extend({
         //console.log("Inside loop");
 
         var self = this;
+        var is_playing = this.data_model.get("is_playing");
 
-        if(isPlaying === false){
+        if(is_playing === false){
             return;
         }
         //playing
-        if(isPlaying === true){
+        if(is_playing === true){
             // get time and draw up until this time.
-            console.log("starting to draw");
+            //console.log("starting to draw");
 
             self.draw_all();
         }
