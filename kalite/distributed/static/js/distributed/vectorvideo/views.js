@@ -6,6 +6,7 @@ var Handlebars = require("base/handlebars");
  //var past_object = 0;
  //var current_object = 0;
 // var is_playing = false; 
+var array = [];
 
 var Paper = require("../../../../../../node_modules/paper/dist/paper-full.min.js");
 
@@ -55,7 +56,7 @@ var VectorVideoView = ContentBaseView.extend({
         this.loop();
 
         console.log("After");
-        setInterval(this.loop, 10);
+        setInterval(this.loop, 100);
     },
 
     initialize_sound_manager: function() {
@@ -244,9 +245,11 @@ var VectorVideoView = ContentBaseView.extend({
 
     draw_object: function(one_object) {
 
+        
         var current_object = this.data_model.get("current_object");
+        //console.log("CURRENT OBJECT", current_object);
         this.data_model.set("past_object", current_object);
-        this.data_model.set("current_object", current_object++);
+        this.data_model.set("current_object", current_object+1);
         var object_start_x = parseInt(one_object.offset_x);
         var object_start_y = parseInt(one_object.offset_y);
         var color_r = parseInt(one_object.color[0]);
@@ -278,9 +281,9 @@ var VectorVideoView = ContentBaseView.extend({
 
                 stroke.add(new Paper.paper.Point(x, y));
             Paper.paper.view.update();
-            console.log("one sub stroke");
+            //console.log("one sub stroke");
         }
-        //array.push(stroke);
+        array.push(stroke);
     },
 
     loop: function() {
