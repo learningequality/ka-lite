@@ -11,6 +11,7 @@ from optparse import make_option
 
 from django.conf import settings as django_settings
 from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
 
 logging = django_settings.LOG
 
@@ -39,17 +40,17 @@ class Command(BaseCommand):
             return
 
         if is_valid_url(ziplocation):  # url; download the zip
-            print "Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time..."
+            logging.info("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
             # this way we can download stuff larger than the device's RAM
             r = requests.get(ziplocation, prefetch=False)
             content_length = r.headers.get("Content-Length")
-            print "Downloaded size: ", str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown"
+            logging.info("Downloaded size: ", str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown")
             sys.stdout.write("Downloading file...")
             sys.stdout.flush()
             f = tempfile.TemporaryFile("r+")
             r.raise_for_status()
             for cnt, chunk in enumerate(r.iter_content(chunk_size=1024)):
-                if chunk: # filter out keep-alive new chunks
+                if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
                     if cnt % 1000 == 0:
                         sys.stdout.write(".")
@@ -60,9 +61,13 @@ class Command(BaseCommand):
         else:                   # file; just open it normally
             f = open(ziplocation, "rb")
 
-        print "Unpacking..."
+        logging.info("Unpacking...")
         zf = zipfile.ZipFile(f, "r")
         unpack_zipfile_to_content_folder(zf)
+
+        logging.info("Scanning items and updating content db...")
+        call_command("annotate_content_items")
+        logging.info("Done, assessment items installed and everything updated. Refresh your browser!")
 
 
 def should_upgrade_assessment_items():
@@ -101,12 +106,6 @@ def unpack_zipfile_to_content_folder(zf):
         os.path.join(folder, 'assessmentitems.version'),
         settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
     )
-    # JSON file is apparrently not required (not in the test at least)
-    if os.path.isfile(os.path.join(folder, 'assessmentitems.json')):
-        shutil.move(
-            os.path.join(folder, 'assessmentitems.json'),
-            settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
-        )
 
 
 def is_valid_url(url):
