@@ -112,10 +112,8 @@ import kalite
 from kalite.django_cherrypy_wsgiserver.cherrypyserver import DjangoAppPlugin
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses
-import multiprocessing 
 import benchmark
-from benchmark import *
-
+from benchmark import benchmark_client
 
 # Environment variables that are used by django+kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.default")
@@ -158,7 +156,7 @@ STATUS_SERVER_CONFIGURATION_ERROR = 9
 STATUS_PID_FILE_READ_ERROR = 99
 STATUS_PID_FILE_INVALID = 100
 STATUS_UNKNOW = 101
-BENCHMARKING = True
+
 
 class NotRunning(Exception):
     """
@@ -450,10 +448,7 @@ def kill_watchify_process():
         sys.stdout.write('watchify process killed')
 
 
-
-
-
-
+@benchmark_client
 def start(debug=False, watch=False, daemonize=True, benchmark=False, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon
@@ -465,20 +460,7 @@ def start(debug=False, watch=False, daemonize=True, benchmark=False, args=[], sk
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
     # TODO: Do we want to fail if running as root?
-    
-    #p2 = multiprocessing.Process(target=start_benchmark,args=(os.getpid(),))
-    manager = multiprocessing.Manager()
-    q = manager.Queue()
-    #q = multiprocessing.Queue()
-    p2 = BenchmarkingProcess(os.getpid(),q)
-    p2.start()
-
-
-    print(p2, p2.is_alive())
-    
-    p2.start_benchmark()
-
-           
+       
     port = int(port or DEFAULT_LISTEN_PORT)
 
     if not daemonize:
@@ -502,7 +484,7 @@ def start(debug=False, watch=False, daemonize=True, benchmark=False, args=[], sk
             pass
 
         os.unlink(STARTUP_LOCK)
-
+    
     try:
         if get_pid():
             sys.stderr.write("Refusing to start: Already running\n")
@@ -527,11 +509,7 @@ def start(debug=False, watch=False, daemonize=True, benchmark=False, args=[], sk
         f.write("%s\n%d" % (str(os.getpid()), port))
 
     manage('initialize_kalite')
-
-    global BENCHMARK    # Needed to modify global copy of globvar
-    BENCHMARK = False
-    p2.join()
-    print(p2, p2.is_alive())
+ 
 
     if watch:
         watchify_thread = Thread(target=start_watchify)
@@ -930,7 +908,6 @@ if __name__ == "__main__":
     settings_module = arguments.pop('--settings', None)
     if settings_module:
         os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
-
     if arguments['start']:
         start(
             debug=arguments['--debug'],
