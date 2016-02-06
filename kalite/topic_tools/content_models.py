@@ -62,7 +62,7 @@ class AssessmentItem(Model):
     id = CharField(max_length=50, primary_key=True)
     item_data = TextField()  # A serialized JSON blob
     author_names = CharField(max_length=200)  # A serialized JSON list
-    __slots__ = ["id","item_data","author_names"]
+
 
 
 def parse_model_data(item):
@@ -466,9 +466,8 @@ def iterator_content_items(ids=None, **kwargs):
         items = Item.select().where(Item.id.in_(ids)).dicts().iterator()
     else:
         items = Item.select().dicts().iterator()
-
-    imap = itertools.imap
-    mapped_items = imap(unparse_model_data, items)
+    
+    mapped_items = itertools.imap(unparse_model_data, items)
     updated_mapped_items = update_content_availability(mapped_items)
 
     for path, update in updated_mapped_items:
@@ -481,8 +480,7 @@ def iterator_content_items_by_youtube_id(ids=None, **kwargs):
     else:
         items = Item.select().dicts().iterator()
 
-    imap = itertools.imap
-    mapped_items = imap(unparse_model_data, items)
+    mapped_items = itertools.imap(unparse_model_data, items)
     updated_mapped_items = update_content_availability(mapped_items)
 
     for path, update in updated_mapped_items:
