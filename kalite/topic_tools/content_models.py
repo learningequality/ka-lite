@@ -12,10 +12,8 @@ the dictionary, or with many of the fields collapsed into an 'extra_fields' key.
 All functions return the model data as a dictionary, in order to prevent external functions from having to know
 implementation details about the model class used in this module.
 """
-import os
 import json
 
-import sqlite3
 import itertools
 
 from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using,\
@@ -27,7 +25,8 @@ from .base import available_content_databases
 from .settings import CONTENT_DATABASE_PATH, CHANNEL
 from .annotate import update_content_availability
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+logging = settings.LOG
 
 
 # This Item is defined without a database.
@@ -41,13 +40,13 @@ class Item(Model):
     files_complete = IntegerField(default=0)
     total_files = IntegerField(default=0)
     kind = CharField()
-    parent = ForeignKeyField("self", null=True, index=True, related_name="children")
+    parent = ForeignKeyField("self", default=None, null=True, index=True, related_name="children")
     id = CharField(index=True)
     pk = PrimaryKeyField(primary_key=True)
     slug = CharField()
     path = CharField(index=True, unique=True)
-    extra_fields = CharField(null=True)
-    youtube_id = CharField(null=True)
+    extra_fields = CharField(null=True, default="")
+    youtube_id = CharField(null=True, default="")
     size_on_disk = IntegerField(default=0)
     remote_size = IntegerField(default=0)
     sort_order = FloatField(default=0)
@@ -59,6 +58,7 @@ class Item(Model):
     def __init__(self, *args, **kwargs):
         kwargs = parse_model_data(kwargs)
         super(Item, self).__init__(*args, **kwargs)
+
 
 class AssessmentItem(Model):
     id = CharField(max_length=50, primary_key=True)
@@ -108,7 +108,12 @@ def set_database(function):
         if language == "pt-BR":
             language = "pt"
 
-        path = kwargs.pop("database_path", None) or CONTENT_DATABASE_PATH.format(channel=kwargs.get("channel", CHANNEL), language=language)
+        path = kwargs.pop("database_path", None)
+        if not path:
+            path = CONTENT_DATABASE_PATH.format(
+                channel=kwargs.get("channel", CHANNEL),
+                language=language
+            )
 
         db = SqliteDatabase(path)
 
@@ -155,7 +160,7 @@ def parse_data(function):
                     output = map(unparse_model_data, output.dicts())
                 else:
                     output = [item for item in output.dicts()]
-            except (TypeError, OperationalError) as e:
+            except (TypeError, OperationalError):
                 logging.warn("No content database file found")
                 output = []
         return output
@@ -353,7 +358,6 @@ def get_content_parents(ids=None, **kwargs):
         return parent_values
 
 
-
 @parse_data
 @set_database
 def get_leafed_topics(kinds=None, db=None, **kwargs):
@@ -474,7 +478,7 @@ def search_topic_nodes(kinds=None, query=None, page=1, items_per_page=10, exact=
             Item.path,
             Item.slug,
         ).where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query))))
-        pages = topic_nodes.count()/items_per_page
+        pages = topic_nodes.count() / items_per_page
         topic_nodes = [item for item in topic_nodes.paginate(page, items_per_page).dicts()]
         if topic_node:
             # If we got an exact match, show it first.
@@ -495,7 +499,7 @@ def bulk_insert(items, **kwargs):
         if db:
             with db.atomic():
                 for idx in range(0, len(items), 500):
-                    Item.insert_many(map(parse_model_data, items[idx:idx+500])).execute()
+                    Item.insert_many(items[idx:idx + 500]).execute()
 
 
 @set_database

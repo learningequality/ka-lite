@@ -5,21 +5,18 @@ and turn them into a single database file
 
 import os
 
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from django.db import connections
 from fle_utils.general import softload_json
 from optparse import make_option
 
 from django.conf import settings as django_settings
 logging = django_settings.LOG
 
-from kalite.topic_tools.content_models import bulk_insert, get_or_create, create_table, update_parents
+from kalite.topic_tools.content_models import bulk_insert, create_table, update_parents
 
-from kalite.contentload import settings
 from kalite.contentload.utils import dedupe_paths
 
-from kalite.topic_tools.settings import CONTENT_DATABASE_PATH, CHANNEL_DATA_PATH
+from kalite.topic_tools.settings import CONTENT_DATABASE_TEMPLATE_PATH, CHANNEL_DATA_PATH
 
 from kalite.i18n.base import translate_block
 
@@ -40,7 +37,7 @@ def generate_topic_tree_items(channel="khan", language="en"):
 
     parental_units = {}
 
-    channel_data_path = os.path.join(django_settings.CONTENT_DATA_PATH, channel)
+    channel_data_path = CHANNEL_DATA_PATH
 
     topic_tree = softload_json(os.path.join(channel_data_path, "topics.json"), logger=logging.debug, raises=False)
     content_cache = softload_json(os.path.join(channel_data_path, "contents.json"), logger=logging.debug, raises=False)
@@ -93,25 +90,9 @@ def generate_topic_tree_items(channel="khan", language="en"):
     return flat_topic_tree, parental_units
 
 
-
 class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
-        make_option("-f", "--content-items-folderpath",
-                    action="store",
-                    dest="content_items_filepath",
-                    default=CHANNEL_DATA_PATH,
-                    help="Override the JSON data source to import assessment items from"),
-        make_option("-d", "--database-path",
-                    action="store",
-                    dest="database_path",
-                    default="",
-                    help="Override the destination path for the content item DB file"),
-        make_option("-b", "--bulk-create",
-                    action="store_true",
-                    dest="bulk_create",
-                    default=False,
-                    help="Create the records in bulk (warning: will delete destination DB first)"),
         make_option("-c", "--channel",
                     action="store",
                     dest="channel",
@@ -134,8 +115,10 @@ class Command(BaseCommand):
         language = kwargs["language"]
         channel = kwargs["channel"]
         # temporarily swap out the database path for the desired target
-        database_path = kwargs["database_path"] or CONTENT_DATABASE_PATH.format(channel=channel, language=language)
-        bulk_create = kwargs["bulk_create"]
+        database_path = CONTENT_DATABASE_TEMPLATE_PATH.format(channel=channel, language=language)
+
+        if not os.path.exists(django_settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+            os.makedirs(django_settings.DB_CONTENT_ITEM_TEMPLATE_DIR)
 
         if os.path.isfile(database_path):
             if kwargs["overwrite"]:
@@ -148,19 +131,12 @@ class Command(BaseCommand):
             logging.info("Creating database file at {path}".format(path=database_path))
             create_table(database_path=database_path)
 
-        channel_data_path = kwargs.get("content_items_filepath")
-
         logging.info("Generating flattened topic tree for import")
 
         items, parental_units = generate_topic_tree_items(channel=channel, language=language)
 
-        if bulk_create:
-            logging.info("Bulk creating {number} topic and content items".format(number=len(items)))
-            bulk_insert(items, database_path=database_path)
-        else:
-            logging.info("Individually creating {number} topic and content items".format(number=len(items)))
-            for item in items:
-                get_or_create(item, database_path=database_path)
+        logging.info("Bulk creating {number} topic and content items".format(number=len(items)))
+        bulk_insert(items, database_path=database_path)
 
         logging.info("Adding parent mapping information to nodes")
         update_parents(parent_mapping=parental_units, database_path=database_path)
