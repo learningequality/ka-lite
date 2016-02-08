@@ -178,7 +178,6 @@ class PackagesTests(DependenciesTests):
         "annoying": NO_VERSION,
         "dateutil": "1.5",
         "django": DependenciesTests.DJANGO_VERSION_STR,
-        "django_snippets": "1.0.1",
         "fle_utils": NO_VERSION,
         "git": "0.3.2 RC1",
         "gitdb": "0.5.4",
