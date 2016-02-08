@@ -1,5 +1,6 @@
 from math import ceil
 import datetime
+from collections import OrderedDict
 
 from django.utils.translation import ugettext as _
 from django.db.models import Q, Sum, Avg
@@ -101,7 +102,7 @@ def learner_logs(request):
             topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date, latest_activity_timestamp__lte=end_date)
             if topic_objects.count() == 0:
                 topic_objects = log_objects
-            objects = dict([(obj[id_field], get_content_cache(language=lang).get(obj[id_field], get_exercise_cache(language=lang).get(obj[id_field]))) for obj in topic_objects]).values()
+            objects = OrderedDict([(obj[id_field], get_content_cache(language=lang).get(obj[id_field], get_exercise_cache(language=lang).get(obj[id_field]))) for obj in topic_objects.order_by('completion_timestamp')]).values()
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
