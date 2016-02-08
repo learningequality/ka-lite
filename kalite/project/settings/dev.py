@@ -39,7 +39,6 @@ if DEBUG:
 
 
 INSTALLED_APPS += [
-    'django_snippets',  # used in contact form and (debug) profiling middleware
     'debug_toolbar',
 ]
 TEMPLATE_CONTEXT_PROCESSORS += [
