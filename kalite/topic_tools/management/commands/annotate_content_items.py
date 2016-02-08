@@ -1,6 +1,3 @@
-import os
-
-from django.core.management import call_command
 from optparse import make_option
 
 from django.conf import settings as django_settings
@@ -11,8 +8,6 @@ from kalite.topic_tools.content_models import annotate_content_models
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH
 
 from django.core.management.base import BaseCommand
-
-from django.utils.translation import gettext as _
 
 
 class Command(BaseCommand):
