@@ -65,6 +65,9 @@ class PlaylistProgress(PlaylistProgressParent):
 
         # Build a list of playlists for which the user has at least one data point
         user_playlists = get_content_parents(ids=exercise_ids+video_ids)
+	
+	if user_playlists is None:
+		user_playlists = list()
 
         # Store stats for each playlist
         user_progress = list()
