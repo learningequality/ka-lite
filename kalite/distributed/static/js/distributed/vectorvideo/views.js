@@ -108,10 +108,11 @@ var VectorVideoView = ContentBaseView.extend({
 
         console.log("Before");
 
-        this.loop();
+        //this.loop();
+        this.paper_scope.view.onFrame = this.loop;
 
         console.log("After");
-        setInterval(this.loop, 100);
+        //setInterval(this.loop, 100);
     },
 
     initialize_sound_manager: function () {
