@@ -40,6 +40,8 @@ var VectorVideoView = ContentBaseView.extend({
 
         this.$el.html(this.template(this.data_model.attributes));
 
+        this.$(".papCanvas").attr("id", Math.random().toString());
+
         this.initialize_sound_manager();
     },
 
@@ -100,6 +102,9 @@ var VectorVideoView = ContentBaseView.extend({
         var papCanvas = this.$(".papCanvas");
         //Paper.paper.setup(papCanvas[0]);
         this.paper_scope.setup(papCanvas[0]);
+
+        //TODO - When there are two canvasses, paperscope references the second object
+        //It is a problem with paper.js itself. 
 
         console.log("Before");
 
@@ -321,8 +326,8 @@ var VectorVideoView = ContentBaseView.extend({
 
     draw_stroke: function (one_stroke, start_x, start_y, color_r, color_g, color_b) {
 
-        var stroke = new Paper.paper.Path();
-        stroke.strokeColor = new Paper.paper.Color(color_r, color_g, color_b);
+        var stroke = new this.paper_scope.Path();
+        stroke.strokeColor = new this.paper_scope.Color(color_r, color_g, color_b);
         for (var sub_stroke in one_stroke) {
             //console.log(one_stroke[sub_stroke][0]);
             //console.log(one_stroke[sub_stroke][1]);
@@ -332,7 +337,7 @@ var VectorVideoView = ContentBaseView.extend({
             var y = parseInt(one_stroke[sub_stroke][1]);
             y = y + start_y;
 
-            stroke.add(new Paper.paper.Point(x, y));
+            stroke.add(new this.paper_scope.Point(x, y));
             this.paper_scope.view.update();
             //console.log("one sub stroke");
         }
