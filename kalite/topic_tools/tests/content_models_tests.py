@@ -1,5 +1,64 @@
+from peewee import Using
+
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools.content_models import update_item, get_random_content, get_content_item, get_content_items, get_content_parents
+from kalite.topic_tools.content_models import update_item, get_random_content, get_content_item, get_content_items, \
+    Item, get_topic_nodes, set_database, get_content_parents
+
+
+class ContentModelRegressionTestCase(KALiteTestCase):
+
+    @set_database
+    def setUp(self, db=None):
+        self.db = db
+        with Using(db, [Item], with_transaction=False):
+            parent = self.parent = Item.create(
+                title="Foo",
+                description="Bar",
+                available=True,
+                kind="Topic",
+                id="1",
+                slug="foo",
+                path="foopath"
+            )
+            self.available_item = Item.create(
+                title="available_item",
+                description="Bingo",
+                available=True,
+                kind="Topic",
+                id="2",
+                slug="avail",
+                path="avail",
+                parent=parent
+            )
+            self.unavailable_item = Item.create(
+                title="Unavailable item",
+                description="baz",
+                available=False,
+                kind="Topic",
+                id="3",
+                slug="unavail",
+                path="unavail",
+                parent=parent
+            )
+
+    def tearDown(self):
+        with Using(self.db, [Item], with_transaction=False):
+            self.available_item.delete_instance()
+            self.unavailable_item.delete_instance()
+            self.parent.delete_instance()
+
+    def test_get_topic_nodes(self):
+        """ Test for issue #3997 -- only "available" items should be sent to the sidebar """
+        children = get_topic_nodes(parent="1")
+        self.assertEqual(children, [{
+            'available': True,
+            'description': self.available_item.description,
+            'id': self.available_item.id,
+            'kind': self.available_item.kind,
+            'path': self.available_item.path,
+            'slug': self.available_item.slug,
+            'title': self.available_item.title,
+        }])
 
 
 class UpdateItemTestCase(KALiteTestCase):
@@ -36,4 +95,3 @@ class ContentModelsTestCase(KALiteTestCase):
         The function get_content_parents() should return a empty list when an empty list of ids is passed to it.
         """
         self.assertEqual(get_content_parents(ids=list()), list())
-	
