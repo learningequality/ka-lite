@@ -17,7 +17,7 @@
             <a href="{{ pathto('_sources/' + sourcename, true)|e }}" rel="nofollow"> View page source</a>
           {% endif %}
         {% endif %}
-        {% if not display_github %}
+        {% if "" and not display_github %}
           <a href="http://github.com/learningequality/ka-lite/blob/{{ theme_git_branch }}/sphinx-docs/{{ pagename }}.rst" class="fa fa-github">
               View on Github
           </a>
