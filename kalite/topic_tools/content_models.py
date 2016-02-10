@@ -344,7 +344,11 @@ def get_content_parents(ids=None, **kwargs):
         parent_values = Item.select(
             Parent
         ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids)).distinct()
+	if parent_values is None:
+  	    parent_values = list()
         return parent_values
+    else:
+	return list()
 
 
 
