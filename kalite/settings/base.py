@@ -7,38 +7,16 @@ import sys
 import warnings
 
 from kalite import ROOT_DATA_PATH
-from kalite.shared.warnings import RemovedInKALite_v016_Warning
+from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
 from django.utils.translation import ugettext_lazy
 
-# Load local settings first... loading it again later to have the possibility
-# to overwrite default app settings.. very strange method, will be refactored
-# and completely fixed ~0.14 or 0.15. /benjaoming
-
 try:
-    # Not sure if vars from local_settings are accessed ATM. This is one of
-    # the big disadvantage of this whole implicit importing chaos... will be
-    # fixed later.
     from kalite import local_settings
-    # This is not a DeprecationWarning by purpose, because those are
-    # ignored during settings module load time
-    warnings.warn(
-        "We will be deprecating the old way of statically importing custom "
-        "settings, in favor of a more flexible way. The easiest way to update "
-        "your installation is to rename your local_settings.py (keeping it in "
-        "the same directory) and add an import statement in the very first "
-        "line of the new file so it looks like this:\n\n"
-        "    from kalite.project.settings.base import *\n"
-        "    # Put custom settings here...\n"
-        "    FOO = BAR\n\n"
-        "and then call kalite start with an additional argument pointing to "
-        "your new settings module:\n\n"
-        "    kalite start --settings=kalite.my_settings\n\n"
-        "In the future, it is recommended not to keep your own settings module "
-        "in the kalite code base but to put the file somewhere else in your "
-        "python path, for instance in the current directory when running "
-        "'kalite --settings=my_module'.",
-        RemovedInKALite_v016_Warning
+    raise RemovedInKALite_v016_Error(
+        "The local_settings.py method for using custom settings has been removed."
+        "In order to use custom settings, please add them to the special 'settings.py'"
+        "file found in the '.kalite' subdirectory in your home directory."
     )
 except ImportError:
     local_settings = object()
