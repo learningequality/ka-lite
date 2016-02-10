@@ -9,7 +9,6 @@ import shutil
 import sauceclient as sc
 import socket
 
-from behave import *
 from httplib import CannotSendRequest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -18,9 +17,11 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db import connections
 from django.db.transaction import TransactionManagementError
+from peewee import Using
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
+from kalite.topic_tools.content_models import Item, set_database
 
 from securesync.models import Zone, Device, DeviceZone
 
@@ -34,11 +35,60 @@ def after_all(context):
 
 
 def before_feature(context, feature):
-    pass
+    if "uses_content_paths" in context.tags:
+        setup_content_paths(context)
 
 
 def after_feature(context, feature):
-    pass
+    if "uses_content_paths" in context.tags:
+        teardown_content_paths(context)
+
+
+@set_database
+def setup_content_paths(context, db):
+    """
+    Creaters available content items and adds their urls to the context object.
+
+    :param context: A behave context, to which the attributes "available_content_path" and "unavailable_content_path"
+        will be added.
+    :return: None
+    """
+    # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
+    # depends on these specific values.
+    context.unavailable_content_path, context.available_content_path = (
+        "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/",
+        "khan/math/early-math/cc-early-math-counting-topic/cc-early-math-counting/counting-with-small-numbers/",
+    )
+    with Using(db, [Item], with_transaction=False):
+        context._available_item = Item.create(
+            title="available_item",
+            description="Bingo",
+            available=True,
+            kind="Video",
+            id="2",
+            slug="avail",
+            path=context.available_content_path
+        )
+        context._unavailabe_item = Item.create(
+            title="Unavailable item",
+            description="baz",
+            available=False,
+            kind="Video",
+            id="3",
+            slug="unavail",
+            path=context.unavailable_content_path
+        )
+
+
+def teardown_content_paths(context):
+    """
+    The opposite of ``setup_content_urls``. Removes content items created there.
+
+    :param context: A behave context, which keeps a reference to the Items so we can clean them up.
+    :return: None.
+    """
+    context._available_item.delete_instance()
+    context._unavailabe_item.delete_instance()
 
 
 def setup_sauce_browser(context):
@@ -80,6 +130,7 @@ def setup_sauce_browser(context):
             del context.sauce
             context.browser = webdriver.Firefox(firefox_profile=profile)
 
+
 def setup_local_browser(context):
     """
     Use local webdriver. Has side effects on the passed in behave context.
@@ -98,6 +149,7 @@ def setup_local_browser(context):
         profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
 
     context.browser = webdriver.Firefox(firefox_profile=profile)
+
 
 # FYI: context.tags contains feature tags + scenario tags.
 def before_scenario(context, scenario):
@@ -130,6 +182,7 @@ def before_scenario(context, scenario):
         context.logged_in = True
         login_as_learner(context)
 
+
 def after_scenario(context, scenario):
     if context.logged_in:
         logout(context)
@@ -160,6 +213,7 @@ def after_scenario(context, scenario):
 
     database_teardown(context)
 
+
 def database_setup(context):
     """
     Behave features are analogous to test suites, and behave scenarios are analogous to TestCases, but due to
@@ -167,6 +221,7 @@ def database_setup(context):
     setup/teardown done by TestCases in order to achieve consistent isolation.
     """
     KALiteTestCase.setUpDatabase()
+
 
 def database_teardown(context):
     """
@@ -179,6 +234,7 @@ def database_teardown(context):
             call_command("flush", database=alias, interactive=False)
         except TransactionManagementError as e:
             print("Couldn't flush the database, got a TransactionManagementError: " + e.message)
+
 
 def do_fake_registration():
     """
