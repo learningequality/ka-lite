@@ -21,7 +21,7 @@ from peewee import Using
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
-from kalite.topic_tools.content_models import Item, set_database
+from kalite.topic_tools.content_models import Item, set_database, update_item
 
 from securesync.models import Zone, Device, DeviceZone
 
@@ -56,19 +56,14 @@ def setup_content_paths(context, db):
     # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
     # depends on these specific values.
     context.unavailable_content_path, context.available_content_path = (
-        "khan/math/arithmetic/addition-subtraction/two_dig_add_sub/adding-whole-numbers-and-applications-1/",
-        "khan/math/early-math/cc-early-math-counting-topic/cc-early-math-counting/counting-with-small-numbers/",
+        "khan/foo/bar/unavail",
+        "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/",
     )
+
+    update_item(path="khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/",
+                update={"available": True})
+
     with Using(db, [Item], with_transaction=False):
-        context._available_item = Item.create(
-            title="available_item",
-            description="Bingo",
-            available=True,
-            kind="Video",
-            id="2",
-            slug="avail",
-            path=context.available_content_path
-        )
         context._unavailabe_item = Item.create(
             title="Unavailable item",
             description="baz",
@@ -87,7 +82,6 @@ def teardown_content_paths(context):
     :param context: A behave context, which keeps a reference to the Items so we can clean them up.
     :return: None.
     """
-    context._available_item.delete_instance()
     context._unavailabe_item.delete_instance()
 
 
