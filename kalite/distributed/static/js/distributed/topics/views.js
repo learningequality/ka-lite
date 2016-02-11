@@ -316,7 +316,9 @@ var SidebarView = BaseView.extend({
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".sidebar-fade").show();
         } else {
-            this.sidebar.css({left: - this.width});
+            // In an edge case, this.width may be undefined -- if so, then just make sure a sufficiently high
+            // numerical value is set to hide the sidebar
+            this.sidebar.css({left: -(this.width || $(window).width())});
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".sidebar-fade").hide();
         }
