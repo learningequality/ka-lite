@@ -37,7 +37,6 @@ def search_api(request, channel):
     return JsonResponse(matches)
 
 
-
 @api_handle_error_with_json
 def content_item(request, channel, content_id):
     language = request.language
@@ -50,7 +49,15 @@ def content_item(request, channel, content_id):
     content = get_content_item(channel=channel, content_id=content_id, language=language)
 
     if not content:
-        return None
+        content = {
+            "title": "Unavailable Content",
+            "description": "This content is unavailable. Either it must be downloaded, or the url is incorrect.",
+            "available": False,
+            "kind": "Video",
+            "id": "unavailable_content",
+            "slug": "unavailable_content",
+            "path": "unavailable_content"
+        }
 
     if not content.get("available", False):
         if request.is_admin:
