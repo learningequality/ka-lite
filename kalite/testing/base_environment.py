@@ -56,7 +56,7 @@ def setup_content_paths(context, db):
     # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
     # depends on these specific values.
     context.unavailable_content_path, context.available_content_path = (
-        "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/",
+        "khan/math/arithmetic/addition-subtraction/two_dig_add_sub/adding-whole-numbers-and-applications-1/",
         "khan/math/early-math/cc-early-math-counting-topic/cc-early-math-counting/counting-with-small-numbers/",
     )
     with Using(db, [Item], with_transaction=False):
