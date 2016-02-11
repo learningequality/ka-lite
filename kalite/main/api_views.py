@@ -12,7 +12,7 @@ from django.utils.translation import gettext as _
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError
 
-from kalite.topic_tools.content_models import get_topic_nodes, get_content_item, search_topic_nodes
+from kalite.topic_tools.content_models import get_topic_nodes, get_content_item, search_topic_nodes, get_assessment_item_data
 from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
 from kalite.facility.models import FacilityUser
 from kalite.distributed.api_views import get_messages_for_api_calls
@@ -97,3 +97,11 @@ def content_recommender(request):
     explore_recommendations = [set_bool_flag("explore", rec) for rec in get_explore_recommendations(user, request)] if explore else []
 
     return JsonResponse(resume_recommendations + next_recommendations + explore_recommendations)
+
+
+@api_handle_error_with_json
+def assessment_item(request, assessment_item):
+    assessment_item = get_assessment_item_data(channel=getattr(request, "channel", "khan"),
+                                               language=getattr(request, "language", "en"),
+                                               assessment_item_id=assessment_item)
+    return JsonResponse(assessment_item)
