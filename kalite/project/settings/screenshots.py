@@ -4,6 +4,7 @@ To use it, run kalite with --settings=kalite.project.settings.screenshots or
 set then environment variable DJANGO_SETTINGS_MODULE to
 'kalite.project.settings.screenshots'.
 """
+from .base import *  # @UnusedWildImport  noqa
 
 SCREENSHOTS_OUTPUT_PATH = os.path.join(USER_DATA_ROOT, "data", "screenshots")
 SCREENSHOTS_EXTENSION = ".png"
