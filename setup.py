@@ -62,8 +62,10 @@ RAW_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read(
 def filter_requirement_statements(req):
     """Filter comments and blank lines from a requirements.txt like file
     content to feed pip"""
-    # Strip comments and empty lines
-    req_pattern = re.compile(r'^\s*([^\#]+)')
+    # Strip comments and empty lines, but '#' is allowed in a URL!
+    if req.startswith('http'):
+        return req
+    req_pattern = re.compile(r'^(\s*)([^\#]+)')
 
     m = req_pattern.search(req)
     if m:
@@ -415,6 +417,7 @@ setup(
     data_files=data_files,
     zip_safe=False,
     install_requires=DIST_REQUIREMENTS,
+    dependency_links=DEPENDENCY_LINKS,
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',

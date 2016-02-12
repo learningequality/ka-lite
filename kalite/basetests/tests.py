@@ -164,7 +164,6 @@ class PackagesTests(DependenciesTests):
     TODO(cpauya): We can improve this with version checks like how pip does
     it with it's `requirements.txt`.  Example:
     ...
-        "announcements==1.0.2",
         "django>=1.5.1"
     ...
     This way it's quite easy to add more package dependencies here.
@@ -176,36 +175,15 @@ class PackagesTests(DependenciesTests):
     # out requirements.txt and we should detect conflicts from dependencies
     # but not this way.
     PACKAGES = {
-        "announcements": "1.0.2",
         "annoying": NO_VERSION,
-        "async": NO_VERSION,
-        "cherrypy": "3.2.2",
-        "contextlib2": NO_VERSION,
         "dateutil": "1.5",
         "django": DependenciesTests.DJANGO_VERSION_STR,
-        "django_snippets": "1.0.1",
         "fle_utils": NO_VERSION,
         "git": "0.3.2 RC1",
         "gitdb": "0.5.4",
-        "httplib2": "0.8",
-        "ifcfg": NO_VERSION,
-        "importlib": NO_VERSION,
-        "iso8601": NO_VERSION,
         "kaa": "0.99.2dev",
-        "khan_api_python": NO_VERSION,
-        "khanacademy": NO_VERSION,
-        "pyasn1": "0.1.4",
         "requests": "0.14.2",
-        "rsa": "3.1.1",
-        "smmap": "0.8.2",
-        "tastypie": "0.11.0",
-        "youtube_dl": "2014.12.10.3",
-        "collections_local_copy": NO_VERSION,
-        "memory_profiler": "0.26",
-        "mimeparse": "0.1.4",
         "oauth": "1.0",
-        "pbkdf2": "1.3",
-        "polib": "1.0.3",
         "six": "1.8.0",
     }
     INSTALLED_APPS = getattr(settings, "INSTALLED_APPS", [])
