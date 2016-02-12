@@ -2,6 +2,8 @@
 Default settings for Raspberry Pi
 """
 
+from .base import *  # @UnusedWildImport noqa
+
 # nginx proxy will normally be on 8008 and production port on 7007
 # You need to specify kalite start --port=7007 to run KA Lite
 # on a different port. This is done by default in the debian package's
