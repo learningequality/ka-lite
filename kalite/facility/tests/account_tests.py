@@ -5,7 +5,6 @@ from ..models import FacilityUser
 
 
 class UserCreationTestCase(FacilityTestCase):
-
     def create_user(self, username=None, password=None):
         if not username:
             username = self.data['username']

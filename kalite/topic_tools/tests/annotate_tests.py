@@ -1,17 +1,13 @@
-
-from kalite.topic_tools.annotate import update_content_availability
-from kalite.testing.base import KALiteTestCase
-from django.test import TestCase
-from kalite.topic_tools.content_models import Item, annotate_content_models, set_database, unparse_model_data
-from . import settings
-from peewee import Using
-from playhouse.shortcuts import model_to_dict
-import json
 import os
 
-from django.test.utils import override_settings
+from django.test import TestCase
+from peewee import Using
+from playhouse.shortcuts import model_to_dict
 
+from kalite.topic_tools.annotate import update_content_availability
+from kalite.topic_tools.content_models import Item, set_database, unparse_model_data
 from kalite.contentload import settings as contentload_settings
+
 
 class AnnotateTestCase(TestCase):
     TITLE = "testing "
@@ -38,7 +34,6 @@ class AnnotateTestCase(TestCase):
         self.cleanup = False
 
         if not os.path.exists(self.version_path):
-
             with open(self.version_path, 'w') as f:
                 f.write("stuff")
             self.cleanup = True

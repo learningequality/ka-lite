@@ -2,7 +2,6 @@
 Run benchmarks from the benchmark command
 """
 import threading
-import time
 from functools import partial
 from optparse import make_option
 
@@ -138,7 +137,6 @@ class Command(BaseCommand):
         #   passing the lambda function
         threads = []
         for ti in range(int(options["nclients"])):
-
             # Eliminate unnecessary keys
             kwargs = dict((k, options[k]) for k in good_keys)
             kwargs["behavior_profile"] += ti  # each thread has a different behavior

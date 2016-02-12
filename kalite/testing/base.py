@@ -3,17 +3,15 @@ Contains test wrappers and helper functions for
 automated of KA Lite using selenium
 for automated browser-based testing.
 """
-import re
-import six
 import sys
 
+import six
 from selenium import webdriver
-
 from behave.configuration import Configuration
 from behave.runner import Runner as BehaveRunner
 from behave.formatter.ansi_escapes import escapes
-
 from django.core.urlresolvers import reverse
+
 from django.test import TestCase, LiveServerTestCase
 
 from .browser import setup_browser
@@ -45,7 +43,6 @@ class KALiteTestCase(CreateDeviceMixin, TestCase):
 
 
 class KALiteClientTestCase(KALiteTestCase):
-
     def setUp(self):
         self.client = KALiteClient()
         self.client.setUp()
@@ -85,10 +82,10 @@ class KALiteBrowserTestCase(KALiteTestCase, LiveServerTestCase):
 # it's options
 def parse_argv(argv, option_info):
     behave_options = option_info.keys()
-    new_argv = ["behave",]
+    new_argv = ["behave", ]
     our_opts = {"browser": None}
 
-    for index in xrange(len(argv)): #using range to have compatybility with Py3
+    for index in xrange(len(argv)):  # using range to have compatybility with Py3
         # If it's a behave option AND is the long version (starts with '--'),
         # then proceed to save the information.  If it's not a behave option
         # (which means it's most likely a Django test option), we ignore it.
@@ -102,7 +99,7 @@ def parse_argv(argv, option_info):
 
                 # Add option argument if there is one
                 if option_info[argv[index]] == True:
-                    new_argv.append(argv[index+1])
+                    new_argv.append(argv[index + 1])
                     index += 1  # Skip past option arg
 
     return (new_argv, our_opts)
@@ -139,16 +136,16 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             self.behave_config.exclude = lambda x: self.feature_name not in six.text_type(x)
         self.behave_config.format = self.behave_config.format if self.behave_config.format else ['pretty']
         # disable these in case you want to add set_trace in the tests you're developing
-        self.behave_config.stdout_capture =\
+        self.behave_config.stdout_capture = \
             self.behave_config.stdout_capture if self.behave_config.stdout_capture else False
-        self.behave_config.stderr_capture =\
+        self.behave_config.stderr_capture = \
             self.behave_config.stderr_capture if self.behave_config.stderr_capture else False
 
     def runTest(self, result=None):
         # run behave on a single directory
 
         # from behave/__main__.py
-        #stream = self.behave_config.output
+        # stream = self.behave_config.output
         runner = BehaveRunner(self.behave_config)
         runner.test_case = self
 
@@ -183,4 +180,4 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
         if failed:
             raise AssertionError('There were behave failures, see output above')
-        # end of from behave/__main__.py
+            # end of from behave/__main__.py

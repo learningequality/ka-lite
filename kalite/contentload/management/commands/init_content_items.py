@@ -4,19 +4,17 @@ and turn them into a single database file
 """
 
 import os
-
-from django.core.management import call_command
-from django.core.management.base import BaseCommand
-from django.db import connections
-from fle_utils.general import softload_json
 from optparse import make_option
 
+from django.core.management.base import BaseCommand
 from django.conf import settings as django_settings
+
+from fle_utils.general import softload_json
+
 logging = django_settings.LOG
 
 from kalite.topic_tools.content_models import bulk_insert, get_or_create, create_table, update_parents
 
-from kalite.contentload import settings
 from kalite.contentload.utils import dedupe_paths
 
 from kalite.topic_tools.settings import CONTENT_DATABASE_PATH, CHANNEL_DATA_PATH
@@ -44,7 +42,8 @@ def generate_topic_tree_items(channel="khan", language="en"):
 
     topic_tree = softload_json(os.path.join(channel_data_path, "topics.json"), logger=logging.debug, raises=False)
     content_cache = softload_json(os.path.join(channel_data_path, "contents.json"), logger=logging.debug, raises=False)
-    exercise_cache = softload_json(os.path.join(channel_data_path, "exercises.json"), logger=logging.debug, raises=False)
+    exercise_cache = softload_json(os.path.join(channel_data_path, "exercises.json"), logger=logging.debug,
+                                   raises=False)
 
     def recurse_nodes(node, parent=""):
         """
@@ -93,9 +92,7 @@ def generate_topic_tree_items(channel="khan", language="en"):
     return flat_topic_tree, parental_units
 
 
-
 class Command(BaseCommand):
-
     option_list = BaseCommand.option_list + (
         make_option("-f", "--content-items-folderpath",
                     action="store",

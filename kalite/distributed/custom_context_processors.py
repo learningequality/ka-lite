@@ -12,7 +12,6 @@ from kalite.topic_tools import settings as topic_tools_settings
 
 
 def custom(request):
-
     return {
         "central_server_host": settings.CENTRAL_SERVER_HOST,
         "central_server_domain": settings.CENTRAL_SERVER_DOMAIN,

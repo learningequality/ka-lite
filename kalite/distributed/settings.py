@@ -1,10 +1,6 @@
 import os
 import uuid
 
-
-from django.http import HttpRequest
-
-
 try:
     from kalite import local_settings
 except ImportError:
@@ -37,7 +33,8 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), "templates"),)
 ##############################
 
 # Note: this MUST be hard-coded for backwards-compatibility reasons.
-ROOT_UUID_NAMESPACE = uuid.UUID("a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
+ROOT_UUID_NAMESPACE = uuid.UUID(
+    "a8f052c7-8790-5bed-ab15-fe2d3b1ede41")  # print uuid.uuid5(uuid.NAMESPACE_URL, "https://kalite.adhocsync.com/")
 
 CENTRAL_SERVER = getattr(local_settings, "CENTRAL_SERVER", False)
 CENTRAL_SERVER_DOMAIN = getattr(local_settings, "CENTRAL_SERVER_DOMAIN", "learningequality.org")
@@ -69,7 +66,8 @@ ZERO_CONFIG = getattr(local_settings, "ZERO_CONFIG", False)
 # With zero config, no admin (by default)
 INSTALL_ADMIN_USERNAME = getattr(local_settings, "INSTALL_ADMIN_USERNAME", None)
 INSTALL_ADMIN_PASSWORD = getattr(local_settings, "INSTALL_ADMIN_PASSWORD", None)
-assert bool(INSTALL_ADMIN_USERNAME) + bool(INSTALL_ADMIN_PASSWORD) != 1, "Must specify both admin username and password, or neither."
+assert bool(INSTALL_ADMIN_USERNAME) + bool(
+    INSTALL_ADMIN_PASSWORD) != 1, "Must specify both admin username and password, or neither."
 
 
 ########################

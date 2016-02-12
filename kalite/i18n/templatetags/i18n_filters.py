@@ -5,8 +5,8 @@ from django.template import Library
 
 from ..base import get_language_name as i18n_get_language_name
 
-
 register = Library()
+
 
 @register.filter
 def get_language_name(lang_code):

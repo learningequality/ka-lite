@@ -2,7 +2,9 @@
 """
 from datetime import datetime
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings;
+
+logging = settings.LOG
 from django.utils.translation import ugettext as _
 
 from ...models import UpdateProgressLog
@@ -13,6 +15,7 @@ class UpdatesCommand(LocaleAwareCommand):
     """
     Abstract class for sharing code across Dynamic and Static versions
     """
+
     def __init__(self, process_name=None, *args, **kwargs):
         self.process_name = process_name or self.__class__.__module__.split(".")[-1]
         self.progress_log = UpdateProgressLog.get_active_log(process_name=self.process_name)
@@ -23,8 +26,8 @@ class UpdatesCommand(LocaleAwareCommand):
         super(UpdatesCommand, self).__init__(*args, **kwargs)
 
     def display_notes(self, notes, ignore_same=True):
-            if notes and (not ignore_same or notes != self.progress_log.notes):
-                logging.info(notes)
+        if notes and (not ignore_same or notes != self.progress_log.notes):
+            logging.info(notes)
 
     def ended(self):
         return self.progress_log.end_time is not None
@@ -38,6 +41,7 @@ class UpdatesDynamicCommand(UpdatesCommand):
     Updates by knowing the current total number of stages (which can change),
 
     """
+
     def __init__(self, num_stages=None, *args, **kwargs):
         super(UpdatesDynamicCommand, self).__init__(*args, **kwargs)
         if num_stages:
@@ -71,7 +75,8 @@ class UpdatesDynamicCommand(UpdatesCommand):
     def update_stage(self, stage_name=None, stage_percent=None, stage_status=None, notes=None):
         self.check_if_cancel_requested()
         self.display_notes(notes)
-        self.progress_log.update_stage(stage_name=stage_name, stage_percent=stage_percent, stage_status=stage_status, notes=notes)
+        self.progress_log.update_stage(stage_name=stage_name, stage_percent=stage_percent, stage_status=stage_status,
+                                       notes=notes)
 
     def cancel(self, stage_status=None, notes=None):
         self.check_if_cancel_requested()
@@ -95,6 +100,7 @@ class UpdatesStaticCommand(UpdatesCommand):
     Command that updates the UpdateProgressLog table,
     having a well-defined, sequential static list of stages.
     """
+
     def __init__(self, *args, **kwargs):
         super(UpdatesStaticCommand, self).__init__(*args, **kwargs)
 
@@ -117,11 +123,13 @@ class UpdatesStaticCommand(UpdatesCommand):
         assert self.progress_log.current_stage is not None, "Must call start function before next_stage()"
         assert self.progress_log.current_stage < len(self.stages), "Must not be at the last stage already."
         self.display_notes(notes)
-        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage], stage_percent=0, notes=notes)
+        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage], stage_percent=0,
+                                       notes=notes)
 
     def update_stage(self, stage_percent, stage_status=None, notes=None):
         self.display_notes(notes)
-        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage - 1], stage_percent=stage_percent, stage_status=stage_status, notes=notes)
+        self.progress_log.update_stage(stage_name=self.stages[self.progress_log.current_stage - 1],
+                                       stage_percent=stage_percent, stage_status=stage_status, notes=notes)
 
     def cancel(self, stage_status=None, notes=None):
         self.display_notes(notes)

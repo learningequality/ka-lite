@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 import time
-from kalite import version
 import logging
 import os
 import sys
 import warnings
 
+from django.utils.translation import ugettext_lazy
+
+from kalite import version
 from kalite import ROOT_DATA_PATH
 from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
-from django.utils.translation import ugettext_lazy
-
 try:
     from kalite import local_settings
+
     raise RemovedInKALite_v016_Error(
         "The local_settings.py method for using custom settings has been removed."
         "In order to use custom settings, please add them to the special 'settings.py'"
@@ -31,7 +32,8 @@ DEBUG = getattr(local_settings, "DEBUG", False)
 TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 if DEBUG:
-    warnings.warn("Setting DEBUG=True in local_settings is no longer properly supported and will not yield a true develop environment, please use --settings=kalite.project.settings.dev")
+    warnings.warn(
+        "Setting DEBUG=True in local_settings is no longer properly supported and will not yield a true develop environment, please use --settings=kalite.project.settings.dev")
 
 
 ##############################
@@ -179,7 +181,7 @@ else:
     if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
         os.mkdir(USER_WRITABLE_LOCALE_DIR)
 
-    DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
+    DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database", )
     if not os.path.exists(DEFAULT_DATABASE_PATH):
         os.mkdir(DEFAULT_DATABASE_PATH)
 
@@ -231,13 +233,13 @@ STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
 KALITE_CHANNEL_CONTEXT_DATA = {
     "channel_name": ugettext_lazy(u"KA Lite"),
     "head_line": ugettext_lazy(u"A free world-class education for anyone anywhere."),
-    "tag_line": ugettext_lazy(u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection."),
+    "tag_line": ugettext_lazy(
+        u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection."),
     "channel_license": ugettext_lazy(u"CC-BY-NC-SA"),
     "footer_text": ugettext_lazy(u"Videos © 2015 Khan Academy (Creative Commons) // Exercises © 2015 Khan Academy"),
     "header_logo": os.path.join(STATIC_URL, 'images', 'horizontal-logo-small.png'),
     "frontpage_splash": os.path.join(STATIC_URL, 'images', 'logo_10_enlarged_2.png'),
 }
-
 
 DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
 
@@ -277,7 +279,6 @@ SECRET_KEY_FILE = getattr(local_settings,
                           "SECRET_KEY_FILE",
                           os.path.join(USER_DATA_ROOT, "secretkey.txt"))
 
-
 try:
     with open(SECRET_KEY_FILE) as f:
         SECRET_KEY = getattr(local_settings, "SECRET_KEY", f.read())
@@ -285,6 +286,7 @@ except Exception as e:
     sys.stderr.write("Error reading secret key file. Generating one now. Error was: %s\n" % e)
 
     from ._utils import generate_secret_key, cache_secret_key
+
     SECRET_KEY = generate_secret_key()
     cache_secret_key(SECRET_KEY, SECRET_KEY_FILE)
 
@@ -339,32 +341,31 @@ if IS_SOURCE:
 INSTALLED_APPS += getattr(local_settings, 'INSTALLED_APPS', tuple())
 
 MIDDLEWARE_CLASSES = [
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'kalite.i18n.middleware.SessionLanguage',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'fle_utils.django_utils.middleware.GetNextParam',
-    'kalite.facility.middleware.AuthFlags',
-    'kalite.facility.middleware.FacilityCheck',
-    'securesync.middleware.RegisteredCheck',
-    'securesync.middleware.DBCheck',
-    'django.middleware.common.CommonMiddleware',
-    'kalite.distributed.middleware.LockdownCheck',
-    'django.middleware.gzip.GZipMiddleware',
-    'django_snippets.session_timeout_middleware.SessionIdleTimeout'
-] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
+                         'django.middleware.csrf.CsrfViewMiddleware',
+                         'django.contrib.sessions.middleware.SessionMiddleware',
+                         'kalite.i18n.middleware.SessionLanguage',
+                         'django.middleware.locale.LocaleMiddleware',
+                         'django.contrib.auth.middleware.AuthenticationMiddleware',
+                         'django.contrib.messages.middleware.MessageMiddleware',
+                         'fle_utils.django_utils.middleware.GetNextParam',
+                         'kalite.facility.middleware.AuthFlags',
+                         'kalite.facility.middleware.FacilityCheck',
+                         'securesync.middleware.RegisteredCheck',
+                         'securesync.middleware.DBCheck',
+                         'django.middleware.common.CommonMiddleware',
+                         'kalite.distributed.middleware.LockdownCheck',
+                         'django.middleware.gzip.GZipMiddleware',
+                         'django_snippets.session_timeout_middleware.SessionIdleTimeout'
+                     ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
 
 TEMPLATE_CONTEXT_PROCESSORS = [
-    'django.core.context_processors.i18n',
-    'kalite.i18n.custom_context_processors.languages',
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
-    'kalite.distributed.custom_context_processors.custom',
-    'django.contrib.messages.context_processors.messages',
-] + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', [])
-
+                                  'django.core.context_processors.i18n',
+                                  'kalite.i18n.custom_context_processors.languages',
+                                  'django.contrib.auth.context_processors.auth',
+                                  'django.core.context_processors.request',
+                                  'kalite.distributed.custom_context_processors.custom',
+                                  'django.contrib.messages.context_processors.messages',
+                              ] + getattr(local_settings, 'TEMPLATE_CONTEXT_PROCESSORS', [])
 
 TEMPLATE_DIRS = tuple()  # will be filled recursively via INSTALLED_APPS
 
@@ -437,7 +438,7 @@ SESSION_ENGINE = getattr(
     local_settings, "SESSION_ENGINE", 'django.contrib.sessions.backends.signed_cookies' + (''))
 
 # Expire session cookies after 30 minutes, but extend sessions when there's activity from the user.
-SESSION_COOKIE_AGE = 60 * 30     # 30 minutes
+SESSION_COOKIE_AGE = 60 * 30  # 30 minutes
 SESSION_SAVE_EVERY_REQUEST = True
 
 # Use our custom message storage to avoid adding duplicate messages
@@ -472,14 +473,10 @@ CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
 ########################
 
 from kalite.distributed.settings import *
-from securesync.settings import *
-from fle_utils.chronograph.settings import *
-from kalite.facility.settings import *
-from kalite.main.settings import *
 
 # Import from applications with problematic __init__.py files
 from kalite.legacy.i18n_settings import *
-from kalite.legacy.updates_settings import *
 
 from kalite.testing.settings import *
+
 TEST_RUNNER = KALITE_TEST_RUNNER

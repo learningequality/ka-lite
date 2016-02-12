@@ -3,7 +3,6 @@ from tastypie.exceptions import Unauthorized
 
 
 class TeacherOrAdminCanReadWrite(ReadOnlyAuthorization):
-
     def _raise_unauthorized_if_not_admin(self, bundle):
         if not bundle.request.session.get("is_admin", False):
             raise Unauthorized("You must be logged in as a superuser or teacher to do that!")

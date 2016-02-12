@@ -18,30 +18,31 @@ import sys
 import tempfile
 import subprocess
 from distutils import spawn
-from annoying.functions import get_object_or_None
 from optparse import make_option
-from peewee import OperationalError
+import warnings
 
+from peewee import OperationalError
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
+from annoying.functions import get_object_or_None
 import kalite
 from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
 from kalite.topic_tools.settings import CHANNEL
-
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
 from kalite.version import VERSION, SHORTVERSION
 from kalite.facility.models import Facility
 from securesync.models import Device
-import warnings
+
 
 
 # for extracting assessment item resources
-ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/{version}/content/{channel}_assessment.zip".format(version=SHORTVERSION, channel=CHANNEL)
+ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/{version}/content/{channel}_assessment.zip".format(
+    version=SHORTVERSION, channel=CHANNEL)
 
 
 def raw_input_yn(prompt):
@@ -88,7 +89,8 @@ def clean_pyc(path):
 
 
 def validate_username(username):
-    return bool(username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'^.*[^a-zA-Z0-9_]+.*$', username)))
+    return bool(
+        username and (not re.match(r'^[^a-zA-Z]', username) and not re.match(r'^.*[^a-zA-Z0-9_]+.*$', username)))
 
 
 def get_clean_default_username():
@@ -237,10 +239,12 @@ class Command(BaseCommand):
 
         if sys.version_info >= (2, 8) or sys.version_info < (2, 6):
             raise CommandError(
-                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %d.%d.%d\n" % sys.version_info[:3])
+                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %d.%d.%d\n" % sys.version_info[
+                                                                                                       :3])
         if sys.version_info < (2, 7, 9):
             logging.warning(
-                "It's recommended that you install Python version 2.7.9. Your version is: %d.%d.%d\n" % sys.version_info[:3])
+                "It's recommended that you install Python version 2.7.9. Your version is: %d.%d.%d\n" % sys.version_info[
+                                                                                                        :3])
             if sys.version_info < (2, 7):
                 raise CommandError("Support for Python version 2.6 and below had been discontinued, please upgrade.")
 
@@ -305,9 +309,9 @@ class Command(BaseCommand):
                 print(
                     "-------------------------------------------------------------------")
                 if not options["interactive"] \
-                   or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
-                   or not raw_input_yn("Remove database file '%s' now? " % database_file) \
-                   or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
+                        or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
+                        or not raw_input_yn("Remove database file '%s' now? " % database_file) \
+                        or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
                     install_clean = False
                     print("Upgrading database to KA Lite version %s" % VERSION)
                 else:
@@ -379,7 +383,8 @@ class Command(BaseCommand):
                 shutil.move(database_file, dest_file)
 
         if settings.DB_TEMPLATE_FILE and not database_exists:
-            print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH))
+            print(
+            "Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH))
             shutil.copy(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH)
         else:
             print("Baking a fresh database from scratch or upgrading existing database.")

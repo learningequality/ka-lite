@@ -1,7 +1,4 @@
 from behave import *
-from selenium.common.exceptions import NoSuchElementException
-
-from django.core.urlresolvers import reverse
 
 from kalite.testing.behave_helpers import *
 from kalite.facility.models import Facility
@@ -52,7 +49,7 @@ def submit_facility_form(context):
     name_field = find_id_with_wait(context, "id_name")
     name_field.send_keys("The Fortress of Solitude")
     facility_form.submit()
- 
+
 
 def get_empty_facilities_msg(browser):
     """ Returns a Selenium WebElement if it exists, otherwise None

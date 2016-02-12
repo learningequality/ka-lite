@@ -1,15 +1,13 @@
-import sys
-
-from annoying.decorators import render_to
-
 from django.utils.translation import ugettext as _, ugettext_lazy
 from django.contrib import messages
 from django.conf import settings
 
+from annoying.decorators import render_to
 from kalite.i18n.base import get_installed_language_packs
 from kalite.shared.decorators.auth import require_admin
 from securesync.models import Device
 from securesync.devices.decorators import require_registration
+
 
 def update_context(request):
     device = Device.get_own_device()
@@ -29,7 +27,8 @@ def update_context(request):
 def update_videos(request, max_to_show=4):
     context = update_context(request)
     if getattr(settings, 'USING_RASPBERRY_PI', False):
-        messages.warning(request, _('For low-powered devices like the Raspberry Pi, please download less than 25 videos at a time.'))
+        messages.warning(request, _(
+            'For low-powered devices like the Raspberry Pi, please download less than 25 videos at a time.'))
 
     return context
 

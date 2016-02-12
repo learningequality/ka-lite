@@ -7,9 +7,11 @@ import random
 import uuid
 from math import ceil
 from datetime import datetime
-from dateutil import relativedelta
 
-from django.conf import settings; logging = settings.LOG
+from dateutil import relativedelta
+from django.conf import settings;
+
+logging = settings.LOG
 from django.contrib.auth.signals import user_logged_out
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -29,21 +31,24 @@ from .content_rating_models import ContentRating
 
 
 class VideoLog(DeferredCountSyncedModel):
-
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
-    video_id = models.CharField(max_length=200, db_index=True); video_id.minversion="0.10.3"  # unique key (per-user)
-    youtube_id = models.CharField(max_length=20) # metadata only
+    video_id = models.CharField(max_length=200, db_index=True);
+    video_id.minversion = "0.10.3"  # unique key (per-user)
+    youtube_id = models.CharField(max_length=20)  # metadata only
     total_seconds_watched = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
+    language = models.CharField(max_length=8, blank=True, null=True);
+    language.minversion = "0.10.3"
     complete = models.BooleanField(default=False)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
-    latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
+    latest_activity_timestamp = models.DateTimeField(blank=True, null=True);
+    latest_activity_timestamp.minversion = "0.14.0"
 
     def __init__(self, *args, **kwargs):
         super(VideoLog, self).__init__(*args, **kwargs)
-        self._unhashable_fields += ("latest_activity_timestamp",) # since it's being stripped out by minversion, we can't include it in the signature
+        self._unhashable_fields += (
+        "latest_activity_timestamp",)  # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -66,7 +71,8 @@ class VideoLog(DeferredCountSyncedModel):
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
             video = get_video_from_youtube_id(vlog.youtube_id)
-            self.video_id = video.get("id", self.youtube_id) if video else self.youtube_id  # for unknown videos, default to the youtube_id
+            self.video_id = video.get("id",
+                                      self.youtube_id) if video else self.youtube_id  # for unknown videos, default to the youtube_id
 
         if not kwargs.get("imported", False):
             self.full_clean()
@@ -75,7 +81,9 @@ class VideoLog(DeferredCountSyncedModel):
             #   TODO(bcipolli): Could log video information in the future.
             if update_userlog:
                 try:
-                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
+                    UserLog.update_user_activity(self.user, activity_type="login",
+                                                 update_datetime=(self.completion_timestamp or datetime.now()),
+                                                 language=self.language)
                 except ValidationError as e:
                     logging.error("Failed to update userlog during video: %s" % e)
 
@@ -95,10 +103,11 @@ class VideoLog(DeferredCountSyncedModel):
 
     @classmethod
     def calc_points(cls, seconds_watched, video_length):
-        return ceil(float(seconds_watched) / video_length* VideoLog.POINTS_PER_VIDEO)
+        return ceil(float(seconds_watched) / video_length * VideoLog.POINTS_PER_VIDEO)
 
     @classmethod
-    def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, complete, completion_timestamp, points=0):
+    def update_video_log(cls, facility_user, video_id, youtube_id, total_seconds_watched, language, complete,
+                         completion_timestamp, points=0):
         assert facility_user and video_id and youtube_id, "Updating a video log requires a facility user, video ID, and a YouTube ID"
 
         ds = load_dynamic_settings(user=facility_user)
@@ -131,23 +140,27 @@ class ExerciseLog(DeferredCountSyncedModel):
     streak_progress = models.IntegerField(default=0)
     attempts = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
+    language = models.CharField(max_length=8, blank=True, null=True);
+    language.minversion = "0.10.3"
     complete = models.BooleanField(default=False)
     struggling = models.BooleanField(default=False)
     attempts_before_completion = models.IntegerField(blank=True, null=True)
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
-    latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
+    latest_activity_timestamp = models.DateTimeField(blank=True, null=True);
+    latest_activity_timestamp.minversion = "0.14.0"
 
     def __init__(self, *args, **kwargs):
         super(ExerciseLog, self).__init__(*args, **kwargs)
-        self._unhashable_fields += ("latest_activity_timestamp",) # since it's being stripped out by minversion, we can't include it in the signature
+        self._unhashable_fields += (
+        "latest_activity_timestamp",)  # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
     def __unicode__(self):
-        return u"user=%s, exercise_id=%s, points=%d, language=%s%s" % (self.user, self.exercise_id, self.points, self.language, " (completed)" if self.complete else "")
+        return u"user=%s, exercise_id=%s, points=%d, language=%s%s" % (
+        self.user, self.exercise_id, self.points, self.language, " (completed)" if self.complete else "")
 
     def save(self, update_userlog=False, *args, **kwargs):
         if not kwargs.get("imported", False):
@@ -167,7 +180,9 @@ class ExerciseLog(DeferredCountSyncedModel):
             #   TODO(bcipolli): Could log exercise information in the future.
             if update_userlog:
                 try:
-                    UserLog.update_user_activity(self.user, activity_type="login", update_datetime=(self.completion_timestamp or datetime.now()), language=self.language)
+                    UserLog.update_user_activity(self.user, activity_type="login",
+                                                 update_datetime=(self.completion_timestamp or datetime.now()),
+                                                 language=self.language)
                 except ValidationError as e:
                     logging.error("Failed to update userlog during exercise: %s" % e)
 
@@ -189,7 +204,7 @@ class ExerciseLog(DeferredCountSyncedModel):
             # If we're adding randomness, then we add
             # 50% more points 9% of the time,
             # 100% more points 1% of the time.
-            bump = 1.0 + add_randomness * (0.5*(bumpprob >= 90) + 0.5*(bumpprob>=99))
+            bump = 1.0 + add_randomness * (0.5 * (bumpprob >= 90) + 0.5 * (bumpprob >= 99))
             inc += basepoints * bump;
         return ceil(inc)
 
@@ -198,7 +213,8 @@ class ExerciseLog(DeferredCountSyncedModel):
         return ExerciseLog.objects.filter(user=user).aggregate(Sum("points")).get("points__sum", 0) or 0
 
     def get_attempt_logs(self):
-        return AttemptLog.objects.filter(user=self.user, exercise_id=self.exercise_id, context_type__in=["playlist", "exercise"])
+        return AttemptLog.objects.filter(user=self.user, exercise_id=self.exercise_id,
+                                         context_type__in=["playlist", "exercise"])
 
 
 class UserLogSummary(DeferredCountSyncedModel):
@@ -214,14 +230,17 @@ class UserLogSummary(DeferredCountSyncedModel):
     end_datetime = models.DateTimeField(blank=True, null=True)
     count = models.IntegerField(default=0, blank=False, null=False)
     total_seconds = models.IntegerField(default=0, blank=False, null=False)
-    last_activity_datetime = models.DateTimeField(blank=True, null=True); last_activity_datetime.minversion = "0.10.3"
+    last_activity_datetime = models.DateTimeField(blank=True, null=True);
+    last_activity_datetime.minversion = "0.10.3"
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
 
     def __unicode__(self):
         self.full_clean()  # make sure everything that has to be there, is there.
-        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (self.total_seconds, self.count, self.device.name, self.user.username, self.activity_type, self.start_datetime, self.end_datetime)
+        return u"%d seconds over %d logins for %s/%s/%d, period %s to %s" % (
+        self.total_seconds, self.count, self.device.name, self.user.username, self.activity_type, self.start_datetime,
+        self.end_datetime)
 
     @classmethod
     def get_period_start_datetime(cls, log_time, summary_freq):
@@ -230,7 +249,7 @@ class UserLogSummary(DeferredCountSyncedModel):
         Weeks referenced from Monday morning @ 00:00:00am.
         Months and years follow from the above."""
 
-        summary_freq_qty    = summary_freq[0]
+        summary_freq_qty = summary_freq[0]
         summary_freq_period = summary_freq[1].lower()
         base_time = log_time.replace(microsecond=0, second=0, minute=0, hour=0)
 
@@ -243,12 +262,12 @@ class UserLogSummary(DeferredCountSyncedModel):
             raise NotImplementedError("Still working to implement weeks.")
 
         elif summary_freq_period in ["month", "months"]:
-            assert summary_freq_qty in [1,2,3,4,6], "Months only supports [1,2,3,4,6]"
+            assert summary_freq_qty in [1, 2, 3, 4, 6], "Months only supports [1,2,3,4,6]"
             # Integer math makes this equation work as desired
             return base_time.replace(day=1, month=log_time.month / summary_freq_qty * summary_freq_qty)
 
         elif summary_freq_period in ["year", "years"]:
-            assert summary_freq_qty in [1,2,3,4,6], "Years only supports 1"
+            assert summary_freq_qty in [1, 2, 3, 4, 6], "Years only supports 1"
             return base_time.replace(day=1, month=1)
 
         else:
@@ -257,20 +276,24 @@ class UserLogSummary(DeferredCountSyncedModel):
     @classmethod
     def get_period_end_datetime(cls, log_time, summary_freq):
         start_datetime = cls.get_period_start_datetime(log_time, summary_freq)
-        summary_freq_qty    = summary_freq[0]
+        summary_freq_qty = summary_freq[0]
         summary_freq_period = summary_freq[1].lower()
 
         if summary_freq_period in ["day", "days"]:
-            return start_datetime + relativedelta.relativedelta(days=summary_freq_qty) - relativedelta.relativedelta(seconds=1)
+            return start_datetime + relativedelta.relativedelta(days=summary_freq_qty) - relativedelta.relativedelta(
+                seconds=1)
 
         elif summary_freq_period in ["week", "weeks"]:
-            return start_datetime + relativedelta.relativedelta(days=7*summary_freq_qty) - relativedelta.relativedelta(seconds=1)
+            return start_datetime + relativedelta.relativedelta(
+                days=7 * summary_freq_qty) - relativedelta.relativedelta(seconds=1)
 
         elif summary_freq_period in ["month", "months"]:
-            return start_datetime + relativedelta.relativedelta(months=summary_freq_qty) - relativedelta.relativedelta(seconds=1)
+            return start_datetime + relativedelta.relativedelta(months=summary_freq_qty) - relativedelta.relativedelta(
+                seconds=1)
 
         elif summary_freq_period in ["year", "years"]:
-            return start_datetime + relativedelta.relativedelta(years=summary_freq_qty) - relativedelta.relativedelta(seconds=1)
+            return start_datetime + relativedelta.relativedelta(years=summary_freq_qty) - relativedelta.relativedelta(
+                seconds=1)
 
         else:
             raise NotImplementedError("Unrecognized summary frequency period: %s" % summary_freq_period)
@@ -293,7 +316,7 @@ class UserLogSummary(DeferredCountSyncedModel):
         )
 
         # TODO(anuragkanungo): Figure out and fix the issue for duplicate entries and enable assert check with if condition removed.
-        #assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
+        # assert log_summary.count() <= 1, "There should never be multiple summaries in the same time period/device/user/type combo"
         if log_summary.count() > 1:
             for log in log_summary[1:]:
                 log.soft_delete()
@@ -310,7 +333,9 @@ class UserLogSummary(DeferredCountSyncedModel):
             count=0,
         )
 
-        logging.debug("Adding %d seconds for %s/%s/%d/%s, period %s to %s" % (user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, user_log.language, log_summary.start_datetime, log_summary.end_datetime))
+        logging.debug("Adding %d seconds for %s/%s/%d/%s, period %s to %s" % (
+        user_log.total_seconds, device.name, user_log.user.username, user_log.activity_type, user_log.language,
+        log_summary.start_datetime, log_summary.end_datetime))
 
         # Add the latest info
         log_summary.total_seconds += user_log.total_seconds
@@ -325,12 +350,13 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
     """
 
     # Currently, all activity is used just to update logged-in-time.
-    KNOWN_TYPES={"login": 1, "coachreport": 2}
+    KNOWN_TYPES = {"login": 1, "coachreport": 2}
     minversion = "0.9.4"
 
     user = models.ForeignKey(FacilityUser, blank=False, null=False, db_index=True)
     activity_type = models.IntegerField(blank=False, null=False)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
+    language = models.CharField(max_length=8, blank=True, null=True);
+    language.minversion = "0.10.3"
     start_datetime = models.DateTimeField(blank=False, null=False)
     last_active_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
@@ -342,9 +368,11 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
 
     def __unicode__(self):
         if self.end_datetime:
-            return u"%s (%s): logged in @ %s; for %s seconds" % (self.user.username, self.language, self.start_datetime, self.total_seconds)
+            return u"%s (%s): logged in @ %s; for %s seconds" % (
+            self.user.username, self.language, self.start_datetime, self.total_seconds)
         else:
-            return u"%s (%s): logged in @ %s; last active @ %s" % (self.user.username, self.language, self.start_datetime, self.last_active_datetime)
+            return u"%s (%s): logged in @ %s; last active @ %s" % (
+            self.user.username, self.language, self.start_datetime, self.last_active_datetime)
 
     def save(self, *args, **kwargs):
         """When this model is saved, check if the activity is ended.
@@ -409,19 +437,22 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
             # Note: this can be a recursive call
             logging.warn("%s: had to END activity on a begin(%d) @ %s" % (user.username, activity_type, start_datetime))
             # Don't mark current language when closing an old one
-            cls.end_user_activity(user=user, activity_type=activity_type, end_datetime=cur_log.last_active_datetime)  # can't suppress save
+            cls.end_user_activity(user=user, activity_type=activity_type,
+                                  end_datetime=cur_log.last_active_datetime)  # can't suppress save
             cur_log = None
 
         # Create a new entry
         logging.debug("%s: BEGIN activity(%d) @ %s" % (user.username, activity_type, start_datetime))
-        cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime, last_active_datetime=start_datetime, language=language)
+        cur_log = cls(user=user, activity_type=activity_type, start_datetime=start_datetime,
+                      last_active_datetime=start_datetime, language=language)
         if not suppress_save:
             cur_log.save()
 
         return cur_log
 
     @classmethod
-    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=None, suppress_save=False):
+    def update_user_activity(cls, user, activity_type="login", update_datetime=None, language=None,
+                             suppress_save=False):
         """Helper function to update an existing user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -442,8 +473,10 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
                 raise ValidationError("Update time must always be later than the login time.")
         else:
             # No unstopped starts.  Start should have been called first!
-            logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s" % (user.username, activity_type, update_datetime))
-            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime, suppress_save=True)
+            logging.warn("%s: Had to create a user log entry on an UPDATE(%d)! @ %s" % (
+            user.username, activity_type, update_datetime))
+            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=update_datetime,
+                                              suppress_save=True)
 
         logging.debug("%s: UPDATE activity (%d) @ %s" % (user.username, activity_type, update_datetime))
         cur_log.last_active_datetime = update_datetime
@@ -453,7 +486,8 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
         return cur_log
 
     @classmethod
-    def end_user_activity(cls, user, activity_type="login", end_datetime=None, suppress_save=False):  # don't accept language--we're just closing previous activity.
+    def end_user_activity(cls, user, activity_type="login", end_datetime=None,
+                          suppress_save=False):  # don't accept language--we're just closing previous activity.
         """Helper function to complete an existing user activity log entry."""
 
         # Do nothing if the max # of records is zero
@@ -475,8 +509,10 @@ class UserLog(ExtendedModel):  # Not sync'd, only summaries are
                 raise ValidationError("Update time must always be later than the login time.")
         else:
             # No unstopped starts.  Start should have been called first!
-            logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s" % (user.username, activity_type, end_datetime))
-            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime, suppress_save=True)
+            logging.warn("%s: Had to BEGIN a user log entry, but ENDING(%d)! @ %s" % (
+            user.username, activity_type, end_datetime))
+            cur_log = cls.begin_user_activity(user=user, activity_type=activity_type, start_datetime=end_datetime,
+                                              suppress_save=True)
 
         logging.debug("%s: Logging LOGOUT activity @ %s" % (user.username, end_datetime))
         cur_log.end_datetime = end_datetime
@@ -495,16 +531,16 @@ class AttemptLog(DeferredCountSyncedModel):
     user = models.ForeignKey(FacilityUser, db_index=True)
     exercise_id = models.CharField(max_length=200, db_index=True)
     seed = models.IntegerField(default=0)
-    answer_given = models.TextField(blank=True) # first answer given to the question
+    answer_given = models.TextField(blank=True)  # first answer given to the question
     points = models.IntegerField(default=0)
-    correct = models.BooleanField(default=False) # indicates that the first answer given was correct
-    complete = models.BooleanField(default=False) # indicates that the question was eventually answered correctly
-    context_type = models.CharField(max_length=20, blank=True) # e.g. "exam", "quiz", "playlist", "topic"
-    context_id = models.CharField(max_length=100, blank=True) # e.g. the exam ID, quiz ID, playlist ID, topic ID, etc
+    correct = models.BooleanField(default=False)  # indicates that the first answer given was correct
+    complete = models.BooleanField(default=False)  # indicates that the question was eventually answered correctly
+    context_type = models.CharField(max_length=20, blank=True)  # e.g. "exam", "quiz", "playlist", "topic"
+    context_id = models.CharField(max_length=100, blank=True)  # e.g. the exam ID, quiz ID, playlist ID, topic ID, etc
     language = models.CharField(max_length=8, blank=True)
-    timestamp = models.DateTimeField() # time at which the question was first loaded (that led to the initial response)
-    time_taken = models.IntegerField(blank=True, null=True) # time spent on exercise before initial response (in ms)
-    version = models.CharField(blank=True, max_length=100) # the version of KA Lite at the time the answer was given
+    timestamp = models.DateTimeField()  # time at which the question was first loaded (that led to the initial response)
+    time_taken = models.IntegerField(blank=True, null=True)  # time spent on exercise before initial response (in ms)
+    version = models.CharField(blank=True, max_length=100)  # the version of KA Lite at the time the answer was given
     response_log = models.TextField(default="[]")
     response_count = models.IntegerField(default=0)
     assessment_item_id = models.CharField(max_length=100, blank=True, default="")
@@ -516,20 +552,21 @@ class AttemptLog(DeferredCountSyncedModel):
 
 
 class ContentLog(DeferredCountSyncedModel):
-
     minversion = "0.13.0"
 
     user = models.ForeignKey(FacilityUser, blank=True, null=True, db_index=True)
     content_id = models.CharField(max_length=200, db_index=True)
     points = models.IntegerField(default=0)
-    language = models.CharField(max_length=8, blank=True, null=True); language.minversion="0.10.3"
+    language = models.CharField(max_length=8, blank=True, null=True);
+    language.minversion = "0.10.3"
     complete = models.BooleanField(default=False)
     start_timestamp = models.DateTimeField(auto_now_add=True, editable=False)  # this must NOT be null
     completion_timestamp = models.DateTimeField(blank=True, null=True)
     completion_counter = models.IntegerField(blank=True, null=True)
     time_spent = models.FloatField(blank=True, null=True)
     progress_timestamp = models.DateTimeField(blank=True, null=True)
-    latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
+    latest_activity_timestamp = models.DateTimeField(blank=True, null=True);
+    latest_activity_timestamp.minversion = "0.14.0"
     content_source = models.CharField(max_length=100, db_index=True, default=CHANNEL)
     content_kind = models.CharField(max_length=100, db_index=True)
     progress = models.FloatField(blank=True, null=True)
@@ -538,7 +575,8 @@ class ContentLog(DeferredCountSyncedModel):
 
     def __init__(self, *args, **kwargs):
         super(ContentLog, self).__init__(*args, **kwargs)
-        self._unhashable_fields += ("latest_activity_timestamp",) # since it's being stripped out by minversion, we can't include it in the signature
+        self._unhashable_fields += (
+        "latest_activity_timestamp",)  # since it's being stripped out by minversion, we can't include it in the signature
 
     class Meta:  # needed to clear out the app_name property from SyncedClass.Meta
         pass
@@ -583,13 +621,16 @@ def add_to_summary(sender, **kwargs):
         # The bottom computation is more strict: user activity is from start until the last "action"
         #   recorded--in the current case, that means from login until the last moment an exercise or
         #   video log was updated.
-        #instance.total_seconds = datediff(instance.end_datetime, instance.start_datetime, units="seconds")
-        instance.total_seconds = 0 if not instance.last_active_datetime else datediff(instance.last_active_datetime, instance.start_datetime, units="seconds")
+        # instance.total_seconds = datediff(instance.end_datetime, instance.start_datetime, units="seconds")
+        instance.total_seconds = 0 if not instance.last_active_datetime else datediff(instance.last_active_datetime,
+                                                                                      instance.start_datetime,
+                                                                                      units="seconds")
 
         # Confirm the result (output info first for easier debugging)
         if instance.total_seconds < 0:
             raise ValidationError("Total learning time should always be non-negative.")
-        logging.debug("%s: total time (%d): %d seconds" % (instance.user.username, instance.activity_type, instance.total_seconds))
+        logging.debug("%s: total time (%d): %d seconds" % (
+        instance.user.username, instance.activity_type, instance.total_seconds))
 
         # Save only completed log items to the UserLogSummary
         UserLogSummary.add_log_to_summary(instance)
@@ -601,12 +642,14 @@ def cull_records(sender, **kwargs):
     Listen in to see when videos become available.
     """
     if settings.USER_LOG_MAX_RECORDS_PER_USER and kwargs["created"]:  # Works for None, out of the box
-        current_models = UserLog.objects.filter(user=kwargs["instance"].user, activity_type=kwargs["instance"].activity_type)
+        current_models = UserLog.objects.filter(user=kwargs["instance"].user,
+                                                activity_type=kwargs["instance"].activity_type)
         if current_models.count() > settings.USER_LOG_MAX_RECORDS_PER_USER:
             # Unfortunately, could not do an aggregate delete when doing a
             #   slice in query
             to_discard = current_models \
-                .order_by("start_datetime")[0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
+                             .order_by("start_datetime")[
+                         0:current_models.count() - settings.USER_LOG_MAX_RECORDS_PER_USER]
             UserLog.objects.filter(pk__in=to_discard).delete()
 
 
@@ -618,6 +661,7 @@ def logout_endlog(sender, request, user, **kwargs):
         except ValidationError as e:
             logging.error("Failed to end_user_activity upon logout: %s" % e)
         del request.session["facility_user"]
+
 
 # End a log whenever a logout event is fired.
 user_logged_out.connect(logout_endlog)

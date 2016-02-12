@@ -1,19 +1,17 @@
 """
 """
 
-from annoying.functions import get_object_or_None
-
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.translation import ugettext as _
 
+from annoying.functions import get_object_or_None
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet.decorators import api_response_causes_reload
 from fle_utils.internet.classes import JsonResponseMessageSuccess, JsonResponseMessageError
 from kalite.shared.decorators.auth import require_authorized_admin
-
 
 log = settings.LOG
 
@@ -61,7 +59,8 @@ def facility_delete(request, facility_id=None):
     fac = get_object_or_404(Facility, id=facility_id)
 
     fac.soft_delete()
-    return JsonResponseMessageSuccess(_("Deleted facility %(facility_name)s successfully.") % {"facility_name": fac.name})
+    return JsonResponseMessageSuccess(
+        _("Deleted facility %(facility_name)s successfully.") % {"facility_name": fac.name})
 
 
 @require_authorized_admin

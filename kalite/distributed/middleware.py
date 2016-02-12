@@ -14,5 +14,4 @@ class LockdownCheck:
             and not request.path.startswith("/api/")
             and not request.path.startswith(settings.CONTENT_DATA_URL)
             and not request.path.startswith(settings.STATIC_URL)):
-
             raise PermissionDenied()

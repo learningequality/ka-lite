@@ -45,7 +45,6 @@ class TestAdminApiCalls(MainTestCase):
         if os.path.exists(self.fake_video_file):
             os.remove(self.fake_video_file)
 
-
     def test_delete_non_existing_video(self):
         """
         "Delete" a video through the API that never existed.
@@ -55,9 +54,10 @@ class TestAdminApiCalls(MainTestCase):
 
         # Delete a video file, make sure
         result = self.client.delete_videos(paths=[self.path])
-        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
+        self.assertEqual(result.status_code, 200,
+                         "An error (%d) was thrown while deleting the video through the API: %s" % (
+                         result.status_code, result.content))
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
-
 
     def test_delete_existing_video_file(self):
         """
@@ -67,7 +67,9 @@ class TestAdminApiCalls(MainTestCase):
 
         # Delete a video file, make sure
         result = self.client.delete_videos(paths=[self.path])
-        self.assertEqual(result.status_code, 200, "An error (%d) was thrown while deleting the video through the API: %s" % (result.status_code, result.content))
+        self.assertEqual(result.status_code, 200,
+                         "An error (%d) was thrown while deleting the video through the API: %s" % (
+                         result.status_code, result.content))
         self.assertFalse(os.path.exists(self.fake_video_file), "Video file should not exist on disk.")
         videofile = get_content_item(content_id=self.video_id)
         self.assertFalse(videofile.get("available"))

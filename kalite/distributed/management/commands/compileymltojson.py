@@ -2,8 +2,8 @@ from __future__ import print_function
 
 import json
 import os
-import yaml
 
+import yaml
 from django.core.management.base import NoArgsCommand
 
 BLACKLISTED_YAML_FILES = [
@@ -13,7 +13,6 @@ BLACKLISTED_YAML_FILES = [
 
 
 class Command(NoArgsCommand):
-
     def handle_noargs(*args, **kwargs):
         # avoid using django.conf.settings, for that sweet fast startup
         # time
@@ -22,8 +21,8 @@ class Command(NoArgsCommand):
             for f in files:
                 full_name = os.path.join(root, f)
                 if (full_name.endswith(".yml") and
-                    "node_modules" not in root and
-                    f not in BLACKLISTED_YAML_FILES):
+                            "node_modules" not in root and
+                            f not in BLACKLISTED_YAML_FILES):
                     print(full_name)
                     yml_to_json(full_name)
 

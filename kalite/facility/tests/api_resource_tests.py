@@ -2,8 +2,8 @@ import json
 
 from kalite.testing.base import KALiteClientTestCase
 from kalite.testing.mixins.facility_mixins import FacilityMixins
-
 from securesync.models import Device
+
 
 class TestCoachRedirect(FacilityMixins, KALiteClientTestCase):
     """
@@ -27,4 +27,6 @@ class TestCoachRedirect(FacilityMixins, KALiteClientTestCase):
             content_type="application/json",
         )
         redirect = json.loads(resp.content).get("redirect")
-        self.assertEqual(redirect, self.reverse("coach_reports", kwargs={"zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")}), "Logging in as coach does not redirect!")
+        self.assertEqual(redirect, self.reverse("coach_reports", kwargs={
+            "zone_id": getattr(Device.get_own_device().get_zone(), "id", "None")}),
+                         "Logging in as coach does not redirect!")

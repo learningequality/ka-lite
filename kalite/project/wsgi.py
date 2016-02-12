@@ -16,11 +16,11 @@ from django.core.handlers.wsgi import WSGIHandler
 # Add ka-lite to the path
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 sys.path = [
-    PROJECT_PATH,
-    os.path.join(PROJECT_PATH, "../../"),
-    os.path.join(PROJECT_PATH, "../../python-packages/"),
-    os.path.join(PROJECT_PATH, "../../dist-packages/"),
-] + sys.path
+               PROJECT_PATH,
+               os.path.join(PROJECT_PATH, "../../"),
+               os.path.join(PROJECT_PATH, "../../python-packages/"),
+               os.path.join(PROJECT_PATH, "../../dist-packages/"),
+           ] + sys.path
 
 # We set the variable directly because of how mod_wsgi uses a thread pool
 # with shared ENVs which will break when running on multiple django vhosts.

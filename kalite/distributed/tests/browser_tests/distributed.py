@@ -1,22 +1,16 @@
 """
 These use a web-browser, along selenium, to simulate user actions.
 """
-import re
 import time
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions, ui
-from selenium.common.exceptions import TimeoutException, ElementNotVisibleException, WebDriverException
-from selenium.webdriver.support.ui import WebDriverWait
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.utils import unittest
 from django.test.utils import override_settings
-from django.utils.translation import ugettext as _
 
-from kalite.facility.models import FacilityUser
-from kalite.main.models import ExerciseLog
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
@@ -46,7 +40,7 @@ class TestAddFacility(BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCa
         add_facility_url = self.reverse("add_facility", kwargs=params)
         self.browse_to(add_facility_url)
 
-        self.browser_activate_element(id="id_name") # explicitly set the focus, to start
+        self.browser_activate_element(id="id_name")  # explicitly set the focus, to start
         self.browser_send_keys(facility_name)
         self.browser.find_elements_by_class_name("submit")[0].click()
         self.wait_for_page_change(add_facility_url)
@@ -74,7 +68,7 @@ class DeviceUnregisteredTest(BrowserActionMixins, CreateAdminMixin, KALiteBrowse
         home_url = self.reverse("homepage")
 
         # First, get the homepage without any automated information.
-        self.browse_to(home_url) # Load page
+        self.browse_to(home_url)  # Load page
         self.browser_check_django_message(message_type="warning", contains="complete the setup.")
         self.assertFalse(self.browser_is_logged_in(), "Not (yet) logged in")
 
@@ -149,8 +143,8 @@ class TestSessionTimeout(CreateAdminMixin, BrowserActionMixins, FacilityMixins, 
         self.assertTrue(self.browser_is_logged_in(), "Timeout should not logout teacher")
 
 
-class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin, KALiteBrowserTestCase):
-
+class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, CreateFacilityMixin,
+                                       KALiteBrowserTestCase):
     def setUp(self):
         super(AlertsRemovedAfterNavigationTest, self).setUp()
         self.create_admin()
@@ -161,14 +155,14 @@ class AlertsRemovedAfterNavigationTest(BrowserActionMixins, CreateAdminMixin, Cr
         self.browser_login_student(username="johnduck", password="superpassword")
         try:
             self.assertTrue(WebDriverWait(self.browser, 3).until(
-                expected_conditions.presence_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+                expected_conditions.presence_of_element_located((By.CSS_SELECTOR, "div.alert-dismissible"))
             ))
         except TimeoutException:
             self.fail("No alert present on page after login.")
         self.browse_to(self.reverse("learn"))
         try:
             self.assertTrue(WebDriverWait(self.browser, 3).until(
-                expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR,"div.alert-dismissible"))
+                expected_conditions.invisibility_of_element_located((By.CSS_SELECTOR, "div.alert-dismissible"))
             ))
         except TimeoutException:
             self.fail("Alert present on page after navigation event. Expected no alerts.")

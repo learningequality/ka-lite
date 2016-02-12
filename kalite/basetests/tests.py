@@ -309,7 +309,6 @@ class PathsTests(DependenciesTests):
 
 
 if __name__ == '__main__':
-
     # turn-off logging warnings
     logger = logging.getLogger(None)
     logger.setLevel(logging.ERROR)

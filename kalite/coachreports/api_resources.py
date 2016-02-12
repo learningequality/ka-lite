@@ -1,11 +1,10 @@
 from tastypie import fields
-from tastypie.exceptions import NotFound, Unauthorized
+from tastypie.exceptions import NotFound
 from tastypie.resources import Resource
-
-from django.utils.translation import ugettext as _
 
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from .models import PlaylistProgress, PlaylistProgressDetail
+
 
 class CoachReportBaseResource(Resource):
     """
@@ -30,7 +29,6 @@ class CoachReportBaseResource(Resource):
 
 
 class PlaylistProgressResource(CoachReportBaseResource):
-
     title = fields.CharField(attribute='title')
     id = fields.CharField(attribute='id')
     tag = fields.CharField(attribute='tag', null=True)
@@ -57,8 +55,8 @@ class PlaylistProgressResource(CoachReportBaseResource):
         result = PlaylistProgress.user_progress(user_id=user_id, language=request.language)
         return result
 
-class PlaylistProgressDetailResource(CoachReportBaseResource):
 
+class PlaylistProgressDetailResource(CoachReportBaseResource):
     kind = fields.CharField(attribute='kind')
     status = fields.CharField(attribute='status')
     title = fields.CharField(attribute='title')
@@ -73,7 +71,9 @@ class PlaylistProgressDetailResource(CoachReportBaseResource):
         user_id = request.GET.get("user_id")
         playlist_id = request.GET.get("playlist_id")
         language = request.language
-        result = PlaylistProgressDetail.user_progress_detail(user_id=user_id, playlist_id=playlist_id, language=language)
+        result = PlaylistProgressDetail.user_progress_detail(user_id=user_id, playlist_id=playlist_id,
+                                                             language=language)
         if not result:
-            raise NotFound("User playlist progress details with user ID '%s' and playlist ID '%s' were not found." % (user_id, playlist_id))
+            raise NotFound("User playlist progress details with user ID '%s' and playlist ID '%s' were not found." % (
+            user_id, playlist_id))
         return result

@@ -29,17 +29,17 @@ For interacting with the API:
 """
 import json
 import urllib
+from urlparse import urljoin
 
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from urlparse import urljoin
-
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from kalite.facility.models import FacilityUser
+
 
 # Use these for now, so that we don't DROurselves, but eventually
 # we'll want to move away from mixins.
@@ -68,7 +68,8 @@ def rgba_to_hex(rgba_string):
     """
     Returns an uppercase HEX representation of an rgba(xxx, yyy, zzz, a) string
     """
-    return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
+    return "#" + "".join([hex(int(each)).replace("0x", "").upper() for each in
+                          rgba_string.replace("rgba(", "").replace(")", "").split(",")[:-1]])
 
 
 def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
@@ -166,9 +167,11 @@ def elem_is_visible_with_wait(context, elem, wait_time=MAX_WAIT_TIME):
     wait_time: sets the max wait time. Optional, but has a default value.
     Returns True if the element is visible, otherwise waits and returns False
     """
+
     def _visiblity_of():
         # elem.location returns a dict: {"x": 42, "y": 42}
-        context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
+        context.browser.execute_script(
+            "$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
         return elem.is_displayed()
 
     try:
@@ -281,14 +284,17 @@ def _shown_elem_with_wait(context, by, wait_time=MAX_WAIT_TIME):
     wait_time: The max time to wait in seconds
     Returns the element if found or None
     """
+
     def _visibility():
         # Try to scroll to the element and determine visibility
         try:
             elem = context.browser.find_element(by[0], by[1])
-            context.browser.execute_script("$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
+            context.browser.execute_script(
+                "$(window).scrollLeft(%s);$(window).scrollTop(%s);" % (elem.location['x'], elem.location['y']))
             return elem.is_displayed()
         except NoSuchElementException:
             return False
+
     try:
         return WebDriverWait(context.browser, wait_time).until(
             lambda browser: _visibility()
@@ -345,6 +351,7 @@ def login_as_learner(context, learner_name="mrpibb", learner_pass="abc123"):
         class ContextWithMixin(FacilityMixins):
             def __init__(self):
                 self.browser = context.browser
+
         context_wm = ContextWithMixin()
         context_wm.create_student(username=learner_name, password=learner_pass)
     facility = FacilityUser.objects.get(username=learner_name).facility.id
@@ -362,6 +369,7 @@ def login_as_coach(context, coach_name="mrpibb", coach_pass="abc123"):
         class ContextWithMixin(FacilityMixins):
             def __init__(self):
                 self.browser = context.browser
+
         context_wm = ContextWithMixin()
         context_wm.create_teacher(username=coach_name, password=coach_pass)
     facility = FacilityUser.objects.get(username=coach_name).facility.id
@@ -381,6 +389,7 @@ def login_as_admin(context, admin_name="admin", admin_pass="abc123"):
         class ContextWithMixin(CreateAdminMixin):
             def __init__(self):
                 self.browser = context.browser
+
         context_wm = ContextWithMixin()
         context_wm.create_admin(username=admin_name, password=admin_pass)
     _login_user(context, admin_name, admin_pass)
@@ -436,7 +445,8 @@ def request(context, url, method="GET", data=""):
 
     context_wm = ContextWithMixin()
 
-    context.browser.get(build_url(context, reverse("homepage")))  # Avoid x-site scripting error by sending request from same domain
+    context.browser.get(
+        build_url(context, reverse("homepage")))  # Avoid x-site scripting error by sending request from same domain
     context.browser.execute_script("""
             var req = new XMLHttpRequest();
             req.open("{method}", "{url}", true);
@@ -449,7 +459,7 @@ def request(context, url, method="GET", data=""):
             }};
             req.send('{data}');
         """.format(method=method, url=url, data=data)  # One must escape '{' and '}' by doubling them
-    )
+                                   )
     context_wm.browser_wait_for_js_condition("window.FLAG")
     resp = context.browser.execute_script("return window.DATA")
     return resp

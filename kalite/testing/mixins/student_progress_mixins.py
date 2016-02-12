@@ -13,6 +13,7 @@ class CreateTestLogMixin(object):
         'total_number': 4,
         'total_correct': 2,
     }
+
     @classmethod
     def create_test_log(cls, **kwargs):
         fields = CreateTestLogMixin.DEFAULTS.copy()
@@ -37,6 +38,7 @@ class CreateAttemptLogMixin(object):
 
         return AttemptLog.objects.create(**fields)
 
+
 class CreateExerciseLogMixin(object):
     DEFAULTS = {
         'exercise_id': 'comparing_whole_numbers',
@@ -48,6 +50,7 @@ class CreateExerciseLogMixin(object):
         fields['user'] = kwargs.get("user")
 
         return ExerciseLog.objects.create(**fields)
+
 
 class CreateVideoLogMixin(object):
     DEFAULTS = {
@@ -62,6 +65,7 @@ class CreateVideoLogMixin(object):
 
         return VideoLog.objects.create(**fields)
 
+
 class StudentProgressMixin(CreateTestLogMixin,
                            CreateAttemptLogMixin,
                            CreateExerciseLogMixin,
@@ -70,4 +74,3 @@ class StudentProgressMixin(CreateTestLogMixin,
     Toplevel class that has all the mixin methods defined above
     '''
     pass
-

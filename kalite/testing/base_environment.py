@@ -6,11 +6,10 @@ could be used to bootstrap other integration tests in our project.
 import os
 import tempfile
 import shutil
-import sauceclient as sc
 import socket
-
-from behave import *
 from httplib import CannotSendRequest
+
+import sauceclient as sc
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -21,7 +20,6 @@ from django.db.transaction import TransactionManagementError
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
-
 from securesync.models import Zone, Device, DeviceZone
 
 
@@ -53,7 +51,7 @@ def setup_sauce_browser(context):
     access_key = os.environ.get('SAUCE_ACCESS_KEY')
     circle_build = os.environ.get('CIRCLE_BUILD_NUM')
     circle_node = os.environ.get('CIRCLE_NODE_INDEX')
-    
+
     tunnel_id = "{build}-{node}".format(build=circle_build, node=circle_node)
     context.sauce = sc.SauceClient(username, access_key)
     sauce_url = "http://{username}:{access_key}@ondemand.saucelabs.com:80/wd/hub".format(username=username,
@@ -80,6 +78,7 @@ def setup_sauce_browser(context):
             del context.sauce
             context.browser = webdriver.Firefox(firefox_profile=profile)
 
+
 def setup_local_browser(context):
     """
     Use local webdriver. Has side effects on the passed in behave context.
@@ -98,6 +97,7 @@ def setup_local_browser(context):
         profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
 
     context.browser = webdriver.Firefox(firefox_profile=profile)
+
 
 # FYI: context.tags contains feature tags + scenario tags.
 def before_scenario(context, scenario):
@@ -130,6 +130,7 @@ def before_scenario(context, scenario):
         context.logged_in = True
         login_as_learner(context)
 
+
 def after_scenario(context, scenario):
     if context.logged_in:
         logout(context)
@@ -160,6 +161,7 @@ def after_scenario(context, scenario):
 
     database_teardown(context)
 
+
 def database_setup(context):
     """
     Behave features are analogous to test suites, and behave scenarios are analogous to TestCases, but due to
@@ -167,6 +169,7 @@ def database_setup(context):
     setup/teardown done by TestCases in order to achieve consistent isolation.
     """
     KALiteTestCase.setUpDatabase()
+
 
 def database_teardown(context):
     """
@@ -179,6 +182,7 @@ def database_teardown(context):
             call_command("flush", database=alias, interactive=False)
         except TransactionManagementError as e:
             print("Couldn't flush the database, got a TransactionManagementError: " + e.message)
+
 
 def do_fake_registration():
     """

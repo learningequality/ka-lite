@@ -1,8 +1,8 @@
 """
 """
 import time
-from selenium import webdriver
 
+from selenium import webdriver
 from django.conf import settings
 
 logging = settings.LOG
@@ -17,6 +17,7 @@ def setup_browser(browser_type="Firefox"):
     hacks_for_phantomjs(browser)
 
     return browser
+
 
 def hacks_for_phantomjs(browser):
     """

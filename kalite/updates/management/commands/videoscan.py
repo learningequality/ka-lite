@@ -1,13 +1,12 @@
-from kalite.updates.management.commands.classes import UpdatesStaticCommand
 from optparse import make_option
 
 from django.core.management import call_command
-
 from django.utils.translation import gettext as _
+
+from kalite.updates.management.commands.classes import UpdatesStaticCommand
 
 
 class Command(UpdatesStaticCommand):
-
     option_list = UpdatesStaticCommand.option_list + (
         make_option("-c", "--channel",
                     action="store",
@@ -26,7 +25,6 @@ class Command(UpdatesStaticCommand):
     )
 
     def handle(self, *args, **kwargs):
-
         language = kwargs["language"]
         channel = kwargs["channel"]
 

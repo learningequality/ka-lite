@@ -15,4 +15,3 @@ import warnings
 
 warnings.filterwarnings('ignore', message=r'.*Wrong settings module imported.*', append=True)
 
-from kalite.settings import *  # @UnusedWildImport

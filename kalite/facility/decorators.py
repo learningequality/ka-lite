@@ -4,8 +4,6 @@ If any sub-module really could be separated from securesync, it would be this:
 these models use the machinery of engine and devices, they are simply data.
 """
 import re
-from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
 
 from django.conf import settings
 from django.contrib import messages
@@ -14,6 +12,8 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 
+from annoying.decorators import render_to
+from annoying.functions import get_object_or_None
 from .middleware import refresh_session_facility_info
 from .models import Facility
 from fle_utils.config.models import Settings
@@ -76,7 +76,8 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
             kwargs["facility"] = facility
         return handler(request, *args, **kwargs)
 
-    return facility_from_request_wrapper_fn if not request else facility_from_request_wrapper_fn(request=request, *args, **kwargs)
+    return facility_from_request_wrapper_fn if not request else facility_from_request_wrapper_fn(request=request, *args,
+                                                                                                 **kwargs)
 
 
 def facility_required(handler):
@@ -86,6 +87,7 @@ def facility_required(handler):
     * Otherwise, it fails, telling the user that a facility is required
         for whatever action hey were doing.
     """
+
     @facility_from_request
     def facility_required_inner_fn(request, facility, *args, **kwargs):
         if facility:
@@ -94,10 +96,11 @@ def facility_required(handler):
         if not request.session["facility_exists"]:
             if request.is_admin:
                 messages.warning(request, _("To continue, you must first add a facility (e.g. for your school). ") \
-                    + _("Please use the form below to add a facility."))
+                                 + _("Please use the form below to add a facility."))
             else:
                 messages.warning(request,
-                    _("You must first have the administrator of this server log in below to add a facility."))
+                                 _(
+                                     "You must first have the administrator of this server log in below to add a facility."))
             zone_id = getattr(Device.get_own_device().get_zone(), "id", "None")
             return HttpResponseRedirect(reverse("add_facility", kwargs={"zone_id": zone_id}))
 
@@ -112,7 +115,7 @@ def facility_required(handler):
                 if cp_path_match:
                     path_template = "%s%%(facility_id)s%s" % cp_path_match.groups()
                 else:
-                    path_template="%(path)s?%(querystring)s&facility=%(facility_id)s"
+                    path_template = "%(path)s?%(querystring)s&facility=%(facility_id)s"
 
                 selection_paths = {}
                 for facility in facilities:
@@ -125,6 +128,7 @@ def facility_required(handler):
                     "facilities": facilities,
                     "selection_paths": selection_paths,
                 }
+
             return facility_selection(request)
 
     return facility_required_inner_fn

@@ -8,7 +8,6 @@ def group_by_slug(count_dict, item):
 
 
 def dedupe_paths(topic_tree):
-
     def recurse_nodes(node):
 
         children = node.get("children", [])

@@ -1,11 +1,9 @@
 """
 environment.py specific to the this app
 """
-from kalite.testing.base_environment import before_all, after_all, before_feature, after_feature, before_scenario as base_before_scenario, after_scenario
-
-import random
 import datetime
 
+from kalite.testing.base_environment import before_scenario as base_before_scenario
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
 from kalite.topic_tools.content_models import get_random_content
@@ -24,7 +22,7 @@ def before_scenario(context, scenario):
                 streak_progress=50,
                 attempts=15,
                 latest_activity_timestamp=datetime.datetime.now()
-                )
+            )
             log.save()
         context.exercises = exercises
 
@@ -38,6 +36,6 @@ def before_scenario(context, scenario):
                 total_seconds_watched=100,
                 points=600,
                 latest_activity_timestamp=datetime.datetime.now()
-                )
+            )
             log.save()
         context.videos = videos

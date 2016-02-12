@@ -1,7 +1,8 @@
 from django.conf import settings
 
-from tastypie.exceptions import NotFound, Unauthorized
+from tastypie.exceptions import Unauthorized
 from tastypie.authorization import Authorization, ReadOnlyAuthorization
+
 
 def _is_central_object_admin(object_list, bundle):
     """Return true if the central server user is allowed to access the objects"""
@@ -30,7 +31,6 @@ def _user_is_admin(object_list, bundle):
 
 
 class UserObjectsOnlyAuthorization(Authorization):
-
     def _get_user(self, bundle):
         """Convenience method to extract current user from bundle."""
 
@@ -117,7 +117,6 @@ class UserObjectsOnlyAuthorization(Authorization):
 
         raise Unauthorized("Sorry, that operation is restricted.")
 
-
     def delete_list(self, object_list, bundle):
         # Sorry user, no deletes for you!
         raise Unauthorized("Sorry, that operation is restricted.")
@@ -127,7 +126,6 @@ class UserObjectsOnlyAuthorization(Authorization):
 
 
 class AdminReadWriteAndStudentReadOnlyAuthorization(Authorization):
-
     def _get_user(self, bundle):
         """Convenience method to extract current user from bundle."""
 
@@ -183,9 +181,7 @@ class AdminReadWriteAndStudentReadOnlyAuthorization(Authorization):
 
 
 def tastypie_require_admin(handler):
-
     def tastypie_require_admin_wrapper_fn(self, *args, **kwargs):
-
         bundle = kwargs.get("bundle")
 
         # TODO(jamalex): figure out how best to apply this on the central server once needed
@@ -223,19 +219,18 @@ class ObjectAdminAuthorization(ReadOnlyAuthorization):
     def read_list(self, object_list, bundle):
         # On Central
         if settings.CENTRAL_SERVER and self._is_central_object_admin(object_list, bundle):
-            return object_list            
-        # on distributed
+            return object_list
+            # on distributed
         elif bundle.request.is_admin:
             return object_list
         else:
             raise Unauthorized("Sorry, that operation is restricted.")
 
-
     def read_detail(self, object_list, bundle):
         # On Central
         if settings.CENTRAL_SERVER and self._is_central_object_admin(object_list, bundle):
-            return True            
-        # on distributed
+            return True
+            # on distributed
         elif bundle.request.is_admin:
             return True
         else:

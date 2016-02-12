@@ -12,22 +12,20 @@ the dictionary, or with many of the fields collapsed into an 'extra_fields' key.
 All functions return the model data as a dictionary, in order to prevent external functions from having to know
 implementation details about the model class used in this module.
 """
-import os
 import json
-
-import sqlite3
 import itertools
 
-from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using,\
+from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, \
     DoesNotExist, fn, IntegerField, OperationalError, FloatField
-
 from playhouse.shortcuts import model_to_dict
+from django.conf import settings;
 
 from .base import available_content_databases
+
 from .settings import CONTENT_DATABASE_PATH, CHANNEL
 from .annotate import update_content_availability
 
-from django.conf import settings; logging = settings.LOG
+logging = settings.LOG
 
 
 # This Item is defined without a database.
@@ -60,6 +58,7 @@ class Item(Model):
         kwargs = parse_model_data(kwargs)
         super(Item, self).__init__(*args, **kwargs)
 
+
 class AssessmentItem(Model):
     id = CharField(max_length=50, primary_key=True)
     item_data = TextField()  # A serialized JSON blob
@@ -86,7 +85,6 @@ def parse_model_data(item):
 
 
 def unparse_model_data(item):
-
     extra_fields = json.loads(item.get("extra_fields", "{}"))
 
     # Do this to ensure any model fields that have accidentally
@@ -108,7 +106,8 @@ def set_database(function):
         if language == "pt-BR":
             language = "pt"
 
-        path = kwargs.pop("database_path", None) or CONTENT_DATABASE_PATH.format(channel=kwargs.get("channel", CHANNEL), language=language)
+        path = kwargs.pop("database_path", None) or CONTENT_DATABASE_PATH.format(channel=kwargs.get("channel", CHANNEL),
+                                                                                 language=language)
 
         db = SqliteDatabase(path)
 
@@ -133,6 +132,7 @@ def set_database(function):
         db.close()
 
         return output
+
     return wrapper
 
 
@@ -159,6 +159,7 @@ def parse_data(function):
                 logging.warn("No content database file found")
                 output = []
         return output
+
     return wrapper
 
 
@@ -357,7 +358,6 @@ def get_content_parents(ids=None, **kwargs):
         return list()
 
 
-
 @parse_data
 @set_database
 def get_leafed_topics(kinds=None, db=None, **kwargs):
@@ -405,7 +405,8 @@ def get_download_youtube_ids(paths=None, **kwargs):
         for path in paths:
             selector = (Item.kind != "Topic") & (Item.path.contains(path)) & (Item.youtube_id.is_null(False))
 
-            youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
+            youtube_ids.update(
+                dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
 
         return youtube_ids
 
@@ -477,8 +478,9 @@ def search_topic_nodes(kinds=None, query=None, page=1, items_per_page=10, exact=
             Item.id,
             Item.path,
             Item.slug,
-        ).where((Item.kind.in_(kinds)) & ((fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query))))
-        pages = topic_nodes.count()/items_per_page
+        ).where((Item.kind.in_(kinds)) & (
+        (fn.Lower(Item.title).contains(query)) | (fn.Lower(Item.extra_fields).contains(query))))
+        pages = topic_nodes.count() / items_per_page
         topic_nodes = [item for item in topic_nodes.paginate(page, items_per_page).dicts()]
         if topic_node:
             # If we got an exact match, show it first.
@@ -499,7 +501,7 @@ def bulk_insert(items, **kwargs):
         if db:
             with db.atomic():
                 for idx in range(0, len(items), 500):
-                    Item.insert_many(map(parse_model_data, items[idx:idx+500])).execute()
+                    Item.insert_many(map(parse_model_data, items[idx:idx + 500])).execute()
 
 
 @set_database
@@ -596,11 +598,13 @@ def annotate_content_models_by_youtube_id(channel="khan", language="en", youtube
     :param language: Language of channel to update.
     :param youtube_ids: List of youtube_ids to find content models for annotation.
     """
-    annotate_content_models(channel=channel, language=language, ids=youtube_ids, iterator_content_items=iterator_content_items_by_youtube_id)
+    annotate_content_models(channel=channel, language=language, ids=youtube_ids,
+                            iterator_content_items=iterator_content_items_by_youtube_id)
 
 
 @set_database
-def annotate_content_models(channel="khan", language="en", ids=None, iterator_content_items=iterator_content_items, **kwargs):
+def annotate_content_models(channel="khan", language="en", ids=None, iterator_content_items=iterator_content_items,
+                            **kwargs):
     """
     Annotate content models that have the ids specified in a list.
     Our ids can be duplicated at the moment, so this may be several content items per id.
@@ -628,7 +632,9 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
 
                 files_complete = children.aggregate(fn.SUM(Item.files_complete))
 
-                child_remote = children.where(((Item.available == False) & (Item.kind != "Topic")) | (Item.kind == "Topic")).aggregate(fn.SUM(Item.remote_size))
+                child_remote = children.where(
+                    ((Item.available == False) & (Item.kind != "Topic")) | (Item.kind == "Topic")).aggregate(
+                    fn.SUM(Item.remote_size))
                 child_on_disk = children.aggregate(fn.SUM(Item.size_on_disk))
 
                 if parent.available != available:

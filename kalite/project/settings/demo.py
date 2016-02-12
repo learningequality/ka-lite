@@ -4,7 +4,6 @@ To use it, run kalite with --settings=kalite.project.settings.demo or
 set then environment variable DJANGO_SETTINGS_MODULE to
 'kalite.project.settings.demo'.
 """
-from .base import *  # @UnusedWildImport
 
 CENTRAL_SERVER_HOST = getattr(local_settings, "CENTRAL_SERVER_HOST", "staging.learningequality.org")
 SECURESYNC_PROTOCOL = getattr(local_settings, "SECURESYNC_PROTOCOL", "http")

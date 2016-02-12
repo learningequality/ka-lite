@@ -6,7 +6,6 @@ logging = settings.LOG
 
 
 def load_dynamic_settings(request=None, user=None):
-
     # load all the "dynamic_assets.py" files present in installed apps
     modules = []
     for app in settings.INSTALLED_APPS:

@@ -6,7 +6,6 @@ import re
 
 from kalite.shared.utils import open_json_or_yml
 from kalite import settings
-
 from fle_utils.internet.classes import JsonResponse
 
 

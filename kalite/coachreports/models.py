@@ -1,15 +1,11 @@
 """Classes used by the student progress tastypie API"""
-import json
-from fle_utils.config.models import Settings
-
 from django.conf import settings
 from django.core.urlresolvers import reverse, NoReverseMatch
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import ugettext as _
 
+from fle_utils.config.models import Settings
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools.content_models import get_topic_nodes, get_topic_node, get_content_parents, get_topic_contents
+from kalite.topic_tools.content_models import get_topic_node, get_content_parents, get_topic_contents
 
 
 class PlaylistProgressParent:
@@ -26,11 +22,12 @@ class PlaylistProgressParent:
     @classmethod
     def get_user_logs(cls, user, pl_video_ids=None, pl_exercise_ids=None):
         user_ex_logs = list(ExerciseLog.objects \
-            .filter(user=user) \
-            .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling", "completion_timestamp"))
+                            .filter(user=user) \
+                            .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling",
+                                    "completion_timestamp"))
         user_vid_logs = list(VideoLog.objects \
-            .filter(user=user) \
-            .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
+                             .filter(user=user) \
+                             .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
 
         if pl_video_ids and pl_exercise_ids:
             user_ex_logs = [ex_log for ex_log in user_ex_logs if ex_log.get("exercise_id") in pl_exercise_ids]
@@ -64,7 +61,7 @@ class PlaylistProgress(PlaylistProgressParent):
         video_ids = list(set([vid_log["video_id"] for vid_log in user_vid_logs]))
 
         # Build a list of playlists for which the user has at least one data point
-        user_playlists = get_content_parents(ids=exercise_ids+video_ids)
+        user_playlists = get_content_parents(ids=exercise_ids + video_ids)
 
         # Store stats for each playlist
         user_progress = list()
@@ -80,7 +77,8 @@ class PlaylistProgress(PlaylistProgressParent):
 
             # Compute video stats
             n_vid_complete = len([vid for vid in pl_vid_logs if vid["complete"]])
-            n_vid_started = len([vid for vid in pl_vid_logs if (vid["total_seconds_watched"] > 0) and (not vid["complete"])])
+            n_vid_started = len(
+                [vid for vid in pl_vid_logs if (vid["total_seconds_watched"] > 0) and (not vid["complete"])])
             vid_pct_complete = int(float(n_vid_complete) / n_pl_videos * 100) if n_pl_videos else 0
             vid_pct_started = int(float(n_vid_started) / n_pl_videos * 100) if n_pl_videos else 0
             if vid_pct_complete == 100:
@@ -132,6 +130,7 @@ class PlaylistProgress(PlaylistProgressParent):
             user_progress.append(cls(**progress))
 
         return user_progress
+
 
 class PlaylistProgressDetail(PlaylistProgressParent):
     """Detailed progress on a specific playlist for a specific user"""
@@ -191,7 +190,6 @@ class PlaylistProgressDetail(PlaylistProgressParent):
                         status = "inprogress"
 
                     score = ex_log.get('streak_progress')
-
 
             progress_details.append(cls(**entry))
 

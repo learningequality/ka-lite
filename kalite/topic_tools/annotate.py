@@ -1,13 +1,10 @@
 import os
-import json
 
 from django.conf import settings as django_settings
+
 logging = django_settings.LOG
 
 from kalite.i18n.base import get_srt_path, get_language_name
-
-from . import settings
-from .base import database_exists
 
 from kalite.updates.videos import get_local_video_size
 from kalite.contentload import settings as contentload_settings
@@ -108,10 +105,12 @@ def update_content_availability(content_list, language="en", channel="khan"):
 
                 # Generate subtitle URLs for any subtitles that do exist for this content item
                 subtitle_urls = [{
-                    "code": lc,
-                    "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
-                    "name": get_language_name(lc)
-                    } for lc in subtitle_lang_codes]
+                                     "code": lc,
+                                     "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc,
+                                                                                                                id=content.get(
+                                                                                                                    "id")),
+                                     "name": get_language_name(lc)
+                                 } for lc in subtitle_lang_codes]
 
                 # Sort all subtitle URLs by language code
                 update["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))

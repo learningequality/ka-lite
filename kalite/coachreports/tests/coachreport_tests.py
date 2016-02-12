@@ -1,6 +1,7 @@
 import json
 
 from django.conf import settings
+
 logging = settings.LOG
 
 from kalite.testing.base import KALiteTestCase
@@ -53,6 +54,7 @@ class ExternalAPITests(FacilityMixins,
         self.assertEqual(objects[1]["name"], "empty_group", "API response incorrect")
         self.client.logout()
 
+
 class InternalAPITests(FacilityMixins,
                        StudentProgressMixin,
                        CreateZoneMixin,
@@ -76,17 +78,20 @@ class InternalAPITests(FacilityMixins,
         self.empty_group = self.create_group(name='empty_group', facility=self.facility)
 
     def test_learner_log_endpoint(self):
-        response_keys = ["logs","contents","learners","page","pages","limit"]
+        response_keys = ["logs", "contents", "learners", "page", "pages", "limit"]
         self.client.login(username='admin', password='admin')
-        api_resp = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("learner_logs"), self.facility.id)).content)
+        api_resp = json.loads(
+            self.client.get("%s?facility_id=%s" % (self.reverse("learner_logs"), self.facility.id)).content)
         for key in response_keys:
             assert key in api_resp, "{key} not found in learner log API response".format(key)
         self.client.logout()
 
     def test_aggregate_endpoint(self):
-        response_keys = ["content_time_spent","exercise_attempts","exercise_mastery", "total_time_logged", "learner_events"]
+        response_keys = ["content_time_spent", "exercise_attempts", "exercise_mastery", "total_time_logged",
+                         "learner_events"]
         self.client.login(username='admin', password='admin')
-        api_resp = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("aggregate_learner_logs"), self.facility.id)).content)
+        api_resp = json.loads(
+            self.client.get("%s?facility_id=%s" % (self.reverse("aggregate_learner_logs"), self.facility.id)).content)
         for key in response_keys:
             assert key in api_resp, "{key} not found in learner log API response".format(key)
         self.client.logout()
@@ -98,9 +103,11 @@ class InternalAPITests(FacilityMixins,
         self.create_video_log(user=self.student)
         self.create_exercise_log(user=self.student)
 
-        response_keys = ["content_time_spent","exercise_attempts","exercise_mastery", "total_time_logged", "learner_events"]
+        response_keys = ["content_time_spent", "exercise_attempts", "exercise_mastery", "total_time_logged",
+                         "learner_events"]
         self.client.login(username='admin', password='admin')
-        api_resp = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("aggregate_learner_logs"), self.facility.id)).content)
+        api_resp = json.loads(
+            self.client.get("%s?facility_id=%s" % (self.reverse("aggregate_learner_logs"), self.facility.id)).content)
         for key in response_keys:
             assert key in api_resp, "{key} not found in learner log API response".format(key)
         self.client.logout()

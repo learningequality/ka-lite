@@ -70,4 +70,3 @@ def get_users_from_group(user_type, group_id, facility=None):
         .prefetch_related("group")
 
     return user_list
-

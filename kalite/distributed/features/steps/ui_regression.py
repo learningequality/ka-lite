@@ -1,5 +1,4 @@
 from behave import *
-from django.core.urlresolvers import reverse
 
 from kalite.testing.behave_helpers import *
 

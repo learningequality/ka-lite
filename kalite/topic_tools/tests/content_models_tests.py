@@ -3,7 +3,6 @@ from kalite.topic_tools.content_models import update_item, get_random_content, g
 
 
 class UpdateItemTestCase(KALiteTestCase):
-    
     def test_update_item(self):
         item = get_random_content()[0]
         available = item.get("available")

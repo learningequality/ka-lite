@@ -7,7 +7,6 @@ from kalite.testing.base import KALiteBrowserTestCase
 
 
 class KnowledgeMapTests(KALiteBrowserTestCase):
-
     @unittest.skipIf("medium" in settings.TESTS_TO_SKIP, "Skipping medium-length test")
     def test_exercise_dashboard(self, map_url=None):
         """
@@ -25,11 +24,11 @@ class KnowledgeMapTests(KALiteBrowserTestCase):
         #
         link_urls = []
         for exercise in exercise_elements:
-            #self.assertTrue(exercise.is_displayed(), "Exercise %s should be displayed @ %s" % (exercise, map_url))
+            # self.assertTrue(exercise.is_displayed(), "Exercise %s should be displayed @ %s" % (exercise, map_url))
             url = exercise.get_attribute("href")
             if url.startswith(self.reverse("exercise_dashboard")):
                 link_urls.append(url)
-            self.assertTrue(url is not None and url!= "")
+            self.assertTrue(url is not None and url != "")
 
         for url in link_urls:
             self.test_exercise_dashboard(map_url=url)
