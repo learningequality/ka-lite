@@ -21,7 +21,7 @@ from peewee import Using
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
-from kalite.topic_tools.content_models import Item, set_database, update_item
+from kalite.topic_tools.content_models import Item, set_database, annotate_content_models
 
 from securesync.models import Zone, Device, DeviceZone
 
@@ -60,8 +60,12 @@ def setup_content_paths(context, db):
         "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/",
     )
 
-    update_item(path="khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/",
-                update={"available": True})
+    # This function uses 'iterator_content_items' function to return a list of path, update dict pairs
+    # It then updates the items with these paths with their update dicts, and then propagates
+    # availability changes up the topic tree - this means that we can alter the availability of one item
+    # and make all its parent topics available so that it is navigable to in integration tests.
+    annotate_content_models(db=db, iterator_content_items=lambda ids: [(
+        context.available_content_path, {"available": True})])
 
     with Using(db, [Item], with_transaction=False):
         context._unavailable_item = Item.create(
