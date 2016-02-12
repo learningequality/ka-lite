@@ -6,7 +6,7 @@ Supported by Foundation for Learning Equality
 www.learningequality.org
 
 Usage:
-  kalite start [--foreground --watch] [options] [DJANGO_OPTIONS ...]
+  kalite start [--foreground --watch --benchmark] [options] [DJANGO_OPTIONS ...]
   kalite stop [options] [DJANGO_OPTIONS ...]
   kalite restart [options] [DJANGO_OPTIONS ...]
   kalite status [options]
@@ -66,7 +66,6 @@ import socket
 import sys
 import time
 import traceback
-
 # KALITE_DIR set, so probably called from bin/kalite
 if 'KALITE_DIR' in os.environ:
     sys.path = [
@@ -108,6 +107,12 @@ import kalite
 from kalite.distributed.cherrypyserver import DjangoAppPlugin
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses
+import benchmarkserver
+from benchmarkserver import BenchmarkingServer
+import benchmarkclient
+from benchmarkclient import BenchmarkClient
+import benchmark
+from benchmark import benchmark_client
 
 # Environment variables that are used by django+kalite
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "kalite.project.settings.default")
@@ -445,7 +450,8 @@ def kill_watchify_process():
         sys.stdout.write('watchify process killed')
 
 
-def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=False, port=None):
+@benchmark_client
+def start(debug=False, watch=False, daemonize=True, benchmark=False, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon
 
@@ -456,7 +462,7 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
     :param skip_job_scheduler: Skips running the job scheduler in a separate thread
     """
     # TODO: Do we want to fail if running as root?
-
+       
     port = int(port or DEFAULT_LISTEN_PORT)
 
     if not daemonize:
@@ -480,7 +486,7 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
             pass
 
         os.unlink(STARTUP_LOCK)
-
+    
     try:
         if get_pid():
             sys.stderr.write("Refusing to start: Already running\n")
@@ -505,6 +511,7 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
         f.write("%s\n%d" % (str(os.getpid()), port))
 
     manage('initialize_kalite')
+ 
 
     if watch:
         watchify_thread = Thread(target=start_watchify)
@@ -907,7 +914,6 @@ if __name__ == "__main__":
     settings_module = arguments.pop('--settings', None)
     if settings_module:
         os.environ['DJANGO_SETTINGS_MODULE'] = settings_module
-
     if arguments['start']:
         start(
             debug=arguments['--debug'],
@@ -915,7 +921,8 @@ if __name__ == "__main__":
             skip_job_scheduler=arguments['--skip-job-scheduler'],
             args=arguments['DJANGO_OPTIONS'],
             daemonize=not arguments['--foreground'],
-            port=arguments["--port"]
+            benchmark=arguments['--benchmark'],
+            port=arguments["--port"],
         )
 
     elif arguments['stop']:
