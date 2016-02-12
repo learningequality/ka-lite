@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from fle_utils.config.models import Settings
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools.content_models import get_topic_node, get_content_parents, get_topic_contents
+from kalite.topic_tools.content_models import get_topic_node, get_content_parents, get_topic_contents, get_content_item
 
 
 class PlaylistProgressParent:
@@ -143,14 +143,12 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         self.score = kwargs.get("score")
         self.path = kwargs.get("path")
 
+    @classmethod
     def user_progress_detail(cls, user_id, playlist_id):
         """
         Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
         """
-        if not language:
-            language = Settings.get("default_language") or settings.LANGUAGE_CODE
-
         user = FacilityUser.objects.get(id=user_id)
         playlist = get_topic_node(content_id=playlist_id)
 
@@ -163,7 +161,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         # injected where it exists.
         progress_details = list()
         for entity_id in playlist.get("children"):
-            entry = {}
+            leaf_node = get_content_item(entity_id)
             kind = leaf_node.get("kind")
 
             status = "notstarted"
@@ -191,6 +189,13 @@ class PlaylistProgressDetail(PlaylistProgressParent):
 
                     score = ex_log.get('streak_progress')
 
-            progress_details.append(cls(**entry))
+            progress_details.append(PlaylistProgressDetail(
+                id=entity_id,
+                title=leaf_node["title"],
+                kind=kind,
+                status=status,
+                score=score,
+                path=leaf_node["path"]
+            ))
 
         return progress_details
