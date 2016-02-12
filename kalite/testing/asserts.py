@@ -2,6 +2,7 @@
 """
 from django.conf import settings
 from django.http import Http404
+from django.utils.translation import ugettext as _
 
 
 def central_server_only(handler):

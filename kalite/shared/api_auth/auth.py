@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils.translation import ugettext as _
 
 from tastypie.exceptions import Unauthorized
 from tastypie.authorization import Authorization, ReadOnlyAuthorization
