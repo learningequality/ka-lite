@@ -32,8 +32,8 @@ class UpdateItemTestCase(KALiteTestCase):
 class ContentModelsTestCase(KALiteTestCase):
 
     def test_get_content_parents(self):
-	"""
-	The function get_content_parents() should return a empty list when an empty list of ids is passed to it.
-	"""
-	self.assertEqual(get_content_parents(ids=list()), list())
+        """
+        The function get_content_parents() should return a empty list when an empty list of ids is passed to it.
+        """
+        self.assertEqual(get_content_parents(ids=list()), list())
 	
