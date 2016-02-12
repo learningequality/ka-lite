@@ -1,5 +1,5 @@
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools.content_models import update_item, get_random_content, get_content_item, get_content_items
+from kalite.topic_tools.content_models import update_item, get_random_content, get_content_item, get_content_items, get_content_parents
 
 
 class UpdateItemTestCase(KALiteTestCase):
@@ -27,3 +27,13 @@ class UpdateItemTestCase(KALiteTestCase):
         update_item({"available": inverse_available}, item.get("path"))
         items = get_content_items(ids=[item.get("id")])
         self.assertTrue(all([item.get("available") == inverse_available for item in items]))
+
+
+class ContentModelsTestCase(KALiteTestCase):
+
+    def test_get_content_parents(self):
+        """
+        The function get_content_parents() should return a empty list when an empty list of ids is passed to it.
+        """
+        self.assertEqual(get_content_parents(ids=list()), list())
+	
