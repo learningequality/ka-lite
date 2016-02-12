@@ -4,7 +4,7 @@ from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.exceptions import NotFound
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
-from kalite.topic_tools.content_models import get_assessment_item_data
+from kalite.topic_tools.content_models import get_assessment_item_data, AssessmentItem
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
 
