@@ -1,9 +1,11 @@
 import json
 
 from django.conf import settings
+
 logging = settings.LOG
 
 from .settings import VIDEO_DOWNLOAD_QUEUE_FILE
+
 
 class VideoQueue(object):
     """
@@ -47,7 +49,8 @@ class VideoQueue(object):
         """Remove the last file from the list, and check that it matches the passed in youtube_id"""
         removed_file = self.queue.pop()
         if removed_file.get("youtube_id") != youtube_id:
-            logging.warn("Tried to remove {youtube_id} from file queue but found {removed_file} instead.".format(youtube_id=youtube_id, removed_file=removed_file.get("youtube_id")))
+            logging.warn("Tried to remove {youtube_id} from file queue but found {removed_file} instead.".format(
+                youtube_id=youtube_id, removed_file=removed_file.get("youtube_id")))
         else:
             self.save()
 

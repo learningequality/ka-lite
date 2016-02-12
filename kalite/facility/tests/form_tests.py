@@ -7,11 +7,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils import unittest
-
-import selenium.webdriver.support.expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 
 from ..forms import FacilityUserForm, FacilityForm, FacilityGroupForm
 from ..models import Facility, FacilityUser, FacilityGroup
@@ -22,7 +18,6 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 
 
 class FacilityTestCase(KALiteTestCase):
-
     def setUp(self):
         super(FacilityTestCase, self).setUp()
         self.facility = Facility.objects.create(name='testfac')
@@ -41,7 +36,6 @@ class FacilityTestCase(KALiteTestCase):
 
 
 class UserRegistrationTestCase(FacilityTestCase):
-
     def test_facility_user_form_works(self):
         """Valid password should work"""
         response = self.client.post(reverse('facility_user_signup'), self.data)
@@ -56,7 +50,7 @@ class UserRegistrationTestCase(FacilityTestCase):
         response = self.client.post(reverse('facility_user_signup'), self.data, follow=True)
         self.assertEqual(response.status_code, 200, "Status code must be 200")
         self.assertFormError(response, 'form', 'username',
-                            'A user with this username already exists. Please choose a new username and try again.')
+                             'A user with this username already exists. Please choose a new username and try again.')
 
     def test_password_length_valid(self):
         response = self.client.post(reverse('facility_user_signup'), self.data)
@@ -89,7 +83,6 @@ class UserRegistrationTestCase(FacilityTestCase):
 
 
 class DuplicateFacilityNameTestCase(FacilityTestCase):
-
     def test_duplicate_facility_name(self):
         facility_form = FacilityForm(data={"name": self.facility.name})
         self.assertFalse(facility_form.is_valid(), "Form must not be valid, but was!")
@@ -100,16 +93,17 @@ class DuplicateFacilityNameTestCase(FacilityTestCase):
 
 
 class DuplicateFacilityGroupTestCase(FacilityTestCase):
-
     def test_duplicate_group_name(self):
-        group_form = FacilityGroupForm(facility=self.facility, data={"facility": self.facility.id, "name": self.group.name})
+        group_form = FacilityGroupForm(facility=self.facility,
+                                       data={"facility": self.facility.id, "name": self.group.name})
         self.assertFalse(group_form.is_valid(), "Form must not be valid, but was!")
 
     def test_duplicate_group_name_in_different_facility(self):
         """Group need only be unique within a facility, not across them."""
         different_fac = Facility(name=self.facility.name + "-different")
         different_fac.save()
-        group_form = FacilityGroupForm(facility=different_fac, data={"facility": self.facility.id, "name": self.group.name})
+        group_form = FacilityGroupForm(facility=different_fac,
+                                       data={"facility": self.facility.id, "name": self.group.name})
         self.assertTrue(group_form.is_valid(), "Form must be valid; instead: errors (%s)" % group_form.errors)
 
     def test_nonduplicate_group_name(self):
@@ -119,7 +113,6 @@ class DuplicateFacilityGroupTestCase(FacilityTestCase):
 
 
 class DuplicateFacilityUserTestCase(FacilityTestCase):
-
     def setUp(self):
         super(DuplicateFacilityUserTestCase, self).setUp()
 
@@ -200,7 +193,7 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
         self.data['group'] = None
         user_form = FacilityUserForm(facility=new_fac, data=self.data)
         self.assertTrue(user_form.is_valid(),
-            "Form must be valid; instead: errors (%s)" % user_form.errors)
+                        "Form must be valid; instead: errors (%s)" % user_form.errors)
 
     def test_form_duplicate_name_count(self):
         """Should have the proper duplicate user name count."""
@@ -234,7 +227,6 @@ class DuplicateFacilityUserTestCase(FacilityTestCase):
 
 
 class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin):
-
     def setUp(self):
         self.facility = self.create_facility()
         self.admin = self.create_admin()
@@ -243,7 +235,8 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
     def test_logged_in_student_cannot_select_group(self):
         self.group = self.create_group(facility=self.facility)
         self.student = self.create_student(facility=self.facility, group=self.group)
-        self.browser_login_student(username=self.student.username, password='password', facility_name=self.facility.name)
+        self.browser_login_student(username=self.student.username, password='password',
+                                   facility_name=self.facility.name)
         self.browse_to(self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id}))
         with self.assertRaises(NoSuchElementException):
             self.browser.find_element_by_xpath("//label[@for='id_group']")
@@ -252,15 +245,14 @@ class FormBrowserTests(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCas
         self.group = self.create_group(facility=self.facility)
         self.student = self.create_student(facility=self.facility, group=self.group)
         self.teacher = self.create_teacher(facility=self.facility)
-        self.browser_login_teacher(username=self.teacher.username, password='password', facility_name=self.facility.name)
+        self.browser_login_teacher(username=self.teacher.username, password='password',
+                                   facility_name=self.facility.name)
         self.browse_to(self.reverse('edit_facility_user', kwargs={'facility_user_id': self.student.id}))
         group_select = self.browser.find_element_by_id('id_group')
         self.assertTrue(group_select.is_displayed())
 
 
-
 class FormGroupTest(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase, CreateAdminMixin):
-
     def setUp(self):
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)

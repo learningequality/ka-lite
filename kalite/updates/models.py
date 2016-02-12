@@ -2,7 +2,9 @@
 """
 import datetime
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings;
+
+logging = settings.LOG
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -31,17 +33,18 @@ class UpdateProgressLog(ExtendedModel):
 
     cancel_requested = models.BooleanField(default=False)
 
-#    @classmethod
-#    def get_or_create_log(process_name, *args, **kwargs):
-#        try:
-#            return UpdateProgressLog.objects.get(process_name=process_name, end_time=None)
-#        except:
-#            log = UpdateProgressLog(process_name=process_name, **kwargs)
-#            log.save()
-#            return log
+    #    @classmethod
+    #    def get_or_create_log(process_name, *args, **kwargs):
+    #        try:
+    #            return UpdateProgressLog.objects.get(process_name=process_name, end_time=None)
+    #        except:
+    #            log = UpdateProgressLog(process_name=process_name, **kwargs)
+    #            log.save()
+    #            return log
     def __unicode__(self):
-        return "%s (%5.2f%% done); stage %s (%4.1f%% done)%s" % (self.process_name, 100*self.process_percent, self.stage_name, 100*self.stage_percent, " completed" if self.completed else "")
-
+        return "%s (%5.2f%% done); stage %s (%4.1f%% done)%s" % (
+        self.process_name, 100 * self.process_percent, self.stage_name, 100 * self.stage_percent,
+        " completed" if self.completed else "")
 
     def save(self, *args, **kwargs):
         assert 0 <= self.stage_percent and self.stage_percent <= 1, "Stage percent must be between 0 and 1"
@@ -76,7 +79,7 @@ class UpdateProgressLog(ExtendedModel):
             if self.stage_name:  # moving to the next stage
                 self.notes = None  # reset notes after each stage
                 self.current_stage += 1
-            else: # just starting
+            else:  # just starting
                 self.current_stage = 1
             self.stage_name = stage_name
 
@@ -85,7 +88,6 @@ class UpdateProgressLog(ExtendedModel):
         self.stage_status = stage_status
         self.notes = notes or self.notes
         self.save()
-
 
     def cancel_current_stage(self, stage_status=None, notes=None):
         """
@@ -99,7 +101,6 @@ class UpdateProgressLog(ExtendedModel):
         self.notes = notes
         self.process_percent = self._compute_process_percent()
         self.save()
-
 
     def update_total_stages(self, total_stages, current_stage=None):
         """
@@ -115,7 +116,6 @@ class UpdateProgressLog(ExtendedModel):
             logging.debug("Updating %s from %d to %d stages." % (self.process_name, self.total_stages, total_stages))
         else:
             logging.debug("Setting %s to %d total stages." % (self.process_name, total_stages))
-
 
         self.total_stages = total_stages
         if current_stage is not None:
@@ -135,10 +135,9 @@ class UpdateProgressLog(ExtendedModel):
 
         self.stage_status = stage_status or "cancelled"
         self.end_time = datetime.datetime.now()
-        self.completed=False
+        self.completed = False
         self.notes = notes
         self.save()
-
 
     def mark_as_completed(self, stage_status=None, notes=None):
         """
@@ -155,13 +154,12 @@ class UpdateProgressLog(ExtendedModel):
         self.notes = notes
         self.save()
 
-
     @classmethod
     def get_active_log(cls, create_new=True, force_new=False, overlapping=False, *args, **kwargs):
         """
         For a given query, return the most recently opened, non-closed log.
         """
-        #assert not args, "no positional args allowed to this method."
+        # assert not args, "no positional args allowed to this method."
 
         if not force_new:
             logs = cls.objects.filter(end_time=None, completed=False, **kwargs).order_by("-start_time")
@@ -170,8 +168,9 @@ class UpdateProgressLog(ExtendedModel):
             elif not create_new:
                 return None
 
-        if not "process_name" in kwargs:
-            raise Exception("You better specify process_name if your log is not found!  Otherwise, how could we create one??")
+        if "process_name" not in kwargs:
+            raise Exception(
+                "You better specify process_name if your log is not found!  Otherwise, how could we create one??")
         process_name = kwargs["process_name"]
 
         # Most of the time, we want exclusivity.

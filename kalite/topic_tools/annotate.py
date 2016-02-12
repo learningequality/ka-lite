@@ -1,13 +1,10 @@
 import os
-import json
 
 from django.conf import settings as django_settings
+
 logging = django_settings.LOG
 
 from kalite.i18n.base import get_srt_path, get_language_name
-
-from . import settings
-from .base import database_exists
 
 from kalite.updates.videos import get_local_video_size
 from kalite.contentload import settings as contentload_settings
@@ -95,23 +92,19 @@ def update_content_availability(content_list, language="en", channel="khan"):
                         "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
                         "thumbnail": thumbnail,
                     }
-            elif django_settings.BACKUP_VIDEO_SOURCE:
-                update["available"] = True
-                update["content_urls"] = {
-                    "stream": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
-                    "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
-                    "thumbnail": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
-                }
 
             if update.get("available"):
                 # Don't bother doing this work if the video is not available at all
 
                 # Generate subtitle URLs for any subtitles that do exist for this content item
                 subtitle_urls = [{
-                    "code": lc,
-                    "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
-                    "name": get_language_name(lc)
-                    } for lc in subtitle_lang_codes]
+                                     "code": code,
+                                     "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(
+                                         code=code,
+                                         id=content.get("id")
+                                     ),
+                                     "name": get_language_name(code)
+                                 } for code in subtitle_lang_codes]
 
                 # Sort all subtitle URLs by language code
                 update["subtitle_urls"] = sorted(subtitle_urls, key=lambda x: x.get("code", ""))

@@ -1,16 +1,17 @@
 import copy
-
 from math import ceil, log, exp  # needed for basepoints calculation
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings;
+
+logging = settings.LOG
 
 from django.utils.text import slugify
 
 from kalite.contentload.utils import dedupe_paths
 
+
 # For specification of channel_data dictionary, please see CHANNELDATA.md
 def retrieve_API_data(channel=None):
-
     topic_tree = {}
 
     exercises = []
@@ -91,7 +92,7 @@ def rebuild_topictree(
     Denorms content data to reduce the bulk of the topic tree.
     Adds position data to every node in the topic tree.
     """
-    
+
     topic_tree, exercises, assessment_items, contents = retrieve_API_data(channel=channel)
 
     exercise_lookup = dict((exercise["id"], exercise) for exercise in exercises)
@@ -140,13 +141,15 @@ def rebuild_topictree(
                 if child_kind == "Exercise":
                     child_denormed_data = exercise_lookup[child_id]
                     # Add path information here
-                    slug = exercise_lookup[child_id][slug_key] if exercise_lookup[child_id][slug_key] != "root" else "khan"
+                    slug = exercise_lookup[child_id][slug_key] if exercise_lookup[child_id][
+                                                                      slug_key] != "root" else "khan"
                     slug = slugify(unicode(slug))
                     exercise_lookup[child_id]["path"] = node["path"] + slug + "/"
                 elif child_kind == "Video":
                     child_denormed_data = content_lookup[child_id]
                     # Add path information here
-                    slug = content_lookup[child_id][slug_key] if content_lookup[child_id][slug_key] != "root" else "khan"
+                    slug = content_lookup[child_id][slug_key] if content_lookup[child_id][
+                                                                     slug_key] != "root" else "khan"
                     slug = slugify(unicode(slug))
                     content_lookup[child_id]["path"] = node["path"] + slug + "/"
                 else:
@@ -173,7 +176,8 @@ def rebuild_topictree(
                 logging.debug("Removing non-live child: %s" % child[channel_data["slug_key"][child_kind]])
                 children_to_delete.append(i)
                 continue
-            elif child.get("hide", False):  # node is hidden. Note that root is hidden, and we're implicitly skipping that.
+            elif child.get("hide",
+                           False):  # node is hidden. Note that root is hidden, and we're implicitly skipping that.
                 children_to_delete.append(i)
                 logging.debug("Removing hidden child: %s" % child[channel_data["slug_key"][child_kind]])
                 continue
@@ -198,6 +202,7 @@ def rebuild_topictree(
             node["contains"] = list(child_kinds)
 
         return child_kinds
+
     recurse_nodes(topic_tree)
 
     dedupe_paths(topic_tree)
@@ -219,6 +224,7 @@ def rebuild_topictree(
 
         for ci in reversed(children_to_delete):
             del node["children"][ci]
+
     recurse_nodes_to_remove_childless_nodes(topic_tree)
 
     return topic_tree, exercises, assessment_items, contents

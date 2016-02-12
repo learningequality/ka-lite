@@ -2,6 +2,7 @@
 # in order to avoid consistent method error resolution errors.
 from kalite.facility.models import Facility, FacilityGroup, FacilityUser
 
+
 class CreateFacilityMixin(object):
     DEFAULTS = {
         'name': 'facility1',
@@ -69,6 +70,7 @@ class CreateTeacherMixin(CreateStudentMixin):
         fields = CreateTeacherMixin.DEFAULTS.copy()
         fields.update(**kwargs)
         return cls.create_student(**fields)  # delegate to the create_student method, which has the right logic
+
 
 class FacilityMixins(CreateTeacherMixin, CreateStudentMixin, CreateGroupMixin, CreateFacilityMixin):
     '''

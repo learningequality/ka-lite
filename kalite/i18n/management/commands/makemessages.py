@@ -4,15 +4,14 @@ For now (11/12/15) we'll just deal with the existing output. In the future, we s
 vanilla Django and again do our custom actions *on top of* the vanilla output.
 """
 import os
+
 import polib
 import yaml
-
 from django.conf import settings
 from django.core.management.commands import makemessages
 
 
 class Command(makemessages.Command):
-
     def handle_noargs(self, *args, **options):
         # Set some sensible defaults
         ignore_pattern = "node_modules*"

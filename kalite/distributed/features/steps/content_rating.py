@@ -3,16 +3,14 @@ import glob
 import os
 
 from behave import *
-from kalite.testing.behave_helpers import *
+from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.ui import WebDriverWait
 
+from kalite.testing.behave_helpers import *
 from kalite.main.models import ContentRating
 from kalite.facility.models import FacilityUser
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from securesync.models import Device
-
-from selenium.webdriver.support.select import Select
-from selenium.webdriver.support.ui import WebDriverWait
-
 
 RATING_CONTAINER_ID = "rating-container"
 TEXT_CONTAINER_ID = "text-container"
@@ -65,9 +63,9 @@ def impl(context):
 def impl(context):
     # Only star-container-1 should be visible
     visible_container = find_id_with_wait(context, STAR_CONTAINER_IDS[0])
-    assert visible_container.is_displayed(),\
+    assert visible_container.is_displayed(), \
         "Element with id '{0}' not visible, but it should be!".format(STAR_CONTAINER_IDS[0])
-    for id_ in STAR_CONTAINER_IDS[1:] + (TEXT_CONTAINER_ID, ):
+    for id_ in STAR_CONTAINER_IDS[1:] + (TEXT_CONTAINER_ID,):
         assert_no_element_by_css_selector(context, "#{id} div".format(id=id_))
 
 

@@ -9,8 +9,10 @@ class ZoneForm(ModelForm):
         model = Zone
         fields = ('name', 'description')
 
+
 class UploadFileForm(forms.Form):
-    file  = forms.FileField()
+    file = forms.FileField()
+
 
 class DateRangeForm(forms.Form):
     """Form that validates Dates for CSV Export"""

@@ -7,8 +7,8 @@ import zipfile
 from django.core.management.base import CommandError
 from django.core.management import call_command
 from django.utils.translation import ugettext as _
-
 from django.conf import settings as django_settings
+
 logging = django_settings.LOG
 
 from fle_utils.general import ensure_dir

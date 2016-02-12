@@ -3,16 +3,10 @@ from __future__ import print_function
 import atexit
 import os
 import subprocess
-import sys
-import traceback
-
-from signal import SIGTERM
-
 from threading import Thread
 
 from django.contrib.staticfiles.management.commands.runserver import Command as RunserverCommand
 from django.core.management.base import CommandError
-from django.core.servers import basehttp
 
 
 class Command(RunserverCommand):
@@ -32,7 +26,6 @@ class Command(RunserverCommand):
         # autoreloader with RUN_MAIN set to true, we have to check for
         # this to avoid running browserify twice.
         if not os.getenv('RUN_MAIN', False) and not getattr(self, "browserify_process"):
-
             browserify_thread = Thread(target=self.start_browserify)
             browserify_thread.daemon = True
             browserify_thread.start()

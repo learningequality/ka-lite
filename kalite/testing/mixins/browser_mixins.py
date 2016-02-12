@@ -8,24 +8,21 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from django.contrib.auth.models import User
 
 from ..browser import browse_to, setup_browser, wait_for_page_change
 from kalite.topic_tools.content_models import get_random_content
 from kalite.facility.models import Facility
-
-from django.contrib.auth.models import User
-
-from random import choice
-
 from kalite.testing.browser import hacks_for_phantomjs
 
 FIND_ELEMENT_TIMEOUT = 3
 
+
 class KALiteTimeout(Exception):
     pass
 
-class BrowserActionMixins(object):
 
+class BrowserActionMixins(object):
     # not all act as tab stops, but ...
     HtmlFormElements = ["form", "input", "textarea", "label", "fieldset",
                         "legend", "select", "optgroup", "option", "button",
@@ -90,9 +87,11 @@ class BrowserActionMixins(object):
                 elif name:
                     elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.NAME, name)))
                 elif tag_name:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.TAG_NAME, tag_name)))
+                    elem = WebDriverWait(browser, max_wait).until(
+                        EC.presence_of_element_located((By.TAG_NAME, tag_name)))
                 elif css_class:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.CLASS_NAME, css_class)))
+                    elem = WebDriverWait(browser, max_wait).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, css_class)))
                 elif xpath:
                     elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.XPATH, xpath)))
         except TimeoutException:
@@ -110,7 +109,8 @@ class BrowserActionMixins(object):
 
         # Get messages (and limit by type)
         if num_messages > 0:
-            messages = WebDriverWait(self.browser, 5).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "alert")))
+            messages = WebDriverWait(self.browser, 5).until(
+                EC.presence_of_all_elements_located((By.CLASS_NAME, "alert")))
         else:
             messages = []
 
@@ -151,7 +151,7 @@ class BrowserActionMixins(object):
         # Loop until you've arrived at a form element
         num_links = 0
         while num_tabs <= max_tabs and \
-                browser.switch_to_active_element().tag_name not in self.HtmlFormElements:
+                        browser.switch_to_active_element().tag_name not in self.HtmlFormElements:
             num_links += browser.switch_to_active_element().tag_name == "a"
             self.browser_send_keys(Keys.TAB, browser=browser)
             num_tabs += 1
@@ -241,7 +241,8 @@ class BrowserActionMixins(object):
         self.browser_activate_element(id=submission_element_id)  # explicitly set the focus, to start
         self.browser_send_keys(Keys.RETURN)
         # how to wait for page change?  Will reload the same page.
-        self.assertNotEqual(self.browser_wait_for_element(".errorlist", max_wait_time=30), None, "Make sure there's an error.")
+        self.assertNotEqual(self.browser_wait_for_element(".errorlist", max_wait_time=30), None,
+                            "Make sure there's an error.")
 
     def browser_accept_alert(self, sleep=1, text=None):
         """
@@ -298,7 +299,6 @@ class BrowserActionMixins(object):
         alert = self.browser_accept_alert(sleep=sleep, text=text)
         return alert
 
-
     def browser_register_user(self, username, password, first_name="firstname",
                               last_name="lastname", facility_name=None,
                               stay_logged_in=False):
@@ -344,7 +344,6 @@ class BrowserActionMixins(object):
         self.__request(method="POST", url=url, data=data, browser=browser)
         self.browser.refresh()
 
-
     def browser_login_admin(self, username=None, password=None, browser=None):
         self.browser_login_user(username=username, password=password, browser=browser)
 
@@ -372,7 +371,6 @@ class BrowserActionMixins(object):
         self.__request(method="GET", url=url, data="")
         self.browser.refresh()
 
-
     def __request(self, method, url, data, browser=None):
         browser = browser or self.browser
         browser.get(self.reverse("homepage"))  # Send requests from the same domain
@@ -389,16 +387,14 @@ class BrowserActionMixins(object):
                 }};
                 req.send('{data}');
             """.format(method=method, url=url, data=data)  # One must escape '{' and '}' by doubling them
-        )
+                               )
         self.browser_wait_for_js_condition("window.FLAG")
         return browser.execute_script("return window.DATA")
-
 
     def browser_is_logged_in(self, expected_username=None, browser=None):
         url = self.reverse("api_dispatch_list", kwargs={"resource_name": "user"}) + "status/"
         data = self.__request(method="GET", url=url, data="", browser=browser)
         return data.get("is_logged_in", False)
-
 
     def fill_form(self, input_id_dict):
         """
@@ -433,6 +429,6 @@ class BrowserActionMixins(object):
         self.browser_wait_for_js_object_exists("window.statusModel");
         self.browser.execute_script("window.statusModel.trigger(\"change:points\");")
         points_text = self.browser.execute_script("return $('#points').text();")
-        self.assertTrue(bool(points_text), "Failed fetching contents of #points element, got {0}".format(repr(points_text)))
+        self.assertTrue(bool(points_text),
+                        "Failed fetching contents of #points element, got {0}".format(repr(points_text)))
         return int(re.search(r"(\d+)", points_text).group(1))
-

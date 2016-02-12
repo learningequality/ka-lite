@@ -4,15 +4,16 @@ Downloads a language pack, unzips the contents, then moves files accordingly
 import glob
 import os
 import shutil
-import requests
 import zipfile
 from optparse import make_option
 from StringIO import StringIO
 
-from django.conf import settings; logging = settings.LOG
-import httplib
+from django.conf import settings;
 
-from ... import REMOTE_VIDEO_SIZE_FILEPATH
+import requests
+
+logging = settings.LOG
+
 from .classes import UpdatesStaticCommand
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
@@ -86,7 +87,6 @@ class Command(UpdatesStaticCommand, CronCommand):
             self.next_stage(_("Creating static files for language pack '%(lang_code)s'") % {"lang_code": lang_code})
             update_jsi18n_file(lang_code)
 
-
             self.next_stage(_("Moving files to their appropriate local disk locations."))
             move_dubbed_video_map(lang_code)
             move_exercises(lang_code)
@@ -96,13 +96,15 @@ class Command(UpdatesStaticCommand, CronCommand):
             self.next_stage()
             call_command("collectstatic", interactive=False)
 
-            self.complete(_("Finished processing language pack %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
+            self.complete(
+                _("Finished processing language pack %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
         except Exception as e:
             self.cancel(stage_status="error", notes=_("Error: %(error_msg)s") % {"error_msg": unicode(e)})
             raise
 
     def cb(self, percent):
         self.update_stage(stage_percent=percent / 100.)
+
 
 def get_language_pack(lang_code, software_version, callback):
     """Download language pack for specified language"""
@@ -116,10 +118,12 @@ def get_language_pack(lang_code, software_version, callback):
     # return a status code. So before we make the full request, we
     # check first if the said lang pack url exists. If not, error out.
     if requests.head(request_url).status_code == 404:
-        raise requests.exceptions.HTTPError("Language pack %s not found. Please double check that it exists." % lang_code)
+        raise requests.exceptions.HTTPError(
+            "Language pack %s not found. Please double check that it exists." % lang_code)
 
     path, response = download_file(request_url, callback=callback_percent_proxy(callback))
     return path
+
 
 def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     """Unpack zipped language pack into locale directory"""
@@ -134,8 +138,10 @@ def unpack_language(lang_code, zip_filepath=None, zip_fp=None, zip_data=None):
     except zipfile.BadZipfile as e:
         # Need to add more information on the errror message.
         # See http://stackoverflow.com/questions/6062576/adding-information-to-a-python-exception
-        raise type(e), type(e)(e.message + _("Language pack corrupted. Please try downloading the language pack again in a few minutes."))
+        raise type(e), type(e)(
+            e.message + _("Language pack corrupted. Please try downloading the language pack again in a few minutes."))
     z.extractall(os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code))
+
 
 def move_dubbed_video_map(lang_code):
     lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
@@ -154,12 +160,14 @@ def move_dubbed_video_map(lang_code):
         except Exception as e:
             logging.error("Error removing dubbed video directory (%s): %s" % (dubbed_video_dir, e))
 
+
 def move_video_sizes_file(lang_code):
     """
     This is no longer needed. See:
     https://github.com/learningequality/ka-lite/issues/4538#issuecomment-144560505
     """
     return
+
 
 def move_exercises(lang_code):
     lang_pack_location = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code)
@@ -182,6 +190,7 @@ def move_exercises(lang_code):
             shutil.rmtree(src_exercise_dir)
         except Exception as e:
             logging.error("Error removing dubbed video directory (%s): %s" % (src_exercise_dir, e))
+
 
 def move_srts(lang_code):
     """

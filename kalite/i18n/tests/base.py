@@ -4,8 +4,8 @@ Base classes to help test i18n functions
 import logging
 import os
 import urllib
-from mock import patch
 
+from mock import patch
 from django.core.management import call_command
 from django.test import TestCase
 
@@ -13,7 +13,6 @@ from ..base import get_installed_language_packs, delete_language
 
 
 class I18nTestCase(TestCase):
-
     def is_language_installed(self, lang_code, force_reload=True):
         return lang_code in get_installed_language_packs(force=force_reload)
 
@@ -30,13 +29,12 @@ class I18nTestCase(TestCase):
         if not self.TEST_LANGUAGES:
             logging.debug("self.TEST_LANGUAGES not defined. Not installing any language.")
         else:
-            logging.disable(logging.ERROR) # silence langpack installation logs
+            logging.disable(logging.ERROR)  # silence langpack installation logs
 
             for lang in self.TEST_LANGUAGES:
                 self.install_language(lang)
 
-            logging.disable(logging.NOTSET) # reactivate logs again
-
+            logging.disable(logging.NOTSET)  # reactivate logs again
 
     def uninstall_languages(self):
         logging.disable(logging.ERROR)

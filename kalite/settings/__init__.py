@@ -1,7 +1,4 @@
-import sys
-import warnings
 from kalite import version
-from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
 
 ##############################
@@ -11,12 +8,11 @@ def package_selected(package_name):
     global CONFIG_PACKAGE
     return bool(CONFIG_PACKAGE) and bool(package_name) and package_name.lower() in CONFIG_PACKAGE
 
+
 # for extracting assessment item resources
 ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/%s/content/assessment.zip" % version.SHORTVERSION
 
-
 from .base import *
-
 
 CHERRYPY_PORT = HTTP_PORT
 
@@ -31,7 +27,6 @@ CONFIG_PACKAGE = getattr(local_settings, "CONFIG_PACKAGE", [])
 if isinstance(CONFIG_PACKAGE, basestring):
     CONFIG_PACKAGE = [CONFIG_PACKAGE]
 CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
-
 
 if CONFIG_PACKAGE:
     raise RemovedInKALite_v016_Error("CONFIG_PACKAGE is outdated, use a settings module from kalite.project.settings")
@@ -60,6 +55,7 @@ try:
     DEFAULT_ENCODING = DEFAULT_ENCODING
 except NameError:
     from django.conf import settings
+
     DEFAULT_ENCODING = settings.DEFAULT_ENCODING
 
 if sys.getdefaultencoding() != DEFAULT_ENCODING:

@@ -5,15 +5,15 @@ get the "Explore" recommendations.
 import datetime
 
 from django.test.client import RequestFactory
-
 from django.conf import settings
+
 from kalite.topic_tools.content_recommendation import get_explore_recommendations
 from kalite.testing.base import KALiteTestCase
 from kalite.facility.models import Facility, FacilityUser
 from kalite.main.models import ExerciseLog
 
-class TestExploreMethods(KALiteTestCase):
 
+class TestExploreMethods(KALiteTestCase):
     ORIGINAL_POINTS = 37
     ORIGINAL_ATTEMPTS = 3
     ORIGINAL_STREAK_PROGRESS = 20
@@ -39,7 +39,7 @@ class TestExploreMethods(KALiteTestCase):
         self.user1.set_password(self.PASSWORD)
         self.user1.save()
 
-        #add one exercise
+        # add one exercise
         self.original_exerciselog = ExerciseLog(exercise_id=self.EXERCISE_ID, user=self.user1)
         self.original_exerciselog.points = self.ORIGINAL_POINTS
         self.original_exerciselog.attempts = self.ORIGINAL_ATTEMPTS
@@ -48,13 +48,13 @@ class TestExploreMethods(KALiteTestCase):
         self.original_exerciselog.completion_timestamp = self.TIMESTAMP
         self.original_exerciselog.save()
 
-        #create a request factory for later instantiation of request
-        self.factory = RequestFactory() 
+        # create a request factory for later instantiation of request
+        self.factory = RequestFactory()
 
     def test_explore_overall(self):
         '''get_explore_recommendations()'''
 
-        #create a request object and set the language attribute
+        # create a request object and set the language attribute
         request = self.factory.get('/content_recommender?explore=true')
         request.language = settings.LANGUAGE_CODE
 

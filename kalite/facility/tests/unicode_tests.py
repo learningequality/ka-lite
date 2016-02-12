@@ -1,8 +1,6 @@
 """
 """
-import sys
 
-from django.conf import settings
 from django.utils import unittest
 
 from ..models import *
@@ -12,9 +10,9 @@ from securesync.models import *
 class SecuresyncUnicodeModelsTest(unittest.TestCase):
     """
     """
-    
+
     korean_string = unichr(54392)
-    
+
     def test_unicode_string(self):
         # Stand-alone classes
         dev = Device(name=self.korean_string)

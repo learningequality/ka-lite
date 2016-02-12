@@ -10,6 +10,7 @@ All settings for the topic_tools app should be defined here, they can
 only on django.conf.settings
 """
 import os
+
 from django.conf import settings
 
 CONTENT_DATABASE_ROOT = os.path.join(settings.USER_DATA_ROOT, "content_databases")

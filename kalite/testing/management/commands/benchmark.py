@@ -2,7 +2,6 @@
 Run benchmarks from the benchmark command
 """
 import threading
-import time
 from functools import partial
 from optparse import make_option
 
@@ -130,7 +129,6 @@ class Command(BaseCommand):
         else:
             raise CommandError("Unknown test case: %s;\nSelect from %s" % (args[0], self.class_map.keys()))
 
-
         # Now, use the class to make a lambda function
         good_keys = list(set(options.keys()) - set(["niters", "nclients", 'settings', 'pythonpath', 'traceback']))
 
@@ -138,7 +136,6 @@ class Command(BaseCommand):
         #   passing the lambda function
         threads = []
         for ti in range(int(options["nclients"])):
-
             # Eliminate unnecessary keys
             kwargs = dict((k, options[k]) for k in good_keys)
             kwargs["behavior_profile"] += ti  # each thread has a different behavior

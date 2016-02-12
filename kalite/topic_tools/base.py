@@ -16,23 +16,17 @@ and more.
 """
 import os
 import re
-import json
-import copy
 import glob
 
 from django.conf import settings as django_settings
+
 logging = django_settings.LOG
 
-from django.contrib import messages
-from django.db import DatabaseError
 from django.utils.translation import gettext as _
-
-from fle_utils.general import json_ascii_decoder
 
 from . import settings
 
 CACHE_VARS = []
-
 
 if not os.path.exists(settings.CHANNEL_DATA_PATH):
     logging.warning("Channel {channel} does not exist.".format(channel=settings.CHANNEL))
@@ -42,6 +36,7 @@ def database_exists(channel="khan", language="en", database_path=None):
     path = database_path or settings.CONTENT_DATABASE_PATH.format(channel=channel, language=language)
 
     return os.path.exists(path)
+
 
 def available_content_databases():
     """

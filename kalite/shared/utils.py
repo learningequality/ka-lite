@@ -1,5 +1,6 @@
 import os
 
+
 def open_json_or_yml(file_name):
     """Try to load either the JSON or YAML version of a file.
 

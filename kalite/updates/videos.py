@@ -1,11 +1,11 @@
 """
 """
-import os
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings;
+
+logging = settings.LOG
 
 from fle_utils import videos  # keep access to all functions
-from fle_utils.general import softload_json
 from fle_utils.videos import *  # get all into the current namespace, override some.
 
 

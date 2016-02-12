@@ -1,4 +1,3 @@
-import requests
 import os
 import urlparse
 import zipfile
@@ -6,12 +5,14 @@ import tempfile
 import sys
 import shutil
 from distutils.version import StrictVersion
-from fle_utils.general import ensure_dir
 from optparse import make_option
 
 from django.conf import settings as django_settings
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
+
+import requests
+from fle_utils.general import ensure_dir
 
 logging = django_settings.LOG
 
@@ -20,7 +21,6 @@ from kalite.contentload import settings
 
 
 class Command(BaseCommand):
-
     option_list = BaseCommand.option_list + (
         make_option("-f", "--force",
                     action="store_true",
@@ -40,11 +40,13 @@ class Command(BaseCommand):
             return
 
         if is_valid_url(ziplocation):  # url; download the zip
-            logging.info("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
+            logging.info(
+                "Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
             # this way we can download stuff larger than the device's RAM
             r = requests.get(ziplocation, prefetch=False)
             content_length = r.headers.get("Content-Length")
-            logging.info("Downloaded size: ", str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown")
+            logging.info("Downloaded size: ",
+                         str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown")
             sys.stdout.write("Downloading file...")
             sys.stdout.flush()
             f = tempfile.TemporaryFile("r+")
@@ -58,7 +60,7 @@ class Command(BaseCommand):
                     f.flush()
             f.seek(0)
             sys.stdout.write("\n")
-        else:                   # file; just open it normally
+        else:  # file; just open it normally
             f = open(ziplocation, "rb")
 
         logging.info("Unpacking...")

@@ -1,12 +1,9 @@
 from behave import *
-
 from django.core.urlresolvers import reverse
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
-import selenium.webdriver.support.expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 
-from kalite.testing.behave_helpers import build_url, find_css_class_with_wait, find_id_with_wait,\
+from kalite.testing.behave_helpers import build_url, find_css_class_with_wait, find_id_with_wait, \
     elem_is_invisible_with_wait, go_to_homepage
 
 
@@ -33,7 +30,6 @@ def step_impl(context):
 
 @then("I see a modal with step number {expected_num:d}")
 def step_impl(context, expected_num):
-
     def condition(driver):
         number_el = driver.find_element_by_class_name(STEP_NUMBER_CLASS)
         actual_num_text = number_el.text
@@ -106,5 +102,5 @@ def go_to_manage_page(context):
 
 
 def start_intro(context):
-    sp_elem = find_id_with_wait(context, STARTING_POINT_ID, wait_time=30) #WebElement
+    sp_elem = find_id_with_wait(context, STARTING_POINT_ID, wait_time=30)  # WebElement
     sp_elem.click()

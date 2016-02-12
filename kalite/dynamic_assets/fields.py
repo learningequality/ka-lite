@@ -62,4 +62,5 @@ class CharField(BaseField):
         if len(value) > self._max_len:
             raise ValidationError("Value for this IntegerField must be less than %d." % self._maximum)
         if self._choices is not None and value not in self._choice_set:
-            raise ValidationError("Value for this CharField must be one of the following: %s." % ", ".join(self._choice_set))
+            raise ValidationError(
+                "Value for this CharField must be one of the following: %s." % ", ".join(self._choice_set))

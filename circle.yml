@@ -18,6 +18,7 @@ dependencies:
 
 test:
   override:
+    - flake8 kalite
     - make assets
     - kalite start --traceback -v2
     - kalite status

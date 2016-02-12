@@ -10,13 +10,10 @@ from django.conf import settings
 
 from kalite.main.tests.base import MainTestCase
 from kalite.contentload.management.commands.channels import import_channel, base
-
 from fle_utils.general import ensure_dir
-import unittest
 
 
 class TestContentImportTopicTree(MainTestCase):
-
     extensions = [("pdf", "Document"), ("mp3", "Audio"), ("mp4", "Video")]
     metadata = ["title", "description", "author", "language"]
 
@@ -32,7 +29,6 @@ class TestContentImportTopicTree(MainTestCase):
             "path": os.path.join(settings.CONTENT_DATA_PATH, os.path.basename(self.tempdir)),
             "name": os.path.basename(self.tempdir),
         }
-
 
     def tearDown(self, *args, **kwargs):
         """
@@ -52,7 +48,8 @@ class TestContentImportTopicTree(MainTestCase):
             filekind = filetype[1]
             with open(os.path.join(os.path.dirname(self.tempdir), path, filename + ".%s" % extension), 'w') as f:
                 f.write(str(random.random()))
-            with open(os.path.join(os.path.dirname(self.tempdir), path, filename + ".%s" % extension + ".json"), 'w') as f:
+            with open(os.path.join(os.path.dirname(self.tempdir), path, filename + ".%s" % extension + ".json"),
+                      'w') as f:
                 json.dump(data, f)
             data["kind"] = filekind
             data["format"] = extension
@@ -69,7 +66,7 @@ class TestContentImportTopicTree(MainTestCase):
     def recursively_create_nodes(self, node):
         self.recursion_depth += 1
         if node["kind"] == "Topic":
-            for i in range(0,5):
+            for i in range(0, 5):
                 child = self.create_node(node["path"])
                 node["children"].append(child)
                 if self.recursion_depth < 6:
@@ -82,7 +79,12 @@ class TestContentImportTopicTree(MainTestCase):
             if key != "children":
                 if key == "slug" or key == "path":
                     value = unicode(value.lower())
-                self.assertEqual(value, generated.get(key, ""), "{key} not equal to generated {key}, {value} not equal {genvalue}".format(key=key, value=value, genvalue=generated.get(key, "")))
+                self.assertEqual(value, generated.get(key, ""),
+                                 "{key} not equal to generated {key}, {value} not equal {genvalue}".format(key=key,
+                                                                                                           value=value,
+                                                                                                           genvalue=generated.get(
+                                                                                                               key,
+                                                                                                               "")))
             else:
                 generated["children"] = sorted(generated["children"], key=operator.itemgetter("slug"))
                 for i, node in enumerate(value):
@@ -121,9 +123,12 @@ class TestContentImportTopicTree(MainTestCase):
         node_cache = []
         self.recursively_find_nodes(topic_tree, "kind", "Video", node_cache)
 
-        retrieve_API_data = lambda channel: (topic_tree, [], [], [])
+        def retrieve_API_data():
+            return topic_tree, [], [], []
 
-        topic_tree, exercises, assessment_items, contents = base.rebuild_topictree(whitewash_node_data=import_channel.whitewash_node_data, retrieve_API_data=retrieve_API_data, channel_data=import_channel.channel_data)
+        topic_tree, exercises, assessment_items, contents = base.rebuild_topictree(
+            whitewash_node_data=import_channel.whitewash_node_data, retrieve_API_data=retrieve_API_data,
+            channel_data=import_channel.channel_data)
 
         new_node_cache = []
         self.recursively_find_nodes(topic_tree, "kind", "Video", new_node_cache)

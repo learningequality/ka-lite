@@ -7,25 +7,11 @@ Here, these are focused on API tools from the website, including:
 * Showing the process ID (so that the server can be killed dynamically)
 """
 import cgi
-import os
-import datetime
 
-from django.conf import settings
 from django.contrib.messages.api import get_messages
-from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
-from django.utils import simplejson
 from django.utils.safestring import SafeString, SafeUnicode
-from django.utils.translation import ugettext as _
-from django.views.decorators.csrf import ensure_csrf_cookie
 
-from .api_forms import DateTimeForm
-from fle_utils.internet.decorators import api_handle_error_with_json
-from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonResponseMessageError
-from fle_utils.testing.decorators import allow_api_profiling
-from kalite import version
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog
-from kalite.shared.decorators.auth import require_admin
 
 
 # Functions below here focused on users

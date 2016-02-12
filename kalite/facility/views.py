@@ -1,11 +1,11 @@
 """
 """
-from annoying.decorators import render_to
-from annoying.functions import get_object_or_None
+from django import forms
+from django.conf import settings;
+
 from securesync.devices.views import *  # ARGH! TODO(aron): figure out what things are imported here, and import them specifically
 
-from django import forms
-from django.conf import settings; logging = settings.LOG
+logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -57,7 +57,8 @@ def facility_user_signup(request):
 
     if settings.DISABLE_SELF_ADMIN:
         # Users cannot create/edit their own data when UserRestricted
-        raise PermissionDenied(_("Please contact a coach or administrator to receive login information to this installation."))
+        raise PermissionDenied(
+            _("Please contact a coach or administrator to receive login information to this installation."))
     if settings.CENTRAL_SERVER:
         raise Http404(_("You may not sign up as a facility user on the central server."))
 
@@ -74,7 +75,8 @@ def edit_facility_user(request, ds, facility_user_id):
     """
     user_being_edited = get_object_or_404(FacilityUser, id=facility_user_id) or None
     title = _("Edit user %(username)s") % {"username": user_being_edited.username}
-    return _facility_user(request, user_being_edited=user_being_edited, is_teacher=user_being_edited.is_teacher, title=title)
+    return _facility_user(request, user_being_edited=user_being_edited, is_teacher=user_being_edited.is_teacher,
+                          title=title)
 
 
 @facility_required
@@ -95,7 +97,8 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
 
         form = FacilityUserForm(facility, data=request.POST, instance=user_being_edited)
         if not form.is_valid():
-            messages.error(request, _("There was a problem saving the information provided; please review errors below."))
+            messages.error(request,
+                           _("There was a problem saving the information provided; please review errors below."))
 
         else:
             # In case somebody tries to check the hidden 'is_teacher' field
@@ -114,18 +117,21 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
 
             # Editing another user
             elif not new_user:
-                messages.success(request, _("Changes saved for user '%(username)s'") % {"username": form.instance.get_name()})
+                messages.success(request,
+                                 _("Changes saved for user '%(username)s'") % {"username": form.instance.get_name()})
                 if request.next:
                     return HttpResponseRedirect(next)
 
             # New user created by admin
             elif request.is_admin or request.is_django_user:
-                messages.success(request, _("You successfully created user '%(username)s'") % {"username": form.instance.get_name()})
+                messages.success(request, _("You successfully created user '%(username)s'") % {
+                    "username": form.instance.get_name()})
                 if request.next:
                     return HttpResponseRedirect(next)
                 else:
                     zone_id = getattr(facility.get_zone(), "id", None)
-                    return HttpResponseRedirect(reverse("facility_management", kwargs={"zone_id": zone_id, "facility_id": facility.id}))
+                    return HttpResponseRedirect(
+                        reverse("facility_management", kwargs={"zone_id": zone_id, "facility_id": facility.id}))
 
             # New student signed up
             else:
@@ -145,7 +151,8 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
             "default_language": get_default_language(),
         })
 
-    if is_teacher or (not (request.is_admin or request.is_teacher) and FacilityGroup.objects.filter(facility=facility).count() == 0) or (not new_user and not (request.is_admin or request.is_teacher)):
+    if is_teacher or (not (request.is_admin or request.is_teacher) and FacilityGroup.objects.filter(
+            facility=facility).count() == 0) or (not new_user and not (request.is_admin or request.is_teacher)):
         form.fields['group'].widget = forms.HiddenInput()
     if Facility.objects.count() < 2 or (not new_user and not request.is_admin):
         form.fields['facility'].widget = forms.HiddenInput()
@@ -187,4 +194,3 @@ def group_edit(request, facility, group_id):
         "singlefacility": request.session["facility_count"] == 1,
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
-

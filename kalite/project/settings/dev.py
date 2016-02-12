@@ -37,7 +37,6 @@ CENTRAL_SERVER_URL = "%s://%s" % (SECURESYNC_PROTOCOL, CENTRAL_SERVER_HOST)
 if DEBUG:
     warnings.simplefilter('error', DeprecationWarning)
 
-
 INSTALLED_APPS += [
     'django_snippets',  # used in contact form and (debug) profiling middleware
     'debug_toolbar',

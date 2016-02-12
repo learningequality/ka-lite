@@ -2,7 +2,6 @@
 This is a command-line tool to execute functions helpful to testing.
 """
 from django.conf import settings
-
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db import DatabaseError
@@ -35,7 +34,8 @@ class Command(BaseCommand):
             logging.info("Setting up KA Lite; this may take a few minutes; please wait!\n")
             call_command("setup", interactive=False)
             # Double check the setup process worked ok.
-            assert Settings.get("database_version") == VERSION, "There was an error configuring the server. Please report the output of this command to Learning Equality."
+            assert Settings.get(
+                "database_version") == VERSION, "There was an error configuring the server. Please report the output of this command to Learning Equality."
 
     def handle(self, *args, **options):
 

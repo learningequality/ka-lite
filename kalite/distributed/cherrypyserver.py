@@ -3,14 +3,15 @@ import imp
 import os
 import urlparse
 
-import cherrypy
-from cherrypy.process import plugins
-
 import django
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 
+import cherrypy
+from cherrypy.process import plugins
+
 __all__ = ['DjangoAppPlugin']
+
 
 class DjangoAppPlugin(plugins.SimplePlugin):
     def __init__(self, bus):

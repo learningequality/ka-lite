@@ -2,22 +2,20 @@ import StringIO
 import os
 import zipfile
 
-import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import NoArgsCommand
+
+import requests
 from fle_utils.general import ensure_dir
-
 from kalite.version import SHORTVERSION
-
 
 CROWDIN_URL_TEMPLATE = "https://api.crowdin.com/api/project/{project_identifier}/download/{lang}.zip?key={project_key}"
 PSEUDOLANGUAGE = "en-US"
 
 
 class Command(NoArgsCommand):
-
     def handle_noargs(self, **kwargs):
 
         if not settings.IN_CONTEXT_LOCALIZED:

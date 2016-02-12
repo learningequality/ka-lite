@@ -1,15 +1,15 @@
 import copy
 import StringIO
 import os
-import requests
 import tempfile
 import zipfile
-from mock import patch, MagicMock, mock_open
 
+from mock import patch, MagicMock, mock_open
 from django.conf import settings
 from django.core.management import call_command
 from django.test.utils import override_settings
 
+import requests
 from kalite.testing.base import KALiteTestCase
 from kalite.contentload.management.commands import unpack_assessment_zip as mod
 from kalite import version
@@ -35,9 +35,8 @@ contentload_settings.KHAN_ASSESSMENT_ITEM_JSON_PATH = os.path.join(TEMP_CONTENT_
 
 @override_settings(CONTENT_ROOT=TEMP_CONTENT_PATH)
 class UnpackAssessmentZipCommandTests(KALiteTestCase):
-
     def setUp(self):
-        
+
         # Create a dummy assessment item zip
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
@@ -61,7 +60,7 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
         filename = "/fake/file/somewhere.zip"
         call_command("unpack_assessment_zip", filename)
-        self.assertEqual(mod.open.call_count, 0,  "open was called even if we should've skipped!")
+        self.assertEqual(mod.open.call_count, 0, "open was called even if we should've skipped!")
 
     @patch.object(requests, "get", autospec=True)
     def test_command_with_url(self, get_method):
@@ -90,7 +89,8 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
                     continue
                 else:
                     filename_path = os.path.join(mod.CONTENT_ROOT, filename)
-                    self.assertTrue(os.path.exists(filename_path), "%s wasn't extracted to %s" % (filename, mod.CONTENT_ROOT))
+                    self.assertTrue(os.path.exists(filename_path),
+                                    "%s wasn't extracted to %s" % (filename, mod.CONTENT_ROOT))
 
     def test_command_with_local_path(self):
         pass
@@ -98,7 +98,6 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
 @override_settings(CONTENT_ROOT=TEMP_CONTENT_PATH)
 class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
-
     def setUp(self):
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
@@ -118,7 +117,7 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         zipfile_instance = zipfile.ZipFile(open(self.zipfile_path, "r"), "r")
 
         zipfile_instance.extractall = MagicMock(side_effect=zipfile_instance.extractall)
-        
+
         from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT
         extract_dir = KHAN_ASSESSMENT_ITEM_ROOT
 

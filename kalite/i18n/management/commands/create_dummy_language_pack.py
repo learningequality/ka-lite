@@ -6,27 +6,26 @@ that. Make sure you have internet!
 
 """
 
-import accenting
 import json
 import os
-import polib
-import requests
 import sys
-import tempfile
 import zipfile
 from cStringIO import StringIO
 
+import polib
 from django.conf import settings
 from django.core.management.base import NoArgsCommand
 
+import accenting
+import requests
 from fle_utils.general import ensure_dir
 from kalite.i18n.base import get_language_pack_url, get_locale_path, update_jsi18n_file
 from kalite.version import VERSION
 
 logging = settings.LOG
 
-BASE_LANGUAGE_PACK = "de"       # language where we base the dummy langpack from
-TARGET_LANGUAGE_PACK = "eo"     # what the "dummy" language's language code. Will be. Sorry, Esperantists.
+BASE_LANGUAGE_PACK = "de"  # language where we base the dummy langpack from
+TARGET_LANGUAGE_PACK = "eo"  # what the "dummy" language's language code. Will be. Sorry, Esperantists.
 TARGET_LANGUAGE_DIR = get_locale_path(TARGET_LANGUAGE_PACK)
 MO_FILE_LOCATION = os.path.join(TARGET_LANGUAGE_DIR, "LC_MESSAGES")
 TARGET_LANGUAGE_METADATA_PATH = os.path.join(
@@ -36,13 +35,13 @@ TARGET_LANGUAGE_METADATA_PATH = os.path.join(
 
 
 class Command(NoArgsCommand):
-
     def handle_noargs(self, **options):
         logging.info("Creating a debugging language pack, with %s language code." % TARGET_LANGUAGE_PACK)
         langpack_zip = download_language_pack(BASE_LANGUAGE_PACK)
         django_mo_contents, djangojs_mo_contents = retrieve_mo_files(langpack_zip)
-        dummy_django_mo, dummy_djangojs_mo = (create_mofile_with_dummy_strings(django_mo_contents, filename="django.mo"),
-                                              create_mofile_with_dummy_strings(djangojs_mo_contents, filename="djangojs.mo"))
+        dummy_django_mo, dummy_djangojs_mo = (
+        create_mofile_with_dummy_strings(django_mo_contents, filename="django.mo"),
+        create_mofile_with_dummy_strings(djangojs_mo_contents, filename="djangojs.mo"))
         logging.debug("Creating i18n JS file for %s" % TARGET_LANGUAGE_PACK)
         update_jsi18n_file(code=TARGET_LANGUAGE_PACK)
         logging.info("Finished creating debugging language pack %s." % TARGET_LANGUAGE_PACK)
@@ -70,7 +69,6 @@ def retrieve_mo_files(langpack_zip):
 
 
 def create_mofile_with_dummy_strings(filecontents, filename):
-
     logging.debug("Creating %s if it does not exist yet." % MO_FILE_LOCATION)
     ensure_dir(MO_FILE_LOCATION)
 

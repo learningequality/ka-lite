@@ -1,6 +1,7 @@
 from optparse import make_option
 
 from django.conf import settings as django_settings
+
 logging = django_settings.LOG
 
 from kalite.topic_tools.content_models import annotate_content_models
@@ -11,7 +12,6 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-
     option_list = BaseCommand.option_list + (
         make_option("-d", "--database-path",
                     action="store",
@@ -31,7 +31,6 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **kwargs):
-
         language = kwargs["language"]
         channel = kwargs["channel"]
         # temporarily swap out the database path for the desired target

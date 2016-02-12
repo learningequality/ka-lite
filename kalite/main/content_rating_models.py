@@ -1,15 +1,13 @@
 import uuid
 
-from django.conf import settings
 from django.db import models
 
 from kalite.facility.models import FacilityUser
 from kalite.topic_tools.settings import CHANNEL
-
 from securesync.models import DeferredCountSyncedModel
 
-class ContentRating(DeferredCountSyncedModel):
 
+class ContentRating(DeferredCountSyncedModel):
     minversion = "0.15.0"
 
     class Meta:

@@ -1,15 +1,12 @@
-from fle_utils.django_utils.templatetags.my_filters import jsonify
-
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from fle_utils.django_utils.templatetags.my_filters import jsonify
 from kalite.dynamic_assets import DynamicSettingsBase, fields
 
 
 class DynamicSettingsModelsTests(TestCase):
-
     def test_can_define_new_dynamic_setting_instance(self):
-
         class DynamicSettings(DynamicSettingsBase):
             test_intsetting = fields.IntegerField(default=17, minimum=0, maximum=20)
             test_charsetting = fields.CharField(default="This is a test.")
@@ -18,7 +15,6 @@ class DynamicSettingsModelsTests(TestCase):
         s = DynamicSettings()
 
     def test_default_values_are_being_used(self):
-
         class DynamicSettings(DynamicSettingsBase):
             test_intsetting = fields.IntegerField(default=17, minimum=0, maximum=20)
             test_charsetting = fields.CharField(default="This is a test.")
@@ -31,7 +27,6 @@ class DynamicSettingsModelsTests(TestCase):
         self.assertEqual(s.test_boolsetting, True)
 
     def test_ds_must_be_json_serializable(self):
-
         class DynamicSettings(DynamicSettingsBase):
             test_intsetting = fields.IntegerField(default=17, minimum=0, maximum=20)
             test_charsetting = fields.CharField(default="This is a test.")
@@ -42,7 +37,6 @@ class DynamicSettingsModelsTests(TestCase):
         self.assertTrue("This is a test." in jsonify(s))
 
     def test_ds_fields_are_not_leaky_across_instances(self):
-
         class DynamicSettings(DynamicSettingsBase):
             test_intsetting = fields.IntegerField(default=17, minimum=0, maximum=20)
             test_charsetting = fields.CharField(default="This is a test.")
@@ -57,7 +51,6 @@ class DynamicSettingsModelsTests(TestCase):
 
 
 class FieldValidationTests(TestCase):
-
     def test_cant_instantiate_a_basefield(self):
 
         with self.assertRaises(NotImplementedError):

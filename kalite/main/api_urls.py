@@ -6,29 +6,29 @@ they're imported into the project's urls.py file.
 """
 from django.conf.urls import include, patterns, url
 
-from .api_resources import VideoLogResource, ExerciseLogResource, AttemptLogResource, ContentLogResource,\
+from .api_resources import VideoLogResource, ExerciseLogResource, AttemptLogResource, ContentLogResource, \
     AssessmentItemResource, ContentRatingResource
-
 
 urlpatterns = patterns(__package__ + '.api_views',
 
-    url(r'^', include(VideoLogResource().urls)),
-    url(r'^', include(ExerciseLogResource().urls)),
-    url(r'^', include(AttemptLogResource().urls)),
-    url(r'^', include(ContentLogResource().urls)),
-    # Retrieve assessment item data to render front-end Perseus Exercises
-    url(r'^', include(AssessmentItemResource().urls)),
-    url(r'^', include(ContentRatingResource().urls)),
-    
-    url(r'^content_recommender/?$', 'content_recommender', {}, 'content_recommender'),
+                       url(r'^', include(VideoLogResource().urls)),
+                       url(r'^', include(ExerciseLogResource().urls)),
+                       url(r'^', include(AttemptLogResource().urls)),
+                       url(r'^', include(ContentLogResource().urls)),
+                       # Retrieve assessment item data to render front-end Perseus Exercises
+                       url(r'^', include(AssessmentItemResource().urls)),
+                       url(r'^', include(ContentRatingResource().urls)),
 
-    # A flat data structure for building a graphical knowledge map
-    url(r'^topic_tree/(?P<channel>.*)/?$', 'topic_tree', {}, 'topic_tree'),
+                       url(r'^content_recommender/?$', 'content_recommender', {}, 'content_recommender'),
 
-    # An endpoint for querying any fully fleshed out content item.
-    url(r'^content/(?P<channel>\w+)/(?P<content_id>[^\s\/]+)/?$', 'content_item', {}, 'content_item'),
+                       # A flat data structure for building a graphical knowledge map
+                       url(r'^topic_tree/(?P<channel>.*)/?$', 'topic_tree', {}, 'topic_tree'),
 
-    # A search API endpoint
-    url(r'^search/(?P<channel>\w+)/$', 'search_api', {}, 'search_api'),
+                       # An endpoint for querying any fully fleshed out content item.
+                       url(r'^content/(?P<channel>\w+)/(?P<content_id>[^\s\/]+)/?$', 'content_item', {},
+                           'content_item'),
 
-)
+                       # A search API endpoint
+                       url(r'^search/(?P<channel>\w+)/$', 'search_api', {}, 'search_api'),
+
+                       )

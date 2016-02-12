@@ -2,11 +2,10 @@ import glob
 import json
 import os
 import re
-
 from optparse import make_option
+
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -15,7 +14,6 @@ from django.core.urlresolvers import reverse
 from django.utils.six import StringIO
 
 from securesync.models import Device, DeviceZone, Zone
-
 from fle_utils.general import ensure_dir
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins.facility_mixins import FacilityMixins
@@ -29,6 +27,7 @@ USER_TYPE_GUEST = "guest"
 USER_TYPE_STUDENT = "learner"
 
 log = settings.LOG
+
 
 class Command(BaseCommand):
     """
@@ -44,26 +43,26 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option('--from-str',
-            action='store',
-            dest='cl_str',
-            default=None,
-            help='Takes a JSON string instead of reading from the default file location.'),
+                    action='store',
+                    dest='cl_str',
+                    default=None,
+                    help='Takes a JSON string instead of reading from the default file location.'),
         make_option('--output-dir',
-            action='store',
-            dest='output_dir',
-            default=None,
-            help='Specify the output directory relative to the project base directory.'),
+                    action='store',
+                    dest='output_dir',
+                    default=None,
+                    help='Specify the output directory relative to the project base directory.'),
         make_option('--no-del',
-            action='store_true',
-            dest='no_del',
-            default=None,
-            help='Don\'t delete existing screenshots.'),
+                    action='store_true',
+                    dest='no_del',
+                    default=None,
+                    help='Don\'t delete existing screenshots.'),
         make_option('--lang',
-            action='store',
-            dest='language',
-            default=None,
-            help='Specify the language of the session, set by the "set_default_language" api endpoint.'),
-        )
+                    action='store',
+                    dest='language',
+                    default=None,
+                    help='Specify the language of the session, set by the "set_default_language" api endpoint.'),
+    )
 
     def handle(self, *args, **options):
         sc = Screenshot(**options)
@@ -94,11 +93,14 @@ def reset_sqlite_database(username=None, email=None, password=None, router=None,
 
         new_io = StringIO()
         call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
-        call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity, database="assessment_items")
+        call_command("syncdb", interactive=False, stdout=new_io, router=router, verbosity=verbosity,
+                     database="assessment_items")
         call_command("migrate", interactive=False, stdout=new_io, router=router, verbosity=verbosity)
-        call_command("generaterealdata", scenario_1=True, interactive=False, stdout=new_io, router=router, verbosity=verbosity)  # For coachreports pages
+        call_command("generaterealdata", scenario_1=True, interactive=False, stdout=new_io, router=router,
+                     verbosity=verbosity)  # For coachreports pages
         if username and email and password:
-            log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,)) if int(verbosity) > 0 else None
+            log.info('==> Creating superuser username==%s; email==%s ...' % (username, email,)) if int(
+                verbosity) > 0 else None
             call_command("createsuperuser", username=username, email=email,
                          interactive=False, stdout=new_io, router=router, verbosity=verbosity)
             admin_user = User.objects.get(username=username)
@@ -183,8 +185,8 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
         # make sure output path exists and is empty
         if kwargs['output_dir']:
-            self.output_path = os.path.join( os.path.realpath(os.path.join(settings.PROJECT_PATH, '..')),
-                                        kwargs['output_dir'])
+            self.output_path = os.path.join(os.path.realpath(os.path.join(settings.PROJECT_PATH, '..')),
+                                            kwargs['output_dir'])
         else:
             self.output_path = settings.SCREENSHOTS_OUTPUT_PATH
         ensure_dir(self.output_path)
@@ -199,12 +201,14 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
 
         # setup database to use and auto-create admin user
         self.loginfo("==> Setting-up database ...")
-        self.admin_user = reset_sqlite_database(self.admin_username, self.admin_email, self.default_password, verbosity=self.verbosity)
+        self.admin_user = reset_sqlite_database(self.admin_username, self.admin_email, self.default_password,
+                                                verbosity=self.verbosity)
         self.admin_pass = self.default_password
         if not self.admin_user:
             raise Exception("==> Did not successfully setup database!")
 
-        Facility.initialize_default_facility("Facility Dos")  # Default facility required to avoid pernicious facility selection page
+        Facility.initialize_default_facility(
+            "Facility Dos")  # Default facility required to avoid pernicious facility selection page
         facility = self.facility = Facility.objects.get(name="Facility Dos")
         self.create_student(username=self.student_username, password=self.default_password, facility=facility)
         self.create_teacher(username=self.coach_username, password=self.default_password, facility=facility)
@@ -224,7 +228,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         self.set_session_language(kwargs['language'])
 
         self.loginfo("==> Browser %s successfully setup with live_server_url %s." %
-                 (self.browser.name, self.live_server_url,))
+                     (self.browser.name, self.live_server_url,))
         self.loginfo("==> Saving screenshots to %s ..." % (settings.SCREENSHOTS_OUTPUT_PATH,))
 
     def set_session_language(self, lang_code):
@@ -232,16 +236,24 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         The language pack should already be downloaded, or the behavior is undefined.
         TODO: Handle the case when the language pack is not downloaded.
 
-        :param lang_code: A string with the language code or None. Value None is a no-op 
+        :param lang_code: A string with the language code or None. Value None is a no-op
         """
         if not lang_code:
             return
         self.browser.get(self.live_server_url + reverse("homepage"))
         self.browser_wait_for_js_object_exists("$")
         data = json.dumps({"lang": lang_code})
-        self.browser.execute_script("window.SUCCESS=false; $.ajax({type: \"POST\", url: \"%s\", data: '%s', contentType: \"application/json\", success: function(){window.SUCCESS=true}})" % (reverse("set_default_language"), data))
-        self.browser_wait_for_js_condition("window.SUCCESS")    
-        # Ensure the changes are loaded 
+        self.browser.execute_script(
+            "window.SUCCESS=false;"
+            "$.ajax("
+            "{type: \"POST\","
+            "url: \"%s\","
+            "data: '%s',"
+            "contentType: \"application/json\","
+            "success: function(){window.SUCCESS=true}})" % (reverse("set_default_language"), data)
+        )
+        self.browser_wait_for_js_condition("window.SUCCESS")
+        # Ensure the changes are loaded
         self.browser.get(self.live_server_url + reverse("homepage"))
 
     def validate_json_keys(self, shot):
@@ -257,7 +269,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
     def snap(self, slug, focus, note):
         filename = self.make_filename(slug=slug)
         self.loginfo('====> Snapping %s --titled-- "%s" --> %s%s ...' %
-                 (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
+                     (self.browser.current_url, self.browser.title, slug, settings.SCREENSHOTS_EXTENSION))
 
         if focus:
             self.browser_wait_for_js_object_exists("$")
@@ -359,6 +371,6 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         device = Device.get_own_device()
         deviceZone = DeviceZone(device=device, zone=zone)
         deviceZone.save()
-    
+
     def _undo_fake_registration(self):
         unregister_distributed_server()

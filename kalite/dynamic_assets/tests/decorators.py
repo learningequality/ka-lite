@@ -5,9 +5,7 @@ from .. import DynamicSettingsBase
 
 
 class DynamicSettingDecoratorTestCase(TestCase):
-
     def test_decorator_inserts_dynamic_settings(self):
-
         @dynamic_settings
         def test_view(request, ds):
             self.assertTrue(isinstance(ds, dict))

@@ -5,6 +5,6 @@ class UpdatesTestCase(KALiteTestCase):
     """
     Generic setup / teardown for updates tests
     """
+
     def setUp(self):
         super(UpdatesTestCase, self).setUp()
-

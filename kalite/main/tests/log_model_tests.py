@@ -6,7 +6,6 @@ from kalite.testing.base import KALiteTestCase
 
 
 class TestExerciseLogs(KALiteTestCase):
-
     ORIGINAL_POINTS = 37
     ORIGINAL_ATTEMPTS = 3
     NEW_POINTS = 22
@@ -34,10 +33,10 @@ class TestExerciseLogs(KALiteTestCase):
 
         # make sure the ExerciseLog was saved as intended
         self.assertEqual(exerciselog.points, self.ORIGINAL_POINTS, "The ExerciseLog's points have already changed.")
-        self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS, "The ExerciseLog's attempts have already changed.")
+        self.assertEqual(exerciselog.attempts, self.ORIGINAL_ATTEMPTS,
+                         "The ExerciseLog's attempts have already changed.")
 
     def test_exerciselog_update(self):
-
         # get a new reference to the existing ExerciseLog
         exerciselog = ExerciseLog.objects.get(id=self.original_exerciselog.id)
 
@@ -55,7 +54,6 @@ class TestExerciseLogs(KALiteTestCase):
 
     @unittest.skip("Auto-merging is not yet automatic, so skip this")
     def test_exerciselog_collision(self):
-
         # create a new exercise log with the same exercise_id and user, but different points/attempts
         exerciselog = ExerciseLog(exercise_id=self.EXERCISE_ID, user=self.user)
         exerciselog.points = self.NEW_POINTS
@@ -68,12 +66,13 @@ class TestExerciseLogs(KALiteTestCase):
         exerciselog2 = ExerciseLog.objects.get(id=self.original_exerciselog.id)
 
         # make sure the ExerciseLog has been properly merged
-        self.assertEqual(exerciselog.points, max(self.ORIGINAL_POINTS, self.NEW_POINTS), "The ExerciseLog's points were not properly merged.")
-        self.assertEqual(exerciselog.attempts, max(self.ORIGINAL_ATTEMPTS, self.NEW_ATTEMPTS), "The ExerciseLog's attempts have already changed.")
+        self.assertEqual(exerciselog.points, max(self.ORIGINAL_POINTS, self.NEW_POINTS),
+                         "The ExerciseLog's points were not properly merged.")
+        self.assertEqual(exerciselog.attempts, max(self.ORIGINAL_ATTEMPTS, self.NEW_ATTEMPTS),
+                         "The ExerciseLog's attempts have already changed.")
 
 
 class TestVideoLogs(KALiteTestCase):
-
     ORIGINAL_POINTS = 37
     ORIGINAL_SECONDS_WATCHED = 3
     NEW_POINTS = 22
@@ -101,10 +100,10 @@ class TestVideoLogs(KALiteTestCase):
 
         # make sure the VideoLog was created correctly
         self.assertEqual(videolog.points, self.ORIGINAL_POINTS, "The VideoLog's points have already changed.")
-        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED, "The VideoLog's total seconds watched have already changed.")
+        self.assertEqual(videolog.total_seconds_watched, self.ORIGINAL_SECONDS_WATCHED,
+                         "The VideoLog's total seconds watched have already changed.")
 
     def test_videolog_update(self):
-
         # get a new reference to the existing VideoLog
         videolog = VideoLog.objects.get(id=self.original_videolog.id)
 
@@ -118,11 +117,11 @@ class TestVideoLogs(KALiteTestCase):
 
         # make sure the VideoLog was updated
         self.assertEqual(videolog2.points, self.NEW_POINTS, "The VideoLog's points were not updated.")
-        self.assertEqual(videolog2.total_seconds_watched, self.NEW_SECONDS_WATCHED, "The VideoLog's total seconds watched were not updated.")
+        self.assertEqual(videolog2.total_seconds_watched, self.NEW_SECONDS_WATCHED,
+                         "The VideoLog's total seconds watched were not updated.")
 
     @unittest.skip("Auto-merging is not yet automatic, so skip this")
     def test_videolog_collision(self):
-
         # create a new video log with the same youtube_id and user, but different points/total seconds watched
         videolog = VideoLog(video_id=self.VIDEO_ID, youtube_id=self.YOUTUBE_ID, user=self.user)
         videolog.points = self.NEW_POINTS
@@ -135,5 +134,7 @@ class TestVideoLogs(KALiteTestCase):
         videolog2 = VideoLog.objects.get(id=self.original_videolog.id)
 
         # make sure the VideoLog has been properly merged
-        self.assertEqual(videolog.points, max(self.ORIGINAL_POINTS, self.NEW_POINTS), "The VideoLog's points were not properly merged.")
-        self.assertEqual(videolog.total_seconds_watched, max(self.ORIGINAL_ATTEMPTS, self.NEW_SECONDS_WATCHED), "The VideoLog's total seconds watched have already changed.")
+        self.assertEqual(videolog.points, max(self.ORIGINAL_POINTS, self.NEW_POINTS),
+                         "The VideoLog's points were not properly merged.")
+        self.assertEqual(videolog.total_seconds_watched, max(self.ORIGINAL_ATTEMPTS, self.NEW_SECONDS_WATCHED),
+                         "The VideoLog's total seconds watched have already changed.")

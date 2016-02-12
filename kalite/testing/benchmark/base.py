@@ -14,20 +14,21 @@ import platform
 import random
 import subprocess
 import time
+
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions, ui
+from django.conf import settings;
 
-from django.conf import settings; logging = settings.LOG
+logging = settings.LOG
 
 
 class Common(object):
-
     def __init__(self, comment=None, fixture=None, **kwargs):
 
         self.return_dict = {}
         self.return_dict['comment'] = comment
-        self.return_dict['class']=type(self).__name__
+        self.return_dict['class'] = type(self).__name__
         self.return_dict['uname'] = platform.uname()
         self.return_dict['fixture'] = fixture
         try:
@@ -36,9 +37,12 @@ class Common(object):
             self.verbosity = 1
 
         try:
-            branch = subprocess.Popen(["git", "describe", "--contains", "--all", "HEAD"], stdout=subprocess.PIPE).communicate()[0]
+            branch = \
+            subprocess.Popen(["git", "describe", "--contains", "--all", "HEAD"], stdout=subprocess.PIPE).communicate()[
+                0]
             self.return_dict['branch'] = branch[:-1]
-            head = subprocess.Popen(["git", "log", "--pretty=oneline", "--abbrev-commit", "--max-count=1"], stdout=subprocess.PIPE).communicate()[0]
+            head = subprocess.Popen(["git", "log", "--pretty=oneline", "--abbrev-commit", "--max-count=1"],
+                                    stdout=subprocess.PIPE).communicate()[0]
             self.return_dict['head'] = head[:-1]
         except:
             self.return_dict['branch'] = None
@@ -58,7 +62,8 @@ class Common(object):
 
     def execute(self, iterations=1):
 
-        if iterations < 1: iterations = 1
+        if iterations < 1:
+            iterations = 1
 
         if hasattr(self, 'max_iterations'):
             if iterations > self.max_iterations:
@@ -70,27 +75,27 @@ class Common(object):
         self.return_dict['exceptions'] = {}
 
         for i in range(iterations):
-            self.return_dict['exceptions'][i+1] = []
+            self.return_dict['exceptions'][i + 1] = []
             start_time = time.time()
             try:
                 self._execute()
-                self.return_dict['individual_elapsed'][i+1] = time.time() - start_time
+                self.return_dict['individual_elapsed'][i + 1] = time.time() - start_time
             except Exception as e:
-                self.return_dict['individual_elapsed'][i+1] = None
-                self.return_dict['exceptions'][i+1].append(e)
+                self.return_dict['individual_elapsed'][i + 1] = None
+                self.return_dict['exceptions'][i + 1].append(e)
                 logging.error("Exception running execute: %s" % e)
 
             try:
-                self.return_dict['post_execute_info'][i+1] = self._get_post_execute_info()
+                self.return_dict['post_execute_info'][i + 1] = self._get_post_execute_info()
             except Exception as e:
-                self.return_dict['post_execute_info'][i+1] = None
-                self.return_dict['exceptions'][i+1].append(e)
+                self.return_dict['post_execute_info'][i + 1] = None
+                self.return_dict['exceptions'][i + 1].append(e)
                 logging.error("Exception getting execute info: %s" % e)
 
-
-
-        mean = lambda vals: sum(vals)/float(len(vals)) if len(vals) else None
-        self.return_dict['average_elapsed'] = mean([v for v in self.return_dict['individual_elapsed'].values() if v is not None])
+        def mean(vals):
+            return sum(vals) / float(len(vals)) if len(vals) else None
+        self.return_dict['average_elapsed'] = mean(
+            [v for v in self.return_dict['individual_elapsed'].values() if v is not None])
 
         try:
             self._teardown()
@@ -104,14 +109,19 @@ class Common(object):
         All benchmarks can take a random seed,
         all should clean / recompile
         """
-        self.random=random.Random() #thread-safe local instance of random
+        self.random = random.Random()  # thread-safe local instance of random
         if behavior_profile:
             self.behavior_profile = behavior_profile
             self.random.seed(self.behavior_profile)
 
-    def _execute(self): pass
-    def _teardown(self): pass
-    def _get_post_execute_info(self): pass
+    def _execute(self):
+        pass
+
+    def _teardown(self):
+        pass
+
+    def _get_post_execute_info(self):
+        pass
 
 
 class UserCommon(Common):

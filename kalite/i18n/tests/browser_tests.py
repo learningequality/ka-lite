@@ -1,6 +1,4 @@
 # encoding: UTF-8
-from django.conf import settings
-from django.utils import unittest
 
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
@@ -9,7 +7,6 @@ from kalite.i18n.tests.base import I18nTestCase
 
 
 class BrowserLanguageSwitchingTests(BrowserActionMixins, CreateAdminMixin, I18nTestCase, KALiteBrowserTestCase):
-
     TEST_LANGUAGES = ['it', 'pt-BR']
 
     def setUp(self):

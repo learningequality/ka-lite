@@ -2,7 +2,7 @@
 Default settings for Raspberry Pi
 """
 
-from .base import *
+from .base import *  # @UnusedWildImport noqa
 
 # nginx proxy will normally be on 8008 and production port on 7007
 # You need to specify kalite start --port=7007 to run KA Lite
@@ -19,4 +19,3 @@ PASSWORD_ITERATIONS_STUDENT = 500
 # This no-op option is used for a couple of views that have user information
 # specifically targeted the RPi users.
 USING_RASPBERRY_PI = True
-

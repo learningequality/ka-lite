@@ -1,12 +1,11 @@
 """
 """
-from annoying.functions import get_object_or_None
-
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
+from annoying.functions import get_object_or_None
 from kalite.facility.decorators import facility_from_request
 from kalite.facility.models import FacilityUser
 from securesync.models import Device, Zone
@@ -18,24 +17,31 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     """
     assert handler or request
     if not handler:
-        handler = lambda request, user, *args, **kwargs: user
+        def handler(request, user, *args, **kwargs):
+            return user
 
     def get_user_from_request_wrapper_fn(request, *args, **kwargs):
-        user = get_object_or_None(FacilityUser, id=request.REQUEST["user"]) if "user" in request.REQUEST else None  # don't hit DB if we don't have to
+        user = get_object_or_None(FacilityUser, id=request.REQUEST[
+            "user"]) if "user" in request.REQUEST else None  # don't hit DB if we don't have to
         user = user or request.session.get("facility_user")
         return handler(request, *args, user=user, **kwargs)
-    return get_user_from_request_wrapper_fn if not request else get_user_from_request_wrapper_fn(request=request, *args, **kwargs)
+
+    return get_user_from_request_wrapper_fn if not request else get_user_from_request_wrapper_fn(request=request, *args,
+                                                                                                 **kwargs)
+
 
 def require_login(handler):
     """
    (Level 1) Make sure that a user is logged in to the distributed server.
     """
+
     def require_login_wrapper_fn(request, *args, **kwargs):
         if getattr(request, "is_logged_in", False):  # requires the securesync.middleware.AuthFlags middleware be hit
             return handler(request, *args, **kwargs)
 
         # Failed.  Send different response for ajax vs non-ajax requests.
         raise PermissionDenied(_("You must be logged in to access this page."))
+
     return require_login_wrapper_fn
 
 
@@ -66,8 +72,6 @@ def require_admin(handler):
     return require_admin_wrapper_fn
 
 
-
-
 def require_authorized_access_to_student_data(handler):
     """
     WARNING: this is a crappy function with a crappy name.
@@ -95,8 +99,10 @@ def require_authorized_access_to_student_data(handler):
                 if request.session.get("facility_user") == user:
                     return handler(request, *args, **kwargs)
                 else:
-                    raise PermissionDenied(_("You requested information for a user that you are not authorized to view."))
+                    raise PermissionDenied(
+                        _("You requested information for a user that you are not authorized to view."))
             return require_admin(handler)
+
         return require_authorized_access_to_student_data_wrapper_fn_distributed
 
 
@@ -129,7 +135,6 @@ def require_authorized_admin(handler):
         if logged_in_user.is_superuser:
             return handler(request, *args, **kwargs)
 
-
         # Objects we're looking to verify
         org = None
         org_id = kwargs.get("org_id")
@@ -151,7 +156,8 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = device.get_zone()
                 if not zone:
-                    raise PermissionDenied(_("You requested device information for a device without a sharing network.  Only super users can do this!"))
+                    raise PermissionDenied(_(
+                        "You requested device information for a device without a sharing network.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate device through zone
@@ -159,7 +165,8 @@ def require_authorized_admin(handler):
             if not zone_id:
                 zone = facility.get_zone()
                 if not zone:
-                    raise PermissionDenied(_("You requested facility information for a facility with no sharing network.  Only super users can do this!"))
+                    raise PermissionDenied(_(
+                        "You requested facility information for a facility with no sharing network.  Only super users can do this!"))
                 zone_id = zone.pk
 
         # Validate zone through org
@@ -170,12 +177,14 @@ def require_authorized_admin(handler):
                 for org in Organization.from_zone(zone):
                     if org.is_member(logged_in_user):
                         return handler(request, *args, **kwargs)
-                raise PermissionDenied(_("You requested information from an organization that you're not authorized on."))
+                raise PermissionDenied(
+                    _("You requested information from an organization that you're not authorized on."))
 
         if org_id and org_id != "new":
             org = get_object_or_404(Organization, pk=org_id)
             if not org.is_member(logged_in_user):
-                raise PermissionDenied(_("You requested information from an organization that you're not authorized on."))
+                raise PermissionDenied(
+                    _("You requested information from an organization that you're not authorized on."))
             elif zone_id and zone and org.zones.filter(pk=zone.pk).count() == 0:
                 raise PermissionDenied(_("This organization is not linked to the requested sharing network."))
 
@@ -195,9 +204,11 @@ def require_superuser(handler):
     ***
 
     """
+
     def require_superuser_wrapper_fn(request, *args, **kwargs):
-        if getattr(request.user, is_superuser, False):
+        if getattr(request.user, "is_superuser", False):
             return handler(request, *args, **kwargs)
         else:
             raise PermissionDenied(_("You must be logged in as a superuser to access this endpoint."))
+
     return require_superuser_wrapper_fn

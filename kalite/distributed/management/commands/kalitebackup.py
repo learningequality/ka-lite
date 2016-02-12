@@ -7,15 +7,14 @@ from django.conf import settings
 
 from kalite.distributed import backup
 
-
 try:
     os.makedirs(settings.BACKUP_DIRPATH)
 except OSError:
     if not os.path.isdir(settings.BACKUP_DIRPATH):
         raise
 
-class Command(BaseCommand):
 
+class Command(BaseCommand):
     help = "Perform a backup."
     option_list = BaseCommand.option_list + (
         make_option(
@@ -23,7 +22,7 @@ class Command(BaseCommand):
             dest='BACKUP_DIRPATH',
             default=settings.BACKUP_DIRPATH,
             help="File path"),
-        )
+    )
 
     def handle(self, *args, **options):
         try:

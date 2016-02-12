@@ -1,20 +1,17 @@
 """
 """
 import datetime
-import dateutil.parser
 import json
 import os
-import re
 import math
-from annoying.functions import get_object_or_None
-from collections_local_copy import defaultdict
 
-from django.conf import settings; logging = settings.LOG
-from django.core.management import call_command
+import dateutil.parser
+from django.conf import settings;
+
+logging = settings.LOG
 from django.shortcuts import get_object_or_404
 from django.utils import simplejson
 from django.utils.timezone import get_current_timezone, make_naive
-from django.utils import translation
 from django.utils.translation import ugettext as _
 
 from .videos import delete_downloaded_files
@@ -23,14 +20,14 @@ from .views import get_installed_language_packs
 from .download_track import VideoQueue
 from fle_utils.chronograph.utils import force_job
 from fle_utils.django_utils.command import call_command_async
-from fle_utils.general import isnumeric, break_into_chunks, softload_json
+from fle_utils.general import isnumeric
 from fle_utils.internet.decorators import api_handle_error_with_json
 from fle_utils.internet.classes import JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess
 from fle_utils.orderedset import OrderedSet
 from kalite.i18n.base import lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools.settings import CHANNEL
-from kalite.topic_tools.content_models import get_topic_update_nodes, get_download_youtube_ids, annotate_content_models_by_youtube_id
+from kalite.topic_tools.content_models import get_topic_update_nodes, get_download_youtube_ids, \
+    annotate_content_models_by_youtube_id
 
 
 def process_log_from_request(handler):
@@ -68,6 +65,7 @@ def process_log_from_request(handler):
             return JsonResponseMessageError(_("Must specify process_id or process_name"), status=400)
 
         return handler(request, process_log, *args, **kwargs)
+
     return wrapper_fn_pfr
 
 
@@ -163,7 +161,6 @@ def delete_videos(request):
 @require_admin
 @api_handle_error_with_json
 def cancel_video_download(request):
-
     force_job("videodownload", stop=True, locale=request.language)
 
     queue = VideoQueue()
@@ -176,7 +173,6 @@ def cancel_video_download(request):
 @require_admin
 @api_handle_error_with_json
 def video_scan(request):
-
     force_job("videoscan", _("Scan for Videos"), language=request.language)
 
     return JsonResponseMessageSuccess(_("Scanning for videos started."))
@@ -198,7 +194,8 @@ def start_languagepack_download(request):
 
     force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
 
-    return JsonResponseMessageSuccess(_("Successfully started language pack download for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
+    return JsonResponseMessageSuccess(_("Successfully started language pack download for %(lang_name)s.") % {
+        "lang_name": get_language_name(lang_code)})
 
 
 @require_admin
@@ -211,15 +208,15 @@ def delete_language_pack(request):
     lang_code = simplejson.loads(request.body or "{}").get("lang")
     delete_language(lang_code)
 
-    return JsonResponse({"success": _("Successfully deleted language pack for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)}})
+    return JsonResponse({"success": _("Successfully deleted language pack for %(lang_name)s.") % {
+        "lang_name": get_language_name(lang_code)}})
 
 
 @require_admin
 @api_handle_error_with_json
 def get_update_topic_tree(request, lang_code=None):
-
     parent = request.GET.get("parent")
-    lang_code = lang_code or request.language      # Get annotations for the current language.
+    lang_code = lang_code or request.language  # Get annotations for the current language.
 
     return JsonResponse(get_topic_update_nodes(parent=parent, language=lang_code))
 

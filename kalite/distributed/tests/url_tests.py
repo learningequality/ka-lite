@@ -5,14 +5,14 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
+import importlib
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import Client
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
-
-import importlib
 
 
 class UrlTestCases(KALiteTestCase):
@@ -21,13 +21,13 @@ class UrlTestCases(KALiteTestCase):
 
     def validate_url(self, url, status_code=200, find_str=None):
         resp = Client().get(url)
-        self.assertEquals(resp.status_code, status_code, "%s (check status code=%d != %d)" % (url, status_code, resp.status_code))
+        self.assertEquals(resp.status_code, status_code,
+                          "%s (check status code=%d != %d)" % (url, status_code, resp.status_code))
         if find_str is not None:
             self.assertTrue(find_str in resp.content, "%s (check content)" % url)
 
-
     def test_urls(self):
-        settings.DEBUG=False
+        settings.DEBUG = False
         self.validate_url('/')
         self.validate_url(reverse('facility_user_signup'), status_code=302)
         self.validate_url('/learn/')
@@ -36,9 +36,7 @@ class UrlTestCases(KALiteTestCase):
         self.validate_url('/accounts/register/', status_code=404)
 
 
-
 class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
-
     def setUp(self):
         super(AllUrlsTest, self).setUp()
 
@@ -46,7 +44,7 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
         self.admin = self.create_admin(**self.admin_data)
 
     def test_responses(self, allowed_http_codes=None,
-            credentials=None, logout_url="", default_kwargs=None, quiet=False):
+                       credentials=None, logout_url="", default_kwargs=None, quiet=False):
         """
         This is a very liberal test, we are mostly just concerned with making sure
         that no pages throw errors (500).
@@ -85,6 +83,7 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
         if credentials or self.admin_data:
             credentials = credentials or self.admin_data
             self.client.login(**credentials)
+
         def check_urls(urlpatterns, prefix=''):
             for pattern in urlpatterns:
                 if hasattr(pattern, 'url_patterns'):
@@ -103,7 +102,7 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
                     # the url expects parameters
                     # use default_kwargs supplied
                     if regex.groups > len(regex.groupindex.keys()) \
-                        or set(regex.groupindex.keys()) - set(default_kwargs.keys()):
+                            or set(regex.groupindex.keys()) - set(default_kwargs.keys()):
                         # there are positional parameters OR
                         # keyword parameters that are not supplied in default_kwargs
                         # so we skip the url
@@ -123,8 +122,8 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
                     print("testing url: {0}".format(url))
                     response = self.client.get(url)
                     self.assertIn(response.status_code, allowed_http_codes,
-                        "{url} gave status code {status_code}".format(
-                            url=url, status_code=response.status_code))
+                                  "{url} gave status code {status_code}".format(
+                                      url=url, status_code=response.status_code))
                     # print status code if it is not 200
                     status = "" if response.status_code == 200 else str(response.status_code) + " "
                     if not quiet:
@@ -135,4 +134,5 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
                 else:
                     if not quiet:
                         print("SKIP " + regex.pattern + " " + fullname)
+
         check_urls(module.urlpatterns)

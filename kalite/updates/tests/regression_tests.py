@@ -2,11 +2,10 @@ from django.conf import settings
 from django.test.utils import override_settings
 
 from fle_utils.internet.functions import am_i_online
-
 from securesync.models import Device
-
 from kalite.testing.base import KALiteClientTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
+
 
 class RegistrationRedirectTestCase(CreateAdminMixin, KALiteClientTestCase):
     """

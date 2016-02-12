@@ -2,38 +2,33 @@ import json
 
 from django.conf import settings
 from django.test.utils import override_settings
-
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from kalite.testing.base import KALiteBrowserTestCase, KALiteClientTestCase, KALiteTestCase
-
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
-
 logging = settings.LOG
 
 
 class DeviceRegistrationTests(FacilityMixins,
-                       StudentProgressMixin,
-                       BrowserActionMixins,
-                       CreateZoneMixin,
-                       CreateAdminMixin,
-                       KALiteBrowserTestCase):
-
+                              StudentProgressMixin,
+                              BrowserActionMixins,
+                              CreateZoneMixin,
+                              CreateAdminMixin,
+                              KALiteBrowserTestCase):
     def setUp(self):
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
 
         super(DeviceRegistrationTests, self).setUp()
-
 
     def test_device_registration_availability(self):
         """
@@ -46,11 +41,10 @@ class DeviceRegistrationTests(FacilityMixins,
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
         element = self.browser.find_element_by_id('not-registered')
         try:
-             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+            WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
         except TimeoutException:
-             pass
+            pass
         self.assertTrue(element.is_displayed())
-
 
     def test_device_already_register(self):
         """
@@ -65,7 +59,7 @@ class DeviceRegistrationTests(FacilityMixins,
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
         element = self.browser.find_element_by_id('force-sync')
         try:
-             WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
+            WebDriverWait(self.browser, 0.7).until(EC.visibility_of(element))
         except TimeoutException:
             pass
         self.assertTrue(element.is_displayed())
@@ -75,7 +69,6 @@ class FacilityControlTests(FacilityMixins,
                            CreateAdminMixin,
                            BrowserActionMixins,
                            KALiteBrowserTestCase):
-
     def setUp(self):
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
@@ -90,7 +83,6 @@ class FacilityControlTests(FacilityMixins,
 
     #     selector = '.facility-delete-link'
     #     self.browser_click_and_accept(selector, text=facility_name)
-
 
     def test_teachers_have_no_facility_delete_button(self):
         facility_name = 'should-not-be-deleted'
@@ -140,10 +132,9 @@ class FacilityControlTests(FacilityMixins,
                                    password=teacher_password,
                                    facility_name=facility_name)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
-        #should raise NoSuchElementException if there is (incorrectly) no facility no with the warning class
+        # should raise NoSuchElementException if there is (incorrectly) no facility no with the warning class
         self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
 
-        
     def test_facility_with_empty_string_metadata(self):
         facility_name = 'empy-string-metadata'
         self.fac = self.create_facility(name=facility_name)
@@ -160,7 +151,7 @@ class FacilityControlTests(FacilityMixins,
                                    password=teacher_password,
                                    facility_name=facility_name)
         self.browse_to(self.reverse('zone_redirect'))  # zone_redirect so it will bring us to the right zone
-        #should raise NoSuchElementException if there is (incorrectly) no facility no with the warning class
+        # should raise NoSuchElementException if there is (incorrectly) no facility no with the warning class
         self.browser.find_element_by_xpath('//*[@id="facilities-table"]/table/tbody/tr[@class="warning"]')
 
 
@@ -168,7 +159,6 @@ class GroupControlTests(FacilityMixins,
                         CreateAdminMixin,
                         BrowserActionMixins,
                         KALiteBrowserTestCase):
-
     def setUp(self):
         self.facility = self.create_facility()
 
@@ -240,7 +230,9 @@ class GroupControlTests(FacilityMixins,
 
         self.browser.refresh()
 
-        self.assertNotEqual(self.browser.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]').get_attribute("checked"), u'true')
+        self.assertNotEqual(
+            self.browser.find_element_by_xpath('.//input[@type="checkbox" and @value="#groups"]').get_attribute(
+                "checked"), u'true')
 
 
 @override_settings(RESTRICTED_TEACHER_PERMISSIONS=True)
@@ -248,7 +240,6 @@ class RestrictedTeacherTests(FacilityMixins,
                              BrowserActionMixins,
                              KALiteClientTestCase,
                              KALiteBrowserTestCase):
-
     def setUp(self):
         super(RestrictedTeacherTests, self).setUp()
 
@@ -267,7 +258,8 @@ class RestrictedTeacherTests(FacilityMixins,
                                    facility_name=self.facility.name)
 
         # subtest for making sure they don't see the create facility button
-        self.browse_to(self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": facility_to_edit.id}))
+        self.browse_to(
+            self.reverse("facility_management", kwargs={"zone_id": None, "facility_id": facility_to_edit.id}))
         elem = self.browser.find_element_by_css_selector('a.edit-facility')
         self.assertEquals(elem.value_of_css_property("display"), "none", "edit-facility is still displayed!")
 
@@ -278,7 +270,8 @@ class RestrictedTeacherTests(FacilityMixins,
                                         "password": self.teacher_password},
                                   facility=self.facility)
         resp = self.client.get(self.reverse("facility_form", kwargs={"facility_id": facility_to_edit.id}))
-        self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
+        self.assertEqual(resp.status_code, 403,
+                         "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
     def test_teacher_cant_create_facilities(self):
         self.browser_login_teacher(username=self.teacher_username,
@@ -297,7 +290,8 @@ class RestrictedTeacherTests(FacilityMixins,
                                         "password": self.teacher_password},
                                   facility=self.facility)
         resp = self.client.get(self.reverse("add_facility", kwargs={"zone_id": None}))
-        self.assertEqual(resp.status_code, 403, "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
+        self.assertEqual(resp.status_code, 403,
+                         "Teacher was still authorized to delete facilities; status code is %s" % resp.status_code)
 
     def test_teacher_cant_create_students(self):
         self.browser_login_teacher(username=self.teacher_username,
@@ -316,7 +310,8 @@ class RestrictedTeacherTests(FacilityMixins,
                                         "password": self.teacher_password},
                                   facility=self.facility)
         resp = self.client.get(self.reverse("add_facility_student"))
-        self.assertEqual(resp.status_code, 403, "Teacher was still authorized to create students; status code is %s" % resp.status_code)
+        self.assertEqual(resp.status_code, 403,
+                         "Teacher was still authorized to create students; status code is %s" % resp.status_code)
 
     def test_teacher_can_edit_students(self):
         self.browser_login_teacher(username=self.teacher_username,
@@ -341,7 +336,8 @@ class RestrictedTeacherTests(FacilityMixins,
                                         "password": self.teacher_password},
                                   facility=self.facility)
         resp = self.client.get(self.reverse("edit_facility_user", kwargs={"facility_user_id": self.student.id}))
-        self.assertEqual(resp.status_code, 200, "Teacher was not authorized to edit students; status code is %s" % resp.status_code)
+        self.assertEqual(resp.status_code, 200,
+                         "Teacher was not authorized to edit students; status code is %s" % resp.status_code)
 
     def test_teacher_cant_delete_students(self):
         self.browser_login_teacher(username=self.teacher_username,
@@ -360,7 +356,6 @@ class CSVExportTestSetup(FacilityMixins,
                          CreateZoneMixin,
                          CreateAdminMixin,
                          KALiteTestCase):
-
     def setUp(self):
         super(CSVExportTestSetup, self).setUp()
 
@@ -389,10 +384,12 @@ class CSVExportTestSetup(FacilityMixins,
         self.admin = self.create_admin(**self.admin_data)
 
         # base urls
-        self.distributed_data_export_url = "%s%s%s" % (self.reverse("data_export"), "?zone_id=", self.facility.get_zone().id)
+        self.distributed_data_export_url = "%s%s%s" % (
+        self.reverse("data_export"), "?zone_id=", self.facility.get_zone().id)
         self.api_facility_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "facility"})
         self.api_group_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "group"})
-        self.api_facility_user_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "facility_user_csv"})
+        self.api_facility_user_csv_url = self.reverse("api_dispatch_list",
+                                                      kwargs={"resource_name": "facility_user_csv"})
         self.api_test_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "test_log_csv"})
         self.api_attempt_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "attempt_log_csv"})
         self.api_exercise_log_csv_url = self.reverse("api_dispatch_list", kwargs={"resource_name": "exercise_log_csv"})
@@ -400,7 +397,6 @@ class CSVExportTestSetup(FacilityMixins,
 
 
 class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
-
     def test_api_auth_super_admin(self):
         # Super admin can access everything
         self.client.login(username='admin', password='admin')
@@ -408,15 +404,20 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertTrue(facility_resp.get("objects"), "Authorization error")
         group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
         self.assertTrue(group_resp.get("objects"), "Authorization error")
-        user_csv_resp = json.loads(self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
+        user_csv_resp = json.loads(
+            self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
         self.assertTrue(user_csv_resp.get("objects"), "Authorization error")
-        attempt_log_csv_resp = json.loads(self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id).content)
+        attempt_log_csv_resp = json.loads(
+            self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id).content)
         self.assertTrue(attempt_log_csv_resp.get("objects"), "Authorization error")
-        test_log_csv_resp = json.loads(self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id).content)
+        test_log_csv_resp = json.loads(
+            self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id).content)
         self.assertTrue(test_log_csv_resp.get("objects"), "Authorization error")
-        exercise_log_csv = json.loads(self.client.get(self.api_exercise_log_csv_url + "?group_id=" + self.group.id).content)
+        exercise_log_csv = json.loads(
+            self.client.get(self.api_exercise_log_csv_url + "?group_id=" + self.group.id).content)
         self.assertTrue(exercise_log_csv.get("objects"), "Authorization error")
-        device_log_csv_resp = json.loads(self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id).content)
+        device_log_csv_resp = json.loads(
+            self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id).content)
         self.assertTrue(device_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
@@ -427,15 +428,20 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         self.assertTrue(facility_resp.get("objects"), "Authorization error")
         group_resp = json.loads(self.client.get(self.api_group_url + "?facility_id=" + self.facility.id).content)
         self.assertTrue(group_resp.get("objects"), "Authorization error")
-        user_csv_resp = json.loads(self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
+        user_csv_resp = json.loads(
+            self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id).content)
         self.assertTrue(user_csv_resp.get("objects"), "Authorization error")
-        attempt_log_csv_resp = json.loads(self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id).content)
+        attempt_log_csv_resp = json.loads(
+            self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id).content)
         self.assertTrue(attempt_log_csv_resp.get("objects"), "Authorization error")
-        test_log_csv_resp = json.loads(self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id).content)
+        test_log_csv_resp = json.loads(
+            self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id).content)
         self.assertTrue(test_log_csv_resp.get("objects"), "Authorization error")
-        exercise_log_csv = json.loads(self.client.get(self.api_exercise_log_csv_url + "?group_id=" + self.group.id).content)
+        exercise_log_csv = json.loads(
+            self.client.get(self.api_exercise_log_csv_url + "?group_id=" + self.group.id).content)
         self.assertTrue(exercise_log_csv.get("objects"), "Authorization error")
-        device_log_csv_resp = json.loads(self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id).content)
+        device_log_csv_resp = json.loads(
+            self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id).content)
         self.assertTrue(device_log_csv_resp.get("objects"), "Authorization error")
         self.client.logout()
 
@@ -475,7 +481,6 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
         device_log_csv_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id)
         self.assertFalse(device_log_csv_resp.get("objects"), "Authorization error")
 
-
     def test_facility_endpoint(self):
         self.client.login(username='admin', password='admin')
         facility_resp = json.loads(self.client.get(self.api_facility_url + "?zone_id=" + self.zone.id).content)
@@ -496,66 +501,70 @@ class CSVExportAPITests(CSVExportTestSetup, KALiteClientTestCase):
     def test_facility_user_csv_endpoint(self):
         # Test filtering by facility
         self.client.login(username='admin', password='admin')
-        facility_filtered_resp = self.client.get(self.api_facility_user_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
+        facility_filtered_resp = self.client.get(
+            self.api_facility_user_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
         rows = filter(None, facility_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 4, "API response incorrect")
 
         # Test filtering by group
-        group_filtered_resp = self.client.get(self.api_facility_user_csv_url + "?group_id=" + self.group.id + "&format=csv").content
+        group_filtered_resp = self.client.get(
+            self.api_facility_user_csv_url + "?group_id=" + self.group.id + "&format=csv").content
         rows = filter(None, group_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
         self.client.logout()
-
 
     def test_test_log_csv_endpoint(self):
         # Test filtering by facility
         self.client.login(username='admin', password='admin')
-        facility_filtered_resp = self.client.get(self.api_test_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
+        facility_filtered_resp = self.client.get(
+            self.api_test_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
         rows = filter(None, facility_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 3, "API response incorrect")
 
         # Test filtering by group
-        group_filtered_resp = self.client.get(self.api_test_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
+        group_filtered_resp = self.client.get(
+            self.api_test_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
         rows = filter(None, group_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
         self.client.logout()
-
 
     def test_device_log_csv_endpoint(self):
         # Test filtering by facility
         self.client.login(username='admin', password='admin')
-        facility_filtered_resp = self.client.get(self.api_exercise_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
+        facility_filtered_resp = self.client.get(
+            self.api_exercise_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
         rows = filter(None, facility_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 3, "API response incorrect")
 
         # Test filtering by group
-        group_filtered_resp = self.client.get(self.api_exercise_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
+        group_filtered_resp = self.client.get(
+            self.api_exercise_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
         rows = filter(None, group_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
         self.client.logout()
-
 
     def test_attempt_log_csv_endpoint(self):
         # Test filtering by facility
         self.client.login(username='admin', password='admin')
-        facility_filtered_resp = self.client.get(self.api_attempt_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
+        facility_filtered_resp = self.client.get(
+            self.api_attempt_log_csv_url + "?facility_id=" + self.facility.id + "&format=csv").content
         rows = filter(None, facility_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 3, "API response incorrect")
 
         # Test filtering by group
-        group_filtered_resp = self.client.get(self.api_attempt_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
+        group_filtered_resp = self.client.get(
+            self.api_attempt_log_csv_url + "?group_id=" + self.group.id + "&format=csv").content
         rows = filter(None, group_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
         self.client.logout()
 
-
     def test_device_log_csv_endpoint(self):
         # Test filtering by zone
         self.client.login(username='admin', password='admin')
-        zone_filtered_resp = self.client.get(self.api_device_log_csv_url + "?zone_id=" + self.zone.id + "&format=csv").content
+        zone_filtered_resp = self.client.get(
+            self.api_device_log_csv_url + "?zone_id=" + self.zone.id + "&format=csv").content
         rows = filter(None, zone_filtered_resp.split("\n"))
         self.assertEqual(len(rows), 2, "API response incorrect")
-
 
 # class CSVExportBrowserTests(CSVExportTestSetup, BrowserActionMixins, CreateAdminMixin, KALiteBrowserTestCase):
 

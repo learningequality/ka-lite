@@ -23,4 +23,4 @@ else:
             "# Put your custom settings here\n"
             "# MY_SETTING = 123\n"
         )
-    from .base import *
+    from .base import *  # @UnusedWildImport noqa

@@ -2,15 +2,14 @@ from django.core.exceptions import ValidationError
 
 from . import fields
 
-class DynamicSettingsMetaclass(type):
 
+class DynamicSettingsMetaclass(type):
     def __init__(cls, name, bases, dict):
         super(DynamicSettingsMetaclass, cls).__init__(name, bases, dict)
         cls._fields = {}
         for name, field in dict.items():
 
             if isinstance(field, fields.BaseField):
-
                 # add it to the list of fields
                 cls._fields[name] = field
 
@@ -19,7 +18,6 @@ class DynamicSettingsMetaclass(type):
 
 
 class DynamicSettingsBase(object):
-
     __metaclass__ = DynamicSettingsMetaclass
 
     def __new__(cls, *args, **kwargs):

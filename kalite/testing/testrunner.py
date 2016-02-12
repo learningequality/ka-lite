@@ -5,11 +5,12 @@ import os
 import shutil
 
 from django.conf import settings
+
 logging = settings.LOG
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import get_app, get_apps
+from django.db.models import get_app
 from django.core.management import call_command
-from django.test.simple import DjangoTestSuiteRunner, build_suite, build_test, reorder_suite
+from django.test.simple import DjangoTestSuiteRunner, reorder_suite
 from django.utils import unittest
 
 from fle_utils.general import ensure_dir
@@ -38,6 +39,7 @@ def get_features(app_module):
         return features_dir
     else:
         return None
+
 
 def check_feature_file(features_dir, feature_name):
     """Used to check if a feature_name is in the specified features_dir"""
@@ -76,7 +78,7 @@ def get_options():
             name = "--behave_" + long_option[2:]
 
             option_list = option_list + \
-                (make_option(name, **keywords),)
+                          (make_option(name, **keywords),)
 
             # Need to store a little info about the Behave option so that we
             # can deal with it later.  'has_arg' refers to if the option has
@@ -110,20 +112,23 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # If no liveserver specified, set some default.
         #   port range is the set of open ports that Django can use to
         #   start the server.  They may have multiple servers open at once.
-        if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS',""):
+        if not os.environ.get('DJANGO_LIVE_TEST_SERVER_ADDRESS', ""):
             os.environ['DJANGO_LIVE_TEST_SERVER_ADDRESS'] = "localhost:9000-9999"
 
         self._bdd_only = kwargs["bdd_only"]  # Extra options from our custom test management command are passed into
-        self._no_bdd = kwargs['no_bdd']      # the constructor, but not the build_suite function where we need them.
+        self._no_bdd = kwargs['no_bdd']  # the constructor, but not the build_suite function where we need them.
 
         # Django < 1.7 serves static files using the staticfiles app, not from static root.
         # This causes django_js_reverse not to get served to the client, so we manually copy it into distributed.
 
         call_command("collectstatic_js_reverse", interactive=False)
 
-        ensure_dir(os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js"))
+        ensure_dir(
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse",
+                         "js"))
         shutil.copy2(os.path.join(settings.STATIC_ROOT, "django_js_reverse", "js", "reverse.js"),
-            os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js", "reverse.js"))
+                     os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static",
+                                  "django_js_reverse", "js", "reverse.js"))
 
         return super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
@@ -132,6 +137,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
 
         def run_tests_wrapper_fn():
             return super(KALiteTestRunner, self).run_tests(test_labels, extra_tests, **kwargs)
+
         return run_tests_wrapper_fn()
 
     def make_bdd_test_suite(self, features_dir, feature_name=None):

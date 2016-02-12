@@ -1,7 +1,4 @@
 from behave import *
-from selenium.common.exceptions import NoSuchElementException
-
-from django.core.urlresolvers import reverse
 
 from kalite.testing.behave_helpers import *
 from kalite.facility.models import Facility
@@ -28,7 +25,7 @@ def step_impl(context):
 @when("I create a facility")
 def step_impl(context):
     go_to_facilities_page(context)
-    # Wait used because this one is subject to race conditions. 
+    # Wait used because this one is subject to race conditions.
     create_facility_link = find_css_class_with_wait(context, "create-facility")
     click_and_wait_for_page_load(context, create_facility_link)
     submit_facility_form(context)
@@ -52,7 +49,7 @@ def submit_facility_form(context):
     name_field = find_id_with_wait(context, "id_name")
     name_field.send_keys("The Fortress of Solitude")
     facility_form.submit()
- 
+
 
 def get_empty_facilities_msg(browser):
     """ Returns a Selenium WebElement if it exists, otherwise None
