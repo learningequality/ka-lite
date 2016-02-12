@@ -70,7 +70,7 @@ class VideoLog(DeferredCountSyncedModel):
         if not self.video_id:
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
-            video = get_video_from_youtube_id(vlog.youtube_id)
+            video = get_video_from_youtube_id(self.youtube_id)
             self.video_id = video.get("id",
                                       self.youtube_id) if video else self.youtube_id  # for unknown videos, default to the youtube_id
 
