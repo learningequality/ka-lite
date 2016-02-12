@@ -474,11 +474,16 @@ CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
 #   config packages to override settings.
 ########################
 
-from kalite.distributed.settings import *
+from kalite.distributed.settings import *  # noqa
+from securesync.settings import *  # noqa
+from fle_utils.chronograph.settings import *  # noqa
+from kalite.facility.settings import *  # noqa
+from kalite.main.settings import *  # noqa
 
 # Import from applications with problematic __init__.py files
-from kalite.legacy.i18n_settings import *
+from kalite.legacy.i18n_settings import *  # noqa
+from kalite.legacy.updates_settings import *  # noqa
 
-from kalite.testing.settings import *
+from kalite.testing.settings import *  # noqa
 
 TEST_RUNNER = KALITE_TEST_RUNNER
