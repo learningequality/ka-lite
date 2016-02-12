@@ -32,8 +32,7 @@ function version_comparison(v1, v2) {
 
 function get_available_languages() {
     return api.doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
-        cache: false,
-        dataType: "jsonp"
+        cache: false
     }).success(function(languages) {
         installable_languages = languages;
         display_languages();
