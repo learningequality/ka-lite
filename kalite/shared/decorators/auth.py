@@ -17,7 +17,8 @@ def get_user_from_request(handler=None, request=None, *args, **kwargs):
     """
     assert handler or request
     if not handler:
-        handler = lambda request, user, *args, **kwargs: user
+        def handler(request, user, *args, **kwargs):
+            return user
 
     def get_user_from_request_wrapper_fn(request, *args, **kwargs):
         user = get_object_or_None(FacilityUser, id=request.REQUEST[
@@ -133,7 +134,6 @@ def require_authorized_admin(handler):
         # Take care of superusers (Django admins).
         if logged_in_user.is_superuser:
             return handler(request, *args, **kwargs)
-
 
         # Objects we're looking to verify
         org = None

@@ -25,7 +25,7 @@ class UpdateItemTestCase(KALiteTestCase):
         inverse_available = not available
         update_item({"available": inverse_available}, item.get("path"))
         items = get_content_items(ids=[item.get("id")])
-        self.assertTrue(all([item.get("available") == inverse_available for item in items]))
+        self.assertTrue(all([item.get("available") == inverse_available for item in items]))  # noqa F812
 
 
 class ContentModelsTestCase(KALiteTestCase):
@@ -35,4 +35,3 @@ class ContentModelsTestCase(KALiteTestCase):
         The function get_content_parents() should return a empty list when an empty list of ids is passed to it.
         """
         self.assertEqual(get_content_parents(ids=list()), list())
-	

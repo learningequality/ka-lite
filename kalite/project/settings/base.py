@@ -14,4 +14,3 @@ import warnings
 # imported because then people are probably doing things correctly
 
 warnings.filterwarnings('ignore', message=r'.*Wrong settings module imported.*', append=True)
-

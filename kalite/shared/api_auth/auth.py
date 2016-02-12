@@ -10,7 +10,7 @@ def _is_central_object_admin(object_list, bundle):
     if not user.is_authenticated():
         return False
     else:
-        # check that user can access each object we are returning 
+        # check that user can access each object we are returning
         for obj in object_list:
             # note that this authorization only works for syncable objects
             if not user.get_profile().has_permission_for_object(obj):
@@ -209,7 +209,7 @@ class ObjectAdminAuthorization(ReadOnlyAuthorization):
         if not user.is_authenticated():
             return False
         else:
-            # check that user can access each object we are returning 
+            # check that user can access each object we are returning
             for obj in object_list:
                 # note that this authorization only works for syncable objects
                 if not user.get_profile().has_permission_for_object(obj):

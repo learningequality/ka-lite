@@ -17,7 +17,6 @@ import kalite.main.api_urls
 import kalite.updates.api_urls
 import kalite.inline.api_urls
 
-############ Inline narratives ############################################
 urlpatterns = patterns('',
                        url(r'^inline/narrative/', include(kalite.inline.api_urls))
                        )

@@ -43,7 +43,7 @@ class LinkUserManual:
             return
         if request.path == reverse("homepage"):
             messages.info(request, mark_safe(_("Welcome to our demo server!"
-                                               "  Please visit our <a href='%(um_url)s'>user's manual</a> or <a href='%(home_url)s'>homepage</a> for more information.") % {
+                                               "  Please visit our <a href='%(um_url)s'>user's manual</a> or <a href='%(home_url)s'>homepage</a> for more information.") % {  # noqa
                                                  "um_url": "https://learningequality.org/docs/usermanual/userman_main.html",
                                                  "home_url": "https://learningequality.org/ka-lite/",
                                              }))

@@ -129,7 +129,6 @@ class Command(BaseCommand):
         else:
             raise CommandError("Unknown test case: %s;\nSelect from %s" % (args[0], self.class_map.keys()))
 
-
         # Now, use the class to make a lambda function
         good_keys = list(set(options.keys()) - set(["niters", "nclients", 'settings', 'pythonpath', 'traceback']))
 

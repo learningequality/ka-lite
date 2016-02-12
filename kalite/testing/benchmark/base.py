@@ -62,7 +62,8 @@ class Common(object):
 
     def execute(self, iterations=1):
 
-        if iterations < 1: iterations = 1
+        if iterations < 1:
+            iterations = 1
 
         if hasattr(self, 'max_iterations'):
             if iterations > self.max_iterations:
@@ -91,7 +92,8 @@ class Common(object):
                 self.return_dict['exceptions'][i + 1].append(e)
                 logging.error("Exception getting execute info: %s" % e)
 
-        mean = lambda vals: sum(vals) / float(len(vals)) if len(vals) else None
+        def mean(vals):
+            return sum(vals) / float(len(vals)) if len(vals) else None
         self.return_dict['average_elapsed'] = mean(
             [v for v in self.return_dict['individual_elapsed'].values() if v is not None])
 

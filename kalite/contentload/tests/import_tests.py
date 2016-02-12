@@ -123,7 +123,8 @@ class TestContentImportTopicTree(MainTestCase):
         node_cache = []
         self.recursively_find_nodes(topic_tree, "kind", "Video", node_cache)
 
-        retrieve_API_data = lambda channel: (topic_tree, [], [], [])
+        def retrieve_API_data():
+            return topic_tree, [], [], []
 
         topic_tree, exercises, assessment_items, contents = base.rebuild_topictree(
             whitewash_node_data=import_channel.whitewash_node_data, retrieve_API_data=retrieve_API_data,

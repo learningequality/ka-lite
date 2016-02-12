@@ -35,8 +35,8 @@ class TestUrlConversion(TestCase):
         self.assertEqual(expected_string, mod.convert_urls(url_string))
 
     def test_content_link_converted(self):
-        link_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](https://www.khanacademy.org/humanities/history/ancient-medieval/Ancient/v/standard-of-ur-c-2600-2400-b-c-e)"
-        expected_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](/learn/khan/test-prep/ap-art-history/ancient-mediterranean-ap/ancient-near-east-a/standard-of-ur-c-2600-2400-b-c-e/)"
+        link_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](https://www.khanacademy.org/humanities/history/ancient-medieval/Ancient/v/standard-of-ur-c-2600-2400-b-c-e)"  # noqa
+        expected_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](/learn/khan/test-prep/ap-art-history/ancient-mediterranean-ap/ancient-near-east-a/standard-of-ur-c-2600-2400-b-c-e/)"  # noqa
         self.assertEqual(expected_string, mod.convert_urls(link_string))
 
     def test_bad_content_link_removed(self):

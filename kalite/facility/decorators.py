@@ -26,7 +26,8 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
     """
     assert handler or request
     if not handler:
-        handler = lambda request, facility, *args, **kwargs: facility
+        def handler(request, facility, *args, **kwargs):
+            return facility
 
     def facility_from_request_wrapper_fn(request, *args, **kwargs):
         facility = None

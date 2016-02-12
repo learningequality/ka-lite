@@ -53,10 +53,10 @@ def get_next_recommendations(user, request):
 
     Logic:
     Next recommendations are currently comprised of 3 main subgroups: group recommendations,
-    struggling exercises, and topic tree based data. Group recommendations consist of 
+    struggling exercises, and topic tree based data. Group recommendations consist of
     finding the most common item tackled immediately after the most recent item, struggling
     is determined by the "struggling" model attribute, and topic tree data is based off
-    the graphical distance between neighboring exercise/topic nodes. 
+    the graphical distance between neighboring exercise/topic nodes.
     Args:
     user -- The current user as a facility user model object.
 
@@ -102,7 +102,6 @@ def get_next_recommendations(user, request):
             exercise = get_content_item(language=request.language, content_id=exercise_id)
             exercise["topic"] = get_content_item(language=request.language, content_id=subtopic_id, topic=True)
             final.append(exercise)
-
 
     # final recommendations are a combination of struggling, group filtering, and topic_tree filtering
     return final
@@ -178,7 +177,7 @@ def get_explore_recommendations(user, request):
     """Get the recommendations for the Explore section, and return them as a list.
 
     Logic:
-    Looks at a preset distance away, beginning at 2 to exclude self recommendations, to 
+    Looks at a preset distance away, beginning at 2 to exclude self recommendations, to
     recommend a topic for exploration. Currently, the cap is a distance of 6 so that all
     recommendations will still be of moderate relatedness. This number is not permanent, and
     can be tweaked as needed.
@@ -336,7 +335,7 @@ def generate_recommendation_data():
     topic_index = 0
     subtopic_index = 0
 
-    # for each topic 
+    # for each topic
     for topic in tree:
 
         subtopic_index = 0
@@ -352,7 +351,7 @@ def generate_recommendation_data():
         topic_index += 1
 
     ##
-    # ITERATION 2 - grabs all subsequent neighbors of each subtopic via 
+    # ITERATION 2 - grabs all subsequent neighbors of each subtopic via
     # Breadth-first search (BFS)
     ##
 
@@ -360,8 +359,7 @@ def generate_recommendation_data():
     for subtopic in recommendation_data:
         related = recommendation_data[subtopic]['related_subtopics']  # list of related subtopics (right now only 2)
         other_neighbors = get_subsequent_neighbors(related, recommendation_data, subtopic)
-        recommendation_data[subtopic]['related_subtopics'] += other_neighbors  ##append new neighbors
-
+        recommendation_data[subtopic]['related_subtopics'] += other_neighbors  # append new neighbors
 
     ##
     # ITERATION 2.5 - Sort all results by increasing distance and to strip the final
@@ -392,7 +390,6 @@ def get_recommendation_tree(data):
 
     Args:
     data -- a dictionary with each subtopic and its related_subtopics (from generate_recommendation_data())
-    
     """
 
     recommendation_tree = {}  # tree to return
@@ -445,7 +442,7 @@ def get_neighbors_at_dist_1(topic_index, subtopic_index, topic):
     if (prev > -1):
         neighbors.append(topic['children'][prev] + ' 1')  # neighbor on the left side
 
-    # else check if there is a neighboring topic (left)    
+    # else check if there is a neighboring topic (left)
     else:
         if (topic_index - 1) > -1:
             neighbor_length = len(tree[(topic_index - 1)]['children'])
@@ -478,7 +475,6 @@ def get_subsequent_neighbors(nearest_neighbors, data, curr):
     nearest_neighbors -- list of neighbors at dist 1 from subtopic.
     data -- the dictionary of subtopics and their neighbors at distance 1
     curr -- the current subtopic
-    
     """
 
     left_neigh = nearest_neighbors[1].split(' ')  # subtopic id and distance string of left neighbor

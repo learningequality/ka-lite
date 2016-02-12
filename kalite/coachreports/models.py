@@ -21,12 +21,12 @@ class PlaylistProgressParent:
 
     @classmethod
     def get_user_logs(cls, user, pl_video_ids=None, pl_exercise_ids=None):
-        user_ex_logs = list(ExerciseLog.objects \
-                            .filter(user=user) \
+        user_ex_logs = list(ExerciseLog.objects
+                            .filter(user=user)
                             .values("exercise_id", "complete", "points", "attempts", "streak_progress", "struggling",
                                     "completion_timestamp"))
-        user_vid_logs = list(VideoLog.objects \
-                             .filter(user=user) \
+        user_vid_logs = list(VideoLog.objects
+                             .filter(user=user)
                              .values("video_id", "complete", "total_seconds_watched", "points", "completion_timestamp"))
 
         if pl_video_ids and pl_exercise_ids:

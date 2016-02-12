@@ -234,7 +234,6 @@ def construct_node(location, parent_path, node_cache, channel):
 
         node.update(meta_data)
 
-
     # Verify some required fields:
     if "title" not in node:
         logging.warning("Title missing from file {base_name}, using file name instead".format(base_name=base_name))

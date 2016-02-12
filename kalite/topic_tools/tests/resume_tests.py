@@ -75,6 +75,5 @@ class TestResumeMethods(KALiteTestCase):
         actual = get_most_recent_incomplete_item(self.user_with_activity)
         self.assertEqual(expected, actual)
 
-
         # new user just created (no activity logged)
         self.assertIsNone(get_most_recent_incomplete_item(user=self.user_with_no_activity))

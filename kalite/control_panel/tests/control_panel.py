@@ -84,7 +84,6 @@ class FacilityControlTests(FacilityMixins,
     #     selector = '.facility-delete-link'
     #     self.browser_click_and_accept(selector, text=facility_name)
 
-
     def test_teachers_have_no_facility_delete_button(self):
         facility_name = 'should-not-be-deleted'
         self.fac = self.create_facility(name=facility_name)

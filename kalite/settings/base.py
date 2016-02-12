@@ -33,7 +33,8 @@ TEMPLATE_DEBUG = getattr(local_settings, "TEMPLATE_DEBUG", DEBUG)
 
 if DEBUG:
     warnings.warn(
-        "Setting DEBUG=True in local_settings is no longer properly supported and will not yield a true develop environment, please use --settings=kalite.project.settings.dev")
+        "Setting DEBUG=True in local_settings is no longer properly supported and will not yield a true develop "
+        "environment, please use --settings=kalite.project.settings.dev")
 
 
 ##############################
@@ -234,7 +235,8 @@ KALITE_CHANNEL_CONTEXT_DATA = {
     "channel_name": ugettext_lazy(u"KA Lite"),
     "head_line": ugettext_lazy(u"A free world-class education for anyone anywhere."),
     "tag_line": ugettext_lazy(
-        u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection."),
+        u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and "
+        u"exercises) without needing an Internet connection."),
     "channel_license": ugettext_lazy(u"CC-BY-NC-SA"),
     "footer_text": ugettext_lazy(u"Videos © 2015 Khan Academy (Creative Commons) // Exercises © 2015 Khan Academy"),
     "header_logo": os.path.join(STATIC_URL, 'images', 'horizontal-logo-small.png'),

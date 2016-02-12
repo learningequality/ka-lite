@@ -38,12 +38,14 @@ IMAGE_URLS_NOT_TO_REPLACE = set([
 # This is used for image URLs that don't end in an image extension, or are otherwise messed up.
 # Here we can manually map such URLs to a nice, friendly filename that will get used in the assessment item data.
 MANUAL_IMAGE_URL_TO_FILENAME_MAPPING = {
-    "http://www.marineland.com/~/media/UPG/Marineland/Products/Glass%20Aquariums/Cube%20Aquariums/12268%20MCT45B%200509jpg49110640x640.ashx?w=300&h=300&bc=white": "aquarium.jpg",
-    "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSbTT6DecPnyTp5t-Ar9bgQcwNxLV8F6dvSFDYHKZSs1JINCCRFJw": "ar9bgqcwnxlv8f6dvsfdyhkzss1jinccrfjw.jpg",
+    "http://www.marineland.com/~/media/UPG/Marineland/Products/Glass%20Aquariums/Cube%20Aquariums/12268%20MCT45B%200509jpg49110640x640.ashx?w=300&h=300&bc=white": "aquarium.jpg",  # noqa
+    "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSbTT6DecPnyTp5t-Ar9bgQcwNxLV8F6dvSFDYHKZSs1JINCCRFJw": "ar9bgqcwnxlv8f6dvsfdyhkzss1jinccrfjw.jpg",  # noqa
 }
 
-# this ugly regex looks for links to content on the KA site, also including the markdown link text and surrounding bold markers (*), e.g.
-# **[Read this essay to review](https://www.khanacademy.org/humanities/art-history/art-history-400-1300-medieval---byzantine-eras/anglo-saxon-england/a/the-lindisfarne-gospels)**
+# this ugly regex looks for links to content on the KA site, also including the markdown link text and surrounding
+# bold markers (*), e.g.
+# Read this essay to review:
+# https://www.khanacademy.org/humanities/art-history/art-history-400-1300-medieval---byzantine-eras/anglo-saxon-england/a/the-lindisfarne-gospels   noqa
 # TODO(jamalex): answer any questions people might have when this breaks!
 CONTENT_URL_REGEX_PLAIN = "https?://www\.khanacademy\.org/[\/\w\-\%]*/./(?P<slug>[\w\-]+)"
 CONTENT_URL_REGEX = re.compile("(?P<prefix>)" + CONTENT_URL_REGEX_PLAIN + "(?P<suffix>)", flags=re.IGNORECASE)
@@ -154,7 +156,9 @@ def download_urls_to_zip(zf, urls):
     urls = set(urls)
 
     pool = ThreadPool(10)
-    download_to_zip_func = lambda url: download_url_to_zip(zf, url)
+
+    def download_to_zip_func(url):
+        return download_url_to_zip(zf, url)
     pool.map(download_to_zip_func, urls)
 
 

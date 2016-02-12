@@ -33,10 +33,10 @@ def set_language_data_from_request(request):
         #   facility user's individual setting
         #   config.Settings object's value
         #   settings' value
-        request.session["default_language"] = select_best_available_language( \
-            getattr(request.session.get("facility_user"), "default_language", None) \
+        request.session["default_language"] = select_best_available_language(
+            getattr(request.session.get("facility_user"), "default_language", None)
             or get_default_language()
-            )
+        )
 
     # Set this request's language based on the listed priority
     cur_lang = (request.GET.get("lang")

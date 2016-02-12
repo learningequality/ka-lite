@@ -25,7 +25,7 @@ def step_impl(context):
 @when("I create a facility")
 def step_impl(context):
     go_to_facilities_page(context)
-    # Wait used because this one is subject to race conditions. 
+    # Wait used because this one is subject to race conditions.
     create_facility_link = find_css_class_with_wait(context, "create-facility")
     click_and_wait_for_page_load(context, create_facility_link)
     submit_facility_form(context)

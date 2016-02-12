@@ -232,9 +232,9 @@ def aggregate_learner_logs(request):
                                                                                               getattr(log, "content_id",
                                                                                                       ""))), {}),
                                      } for log in output_logs[:event_limit]]
-    output_dict["total_time_logged"] = round((UserLogSummary.objects \
+    output_dict["total_time_logged"] = round((UserLogSummary.objects
                                               .filter(user__in=learners, start_datetime__gte=start_date,
-                                                      start_datetime__lte=end_date) \
+                                                      start_datetime__lte=end_date)
                                               .aggregate(Sum("total_seconds")).get("total_seconds__sum") or 0) / 3600.0,
                                              1)
     return JsonResponse(output_dict)

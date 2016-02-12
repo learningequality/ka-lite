@@ -168,7 +168,7 @@ class UpdateProgressLog(ExtendedModel):
             elif not create_new:
                 return None
 
-        if not "process_name" in kwargs:
+        if "process_name" not in kwargs:
             raise Exception(
                 "You better specify process_name if your log is not found!  Otherwise, how could we create one??")
         process_name = kwargs["process_name"]

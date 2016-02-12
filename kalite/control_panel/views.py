@@ -299,7 +299,6 @@ def facility_management_csv(request, facility, group_id=None, zone_id=None, freq
     period_end = period_end or form.data["period_end"]
     (period_start, period_end) = _get_date_range(frequency, period_start, period_end)
 
-
     # Basic data
     context = control_panel_context(request, zone_id=zone_id, facility_id=facility.id)
     group = group_id and get_object_or_None(FacilityGroup, id=group_id)
@@ -526,7 +525,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             user_data[llog["user__pk"]]["total_logins"] += 1
 
     for group in list(groups) + [None] * (
-            group_id == None or group_id == UNGROUPED):  # None for ungrouped, if no group_id passed.
+            group_id is None or group_id == UNGROUPED):  # None for ungrouped, if no group_id passed.
         group_pk = getattr(group, "pk", None)
         group_name = getattr(group, "name", _(UNGROUPED))
         group_title = getattr(group, "title", _(UNGROUPED))

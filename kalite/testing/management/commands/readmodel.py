@@ -11,7 +11,9 @@ logging = settings.LOG
 from django.core.management.base import BaseCommand, CommandError
 from django.core import serializers
 
-dthandler = lambda obj: obj.isoformat() if isinstance(obj, datetime.datetime) else None
+
+def dthandler(obj):
+    return obj.isoformat() if isinstance(obj, datetime.datetime) else None
 
 
 class Command(BaseCommand):

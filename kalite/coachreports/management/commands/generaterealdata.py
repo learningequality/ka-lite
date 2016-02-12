@@ -47,7 +47,8 @@ lastnames = ["Awolowo", "Clement", "Smith", "Ramirez", "Hussein", "Wong", "St. L
              "De Soto", "Khan", "Mench", "Merkel", "Roschenko", "Picard", "Jones", "French", "Karnowski", "Boyle",
              "Burke", "Tan"]
 
-# We want to show some users that have a correlation between effort and mastery, some that show mastery without too much effort (unchallenged), and some that show little mastery with a lot of effort
+# We want to show some users that have a correlation between effort and mastery, some that show mastery without too
+# much effort (unchallenged), and some that show little mastery with a lot of effort
 # Each 4-uple represents: (mean,std of gaussian, min/max values)
 user_types = [
     {"name": "common", "weight": 0.6, "speed_of_learning": (0.5, 0.5, 0.05, 0.95),
