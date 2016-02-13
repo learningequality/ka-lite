@@ -64,7 +64,7 @@ def setup_content_paths(context, db):
                 update={"available": True})
 
     with Using(db, [Item], with_transaction=False):
-        context._unavailabe_item = Item.create(
+        context._unavailable_item = Item.create(
             title="Unavailable item",
             description="baz",
             available=False,
@@ -74,15 +74,16 @@ def setup_content_paths(context, db):
             path=context.unavailable_content_path
         )
 
-
-def teardown_content_paths(context):
+@set_database
+def teardown_content_paths(context, db):
     """
     The opposite of ``setup_content_urls``. Removes content items created there.
 
     :param context: A behave context, which keeps a reference to the Items so we can clean them up.
     :return: None.
     """
-    context._unavailabe_item.delete_instance()
+    with Using(db, [Item], with_transaction=False):
+        context._unavailable_item.delete_instance()
 
 
 def setup_sauce_browser(context):
