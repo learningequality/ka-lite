@@ -472,7 +472,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
             Q(end_datetime__gte=period_start) & Q(end_datetime__lte=period_end)
         login_logs = login_logs.filter(login_q1)
     # Force results in a single query
-    exercise_logs = list(exercise_logs.values("exercise_id", "user__pk"))
+    exercise_logs = list(exercise_logs.values("exercise_id", "user__pk", "streak_progress"))
     video_logs = list(video_logs.values("video_id", "user__pk"))
     login_logs = list(login_logs.values("activity_type", "total_seconds", "user__pk"))
 

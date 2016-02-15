@@ -18,7 +18,8 @@ import json
 import sqlite3
 import itertools
 
-from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using, DoesNotExist, fn, IntegerField, OperationalError
+from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using,\
+    DoesNotExist, fn, IntegerField, OperationalError, FloatField
 
 from playhouse.shortcuts import model_to_dict
 
@@ -49,6 +50,11 @@ class Item(Model):
     youtube_id = CharField(null=True)
     size_on_disk = IntegerField(default=0)
     remote_size = IntegerField(default=0)
+    sort_order = FloatField(default=0)
+
+    class Meta:
+        # Order by sort_order by default for all queries.
+        order_by = ('sort_order',)
 
     def __init__(self, *args, **kwargs):
         kwargs = parse_model_data(kwargs)
@@ -344,7 +350,11 @@ def get_content_parents(ids=None, **kwargs):
         parent_values = Item.select(
             Parent
         ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids)).distinct()
+        if parent_values is None:
+            parent_values = list()
         return parent_values
+    else:
+        return list()
 
 
 
