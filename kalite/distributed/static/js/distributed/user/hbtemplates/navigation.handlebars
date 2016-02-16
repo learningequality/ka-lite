@@ -10,6 +10,14 @@
   <li role="menuitem"><a href="{{ url "facility_user_signup" }}" id="nav_signup">{{_ "Sign Up" }}</a></li>
 {{/unless}}
 
+{{#if docs_exist}}
+  <li role="menuitem" id="documentation">
+    <a role="menuitem" tabindex="-1" id="documentation_a" href="/static/html/usermanual/userman_main.html">
+      {{_ "User Manual" }}
+     </a>
+  </li>
+{{/if}}
+
   <hr class="nav-divider">
 {{#if is_admin}}
   <hr class="nav-divider">
@@ -41,13 +49,6 @@
           {{_ "Logout" }}
         </a>
       </li>
-    {{#if docs_exist}}
-      <li role="presentation" id="documentation">
-        <a role="menuitem" tabindex="-1" id="documentation_a" href="/static/html/index.html">
-          {{_ "Documentation" }}
-        </a>
-      </li>
-    {{/if}}
     </ul>
   </li>
 {{/if}}
