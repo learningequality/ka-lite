@@ -1,14 +1,7 @@
 import sys
 import warnings
 from kalite import version
-from kalite.shared.warnings import RemovedInKALite_v016_Warning
-
-
-warnings.warn(
-    "Wrong settings module imported! Please do not import kalite.settings "
-    "directly. Instead, import kalite.project.settings.base",
-    RemovedInKALite_v016_Warning
-)
+from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
 
 ##############################
@@ -41,10 +34,7 @@ CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
 
 
 if CONFIG_PACKAGE:
-    warnings.warn(
-        "CONFIG_PACKAGE is outdated, use a settings module from kalite.project.settings",
-        RemovedInKALite_v016_Warning
-    )
+    raise RemovedInKALite_v016_Error("CONFIG_PACKAGE is outdated, use a settings module from kalite.project.settings")
 
 if package_selected("nalanda"):
     TURN_OFF_MOTIVATIONAL_FEATURES = True

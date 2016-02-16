@@ -236,7 +236,7 @@ def get_topic_nodes(parent=None, ids=None, **kwargs):
             Item.id,
             Item.path,
             Item.slug,
-        ).join(Parent, on=(Item.parent == Parent.pk)).where(selector)
+        ).join(Parent, on=(Item.parent == Parent.pk)).where(selector & Item.available)
         return values
     elif ids:
         values = Item.select(
@@ -350,7 +350,11 @@ def get_content_parents(ids=None, **kwargs):
         parent_values = Item.select(
             Parent
         ).join(Parent, on=(Item.parent == Parent.pk)).where(Item.id.in_(ids)).distinct()
+        if parent_values is None:
+            parent_values = list()
         return parent_values
+    else:
+        return list()
 
 
 
