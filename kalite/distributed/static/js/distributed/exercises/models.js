@@ -82,7 +82,8 @@ var ExerciseDataModel = ContentModels.ContentDataModel.extend({
 var AssessmentItemModel = Backbone.Model.extend({
 
     urlRoot: function() {
-        return window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL");
+        var base = window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL"); // Has a trailing '/'
+        return base.slice(0, base.length - 1); // Remove it so the url can be properly built.
     },
 
     get_item_data: function() {
