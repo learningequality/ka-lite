@@ -5,7 +5,7 @@ Setup KA Lite:
  - Run migrations
  - Find and relocate obsolete user and data files
  - if interactive:
-     - Download and english content pack, containing assessment items
+     - Download and unpack the english content pack, containing assessment items
      - Create super user account
      - Run 'kalite start'
 """
