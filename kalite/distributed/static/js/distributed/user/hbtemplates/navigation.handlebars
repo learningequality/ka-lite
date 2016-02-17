@@ -11,11 +11,13 @@
 {{/unless}}
 
 {{#if docs_exist}}
-  <li role="menuitem" id="nav_documentation">
-    <a role="menuitem" tabindex="-1" id="documentation_a" href="/static/html/usermanual/userman_main.html">
-      {{_ "User Manual" }}
-     </a>
-  </li>
+  {{#if is_admin}}
+    <li role="menuitem" id="nav_documentation">
+      <a role="menuitem" tabindex="-1" id="documentation_a" href="/static/html/usermanual/userman_main.html">
+        {{_ "User Manual" }}
+       </a>
+    </li>
+  {{/if}}
 {{/if}}
 
   <hr class="nav-divider">
