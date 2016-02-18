@@ -46,7 +46,7 @@ lint:
 test:
 	bin/kalite manage test --bdd-only
 
-test-bdd:
+test-bdd: docs
 	bin/kalite manage test --bdd-only
 
 test-nobdd:
