@@ -86,8 +86,8 @@ assets:
 	npm cache clean
 	npm install --production
 	node build.js
+	bin/kalite manage retrievecontentpack download en --minimal --foreground
 	bin/kalite manage compileymltojson
-	bin/kalite manage init_content_items --overwrite --channel=khan --language=en
 	bin/kalite manage syncdb --noinput
 	bin/kalite manage migrate
 	cp kalite/database/data.sqlite kalite/database/templates/

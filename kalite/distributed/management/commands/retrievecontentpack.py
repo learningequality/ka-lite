@@ -1,15 +1,15 @@
 import os
-import urllib
-import tempfile
 import shutil
+import tempfile
+import urllib
 import zipfile
 
-from django.core.management.base import CommandError
-from django.core.management import call_command
-from django.utils.translation import ugettext as _
+from optparse import make_option
 
 from django.conf import settings as django_settings
-logging = django_settings.LOG
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.utils.translation import ugettext as _
 
 from fle_utils.general import ensure_dir
 
@@ -18,11 +18,13 @@ from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_p
     update_jsi18n_file, get_srt_path as get_subtitle_path
 from kalite.topic_tools import settings
 from kalite.updates.management.commands.classes import UpdatesStaticCommand
-
 from kalite.version import SHORTVERSION
 
+logging = django_settings.LOG
+
+
 CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
-                             "/ka-lite/{version}/content/contentpacks/{code}.zip")
+                             "/ka-lite/{version}/content/contentpacks/{langcode}{suffix}.zip")
 
 
 class Command(UpdatesStaticCommand):
@@ -37,6 +39,14 @@ class Command(UpdatesStaticCommand):
 
     """
 
+    option_list = UpdatesStaticCommand.option_list + (
+        make_option("", "--minimal",
+                    action="store_true",
+                    dest="minimal",
+                    default=False,
+                    help="0.16 legacy: Try fetching a minimal version of the content pack without assessment items."),
+    )
+
     help = __doc__
 
     stages = (
@@ -48,6 +58,8 @@ class Command(UpdatesStaticCommand):
     def handle(self, *args, **options):
 
         operation = args[0]
+        self.minimal = options.get('minimal', False)
+        self.foreground = options.get('foreground', False)
 
         if operation == "download":
             self.start(_("Downloading content pack."))
@@ -63,7 +75,7 @@ class Command(UpdatesStaticCommand):
         lang = args[1]
 
         with tempfile.NamedTemporaryFile() as f:
-            zf = download_content_pack(f, lang)
+            zf = download_content_pack(f, lang, minimal=self.minimal)
             self.process_content_pack(zf, lang)
             zf.close()
 
@@ -84,7 +96,7 @@ class Command(UpdatesStaticCommand):
         update_jsi18n_file(lang)
         extract_content_db(zf, lang)
         extract_subtitles(zf, lang)
-        extract_content_pack_metadata(zf, lang) # always extract to the en lang
+        extract_content_pack_metadata(zf, lang)  # always extract to the en lang
         extract_assessment_items(zf, "en")
 
         self.next_stage(_("Looking for available content items."))
@@ -101,10 +113,11 @@ def extract_content_pack_metadata(zf, lang):
         shutil.copyfileobj(mf, f)
 
 
-def download_content_pack(fobj, lang):
+def download_content_pack(fobj, lang, minimal=False):
     url = CONTENT_PACK_URL_TEMPLATE.format(
         version=SHORTVERSION,
-        code=lang,
+        langcode=lang,
+        suffix="-minimal" if minimal else "",
     )
 
     httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first

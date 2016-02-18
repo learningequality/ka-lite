@@ -39,7 +39,7 @@ from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device
 import warnings
 
-CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(version=SHORTVERSION, code="en")
+CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(version=SHORTVERSION, langcode="en", suffix="")
 
 
 def raw_input_yn(prompt):
@@ -449,7 +449,7 @@ class Command(BaseCommand):
                     logging.warning(
                         "No content pack given. You will need to download and unpack it later.")
                 else:
-                    call_command("retrievecontentpack", retrieval_method, "en", ass_item_filename)
+                    call_command("retrievecontentpack", retrieval_method, "en", ass_item_filename, foreground=True)
 
             elif options['interactive']:
                 logging.warning(
