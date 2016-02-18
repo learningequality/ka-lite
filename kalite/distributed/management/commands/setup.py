@@ -5,7 +5,7 @@ Setup KA Lite:
  - Run migrations
  - Find and relocate obsolete user and data files
  - if interactive:
-     - Download and unpack assessment items
+     - Download and unpack the english content pack, containing assessment items
      - Create super user account
      - Run 'kalite start'
 """
@@ -29,19 +29,17 @@ from django.core.management.base import BaseCommand, CommandError
 
 import kalite
 from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
-from kalite.topic_tools.settings import CHANNEL
 
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
-from kalite.version import VERSION, SHORTVERSION
+from kalite.distributed.management.commands.retrievecontentpack import CONTENT_PACK_URL_TEMPLATE
 from kalite.facility.models import Facility
+from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device
 import warnings
 
-
-# for extracting assessment item resources
-ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/{version}/content/{channel}_assessment.zip".format(version=SHORTVERSION, channel=CHANNEL)
+CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(version=SHORTVERSION, code="en")
 
 
 def raw_input_yn(prompt):
@@ -139,7 +137,7 @@ def get_assessment_items_filename():
             return False
 
     def find_recommended_file():
-        filename_guess = "{channel}_assessment.zip".format(channel=CHANNEL)
+        filename_guess = "en.zip"
         curdir = os.path.abspath(os.curdir)
         pardir = os.path.abspath(os.path.join(curdir, os.pardir))
         while curdir != pardir:
@@ -152,8 +150,9 @@ def get_assessment_items_filename():
         return ""
 
     recommended_filename = find_recommended_file()
-    prompt = "Please enter the filename of the assessment items package you have downloaded (%s): " % recommended_filename
+    prompt = "Please enter the filename of the content pack you have downloaded (%s): " % recommended_filename
     filename = raw_input(prompt)
+    filename = os.path.expanduser(filename)
     if not filename:
         filename = recommended_filename
     while not validate_filename(filename):
@@ -204,12 +203,12 @@ class Command(BaseCommand):
                     action='store_true',
                     dest='force-assessment-item-dl',
                     default=False,
-                    help='Downloads assessment items from the url specified by ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
+                    help='Downloads content pack from the url specified by CONTENTPACK_URL, without interaction'),
         make_option('-i', '--no-assessment-items',
                     action='store_true',
                     dest='no-assessment-items',
                     default=False,
-                    help='Skip all steps associating with assessment item downloading or the assessment item database'),
+                    help='Skip all steps associating with content pack downloading or the content database'),
         make_option('-g', '--git-migrate',
                     action='store',
                     dest='git_migrate_path',
@@ -387,12 +386,12 @@ class Command(BaseCommand):
             call_command("migrate", merge=True, verbosity=options.get("verbosity"))
         Settings.set("database_version", VERSION)
 
-        # download assessment items
+        # download the english content pack
         # This can take a long time and lead to Travis stalling. None of this
         # is required for tests, and does not apply to the central server.
         if options.get("no-assessment-items", False):
 
-            logging.warning("Skipping assessment item downloading and configuration.")
+            logging.warning("Skipping content pack downloading and configuration.")
 
         else:
 
@@ -411,7 +410,7 @@ class Command(BaseCommand):
 
             if writable_assessment_items and options['force-assessment-item-dl']:
                 call_command(
-                    "unpack_assessment_zip", ASSESSMENT_ITEMS_ZIP_URL)
+                    "retrievecontentpack", "download", "en")
             elif options['force-assessment-item-dl']:
                 raise RuntimeError(
                     "Got force-assessment-item-dl but directory not writable")
@@ -423,20 +422,23 @@ class Command(BaseCommand):
                 print(
                     "If you have already downloaded the assessment items package, you can specify the file in the next step.")
                 print("Otherwise, we will download it from {url}.".format(
-                    url=ASSESSMENT_ITEMS_ZIP_URL))
+                    url=CONTENTPACK_URL))
 
-                if raw_input_yn("Do you wish to download the assessment items package now?"):
-                    ass_item_filename = ASSESSMENT_ITEMS_ZIP_URL
-                elif raw_input_yn("Have you already downloaded the assessment items package?"):
+                if raw_input_yn("Do you wish to download the content pack now?"):
+                    ass_item_filename = CONTENTPACK_URL
+                    retrieval_method = "download"
+                elif raw_input_yn("Have you already downloaded the content pack?"):
                     ass_item_filename = get_assessment_items_filename()
+                    retrieval_method = "local"
                 else:
                     ass_item_filename = None
+                    retrieval_method = "local"
 
                 if not ass_item_filename:
                     logging.warning(
-                        "No assessment items package file given. You will need to download and unpack it later.")
+                        "No content pack given. You will need to download and unpack it later.")
                 else:
-                    call_command("unpack_assessment_zip", ass_item_filename)
+                    call_command("retrievecontentpack", retrieval_method, "en", ass_item_filename)
 
             elif options['interactive']:
                 logging.warning(

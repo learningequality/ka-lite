@@ -69,7 +69,7 @@ class AnnotateTestCase(TestCase):
         with Using(self.db, [Item]):
             actual = dict(update_content_availability([unparse_model_data(model_to_dict(self.item))])).get("thepath")
             # Update is only generated if changed from False to True, not from False to False, so should return None.
-            assert not actual.get("available")
+            assert not actual
 
         try:
             os.rename(self.version_path + ".bak", self.version_path)
