@@ -1,4 +1,3 @@
-import accenting
 import requests
 import zipfile
 from cStringIO import StringIO

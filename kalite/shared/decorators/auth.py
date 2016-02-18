@@ -196,7 +196,7 @@ def require_superuser(handler):
 
     """
     def require_superuser_wrapper_fn(request, *args, **kwargs):
-        if getattr(request.user, is_superuser, False):
+        if getattr(request.user, "is_superuser", False):
             return handler(request, *args, **kwargs)
         else:
             raise PermissionDenied(_("You must be logged in as a superuser to access this endpoint."))

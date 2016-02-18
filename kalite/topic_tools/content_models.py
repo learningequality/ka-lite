@@ -61,7 +61,10 @@ class Item(Model):
         super(Item, self).__init__(*args, **kwargs)
 
 class AssessmentItem(Model):
-    id = CharField(max_length=50, primary_key=True)
+    id = CharField(max_length=50)
+    # looks like peewee doesn't like a primary key field that's not an integer.
+    # Hence, we have a separate field for the primary key.
+    pk = PrimaryKeyField(primary_key=True)
     item_data = TextField()  # A serialized JSON blob
     author_names = CharField(max_length=200)  # A serialized JSON list
 

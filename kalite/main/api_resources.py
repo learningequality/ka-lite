@@ -1,18 +1,10 @@
-import json
 from tastypie import fields
-from tastypie.resources import ModelResource, Resource
-from tastypie.exceptions import NotFound
-from django.conf.urls import url
-from django.conf import settings
+from tastypie.resources import ModelResource
 
 from .models import VideoLog, ExerciseLog, AttemptLog, ContentLog, ContentRating
 
-from kalite.distributed.api_views import get_messages_for_api_calls
-from kalite.topic_tools.settings import CHANNEL
-from kalite.topic_tools.content_models import get_assessment_item_data
 from kalite.shared.api_auth.auth import UserObjectsOnlyAuthorization
 from kalite.facility.api_resources import FacilityUserResource
-
 
 
 class ExerciseLogResource(ModelResource):
@@ -89,43 +81,6 @@ class VideoLogResource(ModelResource):
             "user": ('exact', ),
         }
         authorization = UserObjectsOnlyAuthorization()
-
-
-class AssessmentItemResource(ModelResource):
-    class Meta:
-        resource_name = 'assessment_item'
-
-    def prepend_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)/(?P<id>[\w\d_.-]+)/$" % self._meta.resource_name,
-                self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail"),
-        ]
-
-
-    def obj_get(self, bundle, **kwargs):
-        id = kwargs.get("id")
-        assessment_item = get_assessment_item_data(channel=getattr(bundle.request, "channel", "khan"), language=getattr(bundle.request, "language", "en"), assessment_item_id=id)
-        if assessment_item:
-            return AssessmentItem(**assessment_item)
-        else:
-            raise NotFound('AssessmentItem with id %s not found' % id)
-
-
-    def obj_create(self, bundle, **kwargs):
-        raise NotImplemented("Operation not implemented yet for assessment_items.")
-
-    def obj_update(self, bundle, **kwargs):
-        raise NotImplemented("Operation not implemented yet for assessment_items.")
-
-    def obj_delete_list(self, bundle, **kwargs):
-        raise NotImplemented("Operation not implemented yet for assessment_items.")
-
-    def obj_delete(self, bundle, **kwargs):
-        raise NotImplemented("Operation not implemented yet for assessment_items.")
-
-    def rollback(self, bundles):
-        raise NotImplemented("Operation not implemented yet for assessment_items.")
 
 
 class ContentRatingResource(ModelResource):

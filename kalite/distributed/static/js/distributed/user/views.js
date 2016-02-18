@@ -462,19 +462,21 @@ var UserView = BaseView.extend({
                 // Set the option for the URL redirect after login success
                 options.next = next;
             }
-            if (this.loginModalView) {
-                // If there is already a loginModalView for some reason, just set the above options on it
-                // and rerender
-                this.loginModalView.set_options(options);
-                if (this.login_start_open) {
-                    this.loginModalView.show_modal();
+            // If SuperUserCreateModalView get displayed, don't display loginModalView
+            if (window.statusModel.get("has_superuser")){
+                if (this.loginModalView) {
+                    // If there is already a loginModalView for some reason, just set the above options on it
+                    // and rerender
+                    this.loginModalView.set_options(options);
+                    if (this.login_start_open) {
+                        this.loginModalView.show_modal();
+                    }
+                } else {
+                    // Otherwise just start the modal view with these options, but add in the statusModel with it
+                    options.model = this.model;
+                    this.loginModalView = new LoginModalView(options);
                 }
-            } else {
-                // Otherwise just start the modal view with these options, but add in the statusModel with it
-                options.model = this.model;
-                this.loginModalView = new LoginModalView(options);
             }
-
         }
     },
 
