@@ -168,29 +168,13 @@ def extract_subtitles(zf, lang):
 
 
 def extract_assessment_items(zf, lang):
-    assessment_zip_dir = "assessment_resources/"
+    assessment_zip_dir = "khan/"
+    assessment_dest_dir = os.path.join(content_settings.ASSESSMENT_ITEM_ROOT)
 
-    channel = "khan"
+    _extract_assessment_resources(zf, assessment_zip_dir, assessment_dest_dir)
 
-    assessment_dest_dir = os.path.join(content_settings.ASSESSMENT_ITEM_ROOT, channel)
 
-    ensure_dir(assessment_dest_dir)
-
+def _extract_assessment_resources(zf, assessment_zip_dir, assessment_dest_dir):
     items = (s for s in zf.namelist() if assessment_zip_dir in s)
 
-    for item in items:
-        # files inside zipfiles may come with leading directories in their
-        # names, like subtitles/hotdog.vtt. We'll only want the actual filename
-        # (hotdog.vtt) when extracting as that's what KA Lite expects.
-
-        filename = os.path.basename(item)
-        subfolder = filename[:3]
-        assessment_subfolder = os.path.join(assessment_dest_dir, subfolder)
-
-        ensure_dir(assessment_subfolder)
-
-        zip_item_fileobj = zf.open(item)
-
-        assessment_dest_path = os.path.join(assessment_subfolder, filename)
-        with open(assessment_dest_path, "w") as item_fileobj:
-            shutil.copyfileobj(zip_item_fileobj, item_fileobj)
+    zf.extractall(assessment_dest_dir, items)
