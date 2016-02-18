@@ -12,6 +12,7 @@ recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.otf *.svg 
 # Get the empty DBs -- make sure they are properly generated!
 recursive-exclude kalite/database *
 recursive-include kalite/database/templates *sqlite
+recursive-include kalite/database/templates/content_items *sqlite
 
 # This can be a huge problem when creating an sdist from
 # a local development environment

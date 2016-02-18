@@ -40,11 +40,27 @@ class Command(UpdatesStaticCommand):
     """
 
     option_list = UpdatesStaticCommand.option_list + (
-        make_option("", "--minimal",
-                    action="store_true",
-                    dest="minimal",
-                    default=False,
-                    help="0.16 legacy: Try fetching a minimal version of the content pack without assessment items."),
+        make_option(
+            "", "--minimal",
+            action="store_true",
+            dest="minimal",
+            default=False,
+            help=(
+                "0.16 legacy: Try fetching a minimal version of the content "
+                "pack without assessment items."
+            )
+        ),
+        make_option(
+            "", "--template",
+            action="store_true",
+            dest="template",
+            default=False,
+            help=(
+                "Extract contents of the content pack into template "
+                "directories which source distribution uses to bundle in "
+                "content db's (and nothing more at the moment)"
+            ),
+        ),
     )
 
     help = __doc__
@@ -60,6 +76,10 @@ class Command(UpdatesStaticCommand):
         operation = args[0]
         self.minimal = options.get('minimal', False)
         self.foreground = options.get('foreground', False)
+        self.is_template = options.get('template', False)
+
+        if self.is_template:
+            ensure_dir(django_settings.DB_CONTENT_ITEM_TEMPLATE_DIR)
 
         if operation == "download":
             self.start(_("Downloading content pack."))
@@ -94,7 +114,7 @@ class Command(UpdatesStaticCommand):
         self.next_stage(_("Moving content files to the right place."))
         extract_catalog_files(zf, lang)
         update_jsi18n_file(lang)
-        extract_content_db(zf, lang)
+        extract_content_db(zf, lang, is_template=self.is_template)
         extract_subtitles(zf, lang)
         extract_content_pack_metadata(zf, lang)  # always extract to the en lang
         extract_assessment_items(zf, "en")
@@ -147,11 +167,21 @@ def extract_catalog_files(zf, lang):
             shutil.copyfileobj(zipmof, djangomof)
 
 
-def extract_content_db(zf, lang):
-    content_db_path = settings.CONTENT_DATABASE_PATH.format(
-        channel=settings.CHANNEL,
-        language=lang,
-    )
+def extract_content_db(zf, lang, is_template=False):
+    """
+    :param: as_template: Extracts the result to the template destination,
+                         intended for source distribution
+    """
+    if not is_template:
+        content_db_path = settings.CONTENT_DATABASE_PATH.format(
+            channel=settings.CHANNEL,
+            language=lang,
+        )
+    else:
+        content_db_path = settings.CONTENT_DATABASE_TEMPLATE_PATH.format(
+            channel=settings.CHANNEL,
+            language=lang,
+        )
 
     with open(content_db_path, "wb") as f:
         dbfobj = zf.open("content.db")

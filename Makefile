@@ -86,7 +86,7 @@ assets:
 	npm cache clean
 	npm install --production
 	node build.js
-	bin/kalite manage retrievecontentpack download en --minimal --foreground
+	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 	bin/kalite manage compileymltojson
 	bin/kalite manage syncdb --noinput
 	bin/kalite manage migrate
