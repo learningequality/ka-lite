@@ -1,11 +1,19 @@
 ## Summary
 
-Briefly describe what this is about
+*Briefly describe what this is about*
+
 
 ## Branch or installer method
 
-PLEASE SPECIFY IF YOU ARE USING THE CURRENT `develop` BRANCH OR WHICH INSTALLATION
-SOURCE (Windows / Debian / OSX) AND WHICH VERSION (0.15, 0.16 etc)
+*Please specify if you are using the current `develop` branch or which installation source you were using when the issue occurred.*
+
+ - Installer: Windows/OSX/Debian (?)
+ - Version: 0.15.1 (?)
+
+or:
+
+ - Branch: develop (?)
+
 
 ## Traceback or relevant snippet from server.log
 
@@ -13,11 +21,12 @@ SOURCE (Windows / Debian / OSX) AND WHICH VERSION (0.15, 0.16 etc)
 INSERT TRACEBACK, LOG MESSAGES ETC. HERE
 ```
 
+
 ## How to reproduce
 
-1. STEPS
-1. TO
-1. REPRODUCE
+1. Steps
+1. To
+1. Reproduce
 
 ## Screenshots
 

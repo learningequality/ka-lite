@@ -21,8 +21,8 @@ List the issues solved or partly solved by the PR
 
 ## Documentation
 
-If the PR has documentation, link the file here (either .rst in your repo or if built on Read The Docs)
+*If the PR has documentation, link the file here (either .rst in your repo or if built on Read The Docs)*
 
 ## Screenshots (if appropriate)
 
-They're nice. :)
+*They're nice. :)*
