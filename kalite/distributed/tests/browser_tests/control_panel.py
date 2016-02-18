@@ -84,7 +84,7 @@ class TestUserManagement(BrowserActionMixins, CreateAdminMixin, FacilityMixins, 
         """
         Ungrouped # of students wasn't displaying correctly, see: https://github.com/learningequality/ka-lite/pull/2230
         In particular it seems to have only occurred when a non-english language was set, so this test tried to
-        mock a language pack download -- but that makes the test dependent on languagepackdownload.py details :(
+        mock a language pack download
         """
         facility = self.facility
         params = {

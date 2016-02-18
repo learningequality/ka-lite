@@ -59,10 +59,10 @@ def update_content_availability(content_list, language="en", channel="khan"):
 
         if content.get("kind") == "Exercise":
 
-            # Databases have been pre-filtered to only contain existing exercises
+            # Databases have been pre-filtered to only contain existing exercises.
+            # Exercises have been pre-marked as available as well.
             # Assume if the assessment items have been downloaded, then everything is hunky dory.
-            if os.path.exists(contentload_settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
-                update["available"] = True
+            continue
 
         elif content.get("kind") == "Topic":
             # Ignore topics, as we only want to update their availability after we have updated the rest.

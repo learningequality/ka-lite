@@ -13,8 +13,9 @@ logging = django_settings.LOG
 
 from fle_utils.general import ensure_dir
 
+from kalite.contentload import settings as content_settings
 from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
-    update_jsi18n_file
+    update_jsi18n_file, get_srt_path as get_subtitle_path
 from kalite.topic_tools import settings
 from kalite.updates.management.commands.classes import UpdatesStaticCommand
 
@@ -82,7 +83,9 @@ class Command(UpdatesStaticCommand):
         extract_catalog_files(zf, lang)
         update_jsi18n_file(lang)
         extract_content_db(zf, lang)
-        extract_content_pack_metadata(zf, lang)
+        extract_subtitles(zf, lang)
+        extract_content_pack_metadata(zf, lang) # always extract to the en lang
+        extract_assessment_items(zf, "en")
 
         self.next_stage(_("Looking for available content items."))
         call_command("annotate_content_items", language=lang)
@@ -140,3 +143,54 @@ def extract_content_db(zf, lang):
     with open(content_db_path, "wb") as f:
         dbfobj = zf.open("content.db")
         shutil.copyfileobj(dbfobj, f)
+
+
+def extract_subtitles(zf, lang):
+    SUBTITLE_DEST_DIR = get_subtitle_path(lang_code=lang)
+    SUBTITLE_ZIP_DIR = "subtitles/"
+
+    ensure_dir(SUBTITLE_DEST_DIR)
+
+    subtitles = (s for s in zf.namelist() if SUBTITLE_ZIP_DIR in s)
+
+    for subtitle in subtitles:
+        # files inside zipfiles may come with leading directories in their
+        # names, like subtitles/hotdog.vtt. We'll only want the actual filename
+        # (hotdog.vtt) when extracting as that's what KA Lite expects.
+
+        subtitle_filename = os.path.basename(subtitle)
+        subtitle_dest_path = os.path.join(SUBTITLE_DEST_DIR, subtitle_filename)
+
+        subtitle_fileobj = zf.open(subtitle)
+
+        with open(subtitle_dest_path, "w") as dest_fileobj:
+            shutil.copyfileobj(subtitle_fileobj, dest_fileobj)
+
+
+def extract_assessment_items(zf, lang):
+    assessment_zip_dir = "assessment_resources/"
+
+    channel = "khan"
+
+    assessment_dest_dir = os.path.join(content_settings.ASSESSMENT_ITEM_ROOT, channel)
+
+    ensure_dir(assessment_dest_dir)
+
+    items = (s for s in zf.namelist() if assessment_zip_dir in s)
+
+    for item in items:
+        # files inside zipfiles may come with leading directories in their
+        # names, like subtitles/hotdog.vtt. We'll only want the actual filename
+        # (hotdog.vtt) when extracting as that's what KA Lite expects.
+
+        filename = os.path.basename(item)
+        subfolder = filename[:3]
+        assessment_subfolder = os.path.join(assessment_dest_dir, subfolder)
+
+        ensure_dir(assessment_subfolder)
+
+        zip_item_fileobj = zf.open(item)
+
+        assessment_dest_path = os.path.join(assessment_subfolder, filename)
+        with open(assessment_dest_path, "w") as item_fileobj:
+            shutil.copyfileobj(zip_item_fileobj, item_fileobj)
