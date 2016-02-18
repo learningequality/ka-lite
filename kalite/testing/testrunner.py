@@ -20,6 +20,7 @@ from selenium import webdriver
 from optparse import make_option
 
 from kalite.testing.base import DjangoBehaveTestCase
+from kalite.topic_tools.base import database_exists
 
 
 def get_app_dir(app_module):
@@ -124,17 +125,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         shutil.copy2(os.path.join(settings.STATIC_ROOT, "django_js_reverse", "js", "reverse.js"),
             os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js", "reverse.js"))
 
-        if os.environ.get("TRAVIS"):
-            settings.DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
-
-        return super(KALiteTestRunner, self).__init__(*args, **kwargs)
-
-    def run_tests(self, test_labels=None, extra_tests=None, **kwargs):
-        """By default, only run relevant app tests.  If you specify... you're on your own!"""
-
-        def run_tests_wrapper_fn():
-            return super(KALiteTestRunner, self).run_tests(test_labels, extra_tests, **kwargs)
-        return run_tests_wrapper_fn()
+        super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
     def make_bdd_test_suite(self, features_dir, feature_name=None):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info, feature_name=feature_name)
@@ -148,8 +139,17 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         # Output Firefox version, needed to understand Selenium compatibility
         # issues
         browser = webdriver.Firefox()
-        print("Successfully setup Firefox {0}".format(browser.capabilities['version']))
+        logging.info("Successfully setup Firefox {0}".format(browser.capabilities['version']))
         browser.quit()
+
+        if not database_exists():
+            call_command("init_content_items")
+            call_command("annotate_content_items")
+
+            logging.info("Successfully setup content database")
+        else:
+            logging.info("Content database already exists")
+
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
         bdd_labels = test_labels
@@ -169,7 +169,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         for label in bdd_labels:
             feature_name = None
             if '.' in label:
-                print("Found label with dot in: %s, processing individual feature" % label)
+                logging.info("Found label with dot in: %s, processing individual feature" % label)
                 full_label = label
                 feature_name = label.split(".")[-1]
                 label = label.split(".")[0]
@@ -192,7 +192,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
                         # Flag that we should ignore test_labels if empty
                         ignore_empty_test_labels = True
                     else:
-                        print("Invalid behave feature name, ignoring")
+                        logging.info("Invalid behave feature name, ignoring")
                         continue
                 # build a test suite for this directory
                 extra_tests.append(self.make_bdd_test_suite(features_dir, feature_name=feature_name))

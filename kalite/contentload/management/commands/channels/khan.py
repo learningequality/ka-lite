@@ -93,7 +93,7 @@ whitewash_node_data = partial(base.whitewash_node_data, channel_data=channel_dat
 def denorm_data(node):
     if node:
         kind = node.get("kind", "")
-        if channel_data["denormed_attribute_list"].has_key(kind):
+        if kind in channel_data["denormed_attribute_list"]:
             for key in node.keys():
                 if key not in channel_data["denormed_attribute_list"][kind] or not node.get(key, "") or isinstance(node.get(key), partial):
                     del node[key]
@@ -119,7 +119,7 @@ def build_full_cache(items, id_key="id", ids=None):
                                 subitem = json.loads(subitem.toJSON())
                             except AttributeError:
                                 pass
-                            if subitem.has_key("kind"):
+                            if "kind" in subitem:
                                 subitem = whitewash_node_data(
                                     {key: value for key, value in subitem.items()})
                                 denorm_data(subitem)
@@ -128,7 +128,7 @@ def build_full_cache(items, id_key="id", ids=None):
                         item[attribute] = json.loads(item[attribute].toJSON())
                     except AttributeError:
                         pass
-                    if item[attribute].has_key("kind"):
+                    if "kind" in item[attribute]:
                         item[attribute] = whitewash_node_data(
                             {key: value for key, value in item.attribute.items()})
                         denorm_data(item[attribute])
@@ -233,12 +233,14 @@ def retrieve_API_data(channel=None):
     return topic_tree, exercises, assessment_items, content
 
 
-def query_remote_content_file_sizes(content_items, threads=10, blacklist=[]):
+def query_remote_content_file_sizes(content_items, threads=10, blacklist=None):
     """
     Query and store the file sizes for downloadable videos, by running HEAD requests against them,
     and reading the `content-length` header. Right now, this is only for the "khan" channel, and hence lives here.
     TODO(jamalex): Generalize this to other channels once they're centrally hosted and downloadable.
     """
+    if not blacklist:
+        blacklist = []
     sizes_by_id = {}
 
     if isinstance(content_items, dict):

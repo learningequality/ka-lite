@@ -374,10 +374,7 @@ var TotalPointView = Backbone.View.extend({
             return;
         }
 
-        message = sprintf(gettext("Points: %(points)d "), { points : points });
-        if (ds.store.show_store_link_once_points_earned) {
-            message += " | <a href='/store/'>Store!</a>";
-        }
+        message = sprintf(gettext(" %(points)d points "), { points : points });
 
         this.$el.html(message);
         this.$el.show();

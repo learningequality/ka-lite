@@ -1,14 +1,7 @@
 import sys
 import warnings
 from kalite import version
-from kalite.shared.warnings import RemovedInKALite_v016_Warning
-
-
-warnings.warn(
-    "Wrong settings module imported! Please do not import kalite.settings "
-    "directly. Instead, import kalite.project.settings.base",
-    RemovedInKALite_v016_Warning
-)
+from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
 
 ##############################
@@ -25,7 +18,7 @@ ASSESSMENT_ITEMS_ZIP_URL = "https://learningequality.org/downloads/ka-lite/%s/co
 from .base import *
 
 
-CHERRYPY_PORT = getattr(local_settings, "CHERRYPY_PORT", PRODUCTION_PORT)
+CHERRYPY_PORT = HTTP_PORT
 
 ########################
 # IMPORTANT: Do not add new settings below this line
@@ -41,30 +34,7 @@ CONFIG_PACKAGE = [cp.lower() for cp in CONFIG_PACKAGE]
 
 
 if CONFIG_PACKAGE:
-    warnings.warn(
-        "CONFIG_PACKAGE is outdated, use a settings module from kalite.project.settings",
-        RemovedInKALite_v016_Warning
-    )
-
-# Config for Raspberry Pi distributed server
-if package_selected("RPi"):
-
-    # nginx proxy will normally be on 8008 and production port on 7007
-    # If ports are overridden in local_settings, run the optimizerpi script
-    PRODUCTION_PORT = getattr(local_settings, "PRODUCTION_PORT", 7007)
-    PROXY_PORT = getattr(local_settings, "PROXY_PORT", 8008)
-    assert PRODUCTION_PORT != PROXY_PORT, "PRODUCTION_PORT and PROXY_PORT must not be the same"
-    #SYNCING_THROTTLE_WAIT_TIME = getattr(local_settings, "SYNCING_THROTTLE_WAIT_TIME", 1.0)
-    #SYNCING_MAX_RECORDS_PER_REQUEST = getattr(local_settings, "SYNCING_MAX_RECORDS_PER_REQUEST", 10)
-
-    PASSWORD_ITERATIONS_TEACHER = getattr(local_settings, "PASSWORD_ITERATIONS_TEACHER", 2000)
-    PASSWORD_ITERATIONS_STUDENT = getattr(local_settings, "PASSWORD_ITERATIONS_STUDENT", 500)
-
-    ENABLE_CLOCK_SET = getattr(local_settings, "ENABLE_CLOCK_SET", True)
-
-    DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = True
-    USING_RASPBERRY_PI = True
-
+    raise RemovedInKALite_v016_Error("CONFIG_PACKAGE is outdated, use a settings module from kalite.project.settings")
 
 if package_selected("nalanda"):
     TURN_OFF_MOTIVATIONAL_FEATURES = True
@@ -89,7 +59,8 @@ if package_selected("UserRestricted"):
 try:
     DEFAULT_ENCODING = DEFAULT_ENCODING
 except NameError:
-    from django.conf.settings import DEFAULT_ENCODING  # @UnresolvedImport
+    from django.conf import settings
+    DEFAULT_ENCODING = settings.DEFAULT_ENCODING
 
 if sys.getdefaultencoding() != DEFAULT_ENCODING:
     reload(sys)

@@ -1,46 +1,22 @@
+# -*- coding: utf-8 -*-
 import time
-import tempfile
-import getpass
 from kalite import version
-import hashlib
 import logging
 import os
-import json
 import sys
 import warnings
 
 from kalite import ROOT_DATA_PATH
-from kalite.shared.warnings import RemovedInKALite_v016_Warning
+from kalite.shared.exceptions import RemovedInKALite_v016_Error
 
-
-# Load local settings first... loading it again later to have the possibility
-# to overwrite default app settings.. very strange method, will be refactored
-# and completely fixed ~0.14 or 0.15. /benjaoming
+from django.utils.translation import ugettext_lazy
 
 try:
-    # Not sure if vars from local_settings are accessed ATM. This is one of
-    # the big disadvantage of this whole implicit importing chaos... will be
-    # fixed later.
     from kalite import local_settings
-    # This is not a DeprecationWarning by purpose, because those are
-    # ignored during settings module load time
-    warnings.warn(
-        "We will be deprecating the old way of statically importing custom "
-        "settings, in favor of a more flexible way. The easiest way to update "
-        "your installation is to rename your local_settings.py (keeping it in "
-        "the same directory) and add an import statement in the very first "
-        "line of the new file so it looks like this:\n\n"
-        "    from kalite.project.settings.base import *\n"
-        "    # Put custom settings here...\n"
-        "    FOO = BAR\n\n"
-        "and then call kalite start with an additional argument pointing to "
-        "your new settings module:\n\n"
-        "    kalite start --settings=kalite.my_settings\n\n"
-        "In the future, it is recommended not to keep your own settings module "
-        "in the kalite code base but to put the file somewhere else in your "
-        "python path, for instance in the current directory when running "
-        "'kalite --settings=my_module'.",
-        RemovedInKALite_v016_Warning
+    raise RemovedInKALite_v016_Error(
+        "The local_settings.py method for using custom settings has been removed."
+        "In order to use custom settings, please add them to the special 'settings.py'"
+        "file found in the '.kalite' subdirectory in your home directory."
     )
 except ImportError:
     local_settings = object()
@@ -69,8 +45,11 @@ if DEBUG:
 LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.INFO)
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
 
-logging.basicConfig()
 LOG.setLevel(LOGGING_LEVEL)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(levelname)s:%(name)s: %(message)s')
+ch.setFormatter(formatter)
+LOG.addHandler(ch)
 
 logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
 
@@ -98,6 +77,10 @@ IS_SOURCE = (
 )
 SOURCE_DIR = None
 
+# DB_TEMPLATE_FILE should point to a pre-generated database with no rows.
+# If it exists and DATABASES["default"]["name"] file does not, then the latter will be copied from the former
+# in the setup mgmt command.
+DB_TEMPLATE_FILE = None
 
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
@@ -126,7 +109,7 @@ if IS_SOURCE:
     )
 
 else:
-    _data_path = os.path.join(ROOT_DATA_PATH,)
+    _data_path = ROOT_DATA_PATH
 
     # BEING DEPRECATED, PLEASE DO NOT USE PROJECT_PATH!
     PROJECT_PATH = os.environ.get(
@@ -202,6 +185,14 @@ else:
 
     DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'data.sqlite')
 
+    # If we're not running as source, then we should include a blank, pre-migrated db in this location,
+    # to be copied to user's KALITE_HOME.
+    DB_TEMPLATE_FILE = os.path.join(
+        os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
+        "database",
+        "data.sqlite",
+    )
+
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security
     HTTPSRV_PATH = os.path.join(USER_DATA_ROOT, 'httpsrv')
@@ -236,22 +227,19 @@ MEDIA_URL = getattr(local_settings, "MEDIA_URL", "/media/")
 STATIC_URL = getattr(local_settings, "STATIC_URL", "/static/")
 
 
+# Context data included by ka lite's context processor
+KALITE_CHANNEL_CONTEXT_DATA = {
+    "channel_name": ugettext_lazy(u"KA Lite"),
+    "head_line": ugettext_lazy(u"A free world-class education for anyone anywhere."),
+    "tag_line": ugettext_lazy(u"KA Lite is a light-weight web server for viewing and interacting with core Khan Academy content (videos and exercises) without needing an Internet connection."),
+    "channel_license": ugettext_lazy(u"CC-BY-NC-SA"),
+    "footer_text": ugettext_lazy(u"Videos © 2015 Khan Academy (Creative Commons) // Exercises © 2015 Khan Academy"),
+    "header_logo": os.path.join(STATIC_URL, 'images', 'horizontal-logo-small.png'),
+    "frontpage_splash": os.path.join(STATIC_URL, 'images', 'logo_10_enlarged_2.png'),
+}
+
+
 DEFAULT_DATABASE_PATH = getattr(local_settings, "DATABASE_PATH", DEFAULT_DATABASE_PATH)
-
-# This database is located in the content root because then it can be copied
-# together with the other media files located there.
-# Users changing CONTENT_ROOT have to change DATABASES['assessment_items']['NAME']
-# to match
-__assessment_items_database_path = os.path.join(CONTENT_ROOT, 'assessmentitems.sqlite')
-
-# Are assessment items distributed in the system-wide data directory?
-# TODO: This is hard-coded as we do not expect users setting their own CONTENT_ROOT
-# to deviate from the system wide location
-ASSESSMENT_ITEMS_SYSTEM_WIDE = os.path.isfile(os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite'))
-
-if ASSESSMENT_ITEMS_SYSTEM_WIDE:
-    __assessment_items_database_path = os.path.join(ROOT_DATA_PATH, 'assessment', 'khan', 'assessmentitems.sqlite')
-
 
 DATABASES = getattr(local_settings, "DATABASES", {
     "default": {
@@ -260,16 +248,8 @@ DATABASES = getattr(local_settings, "DATABASES", {
         "OPTIONS": {
             "timeout": 60,
         },
-    },
-    "assessment_items": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": __assessment_items_database_path,
-        "OPTIONS": {
-        },
     }
 })
-
-DATABASE_ROUTERS = ["kalite.router.TopicToolsRouter", ]
 
 INTERNAL_IPS = getattr(local_settings, "INTERNAL_IPS", ("127.0.0.1",))
 ALLOWED_HOSTS = getattr(local_settings, "ALLOWED_HOSTS", ['*'])
@@ -312,7 +292,7 @@ LANGUAGE_COOKIE_NAME = "django_language"
 
 ROOT_URLCONF = "kalite.distributed.urls"
 
-from os.path import join, expanduser
+from os.path import expanduser
 
 BACKUP_DIRPATH = os.path.join(expanduser("~"), 'ka-lite-backups')
 DBBACKUP_BACKUP_DIRECTORY = BACKUP_DIRPATH
@@ -332,24 +312,19 @@ INSTALLED_APPS = [
     'fle_utils.django_utils',
     'fle_utils.config',
     'fle_utils.chronograph',
-    'fle_utils.testing', # needed to get the "runcode" command, which we sometimes tell users to run
-    'kalite.django_cherrypy_wsgiserver',
+    'fle_utils.testing',  # needed to get the "runcode" command, which we sometimes tell users to run
     'kalite.coachreports',
     'kalite.distributed',
     'kalite.main',
-    'kalite.playlist',
-    'kalite.caching',
     'kalite.updates',
     'kalite.facility',
     'kalite.student_testing',
-    'kalite.store',
     'kalite.topic_tools',
     'kalite.contentload',
     'kalite.dynamic_assets',
     'kalite.remoteadmin',
     'kalite.inline',
     'kalite.i18n',
-    'kalite.ab_testing',
     'kalite.control_panel',
     'dbbackup',
 ]
@@ -377,7 +352,6 @@ MIDDLEWARE_CLASSES = [
     'securesync.middleware.DBCheck',
     'django.middleware.common.CommonMiddleware',
     'kalite.distributed.middleware.LockdownCheck',
-    'kalite.student_testing.middleware.ExamModeCheck',
     'django.middleware.gzip.GZipMiddleware',
     'django_snippets.session_timeout_middleware.SessionIdleTimeout'
 ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
@@ -485,6 +459,8 @@ SESSION_IDLE_TIMEOUT = getattr(local_settings, "SESSION_IDLE_TIMEOUT", 0)
 LOGIN_URL = "/?login=true"
 LOGOUT_URL = "/securesync/api/user/logout/"
 
+# 18 threads seems a sweet spot
+CHERRYPY_THREAD_COUNT = getattr(local_settings, "CHERRYPY_THREAD_COUNT", 18)
 
 ########################
 # After all settings, but before config packages,
@@ -496,13 +472,10 @@ LOGOUT_URL = "/securesync/api/user/logout/"
 ########################
 
 from kalite.distributed.settings import *
-from kalite.django_cherrypy_wsgiserver.settings import *
 from securesync.settings import *
 from fle_utils.chronograph.settings import *
 from kalite.facility.settings import *
 from kalite.main.settings import *
-from kalite.playlist.settings import *
-from kalite.student_testing.settings import *
 
 # Import from applications with problematic __init__.py files
 from kalite.legacy.i18n_settings import *

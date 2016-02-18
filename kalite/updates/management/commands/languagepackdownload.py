@@ -17,12 +17,10 @@ from .classes import UpdatesStaticCommand
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet.download import callback_percent_proxy, download_file
-
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
-from kalite import caching
-from kalite.i18n import get_language_name, get_language_pack_url, \
+from kalite.i18n.base import get_language_name, get_language_pack_url, \
     get_localized_exercise_dirpath, get_po_filepath, get_srt_path, \
     lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.version import SHORTVERSION
@@ -97,9 +95,6 @@ class Command(UpdatesStaticCommand, CronCommand):
 
             self.next_stage()
             call_command("collectstatic", interactive=False)
-
-            self.next_stage(_("Invalidate caches"))
-            caching.invalidate_all_caches()
 
             self.complete(_("Finished processing language pack %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
         except Exception as e:

@@ -316,7 +316,9 @@ var SidebarView = BaseView.extend({
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".sidebar-fade").show();
         } else {
-            this.sidebar.css({left: - this.width});
+            // In an edge case, this.width may be undefined -- if so, then just make sure a sufficiently high
+            // numerical value is set to hide the sidebar
+            this.sidebar.css({left: -(this.width || $(window).width())});
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".sidebar-fade").hide();
         }
@@ -673,6 +675,14 @@ var TopicContainerOuterView = BaseView.extend({
         var self = this;
 
         this.inner_views[0].deferred_node_by_slug(path, function(node){
+            /*
+            Ultimately this will be called once for each TopicNode in the encapsulating SidebarView's TopicCollection
+            corresponding to the given path.
+
+            If no path is found, e.g. because an invalid url was entered (or because we're using the testing
+            framework) then node will be undefined. We still request the entry in order to complete the Sidebar
+            display logic, even though nothing will be shown.
+             */
             if (node!==undefined) {
                 if (node.get("kind")==="Topic") {
                     self.show_new_topic(node);
@@ -680,6 +690,8 @@ var TopicContainerOuterView = BaseView.extend({
                     self.entry_requested(node);
                 }
                 node.set("active", true);
+            } else {
+                self.entry_requested(node);
             }
         });
     },
@@ -709,51 +721,34 @@ var TopicContainerOuterView = BaseView.extend({
     },
 
     entry_requested: function(entry) {
-        var kind = entry.get("kind") || entry.get("entity_kind");
-        var id = entry.get("id") || entry.get("entity_id");
-
-        var view;
+        // entry could be undefined if we've requested a content item that *doesn't exist*, either through a bad url
+        // or more likely because we're using the testing framework. In this case, just pretend like we finished
+        // without actually showing anything.
+        var kind;
+        var id;
+        if( entry !== undefined ) {
+            kind = entry.get("kind") || entry.get("entity_kind");
+            id = entry.get("id") || entry.get("entity_id");
+        } else {
+            kind = "Video";
+            id = "undefined_entry_id";
+            entry = new Models.TopicNode();
+        }
 
         this.content_view.model = entry;
         // The rating subview depends on the content_view.model, but we can't just listen to events on the model
         // to trigger show_rating, since the actual object is swapped out here. We must call it explicitly.
         this.content_view.show_rating();
-        var self = this;
-        // Mask "require" with "external" to prevent browserify from bundling what we want to be external dependencies.
-        var external = require;
-        switch(kind) {
 
-            case "Exercise":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    var ExerciseViews = external("exercise");
-                    view = new ExerciseViews.ExercisePracticeView({
-                        exercise_id: id,
-                        context_type: "playlist",
-                        context_id: self.model.get("id")
-                    });
-                    self.content_view.show_view(view);
-                });
-                break;
+        var view = new ContentViews.ContentWrapperView({
+            id: id,
+            kind: kind,
+            context_id: this.model.get("id"),
+            channel: window.channel_router.channel
+        });
 
-            case "Quiz":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    var ExerciseViews = external("exercise");
-                    view = new ExerciseViews.ExerciseQuizView({
-                        quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
-                        context_id: self.model.get("id") // for now, just use the playlist ID as the quiz context_id
-                    });
-                    self.content_view.show_view(view);
-                });
-                break;
+        this.content_view.show_view(view);
 
-            default:
-                view = new ContentViews.ContentWrapperView({
-                    id: id,
-                    context_id: this.model.get("id")
-                });
-                this.content_view.show_view(view);
-                break;
-        }
         this.inner_views.unshift(this.content_view);
         this.trigger("inner_view_added");
         this.state_model.set("content_displayed", true);

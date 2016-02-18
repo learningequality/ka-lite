@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.test.utils import override_settings
 from django.utils import unittest
-from kalite.i18n import get_installed_language_packs
+from kalite.i18n.base import get_installed_language_packs
 from kalite.testing.base import KALiteBrowserTestCase
 from kalite.testing.mixins.browser_mixins import BrowserActionMixins
 from kalite.testing.mixins.django_mixins import CreateAdminMixin

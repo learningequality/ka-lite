@@ -38,7 +38,6 @@ Options:
 
 Examples:
   kalite start          Start KA Lite
-  kalite url            Tell me where KA Lite is available from
   kalite status         How is KA Lite doing?
   kalite stop           Stop KA Lite
   kalite shell          Display a Django shell
@@ -51,10 +50,6 @@ Examples:
                             the Watchify process to recompile Javascript dynamically.
 
 Planned features:
-  kalite diagnose             Outputs user and copy-paste friendly diagnostics
-  kalite query [COMMAND ...]  A query method for external UIs etc. to send
-                              commands and obtain data from kalite.
-
   Universal --verbose option and --debug option. Shows INFO level and DEBUG
   level from logging.. depends on proper logging being introduced and
   settings.LOGGERS. Currently, --debug just tells cherrypy to do "debug" mode.
@@ -110,7 +105,7 @@ from socket import timeout
 from django.core.management import ManagementUtility, get_commands
 
 import kalite
-from kalite.django_cherrypy_wsgiserver.cherrypyserver import DjangoAppPlugin
+from kalite.distributed.cherrypyserver import DjangoAppPlugin
 from kalite.shared.compat import OrderedDict
 from fle_utils.internet.functions import get_ip_addresses
 
@@ -385,7 +380,7 @@ class ManageThread(Thread):
         utility.execute()
 
 
-def manage(command, args=[], as_thread=False):
+def manage(command, args=None, as_thread=False):
     """
     Run a django command on the kalite project
 
@@ -393,6 +388,9 @@ def manage(command, args=[], as_thread=False):
     :param args: List of options to parse to the django management command
     :param as_thread: Runs command in thread and returns immediately
     """
+
+    if not args:
+        args = []
 
     args = update_default_args(["--traceback"], args)
 
@@ -524,6 +522,8 @@ def start(debug=False, watch=False, daemonize=True, args=[], skip_job_scheduler=
         print("\thttp://%s:%s/" % (addr, port))
     print("To access KA Lite from this machine, try the following address:")
     print("\thttp://127.0.0.1:%s/\n" % port)
+    for addr in get_urls_proxy(output_pipe=sys.stdout):
+        sys.stdout.write("\t{}\n".format(addr))
 
     # Daemonize at this point, no more user output is needed
     if daemonize:
@@ -639,21 +639,30 @@ def get_urls():
         return e.status_code, []
 
 
-def get_urls_proxy():
+def get_urls_proxy(output_pipe=sys.stderr):
     """
     Get addresses of the server if we're using settings.PROXY_PORT
 
     :raises: Exception for sure if django.conf.settings isn't loaded
     """
     # Import settings and check if a proxy port exists
-    from django.conf import settings
-    if hasattr(settings, 'PROXY_PORT') and settings.PROXY_PORT:
-        sys.stderr.write(
+    try:
+        from django.conf import settings
+    except Exception as e:
+        output_pipe.write(
+            "\n\nWarning, exception fetching KA Lite settings module:\n\n" +
+            str(e) + "\n\n"
+        )
+        return
+    if hasattr(settings, 'USER_FACING_PORT') and settings.USER_FACING_PORT and \
+       hasattr(settings, 'HTTP_PORT') and \
+       not settings.USER_FACING_PORT == settings.HTTP_PORT:
+        output_pipe.write(
             "\nKA Lite configured behind another server, primary "
             "addresses are:\n\n"
         )
         for addr in get_ip_addresses():
-            yield "http://{}:{}/".format(addr, settings.PROXY_PORT)
+            yield "http://{}:{}/".format(addr, settings.USER_FACING_PORT)
 
 
 def status():
@@ -674,15 +683,8 @@ def status():
         sys.stderr.write("KA Lite running on:\n\n")
         for addr in urls:
             sys.stderr.write("\t{}\n".format(addr))
-        # Import settings and check if a proxy port exists
-        try:
-            for addr in get_urls_proxy():
-                sys.stderr.write("\t{}\n".format(addr))
-        except Exception as e:
-            sys.stderr.write(
-                "\n\nWarning, exception fetching KA Lite settings module:\n\n" +
-                str(e) + "\n\n"
-            )
+        for addr in get_urls_proxy():
+            sys.stderr.write("\t{}\n".format(addr))
         return STATUS_RUNNING
     else:
         verbose_status = status.codes[status_code]

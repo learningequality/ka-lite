@@ -7,8 +7,8 @@ import os
 import tempfile
 import shutil
 import sauceclient as sc
+import socket
 
-from behave import *
 from httplib import CannotSendRequest
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -16,23 +16,79 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db import connections
+from django.db.transaction import TransactionManagementError
+from peewee import Using
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
+from kalite.topic_tools.content_models import Item, set_database, annotate_content_models
 
 from securesync.models import Zone, Device, DeviceZone
+
 
 def before_all(context):
     pass
 
+
 def after_all(context):
     pass
 
+
 def before_feature(context, feature):
-    pass
+    if "uses_content_paths" in context.tags:
+        setup_content_paths(context)
+
 
 def after_feature(context, feature):
-    pass
+    if "uses_content_paths" in context.tags:
+        teardown_content_paths(context)
+
+
+@set_database
+def setup_content_paths(context, db):
+    """
+    Creaters available content items and adds their urls to the context object.
+
+    :param context: A behave context, to which the attributes "available_content_path" and "unavailable_content_path"
+        will be added.
+    :return: None
+    """
+    # These paths are "magic" -- the success or failure of actually visiting the content items in the browser
+    # depends on these specific values.
+    context.unavailable_content_path, context.available_content_path = (
+        "khan/foo/bar/unavail",
+        "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/",
+    )
+
+    # This function uses 'iterator_content_items' function to return a list of path, update dict pairs
+    # It then updates the items with these paths with their update dicts, and then propagates
+    # availability changes up the topic tree - this means that we can alter the availability of one item
+    # and make all its parent topics available so that it is navigable to in integration tests.
+    annotate_content_models(db=db, iterator_content_items=lambda ids: [(
+        context.available_content_path, {"available": True})])
+
+    with Using(db, [Item], with_transaction=False):
+        context._unavailable_item = Item.create(
+            title="Unavailable item",
+            description="baz",
+            available=False,
+            kind="Video",
+            id="3",
+            slug="unavail",
+            path=context.unavailable_content_path
+        )
+
+@set_database
+def teardown_content_paths(context, db):
+    """
+    The opposite of ``setup_content_urls``. Removes content items created there.
+
+    :param context: A behave context, which keeps a reference to the Items so we can clean them up.
+    :return: None.
+    """
+    with Using(db, [Item], with_transaction=False):
+        context._unavailable_item.delete_instance()
+
 
 def setup_sauce_browser(context):
     """
@@ -68,10 +124,11 @@ def setup_sauce_browser(context):
             context.browser = webdriver.Remote(desired_capabilities=desired_capabilities,
                                                browser_profile=profile,
                                                command_executor=sauce_url)
-        except WebDriverException:
+        except (WebDriverException, socket.timeout):  # socket.timeout thrown occasionally, Selenium doesn't handle it
             print("Couldn't establish a connection to saucelabs. Using a local Firefox WebDriver instance.")
             del context.sauce
             context.browser = webdriver.Firefox(firefox_profile=profile)
+
 
 def setup_local_browser(context):
     """
@@ -91,6 +148,7 @@ def setup_local_browser(context):
         profile.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/csv")
 
     context.browser = webdriver.Firefox(firefox_profile=profile)
+
 
 # FYI: context.tags contains feature tags + scenario tags.
 def before_scenario(context, scenario):
@@ -123,6 +181,7 @@ def before_scenario(context, scenario):
         context.logged_in = True
         login_as_learner(context)
 
+
 def after_scenario(context, scenario):
     if context.logged_in:
         logout(context)
@@ -153,6 +212,7 @@ def after_scenario(context, scenario):
 
     database_teardown(context)
 
+
 def database_setup(context):
     """
     Behave features are analogous to test suites, and behave scenarios are analogous to TestCases, but due to
@@ -161,6 +221,7 @@ def database_setup(context):
     """
     KALiteTestCase.setUpDatabase()
 
+
 def database_teardown(context):
     """
     Behave features are analogous to test suites, and behave scenarios are analogous to TestCases, but due to
@@ -168,7 +229,11 @@ def database_teardown(context):
     setup/teardown done by TestCases in order to achieve consistent isolation.
     """
     for alias in connections:
-        call_command("flush", database=alias, interactive=False)
+        try:
+            call_command("flush", database=alias, interactive=False)
+        except TransactionManagementError as e:
+            print("Couldn't flush the database, got a TransactionManagementError: " + e.message)
+
 
 def do_fake_registration():
     """
