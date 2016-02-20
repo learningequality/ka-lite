@@ -448,7 +448,7 @@ def kill_watchify_process():
         sys.stdout.write('watchify process killed')
 
 
-@benchmark_client
+
 def start(debug=False, watch=False, daemonize=True, benchmark=False, args=[], skip_job_scheduler=False, port=None):
     """
     Start the kalite server as a daemon

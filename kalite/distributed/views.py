@@ -30,7 +30,9 @@ from securesync.api_client import BaseClient
 from securesync.models import Device, SyncSession, Zone
 from kalite.distributed.forms import SuperuserForm
 from kalite.topic_tools.settings import CHANNEL
+from benchmark import benchmark_client
 import json
+
 
 def check_setup_status(handler):
     """
@@ -81,9 +83,9 @@ def learn(request):
     }
     return context
 
-
 @check_setup_status
 @render_to("distributed/homepage.html")
+@benchmark_client
 def homepage(request):
     """
     Homepage.

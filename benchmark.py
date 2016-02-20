@@ -1,3 +1,4 @@
+import sys
 from benchmarkclient import BenchmarkClient
 from benchmarkserver import BenchmarkingServer
 
@@ -14,13 +15,14 @@ def benchmark_client(f):
     """
   
     def wrapper(*args, **kwargs):
-        if not kwargs['benchmark']:
-            f(*args, **kwargs)
+    
+        if '--benchmark' not in sys.argv:
+            return f(*args, **kwargs)
         else:
-            p2 = BenchmarkingServer()
+            p2 = BenchmarkingServer(f.__name__)
             p2.start()
             with BenchmarkClient() as c:
-                f(*args, **kwargs)
+                return f(*args, **kwargs)
 
     return wrapper
 

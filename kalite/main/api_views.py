@@ -16,8 +16,10 @@ from kalite.topic_tools.content_models import get_topic_nodes, get_content_item,
 from kalite.topic_tools.content_recommendation import get_resume_recommendations, get_next_recommendations, get_explore_recommendations
 from kalite.facility.models import FacilityUser
 from kalite.distributed.api_views import get_messages_for_api_calls
+from benchmark import benchmark_client
 
 @api_handle_error_with_json
+@benchmark_client
 def topic_tree(request, channel):
     parent = request.GET.get("parent")
     return JsonResponse(get_topic_nodes(channel=channel, language=request.language, parent=parent))

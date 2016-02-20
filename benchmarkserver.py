@@ -13,7 +13,8 @@ class BenchmarkingServer(multiprocessing.Process):
     The server can listen up to 5 queued connections
     """
 
-    def __init__(self):
+    def __init__(self,view_name):
+        self.view_name = view_name
         super(BenchmarkingServer, self).__init__()
 
     def run(self):
@@ -44,13 +45,13 @@ class BenchmarkingServer(multiprocessing.Process):
         cpu_usage_single = psutil.cpu_percent()
         mem_usage = process.memory_info()[0] / float(2 ** 20)
         # disk_io = psutil.disk_usage(path)
-        writer.writerow((datetime.datetime.now(), cpu_usage_single, cpu_usage_multiple, mem_usage))
+        writer.writerow((datetime.datetime.now(), cpu_usage_single, mem_usage))
 
     def writeheader(self,msg):
         command = ['git', 'log', '-1', '--format="%H"']
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None)
         hash_file_name = p.stdout.read()
-        hash_file_name = hash_file_name[1:-2] + ".csv" #stdout from pipe adds a whitespace at the end of string
+        hash_file_name = hash_file_name[1:-2] + "-" + self.view_name + ".csv" #stdout from pipe adds a whitespace at the end of string
         f = open(hash_file_name, "at")
         writer = csv.writer(f, quoting=csv.QUOTE_ALL)
         writer.writerow(('Date', 'CPU', 'Mem'))
