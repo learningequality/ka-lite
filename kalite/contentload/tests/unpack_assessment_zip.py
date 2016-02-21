@@ -80,9 +80,6 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
             get_method.assert_called_once_with(url, prefetch=False)
 
-            # TODO(aron): write test for verifying that assessment items are combined
-            # once the splitting code on the generate_assessment_zips side is written
-
             # verify that the other items are written to the content directory
             for filename in zf.namelist():
                 # already verified above; no need to double-dip
