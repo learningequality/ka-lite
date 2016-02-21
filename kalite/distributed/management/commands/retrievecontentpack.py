@@ -119,8 +119,9 @@ class Command(UpdatesStaticCommand):
         extract_content_pack_metadata(zf, lang)  # always extract to the en lang
         extract_assessment_items(zf, "en")
 
-        self.next_stage(_("Looking for available content items."))
-        call_command("annotate_content_items", language=lang)
+        if not self.is_template:
+            self.next_stage(_("Looking for available content items."))
+            call_command("annotate_content_items", language=lang)
 
         self.complete(_("Finished processing content pack."))
 

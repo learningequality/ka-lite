@@ -86,13 +86,11 @@ assets:
 	npm cache clean
 	npm install --production
 	node build.js
-	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
-	# Press ctrl+d to continue after making manual amendments
-	cat
 	bin/kalite manage compileymltojson
 	bin/kalite manage syncdb --noinput
 	bin/kalite manage migrate
 	cp kalite/database/data.sqlite kalite/database/templates/
+	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
 release: clean docs assets
 	python setup.py sdist --formats=gztar,zip upload --sign
