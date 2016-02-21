@@ -91,7 +91,7 @@ assets:
 	bin/kalite manage syncdb --noinput
 	bin/kalite manage migrate
 
-release: clean docs assets
+release: clean docs assets man
 	python setup.py sdist --formats=gztar,zip upload --sign
 	python setup.py sdist --formats=gztar,zip upload --sign --static
 	ls -l dist
