@@ -38,20 +38,76 @@ if DEBUG:
 # Basic setup of logging
 ##############################
 
-# TODO: Use Django's settings.LOGGERS
-
 # Set logging level based on the value of DEBUG (evaluates to 0 if False,
 # 1 if True)
 LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.INFO)
+
+# We should use local module level logging.getLogger
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
 
-LOG.setLevel(LOGGING_LEVEL)
-ch = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(levelname)s:%(name)s: %(message)s')
-ch.setFormatter(formatter)
-LOG.addHandler(ch)
-
-logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'standard': {
+            'format': '[%(levelname)s] [%(asctime)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['null'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'kalite': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'cherrypy.console': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'cherrypy.access': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'cherrypy.error': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}
 
 
 ###################################################
@@ -357,6 +413,7 @@ MIDDLEWARE_CLASSES = [
     'securesync.middleware.DBCheck',
     'django.middleware.common.CommonMiddleware',
     'kalite.distributed.middleware.LockdownCheck',
+    'kalite.distributed.middleware.LogRequests',
     'django.middleware.gzip.GZipMiddleware',
     'django_snippets.session_timeout_middleware.SessionIdleTimeout'
 ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])
