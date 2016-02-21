@@ -142,7 +142,11 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         logging.info("Successfully setup Firefox {0}".format(browser.capabilities['version']))
         browser.quit()
 
-        logging.info("Content database already exists")
+        if not database_exists():
+            call_command("retrievecontentpack", "download", "en", minimal=True, foreground=True)
+            logging.info("Successfully setup content database")
+        else:
+            logging.info("Content database already exists")
 
         # Add BDD tests to the extra_tests
         # always get all features for given apps (for convenience)
