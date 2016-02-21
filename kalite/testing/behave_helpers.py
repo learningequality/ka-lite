@@ -86,6 +86,15 @@ def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
     )
 
 
+def assert_no_element_by_id(context, _id, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Assert that no element is found. Use a wait in case the element currently exists
+    on the page, and we want to wait for it to disappear before doing the assert.
+    Finds the element using an id.
+    """
+    _assert_no_element_by(context, By.ID, _id, wait_time)
+
+
 def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_PAGE_LOAD_TIME):
     """
     Assert that no element is found. Use a wait in case the element currently exists
