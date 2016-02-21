@@ -251,51 +251,6 @@ class PackagesTests(DependenciesTests):
             self._pass()
 
 
-class PathsTests(DependenciesTests):
-    """
-    Check that we have access to all paths and files we need read or write access to.
-    """
-
-    JSON_FILES = ("channel_data.json", "contents.json", "exercises.json",
-                  "topics.json",)
-
-    def test_content_path(self):
-        content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))
-        msg = 'Testing write access to content folder "%s"...' % content_path
-        self.check_path(content_path, os.W_OK, msg=msg)
-
-    def test_data_path(self):
-        khan_path = os.path.realpath(os.path.join(PROJECT_PATH, "data", "khan"))
-        msg = 'Testing read-only access to data folder "%s"...' % khan_path
-        self.check_path(khan_path, os.R_OK, msg=msg)
-
-    def test_json_path(self):
-        khan_path = os.path.realpath(os.path.join(PROJECT_PATH, "data", "khan"))
-        msg = 'Testing access to and format of json files at "%s"...' % khan_path
-        self._log(msg)
-        fail_count = 0
-        for json_file in self.JSON_FILES:
-            json_path = os.path.realpath(os.path.join(khan_path, json_file)) + ''
-            msg = '\n...checking access to "%s"...' % json_path
-            if not self.check_path(json_path, os.R_OK, msg=msg, raise_fail=False, end_chars=""):
-                fail_count += 1
-            else:
-                # Attempt to load .json file to validate format.
-                # TODO(cpauya): Check if .json file is large to prevent delays.
-                self._log("\n......loading json file...")
-                json_content = softload_json(json_path, default=None)
-                if json_content is None:
-                    msg = "file has invalid json format or is empty..."
-                    self._fail(msg, raise_fail=False, end_chars="")
-                    fail_count += 1
-                else:
-                    self._pass(end_chars="")
-        if fail_count > 0:
-            self._fail("\n...Result: %s json file/s failed test..." % fail_count)
-        else:
-            self._pass("\n...Result: all json file/s are ok...")
-
-
 # NOTE: Enable these if we want to run the tests in specified order.
 # TEST_CASES = (SqliteTests, DjangoTests, PathsTests, PackagesTests)
 #
