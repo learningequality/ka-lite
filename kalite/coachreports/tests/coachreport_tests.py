@@ -116,7 +116,7 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
     def test_playlist_progress(self):
         parent=get_content_parents(ids=[self.ex_logs.exercise_id])
         base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress_detail'})
-        url = base_url + '?' + urllib.urlencode({'user_id':self.student.id, 'playlist_id': parent[0]["id"]})
+        url = base_url + '?' + urllib.urlencode({'user_id':self.student.id, 'playlist_id': "greater-than-less-than"})
         resp = self.client.get(url)
         exercises=json.loads(resp.content).get("objects")
         # checking if the request returned any of the exercises
