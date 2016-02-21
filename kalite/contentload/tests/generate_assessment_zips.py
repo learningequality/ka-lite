@@ -37,7 +37,10 @@ class TestUrlConversion(TestCase):
 
     def test_content_link_converted(self):
         link_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](https://www.khanacademy.org/humanities/history/ancient-medieval/Ancient/v/standard-of-ur-c-2600-2400-b-c-e)"
-        expected_string = "(and so that is the correct answer).**\\n\\n[Watch this video to review](/learn/khan/test-prep/ap-art-history/ancient-mediterranean-ap/ancient-near-east-a/standard-of-ur-c-2600-2400-b-c-e/)"
+        expected_string = u"(and so that is the correct answer).**\\n\\n[Watch this video to review](/learn/khan/test-prep/ap-art-history/ancient-mediterranean-AP/ancient-near-east-a/standard-of-ur-c-2600-2400-b-c-e/)"
+        self.maxDiff = None
+        print expected_string
+        print mod.convert_urls(link_string)
         self.assertEqual(expected_string, mod.convert_urls(link_string))
 
     def test_bad_content_link_removed(self):
