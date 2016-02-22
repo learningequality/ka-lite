@@ -234,14 +234,14 @@ class Command(BaseCommand):
         print("         version %s" % VERSION)
         print("                                     ")
 
-        if sys.version_info >= (2, 8) or sys.version_info < (2, 6):
+        if sys.version_info < (2, 7):
+            raise CommandError("Support for Python version 2.6 and below had been discontinued, please upgrade.")
+        elif sys.version_info >= (2, 8):
             raise CommandError(
-                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %d.%d.%d\n" % sys.version_info[:3])
-        if sys.version_info < (2, 7, 9):
+                "Your Python version is: %d.%d.%d -- which is not supported. Please use the Python 2.7 series or wait for Learning Equality to release Kolibri.\n" % sys.version_info[:3])
+        elif sys.version_info < (2, 7, 6):
             logging.warning(
-                "It's recommended that you install Python version 2.7.9. Your version is: %d.%d.%d\n" % sys.version_info[:3])
-            if sys.version_info < (2, 7):
-                raise CommandError("Support for Python version 2.6 and below had been discontinued, please upgrade.")
+                "It's recommended that you install Python version 2.7.6. Your version is: %d.%d.%d\n" % sys.version_info[:3])
 
         if options["interactive"]:
             print(
