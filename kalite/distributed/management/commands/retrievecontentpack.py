@@ -213,12 +213,5 @@ def extract_subtitles(zf, lang):
 
 def extract_assessment_items(zf, lang):
     assessment_zip_dir = "khan/"
-    assessment_dest_dir = os.path.join(content_settings.ASSESSMENT_ITEM_ROOT)
-
-    _extract_assessment_resources(zf, assessment_zip_dir, assessment_dest_dir)
-
-
-def _extract_assessment_resources(zf, assessment_zip_dir, assessment_dest_dir):
     items = (s for s in zf.namelist() if assessment_zip_dir in s)
-
-    zf.extractall(assessment_dest_dir, items)
+    zf.extractall(content_settings.ASSESSMENT_ITEM_ROOT, items)
