@@ -152,14 +152,15 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         """
         user = FacilityUser.objects.get(id=user_id)
         playlist = get_topic_node(content_id=playlist_id)
-
+	print user.get_name()
         pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist)
 
         # Retrieve video, exercise, and quiz logs that appear in this playlist
         user_vid_logs, user_ex_logs = cls.get_user_logs(user, pl_video_ids, pl_exercise_ids)
-
+	print user_vid_logs,user_ex_logs
         # Finally, sort an ordered list of the playlist entries, with user progress
         # injected where it exists.
+	print get_topic_nodes(parent=playlist_id)
         progress_details = list()
         for leaf_node in get_topic_nodes(parent=playlist_id):
             entity_id = leaf_node.get("id")
