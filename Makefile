@@ -102,8 +102,8 @@ release: clean clean-dev-db docs assets man
 	ls -l dist
 
 dist: clean clean-dev-db docs assets
-	python setup.py sdist --formats=gztar,zip
-	python setup.py sdist --formats=gztar,zip --static
+	python setup.py sdist 
+	python setup.py sdist --static
 	ls -l dist
 
 install: clean
