@@ -18,7 +18,7 @@ urlpatterns = patterns(__package__ + '.api_views',
     url(r'^', include(ContentLogResource().urls)),
     url(r'^', include(ContentRatingResource().urls)),
 
-    url(r'^assessment_item/(?P<assessment_item>.*)/$', 'assessment_item', {}, 'assessment_item'),
+    url(r'^assessment_item/(?P<assessment_item_id>.*)/$', 'assessment_item', {}, 'assessment_item'),
     url(r'^content_recommender/?$', 'content_recommender', {}, 'content_recommender'),
 
     # A flat data structure for building a graphical knowledge map
