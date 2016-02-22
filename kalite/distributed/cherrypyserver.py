@@ -31,13 +31,15 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         # Serve the content files
         if getattr(settings, "CONTENT_ROOT", None):
             # Assessment items
-            from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT
+            from kalite.contentload.settings import ASSESSMENT_ITEM_ROOT
             static_handler = cherrypy.tools.staticdir.handler(
                 section="/",
                 dir="",
-                root=os.path.abspath(KHAN_ASSESSMENT_ITEM_ROOT)
+                root=os.path.abspath(ASSESSMENT_ITEM_ROOT)
             )
-            cherrypy.tree.mount(static_handler, settings.CONTENT_URL + "khan/")
+            cherrypy.tree.mount(static_handler, settings.CONTENT_URL + "assessment/",)
+
+            # Video content items
             static_handler = cherrypy.tools.staticdir.handler(
                 section="/",
                 dir=os.path.split(settings.CONTENT_ROOT)[1],
