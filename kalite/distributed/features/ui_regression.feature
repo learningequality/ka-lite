@@ -12,3 +12,18 @@ Feature: UI regression tests
         Given I'm on update_videos page
         Then I'm redirected to the homepage
         Then I see only superusercreate modal
+
+    @as_coach
+    Scenario: Documentation link shown to coaches
+        Given I am on the homepage
+        Then I see the documentation link
+
+    @as_admin
+    Scenario: Documentation link shown to admins
+        Given I am on the homepage
+        Then I see the documentation link
+
+    @as_learner
+    Scenario: Documentation link not shown to learners
+        Given I am on the homepage
+        Then I do not see the documentation link

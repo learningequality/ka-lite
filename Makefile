@@ -49,7 +49,7 @@ lint:
 test:
 	bin/kalite manage test --bdd-only
 
-test-bdd:
+test-bdd: docs
 	bin/kalite manage test --bdd-only
 
 test-nobdd:
@@ -96,7 +96,7 @@ assets:
 	cp kalite/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
-release: clean clean-dev-db docs assets
+release: clean clean-dev-db docs assets man
 	python setup.py sdist --formats=gztar,zip upload --sign
 	python setup.py sdist --formats=gztar,zip upload --sign --static
 	ls -l dist
