@@ -122,6 +122,15 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
 	q1=Item.update(available=True).where(Item.id == self.ex_logs.exercise_id)
 	q1.execute()
 
+    @set_database
+    def tearDown(self, db=None):
+	print self.p['id']
+	self.db = db
+        q=Item.update(available=False).where(Item.id == self.p['id'])
+	q.execute()
+	q1=Item.update(available=False).where(Item.id == self.ex_logs.exercise_id)
+	q1.execute()
+
     def test_playlist_progress(self):
 	print self.ex_logs
 	print self.ex_logs.exercise_id
