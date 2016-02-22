@@ -274,11 +274,6 @@ class Command(BaseCommand):
         if git_migrate_path:
             call_command("gitmigrate", path=git_migrate_path, interactive=options["interactive"])
 
-        # TODO(benjaoming): This is used very loosely, what does it mean?
-        # Does it mean that the installation path is clean or does it mean
-        # that we should remove (clean) items from a previous installation?
-        install_clean = not kalite.is_installed()
-
         database_kind = settings.DATABASES["default"]["ENGINE"]
         if "sqlite" in database_kind:
             database_file = settings.DATABASES["default"]["NAME"]
@@ -290,6 +285,8 @@ class Command(BaseCommand):
         # An empty file is created automatically even when the database dosn't
         # exist. But if it's empty, it's safe to overwrite.
         database_exists = database_exists and os.path.getsize(database_file) > 0
+
+        install_clean = not database_exists
 
         if database_file:
             if not database_exists:
@@ -316,7 +313,7 @@ class Command(BaseCommand):
                     print(
                         "the database file will be moved to a deletable location.")
 
-        if not install_clean and not database_file and not kalite.is_installed():
+        if not install_clean and not database_file:
             # Make sure that, for non-sqlite installs, the database exists.
             raise Exception(
                 "For databases not using SQLite, you must set up your database before running setup.")
