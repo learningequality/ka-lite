@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools.content_models import get_topic_node, get_content_parents, get_topic_contents, get_content_item
+from kalite.topic_tools.content_models import get_topic_node, get_content_parents, get_topic_contents, get_content_item, get_topic_nodes
 
 
 class PlaylistProgressParent:
@@ -145,7 +145,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         self.path = kwargs.get("path")
 
     @classmethod
-    def user_progress_detail(cls, user_id, playlist_id):
+    def user_progress_detail(cls, user_id, playlist_id, language=None):
         """
         Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
@@ -161,8 +161,8 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         # Finally, sort an ordered list of the playlist entries, with user progress
         # injected where it exists.
         progress_details = list()
-        for entity_id in playlist.get("children"):
-            leaf_node = get_content_item(entity_id)
+        for leaf_node in get_topic_nodes(parent=playlist_id):
+            entity_id = leaf_node.get("id")
             kind = leaf_node.get("kind")
 
             status = "notstarted"

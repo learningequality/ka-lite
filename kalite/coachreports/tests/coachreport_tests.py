@@ -1,13 +1,15 @@
 import json
+import urllib
 
 from django.conf import settings
 logging = settings.LOG
 
-from kalite.testing.base import KALiteTestCase
+from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
+from kalite.topic_tools.content_models import get_content_parents
 
 
 class ExternalAPITests(FacilityMixins,
@@ -104,3 +106,20 @@ class InternalAPITests(FacilityMixins,
         for key in response_keys:
             assert key in api_resp, "{key} not found in learner log API response".format(key)
         self.client.logout()
+
+class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KALiteClientTestCase):
+
+    def setUp(self):
+        self.student=self.create_student()
+        self.ex_logs=self.create_exercise_log(user=self.student)
+
+    def test_playlist_progress(self):
+        parent=get_content_parents(ids=[self.ex_logs.exercise_id])
+        base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress_detail'})
+        url = base_url + '?' + urllib.urlencode({'user_id':self.student.id, 'playlist_id': "greater-than-less-than"})
+        resp = self.client.get(url)
+        exercises=json.loads(resp.content).get("objects")
+        # checking if the request returned any of the exercises
+        self.assertEqual(len(exercises),1)
+        #checking if the returned list is accurate
+        self.assertEqual(exercises[0]["title"],"Comparing two-digit numbers")
