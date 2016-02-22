@@ -87,8 +87,6 @@ assets:
 	npm install --production
 	node build.js
 	bin/kalite manage compileymltojson
-	bin/kalite manage init_content_items
-	bin/kalite manage annotate_content_items
 	bin/kalite manage syncdb --noinput
 	bin/kalite manage migrate
 
