@@ -151,10 +151,13 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         objects associated with a specific user and playlist ID.
         """
         user = FacilityUser.objects.get(id=user_id)
+	print playlist_id
         playlist = get_topic_node(content_id=playlist_id)
+	print playlist
 	print user.get_name()
         pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist)
 
+	print pl_video_ids, pl_exercise_ids
         # Retrieve video, exercise, and quiz logs that appear in this playlist
         user_vid_logs, user_ex_logs = cls.get_user_logs(user, pl_video_ids, pl_exercise_ids)
 	print user_vid_logs,user_ex_logs
