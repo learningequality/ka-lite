@@ -18,13 +18,16 @@ help:
 
 clean: clean-build clean-pyc clean-test
 
+clean-dev-db:
+	rm -f kalite/database/data.sqlite
+
 clean-build:
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
-	rm -f kalite/database/data.sqlite
+	rm -fr kalite/database/templates
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -87,17 +90,18 @@ assets:
 	npm install --production
 	node build.js
 	bin/kalite manage compileymltojson
-	bin/kalite manage init_content_items
-	bin/kalite manage annotate_content_items
 	bin/kalite manage syncdb --noinput
 	bin/kalite manage migrate
+	mkdir -p kalite/database/templates/
+	cp kalite/database/data.sqlite kalite/database/templates/
+	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
-release: clean docs assets man
+release: clean clean-dev-db docs assets man
 	python setup.py sdist --formats=gztar,zip upload --sign
 	python setup.py sdist --formats=gztar,zip upload --sign --static
 	ls -l dist
 
-dist: clean docs assets
+dist: clean clean-dev-db docs assets
 	python setup.py sdist --formats=gztar,zip
 	python setup.py sdist --formats=gztar,zip --static
 	ls -l dist

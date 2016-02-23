@@ -33,6 +33,9 @@ static-updates
 # MAC stuff
 .DS_Store
 
+# oh-my-zsh
+.venv
+
 # SQLite files (should probably specify the path)
 *.db
 *.sqlite*

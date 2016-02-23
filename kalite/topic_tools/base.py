@@ -49,7 +49,7 @@ def available_content_databases():
     @return: iterator over (channel, language) values
     """
     pattern = re.compile("content_(?P<channel>[^_]+)_(?P<language>[^_]+).sqlite")
-    for filename in glob.iglob(settings.CONTENT_DATABASE_ROOT):
+    for filename in glob.iglob(django_settings.DEFAULT_DATABASE_DIR):
         match = pattern.search(filename)
         if match:
             yield match.group(1, 2)
