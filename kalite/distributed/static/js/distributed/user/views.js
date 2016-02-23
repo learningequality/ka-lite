@@ -67,6 +67,7 @@ var SuperUserCreateModalView = BaseView.extend({
                 success : function(e){
                     if (e.Status == 'Success') {
                         this.close_modal();
+                        window.statusModel.set("has_superuser", true);
                     }else if (e.Status == 'Invalid'){
                         $('#superusercreate-container').html(e.data);
                         this.highlight_form();
