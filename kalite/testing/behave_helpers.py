@@ -51,7 +51,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 # Maximum time to wait when trying to find elements
 MAX_WAIT_TIME = 30
 # Maximum time to wait for a page to load.
-MAX_PAGE_LOAD_TIME = 5
+MAX_PAGE_LOAD_TIME = 30
 
 
 def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
