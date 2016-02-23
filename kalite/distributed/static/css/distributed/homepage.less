@@ -1,5 +1,6 @@
 @import "./kalite-base.less";
 
+
 .suggested-action {
     background-color: #F7F7F7;
     color: #444!important;
@@ -10,30 +11,29 @@
     float: left;
     margin-right: 25px;
     min-height: 221px;
+    :hover {
+    border-color: #C3CA7D;
+    -webkit-box-shadow: 0 0 6px 3px @k-accent-color;
+    -moz-box-shadow: 0 0 6px 3px @k-accent-color;
+    box-shadow: 0 0 6px 3px @k-accent-color;
+    }
+    a:hover {
+    text-decoration: none!important;
+    color: @learntitle;
+    }
 }
 
 .suggested-actions {
     padding-top: 124px;
 }
 
-.suggested-action:hover {
-    border-color: #C3CA7D;
-    -webkit-box-shadow: 0 0 6px 3px @k-accent-color;
-    -moz-box-shadow: 0 0 6px 3px @k-accent-color;
-    box-shadow: 0 0 6px 3px @k-accent-color;
-}
-
-.suggested-action a:hover {
-    text-decoration: none!important;
-    color: #005987;
-}
-
 #suggested-action-image-link-homepage {
-    margin: auto;
+    display: block;
+    width: 100%;
 }
 
 .suggested-action-title {
-    color: #005987;
+    color: @learntitle;
     text-decoration: none;
     font-size: 21px;
 }
@@ -41,11 +41,10 @@
 .suggested-action-big-button {
     border-top-right-radius: 15px;
     border-top-left-radius: 5px;
-}
-
-.suggested-action-big-button h1 {
-    color: white;
-    text-align: center;
+        h1 {
+            color: white;
+            text-align: center;
+        }
 }
 
 .message {
@@ -122,10 +121,9 @@ td div {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-}
-
-.playlist-list-item:hover {
-    background-color: #D5D5D5;
+    :hover {
+        background-color: #D5D5D5;
+    }
 }
 
 .playlist-list-header {
