@@ -53,8 +53,6 @@ var VectorVideoView = ContentBaseView.extend({
         console.log("original data:");
         console.log(data);
 
-        var new_json = {};
-
 
         for (var object = 0; object < data.operations.length; object++) {
             var object_start_time = parseFloat(data.operations[object].start);
@@ -79,8 +77,6 @@ var VectorVideoView = ContentBaseView.extend({
                         var new_distance = Math.sqrt(((x_cord - x_cord_prev) * (x_cord - x_cord_prev)) + ((y_cord - y_cord_prev) * (y_cord - y_cord_prev)));
                         stroke_distance = stroke_distance + new_distance;
                     }
-
-
                 }
                 //console.log("TOTAL DISTANCE OF A STROKE: " + stroke_distance);
                 object_stroke_distances.push(stroke_distance);
@@ -90,19 +86,19 @@ var VectorVideoView = ContentBaseView.extend({
             //console.log("TOTAL DISTANCE OF AN OBJECT: " + object_distance);
             //console.log("OBJECT DURATION" + object_duration);
 
-
-            //TODO: NEED TO CONTINUE THIS
             for (var i = 0; i < object_stroke_distances.length; i++) {
                 var stroke_duration = object_stroke_distances[i] / object_distance * object_duration; //one stroke divided by whole object distance = a deceimal aka .5. then multiply that by the duration that the object takes which gives us a time of how long that stroke should be drawn for.
-                //console.log(stroke_duration);
-                //console.log("TESTING IS BELOW ME!!!");
-                //console.log(data.operations[object].strokes[i]);
-
-                data.operations[object].strokes[i].stroke_duration = stroke_duration;
-
-
+                if (i === 0) {
+                    data.operations[object].strokes[i].stroke_start_time = object_start_time;
+                    data.operations[object].strokes[i].stroke_end_time = object_start_time + stroke_duration;
+                }
+                else {
+                    var before_stroke_start_time = data.operations[object].strokes[i - 1].stroke_start_time;
+                    var before_stroke_end_time = data.operations[object].strokes[i - 1].stroke_end_time;
+                    data.operations[object].strokes[i].stroke_start_time = stroke_duration + before_stroke_start_time;
+                    data.operations[object].strokes[i].stroke_end_time = stroke_duration + before_stroke_end_time;
+                }
             }
-
         }
         console.log("data after having added the durations for each stroke:");
         console.log(data);
@@ -329,8 +325,19 @@ var VectorVideoView = ContentBaseView.extend({
         color_b = color_b / 255;
 
         for (var stroke in one_object.strokes) {
+            //while(((parseInt(this.get_position())) / 1000) < (one_object.strokes[stroke].stroke_start_time)){
+
+
+
+            var time = (this.audio_object.position) / 1000;
+            var stroke_start_time = one_object.strokes[stroke].stroke_start_time;
+            console.log("time");
+            console.log(time);
+            console.log("stroke start time");
+            console.log(stroke_start_time);
             this.draw_stroke(one_object.strokes[stroke], object_start_x, object_start_y, color_r, color_g, color_b);
             //console.log(one_object.strokes[stroke]);
+            console.log("FINISHED ONE STROKE");
         }
     },
 
