@@ -1,13 +1,16 @@
 import json
+import urllib
+import peewee
 
 from django.conf import settings
 logging = settings.LOG
 
-from kalite.testing.base import KALiteTestCase
+from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
+from kalite.topic_tools.content_models import get_content_parents, Item ,set_database
 
 
 class ExternalAPITests(FacilityMixins,
@@ -104,3 +107,40 @@ class InternalAPITests(FacilityMixins,
         for key in response_keys:
             assert key in api_resp, "{key} not found in learner log API response".format(key)
         self.client.logout()
+
+class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KALiteClientTestCase):
+
+    @set_database	
+    def setUp(self, db=None):
+        self.db = db
+	self.student=self.create_student()
+        self.ex_logs=self.create_exercise_log(user=self.student)
+	self.Parent=get_content_parents(ids=[self.ex_logs.exercise_id])
+	self.p=self.Parent[0]
+        q=Item.update(available=True).where(Item.id == self.p['id'])
+	q.execute()
+	q1=Item.update(available=True).where(Item.id == self.ex_logs.exercise_id)
+	q1.execute()
+
+    @set_database
+    def tearDown(self, db=None):
+	print self.p['id']
+	self.db = db
+        q=Item.update(available=False).where(Item.id == self.p['id'])
+	q.execute()
+	q1=Item.update(available=False).where(Item.id == self.ex_logs.exercise_id)
+	q1.execute()
+
+    def test_playlist_progress(self):
+	print self.ex_logs
+	print self.ex_logs.exercise_id
+        base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress_detail'})
+        url = base_url + '?' + urllib.urlencode({'user_id':self.student.id, 'playlist_id': self.p["id"]})
+        resp = self.client.get(url)
+        exercises=json.loads(resp.content).get("objects")
+        # checking if the request returned any of the exercises
+	print len(exercises)
+        self.assertEqual(len(exercises),1)
+        #checking if the returned list is accurate
+	print exercises[0]["title"]
+        self.assertEqual(exercises[0]["title"],"Comparing two-digit numbers")

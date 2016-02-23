@@ -3,7 +3,7 @@ from behave import given, then
 from kalite.testing.behave_helpers import build_url, reverse, alert_in_page, find_css_class_with_wait, \
     assert_no_element_by_css_selector
 
-TIMEOUT = 3
+TIMEOUT = 30
 
 
 @given(u"I open some unavailable content")

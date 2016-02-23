@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools.content_models import get_topic_node, get_content_parents, get_topic_contents, get_content_item
+from kalite.topic_tools.content_models import get_topic_node, get_content_parents, get_topic_contents, get_content_item, get_topic_nodes
 
 
 class PlaylistProgressParent:
@@ -145,24 +145,28 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         self.path = kwargs.get("path")
 
     @classmethod
-    def user_progress_detail(cls, user_id, playlist_id):
+    def user_progress_detail(cls, user_id, playlist_id, language=None):
         """
         Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
         """
         user = FacilityUser.objects.get(id=user_id)
+	print playlist_id
         playlist = get_topic_node(content_id=playlist_id)
-
+	print playlist
+	print user.get_name()
         pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist)
 
+	print pl_video_ids, pl_exercise_ids
         # Retrieve video, exercise, and quiz logs that appear in this playlist
         user_vid_logs, user_ex_logs = cls.get_user_logs(user, pl_video_ids, pl_exercise_ids)
-
+	print user_vid_logs,user_ex_logs
         # Finally, sort an ordered list of the playlist entries, with user progress
         # injected where it exists.
+	print get_topic_nodes(parent=playlist_id)
         progress_details = list()
-        for entity_id in playlist.get("children"):
-            leaf_node = get_content_item(entity_id)
+        for leaf_node in get_topic_nodes(parent=playlist_id):
+            entity_id = leaf_node.get("id")
             kind = leaf_node.get("kind")
 
             status = "notstarted"
