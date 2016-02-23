@@ -93,12 +93,12 @@ class FacilityUserResource(ModelResource):
 
         if users.count() == 0:
             if Facility.objects.count() > 1:
-                error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
+                error_message = _("Username and password do not match. Make sure you choose the right facility.")
             else:
-                error_message = _("Username was not found. Did you type your username correctly?")
+                error_message = _("Username and password do not match.")
             return self.create_response(request, {
                 'messages': {'error': error_message},
-                'error_highlight': "username"
+                'error_highlight': "password"
                 }, HttpUnauthorized )
 
         for user in users:
@@ -112,9 +112,12 @@ class FacilityUserResource(ModelResource):
                 user = None
 
         if not user:
+            if Facility.objects.count() > 1:
+                error_message = _("Username and password do not match. Make sure you choose the right facility.")
+            else:
+                error_message = _("Username and password do not match.")
             return self.create_response(request, {
-                'messages': {'error': _("Password was incorrect. Please try again.")},
-                # Specify which field to highlight as in error.
+                'messages': {'error': error_message},
                 'error_highlight': "password"
                 }, HttpUnauthorized )
         else:
