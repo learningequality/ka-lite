@@ -73,6 +73,8 @@ class Command(UpdatesStaticCommand):
 
     def handle(self, *args, **options):
 
+        self.setup(options)
+
         operation = args[0]
         self.minimal = options.get('minimal', False)
         self.foreground = options.get('foreground', False)
