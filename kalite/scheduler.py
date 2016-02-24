@@ -57,13 +57,26 @@ logger = logging.getLogger(__name__)
 
 def reset_spool():
     """
-    Called each time the main thread starts
+    Called each time the main thread starts.
+
+    Resets the output of workers since those are definitely gone since last,
+    however we maintain a persistent job spool, so the job description files
+    are not purged.
     """
     if os.path.exists(WORKER_SPOOL_DIR):
         shutil.rmtree(WORKER_SPOOL_DIR)
+    os.makedirs(WORKER_SPOOL_DIR)
+    if not os.path.exists(JOB_SPOOL_DIR):
+        os.makedirs(JOB_SPOOL_DIR)
+
+
+def purge_jobs():
+    """
+    Purges the job queue
+    """
     if os.path.exists(JOB_SPOOL_DIR):
         shutil.rmtree(JOB_SPOOL_DIR)
-
+    os.makedirs(JOB_SPOOL_DIR)
 
 class Scheduler(Thread):
     """
@@ -94,7 +107,7 @@ class Scheduler(Thread):
                 JobClass, job_kwargs = parse_job_description(job_description)
                 return JobClass(
                     file_path,
-                    **job_kwargs
+                    kwargs=job_kwargs
                 )
             except ValueError:
                 logging.error("Error reading job: {}".format(file_path))
@@ -107,27 +120,28 @@ class Scheduler(Thread):
         description file and starting new threads
         """
 
-        active_jobs = []
+        active_jobs = {}
 
         while True:
 
             # Check all currently running jobs
-            finished_jobs = filter(lambda j: not j.is_active(), active_jobs)
-            active_jobs = filter(lambda j: j.is_active(), active_jobs)
+            finished_jobs = {k: v for k, v in active_jobs.items() if not v.is_alive()}
+            active_jobs = {k: v for k, v in active_jobs.items() if v.is_alive()}
 
             # Finalize jobs that are done
-            for job in finished_jobs:
+            for job in finished_jobs.values():
                 self.finalize_job(job)
 
             # Check all files containing job descriptions
-            for cnt, file_name in enumerate(os.listdir(JOB_SPOOL_DIR)):
+            new_jobs = filter(lambda f: f not in active_jobs, os.listdir(JOB_SPOOL_DIR))
+            for cnt, file_name in enumerate(new_jobs):
                 # Never start any more workers than we are allowed
-                if cnt > MAX_WORKERS - len(active_jobs):
+                if cnt + len(active_jobs) >= MAX_WORKERS:
                     break
                 job = self.get_job(file_name, cnt)
                 if job:
                     job.start()
-                    active_jobs.append(job)
+                    active_jobs[file_name] = job
 
             time.sleep(POLL_INTERVAL_SECONDS)
 
@@ -144,13 +158,14 @@ class Scheduler(Thread):
                 os.remove(job.progress_file_path)
             # Finally, remove the job description from spool
             if os.path.isfile(job.job_file):
+                logger.debug("Removing job file: {}".format(job.job_file))
                 os.remove(job.job_file)
         except Exception as e:
             logger.error(
                 "job {job_id} failed to finalize: {reason}\n\n{traceback}".format(
                     job_id=job.id,
                     reason=str(e),
-                    traceback.format_exc(),
+                    traceback=traceback.format_exc(),
                 )
             )
 
@@ -163,8 +178,8 @@ class SingleJobWorker(Thread):
 
     def __init__(self, job_file, *args, **kwargs):
         self.job_file = job_file
-        self.id = uuid.uuid4()
-        self.kwargs = kwargs
+        self.id = uuid.uuid4().hex
+        self.kwargs = kwargs.pop('kwargs', {})
         self.progress_file_path = os.path.join(WORKER_SPOOL_DIR, self.id + ".json")
         super(SingleJobWorker, self).__init__(*args, **kwargs)
         self.setDaemon(True)
@@ -254,13 +269,15 @@ class VideoDownloader(SingleJobWorker):
 
         # Fetch next video scheduled for download
         selector = Item.select().where(
-            Item.available == False &
+            Item.available == False &  # @IgnorePep8
             Item.schedule_download == True
         ).limit(1)
 
         # Create a job
         for item in selector.execute():
-            job_create(JOB_VIDEO_DOWNLOADER, {'youtube_id': item.youtube_id})
+            create_job(JOB_VIDEO_DOWNLOADER, {'youtube_id': item.youtube_id})
+
+        super(VideoDownloader, self).finalize()
 
 
 class IdleJob(SingleJobWorker):
@@ -269,12 +286,20 @@ class IdleJob(SingleJobWorker):
 
     Manual example:
 
-    1. Place a file in .kalite/spool/jobs/whatevernameyoulike
+    1. Place a file in .kalite/spool/jobs/your_job_uuid
     2. Content: {id: 'idle', data: {'duration': 123}}
     """
 
     def run(self):
-        time.sleep(int(self.kwargs.get('duration', 10)))
+        logger.info("Starting IdleJob {}".format(self.id))
+        duration = int(self.kwargs.get('duration', 10))
+        for n in range(duration):
+            self.write_progress({'duration': float(n) / float(duration)})
+            time.sleep(1)
+
+    def finalize(self):
+        logger.info("Finalizing IdleJob {}".format(self.id))
+        super(IdleJob, self).finalize()
 
 
 JOB_VIDEO_DOWNLOADER = 'video_downloader'
@@ -292,7 +317,7 @@ def parse_job_description(job_description):
 
     :param: job_description: input from a job spool file
     """
-    job_data = json.loads(VideoDownloader)  # raises ValueError
+    job_data = json.loads(job_description)  # raises ValueError
     try:
         return (
             JOB_TYPES.get(job_data.get('type')),
@@ -302,14 +327,14 @@ def parse_job_description(job_description):
         raise ValueError("No job type or illegal job type in job description")
 
 
-def job_create(job_type, data):
+def create_job(job_type, data):
     """
     Create a new job
 
     :param: job_type: something from JOB_TYPES
     :param: data: Should be JSON serializable
     """
-    file_name = uuid.uuid4() + ".json"
+    file_name = uuid.uuid4().hex + ".json"
     with open(os.path.join(JOB_SPOOL_DIR, file_name), "w") as f:
         f.write(
             json.dumps(
@@ -335,6 +360,7 @@ def get_worker_progress_data():
         while True:
             try:
                 f = open(file_path, 'r')
-                yield f.read()
-            except OSError:
+                yield json.loads(f.read())
+                break
+            except (OSError, ValueError):
                 time.sleep(0.1)
