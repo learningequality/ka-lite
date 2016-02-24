@@ -54,18 +54,26 @@ var VectorVideoView = ContentBaseView.extend({
         console.log(data);
 
 
+
+        //LOOP THROUGH ALL OBJECTS
         for (var object = 0; object < data.operations.length; object++) {
             var object_start_time = parseFloat(data.operations[object].start);
             var object_end_time = parseFloat(data.operations[object].end);
             var object_duration = object_end_time - object_start_time;
             var object_distance = 0;
 
+            var stroke_distances_array = [];
 
-            var object_stroke_distances = [];
+            //LOOP THROUGH ALL STROKES IN ONE OBJECT
             for (var stroke = 0; stroke < data.operations[object].strokes.length; stroke++) {
 
                 var stroke_distance = 0;
 
+
+
+
+
+                //LOOP THROUGH ALL SUBSTROKES IN ONE STROKE
                 for (var sub_stroke = 0; sub_stroke < data.operations[object].strokes[stroke].length; sub_stroke++) {
 
                     var x_cord = data.operations[object].strokes[stroke][sub_stroke][0];
@@ -78,25 +86,79 @@ var VectorVideoView = ContentBaseView.extend({
                         stroke_distance = stroke_distance + new_distance;
                     }
                 }
+
+
+
+
                 //console.log("TOTAL DISTANCE OF A STROKE: " + stroke_distance);
-                object_stroke_distances.push(stroke_distance);
+                stroke_distances_array.push(stroke_distance);
                 object_distance = object_distance + stroke_distance;
             }
-            //console.log(object_stroke_distances);
+            //console.log(stroke_distances_array);
             //console.log("TOTAL DISTANCE OF AN OBJECT: " + object_distance);
             //console.log("OBJECT DURATION" + object_duration);
 
-            for (var i = 0; i < object_stroke_distances.length; i++) {
-                var stroke_duration = object_stroke_distances[i] / object_distance * object_duration; //one stroke divided by whole object distance = a deceimal aka .5. then multiply that by the duration that the object takes which gives us a time of how long that stroke should be drawn for.
+            for (var i = 0; i < stroke_distances_array.length; i++) {
+                var stroke_duration = parseFloat(stroke_distances_array[i]) / object_distance * object_duration;
+                //IF FIRST STROKE
                 if (i === 0) {
-                    data.operations[object].strokes[i].stroke_start_time = object_start_time;
-                    data.operations[object].strokes[i].stroke_end_time = object_start_time + stroke_duration;
+                    var stroke_start_time = object_start_time;
+                    data.operations[object].strokes[i].stroke_start_time = stroke_start_time;
+
+                    var stroke_end_time = object_start_time + stroke_duration;
+                    data.operations[object].strokes[i].stroke_end_time = stroke_end_time;
+
+
+                    //LOOP THROUGH ALL SUBSTROKES
+                    for (var j = 0; j < data.operations[object].strokes[i].length; j++) {
+                        console.log(data.operations[object].strokes[i][j]);//.start or end and stuff
+
+                        //var current_time = j / parseFloat(data.operations[object].strokes[i].length) * stroke_duration;
+                        var percent = j / parseFloat(data.operations[object].strokes[i].length);
+                        //console.log(percent);
+                        var substroke_start_time = percent * stroke_duration;
+                        var adjusted_start_time = substroke_start_time + stroke_start_time;
+                        //console.log(adjusted_start_time);
+                        data.operations[object].strokes[i][j].substroke_start_time = adjusted_start_time;
+
+                        var start_value = stroke_start_time;
+                        var change_in_value = stroke_end_time;
+                        var duration = stroke_duration;
+
+                        //data.operations[object].strokes[i][j].substroke_end_time = "stroke zero of this object";
+                        //var substroke_start_time = this.ease(current_time, start_value, change_in_value, duration);
+
+                        /*
+
+                         var stroke_start_time = parseFloat(data.operations[object].strokes[i].stroke_start_time);
+                         var stroke_end_time = parseFloat(data.operations[object].strokes[i].stroke_end_time);
+
+                         console.log("length of this" + data.operations[object].strokes[i].length);
+                         var current_time = j / parseFloat(data.operations[object].strokes[i].length) * stroke_duration;
+                         var start_value = stroke_start_time;
+                         var change_in_value = stroke_end_time;
+                         var duration = stroke_duration;
+                         console.log("current_time" + current_time);
+                         console.log("start_value" + start_value);
+                         console.log("change_in_value" + change_in_value);
+                         console.log("duration" + duration);
+                         //current_time, start_value, change_in_value, duration
+                         var substroke_start_time = this.ease(current_time, start_value, change_in_value, duration);
+                         */
+
+
+
+                    }
                 }
                 else {
                     var before_stroke_start_time = data.operations[object].strokes[i - 1].stroke_start_time;
                     var before_stroke_end_time = data.operations[object].strokes[i - 1].stroke_end_time;
                     data.operations[object].strokes[i].stroke_start_time = stroke_duration + before_stroke_start_time;
                     data.operations[object].strokes[i].stroke_end_time = stroke_duration + before_stroke_end_time;
+                    for (var k = 0; k < data.operations[object].strokes[i].length; k++) {
+                        data.operations[object].strokes[i][k].stroke_start_time = "not zero of this object";
+                        data.operations[object].strokes[i][k].stroke_end_time = "not zero of this object";
+                    }
                 }
             }
         }
@@ -118,6 +180,14 @@ var VectorVideoView = ContentBaseView.extend({
 
         console.log("After");
         //setInterval(this.loop, 100);
+    },
+
+    ease: function (current_time, start_value, change_in_value, duration) {
+        //ease in out quad
+        current_time /= duration / 2;
+        if (current_time < 1) return change_in_value / 2 * current_time * current_time + start_value;
+        current_time--;
+        return -change_in_value / 2 * (current_time * (current_time - 2) - 1) + start_value;
     },
 
     initialize_sound_manager: function () {
@@ -324,21 +394,22 @@ var VectorVideoView = ContentBaseView.extend({
         var color_b = parseInt(one_object.color[2]);
         color_b = color_b / 255;
 
+        var time = (this.audio_object.position) / 1000;
+
         for (var stroke in one_object.strokes) {
+
+
             //while(((parseInt(this.get_position())) / 1000) < (one_object.strokes[stroke].stroke_start_time)){
-
-
-
-            var time = (this.audio_object.position) / 1000;
             var stroke_start_time = one_object.strokes[stroke].stroke_start_time;
-            console.log("time");
-            console.log(time);
-            console.log("stroke start time");
-            console.log(stroke_start_time);
+            console.log("stroke: " + stroke);
+            console.log("time: " + time);
+            console.log("stroke start time: " + stroke_start_time);
+
             this.draw_stroke(one_object.strokes[stroke], object_start_x, object_start_y, color_r, color_g, color_b);
             //console.log(one_object.strokes[stroke]);
             console.log("FINISHED ONE STROKE");
         }
+        console.log("FINISHEEDDDD AN OBJECT APPARENTLY");
     },
 
     draw_stroke: function (one_stroke, start_x, start_y, color_r, color_g, color_b) {
