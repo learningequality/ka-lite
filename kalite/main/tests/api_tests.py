@@ -7,42 +7,43 @@ from ..models import VideoLog, ExerciseLog
 from kalite.facility.models import Facility, FacilityUser
 from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
 from kalite.testing.client import KALiteClient
+from kalite.topic_tools.content_models import set_database, Using, Item, get_or_create
 
 
 class ContentItemApiViewTestCase(KALiteClientTestCase):
+    def setUp(self, db=None):
+        item_attributes = {
+            u"title": u"My Cool Item",
+            u"description": u"A description!",
+            u"available": True,
+            u"kind": u"Video",
+            u"id": u"my_content",
+            u"slug": u"my_content",
+            u"path": u"khan/my_content",
+            u"extra_fields": u"{}",
+            u"size_on_disk": 0,
+            u"sort_order": 0.0,
+            u"remote_size": 0,
+            u"files_complete": 0,
+            u"total_files": 0,
+            u"youtube_id": u"",
+        }
+        self.expected = item_attributes.copy()
+        self.expected.update({
+            u"messages": [],  # Added to all responses
+            u"parent": {},  # Since the item's parent is not set, it gets translated to an empty dict in the response
+        })
+        get_or_create(item_attributes)
+        self.maxDiff = None
+
     def test_sanity(self):
         resp = self.client.get(reverse('content_item', kwargs={
             'channel': 'khan',
-            'content_id': 'subtraction_1',
+            'content_id': 'my_content',
         }))
-        expected = json.loads('{"available": true, "kind": "Exercise", "description": "Subtract small numbers. All answers are four or less.", "parent": {}, "title": "Subtraction within five", "extra_fields": "{\\\"curated_related_videos\\\":[\\\"x2fefc435\\\"],\\\"display_name\\\":\\\"Subtraction within five\\\",\\\"prerequisites\\\":[\\\"addition_1\\\"],\\\"uses_assessment_items\\\":false,\\\"file_name\\\":\\\"subtraction_1.html\\\",\\\"all_assessment_items\\\":[],\\\"name\\\":\\\"subtraction_1\\\"}", "youtube_id": null, "messages": [], "slug": "subtraction_1", "files_complete": 0, "total_files": 0, "pk": 31, "path": "khan/math/arithmetic/addition-subtraction/basic_addition/subtraction_1/", "size_on_disk": 0, "sort_order": 0.0, "id": "subtraction_1", "remote_size": 0}')  # noqa
-        self.assertDictEqual(json.loads(resp.content), expected)
-
-    def test_template_key_not_in_extra_fields(self):
-        """
-        A regression test -- hard to test the JS, but at least we can assert which keys we expect to find and which
-        we do not.
-        """
-        resp = self.client.get(reverse('content_item', kwargs={
-            'channel': 'khan',
-            'content_id': 'subtraction_1',
-        }))
-        resp_dict = json.loads(resp.content)
-        extra_fields = json.loads(resp_dict['extra_fields'])
-        self.assertNotIn('template', extra_fields)
-
-    def test_file_name_key_in_extra_fields(self):
-        """
-        A regression test -- hard to test the JS, but at least we can assert which keys we expect to find and which
-        we do not.
-        """
-        resp = self.client.get(reverse('content_item', kwargs={
-            'channel': 'khan',
-            'content_id': 'subtraction_1',
-        }))
-        resp_dict = json.loads(resp.content)
-        extra_fields = json.loads(resp_dict['extra_fields'])
-        self.assertIn('file_name', extra_fields)
+        actual = json.loads(resp.content)
+        actual.pop(u"pk")  # We have no control over this value, so don't check it
+        self.assertDictEqual(actual, self.expected)
 
 
 class TestSaveExerciseLog(KALiteTestCase):
