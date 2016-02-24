@@ -37,6 +37,7 @@ class Item(Model):
     title = CharField()
     description = TextField()
     available = BooleanField()
+    schedule_download = BooleanField(default=False)
     files_complete = IntegerField(default=0)
     total_files = IntegerField(default=0)
     kind = CharField()
