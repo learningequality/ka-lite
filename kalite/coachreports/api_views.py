@@ -74,7 +74,7 @@ def learner_logs(request):
 
     end_date = request.GET.get("end_date")
 
-    topic_ids = request.GET.getlist("topic_id", [])
+    topic_ids = json.loads(request.GET.get("topic_ids", "[]"))
 
     learners = get_learners_from_GET(request)
 
