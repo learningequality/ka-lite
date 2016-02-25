@@ -64,7 +64,7 @@ var VideoPlayerView = ContentBaseView.extend({
                 "controls": true,
                 "width": "auto",
                 "height": "auto",
-                "playbackRates": [0.5, 1, 1.5, 2]
+                "playbackRates": [0.5, 1, 1.25, 1.5, 2]
             };
             if( this.data_model.get("content_urls").thumbnail ) {
                 video_player_options['poster'] = this.data_model.get("content_urls").thumbnail;
