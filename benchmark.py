@@ -1,8 +1,8 @@
 import sys
 from benchmarkclient import BenchmarkClient
 from benchmarkserver import BenchmarkingServer
-
-
+import time
+import logging
 
 
 def benchmark_client(f):
@@ -21,7 +21,11 @@ def benchmark_client(f):
         else:
             p2 = BenchmarkingServer(f.__name__)
             p2.start()
-            with BenchmarkClient() as c:
+            with BenchmarkClient():
+                logging.info("inside benchmarkclient decorator")
+                #sleep needed because of race condition, server spawns new process
+                #before closing old one
+                time.sleep(1)
                 return f(*args, **kwargs)
 
     return wrapper

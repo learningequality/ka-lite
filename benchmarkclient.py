@@ -1,6 +1,7 @@
 import os
 import socket
 import time
+import logging
 
 
 class BenchmarkClient(object):
@@ -32,15 +33,18 @@ class BenchmarkClient(object):
         while (total_sent < message_len):
             sent = self.s.send(the_string)
             total_sent += sent
+        logging.info("end of start function")
 
     def stop(self):
-        self.s.send('close')
+        self.s.sendall('close')
         self.s.close()
 
     def __enter__(self):
+        logging.info("inside client start")
         self.start()
 
     def __exit__(self, exception_type, exception_val, trace):
+        logging.info("inside client stop")
         try:
             self.stop()
         except AttributeError:
