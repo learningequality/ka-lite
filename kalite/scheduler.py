@@ -55,29 +55,6 @@ MAX_WORKERS = 4
 logger = logging.getLogger(__name__)
 
 
-def reset_spool():
-    """
-    Called each time the main thread starts.
-
-    Resets the output of workers since those are definitely gone since last,
-    however we maintain a persistent job spool, so the job description files
-    are not purged.
-    """
-    if os.path.exists(WORKER_SPOOL_DIR):
-        shutil.rmtree(WORKER_SPOOL_DIR)
-    os.makedirs(WORKER_SPOOL_DIR)
-    if not os.path.exists(JOB_SPOOL_DIR):
-        os.makedirs(JOB_SPOOL_DIR)
-
-
-def purge_jobs():
-    """
-    Purges the job queue
-    """
-    if os.path.exists(JOB_SPOOL_DIR):
-        shutil.rmtree(JOB_SPOOL_DIR)
-    os.makedirs(JOB_SPOOL_DIR)
-
 class Scheduler(Thread):
     """
     Main scheduler thread. Detects new jobs in the spool and generates up to
@@ -87,6 +64,8 @@ class Scheduler(Thread):
     """
 
     def __init__(self, *args, **kwargs):
+        # Set by stop(), read by run()
+        self.__alive = False
         # Do this every time so we don't have data of unknown jobs lying around.
         reset_spool()
         super(Scheduler, self).__init__(*args, **kwargs)
@@ -119,18 +98,10 @@ class Scheduler(Thread):
         Run the scheduler, picking jobs from the spool, parsing the job
         description file and starting new threads
         """
-
+        self.__alive = True
         active_jobs = {}
 
-        while True:
-
-            # Check all currently running jobs
-            finished_jobs = {k: v for k, v in active_jobs.items() if not v.is_alive()}
-            active_jobs = {k: v for k, v in active_jobs.items() if v.is_alive()}
-
-            # Finalize jobs that are done
-            for job in finished_jobs.values():
-                self.finalize_job(job)
+        while self.__alive:
 
             # Check all files containing job descriptions
             new_jobs = filter(lambda f: f not in active_jobs, os.listdir(JOB_SPOOL_DIR))
@@ -144,6 +115,20 @@ class Scheduler(Thread):
                     active_jobs[file_name] = job
 
             time.sleep(POLL_INTERVAL_SECONDS)
+
+            # Check all currently running jobs
+            finished_jobs = {k: v for k, v in active_jobs.items() if not v.is_alive()}
+            active_jobs = {k: v for k, v in active_jobs.items() if v.is_alive()}
+
+            # Finalize jobs that are done
+            for job in finished_jobs.values():
+                self.finalize_job(job)
+
+    def stop(self):
+        self.__alive = False
+        while self.is_alive():
+            logger.info("Waiting for scheduler to finish")
+            time.sleep(0.1)
 
     def finalize_job(self, job):
         """
@@ -253,6 +238,8 @@ class VideoDownloader(SingleJobWorker):
 
     def run(self):
         # TODO: Implement video downloading
+        # Remember to skip already downloaded videos because there is
+        # a theoretical chance that they are scheduled multiple times
         pass
 
     def finalize(self):
@@ -267,17 +254,19 @@ class VideoDownloader(SingleJobWorker):
             youtube_id=self.kwargs['youtube_id']
         )
 
-        # Fetch next video scheduled for download
-        selector = Item.select().where(
-            Item.available == False &  # @IgnorePep8
-            Item.schedule_download == True
-        ).limit(1)
+        create_scheduled_video_download_jobs(1)
 
-        # Create a job
-        for item in selector.execute():
-            create_job(JOB_VIDEO_DOWNLOADER, {'youtube_id': item.youtube_id})
 
-        super(VideoDownloader, self).finalize()
+class NewVideo(SingleJobWorker):
+    """
+    This job creates a couple of new video downloads from the pool of videos
+    that have been scheduled for download in the database.
+
+    1. Content: {id: 'new_video', data: {}}
+    """
+
+    def run(self):
+        create_scheduled_video_download_jobs(MAX_WORKERS)
 
 
 class IdleJob(SingleJobWorker):
@@ -299,15 +288,16 @@ class IdleJob(SingleJobWorker):
 
     def finalize(self):
         logger.info("Finalizing IdleJob {}".format(self.id))
-        super(IdleJob, self).finalize()
 
 
 JOB_VIDEO_DOWNLOADER = 'video_downloader'
+JOB_NEW_VIDEO = 'new_video'
 JOB_IDLE = 'idle'
 
 JOB_TYPES = {
     JOB_VIDEO_DOWNLOADER: VideoDownloader,
     JOB_IDLE: IdleJob,
+    JOB_NEW_VIDEO: NewVideo
 }
 
 
@@ -334,13 +324,28 @@ def create_job(job_type, data):
     :param: job_type: something from JOB_TYPES
     :param: data: Should be JSON serializable
     """
-    file_name = uuid.uuid4().hex + ".json"
+    file_name = job_type + "-" + uuid.uuid4().hex + ".json"
     with open(os.path.join(JOB_SPOOL_DIR, file_name), "w") as f:
         f.write(
             json.dumps(
                 {'type': job_type, 'data': data}
             )
         )
+
+
+def create_scheduled_video_download_jobs(number_of_jobs):
+
+    from kalite.topic_tools.content_models import Item
+
+    # Fetch next video scheduled for download
+    selector = Item.select().where(
+        Item.available == False &  # @IgnorePep8
+        Item.schedule_download == True
+    ).limit(number_of_jobs)
+
+    # Create a job
+    for item in selector.execute():
+        create_job(JOB_VIDEO_DOWNLOADER, {'youtube_id': item.youtube_id})
 
 
 def get_worker_progress_data():
@@ -364,3 +369,48 @@ def get_worker_progress_data():
                 break
             except (OSError, ValueError):
                 time.sleep(0.1)
+
+
+def reset_spool():
+    """
+    Called each time the main thread starts.
+
+    Resets the output of workers since those are definitely gone since last,
+    however we maintain a persistent job spool, so the job description files
+    are not purged.
+    """
+    if os.path.exists(WORKER_SPOOL_DIR):
+        shutil.rmtree(WORKER_SPOOL_DIR)
+    os.makedirs(WORKER_SPOOL_DIR)
+    if not os.path.exists(JOB_SPOOL_DIR):
+        os.makedirs(JOB_SPOOL_DIR)
+
+
+def purge_jobs():
+    """
+    Purges the job queue
+    """
+    if os.path.exists(JOB_SPOOL_DIR):
+        shutil.rmtree(JOB_SPOOL_DIR)
+    os.makedirs(JOB_SPOOL_DIR)
+
+
+def purge_jobs_by_type(job_type):
+    """
+    Purging jobs while the scheduler is active is subject to race conditions
+    as a job may have been picked from the queue already.
+
+    This method may be called from a different process or thread!!
+
+    :param: job_type: A job type from JOB_TYPES
+    """
+    for file_name in os.listdir(JOB_SPOOL_DIR):
+        # By convention, auto-created jobs start with
+        if file_name.startswith(job_type):
+            file_path = os.path.join(JOB_SPOOL_DIR, file_name)
+            # Because of the race-condition, the job file could have disappeared
+            try:
+                os.remove(file_path)
+            except OSError:
+                logger.error("Failed to delete job: {}".format(file_path))
+                logger.error(traceback.format_exc())
