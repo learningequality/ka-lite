@@ -65,7 +65,7 @@ var ExerciseDataModel = ContentModels.ContentDataModel.extend({
                 "secondsPerFastProblem": this.get("seconds_per_fast_problem"),
                 "authorName": this.get("author_name"),
                 "relatedVideos": this.get("related_videos"),
-                "fileName": this.get("template")
+                "fileName": this.get("file_name")
             },
             "exerciseProgress": {
                 "level": "" // needed to keep khan-exercises from blowing up
