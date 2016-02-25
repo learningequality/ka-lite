@@ -111,6 +111,7 @@ class Command(UpdatesStaticCommand):
         extract_catalog_files(zf, lang)
         update_jsi18n_file(lang)
         extract_content_db(zf, lang, is_template=self.is_template)
+        call_command("patch_content_db", template=self.is_template)
         extract_subtitles(zf, lang)
         extract_content_pack_metadata(zf, lang)  # always extract to the en lang
         extract_assessment_items(zf, "en")
