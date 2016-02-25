@@ -30,7 +30,8 @@ from fle_utils.orderedset import OrderedSet
 from kalite.i18n.base import lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.settings import CHANNEL
-from kalite.topic_tools.content_models import get_topic_update_nodes, get_download_youtube_ids, annotate_content_models_by_youtube_id
+from kalite.topic_tools.content_models import get_topic_update_nodes, get_download_youtube_ids, annotate_content_models_by_youtube_id, Item
+from kalite import scheduler
 
 
 def process_log_from_request(handler):
@@ -119,22 +120,18 @@ def cancel_update_progress(request, process_log):
 @require_admin
 @api_handle_error_with_json
 def start_video_download(request):
-    """
-    API endpoint for launching the videodownload job.
-    """
-    force_job("videodownload", stop=True, locale=request.language)
+    paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
 
-    paths = OrderedSet(json.loads(request.body or "{}").get("paths", []))
+    for path in paths:
+        Item.update(
+            schedule_download=True
+        ).where(
+            (Item.kind != "Topic") &
+            (Item.path.contains(path)) &
+            (Item.youtube_id.is_null(False))
+        )
 
-    lang = json.loads(request.body or "{}").get("lang", "en")
-
-    youtube_ids = get_download_youtube_ids(paths, language=lang, downloaded=False)
-
-    queue = VideoQueue()
-
-    queue.add_files(youtube_ids, language=lang)
-
-    force_job("videodownload", _("Download Videos"), locale=lang)
+    scheduler.create_job(scheduler.JOB_VIDEO_DOWNLOADER, {})
 
     return JsonResponseMessageSuccess(_("Launched video download process successfully."))
 
@@ -146,11 +143,9 @@ def delete_videos(request):
     API endpoint for deleting videos.
     """
 
-    paths = OrderedSet(json.loads(request.body or "{}").get("paths", []))
+    paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
 
-    lang = json.loads(request.body or "{}").get("lang", "en")
-
-    youtube_ids = get_download_youtube_ids(paths, language=lang, downloaded=True)
+    youtube_ids = get_download_youtube_ids(paths)
 
     num_deleted = 0
 
@@ -159,7 +154,7 @@ def delete_videos(request):
         if delete_downloaded_files(id):
             num_deleted += 1
 
-    annotate_content_models_by_youtube_id(youtube_ids=youtube_ids.keys(), language=lang)
+    annotate_content_models_by_youtube_id(youtube_ids=youtube_ids.keys(), language=request.language)
 
     return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 
@@ -168,11 +163,11 @@ def delete_videos(request):
 @api_handle_error_with_json
 def cancel_video_download(request):
 
-    force_job("videodownload", stop=True)
+    Item.update(
+        schedule_download=False
+    ).where()
 
-    queue = VideoQueue()
-
-    queue.clear()
+    scheduler.purge_jobs_by_type(scheduler.JOB_VIDEO_DOWNLOADER)
 
     return JsonResponseMessageSuccess(_("Cancelled video download process successfully."))
 
@@ -181,9 +176,7 @@ def cancel_video_download(request):
 @api_handle_error_with_json
 def video_scan(request):
 
-    lang = json.loads(request.body or "{}").get("lang", "en")
-
-    force_job("videoscan", _("Scan for Videos"), language=lang)
+    force_job("videoscan", _("Scan for Videos"), language=request.language)
 
     return JsonResponseMessageSuccess(_("Scanning for videos started."))
 
@@ -222,10 +215,10 @@ def delete_language_pack(request):
 
 @require_admin
 @api_handle_error_with_json
-def get_update_topic_tree(request):
+def get_update_topic_tree(request, lang_code=None):
 
     parent = request.GET.get("parent")
-    lang_code = request.GET.get("lang") or request.language      # Get annotations for the current language.
+    lang_code = lang_code or request.language      # Get annotations for the current language.
 
     return JsonResponse(get_topic_update_nodes(parent=parent, language=lang_code))
 
