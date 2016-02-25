@@ -40,22 +40,24 @@ class UpdatesCommand(LocaleAwareCommand):
 
     def __init__(self, process_name=None, *args, **kwargs):
 
+        self.process_name = process_name or self.__class__.__module__.split(".")[-1]
+
+        super(UpdatesCommand, self).__init__(*args, **kwargs)
+
+    def setup(self, options):
+
         # Should be set by command's handle() method since there's no clear
         # call structure defined. Respected by the methods that update stuff
         # in the database.
-        self.foreground = False
+        self.foreground = options["foreground"]
 
-        self.process_name = process_name or self.__class__.__module__.split(".")[-1]
-
-        if self.foreground:
+        if not self.foreground:
             self.progress_log = UpdateProgressLog.get_active_log(process_name=self.process_name)
         else:
             self.progress_log = None
         if self.progress_log and self.progress_log.current_stage:
             self.progress_log.cancel_progress(notes=_("Starting fresh."))
             self.progress_log = UpdateProgressLog.get_active_log(process_name=self.process_name)
-
-        super(UpdatesCommand, self).__init__(*args, **kwargs)
 
     @skip_if_no_progress_log
     def display_notes(self, notes, ignore_same=True):
