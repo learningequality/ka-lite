@@ -95,7 +95,6 @@ assets:
 	mkdir -p kalite/database/templates/
 	cp kalite/database/data.sqlite kalite/database/templates/
 	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
-	bin/kalite manage patch_content_db --template
 
 release: clean clean-dev-db docs assets man
 	python setup.py sdist --formats=gztar,zip upload --sign
