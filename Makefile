@@ -12,9 +12,12 @@ help:
 	@echo "assets - build all JS/CSS assets"
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
-	@echo "dist - package locally"
+	@echo "release - package and upload a release, options: format=[gztar,zip]"
+	@echo "dist - package locally, options: format=[gztar,zip]"
 	@echo "install - install the package to the active Python's site-packages"
+
+# used for release and dist targets
+format?=gztar
 
 clean: clean-build clean-pyc clean-test
 
@@ -97,13 +100,13 @@ assets:
 	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
 release: clean clean-dev-db docs assets man
-	python setup.py sdist --formats=gztar,zip upload --sign
-	python setup.py sdist --formats=gztar,zip upload --sign --static
+	python setup.py sdist --formats=$(format) upload --sign
+	python setup.py sdist --formats=$(format) upload --sign --static
 	ls -l dist
 
 dist: clean clean-dev-db docs assets
-	python setup.py sdist --formats=gztar,zip
-	python setup.py sdist --formats=gztar,zip --static
+	python setup.py sdist --formats=$(format)
+	python setup.py sdist --formats=$(format) --static
 	ls -l dist
 
 install: clean
