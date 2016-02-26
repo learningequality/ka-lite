@@ -10,7 +10,7 @@ from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
-from kalite.topic_tools.content_models import get_content_parents, Item ,set_database
+from kalite.topic_tools.content_models import get_content_parents, Item, set_database, create
 
 
 class ExternalAPITests(FacilityMixins,
@@ -78,12 +78,70 @@ class InternalAPITests(FacilityMixins,
         self.group = self.create_group(name='group1', facility=self.facility)
         self.empty_group = self.create_group(name='empty_group', facility=self.facility)
 
+        self.facility_user = self.create_student()
+
     def test_learner_log_endpoint(self):
         response_keys = ["logs","contents","learners","page","pages","limit"]
         self.client.login(username='admin', password='admin')
         api_resp = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("learner_logs"), self.facility.id)).content)
         for key in response_keys:
             assert key in api_resp, "{key} not found in learner log API response".format(key)
+        self.client.logout()
+
+    def test_learner_log_topic_filters(self):
+        topic1 = create({
+            "id": "stuff_here",
+            "slug": "stuff_here",
+            "path": "qwrqweqweqwe",
+            "kind": "Topic",
+            "title": "",
+            "description": "",
+            "available": True,
+        })
+        topic2 = create({
+            "id": "stuff_there",
+            "slug": "stuff_there",
+            "path": "qwrqweqweqw",
+            "kind": "Topic",
+            "title": "",
+            "description": "",
+            "available": True,
+        })
+
+        exercise1 = create({
+            "id": "stuff_here_ex",
+            "slug": "stuff_here_ex",
+            "path": "qwrqweqweqwe/qwrqweqweq",
+            "kind": "Exercise",
+            "title": "",
+            "description": "",
+            "available": True,
+            "parent": topic1,
+        })
+        exercise2 = create({
+            "id": "stuff_there_ex",
+            "slug": "stuff_there_ex",
+            "path": "qwrqweqweqw/qwrqweqw",
+            "kind": "Exercise",
+            "title": "",
+            "description": "",
+            "available": True,
+            "parent": topic2,
+        })
+
+        self.create_exercise_log(user=self.facility_user, exercise_id=exercise1.id)
+        self.create_exercise_log(user=self.facility_user, exercise_id=exercise2.id)
+        response_keys = ["logs","contents","learners","page","pages","limit"]
+        self.client.login(username='admin', password='admin')
+        api_resp_1 = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("learner_logs"), self.facility.id)).content)
+        api_resp_2 = json.loads(self.client.get("%s?facility_id=%s&topic_ids=%s" % (self.reverse("learner_logs"), self.facility.id, json.dumps([topic1.id]))).content)
+
+        assert len(api_resp_1["contents"]) == 2
+        assert len(api_resp_2["contents"]) == 1
+        exercise1.delete()
+        exercise2.delete()
+        topic1.delete()
+        topic2.delete()
         self.client.logout()
 
     def test_aggregate_endpoint(self):
