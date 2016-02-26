@@ -11,16 +11,27 @@ from django.conf import settings
 from django.core.management.commands import makemessages
 
 
+IGNORE_PATTERNS = [
+    "*/node_modules*",
+    "*dist-packages*",
+    "*python-packages*",
+    "*/kalite/static*",
+    "*bundle*.js",
+    "*/ka-lite/build/*",
+    "*/js/i18n/*.js",
+    "*/ka-lite/docs/*"
+]
+
+
 class Command(makemessages.Command):
 
     def handle_noargs(self, *args, **options):
         # Set some sensible defaults
-        ignore_pattern = "node_modules*"
-        if ignore_pattern not in options["ignore_patterns"]:
-            options["ignore_patterns"].append(ignore_pattern)
+        for ignore_pattern in IGNORE_PATTERNS:
+            if ignore_pattern not in options["ignore_patterns"]:
+                options["ignore_patterns"].append(ignore_pattern)
+        print("Ignoring the following patterns: {}".format(options["ignore_patterns"]))
 
-        print("Added \"{patt}\" to --ignore patterns. Ignoring: {all}".format(patt=ignore_pattern,
-                                                                              all=options["ignore_patterns"]))
         print("Calling base makemessages command.")
         super(Command, self).handle_noargs(*args, **options)
 
