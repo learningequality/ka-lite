@@ -444,7 +444,7 @@ def get_neighbors_at_dist_1(topic_index, subtopic_index, topic):
 
     #else check if there is a neighboring topic (right)
     else:
-        if (topic_index + 1) < len(tree):
+        if (topic_index + 1) < len(tree) and tree[(topic_index+1)]['children']:
             #the 4 denotes the # of nodes in path to this other node, will always be 4
             neighbors.append(tree[(topic_index+1)]['children'][0] + ' 4') 
 
