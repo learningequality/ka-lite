@@ -13,6 +13,22 @@ from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes, get_leafed_topics, get_content_parents
 
+
+def unique_by_id_and_kind_sort(seq):
+
+    seq.sort(key=lambda x: x.get("sort_order", 0))
+    seen = {}
+    result = []
+    for item in seq:
+        marker = item.get("id") + item.get("kind")
+
+        if marker in seen:
+            continue
+        seen[marker] = 1
+        result.append(item)
+    return result
+
+
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
 
@@ -106,6 +122,8 @@ def learner_logs(request):
             objects = dict([(item.get("id"), item) for item in get_topic_nodes(ids=[obj[id_field] for obj in topic_objects]) or []]).values()
         output_objects.extend(objects)
         output_logs.extend(log_objects)
+
+    output_objects = unique_by_id_and_kind_sort(output_objects)
 
     return JsonResponse({
         "logs": output_logs,
