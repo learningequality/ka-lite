@@ -426,12 +426,12 @@ def get_neighbors_at_dist_1(topic_index, subtopic_index, topic):
     next = subtopic_index + 1
 
     #if there is a previous topic (neighbor to left)
-    if(prev > -1 ):
+    if (prev > -1 ) and prev < len(topic['children']):
         neighbors.append(topic['children'][prev] + ' 1') # neighbor on the left side
 
     #else check if there is a neighboring topic (left)    
     else:
-        if (topic_index-1) > -1:
+        if (topic_index-1) > -1 and topic_index - 1 < len(tree) and len(tree[(topic_index-1)]['children']) > 1:
             neighbor_length = len(tree[(topic_index-1)]['children'])
             neighbors.append(tree[(topic_index-1)]['children'][(neighbor_length-1)] + ' 4')
 
