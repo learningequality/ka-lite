@@ -45,11 +45,14 @@ class VideoQueue(object):
 
     def remove_file(self, youtube_id):
         """Remove the last file from the list, and check that it matches the passed in youtube_id"""
-        removed_file = self.queue.pop()
-        if removed_file.get("youtube_id") != youtube_id:
-            logging.warn("Tried to remove {youtube_id} from file queue but found {removed_file} instead.".format(youtube_id=youtube_id, removed_file=removed_file.get("youtube_id")))
-        else:
-            self.save()
+        try:
+            removed_file = self.queue.pop()
+            if removed_file.get("youtube_id") != youtube_id:
+                logging.warn("Tried to remove {youtube_id} from file queue but found {removed_file} instead.".format(youtube_id=youtube_id, removed_file=removed_file.get("youtube_id")))
+            else:
+                self.save()
+        except IndexError:
+            logging.warn("Tried to remove {youtube_id} from file queue, but was empty instead.".format(youtube_id=youtube_id))
 
     def clear(self):
         """Clear all currently queued videos"""
