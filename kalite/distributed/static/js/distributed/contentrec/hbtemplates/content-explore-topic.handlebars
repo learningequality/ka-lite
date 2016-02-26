@@ -7,11 +7,11 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-5">
+      <div class="col-xs-12">
           <h2 class="h3">{{ suggested_topic.title }}:</h2>
       </div>
       {{#if suggested_topic.description }}
-      <div class="col-xs-7">
+      <div class="col-xs-12">
         <p class="h4">{{_ "Description" }}:</p>
         <p aria-hidden="true">{{ truncate suggested_topic.description 70 }}</p>
         <span class="sr-only">{{ suggested_topic.description }}</span>
