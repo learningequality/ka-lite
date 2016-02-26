@@ -36,7 +36,8 @@ def get_resume_recommendations(user, request):
 
     final = get_most_recent_incomplete_item(user)
     if final:
-        return [get_content_item(language=request.language, channel=getattr(final, "channel", "khan"), content_id=final.get("id"))]
+        content = get_content_item(language=request.language, channel=getattr(final, "channel", "khan"), content_id=final.get("id"))
+        return [content] if content else []
     else:
         return []
 
@@ -100,8 +101,9 @@ def get_next_recommendations(user, request):
         if exercise_id in exercise_parents_table:
             subtopic_id = exercise_parents_table[exercise_id]['subtopic_id']
             exercise = get_content_item(language=request.language, content_id=exercise_id)
-            exercise["topic"] = get_content_item(language=request.language, content_id=subtopic_id, topic=True)
-            final.append(exercise)
+            if exercise:
+                exercise["topic"] = get_content_item(language=request.language, content_id=subtopic_id, topic=True) or {}
+                final.append(exercise)
 
 
     #final recommendations are a combination of struggling, group filtering, and topic_tree filtering
@@ -208,8 +210,8 @@ def get_explore_recommendations(user, request):
         if recommended_topic:
 
             final.append({
-                'suggested_topic': get_content_item(language=request.language, content_id=recommended_topic, topic=True),
-                'interest_topic': get_content_item(language=request.language, content_id=subtopic_id, topic=True),
+                'suggested_topic': get_content_item(language=request.language, content_id=recommended_topic, topic=True) or {},
+                'interest_topic': get_content_item(language=request.language, content_id=subtopic_id, topic=True) or {},
             })
 
             added.append(recommended_topic)
@@ -505,14 +507,17 @@ def get_subsequent_neighbors(nearest_neighbors, data, curr):
                     at_four_left = True
 
                 else:
-                    #if immediate left node is 4
-                    if data[ curr ]['related_subtopics'][1].split(' ')[1] == '4': 
-                        at_four_left = True
-                        new_dist = 4
-                    elif data[left]['related_subtopics'][1].split(' ')[1] == '4': #if the next left neighbor is at dist 4
-                        at_four_left = True
-                        new_dist = 4
-                    else: #this means that the next left node is at dist 1
+                    try:
+                        #if immediate left node is 4
+                        if data[ curr ]['related_subtopics'][1].split(' ')[1] == '4':
+                            at_four_left = True
+                            new_dist = 4
+                        elif data[left]['related_subtopics'][1].split(' ')[1] == '4': #if the next left neighbor is at dist 4
+                            at_four_left = True
+                            new_dist = 4
+                        else: #this means that the next left node is at dist 1
+                            new_dist = 1
+                    except IndexError:
                         new_dist = 1
 
                 other_neighbors.append(data[left]['related_subtopics'][1].split(' ')[0] + ' ' + str(new_dist))
