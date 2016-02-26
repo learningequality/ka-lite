@@ -38,20 +38,76 @@ if DEBUG:
 # Basic setup of logging
 ##############################
 
-# TODO: Use Django's settings.LOGGERS
-
 # Set logging level based on the value of DEBUG (evaluates to 0 if False,
 # 1 if True)
 LOGGING_LEVEL = getattr(local_settings, "LOGGING_LEVEL", logging.INFO)
+
+# We should use local module level logging.getLogger
 LOG = getattr(local_settings, "LOG", logging.getLogger("kalite"))
 
-LOG.setLevel(LOGGING_LEVEL)
-ch = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(levelname)s:%(name)s: %(message)s')
-ch.setFormatter(formatter)
-LOG.addHandler(ch)
-
-logging.getLogger("requests").setLevel(logging.WARNING)  # shut up requests!
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+        'standard': {
+            'format': '[%(levelname)s] [%(asctime)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['null'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'kalite': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'cherrypy.console': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'cherrypy.access': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        'cherrypy.error': {
+            'handlers': ['console'],
+            'level': LOGGING_LEVEL,
+            'propagate': False,
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}
 
 
 ###################################################
@@ -77,10 +133,22 @@ IS_SOURCE = (
 )
 SOURCE_DIR = None
 
-# DB_TEMPLATE_FILE should point to a pre-generated database with no rows.
-# If it exists and DATABASES["default"]["name"] file does not, then the latter will be copied from the former
-# in the setup mgmt command.
-DB_TEMPLATE_FILE = None
+DB_TEMPLATE_DIR = os.path.join(
+    os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
+    "database",
+    "templates"
+)
+
+DB_CONTENT_ITEM_TEMPLATE_DIR = os.path.join(
+    DB_TEMPLATE_DIR,
+    "content_items",
+)
+
+# DB_TEMPLATE_DEFAULT SHOULD POINT TO A PRE-GENERATED DATABASE WITH NO ROWS.
+# IF IT EXISTS AND DATABASES["DEFAULT"]["NAME"] FILE DOES NOT, THEN THE LATTER WILL BE COPIED FROM THE FORMER
+# IN THE SETUP MGMT COMMAND.
+DB_TEMPLATE_DEFAULT = os.path.join(DB_TEMPLATE_DIR, "data.sqlite")
+
 
 if IS_SOURCE:
     # We assume that the project source is 2 dirs up from the settings/base.py file
@@ -159,7 +227,8 @@ if IS_SOURCE:
     LOCALE_PATHS = tuple([os.path.realpath(lp) + "/" for lp in LOCALE_PATHS])
 
     # This is the legacy location kalite/database/data.sqlite
-    DEFAULT_DATABASE_PATH = os.path.join(_data_path, "kalite", "database", "data.sqlite")
+    DEFAULT_DATABASE_DIR = os.path.join(_data_path, "kalite", "database")
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, "data.sqlite")
 
     MEDIA_ROOT = os.path.join(_data_path, "kalite", "media")
     STATIC_ROOT = os.path.join(_data_path, "kalite", "static")
@@ -179,19 +248,11 @@ else:
     if not os.path.exists(USER_WRITABLE_LOCALE_DIR):
         os.mkdir(USER_WRITABLE_LOCALE_DIR)
 
-    DEFAULT_DATABASE_PATH = os.path.join(USER_DATA_ROOT, "database",)
-    if not os.path.exists(DEFAULT_DATABASE_PATH):
-        os.mkdir(DEFAULT_DATABASE_PATH)
+    DEFAULT_DATABASE_DIR = os.path.join(USER_DATA_ROOT, "database",)
+    if not os.path.exists(DEFAULT_DATABASE_DIR):
+        os.mkdir(DEFAULT_DATABASE_DIR)
 
-    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_PATH, 'data.sqlite')
-
-    # If we're not running as source, then we should include a blank, pre-migrated db in this location,
-    # to be copied to user's KALITE_HOME.
-    DB_TEMPLATE_FILE = os.path.join(
-        os.path.split(os.path.dirname(os.path.realpath(__file__)))[0],
-        "database",
-        "data.sqlite",
-    )
+    DEFAULT_DATABASE_PATH = os.path.join(DEFAULT_DATABASE_DIR, 'data.sqlite')
 
     # Stuff that can be served by the HTTP server is located the same place
     # for convenience and security
@@ -352,6 +413,7 @@ MIDDLEWARE_CLASSES = [
     'securesync.middleware.DBCheck',
     'django.middleware.common.CommonMiddleware',
     'kalite.distributed.middleware.LockdownCheck',
+    'kalite.distributed.middleware.LogRequests',
     'django.middleware.gzip.GZipMiddleware',
     'kalite.distributed.middleware.SessionIdleTimeout'
 ] + getattr(local_settings, 'MIDDLEWARE_CLASSES', [])

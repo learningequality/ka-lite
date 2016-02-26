@@ -27,6 +27,8 @@ class Command(UpdatesStaticCommand):
 
     def handle(self, *args, **kwargs):
 
+        self.setup(kwargs)
+
         language = kwargs["language"]
         channel = kwargs["channel"]
 

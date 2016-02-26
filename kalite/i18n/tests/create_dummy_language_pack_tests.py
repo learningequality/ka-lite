@@ -1,12 +1,11 @@
-from management import accenting
-import requests
 import zipfile
 from cStringIO import StringIO
-from mock import patch, MagicMock, call, mock_open
 
+import requests
 from kalite.i18n.base import get_language_pack_url
 from kalite.i18n.management.commands import create_dummy_language_pack as mod
 from kalite.testing.base import KALiteTestCase
+from mock import patch, MagicMock, call, mock_open
 
 
 class CreateDummyLanguagePackCommandTests(KALiteTestCase):

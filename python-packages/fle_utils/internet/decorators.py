@@ -1,15 +1,18 @@
 import csv
 import json
-from annoying.decorators import wraps
-from fle_utils.collections_local_copy import OrderedDict
+import traceback
 from cStringIO import StringIO
 
+from annoying.decorators import wraps
+
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, Http404
 from django.utils.translation import ugettext as _
+from .classes import CsvResponse, JsonResponse, JsonResponseMessageError, JsonpResponse
 
-from .classes import CsvResponse, JsonResponse, JsonResponseMessageError, JsonResponseMessageSuccess, JsonpResponse
+logger = settings.LOG
 
 
 def api_handle_error_with_json(handler):
@@ -17,14 +20,16 @@ def api_handle_error_with_json(handler):
     All API requests should return JSON objects, even when unexpected errors occur.
     This decorator makes sure that all uncaught errors are not returned as HTML to the user, but instead JSON errors.
     """
-    def api_handle_error_with_json_wrapper_fn(*args, **kwargs):
+    def api_handle_error_with_json_wrapper_fn(request, *args, **kwargs):
         try:
-            return handler(*args, **kwargs)
+            return handler(request, *args, **kwargs)
         except PermissionDenied:
             raise  # handled upstream
         except Http404:
             raise
         except Exception as e:
+            logger.error("Error in JSON view: {}".format(request.path))
+            traceback.print_exc()
             return JsonResponseMessageError(_("Unexpected error: %(err)s") % {"err": e}, status=500)
     return api_handle_error_with_json_wrapper_fn
 

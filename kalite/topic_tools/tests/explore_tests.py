@@ -60,4 +60,4 @@ class TestExploreMethods(KALiteTestCase):
 
         actual = get_explore_recommendations(self.user1, request)
 
-        self.assertEqual(actual[0].get("interest_topic").get("id"), "arithmetic")
+        self.assertEqual(actual[0].get("interest_topic").get("id"), "in-sixth-grade-math")

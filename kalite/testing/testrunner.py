@@ -125,14 +125,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         shutil.copy2(os.path.join(settings.STATIC_ROOT, "django_js_reverse", "js", "reverse.js"),
             os.path.join(os.path.dirname(os.path.dirname(__file__)), "distributed", "static", "django_js_reverse", "js", "reverse.js"))
 
-        return super(KALiteTestRunner, self).__init__(*args, **kwargs)
-
-    def run_tests(self, test_labels=None, extra_tests=None, **kwargs):
-        """By default, only run relevant app tests.  If you specify... you're on your own!"""
-
-        def run_tests_wrapper_fn():
-            return super(KALiteTestRunner, self).run_tests(test_labels, extra_tests, **kwargs)
-        return run_tests_wrapper_fn()
+        super(KALiteTestRunner, self).__init__(*args, **kwargs)
 
     def make_bdd_test_suite(self, features_dir, feature_name=None):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info, feature_name=feature_name)
@@ -150,9 +143,7 @@ class KALiteTestRunner(DjangoTestSuiteRunner):
         browser.quit()
 
         if not database_exists():
-            call_command("init_content_items")
-            call_command("annotate_content_items")
-
+            call_command("retrievecontentpack", "download", "en", minimal=True, foreground=True)
             logging.info("Successfully setup content database")
         else:
             logging.info("Content database already exists")

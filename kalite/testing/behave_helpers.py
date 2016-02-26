@@ -51,7 +51,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 # Maximum time to wait when trying to find elements
 MAX_WAIT_TIME = 30
 # Maximum time to wait for a page to load.
-MAX_PAGE_LOAD_TIME = 5
+MAX_PAGE_LOAD_TIME = 30
 
 
 def alert_in_page(browser, wait_time=MAX_WAIT_TIME):
@@ -84,6 +84,15 @@ def _assert_no_element_by(context, by, value, wait_time=MAX_PAGE_LOAD_TIME):
     WebDriverWait(context.browser, wait_time).until_not(
         EC.presence_of_element_located((by, value))
     )
+
+
+def assert_no_element_by_id(context, _id, wait_time=MAX_PAGE_LOAD_TIME):
+    """
+    Assert that no element is found. Use a wait in case the element currently exists
+    on the page, and we want to wait for it to disappear before doing the assert.
+    Finds the element using an id.
+    """
+    _assert_no_element_by(context, By.ID, _id, wait_time)
 
 
 def assert_no_element_by_css_selector(context, css_value, wait_time=MAX_PAGE_LOAD_TIME):

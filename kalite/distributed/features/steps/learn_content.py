@@ -1,25 +1,19 @@
-from behave import *
-from selenium.webdriver.common.by import By
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from behave import given, then
 
-from kalite.testing.behave_helpers import *
-from kalite.topic_tools.content_models import update_item
+from kalite.testing.behave_helpers import build_url, reverse, alert_in_page, find_css_class_with_wait, \
+    assert_no_element_by_css_selector
 
-TIMEOUT = 3
+TIMEOUT = 30
 
 
 @given(u"I open some unavailable content")
 def step_impl(context):
-    update_item(path="khan/math/early-math/cc-early-math-counting-topic/cc-early-math-counting/counting-with-small-numbers/", update={"available": False})
-    context.browser.get(build_url(context, reverse("learn") + "khan/math/early-math/cc-early-math-counting-topic/cc-early-math-counting/counting-with-small-numbers/"))
+    context.browser.get(build_url(context, reverse("learn") + context.unavailable_content_path))
 
 
 @given(u"I open some available content")
 def step_impl(context):
-    update_item(path="khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/", update={"available": True})
-    context.browser.get(build_url(context, reverse("learn") + "khan/math/arithmetic/addition-subtraction/basic_addition/addition_1/"))
+    context.browser.get(build_url(context, reverse("learn") + context.available_content_path))
 
 
 @then(u"I should see an alert")

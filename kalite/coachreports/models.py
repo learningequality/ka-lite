@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.topic_tools.content_models import get_topic_nodes, get_topic_node, get_content_parents, get_topic_contents
+from kalite.topic_tools.content_models import get_topic_node, get_content_parents, get_topic_contents, get_content_item,  get_topic_nodes
 
 
 class PlaylistProgressParent:
@@ -144,14 +144,12 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         self.score = kwargs.get("score")
         self.path = kwargs.get("path")
 
-    def user_progress_detail(cls, user_id, playlist_id):
+    @classmethod
+    def user_progress_detail(cls, user_id, playlist_id, language=None):
         """
         Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
         """
-        if not language:
-            language = Settings.get("default_language") or settings.LANGUAGE_CODE
-
         user = FacilityUser.objects.get(id=user_id)
         playlist = get_topic_node(content_id=playlist_id)
 
@@ -163,8 +161,8 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         # Finally, sort an ordered list of the playlist entries, with user progress
         # injected where it exists.
         progress_details = list()
-        for entity_id in playlist.get("children"):
-            entry = {}
+        for leaf_node in get_topic_nodes(parent=playlist_id):
+            entity_id = leaf_node.get("id")
             kind = leaf_node.get("kind")
 
             status = "notstarted"
@@ -192,7 +190,13 @@ class PlaylistProgressDetail(PlaylistProgressParent):
 
                     score = ex_log.get('streak_progress')
 
-
-            progress_details.append(cls(**entry))
+            progress_details.append(PlaylistProgressDetail(
+                id=entity_id,
+                title=leaf_node["title"],
+                kind=kind,
+                status=status,
+                score=score,
+                path=leaf_node["path"]
+            ))
 
         return progress_details

@@ -1,3 +1,4 @@
+@uses_content_paths
 Feature: Content on the Learn page
     In order to test the features of content
 

@@ -102,7 +102,7 @@ class Command(UpdatesDynamicCommand, CronCommand):
 
 
     def handle(self, *args, **options):
-        self.stdout.write(_("Nothing to download; exiting.") + "\n")
+        self.setup(options)
         self.video = {}
 
         handled_youtube_ids = []  # stored to deal with caching

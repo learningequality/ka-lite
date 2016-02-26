@@ -196,7 +196,7 @@ def start_languagepack_download(request):
     data = json.loads(request.raw_post_data)  # Django has some weird post processing into request.POST, so use .body
     lang_code = lcode_to_ietf(data['lang'])
 
-    force_job('languagepackdownload', _("Language pack download"), lang_code=lang_code, locale=request.language)
+    call_command_async('retrievecontentpack', 'download', lang_code)
 
     return JsonResponseMessageSuccess(_("Successfully started language pack download for %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
 

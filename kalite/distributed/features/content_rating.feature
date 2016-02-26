@@ -1,3 +1,4 @@
+@uses_content_paths
 Feature: Content Rating
     Tests for the content rating form/widget, which should appear on content pages (video, exercises, etc)
 
