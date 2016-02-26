@@ -60,7 +60,16 @@ var VideoPlayerView = ContentBaseView.extend({
         var player_id = this.$(".video-js").attr("id");
 
         if (player_id) {
-            this.player = this.player = _V_(player_id);
+            var video_player_options = {
+                "controls": true,
+                "width": "auto",
+                "height": "auto",
+                "playbackRates": [0.5, 1, 1.25, 1.5, 2]
+            };
+            if( this.data_model.get("content_urls").thumbnail ) {
+                video_player_options['poster'] = this.data_model.get("content_urls").thumbnail;
+            }
+            this.player = window.player = _V_(player_id, video_player_options);
             this.initialize_listeners();
         } else {
             console.warn("Warning: Could not find Video.JS player!");
