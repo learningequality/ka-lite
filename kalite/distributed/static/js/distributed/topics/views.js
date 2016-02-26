@@ -285,9 +285,11 @@ var SidebarView = BaseView.extend({
         
         this.width = (current_level-1) * column_width + last_column_width + 10;
         this.sidebar.width(this.width);
-        this.sidebar.css({left: 0});
-        this.sidebarTab.css({left: this.width});
-        
+        if (this.state_model.get("open")) {
+            this.sidebar.css({left: 0});
+            this.sidebarTab.css({left: this.width});
+        }
+
         this.set_sidebar_back();
     }, 100),
 
