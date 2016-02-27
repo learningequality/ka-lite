@@ -88,62 +88,6 @@ class InternalAPITests(FacilityMixins,
             assert key in api_resp, "{key} not found in learner log API response".format(key)
         self.client.logout()
 
-    def test_learner_log_topic_filters(self):
-        topic1 = create({
-            "id": "stuff_here",
-            "slug": "stuff_here",
-            "path": "qwrqweqweqwe",
-            "kind": "Topic",
-            "title": "",
-            "description": "",
-            "available": True,
-        })
-        topic2 = create({
-            "id": "stuff_there",
-            "slug": "stuff_there",
-            "path": "qwrqweqweqw",
-            "kind": "Topic",
-            "title": "",
-            "description": "",
-            "available": True,
-        })
-
-        exercise1 = create({
-            "id": "stuff_here_ex",
-            "slug": "stuff_here_ex",
-            "path": "qwrqweqweqwe/qwrqweqweq",
-            "kind": "Exercise",
-            "title": "",
-            "description": "",
-            "available": True,
-            "parent": topic1,
-        })
-        exercise2 = create({
-            "id": "stuff_there_ex",
-            "slug": "stuff_there_ex",
-            "path": "qwrqweqweqw/qwrqweqw",
-            "kind": "Exercise",
-            "title": "",
-            "description": "",
-            "available": True,
-            "parent": topic2,
-        })
-
-        self.create_exercise_log(user=self.facility_user, exercise_id=exercise1.id)
-        self.create_exercise_log(user=self.facility_user, exercise_id=exercise2.id)
-        response_keys = ["logs","contents","learners","page","pages","limit"]
-        self.client.login(username='admin', password='admin')
-        api_resp_1 = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("learner_logs"), self.facility.id)).content)
-        api_resp_2 = json.loads(self.client.get("%s?facility_id=%s&topic_ids=%s" % (self.reverse("learner_logs"), self.facility.id, json.dumps([topic1.id]))).content)
-
-        assert len(api_resp_1["contents"]) == 2
-        assert len(api_resp_2["contents"]) == 1
-        exercise1.delete()
-        exercise2.delete()
-        topic1.delete()
-        topic2.delete()
-        self.client.logout()
-
     def test_aggregate_endpoint(self):
         response_keys = ["content_time_spent","exercise_attempts","exercise_mastery", "total_time_logged", "learner_events"]
         self.client.login(username='admin', password='admin')
@@ -197,3 +141,114 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
         self.assertEqual(len(exercises),1)
         #checking if the returned list is accurate
         self.assertEqual(exercises[0]["title"],"Comparing two-digit numbers")
+
+
+class LearnerLogAPITests(FacilityMixins,
+                       StudentProgressMixin,
+                       CreateZoneMixin,
+                       CreateAdminMixin,
+                       KALiteTestCase):
+    """
+    These tests test the learner log API endpoint in the coachreports app.
+    """
+
+    def setUp(self):
+        super(LearnerLogAPITests, self).setUp()
+
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+
+        self.zone = self.create_zone()
+        self.device_zone = self.create_device_zone(self.zone)
+        self.facility = self.create_facility()
+
+        self.group = self.create_group(name='group1', facility=self.facility)
+        self.empty_group = self.create_group(name='empty_group', facility=self.facility)
+
+        self.facility_user = self.create_student()
+
+        self.topic1 = create({
+            "id": "stuff_here",
+            "slug": "stuff_here",
+            "path": "qwrqweqweqwe",
+            "kind": "Topic",
+            "title": "",
+            "description": "",
+            "available": True,
+        })
+        self.topic2 = create({
+            "id": "stuff_there",
+            "slug": "stuff_there",
+            "path": "qwrqweqweqw",
+            "kind": "Topic",
+            "title": "",
+            "description": "",
+            "available": True,
+        })
+
+        self.exercise1 = create({
+            "id": "stuff_here_ex",
+            "slug": "stuff_here_ex",
+            "path": "qwrqweqweqwe/qwrqweqweq",
+            "kind": "Exercise",
+            "title": "",
+            "description": "",
+            "available": True,
+            "parent": self.topic1,
+        })
+        self.exercise2 = create({
+            "id": "stuff_there_ex",
+            "slug": "stuff_there_ex",
+            "path": "qwrqweqweqw/qwrqweqw",
+            "kind": "Exercise",
+            "title": "",
+            "description": "",
+            "available": True,
+            "parent": self.topic2,
+        })
+
+        self.create_exercise_log(user=self.facility_user, exercise_id=self.exercise1.id)
+        self.create_exercise_log(user=self.facility_user, exercise_id=self.exercise2.id)
+
+    def tearDown(self):
+        self.exercise1.delete()
+        self.exercise2.delete()
+        self.topic1.delete()
+        self.topic2.delete()
+
+    def test_learner_log_topic_filters(self):
+
+        self.client.login(username='admin', password='admin')
+        api_resp_1 = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("learner_logs"), self.facility.id)).content)
+        api_resp_2 = json.loads(self.client.get("%s?facility_id=%s&topic_ids=%s" % (self.reverse("learner_logs"), self.facility.id, json.dumps([self.topic1.id]))).content)
+        assert len(api_resp_2["contents"]) < len(api_resp_1["contents"])
+
+    def test_learner_log_topic_filters_contents_length(self):
+
+        self.client.login(username='admin', password='admin')
+        api_resp_2 = json.loads(self.client.get("%s?facility_id=%s&topic_ids=%s" % (self.reverse("learner_logs"), self.facility.id, json.dumps([self.topic1.id]))).content)
+        assert len(api_resp_2["contents"]) == 1
+
+    def test_learner_log_topic_filters_contents_id(self):
+
+        self.client.login(username='admin', password='admin')
+        api_resp_2 = json.loads(self.client.get("%s?facility_id=%s&topic_ids=%s" % (self.reverse("learner_logs"), self.facility.id, json.dumps([self.topic1.id]))).content)
+        assert api_resp_2["contents"][0]["id"] == self.exercise1.id
+
+    def test_learner_log_contents(self):
+
+        self.client.login(username='admin', password='admin')
+        api_resp_1 = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("learner_logs"), self.facility.id)).content)
+        assert len(api_resp_1["contents"]) == 2
+
+    def test_learner_log_logs(self):
+
+        self.client.login(username='admin', password='admin')
+        api_resp_1 = json.loads(self.client.get("%s?facility_id=%s" % (self.reverse("learner_logs"), self.facility.id)).content)
+        assert len(api_resp_1["logs"]) == 2
+
+    def test_learner_log_log_contents(self):
+
+        self.client.login(username='admin', password='admin')
+        api_resp_2 = json.loads(self.client.get("%s?facility_id=%s&topic_ids=%s" % (self.reverse("learner_logs"), self.facility.id, json.dumps([self.topic1.id]))).content)
+        assert api_resp_2["logs"][0]["exercise_id"] == self.exercise1.id

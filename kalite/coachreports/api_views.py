@@ -15,6 +15,12 @@ from kalite.topic_tools.content_models import get_topic_contents, get_topic_node
 
 
 def unique_by_id_and_kind_sort(seq):
+    """
+    Due to the fact that we have duplicate content items for the same content id in our topic tree, as the way that
+    we have implemented duplication of content across the topic tree.
+    :param seq: an iterator of content items.
+    :return: A unique, sorted list of content items.
+    """
 
     seq.sort(key=lambda x: x.get("sort_order", 0))
     seen = {}
@@ -126,7 +132,9 @@ def learner_logs(request):
     output_objects = unique_by_id_and_kind_sort(output_objects)
 
     return JsonResponse({
+        # All learner log objects for each content item.
         "logs": output_logs,
+        # All content items for which logs are being returned.
         "contents": output_objects,
         # Sometimes 'learners' gets collapsed to a list from the Queryset. This insures against that eventuality.
         "learners": [{
