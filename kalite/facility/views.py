@@ -184,7 +184,6 @@ def group_edit(request, facility, group_id):
         "form": form,
         "group_id": group_id,
         "facility": facility,
-        "singlefacility": request.session["facility_count"] == 1,
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 

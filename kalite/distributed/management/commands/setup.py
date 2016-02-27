@@ -39,7 +39,7 @@ from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device
 import warnings
 
-CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(version=SHORTVERSION, code="en")
+CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(version=SHORTVERSION, langcode="en", suffix="")
 
 
 def raw_input_yn(prompt):
@@ -234,14 +234,14 @@ class Command(BaseCommand):
         print("         version %s" % VERSION)
         print("                                     ")
 
-        if sys.version_info >= (2, 8) or sys.version_info < (2, 6):
+        if sys.version_info < (2, 7):
+            raise CommandError("Support for Python version 2.6 and below had been discontinued, please upgrade.")
+        elif sys.version_info >= (2, 8):
             raise CommandError(
-                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %d.%d.%d\n" % sys.version_info[:3])
-        if sys.version_info < (2, 7, 9):
+                "Your Python version is: %d.%d.%d -- which is not supported. Please use the Python 2.7 series or wait for Learning Equality to release Kolibri.\n" % sys.version_info[:3])
+        elif sys.version_info < (2, 7, 6):
             logging.warning(
-                "It's recommended that you install Python version 2.7.9. Your version is: %d.%d.%d\n" % sys.version_info[:3])
-            if sys.version_info < (2, 7):
-                raise CommandError("Support for Python version 2.6 and below had been discontinued, please upgrade.")
+                "It's recommended that you install Python version 2.7.6. Your version is: %d.%d.%d\n" % sys.version_info[:3])
 
         if options["interactive"]:
             print(
@@ -274,11 +274,6 @@ class Command(BaseCommand):
         if git_migrate_path:
             call_command("gitmigrate", path=git_migrate_path, interactive=options["interactive"])
 
-        # TODO(benjaoming): This is used very loosely, what does it mean?
-        # Does it mean that the installation path is clean or does it mean
-        # that we should remove (clean) items from a previous installation?
-        install_clean = not kalite.is_installed()
-
         database_kind = settings.DATABASES["default"]["ENGINE"]
         if "sqlite" in database_kind:
             database_file = settings.DATABASES["default"]["NAME"]
@@ -290,6 +285,8 @@ class Command(BaseCommand):
         # An empty file is created automatically even when the database dosn't
         # exist. But if it's empty, it's safe to overwrite.
         database_exists = database_exists and os.path.getsize(database_file) > 0
+
+        install_clean = not database_exists
 
         if database_file:
             if not database_exists:
@@ -316,7 +313,7 @@ class Command(BaseCommand):
                     print(
                         "the database file will be moved to a deletable location.")
 
-        if not install_clean and not database_file and not kalite.is_installed():
+        if not install_clean and not database_file:
             # Make sure that, for non-sqlite installs, the database exists.
             raise Exception(
                 "For databases not using SQLite, you must set up your database before running setup.")
@@ -370,21 +367,32 @@ class Command(BaseCommand):
 
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
-            if not settings.DB_TEMPLATE_FILE or database_file != settings.DB_TEMPLATE_FILE:
+            if not settings.DB_TEMPLATE_DEFAULT or database_file != settings.DB_TEMPLATE_DEFAULT:
                 # This is an overwrite install; destroy the old db
                 dest_file = tempfile.mkstemp()[1]
                 print(
                     "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
                 shutil.move(database_file, dest_file)
 
-        if settings.DB_TEMPLATE_FILE and not database_exists:
-            print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH))
-            shutil.copy(settings.DB_TEMPLATE_FILE, settings.DEFAULT_DATABASE_PATH)
+        if settings.DB_TEMPLATE_DEFAULT and not database_exists:
+            print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH))
+            shutil.copy(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH)
         else:
             print("Baking a fresh database from scratch or upgrading existing database.")
             call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
             call_command("migrate", merge=True, verbosity=options.get("verbosity"))
         Settings.set("database_version", VERSION)
+
+        # Copy all content item db templates
+        for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+            if file_name.endswith("sqlite"):
+                template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
+                dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
+                if install_clean or not os.path.exists(dest_database):
+                    print("Copying {} to {}".format(template_path, dest_database))
+                    shutil.copy(template_path, dest_database)
+                else:
+                    print("Skipping {}".format(template_path))
 
         # download the english content pack
         # This can take a long time and lead to Travis stalling. None of this
@@ -438,7 +446,7 @@ class Command(BaseCommand):
                     logging.warning(
                         "No content pack given. You will need to download and unpack it later.")
                 else:
-                    call_command("retrievecontentpack", retrieval_method, "en", ass_item_filename)
+                    call_command("retrievecontentpack", retrieval_method, "en", ass_item_filename, foreground=True)
 
             elif options['interactive']:
                 logging.warning(

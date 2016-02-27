@@ -12,11 +12,17 @@ help:
 	@echo "assets - build all JS/CSS assets"
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
-	@echo "dist - package locally"
+	@echo "release - package and upload a release, options: format=[gztar,zip]"
+	@echo "dist - package locally, options: format=[gztar,zip]"
 	@echo "install - install the package to the active Python's site-packages"
 
+# used for release and dist targets
+format?=gztar
+
 clean: clean-build clean-pyc clean-test
+
+clean-dev-db:
+	rm -f kalite/database/data.sqlite
 
 clean-build:
 	rm -fr build/
@@ -24,7 +30,7 @@ clean-build:
 	rm -fr .eggs/
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
-	rm -f kalite/database/data.sqlite
+	rm -fr kalite/database/templates
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
@@ -87,19 +93,20 @@ assets:
 	npm install --production
 	node build.js
 	bin/kalite manage compileymltojson
-	bin/kalite manage init_content_items
-	bin/kalite manage annotate_content_items
 	bin/kalite manage syncdb --noinput
 	bin/kalite manage migrate
+	mkdir -p kalite/database/templates/
+	cp kalite/database/data.sqlite kalite/database/templates/
+	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
-release: clean docs assets man
-	python setup.py sdist --formats=gztar,zip upload --sign
-	python setup.py sdist --formats=gztar,zip upload --sign --static
+release: clean clean-dev-db docs assets man
+	python setup.py sdist --formats=$(format) upload --sign
+	python setup.py sdist --formats=$(format) upload --sign --static
 	ls -l dist
 
-dist: clean docs assets
-	python setup.py sdist --formats=gztar,zip
-	python setup.py sdist --formats=gztar,zip --static
+dist: clean clean-dev-db docs assets
+	python setup.py sdist --formats=$(format)
+	python setup.py sdist --formats=$(format) --static
 	ls -l dist
 
 install: clean

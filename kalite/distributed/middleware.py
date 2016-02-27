@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -16,3 +18,23 @@ class LockdownCheck:
             and not request.path.startswith(settings.STATIC_URL)):
 
             raise PermissionDenied()
+
+
+class LogRequests:
+
+    def process_response(self, request, response):
+        logger = logging.getLogger('django.request')
+        # This is added because somehow requests aren't being logged
+
+        IGNORED_PATHS = (
+            '/api/updates/progress',
+        )
+        if not any([True for r in IGNORED_PATHS if request.path.startswith(r)]):
+            logger.info(
+                "HTTP Request {} - Response: {}".format(
+                    request.path,
+                    response.status_code
+                )
+            )
+
+        return response
