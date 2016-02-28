@@ -30,7 +30,8 @@ from fle_utils.orderedset import OrderedSet
 from kalite.i18n.base import lcode_to_ietf, delete_language, get_language_name
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.settings import CHANNEL
-from kalite.topic_tools.content_models import get_topic_update_nodes, get_download_youtube_ids, annotate_content_models_by_youtube_id
+from kalite.topic_tools.content_models import get_topic_update_nodes, get_download_youtube_ids, annotate_content_models_by_youtube_id, Item
+from kalite import scheduler
 
 
 def process_log_from_request(handler):
@@ -73,66 +74,19 @@ def process_log_from_request(handler):
 
 @require_admin
 @api_handle_error_with_json
-@process_log_from_request
-def check_update_progress(request, process_log):
-    """
-    API endpoint for getting progress data on downloads.
-    """
-    return JsonResponse(_process_log_to_dict(process_log))
-
-
-def _process_log_to_dict(process_log):
-    """
-    Utility function to convert a process log to a dict
-    """
-
-    if not process_log or not process_log.total_stages:
-        return {}
-    else:
-        return {
-            "process_id": process_log.id,
-            "process_name": process_log.process_name,
-            "process_percent": process_log.process_percent,
-            "stage_name": process_log.stage_name,
-            "stage_percent": process_log.stage_percent,
-            "stage_status": process_log.stage_status,
-            "cur_stage_num": 1 + int(math.floor(process_log.total_stages * process_log.process_percent)),
-            "total_stages": process_log.total_stages,
-            "notes": process_log.notes,
-            "completed": process_log.completed or (process_log.end_time is not None),
-        }
-
-
-@require_admin
-@api_handle_error_with_json
-@process_log_from_request
-def cancel_update_progress(request, process_log):
-    """
-    API endpoint for getting progress data on downloads.
-    """
-    process_log.cancel_requested = True
-    process_log.save()
-
-    return JsonResponseMessageSuccess(_("Cancelled update progress successfully."))
-
-
-@require_admin
-@api_handle_error_with_json
 def start_video_download(request):
-    force_job("videodownload", stop=True, locale=request.language)
-
-    """
-    API endpoint for launching the videodownload job.
-    """
     paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
 
-    youtube_ids = get_download_youtube_ids(paths)
+    for path in paths:
+        Item.update(
+            schedule_download=True
+        ).where(
+            (Item.kind != "Topic") &
+            (Item.path.contains(path)) &
+            (Item.youtube_id.is_null(False))
+        )
 
-    queue = VideoQueue()
-
-    queue.add_files(youtube_ids, language=request.language)
-
-    force_job("videodownload", _("Download Videos"), locale=request.language)
+    scheduler.create_job(scheduler.JOB_VIDEO_DOWNLOADER, {})
 
     return JsonResponseMessageSuccess(_("Launched video download process successfully."))
 
@@ -164,11 +118,11 @@ def delete_videos(request):
 @api_handle_error_with_json
 def cancel_video_download(request):
 
-    force_job("videodownload", stop=True, locale=request.language)
+    Item.update(
+        schedule_download=False
+    ).where()
 
-    queue = VideoQueue()
-
-    queue.clear()
+    scheduler.purge_jobs_by_type(scheduler.JOB_VIDEO_DOWNLOADER)
 
     return JsonResponseMessageSuccess(_("Cancelled video download process successfully."))
 

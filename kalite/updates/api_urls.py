@@ -13,6 +13,4 @@ urlpatterns = patterns('kalite.updates.api_views',
 
     url(r'^software/start$', 'start_update_kalite', {}, 'start_update_kalite'),
 
-    url(r'^updates/progress$', 'check_update_progress', {}, 'check_update_progress'),
-    url(r'^updates/cancel$', 'cancel_update_progress', {}, 'cancel_update_progress'),
 )

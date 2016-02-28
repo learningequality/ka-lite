@@ -4,3 +4,4 @@ from fixture_tests import *
 from log_model_tests import *
 from progress_timestamp_test import *
 from unicode_tests import *
+from scheduler_tests import *
