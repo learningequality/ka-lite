@@ -128,7 +128,7 @@ def start_video_download(request):
 
     lang = json.loads(request.body or "{}").get("lang", "en")
 
-    youtube_ids = get_download_youtube_ids(paths)
+    youtube_ids = get_download_youtube_ids(paths, language=lang)
 
     queue = VideoQueue()
 
@@ -222,10 +222,10 @@ def delete_language_pack(request):
 
 @require_admin
 @api_handle_error_with_json
-def get_update_topic_tree(request, lang_code=None):
+def get_update_topic_tree(request):
 
     parent = request.GET.get("parent")
-    lang_code = lang_code or request.language      # Get annotations for the current language.
+    lang_code = request.GET.get("lang") or request.language      # Get annotations for the current language.
 
     return JsonResponse(get_topic_update_nodes(parent=parent, language=lang_code))
 
