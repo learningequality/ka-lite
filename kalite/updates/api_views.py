@@ -119,11 +119,11 @@ def cancel_update_progress(request, process_log):
 @require_admin
 @api_handle_error_with_json
 def start_video_download(request):
-    force_job("videodownload", stop=True, locale=request.language)
-
     """
     API endpoint for launching the videodownload job.
     """
+    force_job("videodownload", stop=True, locale=request.language)
+
     paths = OrderedSet(json.loads(request.body or "{}").get("paths", []))
 
     lang = json.loads(request.body or "{}").get("lang", "en")
@@ -150,7 +150,7 @@ def delete_videos(request):
 
     lang = json.loads(request.body or "{}").get("lang", "en")
 
-    youtube_ids = get_download_youtube_ids(paths)
+    youtube_ids = get_download_youtube_ids(paths, language=lang)
 
     num_deleted = 0
 
