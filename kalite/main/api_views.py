@@ -34,7 +34,7 @@ def search_api(request, channel):
 
     matches, exact, pages = search_topic_nodes(query=query, channel=channel, language=request.language, page=1, items_per_page=15, exact=False)
 
-    if matches==list():
+    if not matches:
         messages.warning(request, _("Search completed, no content was found for your search. Try something else."))
 
     return JsonResponse(matches)
