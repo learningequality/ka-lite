@@ -236,7 +236,7 @@ var SidebarView = BaseView.extend({
         }
     },
 
-    resize_for_narrow: _.debounce(function() {
+    resize_for_narrow: _.throttle(function() {
         if (this.state_model.get("open")) {
             var current_level = this.state_model.get("current_level");
             var column_width = this.$(".topic-container-inner").width();
@@ -279,7 +279,7 @@ var SidebarView = BaseView.extend({
     }, 100),
 
     // Pretty much the code for pre-back-button sidebar resize
-    resize_for_wide: _.debounce(function() {
+    resize_for_wide: _.throttle(function() {
         var current_level = this.state_model.get("current_level");
         var column_width = this.$(".topic-container-inner").width();
         var last_column_width = 400;
