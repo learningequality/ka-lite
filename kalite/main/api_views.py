@@ -110,8 +110,8 @@ def content_recommender(request):
 
 
 @api_handle_error_with_json
-def assessment_item(request, assessment_item):
-    assessment_item = get_assessment_item_data(channel=getattr(request, "channel", "khan"),
-                                               language=getattr(request, "language", "en"),
-                                               assessment_item_id=assessment_item)
-    return JsonResponse(assessment_item)
+def assessment_item(request, assessment_item_id):
+    assessment_item_dict = get_assessment_item_data(channel=getattr(request, "channel", "khan"),
+                                                    language=getattr(request, "language", "en"),
+                                                    assessment_item_id=assessment_item_id)
+    return JsonResponse(assessment_item_dict)
