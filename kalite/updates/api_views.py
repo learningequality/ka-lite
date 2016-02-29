@@ -124,15 +124,17 @@ def start_video_download(request):
     """
     API endpoint for launching the videodownload job.
     """
-    paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
+    paths = OrderedSet(json.loads(request.body or "{}").get("paths", []))
+
+    lang = json.loads(request.body or "{}").get("lang", "en")
 
     youtube_ids = get_download_youtube_ids(paths)
 
     queue = VideoQueue()
 
-    queue.add_files(youtube_ids, language=request.language)
+    queue.add_files(youtube_ids, language=lang)
 
-    force_job("videodownload", _("Download Videos"), locale=request.language)
+    force_job("videodownload", _("Download Videos"), locale=lang)
 
     return JsonResponseMessageSuccess(_("Launched video download process successfully."))
 
@@ -144,7 +146,9 @@ def delete_videos(request):
     API endpoint for deleting videos.
     """
 
-    paths = OrderedSet(simplejson.loads(request.body or "{}").get("paths", []))
+    paths = OrderedSet(json.loads(request.body or "{}").get("paths", []))
+
+    lang = json.loads(request.body or "{}").get("lang", "en")
 
     youtube_ids = get_download_youtube_ids(paths)
 
@@ -155,7 +159,7 @@ def delete_videos(request):
         if delete_downloaded_files(id):
             num_deleted += 1
 
-    annotate_content_models_by_youtube_id(youtube_ids=youtube_ids.keys(), language=request.language)
+    annotate_content_models_by_youtube_id(youtube_ids=youtube_ids.keys(), language=lang)
 
     return JsonResponseMessageSuccess(_("Deleted %(num_videos)s video(s) successfully.") % {"num_videos": num_deleted})
 
@@ -164,7 +168,7 @@ def delete_videos(request):
 @api_handle_error_with_json
 def cancel_video_download(request):
 
-    force_job("videodownload", stop=True, locale=request.language)
+    force_job("videodownload", stop=True)
 
     queue = VideoQueue()
 
@@ -177,7 +181,9 @@ def cancel_video_download(request):
 @api_handle_error_with_json
 def video_scan(request):
 
-    force_job("videoscan", _("Scan for Videos"), language=request.language)
+    lang = json.loads(request.body or "{}").get("lang", "en")
+
+    force_job("videoscan", _("Scan for Videos"), language=lang)
 
     return JsonResponseMessageSuccess(_("Scanning for videos started."))
 
