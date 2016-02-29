@@ -149,6 +149,10 @@ $(function() {
               cache: false
             };
         },
+        loadChildren: function(event, data) {
+            // Apply parent's state to new child nodes:
+            data.node.fixSelection3AfterClick();
+        },
         select: function(event, node) {
             // only allow selection if we're not currently downloading
             if (!videos_downloading) {
