@@ -547,6 +547,7 @@ var VectorVideoView = ContentBaseView.extend({
 
         //IF PLAYING FORWARD
         else {
+            this.data_model.set("previous_time", current_time);
             //loop through all objects
             //loop through all strokes
             //loop through all substrokes and draw based on start time
@@ -561,48 +562,55 @@ var VectorVideoView = ContentBaseView.extend({
                 for (var stroke = previous_stroke; stroke < this.json_data.operations[object].strokes.length; stroke++) {
                     for (var sub_stroke = previous_substroke; sub_stroke < this.json_data.operations[object].strokes[stroke].length; sub_stroke++) {
 
-                        var current_substroke = this.json_data.operations[object].strokes[stroke][sub_stroke];
-                        var current_substroke_x = parseFloat(current_substroke.x);
-                        var current_substroke_y = parseFloat(current_substroke.y);
-                        var current_substroke_start = parseFloat(current_substroke.substroke_start_time);
+                        var sub_stroke_curr = this.json_data.operations[object].strokes[stroke][sub_stroke];
+
+                        var sub_stroke_curr_x = parseFloat(sub_stroke_curr.x);
+                        var sub_stroke_curr_y = parseFloat(sub_stroke_curr.y);
+                        var sub_stroke_curr_start = parseFloat(sub_stroke_curr.substroke_start_time);
+
+                        if (sub_stroke_curr_start <= current_time) {
+                            //console.log("should be drawing");
+                            console.log("objectobjectobject " + object);
+                            console.log("strokestroke " + stroke);
+                            console.log("substroke " + sub_stroke);
+
+                            //x-1 then use x+1
+                            //if (wlocation !== undefined)
+                            //if next exists aka not the last stroke
+                            var path = new this.paper_scope.Path();
+                            path.strokeColor = new this.paper_scope.Color(object_color_r, object_color_g, object_color_b);
+                            path.add(new this.paper_scope.Point(sub_stroke_curr_x, sub_stroke_curr_y));
+
+                            if (this.json_data.operations[object].strokes[stroke][sub_stroke + 1]) {
+                                var sub_stroke_next = this.json_data.operations[object].strokes[stroke][sub_stroke + 1];
+                                var sub_stroke_next_x = parseFloat(sub_stroke_next.x);
+                                var sub_stroke_next_y = parseFloat(sub_stroke_next.y);
+                                path.add(new this.paper_scope.Point(sub_stroke_next_x, sub_stroke_next_y));
+                                console.log("IN FIRST");
+                            }
+
+                            //last item use x-1 aka the last
+
+                            else {
+
+                                var sub_stroke_prev = this.json_data.operations[object].strokes[stroke][sub_stroke - 1];
+                                var sub_stroke_prev_x = parseFloat(sub_stroke_prev.x);
+                                var sub_stroke_prev_y = parseFloat(sub_stroke_prev.y);
+                                path.add(new this.paper_scope.Point(sub_stroke_prev_x, sub_stroke_prev_y));
+                                console.log("IN SECOND");
+                            }
 
 
-                        //console.log(current_substroke_start);
+                            //this.paper_scope.view.update();
 
-                        //if stroke_start_time <= current then draw
-                        //else return
-
-                        /*
-                         var path = new this.paper_scope.Path();
-                         path.strokeColor = new this.paper_scope.Color(object_color_r, object_color_g, object_color_b);
-
-                         var x = parseInt(current_substroke[0]);
-                         x = x + object_start_x;
-                         var y = parseInt(current_substroke[1]);
-                         y = y + object_start_y;
-
-                         path.add(new this.paper_scope.Point(x, y));
-                         this.paper_scope.view.update();
-
-
-                         */
-                        this.data_model.set("previous_object", object);
-                        this.data_model.set("previous_stroke", stroke);
-                        this.data_model.set("previous_substroke", sub_stroke);
+                            this.data_model.set("previous_object", object);
+                            this.data_model.set("previous_stroke", stroke);
+                            this.data_model.set("previous_substroke", sub_stroke);
+                        }
+                        //Else return
                     }
-
                 }
             }
-            /*
-             var current_object = this.data_model.get("current_object");
-             var temp_current_object = current_object;
-             for (var x = previous_object; x <= temp_current_object; x++) {
-             if (parseInt(this.json_data.operations[x].start) < current_time) {
-             this.draw_object(this.json_data.operations[x]);
-             }
-             }
-             this.data_model.set("previous_time", current_time);
-             */
         }
     },
 
