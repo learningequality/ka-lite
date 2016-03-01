@@ -91,13 +91,6 @@ def update_content_availability(content_list, language="en", channel="khan"):
                         "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
                         "thumbnail": thumbnail,
                     }
-            elif django_settings.BACKUP_VIDEO_SOURCE:
-                update["available"] = True
-                update["content_urls"] = {
-                    "stream": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
-                    "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
-                    "thumbnail": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
-                }
 
             if update.get("available"):
                 # Don't bother doing this work if the video is not available at all
