@@ -104,12 +104,7 @@ def set_database(function):
     """
 
     def wrapper(*args, **kwargs):
-        # Hardcode the Brazilian Portuguese mapping that only the central server knows about
-        # TODO(jamalex): BURN IT ALL DOWN!
         language = kwargs.get("language", "en")
-
-        if language == "pt-BR":
-            language = "pt"
 
         path = kwargs.pop("database_path", None)
         if not path:

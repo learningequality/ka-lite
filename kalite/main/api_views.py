@@ -44,11 +44,6 @@ def search_api(request, channel):
 def content_item(request, channel, content_id):
     language = request.language
 
-    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
-    # TODO(jamalex): BURN IT ALL DOWN!
-    if language == "pt-BR":
-        language = "pt"
-
     content = get_content_item(channel=channel, content_id=content_id, language=language)
 
     if not content:
