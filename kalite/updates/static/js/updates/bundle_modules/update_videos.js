@@ -47,7 +47,7 @@ function video_check_callback(progress_log, resp) {
         var status = progress_log.stage_status;
 
         if (keyCompleted) {
-            if (!status) {
+            if (!status && (status !== "error")) {
                 setNodeClass(tree.getNodeByKey(keyCompleted), "complete");
             } else if (status == "error") {
                 // update # errors
@@ -67,8 +67,6 @@ function video_check_callback(progress_log, resp) {
                 });
                 return;
 
-            } else if (lastKey != currentKey) {
-                setNodeClass(tree.getNodeByKey(currentKey), "partial");
             }
 
         } else if (progress_log.completed) {
@@ -86,6 +84,7 @@ function video_check_callback(progress_log, resp) {
 }
 
 var tree;
+var lang_code;
 
 var video_callbacks = {
     start: video_start_callback,
@@ -108,6 +107,7 @@ var scan_callbacks = {
 
 
 $(function() {
+    lang_code = $("#download_language_selector option:selected")[0].value;
 
     $("#content_tree").html("");
 
@@ -120,7 +120,7 @@ $(function() {
         clickFolderMode: 2,
         source: {
             url: window.Urls.get_update_topic_tree(),
-            data: { parent: "root"},
+            data: { parent: "root", lang: lang_code},
             cache: false
         },
         postProcess: function(event, data) {
@@ -136,16 +136,20 @@ $(function() {
                     node["lazy"] = true;
                     node["folder"] = true;
                 }
-                node["key"] = node["id"];
+                node["key"] = node.youtube_id || node.id;
             });
         },
         lazyLoad: function(event, data){
             var node = data.node;
             data.result = {
               url: window.Urls.get_update_topic_tree(),
-              data:{ parent: node.key},
+              data:{ parent: node.key, lang: lang_code},
               cache: false
             };
+        },
+        loadChildren: function(event, data) {
+            // Apply parent's state to new child nodes:
+            data.node.fixSelection3AfterClick();
         },
         select: function(event, node) {
             // only allow selection if we're not currently downloading
@@ -215,7 +219,7 @@ $(function() {
         var paths = _.map(tree.getSelectedNodes(true), function(node) { return node.data.path; });
 
         // Do the request
-        api.doRequest(window.Urls.start_video_download(), {paths: paths})
+        api.doRequest(window.Urls.start_video_download(), {paths: paths, lang: lang_code})
             .success(function() {
                 base.updatesStart("videodownload", 2000, video_callbacks);
             })
@@ -260,7 +264,7 @@ $(function() {
 
                     var paths = _.map(tree.getSelectedNodes(true), function(node) { return node.data.path; });
                     // Do the request
-                    api.doRequest(window.Urls.delete_videos(), {paths: paths})
+                    api.doRequest(window.Urls.delete_videos(), {paths: paths, lang: lang_code})
                         .success(function() {
                             //update fancytree to reflect the current status of the videos
                             $.each(downloading_node, function(ind, node) {
@@ -324,7 +328,7 @@ $(function() {
     }
 
     $("#download_language_selector").change(function() {
-         var lang_code = $("#download_language_selector option:selected")[0].value;
+        lang_code = $("#download_language_selector option:selected")[0].value;
          window.location.href = get_params.setGetParam(window.location.href, "lang", lang_code);
     });
 
@@ -336,7 +340,7 @@ $(function() {
         $("#scan-videos").attr("disabled", "disabled");
 
         // Do the request
-        api.doRequest(window.Urls.video_scan())
+        api.doRequest(window.Urls.video_scan(), {lang: lang_code})
             .success(function() {
                 base.updatesStart("videoscan", 2000, scan_callbacks);
 
@@ -413,7 +417,7 @@ function getSelectedStartedMetadata(data_type) {
 function setNodeClass(node, className) {
     if (node.extraClasses != className) {
         node.extraClasses = className;
-        if (node.parent) {
+        if (node.parent !== null) {
             updateNodeClass(node.parent);
         }
     }
