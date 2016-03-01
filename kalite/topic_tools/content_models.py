@@ -506,14 +506,27 @@ def bulk_insert(items, **kwargs):
 
 
 @set_database
+def create(item, **kwargs):
+    """
+    Wrapper around create that allows us to specify a database
+    and also parse the model data to compress extra fields.
+    :param item: A dictionary containing content metadata for one node.
+    :return Item
+    """
+    if item:
+        return Item.create(**parse_model_data(item))
+
+
+@set_database
 def get_or_create(item, **kwargs):
     """
     Wrapper around get or create that allows us to specify a database
     and also parse the model data to compress extra fields.
     :param item: A dictionary containing content metadata for one node.
+    :return tuple of Item and Boolean for whether created or not.
     """
     if item:
-        Item.create_or_get(**parse_model_data(item))
+        return Item.create_or_get(**parse_model_data(item))
 
 
 @set_database

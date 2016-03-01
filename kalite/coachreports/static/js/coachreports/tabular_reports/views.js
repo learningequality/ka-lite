@@ -375,7 +375,8 @@ var TabularReportView = BaseView.extend({
             facility: this.model.get("facility"),
             group: this.model.get("group"),
             start_date: date_string(this.model.get("start_date")),
-            end_date: date_string(this.model.get("end_date"))
+            end_date: date_string(this.model.get("end_date")),
+            topic_ids: this.model.get("topic_ids")
         });
         if (this.model.get("facility")) {
             this.data_model.fetch().then(function() {

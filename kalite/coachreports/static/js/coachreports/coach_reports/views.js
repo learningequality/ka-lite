@@ -88,7 +88,7 @@ var CoachSummaryView = BaseView.extend({
 
     events: {
         "click #show_tabular_report": "toggle_tabular_view",
-        "click #topic-list-submit": "set_data_model"
+        "click #topic-list-submit": "set_topics"
     },
 
 
@@ -100,7 +100,7 @@ var CoachSummaryView = BaseView.extend({
         var targetElem = $("#topic-list").get(0);
         var frag = document.createDocumentFragment();
 
-        var tids = $.parseJSON(this.data_model.get("topic_ids"));
+        var tids = $.parseJSON(this.data_model.get("topic_ids") || "[]");
         var ctr = -1;
 
         parseData.forEach(function(datum, index) {
@@ -196,14 +196,19 @@ var CoachSummaryView = BaseView.extend({
         _.bindAll(this, "set_data_model", "render");
         this.listenTo(this.model, "change:facility", this.set_data_model);
         this.listenTo(this.model, "change:group", this.set_data_model);
+        this.listenTo(this.model, "change:topic_ids", this.set_data_model);
         this.listenTo(this.model, "set_time", this.set_data_model);
         this.set_data_model();
+    },
 
+    set_topics: function() {
+        var topic_ids = _.map(this.$("#topic-list option:checked"), function (node) {return node.value;});
+        this.model.set("topic_ids", JSON.stringify(topic_ids));
     },
 
     set_data_model: function (){
         if (this.data_model) {
-            var check_fields = ["facility", "group", "start_date", "end_date"];
+            var check_fields = ["facility", "group", "start_date", "end_date", "topic_ids"];
             var data_fields = _.pick(this.data_model.attributes, check_fields);
             var status_fields = _.pick(this.model.attributes, check_fields);
             if (!_.isEqual(data_fields, status_fields)) {
@@ -212,13 +217,12 @@ var CoachSummaryView = BaseView.extend({
         }
 
         if (!this.data_model) {
-            var topic_ids = _.map(this.$("#topic-list option:checked"), function (node) {return node.value;});
             this.data_model = new Models.CoachReportAggregateModel({
                 facility: this.model.get("facility"),
                 group: this.model.get("group"),
                 start_date: date_string(this.model.get("start_date")),
                 end_date: date_string(this.model.get("end_date")),
-                topic_ids: JSON.stringify(topic_ids)
+                topic_ids: this.model.get("topic_ids")
             });
             if (this.model.get("facility")) {
                 this.listenTo(this.data_model, "sync", this.render);
@@ -242,14 +246,16 @@ var CoachSummaryView = BaseView.extend({
         var w = 500;
         var dataset = [struggling/total, complete/total, in_progress/total];
 
-        console.log(dataset);
+
         var svg = d3.select("div.progressbar").append("svg").attr("width", w).attr("height", h).
             attr("class", "col-md-8 innerbar");
 
         svg.selectAll("rect").data(dataset).enter().append("rect").attr("x", function(d, i){
-                return _.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) * w;
+                var out = _.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) * w;
+                out = isNaN(out) ? 0 : out;
+                return out;
             }).attr("y", 0).attr("width", function(d) {
-                return d * w;
+                return isNaN(d * w) ? 0 : d*w;
             }).attr("height", h).attr("class", "rect").attr("class", function(d, i){
                 switch(i) {
                     case(0):
@@ -272,7 +278,9 @@ var CoachSummaryView = BaseView.extend({
                     return in_progress;
             }
         }).attr("fill", "black").attr("x", function(d, i){
-            return (_.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) + d/2) * w;
+            var out = (_.reduce(dataset.slice(0, i), function(memo, num) { return memo + num; }, 0) + d/2) * w;
+            out = isNaN(out) ? 0 : out;
+            return out;
         }).attr("y", h/2).attr("font-size", "12px").style("text-anchor", "middle");
 
     },
