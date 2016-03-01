@@ -532,9 +532,12 @@ var VectorVideoView = ContentBaseView.extend({
         var previous_time = this.data_model.get("previous_time");
 
         var previous_object = this.data_model.get("previous_object");
+
         var previous_stroke = this.data_model.get("previous_stroke");
         var previous_substroke = this.data_model.get("previous_substroke");
-
+        //console.log("previous_object at top" + previous_object);
+        //console.log("previous_stroke at top" + previous_stroke);
+        //console.log("previous_substroke at top" + previous_substroke);
         //IF PLAYING BACKWARDS
         if (current_time < previous_time) {
             //erase canvas
@@ -570,9 +573,9 @@ var VectorVideoView = ContentBaseView.extend({
 
                         if (sub_stroke_curr_start <= current_time) {
                             //console.log("should be drawing");
-                            console.log("objectobjectobject " + object);
-                            console.log("strokestroke " + stroke);
-                            console.log("substroke " + sub_stroke);
+                            //console.log("objectobjectobject " + object);
+                            //console.log("strokestroke " + stroke);
+                            //console.log("substroke " + sub_stroke);
 
                             //x-1 then use x+1
                             //if (wlocation !== undefined)
@@ -586,7 +589,7 @@ var VectorVideoView = ContentBaseView.extend({
                                 var sub_stroke_next_x = parseFloat(sub_stroke_next.x);
                                 var sub_stroke_next_y = parseFloat(sub_stroke_next.y);
                                 path.add(new this.paper_scope.Point(sub_stroke_next_x, sub_stroke_next_y));
-                                console.log("IN FIRST");
+                                //console.log("IN FIRST");
                             }
 
                             //last item use x-1 aka the last
@@ -597,7 +600,7 @@ var VectorVideoView = ContentBaseView.extend({
                                 var sub_stroke_prev_x = parseFloat(sub_stroke_prev.x);
                                 var sub_stroke_prev_y = parseFloat(sub_stroke_prev.y);
                                 path.add(new this.paper_scope.Point(sub_stroke_prev_x, sub_stroke_prev_y));
-                                console.log("IN SECOND");
+                                //console.log("IN SECOND");
                             }
 
 
@@ -606,10 +609,17 @@ var VectorVideoView = ContentBaseView.extend({
                             this.data_model.set("previous_object", object);
                             this.data_model.set("previous_stroke", stroke);
                             this.data_model.set("previous_substroke", sub_stroke);
+                            //console.log("previous_object at bottom" + previous_object);
+                            //console.log("previous_stroke at bottom" + previous_stroke);
+                            //console.log("previous_substroke at bottom" + previous_substroke);
+
+
                         }
                         //Else return
                     }
+                    this.data_model.set("previous_substroke", 0);
                 }
+                this.data_model.set("previous_stroke", 0);
             }
         }
     },
