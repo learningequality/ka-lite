@@ -545,6 +545,12 @@ var VectorVideoView = ContentBaseView.extend({
             //current stroke =0
             //reset substroke to 0
             //previous_time = 0
+            this.data_model.set("previous_object", 0);
+            this.data_model.set("previous_stroke", 0);
+            this.data_model.set("previous_substroke", 0);
+            this.data_model.set("previous_time", 0);
+            //console.log( this.paper_scope.project);
+            this.paper_scope.project.clear();
             return;
         }
 
@@ -563,7 +569,7 @@ var VectorVideoView = ContentBaseView.extend({
                 var object_color_b = parseInt(current_object.color[2]) / 255;
 
                 for (var stroke = previous_stroke; stroke < this.json_data.operations[object].strokes.length; stroke++) {
-                    for (var sub_stroke = previous_substroke; sub_stroke < this.json_data.operations[object].strokes[stroke].length; sub_stroke++) {
+                    for (var sub_stroke = previous_substroke; sub_stroke < this.json_data.operations[object].strokes[stroke].length -1; sub_stroke++) {
 
                         var sub_stroke_curr = this.json_data.operations[object].strokes[stroke][sub_stroke];
 
@@ -584,16 +590,16 @@ var VectorVideoView = ContentBaseView.extend({
                             path.strokeColor = new this.paper_scope.Color(object_color_r, object_color_g, object_color_b);
                             path.add(new this.paper_scope.Point(sub_stroke_curr_x, sub_stroke_curr_y));
 
-                            if (this.json_data.operations[object].strokes[stroke][sub_stroke + 1]) {
+                            //if (this.json_data.operations[object].strokes[stroke][sub_stroke + 1]) {
                                 var sub_stroke_next = this.json_data.operations[object].strokes[stroke][sub_stroke + 1];
                                 var sub_stroke_next_x = parseFloat(sub_stroke_next.x);
                                 var sub_stroke_next_y = parseFloat(sub_stroke_next.y);
                                 path.add(new this.paper_scope.Point(sub_stroke_next_x, sub_stroke_next_y));
                                 //console.log("IN FIRST");
-                            }
+                            //}
 
                             //last item use x-1 aka the last
-
+/*
                             else {
 
                                 var sub_stroke_prev = this.json_data.operations[object].strokes[stroke][sub_stroke - 1];
@@ -602,9 +608,10 @@ var VectorVideoView = ContentBaseView.extend({
                                 path.add(new this.paper_scope.Point(sub_stroke_prev_x, sub_stroke_prev_y));
                                 //console.log("IN SECOND");
                             }
+                            */
 
 
-                            //this.paper_scope.view.update();
+                            this.paper_scope.view.update();
 
                             this.data_model.set("previous_object", object);
                             this.data_model.set("previous_stroke", stroke);
@@ -614,8 +621,9 @@ var VectorVideoView = ContentBaseView.extend({
                             //console.log("previous_substroke at bottom" + previous_substroke);
 
 
+                        } else {
+                            return;
                         }
-                        //Else return
                     }
                     this.data_model.set("previous_substroke", 0);
                 }
