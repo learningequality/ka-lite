@@ -62,8 +62,6 @@ var VideoPlayerView = ContentBaseView.extend({
         if (player_id) {
             var video_player_options = {
                 "controls": true,
-                "width": "auto",
-                "height": "auto",
                 "playbackRates": [0.5, 1, 1.25, 1.5, 2]
             };
             if( this.data_model.get("content_urls").thumbnail ) {
