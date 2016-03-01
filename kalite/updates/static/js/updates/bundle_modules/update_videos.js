@@ -47,7 +47,7 @@ function video_check_callback(progress_log, resp) {
         var status = progress_log.stage_status;
 
         if (keyCompleted) {
-            if (!status) {
+            if (!status && (status !== "error")) {
                 setNodeClass(tree.getNodeByKey(keyCompleted), "complete");
             } else if (status == "error") {
                 // update # errors
@@ -67,8 +67,6 @@ function video_check_callback(progress_log, resp) {
                 });
                 return;
 
-            } else if (lastKey != currentKey) {
-                setNodeClass(tree.getNodeByKey(currentKey), "partial");
             }
 
         } else if (progress_log.completed) {
@@ -138,7 +136,7 @@ $(function() {
                     node["lazy"] = true;
                     node["folder"] = true;
                 }
-                node["key"] = node["id"];
+                node["key"] = node.youtube_id || node.id;
             });
         },
         lazyLoad: function(event, data){
@@ -419,7 +417,7 @@ function getSelectedStartedMetadata(data_type) {
 function setNodeClass(node, className) {
     if (node.extraClasses != className) {
         node.extraClasses = className;
-        if (node.parent) {
+        if (node.parent !== null) {
             updateNodeClass(node.parent);
         }
     }

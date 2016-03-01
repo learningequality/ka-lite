@@ -286,6 +286,7 @@ def get_topic_update_nodes(parent=None, **kwargs):
             Item.total_files,
             Item.id,
             Item.path,
+            Item.youtube_id,
         ).join(Parent, on=(Item.parent == Parent.pk)).where((selector) & (Item.total_files != 0))
         return values
 
