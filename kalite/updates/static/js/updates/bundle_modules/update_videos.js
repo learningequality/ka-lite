@@ -415,10 +415,12 @@ function getSelectedStartedMetadata(data_type) {
 }
 
 function setNodeClass(node, className) {
-    if (node.extraClasses != className) {
-        node.extraClasses = className;
-        if (node.parent !== null) {
-            updateNodeClass(node.parent);
+    if (node !== null) {
+        if (node.extraClasses != className) {
+            node.extraClasses = className;
+            if (node.parent !== null) {
+                updateNodeClass(node.parent);
+            }
         }
     }
 }
