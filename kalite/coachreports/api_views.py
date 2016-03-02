@@ -13,6 +13,28 @@ from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes, get_leafed_topics, get_content_parents
 
+
+def unique_by_id_and_kind_sort(seq):
+    """
+    Due to the fact that we have duplicate content items for the same content id in our topic tree, as the way that
+    we have implemented duplication of content across the topic tree.
+    :param seq: an iterator of content items.
+    :return: A unique, sorted list of content items.
+    """
+
+    seq.sort(key=lambda x: x.get("sort_order", 0))
+    seen = {}
+    result = []
+    for item in seq:
+        marker = item.get("id") + item.get("kind")
+
+        if marker in seen:
+            continue
+        seen[marker] = 1
+        result.append(item)
+    return result
+
+
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
 
@@ -74,7 +96,7 @@ def learner_logs(request):
 
     end_date = request.GET.get("end_date")
 
-    topic_ids = request.GET.getlist("topic_id", [])
+    topic_ids = json.loads(request.GET.get("topic_ids", "[]"))
 
     learners = get_learners_from_GET(request)
 
@@ -107,8 +129,12 @@ def learner_logs(request):
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
+    output_objects = unique_by_id_and_kind_sort(output_objects)
+
     return JsonResponse({
+        # All learner log objects for each content item.
         "logs": output_logs,
+        # All content items for which logs are being returned.
         "contents": output_objects,
         # Sometimes 'learners' gets collapsed to a list from the Queryset. This insures against that eventuality.
         "learners": [{

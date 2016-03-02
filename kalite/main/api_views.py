@@ -34,17 +34,15 @@ def search_api(request, channel):
 
     matches, exact, pages = search_topic_nodes(query=query, channel=channel, language=request.language, page=1, items_per_page=15, exact=False)
 
+    if not matches:
+        messages.warning(request, _("Search completed, no content was found for your search. Try something else."))
+
     return JsonResponse(matches)
 
 
 @api_handle_error_with_json
 def content_item(request, channel, content_id):
     language = request.language
-
-    # Hardcode the Brazilian Portuguese mapping that only the central server knows about
-    # TODO(jamalex): BURN IT ALL DOWN!
-    if language == "pt-BR":
-        language = "pt"
 
     content = get_content_item(channel=channel, content_id=content_id, language=language)
 
@@ -107,8 +105,8 @@ def content_recommender(request):
 
 
 @api_handle_error_with_json
-def assessment_item(request, assessment_item):
-    assessment_item = get_assessment_item_data(channel=getattr(request, "channel", "khan"),
-                                               language=getattr(request, "language", "en"),
-                                               assessment_item_id=assessment_item)
-    return JsonResponse(assessment_item)
+def assessment_item(request, assessment_item_id):
+    assessment_item_dict = get_assessment_item_data(channel=getattr(request, "channel", "khan"),
+                                                    language=getattr(request, "language", "en"),
+                                                    assessment_item_id=assessment_item_id)
+    return JsonResponse(assessment_item_dict)

@@ -1,11 +1,17 @@
-import os
+import json
 
+import os
 from django.contrib.auth.models import User
 from django.core.management import call_command
-
 from kalite.main.tests.base import MainTestCase
+from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
 from kalite.testing.client import KALiteClient
+from kalite.testing.mixins.django_mixins import CreateAdminMixin
+from kalite.testing.mixins.facility_mixins import FacilityMixins
+from kalite.testing.mixins.securesync_mixins import CreateZoneMixin
 from kalite.topic_tools.content_models import get_content_item
+from mock import patch
+
 
 
 class TestAdminApiCalls(MainTestCase):
@@ -73,3 +79,45 @@ class TestAdminApiCalls(MainTestCase):
         self.assertFalse(videofile.get("available"))
         assert videofile.get("size_on_disk") == 0
         assert videofile.get("files_complete") == 0
+
+
+class VideoLanguageUpdateTestCase(CreateZoneMixin,
+                                 CreateAdminMixin,
+                                 FacilityMixins,
+                                 KALiteClientTestCase):
+
+    def setUp(self, db=None):
+        super(VideoLanguageUpdateTestCase, self).setUp()
+
+        self.admin_data = {"username": "admin", "password": "admin"}
+        self.admin = self.create_admin(**self.admin_data)
+
+        self.zone = self.create_zone()
+        self.device_zone = self.create_device_zone(self.zone)
+        self.facility = self.create_facility()
+
+    @patch('kalite.updates.api_views.force_job')
+    @patch('kalite.updates.api_views.get_download_youtube_ids', return_value={"test": "this"})
+    def test_start_video_download(self, force_job, get_download_youtube_ids):
+        self.client.login(username='admin', password='admin')
+        lang = "es-ES"
+        api_resp = json.loads(self.client.post_json(url_name="start_video_download", data={"paths": "this/here", "lang": lang}).content)
+        args, kwargs = get_download_youtube_ids.call_args
+        self.assertEqual(kwargs["locale"], lang)
+
+    @patch('kalite.updates.api_views.annotate_content_models_by_youtube_id')
+    @patch('kalite.updates.api_views.get_download_youtube_ids', return_value={"test": "this"})
+    def test_start_video_delete(self, annotate_content_models_by_youtube_id, get_download_youtube_ids):
+        self.client.login(username='admin', password='admin')
+        lang = "es-ES"
+        api_resp = json.loads(self.client.post_json(url_name="delete_videos", data={"paths": "this/here", "lang": lang}).content)
+        args, kwargs = get_download_youtube_ids.call_args
+        self.assertEqual(kwargs["language"], lang)
+
+    @patch('kalite.updates.api_views.force_job')
+    def test_start_video_scan(self, force_job):
+        self.client.login(username='admin', password='admin')
+        lang = "es-ES"
+        api_resp = json.loads(self.client.post_json(url_name="video_scan", data={"lang": lang}).content)
+        args, kwargs = force_job.call_args
+        self.assertEqual(kwargs["language"], lang)
