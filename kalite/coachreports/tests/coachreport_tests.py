@@ -115,32 +115,43 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
     @set_database
     def setUp(self, db=None):
         self.db = db
-        self.student=self.create_student()
-        self.ex_logs=self.create_exercise_log(user=self.student)
-        self.Parent=get_content_parents(ids=[self.ex_logs.exercise_id])
-        self.p=self.Parent[0]
-        q=Item.update(available=True).where(Item.id == self.p['id'])
-        q.execute()
-        q1=Item.update(available=True).where(Item.id == self.ex_logs.exercise_id)
-        q1.execute()
+        self.topic1 = create({
+            "id": "stuff_here",
+            "slug": "stuff_here",
+            "path": "qwrqweqweqwe",
+            "kind": "Topic",
+            "title": "",
+            "description": "",
+            "available": True,
+        })
+        self.exercise1 = create({
+            "id": "stuff_here_ex",
+            "slug": "stuff_here_ex",
+            "path": "qwrqweqweqwe/qwrqweqweq",
+            "kind": "Exercise",
+            "title": "",
+            "description": "",
+            "available": True,
+            "parent": self.topic1,
+        })
+        self.student = self.create_student()
+        self.ex_logs = self.create_exercise_log(user=self.student, exercise_id=self.exercise1.id)
 
     @set_database
     def tearDown(self, db=None):
         self.db = db
-        q=Item.update(available=False).where(Item.id == self.p['id'])
-        q.execute()
-        q1=Item.update(available=False).where(Item.id == self.ex_logs.exercise_id)
-        q1.execute()
+        self.exercise1.delete()
+        self.topic1.delete()
 
     def test_playlist_progress(self):
         base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress_detail'})
-        url = base_url + '?' + urllib.urlencode({'user_id':self.student.id, 'playlist_id': self.p["id"]})
+        url = base_url + '?' + urllib.urlencode({'user_id': self.student.id, 'playlist_id': self.topic1.id})
         resp = self.client.get(url)
-        exercises=json.loads(resp.content).get("objects")
+        exercises = json.loads(resp.content).get("objects")
         # checking if the request returned any of the exercises
-        self.assertEqual(len(exercises),1)
+        assert len(exercises)
         #checking if the returned list is accurate
-        self.assertEqual(exercises[0]["title"],"Comparing two-digit numbers")
+        self.assertEqual(exercises[0]["title"], self.exercise1.title)
 
 
 class LearnerLogAPITests(FacilityMixins,
