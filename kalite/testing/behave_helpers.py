@@ -43,7 +43,7 @@ from kalite.facility.models import FacilityUser
 
 # Use these for now, so that we don't DROurselves, but eventually
 # we'll want to move away from mixins.
-from kalite.testing.mixins.browser_mixins import BrowserActionMixins
+from kalite.testing.mixins.browser_mixins import BrowserActionMixins, KALiteTimeout
 from kalite.testing.mixins.django_mixins import CreateAdminMixin
 from kalite.testing.mixins.facility_mixins import FacilityMixins
 
@@ -462,3 +462,28 @@ def request(context, url, method="GET", data=""):
     context_wm.browser_wait_for_js_condition("window.FLAG")
     resp = context.browser.execute_script("return window.DATA")
     return resp
+
+
+def wait_for_video_player_ready(context, wait_time=MAX_WAIT_TIME):
+    """
+    If you're on the "Learn" page with video content, wait until the video player is "ready".
+    Specifically, wait until the VideoPlayerView has been initialized, so we can safely trigger events on it.
+
+    :return: Nothing
+    :raises: A TimeoutException if the video player never loads
+    """
+    # A way to gain access to mixins, so that essential code is not duplicated
+    # Be careful how you use this!
+    # TODO(MCGallaspy): Get rid of old integration tests and refactor the mixin methods
+    # as functions here.
+    class ContextWithMixin(BrowserActionMixins):
+        def __init__(self):
+            self.browser = context.browser
+
+    context_wm = ContextWithMixin()
+
+    try:
+        context_wm.browser_wait_for_js_condition("window._kalite_debug.video_player_initialized",
+                                                 max_wait_time=wait_time)
+    except KALiteTimeout as e:
+        raise TimeoutException(str(e))

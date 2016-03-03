@@ -2,6 +2,7 @@ var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 var _V_ = require("video.js");
+global.videojs = _V_;
 require("../../../css/distributed/video-js-override.less");
 
 var ContentBaseView = require("content/baseview");
@@ -47,6 +48,8 @@ var VideoPlayerView = ContentBaseView.extend({
             that.initialize_player(width, height);
 
         });
+
+        window._kalite_debug.video_player_initialized = true;
     },
 
     initialize_player: function(width, height) {
@@ -96,7 +99,7 @@ var VideoPlayerView = ContentBaseView.extend({
         var width = container_width;
         var height = container_height;
 
-        var ratio = this.data_model.get("width") / this.data_model.get("height");
+        var ratio = this.data_model.get("width") / (this.data_model.get("height") || 1);
 
         if (container_ratio > ratio) {
             width = container_height * ratio;

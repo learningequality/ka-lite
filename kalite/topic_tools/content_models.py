@@ -518,6 +518,38 @@ def create(item, **kwargs):
 
 
 @set_database
+def get(item, **kwargs):
+    """
+    Fetch a content item, automatically choosing the correct content database (because of the set_database
+    decorator).
+
+    :param item: A dictionary containing content metadata for one node. "extra_fields" should not be inflated!
+    :return: Item, or None if no such item is found
+    """
+    if item:
+        selector = None
+        for attr, value in item.iteritems():
+            if not selector:
+                selector = (getattr(Item, attr) == value)
+            else:
+                selector &= (getattr(Item, attr) == value)
+        return Item.get(selector)
+
+
+@set_database
+def delete_instances(ids, **kwargs):
+    """
+    Given a list of Item ids, deletes all instances with that id.
+
+    :param item: A list of `Item.id`s
+    :return: None
+    """
+    if ids:
+        for item in Item.select().where(Item.id.in_(ids)):
+            item.delete_instance()
+
+
+@set_database
 def get_or_create(item, **kwargs):
     """
     Wrapper around get or create that allows us to specify a database
