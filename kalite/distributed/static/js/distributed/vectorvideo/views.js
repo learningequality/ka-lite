@@ -137,14 +137,11 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     ease: function (t) {
-        if (t < 0.5) {
-            return 2 * t * t;
-        }
-        else {
-            return -1 + (4 - (2 * t)) * t;
-        }
-        //SHORT VERSION FOR REFERENCE:
-        //return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        //easeinquad
+        return t * t;
+
+        //easeoutquad
+        //return t*(2-t);
     },
 
 
