@@ -225,7 +225,8 @@ var VectorVideoView = ContentBaseView.extend({
                             var sub_stroke_next_y = parseFloat(sub_stroke_next.y);
                             path.add(new this.paper_scope.Point(sub_stroke_next_x, sub_stroke_next_y));
 
-                            this.paper_scope.view.update();
+                            //THIS MAKES IT LAG FOR DAYS SO NO!!!
+                            //this.paper_scope.view.update();
 
                             this.data_model.set("previous_object", object);
                             this.data_model.set("previous_stroke", stroke);
