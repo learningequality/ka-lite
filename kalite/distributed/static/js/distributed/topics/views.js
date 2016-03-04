@@ -193,7 +193,7 @@ var SidebarView = BaseView.extend({
         this.render();
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
-        this.listenTo(this.state_model, "change:current_level", this.resize_sidebar);
+        this.listenTo(this.state_model, "change:current_level", this.update_sidebar_visibility);
     },
 
     render: function() {
@@ -236,7 +236,7 @@ var SidebarView = BaseView.extend({
         }
     },
 
-    resize_for_narrow: _.throttle(function() {
+    resize_for_narrow: function() {
         if (this.state_model.get("open")) {
             var current_level = this.state_model.get("current_level");
             var column_width = this.$(".topic-container-inner").width();
@@ -276,23 +276,23 @@ var SidebarView = BaseView.extend({
 
             this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
         }
-    }, 100),
+    },
 
     // Pretty much the code for pre-back-button sidebar resize
-    resize_for_wide: _.throttle(function() {
-        var current_level = this.state_model.get("current_level");
-        var column_width = this.$(".topic-container-inner").width();
-        var last_column_width = 400;
-        
-        this.width = (current_level-1) * column_width + last_column_width + 10;
-        this.sidebar.width(this.width);
-        if (this.state_model.get("open")) {
-            this.sidebar.css({left: 0});
-            this.sidebarTab.css({left: this.width});
-        }
+    resize_for_wide: function() {
+       if (this.state_model.get("open")) {
+           var current_level = this.state_model.get("current_level");
+           var column_width = this.$(".topic-container-inner").width();
+           var last_column_width = 400;
 
-        this.set_sidebar_back();
-    }, 100),
+           this.width = (current_level-1) * column_width + last_column_width + 10;
+           this.sidebar.width(this.width);
+           this.sidebar.css({left: 0});
+           this.sidebarTab.css({left: this.width});
+
+            this.set_sidebar_back();
+       }
+    },
 
     check_external_click: function(ev) {
         if (this.state_model.get("open")) {
@@ -312,10 +312,10 @@ var SidebarView = BaseView.extend({
 
     update_sidebar_visibility: _.debounce(function() {
         if (this.state_model.get("open")) {
-            // Used to get left value in number form
-            var sidebarPanelPosition = this.sidebar.position();
             this.sidebar.css({left: 0});
             this.resize_sidebar();
+            // Used to get left value in number form
+            var sidebarPanelPosition = this.sidebar.position();
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".sidebar-fade").show();
         } else {
@@ -372,11 +372,15 @@ var SidebarView = BaseView.extend({
     },
 
     show_sidebar: function() {
-        this.state_model.set("open", true);
+        if (!this.state_model.get("open")) {
+            this.state_model.set("open", true);
+        }
     },
 
     hide_sidebar: function() {
-        this.state_model.set("open", false);
+        if (this.state_model.get("open")) {
+            this.state_model.set("open", false);
+        }
     },
 
     show_sidebar_tab: function() {
