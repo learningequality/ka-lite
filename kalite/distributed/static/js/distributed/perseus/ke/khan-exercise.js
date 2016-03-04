@@ -305,16 +305,14 @@ var Khan = $.extend(true, {
         // Load the base modules. These should be in sync with the results of
         // `getBaseModules`, but are required here explicitly as strings so
         // that they can be detected by JavaScript bundlers.
-        require([
-            "./utils/answer-types.js",
-            "./utils/tmpl.js",
-            "./utils/tex.js",
-            "./utils/jquery.adhesion.js",
-            "./utils/scratchpad.js",
-            "./utils/subhints.js",
-        ], function() {
-            baseModulesPromise.resolve();
-        });
+        require("./utils/answer-types.js");
+        require("./utils/tmpl.js");
+        require("./utils/tex.js");
+        require("./utils/jquery.adhesion.js");
+        require("./utils/scratchpad.js");
+        require("./utils/subhints.js");
+        baseModulesPromise.resolve();
+
 
         return baseModulesPromise;
     },
@@ -1672,8 +1670,8 @@ function prepareSite() {
     assessmentMode = !localMode && Exercises.assessmentMode;
 
     // Load and initialize the calculator
-    asyncloader(["./genfiles/calculator.js"], function() {
-        asyncloader(["./utils/init-calculator.js"], function() {
+    asyncloader([Khan.urlBase + "genfiles/calculator.js"], function() {
+        asyncloader([Khan.urlBase + "utils/init-calculator.js"], function() {
             Calculator.init();
         });
     });
