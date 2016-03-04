@@ -1,3 +1,7 @@
+/* TODO(csilvers): fix these lint errors (http://eslint.org/docs/rules): */
+/* eslint-disable comma-dangle, indent, max-len, no-redeclare, no-undef, no-var */
+/* To fix, remove an entry above, run ka-lint, and fix errors. */
+
 define(function(require) {
 
 require("./stat.js");
@@ -16,7 +20,7 @@ $.extend(KhanUtil, {
         );
 
         graph.graph.meanLabel.remove();
-        graph.graph.meanLabel = graph.label([mean, 1.3], $._("\\text{mean}"),
+        graph.graph.meanLabel = graph.label([mean, 1.3], i18n._("\\text{mean}"),
             "above", { color: KhanUtil.BLUE });
 
         graph.graph.mean = mean;
@@ -36,7 +40,7 @@ $.extend(KhanUtil, {
 
         graph.graph.medianLabel.remove();
         graph.graph.medianLabel = graph.label([median, -1.7],
-            $._("\\text{median}"), "below", { color: KhanUtil.GREEN });
+            i18n._("\\text{median}"), "below", { color: KhanUtil.GREEN });
 
         graph.graph.median = median;
     },

@@ -1,3 +1,7 @@
+/* TODO(csilvers): fix these lint errors (http://eslint.org/docs/rules): */
+/* eslint-disable comma-dangle, comma-spacing, indent, max-len, no-constant-condition, no-redeclare, no-undef, no-var, one-var, prefer-spread, space-infix-ops */
+/* To fix, remove an entry above, run ka-lint, and fix errors. */
+
 define(function(require) {
 
 // Minify Raphael ourselves because IE8 has a problem with the 1.5.2 minified release
@@ -89,10 +93,10 @@ $.extend(KhanUtil, {
         return digits;
     },
 
-    placesLeftOfDecimal: [$._("one"), $._("ten"), $._("hundred"),
-        $._("thousand")],
-    placesRightOfDecimal: [$._("one"), $._("tenth"), $._("hundredth"),
-        $._("thousandth"),$._("ten thousandth")],
+    placesLeftOfDecimal: [i18n._("one"), i18n._("ten"), i18n._("hundred"),
+        i18n._("thousand")],
+    placesRightOfDecimal: [i18n._("one"), i18n._("tenth"), i18n._("hundredth"),
+        i18n._("thousandth"),i18n._("ten thousandth")],
 
     powerToPlace: function(power) {
         if (power < 0) {

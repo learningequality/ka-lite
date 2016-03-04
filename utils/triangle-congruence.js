@@ -1,3 +1,7 @@
+/* TODO(csilvers): fix these lint errors (http://eslint.org/docs/rules): */
+/* eslint-disable comma-dangle, indent, max-len, no-undef, no-var, prefer-spread */
+/* To fix, remove an entry above, run ka-lint, and fix errors. */
+
 define(function(require) {
 
 $.extend(KhanUtil, {
@@ -546,7 +550,7 @@ $.extend(KhanUtil, {
         };
 
         $(".question").prepend("<button id='reflect' type='button'>" +
-            $._("Reflect shape") + "</button>");
+            i18n._("Reflect shape") + "</button>");
         $("button#reflect").bind("click", function(event) {
             this.blur();
             if (!triangle.animating) {

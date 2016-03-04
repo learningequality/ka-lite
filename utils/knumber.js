@@ -1,3 +1,7 @@
+/* TODO(csilvers): fix these lint errors (http://eslint.org/docs/rules): */
+/* eslint-disable camelcase, comma-dangle, indent, no-undef, no-var, one-var, space-infix-ops */
+/* To fix, remove an entry above, run ka-lint, and fix errors. */
+
 /*
  * Number Utils
  * A number is a js-number, e.g. 5.12

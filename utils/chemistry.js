@@ -1,3 +1,7 @@
+/* TODO(csilvers): fix these lint errors (http://eslint.org/docs/rules): */
+/* eslint-disable comma-dangle, indent, max-len, no-undef, no-var */
+/* To fix, remove an entry above, run ka-lint, and fix errors. */
+
 define(function(require) {
 
 require("./math-format.js");
@@ -2605,7 +2609,7 @@ $.fn["chemistryLoad"] = function() {
     };
 
     var periodicTable = $("<div>").appendTo("body");
-    periodicTable.attr("title", $._("Periodic table of the elements"));
+    periodicTable.attr("title", i18n._("Periodic table of the elements"));
     periodicTable.dialog({
         autoOpen: false,
         show: "fade",
