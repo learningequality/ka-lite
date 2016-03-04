@@ -1,3 +1,7 @@
+/* TODO(csilvers): fix these lint errors (http://eslint.org/docs/rules): */
+/* eslint-disable comma-dangle, indent, max-len, no-console, no-undef, no-unused-vars, no-var, one-var, prefer-spread, space-before-blocks */
+/* To fix, remove an entry above, run ka-lint, and fix errors. */
+
 /* khan-exercise.js
 
     The main entry point here is essentially the onjQueryLoaded method around
@@ -148,9 +152,11 @@ var primes = [197, 3, 193, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,
     exerciseFilePromises = {},
 
     // A promise for each loaded or loading module, keyed by module filename
-    // (module.src) -- will be resolved when the module is loaded (on the live
-    // site, immediately)
+    // (module.src), as well as a single promise for the loading of the base
+    // modules that are common to every exercise. These will be resolved when
+    // the module is loaded (on the live site, immediately)
     modulePromises = {},
+    baseModulesPromise = null;
     initialModulesPromise = $.Deferred(),
 
     urlBase = localMode ?  "../" :
@@ -238,29 +244,34 @@ var Khan = $.extend(true, {
         "constructions": ["kmatrix"]
     },
 
-    warnTimeout: function() {
-        $(Exercises).trigger("warning", [$._("Your internet might be too " +
-                "slow to see an exercise. Refresh the page or " +
+    warn: function(msg) {
+        $(Exercises).trigger("warning", [msg + i18n._(" Refresh the page or " +
                 "<a href='' id='warn-report'>report a problem</a>."),
                 false]);
         // TODO(alpert): This event binding is kind of gross
         $("#warn-report").click(function(e) {
             e.preventDefault();
-            $("#report").click();
+            $(".report-issue-link").click();
         });
+
+    },
+
+    warnMathJaxError: function(file) {
+        Khan.warn(i18n._("Sorry!  There seems to be an issue with our math " +
+                    "renderer loading the file: %(file)s.", {file: file}));
     },
 
     warnFont: function() {
         var warning;
         if ($.browser.msie) {
-            warning = $._("You should " +
+            warning = i18n._("You should " +
                 "<a href='http://missmarcialee.com/2011/08/" +
                 "how-to-enable-font-download-in-internet-explorer-8/' " +
                 "target='_blank'>enable font download</a> " +
                 "to improve the appearance of math expressions."
             );
         } else {
-            warning = $._("You should enable font download in your " +
+            warning = i18n._("You should enable font download in your " +
                 "browser to improve the appearance of math expressions");
         }
 
@@ -268,16 +279,44 @@ var Khan = $.extend(true, {
     },
 
     // TODO(alpert): This doesn't need to be in the Khan object.
+    // TODO(charlie): It'd be nice to get rid of this now that we have the
+    // `loadBaseModules` method, but these are also needed elsewhere (e.g.,
+    // in the `runModules` method), so we'll always have some duplication.
     getBaseModules: function() {
-        var mods = [];
         // Base modules required for every problem.  These are specified
         // as filenames (minus the .js extension) relative to util/.
         // subhints is here to support the intervention experiment.
-        mods.push(
-            "answer-types", "tmpl", "tex", "jquery.adhesion",
-            "scratchpad", "subhints");
+        // Note: if you update these, you should also update the loading
+        // of the base modules in `loadBaseModules`.
+        return [
+            "answer-types", "tmpl", "tex", "jquery.adhesion", "scratchpad",
+            "subhints"
+        ];
+    },
 
-        return mods;
+    loadBaseModules: function() {
+        if (baseModulesPromise) {
+            return baseModulesPromise;
+        } else {
+            baseModulesPromise = $.Deferred();
+        }
+        debugLog("loadBaseModules");
+
+        // Load the base modules. These should be in sync with the results of
+        // `getBaseModules`, but are required here explicitly as strings so
+        // that they can be detected by JavaScript bundlers.
+        require([
+            "./utils/answer-types.js",
+            "./utils/tmpl.js",
+            "./utils/tex.js",
+            "./utils/jquery.adhesion.js",
+            "./utils/scratchpad.js",
+            "./utils/subhints.js",
+        ], function() {
+            baseModulesPromise.resolve();
+        });
+
+        return baseModulesPromise;
     },
 
     resetModules: function(exerciseId) {
@@ -414,7 +453,7 @@ var Khan = $.extend(true, {
                     }
 
                     $("#scratchpad").show();
-                    $("#scratchpad-show").text($._("Hide scratchpad"));
+                    $("#scratchpad-show").text(i18n._("Hide scratchpad"));
 
                     // If pad has never been created or if it's empty
                     // because it was removed from the DOM, recreate a new
@@ -439,7 +478,7 @@ var Khan = $.extend(true, {
                 $("#scratchpad").hide();
                 // Un-outline things floating on top of the scratchpad
                 $(".above-scratchpad").css("border", "");
-                $("#scratchpad-show").text($._("Show scratchpad"));
+                $("#scratchpad-show").text(i18n._("Show scratchpad"));
             },
 
             toggle: function() {
@@ -570,7 +609,7 @@ var Khan = $.extend(true, {
             e.preventDefault();
 
             if (typeof KA !== "undefined" && KA.vipIssueReporter) {
-                $("#issue .info-box-header").text($._("VIP Issue Report"));
+                $("#issue .info-box-header").text(i18n._("VIP Issue Report"));
             }
 
             // If the hint button isn't visible, we don't want the user to
@@ -597,18 +636,32 @@ var Khan = $.extend(true, {
         });
 
         $("input[name=issue-type]").on("click", function() {
-            if ($(this).prop("id") === "issue-hints-wrong") {
-                $("#issue-body").prop("placeholder", $._("Tell us exactly " +
+            if ($(this).prop("id") === "issue-wrong-answer") {
+                $("#issue-body").prop("placeholder", i18n._("Tell us what " +
+                        "the correct answer should be, and how you got " +
+                        "that answer."));
+            } else if ($(this).prop("id") === "issue-typo") {
+                $("#issue-body").prop("placeholder", i18n._("Tell us what " +
+                        "the incorrect text says and what it should say " +
+                        "instead."));
+            } else if ($(this).prop("id") === "issue-confusing") {
+                $("#issue-body").prop("placeholder", i18n._("Tell us exactly " +
+                        "what you found confusing. How would you reword " +
+                        "the question or hints to be less confusing?"));
+            } else if ($(this).prop("id") === "issue-bug") {
+                $("#issue-body").prop("placeholder", i18n._("Tell us exactly " +
+                        "what happened and what you had expected to happen " +
+                        "instead."));
+                // TODO(csilvers): the following two are obsolete and
+                // can be removed.
+            } else if ($(this).prop("id") === "issue-hints-wrong") {
+                $("#issue-body").prop("placeholder", i18n._("Tell us exactly " +
                         "what's wrong with the hints. What answer did " +
                         "you get and how did you get it?"));
             } else if ($(this).prop("id") === "issue-answer-wrong") {
-                $("#issue-body").prop("placeholder", $._("Tell us exactly " +
+                $("#issue-body").prop("placeholder", i18n._("Tell us exactly " +
                         "how you tried to input the answer from the " +
                         "hints. Did a different answer work instead?"));
-            } else if ($(this).prop("id") === "issue-confusing") {
-                $("#issue-body").prop("placeholder", $._("Tell us exactly " +
-                        "what you found confusing. How would you reword " +
-                        "the question or hints to be less confusing?"));
             } else {
                 $("#issue-body").prop("placeholder", "");
             }
@@ -660,7 +713,7 @@ var Khan = $.extend(true, {
             // Kick off the cycle by showing the first hint.
             showHintIfAvailable();
         });
-                
+
         $(Exercises).bind("newProblem", function() {
             $("#issue-show-answer").removeClass("disabled");
         });
@@ -684,7 +737,7 @@ var Khan = $.extend(true, {
             var body = $("#issue-body").val();
             if (body === "") {
                 $("#issue-status").addClass("error")
-                    .html($._("Please provide a description of the issue.")).show();
+                    .html(i18n._("Please provide a description of the issue.")).show();
                 return;
             }
             issueInfo.bodyInfo = body + "\n\n" + issueInfo.bodyInfo;
@@ -697,15 +750,19 @@ var Khan = $.extend(true, {
             var type = $("input[name=issue-type]:checked").prop("id");
             if (!type) {
                 $("#issue-status").addClass("error")
-                    .html($._("Please specify the issue type.")).show();
+                    .html(i18n._("Please specify the issue type.")).show();
                 return;
             }
 
             issueInfo.type = {
+                "issue-wrong-answer": "Wrong answer",
+                "issue-typo": "Typo",
+                "issue-confusing": "Question or hints confusing",
+                "issue-bug": "Bug",
+                "issue-i18n": "Not translated",
+                // TODO(csilvers): these are obsolete and can be removed.
                 "issue-hints-wrong": "Answer in hints is wrong",
                 "issue-answer-wrong": "Answer in hints not accepted",
-                "issue-confusing": "Question or hints confusing",
-                "issue-i18n": "Not translated"
             }[type];
 
 
@@ -771,7 +828,7 @@ var Khan = $.extend(true, {
 
                 // show status message
                 $("#issue-status").removeClass("error")
-                    .html($._("<p>Thank you for your feedback! " +
+                    .html(i18n._("<p>Thank you for your feedback! " +
                         "Issue <b>%(bugid)s</b> has been opened and " +
                         "we'll look into it shortly.</p>",
                         {bugid: bugid}))
@@ -787,13 +844,11 @@ var Khan = $.extend(true, {
             };
 
             var onFailure = function() {
-                // show status message
-                $("#issue-status").addClass("error")
-                    .html($._("Communication with issue tracker isn't " +
-                        "working. Please file the issue manually at " +
-                        "<a href='http://github.com/Khan/khan-exercises/issues/new'>GitHub</a>. " +
-                        "Please reference item: <b>%(item)s</b>.",
-                        {item: issueInfo.exercise + "/" + issueInfo.item}))
+                // Sometimes communication to JIRA will fail and there's not
+                // much we can do. Instead, just thank the user for taking the
+                // time to give feedback.
+                // TODO(eater): Figure out why JIRA occasionally fails
+                $("#issue-status").html(i18n._("Thank you for your feedback!"))
                     .show();
 
                 // enable the inputs
@@ -860,19 +915,17 @@ function onjQueryLoaded() {
 
         // Load all base modules, and if this is local mode, any specified
         // in the data-require on <html>
-        var mods = Khan.getBaseModules();
+        promises.push(Khan.loadBaseModules());
         if (localMode) {
             var modString = document.documentElement.getAttribute(
                     "data-require") || "";
             var exMods = modString.length ? modString.split(" ") : [];
 
             Khan.exerciseModulesMap[currentExerciseId] = exMods;
-            mods.push.apply(mods, exMods);
+            $.each(exMods, function(i, mod) {
+                promises.push(loadModule(mod));
+            });
         }
-
-        $.each(mods, function(i, mod) {
-            promises.push(loadModule(mod));
-        });
 
         promises.push(Khan.mathJaxLoaded);
 
@@ -1335,7 +1388,7 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
         parent.jQuery(parent.document).trigger("problemLoaded", [makeProblem, answerData.solution]);
     }
 
-    $("#hint").val($._("I'd like a hint"));
+    $("#hint").val(i18n._("I'd like a hint"));
 
     $(Exercises).trigger("newProblem", {
         numHints: hints.length,
@@ -1369,7 +1422,7 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
         var checkAnswerButton = $("#check-answer-button");
         var skipQuestionButton = $("#skip-question-button");
         checkAnswerButton.attr("disabled", "disabled").attr(
-            "title", $._("Type in an answer first."));
+            "title", i18n._("Type in an answer first."));
         // Enables the check answer button - added so that people who type
         // in a number and hit enter quickly do not have to wait for the
         // button to be enabled by the key up
@@ -1617,242 +1670,14 @@ function prepareSite() {
     debugLog("prepareSite()");
 
     assessmentMode = !localMode && Exercises.assessmentMode;
-    function initializeCalculator() {
-        var ansChars = ["+", "-", "/", "*", "^", " "];
-        var calculator = $(".calculator"),
-            history = calculator.children(".history"),
-            output = $("#calc-output-content"),
-            inputRow = history.children(".calc-row.input"),
-            input = inputRow.children("input"),
-            buttons = calculator.find("a"),
-            previousInstrs = [],
-            currentInstrIndex = -1,
-            lastInstr = "",
-            ans = 0,
-            prevAnswer,
-            containsAns = false,
-            separator = icu.getDecimalFormatSymbols().decimal_separator;
 
-        var formatInputHistory = function(text) {
-            return text.replace(/pi/g, "\u03c0") + " =";
-        };
-
-        var appendDiv = function(div) {
-            output.append(div);
-            output.scrollTop(output[0].scrollHeight);
-        };
-
-        var insertPrevAnswer = function() {
-            var outdiv;
-            if (prevAnswer !== undefined) {
-                outdiv = $("<div>").addClass("output").text(prevAnswer);
-                prevAnswer = undefined;
-                appendDiv(outdiv);
-            }
-        };
-
-        var evaluate = function() {
-            var instr = input.val();
-            var indiv, output, outstr;
-            var isError = false;
-            var newInputVal = instr;
-            if ($.trim(instr) !== "") {
-                lastInstr = instr;
-                previousInstrs.unshift(instr);
-                indiv = $("<div>").addClass("input-history")
-                                  .text(formatInputHistory(instr));
-                try {
-                    if (separator !== ".") {
-                        // i18nize the input numbers' decimal point
-                        instr = instr.split(separator).join(".");
-                    }
-                    output = ans = Calculator.calculate(instr, ans);
-                    if (typeof output === "number") {
-                        outstr = Math.round(output * 1000000000) / 1000000000;
-                        if (separator !== ".") {
-                            // i18nize the output number's decimal point
-                            outstr = ("" + outstr).replace(".", separator);
-                        }
-                    } else {
-                        outstr = output;
-                    }
-                    newInputVal = outstr;
-                } catch (e) {
-                    if (e instanceof Calculator.CalculatorError) {
-                        outstr = e.message;
-                        newInputVal = instr;
-                        isError = true;
-                        containsAns = false;
-                        input.css({
-                            backgroundColor: "#ffcccc"
-                        });
-                        return;
-                    } else {
-                        throw e;
-                    }
-                }
-                insertPrevAnswer();
-                appendDiv(indiv);
-                prevAnswer = outstr;
-                // errors should appear immediately
-                if (isError) {
-                    insertPrevAnswer();
-                }
-            }
-
-            containsAns = true;
-            currentInstrIndex = -1;
-            input.val(newInputVal);
-        };
-
-        var selected = function(text) {
-            return "<span class='selected-anglemode'>" + text + "</span>";
-        };
-
-        var unselected = function(text) {
-            return "<span class='unselected-anglemode'>" + text + "</span>";
-        };
-
-        var updateAngleMode = function() {
-            // I18N: "DEGrees" calculator button (3 chars or less)
-            var deg = $._("DEG");
-            // I18N: "RADians" calculator button (3 chars or less)
-            var rad = $._("RAD");
-            if (Calculator.settings.angleMode === "DEG") {
-                $(".calculator-angle-mode").html(unselected(rad) +
-                                                 "<br>" +
-                                                 selected(deg));
-            } else {
-                $(".calculator-angle-mode").html(selected(rad) +
-                                                 "<br>" +
-                                                 unselected(deg));
-            }
-        };
-
-        // backspace etc isn't caught by keypress...
-        var BACKSPACE = 8;
-        var LEFT = 37;
-        var RIGHT = 39;
-        var UP = 38;
-        var DOWN = 40;
-        var keysToCancel = [LEFT, RIGHT];
-        input.on("keydown", function(e) {
-            if (_.contains(keysToCancel, e.keyCode)) {
-                containsAns = false;
-            }
-            if (e.which === BACKSPACE) {
-                if (containsAns) {
-                    input.val("");
-                    insertPrevAnswer();
-                    return false;
-                }
-            }
-
-            if (e.which === UP) {
-                insertPrevAnswer();
-                currentInstrIndex += 1;
-                if (currentInstrIndex >= previousInstrs.length) {
-                    currentInstrIndex = previousInstrs.length - 1;
-                }
-                input.val(previousInstrs[currentInstrIndex]);
-                return false;
-            }
-            if (e.which === DOWN) {
-                insertPrevAnswer();
-                currentInstrIndex -= 1;
-                if (currentInstrIndex < -1) {
-                    currentInstrIndex = -1;
-                }
-                input.val(previousInstrs[currentInstrIndex] || ans);
-                return false;
-            }
+    // Load and initialize the calculator
+    asyncloader(["./genfiles/calculator.js"], function() {
+        asyncloader(["./utils/init-calculator.js"], function() {
+            Calculator.init();
         });
+    });
 
-        var insertText = function(inputtedChar) {
-            var shouldOverwriteAns = !_.contains(ansChars, inputtedChar) &&
-                                    containsAns;
-
-            insertPrevAnswer();
-            containsAns = false;
-            if (shouldOverwriteAns) {
-                input.val("");
-            }
-            input.css({
-                backgroundColor: "white"
-            });
-        };
-
-        history.on("click", function(e) {
-            input.focus();
-        });
-
-        // The enter handler needs to bind to keypress to prevent the
-        // surrounding form submit... (http://stackoverflow.com/a/587575)
-        var ENTER = 13;
-        var EQUALS = 61;
-        input.on("keypress", function(e) {
-            if (e.which === ENTER || e.which === EQUALS) {
-                evaluate();
-                return false;
-            }
-            insertText(String.fromCharCode(e.charCode));
-        });
-
-        input.on("click", function(e) {
-            containsAns = false;
-        });
-
-        buttons.on("click", function() {
-            var jel = $(this),
-                behavior = jel.data("behavior");
-
-            if (behavior != null) {
-                if (behavior === "bs") {
-                    var val = input.val();
-                    input.val(val.slice(0, val.length - 1));
-                } else if (behavior === "clear") {
-                    input.val("");
-                    ans = undefined;
-                    prevAnswer = undefined;
-                    previousInstrs = [];
-                    currentInstrIndex = -1;
-                    containsAns = false;
-                    output.empty();
-                } else if (behavior === "angle-mode") {
-                    Calculator.settings.angleMode =
-                        Calculator.settings.angleMode === "DEG" ?
-                        "RAD" : "DEG";
-                    if (typeof window.localStorage !== "undefined") {
-                        var userID = window.KA && window.KA.getUserID();
-                        window.localStorage["calculator_settings:" +
-                            userID] = JSON.stringify(
-                            Calculator.settings);
-                    }
-                    updateAngleMode();
-                } else if (behavior === "evaluate") {
-                    evaluate();
-                }
-            } else {
-                var text = jel.data("text") || jel.text();
-                insertText(text);
-                input.val(input.val() + text);
-            }
-
-            input.focus();
-            return false;
-        });
-
-        $(Exercises).on("gotoNextProblem", function() {
-            input.val("");
-            output.children().not(inputRow).remove();
-        });
-
-        updateAngleMode();
-
-        // i18nize the decimal point button
-        $(".calculator-decimal").html(separator);
-    }
-    asyncloader([Khan.urlBase + "genfiles/calculator.js"], initializeCalculator);
     Khan.initReportIssueLink("#extras .report-issue-link");
 
     $("#answer_area").delegate("input.button, select", "keydown", function(e) {
@@ -2047,10 +1872,11 @@ function loadExercise(exerciseId, fileName) {
             requires = [];
         }
 
-        $.each(requires.concat(Khan.getBaseModules()), function(i, mod) {
+        $.each(requires, function(i, mod) {
             debugLog("loadExercise submod " + (mod.src || mod));
             subpromises.push(loadModule(mod));
         });
+        subpromises.push(Khan.loadBaseModules());
 
         // Store the module requirements in exerciseModulesMap
         Khan.exerciseModulesMap[exerciseId] = requires;
@@ -2089,7 +1915,15 @@ function loadExercise(exerciseId, fileName) {
         });
     }).fail(function(xhr, status) {
         debugLog("loadExercise err " + xhr.status + " " + fileName);
-        Khan.warnTimeout();
+        if (status === "timeout") {
+            Khan.warn(i18n._("Your internet might be too slow to see an " +
+                             "exercise."));
+        } else if (xhr.status === 404) {
+            Khan.warn(i18n._("Oops!  We can't seem to find this exercise."));
+        } else {
+            Khan.warn(i18n._("Oops!  There was a problem loading this " +
+                             "exercise."));
+        }
     });
 
     return promise;
@@ -2165,7 +1999,7 @@ function loadMathJax() {
     if (window.MathJax) {
         waitForMathJaxReady();
     } else {
-        loadScript(Khan.urlBase + "third_party/MathJax/2.1/MathJax.js?config=KAthJax-eaf1d9cafdc2fc68897cf72d30d67d5a", waitForMathJaxReady);
+        loadScript(Khan.urlBase + "third_party/MathJax/2.1/MathJax.js?config=KAthJax-3d6f4e415c7ff2242f5279bfbcbb5c9f", waitForMathJaxReady);
     }
 
     function waitForMathJaxReady() {
