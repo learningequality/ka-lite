@@ -1,8 +1,9 @@
 import errno
 import os
 import re
-import requests
 import shutil
+import urllib
+import zipfile
 from collections_local_copy import OrderedDict
 from fle_utils.internet.webcache import invalidate_web_cache
 
@@ -12,11 +13,15 @@ from django.views.i18n import javascript_catalog
 
 from contextlib import contextmanager
 
-from kalite.version import SHORTVERSION
+from kalite.version import VERSION, SHORTVERSION
 
 from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
-from kalite.version import VERSION
+
+
+CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
+                             "/ka-lite/{version}/content/contentpacks/{langcode}{suffix}.zip")
+
 
 CACHE_VARS = []
 
@@ -352,10 +357,27 @@ def translate_block(language):
     translation.deactivate()
 
 
-def get_language_pack_url(lang_code, version=SHORTVERSION):
-    """As published"""
-    return "http://%(host)s/media/language_packs/%(version)s/%(lang_code)s.zip" % {
-        "host": settings.CENTRAL_SERVER_HOST,
-        "lang_code": lang_code,
-        "version": version,
-    }
+def download_content_pack(fobj, lang, minimal=False):
+    """Given a file object where the content pack lang will be stored, return a
+    zipfile object pointing to the content pack.
+
+    If minimal is set to True, append the "-minimal" flag when downloading the
+    contentpack.
+
+    """
+    url = CONTENT_PACK_URL_TEMPLATE.format(
+        version=SHORTVERSION,
+        langcode=lang,
+        suffix="-minimal" if minimal else "",
+    )
+
+    logging.info("Downloading content pack from {}".format(url))
+    httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
+
+    shutil.copyfileobj(httpf, fobj)
+    fobj.seek(0)
+    zf = zipfile.ZipFile(fobj)
+
+    httpf.close()
+
+    return zf

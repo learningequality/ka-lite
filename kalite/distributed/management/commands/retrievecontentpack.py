@@ -15,16 +15,11 @@ from fle_utils.general import ensure_dir
 
 from kalite.contentload import settings as content_settings
 from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
-    update_jsi18n_file, get_srt_path as get_subtitle_path
+    download_content_pack, update_jsi18n_file, get_srt_path as get_subtitle_path
 from kalite.topic_tools import settings
 from kalite.updates.management.commands.classes import UpdatesStaticCommand
-from kalite.version import SHORTVERSION
 
 logging = django_settings.LOG
-
-
-CONTENT_PACK_URL_TEMPLATE = ("http://pantry.learningequality.org/downloads"
-                             "/ka-lite/{version}/content/contentpacks/{langcode}{suffix}.zip")
 
 
 class Command(UpdatesStaticCommand):
@@ -134,24 +129,6 @@ def extract_content_pack_metadata(zf, lang):
 
     with open(metadata_path, "wb") as f, zf.open(pack_metadata_name) as mf:
         shutil.copyfileobj(mf, f)
-
-
-def download_content_pack(fobj, lang, minimal=False):
-    url = CONTENT_PACK_URL_TEMPLATE.format(
-        version=SHORTVERSION,
-        langcode=lang,
-        suffix="-minimal" if minimal else "",
-    )
-
-    httpf = urllib.urlopen(url)  # returns a file-like object not exactly to zipfile's liking, so save first
-
-    shutil.copyfileobj(httpf, fobj)
-    fobj.seek(0)
-    zf = zipfile.ZipFile(fobj)
-
-    httpf.close()
-
-    return zf
 
 
 def extract_catalog_files(zf, lang):
