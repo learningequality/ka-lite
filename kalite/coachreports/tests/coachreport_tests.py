@@ -149,7 +149,7 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
         resp = self.client.get(url)
         exercises = json.loads(resp.content).get("objects")
         # checking if the request returned any of the exercises
-        assert len(exercises)
+        self.assertTrue(len(exercises) > 0)
         #checking if the returned list is accurate
         self.assertEqual(exercises[0]["title"], self.exercise1.title)
 
