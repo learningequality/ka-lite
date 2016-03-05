@@ -289,7 +289,7 @@ def _make_video(context):
 
 
 def _teardown_video(context):
-    context.video.delete_instance()
+    delete_instances([context.video.id])
     try:
         os.remove(context._subtitle_file_path)
     except WindowsError as e:
