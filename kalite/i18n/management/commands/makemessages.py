@@ -34,28 +34,38 @@ class Command(makemessages.Command):
 
         print("Calling base makemessages command.")
         super(Command, self).handle_noargs(*args, **options)
+        lang_code = options["locale"]
+        print("Modifying message catalog for locale '{}'".format(lang_code))
 
-        narratives_file = os.path.join(settings.CONTENT_DATA_PATH, "narratives.yml")
+        # only add the inline help narratives for the JS catalog file.
+        if options["domain"] == "djangojs":
+            inline_help_poentries = self.extract_inline_help_strings()
+
+            pofile_path = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code, "LC_MESSAGES", "djangojs.po")
+            po = polib.pofile(pofile_path)
+            for entry in inline_help_poentries:
+                po.append(entry)
+            po.save(pofile_path)
+
+    def extract_inline_help_strings(self, inline_help_path=None):
+        '''
+        Extract the strings from the inline help narratives yml files. Returns an
+        iterator containing the po file entries. Optional inline_help_parameter
+        specifies where the inline help narratives path is. Else, it defaults
+        to settings.CONTENT_DATA_PATH + "narratives.yml"
+
+        '''
+        narratives_file = inline_help_path or os.path.join(settings.CONTENT_DATA_PATH, "narratives.yml")
         with open(narratives_file, "r") as f:
             raw_narrs = yaml.load(f)
 
-        poentries = []
         for narr_key, targets in raw_narrs.iteritems():
             for target in targets:
                 for target_name, steps in target.iteritems():
                     for step in steps:
                         for key, value in step.iteritems():
                             if key == "text":
-                                poentries.append(polib.POEntry(
+                                yield polib.POEntry(
                                     msgid=value,
                                     msgstr="",
-                                    occurrences=[(narratives_file, 0)]
-                                ))
-
-        lang_code = options["locale"]
-        print("Modifying message catalog for locale '{}'".format(lang_code))
-        pofile_path = os.path.join(settings.USER_WRITABLE_LOCALE_DIR, lang_code, "LC_MESSAGES", "django.po")
-        po = polib.pofile(pofile_path)
-        for entry in poentries:
-            po.append(entry)
-        po.save(pofile_path)
+                                )
