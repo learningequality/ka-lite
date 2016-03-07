@@ -1,8 +1,12 @@
+/* TODO(csilvers): fix these lint errors (http://eslint.org/docs/rules): */
+/* eslint-disable comma-dangle, comma-spacing, indent, max-len, no-var, one-var, space-infix-ops */
+/* To fix, remove an entry above, run ka-lint, and fix errors. */
+
 MathJax.Hub.Config({
     messageStyle: "none",
     skipStartupTypeset: true,
     jax: ["input/TeX","output/HTML-CSS"],
-    extensions: ["tex2jax.js","MathZoom.js"],
+    extensions: ["tex2jax.js"],
     TeX: {
         extensions: [
             "AMSmath.js",
@@ -115,7 +119,7 @@ MathJax.Ajax.timeout = 60 * 1000;
 MathJax.Ajax.loadError = (function( oldLoadError ) {
     return function( file ) {
         if (window.Khan) {
-          Khan.warnTimeout();
+          Khan.warnMathJaxError(file);
         }
         // Otherwise will receive unresponsive script error when finally finish loading
         MathJax.Ajax.loadComplete = function( file ) { };

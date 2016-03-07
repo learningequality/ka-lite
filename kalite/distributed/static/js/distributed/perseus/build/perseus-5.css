@@ -1,14 +1,190 @@
-.framework-perseus.perseus-article {
-  margin: 0 auto;
-  max-width: 700px;
+.perseus-sr-only {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
 .framework-perseus.perseus-article .perseus-widget-container.widget-float-left {
   float: left;
-  margin-right: 1em;
+  padding-right: 1em;
+  max-width: 50%;
+  width: 100%;
 }
 .framework-perseus.perseus-article .perseus-widget-container.widget-float-right {
   float: right;
-  margin-left: 1em;
+  padding-left: 1em;
+  max-width: 50%;
+  width: 100%;
+}
+.framework-perseus.perseus-article .perseus-renderer > .paragraph {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 700px;
+}
+.framework-perseus.perseus-article .paragraph.perseus-paragraph-full-width {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+}
+.framework-perseus.perseus-article .paragraph.perseus-paragraph-full-width > .paragraph {
+  margin: 0;
+  max-width: none;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-widget-container {
+  font-size: 14px;
+  line-height: 19.6px;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-widget-container.widget-float-left,
+.bibliotron-article.framework-perseus.perseus-article .perseus-widget-container.widget-float-right {
+  max-width: 50%;
+  padding-top: 32px;
+  width: 100%;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-widget-container.widget-float-left .perseus-image-caption .paragraph .paragraph,
+.bibliotron-article.framework-perseus.perseus-article .perseus-widget-container.widget-float-right .perseus-image-caption .paragraph .paragraph {
+  margin-bottom: 0;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-widget-container.widget-float-left {
+  float: left;
+  padding-right: 32px;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-widget-container.widget-float-right {
+  float: right;
+  padding-left: 32px;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-renderer > .paragraph {
+  color: #21242c;
+  font-size: 20px;
+  line-height: 30px;
+  margin: 0 auto;
+  max-width: 688px;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-renderer > .paragraph .paragraph {
+  color: #21242c;
+  font-size: 20px;
+  line-height: 30px;
+  margin-bottom: 32px;
+  margin-top: 0;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-renderer > .paragraph ul:not(.perseus-widget-radio) {
+  color: #21242c;
+  font-size: 20px;
+  line-height: 30px;
+}
+.bibliotron-article.framework-perseus.perseus-article table {
+  color: #21242c;
+  font-size: 20px;
+  line-height: 30px;
+}
+.bibliotron-article.framework-perseus.perseus-article h2 {
+  font-family: inherit;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 27px;
+  margin-bottom: 16px;
+  margin-top: 48px;
+}
+.bibliotron-article.framework-perseus.perseus-article h3 {
+  font-family: inherit;
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 27px;
+  margin-bottom: 16px;
+  margin-top: 32px;
+}
+.bibliotron-article.framework-perseus.perseus-article h4 {
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 25px;
+  margin-bottom: 16px;
+  margin-top: 32px;
+}
+.bibliotron-article.framework-perseus.perseus-article .MathJax .math {
+  color: inherit;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-image-widget {
+  text-align: center;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-image-caption .paragraph .paragraph {
+  color: #999;
+  font-size: 14px;
+  line-height: 19px;
+  margin: 16px auto 42px;
+  max-width: 455px;
+  text-align: left;
+}
+.bibliotron-article.framework-perseus.perseus-article .paragraph.perseus-paragraph-full-width {
+  margin-bottom: 32px;
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+}
+.bibliotron-article.framework-perseus.perseus-article .paragraph.perseus-paragraph-full-width > .paragraph {
+  margin: 0;
+  max-width: none;
+}
+.bibliotron-article.framework-perseus.perseus-article .perseus-widget-explanation-link {
+  font-size: 16px;
+}
+.bibliotron-article.framework-perseus.perseus-article .svg-image {
+  font-size: 14px;
+  line-height: 19.6px;
+}
+.bibliotron-article.framework-perseus.perseus-article > .perseus-article:first-child > .clearfix:first-child > .perseus-renderer:first-child > .paragraph:first-child h1:first-child,
+.bibliotron-article.framework-perseus.perseus-article > .perseus-article:first-child > .clearfix:first-child > .perseus-renderer:first-child > .paragraph:first-child h2:first-child,
+.bibliotron-article.framework-perseus.perseus-article > .perseus-article:first-child > .clearfix:first-child > .perseus-renderer:first-child > .paragraph:first-child h3:first-child,
+.bibliotron-article.framework-perseus.perseus-article > .perseus-article:first-child > .clearfix:first-child > .perseus-renderer:first-child > .paragraph:first-child h4:first-child,
+.bibliotron-article.framework-perseus.perseus-article > .perseus-article:first-child > .clearfix:first-child > .perseus-renderer:first-child > .paragraph:first-child h5:first-child,
+.bibliotron-article.framework-perseus.perseus-article > .perseus-article:first-child > .clearfix:first-child > .perseus-renderer:first-child > .paragraph:first-child h6:first-child {
+  margin-top: 0;
+}
+/* Derived from the MIT-licensed zoom.js:
+   https://github.com/fat/zoom.js/blob/fd4f3e43153da7596da0bade198e99f98b47791e/
+*/
+.zoomable {
+  cursor: pointer;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+}
+.zoom-img {
+  position: relative;
+  z-index: 999;
+  -webkit-transition: all 300ms;
+  -o-transition: all 300ms;
+  transition: all 300ms;
+}
+img.zoom-img {
+  cursor: pointer;
+  cursor: -webkit-zoom-out;
+  cursor: -moz-zoom-out;
+}
+.zoom-overlay {
+  z-index: 420;
+  background: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  filter: "alpha(opacity=0)";
+  opacity: 0;
+  -webkit-transition: opacity 300ms;
+  -o-transition: opacity 300ms;
+  transition: opacity 300ms;
+}
+.zoom-overlay-open .zoom-overlay {
+  filter: "alpha(opacity=100)";
+  opacity: 1;
+}
+.zoom-overlay-open,
+.zoom-overlay-transitioning {
+  cursor: default;
 }
 #perseus {
   position: relative;
@@ -65,6 +241,7 @@
 }
 .framework-perseus div.paragraph {
   font-size: 14px;
+  line-height: 19.6px;
   margin: 22px 0px;
 }
 .framework-perseus div.instructions {
@@ -73,14 +250,17 @@
   font-weight: bold;
 }
 .framework-perseus .paragraph > ul:not(.perseus-widget-radio) {
-  font-size: 14px;
   margin: -11px 0px 22px 0px;
+}
+.framework-perseus .paragraph ul:not(.perseus-widget-radio) {
+  font-size: 14px;
+  line-height: 19.6px;
   padding-left: 35px;
 }
-.framework-perseus .paragraph > ul:not(.perseus-widget-radio) > li {
+.framework-perseus .paragraph ul:not(.perseus-widget-radio) li {
   list-style-type: disc;
 }
-.framework-perseus .paragraph > ol {
+.framework-perseus .paragraph ol {
   list-style: decimal;
   padding-left: 2em;
 }
@@ -89,6 +269,7 @@
 }
 .framework-perseus table {
   font-size: 14px;
+  line-height: 19.6px;
 }
 .framework-perseus table th,
 .framework-perseus table td {
@@ -195,7 +376,6 @@
 .framework-perseus .misc-settings {
   padding-bottom: 5px;
 }
-.framework-perseus .image-settings,
 .framework-perseus .misc-settings,
 .framework-perseus .type-settings {
   border-top: 1px solid black;
@@ -275,6 +455,9 @@
 .categorizer-container td.category input[type="radio"]:checked + span:before {
   content: "\f111";
   color: #333;
+}
+.static-mode.categorizer-container td.category input[type="radio"]:checked + span:before {
+  color: #888;
 }
 body.mobile .categorizer-container td.category input[type="radio"]:checked + span:before {
   color: #1c758a;
@@ -380,16 +563,15 @@ body.mobile .perseus-widget-dropdown .fancy-option:active:before {
   content: "]";
 }
 .perseus-widget-explanation .perseus-widget-explanation-content {
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: -23px;
   position: relative;
   transition: all 0.1s;
 }
 .perseus-widget-explanation .perseus-widget-explanation-content > .perseus-renderer {
-  border-left: 5px solid #ccc;
+  border-left: 5px solid #cccccc;
   margin-top: 22px;
   margin-bottom: 22px;
-  padding-left: 10px;
+  padding-left: 18px;
 }
 .perseus-widget-expression {
   position: relative;
@@ -513,6 +695,27 @@ body.mobile .perseus-widget-dropdown .fancy-option:active:before {
 .perseus-widget-grapher > .graphie-container > .svg-image {
   position: absolute;
 }
+.framework-perseus .perseus-graded-group {
+  position: relative;
+  width: 100%;
+  margin-left: -5px;
+  padding-left: 5px;
+}
+.framework-perseus .perseus-graded-group.answer-correct {
+  border-left: 3px solid #76a005;
+  margin-left: -8px;
+}
+.framework-perseus .perseus-graded-group.answer-incorrect {
+  border-left: 3px solid #ff8787;
+  margin-left: -8px;
+}
+.framework-perseus .perseus-graded-group .group-icon {
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  top: calc(50% - 7px);
+  margin-left: -25px;
+}
 .framework-perseus .perseus-group {
   position: relative;
   width: 100%;
@@ -537,6 +740,10 @@ body.mobile .perseus-widget-dropdown .fancy-option:active:before {
 .perseus-image-editor .label-settings th,
 .perseus-image-editor .label-settings td {
   border-width: 0;
+}
+.perseus-image-editor .image-settings,
+.perseus-image-editor .graph-settings {
+  margin-top: 5px;
 }
 .perseus-widget-interactive-graph {
   padding: 25px 25px 0 0;
@@ -636,6 +843,10 @@ body.mobile .perseus-widget-dropdown .fancy-option:active:before {
 .perseus-matrix .number-input:focus {
   border: none;
   outline: none;
+}
+.static-mode.perseus-matrix input,
+.static-mode.perseus-matrix .number-input {
+  background: #f5f5f5;
 }
 .perseus-matrix.the-matrix .matrix-bracket,
 .perseus-matrix.the-matrix .matrix-left,
@@ -871,6 +1082,9 @@ body.sat-section .perseus-widget-passage {
 .perseus-widget-radio {
   width: 100%;
 }
+.perseus-widget-radio .checkbox-label {
+  display: block;
+}
 .perseus-widget-radio div,
 .perseus-widget-radio div > p {
   /* TODO(alpert): Find a better way of doing inline renderers */
@@ -887,7 +1101,8 @@ body.sat-section .perseus-widget-passage {
   display: inline-block;
   padding-left: 20px;
 }
-.perseus-widget-radio li span.checkbox {
+.perseus-widget-radio li input[type="radio"],
+.perseus-widget-radio li input[type="checkbox"] {
   position: relative;
   z-index: 3;
   display: inline-block;
@@ -895,8 +1110,8 @@ body.sat-section .perseus-widget-passage {
   margin-left: -20px;
   margin-right: 0;
 }
-.perseus-widget-radio li span.checkbox .pos-back,
-.perseus-widget-radio li span.checkbox .pos {
+.perseus-widget-radio li .pos-back,
+.perseus-widget-radio li .pos {
   display: none;
 }
 .perseus-widget-radio li div.instructions {
@@ -1032,10 +1247,15 @@ body.sat-section .perseus-widget-radio .perseus-radio-option-content,
 #sat-mission .perseus-widget-radio .perseus-radio-option-content {
   user-select: text;
 }
-body.sat-section .perseus-widget-radio .checkbox-and-option,
-#sat-mission .perseus-widget-radio .checkbox-and-option {
-  display: block;
+body.sat-section .perseus-widget-radio .description,
+#sat-mission .perseus-widget-radio .description {
   position: relative;
+  border-top: 1px solid #ccc;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: block;
+  margin-left: 0;
+  padding: 17px 14px;
 }
 body.sat-section .perseus-widget-radio span.checkbox,
 #sat-mission .perseus-widget-radio span.checkbox {
@@ -1073,115 +1293,118 @@ body.sat-section .perseus-widget-radio span.checkbox .pos,
 }
 body.sat-section .perseus-widget-radio .perseus-radio-option,
 #sat-mission .perseus-widget-radio .perseus-radio-option {
-  position: relative;
-  border-top: 1px solid #ccc;
-  border-left: 1px solid transparent;
-  border-right: 1px solid transparent;
-  box-sizing: border-box;
-  cursor: pointer;
-  display: block;
-  margin-left: 0;
-  overflow: hidden;
-  padding: 17px 14px !important;
-}
-body.sat-section .perseus-widget-radio .perseus-radio-option:last-child,
-#sat-mission .perseus-widget-radio .perseus-radio-option:last-child {
-  border-bottom: 1px solid #ccc;
+  margin: 0;
+  padding: 0;
 }
 body.sat-section .perseus-widget-radio .perseus-radio-option label,
 #sat-mission .perseus-widget-radio .perseus-radio-option label {
   cursor: pointer;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option:focus,
-#sat-mission .perseus-widget-radio .perseus-radio-option:focus {
-  border-bottom: 1px solid;
-  border-color: #0084ce;
-  outline: 1px solid #0084ce;
+body.sat-section .perseus-widget-radio .perseus-radio-option .description::after,
+#sat-mission .perseus-widget-radio .perseus-radio-option .description::after {
+  bottom: -1px;
+  content: " ";
+  height: 1px;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option:focus + .perseus-radio-option,
-#sat-mission .perseus-widget-radio .perseus-radio-option:focus + .perseus-radio-option {
-  border-top-width: 0;
+body.sat-section .perseus-widget-radio .perseus-radio-option input[type=radio],
+#sat-mission .perseus-widget-radio .perseus-radio-option input[type=radio] {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected,
-body.sat-section .perseus-widget-radio .perseus-radio-option:active,
-#sat-mission .perseus-widget-radio .perseus-radio-option:active {
-  border-bottom-color: #0084ce;
-  border-top-color: #0084ce;
+body.sat-section .perseus-widget-radio .perseus-radio-option input[type=radio]:focus + .description,
+#sat-mission .perseus-widget-radio .perseus-radio-option input[type=radio]:focus + .description {
+  background-color: #e4f3f9;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  outline: 2px solid #0084ce;
+  z-index: 1;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected span.checkbox .pos,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected span.checkbox .pos,
-body.sat-section .perseus-widget-radio .perseus-radio-option:active span.checkbox .pos,
-#sat-mission .perseus-widget-radio .perseus-radio-option:active span.checkbox .pos {
+body.sat-section .perseus-widget-radio .perseus-radio-option input[type=radio]:active + .description,
+#sat-mission .perseus-widget-radio .perseus-radio-option input[type=radio]:active + .description {
+  background-color: #e4f3f9;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  outline: 2px solid #0084ce;
+  z-index: 1;
+  background-color: #d0edf4 !important;
+}
+body.sat-section .perseus-widget-radio .perseus-radio-option input[type=radio]:active + .description span.checkbox .pos,
+#sat-mission .perseus-widget-radio .perseus-radio-option input[type=radio]:active + .description span.checkbox .pos {
   color: #fff;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected span.checkbox .pos-back,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected span.checkbox .pos-back,
-body.sat-section .perseus-widget-radio .perseus-radio-option:active span.checkbox .pos-back,
-#sat-mission .perseus-widget-radio .perseus-radio-option:active span.checkbox .pos-back {
+body.sat-section .perseus-widget-radio .perseus-radio-option input[type=radio]:active + .description span.checkbox .pos-back,
+#sat-mission .perseus-widget-radio .perseus-radio-option input[type=radio]:active + .description span.checkbox .pos-back {
   background: #0084ce;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected + .perseus-radio-option,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected + .perseus-radio-option,
-body.sat-section .perseus-widget-radio .perseus-radio-option:active + .perseus-radio-option,
-#sat-mission .perseus-widget-radio .perseus-radio-option:active + .perseus-radio-option {
-  border-top-color: #0084ce;
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected .description span.checkbox .pos,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected .description span.checkbox .pos {
+  color: #fff;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct {
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected .description span.checkbox .pos-back,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected .description span.checkbox .pos-back {
+  background: #0084ce;
+}
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct .description,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct .description {
   color: #009900;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct span.checkbox .pos-back,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct span.checkbox .pos-back {
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct .description span.checkbox .pos-back,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct .description span.checkbox .pos-back {
   border-color: #009900;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected {
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct .description:focus,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct .description:focus {
+  border-color: #009900;
+  outline-color: #009900;
+}
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected .description,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected .description {
   background-color: #e4f7e4;
   border-bottom-color: #00cc00;
   border-top-color: #00cc00;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected + .perseus-radio-option,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected + .perseus-radio-option {
-  border-top-color: #00cc00;
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected .description::after,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected .description::after {
+  background-color: #00cc00;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected span.checkbox .pos-back,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected span.checkbox .pos-back {
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected .description span.checkbox .pos-back,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct.perseus-radio-selected .description span.checkbox .pos-back {
   background: #009900;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct:focus,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct:focus {
-  border-color: #009900;
-  outline-color: #009900;
-}
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect {
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect .description,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect .description {
   color: #990000;
   background-color: #f2ebeb;
   border-bottom-color: #cc5252;
   border-top-color: #cc5252;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect + .perseus-radio-option,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect + .perseus-radio-option {
-  border-top-color: #cc5252;
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect .description::after,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect .description::after {
+  background-color: #cc5252;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect span.checkbox .pos-back,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect span.checkbox .pos-back {
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect .description span.checkbox .pos-back,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect .description span.checkbox .pos-back {
   border-color: #990000;
   background: #990000;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect:focus,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect:focus {
+body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect .description:focus,
+#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected.perseus-incorrect .description:focus {
   border-color: #990000;
   outline-color: #990000;
 }
-body.sat-section .perseus-widget-radio .perseus-radio-option:active,
-#sat-mission .perseus-widget-radio .perseus-radio-option:active {
-  background-color: #d0edf4 !important;
-}
-body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-radio-selected,
-#sat-mission .perseus-widget-radio .perseus-radio-option.perseus-radio-selected {
-  background-color: #e4f3f9;
+body.sat-section .perseus-widget-radio .perseus-radio-option:last-child .description,
+#sat-mission .perseus-widget-radio .perseus-radio-option:last-child .description {
+  border-bottom: 1px solid #ccc;
 }
 body.sat-section .perseus-widget-radio .perseus-radio-option .perseus-radio-option-content,
 #sat-mission .perseus-widget-radio .perseus-radio-option .perseus-radio-option-content {
@@ -1192,10 +1415,6 @@ body.sat-section .perseus-widget-radio .perseus-radio-option .perseus-radio-opti
 body.sat-section .perseus-widget-radio .perseus-radio-option.perseus-correct:not(.perseus-radio-selected) span.checkbox .pos,
 #sat-mission .perseus-widget-radio .perseus-radio-option.perseus-correct:not(.perseus-radio-selected) span.checkbox .pos {
   color: #009900;
-}
-body.sat-section .perseus-widget-radio input[type=radio],
-#sat-mission .perseus-widget-radio input[type=radio] {
-  display: none;
 }
 body.sat-section .review-mode .perseus-radio-option-content,
 #sat-mission .review-mode .perseus-radio-option-content {
@@ -1293,6 +1512,7 @@ body.sat-section .review-mode .perseus-radio-clue,
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   float: left;
+  padding: 0 !important;
 }
 .perseus-sortable .perseus-sortable-card {
   background-color: #fff;
@@ -1306,6 +1526,7 @@ body.sat-section .review-mode .perseus-radio-clue,
   min-width: 25px;
   min-height: 44px;
   padding: 10px;
+  list-style-type: none !important;
   -webkit-user-select: none;
   -khtml-user-select: none;
   -moz-user-select: none;
@@ -1589,6 +1810,9 @@ body.mobile .framework-perseus table.perseus-widget-table-of-values.non-markdown
 .perseus-math-input.mq-editable-field.mq-math-mode .mq-paren + span {
   margin: 0;
 }
+.perseus-math-input.mq-editable-field.mq-math-mode sup {
+  line-height: normal;
+}
 .perseus-widget-editor .perseus-math-input.mq-editable-field.mq-math-mode > .mq-root-block {
   border-radius: 0;
 }
@@ -1637,133 +1861,13 @@ body.mobile .framework-perseus table.perseus-widget-table-of-values.non-markdown
 .renderer-widget-error {
   background-color: #fcc;
 }
-body.sat-section .content-area > div {
-  margin-left: auto;
-  margin-right: auto;
-  width: 592px;
-}
-body.sat-section .content-area > div .perseus-input-with-answer-blurb > span {
-  display: inline-block;
-}
-body.sat-section .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers,
-body.sat-section .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers:before {
-  font-family: "Proxima Nova Semibold";
-}
-body.sat-section .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers {
-  color: #009900;
-  padding-right: 4px;
-}
-body.sat-section .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers:before {
-  content: "CORRECT ANSWER:";
-  padding: 0 5px 0 13px;
-  color: #121212;
-}
-body.sat-section .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answer:not(:first-child):before {
-  content: "or";
-  padding: 0 5px;
-  color: #121212;
-}
-body.sat-section .content-area > div input.perseus-incorrect {
-  color: #990000;
-  background-color: #f2ebeb;
-  border: solid 1px #cc5252;
-}
-body.sat-section .content-area > div input.perseus-correct {
-  color: #009900;
-  background-color: #e4f7e4;
-  border: solid 1px #00cc00;
-}
-body.sat-section .content-area > div input.perseus-unanswered {
-  background-color: #eee;
-  border: solid 1px #999;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns {
-  width: 1024px;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns > .paragraph {
-  margin: 0;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns > .paragraph {
-  margin: 0;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column {
-  overflow-y: auto;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column > .paragraph {
-  margin: 0;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column:nth-child(1) {
-  background: #eee;
-  border-right: 1px solid #ddd;
-  height: 515px;
-  max-height: 515px;
-  float: left;
-  padding-left: 46px;
-  padding-top: 35px;
-  padding-bottom: 22px;
-  width: 512px;
-  box-sizing: border-box;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column:nth-child(1) .perseus-widget-passage-container .perseus-widget-passage-instructions div.paragraph {
-  margin-top: 0;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column:nth-child(1) .perseus-widget-passage {
-  margin: 0;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column:nth-child(1) > .paragraph {
-  margin-right: 40px;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column:nth-child(1) blockquote {
-  padding: 0;
-  margin-right: 22px;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column:nth-child(1) blockquote > .paragraph:nth-child(1) {
-  margin-top: 0;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column:nth-child(2) {
-  float: right;
-  height: 550px;
-  max-height: 550px;
-  padding-right: 20px;
-  width: 475px;
-}
-body.sat-section .content-area > div.perseus-renderer-two-columns .perseus-column:nth-child(2) .perseus-group {
-  margin-bottom: 20px;
-}
-body.sat-section .question-annotation {
-  color: #999;
-  margin-top: 35px;
-  margin-bottom: 24px;
-  text-transform: uppercase;
-}
-body.sat-section .paragraph:not(:first-child) .question-annotation {
-  margin-top: 48px;
-}
-body.sat-section input[type=text],
-body.sat-section input[type=number] {
-  border: 1px solid #aaa;
-  font-family: "Proxima Nova Semibold", sans-serif;
-  font-size: 14px;
-  margin: 10px 0;
-  padding: 5px;
-}
-body.sat-section .valid-answer input[type=text]:valid,
-body.sat-section .valid-answer input[type=number]:valid {
-  border: 1px solid #0084ce;
-  background: #e4f3f9;
-}
-body.sat-section .invalid-answer input[type=text]:valid,
-body.sat-section .invalid-answer input[type=number]:valid {
-  color: #990000;
-  background-color: #f2ebeb;
-  border: solid 1px #cc5252;
-}
 #sat-mission .content-area > div {
   margin-left: auto;
   margin-right: auto;
   width: 592px;
 }
-#sat-mission .content-area > div .perseus-input-with-answer-blurb > span {
+#sat-mission .content-area > div .perseus-input-with-answer-blurb > span,
+#sat-mission .content-area > div .perseus-input-with-answer-blurb > label {
   display: inline-block;
 }
 #sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers,
@@ -1772,14 +1876,22 @@ body.sat-section .invalid-answer input[type=number]:valid {
 }
 #sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers {
   color: #009900;
+  display: inline-block;
   padding-right: 4px;
 }
-#sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers:before {
-  content: "CORRECT ANSWER:";
+#sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers dt,
+#sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers dd {
+  display: inline-block;
+}
+#sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers dt {
   padding: 0 5px 0 13px;
   color: #121212;
+  text-transform: uppercase;
 }
-#sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answer:not(:first-child):before {
+#sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers dt::after {
+  content: ":";
+}
+#sat-mission .content-area > div .perseus-input-with-answer-blurb .perseus-possible-answers dd:not(:last-child)::after {
   content: "or";
   padding: 0 5px;
   color: #121212;
@@ -1911,14 +2023,4 @@ body.sat-section .invalid-answer input[type=number]:valid {
   border-radius: 5px;
   padding: 20px;
   margin: 15px 0 10px;
-}
-.perseus-sr-only {
-  border: 0;
-  clip: rect(0, 0, 0, 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
 }
