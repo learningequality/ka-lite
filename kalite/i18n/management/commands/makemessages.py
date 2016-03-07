@@ -10,6 +10,7 @@ import yaml
 from django.conf import settings
 from django.core.management.commands import makemessages
 
+logging = settings.LOG
 
 IGNORE_PATTERNS = [
     "*/node_modules*",
@@ -32,12 +33,12 @@ class Command(makemessages.Command):
         for ignore_pattern in IGNORE_PATTERNS:
             if ignore_pattern not in options["ignore_patterns"]:
                 options["ignore_patterns"].append(ignore_pattern)
-        print("Ignoring the following patterns: {}".format(options["ignore_patterns"]))
+        logging.debug("Ignoring the following patterns: {}".format(options["ignore_patterns"]))
 
-        print("Calling base makemessages command.")
+        logging.debug("Calling base makemessages command.")
         super(Command, self).handle_noargs(*args, **options)
         lang_code = options["locale"]
-        print("Modifying message catalog for locale '{}'".format(lang_code))
+        logging.debug("Modifying message catalog for locale '{}'".format(lang_code))
 
         # only add the inline help narratives for the JS catalog file.
         if options["domain"] == "djangojs":
