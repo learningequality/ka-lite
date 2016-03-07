@@ -3,6 +3,7 @@ environment.py defines setup and teardown behaviors for behave tests.
 The behavior in this file is appropriate for integration tests, and
 could be used to bootstrap other integration tests in our project.
 """
+import json
 import os
 import tempfile
 import shutil
@@ -19,9 +20,11 @@ from django.db import connections
 from django.db.transaction import TransactionManagementError
 from peewee import Using
 
+from kalite.i18n.base import get_srt_path, get_srt_url
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
-from kalite.topic_tools.content_models import Item, set_database, annotate_content_models
+from kalite.topic_tools.content_models import Item, set_database, annotate_content_models, create, get, \
+    delete_instances
 
 from securesync.models import Zone, Device, DeviceZone
 
@@ -77,6 +80,7 @@ def setup_content_paths(context, db):
             slug="unavail",
             path=context.unavailable_content_path
         )
+
 
 @set_database
 def teardown_content_paths(context, db):
@@ -154,6 +158,9 @@ def setup_local_browser(context):
 def before_scenario(context, scenario):
     database_setup(context)
 
+    if "uses_video_with_subtitles" in context.tags:
+        _make_video(context)
+
     if "registered_device" in context.tags:
         do_fake_registration()
 
@@ -183,6 +190,9 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
+    if "uses_video_with_subtitles" in context.tags:
+        _teardown_video(context)
+
     if context.logged_in:
         logout(context)
 
@@ -245,3 +255,45 @@ def do_fake_registration():
     device = Device.get_own_device()
     device_zone = DeviceZone(device=device, zone=zone)
     device_zone.save()
+
+
+def _make_video(context):
+    root = get({"parent": None})
+    lang_code = "en"
+    youtube_id = "my_cool_id"
+    item_dict = {
+        "title": "Subtitled Video",
+        "description": "A video with subtitles",
+        "available": True,
+        "kind": "Video",
+        "id": "video_with_subtitles",
+        "slug": "video_with_subtitles",
+        "path": "khan/video_with_subtitles",
+        "extra_fields": {
+            "subtitle_urls": [{"url": get_srt_url(youtube_id=youtube_id, code=lang_code),
+                               "code": lang_code,
+                               "name": "English"}],
+            "content_urls": {"stream": "/foo", "stream_type": "video/mp4"},
+        },
+        "parent": root,
+    }
+    # `create` will quietly do nothing if the item already exists. Possible from pathological test runs.
+    # So delete any identical Items first.
+    delete_instances(ids=[item_dict["id"]])
+    context.video = create(item_dict)
+
+    subtitle_path = get_srt_path(lang_code=lang_code, youtube_id=youtube_id)
+    with open(subtitle_path, "w") as f:
+        f.write("foo")
+    context._subtitle_file_path = subtitle_path
+
+
+def _teardown_video(context):
+    delete_instances([context.video.id])
+    try:
+        os.remove(context._subtitle_file_path)
+    except WindowsError as e:
+        print("Couldn't remove temporary subtitle file {}. Exception:\n\t{}".format(
+            context._subtitle_file_path,
+            str(e))
+        )

@@ -10,3 +10,8 @@ Feature: Content on the Learn page
     Scenario: Content is available
         Given I open some available content
         Then I should see no alert
+
+    @uses_video_with_subtitles
+    Scenario: Subtitles are available when
+        When I visit a video with subtitles
+        Then the video player is aware of the subtitles

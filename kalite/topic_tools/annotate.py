@@ -1,16 +1,12 @@
 import os
-import json
 
 from django.conf import settings as django_settings
-logging = django_settings.LOG
 
 from kalite.i18n.base import get_srt_path, get_language_name
-
-from . import settings
-from .base import database_exists
-
 from kalite.updates.videos import get_local_video_size
-from kalite.contentload import settings as contentload_settings
+
+
+logging = django_settings.LOG
 
 
 def is_content_on_disk(content_id, format="mp4", content_path=None):
@@ -74,7 +70,7 @@ def update_content_availability(content_list, language="en", channel="khan"):
             filename = file_id + "." + format
 
             # Get list of subtitle language codes currently available
-            subtitle_lang_codes = subtitle_langs.get("{id}.srt".format(id=content.get("id")), [])
+            subtitle_lang_codes = subtitle_langs.get("{id}.vtt".format(id=content.get("id")), [])
 
             if filename in contents_folder or language in subtitle_lang_codes:
                 if (filename not in contents_folder) and language in subtitle_lang_codes:
@@ -95,13 +91,6 @@ def update_content_availability(content_list, language="en", channel="khan"):
                         "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
                         "thumbnail": thumbnail,
                     }
-            elif django_settings.BACKUP_VIDEO_SOURCE:
-                update["available"] = True
-                update["content_urls"] = {
-                    "stream": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format=format),
-                    "stream_type": "{kind}/{format}".format(kind=content.get("kind").lower(), format=format),
-                    "thumbnail": django_settings.BACKUP_VIDEO_SOURCE.format(youtube_id=dubbed_id, video_format="png"),
-                }
 
             if update.get("available"):
                 # Don't bother doing this work if the video is not available at all
@@ -109,7 +98,7 @@ def update_content_availability(content_list, language="en", channel="khan"):
                 # Generate subtitle URLs for any subtitles that do exist for this content item
                 subtitle_urls = [{
                     "code": lc,
-                    "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.srt".format(code=lc, id=content.get("id")),
+                    "url": django_settings.STATIC_URL + "srt/{code}/subtitles/{id}.vtt".format(code=lc, id=content.get("id")),
                     "name": get_language_name(lc)
                     } for lc in subtitle_lang_codes]
 
