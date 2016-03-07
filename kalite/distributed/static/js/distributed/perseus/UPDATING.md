@@ -2,7 +2,7 @@ To update this library within the KA Lite repo, we build perseus from the [learn
 
 Run make build from within the Perseus directory.
 
-Copy the version numbered files (perseus-3*) from 'build' into 'build'.
+Copy the version numbered files (perseus-x*) from 'build' into 'build'.
 
 We also use:
 

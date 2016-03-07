@@ -4,6 +4,19 @@ var Handlebars = require("base/handlebars");
 
 var introJs = require("intro.js");
 
+/*
+    Force the bootstrap script to be reloaded. This is meant to be run after the bootstrap API has been disabled.
+    We might wish to disable the API, for example, to keep dropdown menus expanded.
+*/
+function reload_bootstrap() {
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    // window.bootstrap_src is defined by a template context variable
+    script.src = window.bootstrap_src;
+    head.appendChild(script);
+}
+
 var ButtonView = BaseView.extend({
     template: require("./hbtemplates/inline.handlebars"),
 
@@ -18,19 +31,48 @@ var ButtonView = BaseView.extend({
 
     clickCallback: function() {
         var self = this;
-        this.model.fetch({ 
-            success: function(model, response, options) {
+        this.model.fetch({
+            success: function(model, response) {
                 //obtain narrative, JSON obj of elements and their attributes
-                var narr = self.model.attributes;
+                var narr = model.attributes;
 
                 //translate narrative into build options for introjs
-                options = _.extend(options, self.parseNarrative(narr));
+                var parsedNarr = self.parseNarrative(narr);
+                var options = parsedNarr["options"];
+                var before_showing = parsedNarr["before_showing"];
 
-                //set the options on introjs object
-                var intro = introJs();
+                var intro = introJs.introJs();
                 intro.setOption('tooltipPosition', 'auto');
                 intro.setOption('positionPrecedence', ['left', 'right', 'bottom', 'top']);
                 intro.setOptions(options);
+
+                intro.onbeforechange( function(targetElement) {
+                    if( typeof before_showing[intro._currentStep] !== "undefined" ) {
+                        _.each(before_showing[intro._currentStep], function(element, a_index, a_list) {
+                            var action = Object.keys(element)[0];
+                            var target = element[action];
+                            if (action === "click") {
+                                $(target).click();
+                                if( $(targetElement).parents().hasClass("dropdown") ) {
+                                    /* Imperfect solution. If a dropdown menu (or a child element) is clicked, then
+                                        disable the bootstrap dropdown api, so that the dropdown remains expanded.
+                                        Will be re-enabled by the introJs.onexit or introJs.oncomplete callbacks. */
+                                    $(document).off(".dropdown.data-api");
+                                }
+                            } else if(action === "scroll-to") {
+                                $(window).scrollTop(target);
+                            }
+                        });
+                    }
+                });
+
+                // onexit and oncomplete are not both called, it's either one or the other
+                intro.onexit(function(){
+                    reload_bootstrap(); // In case we disabled it, for the dropdown menu
+                });
+                intro.oncomplete(function(){
+                    reload_bootstrap(); // In case we disabled it, for the dropdown menu
+                });
 
                 intro.start();
             },
@@ -43,49 +85,43 @@ var ButtonView = BaseView.extend({
 
     //Translate narrative into JSON obj used to set introjs options
     parseNarrative: function(narr) {
-        var options = {};
         var steps = [];
+        var before_showing = [];
 
-        var key = Object.keys(narr);
-        key = key[1];
+        var key = Object.keys(narr)[1];
 
         // Parse narrative into obj using attribute keywords for intro framework
-        var newselectors = _.map(narr[key], function(element) {
+        _.each(narr[key], function(element, el_index, el_list) {
             var step = {};
             var selectorKey = String(Object.keys(element));
-            var attributes = [];
-            attributes = element[selectorKey];
+            var attributes = element[selectorKey];
 
             if (selectorKey != "unattached") {
                 step["element"] = selectorKey;
             }
 
             //Set {key: value} pairs that define modal for each intro step
-            var parsed = _.map(attributes, function(attribute) {
-                var key = Object.keys(attribute);
-                key = key[0];
+            _.each(attributes, function(attribute, att_index, att_list) {
+                var key = Object.keys(attribute)[0];
                 var value = attribute[key];
-                var newkey = null;
-                var newvalue = null;
 
                 if (key === "text") {
-                    newkey = "intro";
-                    newvalue = value;
+                    step["intro"] = gettext(value);
+                } else if (key === "position") {
+                    step["position"] = value;
+                } else if (key === "step") {
+                    step["step"] = value;
+                } else if (key === "before-showing") {
+                    before_showing[el_index] = value;
                 }
-                else if (key === "position") {
-                    newkey = "position";
-                    newvalue = value;
-                }
-                else if (key === "before-showing") {
-                    //TO DO: user actions to taken before showing modal
-                }
-                step[newkey] = value;
             });
             steps.push(step);
         });
 
-        options["steps"] = steps;
-        return options;
+        return {
+            "options": {"steps": steps},
+            "before_showing": before_showing
+        };
     },
 
     render: function() {

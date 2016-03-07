@@ -45,8 +45,8 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
         self.admin_data = {"username": "admin", "password": "admin"}
         self.admin = self.create_admin(**self.admin_data)
 
-    def test_responses(self, allowed_http_codes=[200, 302, 400, 401, 404, 405],
-            credentials={}, logout_url="", default_kwargs={}, quiet=False):
+    def test_responses(self, allowed_http_codes=None,
+            credentials=None, logout_url="", default_kwargs=None, quiet=False):
         """
         This is a very liberal test, we are mostly just concerned with making sure
         that no pages throw errors (500).
@@ -70,6 +70,15 @@ class AllUrlsTest(CreateAdminMixin, KALiteTestCase):
         If @quiet=False, print all the urls checked. If status code of the response is not 200,
             print the status code.
         """
+        if not allowed_http_codes:
+            allowed_http_codes = [200, 302, 400, 401, 404, 405]
+
+        if not credentials:
+            credentials = {}
+
+        if not default_kwargs:
+            default_kwargs = {}
+
         # Some URLs only use POST requests, exclude them here.
         url_blacklist = []
         module = importlib.import_module(settings.ROOT_URLCONF)
