@@ -14,12 +14,14 @@ from django.core.management.commands import makemessages
 IGNORE_PATTERNS = [
     "*/node_modules*",
     "*dist-packages*",
+    "*/LC_MESSAGES/*",
     "*python-packages*",
     "*/kalite/static*",
     "*bundle*.js",
     "*/ka-lite/build/*",
     "*/js/i18n/*.js",
-    "*/ka-lite/docs/*"
+    "*/ka-lite/docs/*",
+    "*/ka-lite/data/*.yml",  #  we process the inline help docs separately
 ]
 
 
