@@ -9,7 +9,11 @@ var data_model = new Models.ContentDataModel({
     past_time: 0,
     past_object: 0,
     current_object: 0,
-    is_playing: false
+    is_playing: false,
+    previous_time: 0,
+    previous_object: 0,
+    previous_stroke: 0,
+    previous_substroke: 0
 });
 
 var log_model = new Models.ContentLogModel();
