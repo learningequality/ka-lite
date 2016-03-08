@@ -223,11 +223,11 @@ def _decode_list(data):
 def json_ascii_decoder(data):
     """
     TODO: Delete, it doesn't seem to be used anymore
-    
+
     benjaoming: I don't see how this is more efficient. Letting the JSON
     library load files and parse them with a built-in decoder, probably even
     implemented in C would be much faster.
-    
+
     A custom JSON decoder that can be passed to json.load/s.  This
     parses strings into str instead of unicode. To use this, pass this
     function to the object_hook keyword param in json.load/s.
@@ -266,6 +266,7 @@ def softload_json(json_filepath, default={}, raises=False, logger=None, errmsg="
         if raises:
             raise
         return default
+
 
 def sort_version_list(version_list, reverse):
     """Returns sorted version list - assumes strict version number"""

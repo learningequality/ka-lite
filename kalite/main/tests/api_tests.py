@@ -1,10 +1,50 @@
 """
 """
+import json
+from django.core.urlresolvers import reverse
+
 from ..models import VideoLog, ExerciseLog
-from kalite import i18n
 from kalite.facility.models import Facility, FacilityUser
-from kalite.testing.base import KALiteTestCase
+from kalite.testing.base import KALiteTestCase, KALiteClientTestCase
 from kalite.testing.client import KALiteClient
+from kalite.topic_tools.content_models import set_database, Using, Item, get_or_create
+
+
+class ContentItemApiViewTestCase(KALiteClientTestCase):
+    def setUp(self, db=None):
+        item_attributes = {
+            u"title": u"My Cool Item",
+            u"description": u"A description!",
+            u"available": True,
+            u"kind": u"Video",
+            u"id": u"my_content",
+            u"slug": u"my_content",
+            u"path": u"khan/my_content",
+            u"extra_fields": u"{}",
+            u"size_on_disk": 0,
+            u"sort_order": 0.0,
+            u"remote_size": 0,
+            u"files_complete": 0,
+            u"total_files": 0,
+            u"youtube_id": u"",
+        }
+        self.expected = item_attributes.copy()
+        self.expected.update({
+            u"messages": [],  # Added to all responses
+            u"parent": {},  # Since the item's parent is not set, it gets translated to an empty dict in the response
+        })
+        get_or_create(item_attributes)
+        self.maxDiff = None
+
+    def test_sanity(self):
+        resp = self.client.get(reverse('content_item', kwargs={
+            'channel': 'khan',
+            'content_id': 'my_content',
+        }))
+        actual = json.loads(resp.content)
+        actual.pop(u"pk")  # We have no control over this value, so don't check it
+        self.assertDictEqual(actual, self.expected)
+
 
 class TestSaveExerciseLog(KALiteTestCase):
 
@@ -123,7 +163,6 @@ class TestSaveExerciseLog(KALiteTestCase):
         self.assertEqual(exerciselog.attempts, self.NEW_ATTEMPTS + 1, "The ExerciseLog did not have the correct number of attempts.")
 
 
-
 class TestSaveVideoLog(KALiteTestCase):
 
     ORIGINAL_POINTS = 84
@@ -131,9 +170,9 @@ class TestSaveVideoLog(KALiteTestCase):
     NEW_POINTS = 32
     NEW_SECONDS_WATCHED = 15
     YOUTUBE_ID = "aNqG4ChKShI"
-    VIDEO_ID = i18n.get_video_id(YOUTUBE_ID) or "dummy"
+    VIDEO_ID = "dummy"
     YOUTUBE_ID2 = "b22tMEc6Kko"
-    VIDEO_ID2 = i18n.get_video_id(YOUTUBE_ID2) or "dummy2"
+    VIDEO_ID2 = "dummy2"
     USERNAME = "testuser"
     PASSWORD = "dummies"
 

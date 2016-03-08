@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Dividing positive and negative fractions</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars">
+            <div data-ensure="getGCD(N1, D1) === 1">
+                <var id="N1">randRangeNonZero(-9, 9)</var>
+                <var id="D1">randRange(2, 9)</var>
+            </div>
+
+            <div data-ensure="getGCD(N2, D2) === 1">
+                <var id="N2">randRangeNonZero(-9, 9)</var>
+                <var id="D2">randRange(2, 9)</var>
+            </div>
+
+            <var id="NUMERATOR">N2 &gt; 0 ? N1 * D2 : -N1 * D2</var>
+            <var id="DENOMINATOR">D1 * abs(N2)</var>
+            <var id="GCD">getGCD(NUMERATOR, DENOMINATOR)</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="problem">Reduce to lowest terms:</div>
+                <p class="question"><code>
+                    <var>fraction(N1, D1)</var> \div <var>fraction(N2, D2, false, false, false, N2 &lt; 0)</var> = {?}
+                </code></p>
+                <div class="solution" data-type="rational"><var>NUMERATOR / DENOMINATOR</var></div>
+            </div>
+        </div>
+
+        <div class="hints">
+            <p>Dividing by a fraction is the same as multiplying by the reciprocal of the fraction.</p>
+            <p>The reciprocal of <code><var>fraction(N2, D2)</var></code> is <code><var>fraction(D2, N2)</var></code>.</p>
+
+            <div>
+                <p>Therefore:</p>
+                <p><code>\qquad
+                    <var>fraction(N1, D1)</var> \div <var>fraction(N2, D2, false, false, false, N2 &lt; 0)</var> =
+                    <var>fraction(N1, D1)</var> \times <var>fraction(D2, N2, false, false, false, N2 &lt; 0)</var>
+                </code></p>
+            </div>
+
+            <p><code>
+                \qquad\phantom{<var>fraction(N1, D1)</var> \div <var>fraction(N2, D2, false, false, false, N2 &lt; 0)</var>} = 
+                \dfrac{<var>N1</var> \times <var>negParens(N2 &lt; 0 ? -D2 : D2)</var>}{<var>D1</var> \times <var>abs(N2)</var>}
+            </code></p>
+
+            <p><code>
+                \qquad\phantom{<var>fraction(N1, D1)</var> \div <var>fraction(N2, D2, false, false, false, N2 &lt; 0)</var>} =
+                <var>fraction(NUMERATOR, DENOMINATOR)</var>
+            </code></p>
+
+            <div data-if="GCD !== 1">
+                <p>Simplify:</p>
+                <p><code>\qquad<var>fractionReduce(NUMERATOR, DENOMINATOR)</var></code></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

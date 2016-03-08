@@ -1,0 +1,70 @@
+{{#each data}}
+    {{!-- Whole section is only for screen readers --}}
+<div class="sr-only">
+        <a href="/learn/{{attributes.path}}"><h3>{{attributes.title}}</h3></a>
+        <div>{{!-- Status info for sr-user. --}}
+            {{_ " Status: " }}
+            {{#ifcond attributes.status "===" "complete"}}
+                {{_ " Completed. " }}
+            {{/ifcond}}
+
+            {{#ifcond attributes.status "===" "inprogress"}}
+                {{_ " In progress. " }}
+            {{/ifcond}}
+
+            {{#ifcond attributes.status "===" "struggling"}}
+                {{_ " Struggling. " }}
+            {{/ifcond}}
+
+            {{#ifcond attributes.status "===" "notstarted"}}
+                {{_ " Not started. " }}
+            {{/ifcond}}
+        </div>
+        <div>
+            {{!-- Score info for sr-user. --}}
+            {{!-- Video --}}
+            {{#ifcond attributes.kind "===" "Video"}}
+                <span>{{_ " For this video you completed " }}{{attributes.score}}%.</span>
+            {{/ifcond}}
+
+            {{!-- Exercise --}}
+            {{#ifcond attributes.kind "===" "Exercise"}}
+                <span>{{_ " For this exercise your streak is " }}{{attributes.score}}%.</span>
+            {{/ifcond}}
+
+            {{!-- Quiz --}}
+            {{#ifcond attributes.kind "===" "Quiz"}}
+                <span>{{_ " For this quiz your score is " }}{{attributes.score}}%.</span>
+            {{/ifcond}}
+        </div>
+</div>
+{{!-- Whole section is rendered invisible to screen readers --}}
+<div class="col-sm-1 progress-block" aria-hidden="true" role="presentation">
+    <a href="/learn/{{attributes.path}}">
+    <div
+        class="progress-indicator progress-indicator-sm {{attributes.status}}"
+        data-toggle="popover" data-placement="top"
+
+        {{!-- Video --}}
+        {{#ifcond attributes.kind "===" "Video"}}
+            title="{{attributes.title}}"
+            data-content="{{_ "%% Complete:" }} {{attributes.score}}"
+        {{/ifcond}}
+
+        {{!-- Exercise --}}
+        {{#ifcond attributes.kind "===" "Exercise"}}
+            title="{{attributes.title}}"
+            data-content="{{_ "Streak" }}: {{attributes.score}}%"
+        {{/ifcond}}
+
+        {{!-- Quiz --}}
+        {{#ifcond attributes.kind "===" "Quiz"}}
+            title="Quiz for {{attributes.title}}"
+            data-content="{{_ "Score" }}: {{attributes.score}}%"
+        {{/ifcond}}
+    > {{!-- Close starting div --}}
+        <div class="sidebar-icon icon-{{ attributes.kind }} icon-label icon-label-sm"></div>
+    </div>
+    <span class="progress-item-title">{{attributes.title}}</span></a>
+</div>
+{{/each}}

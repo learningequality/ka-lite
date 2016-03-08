@@ -1,0 +1,123 @@
+<div class="well">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="h3 playlist-title center-block">
+                <a href="{{this.url}}">{{title}}</a>
+            </h2>
+            <div class="sr-only">{{_ "In this topic " }}</div>
+        </div>
+    </div>
+    {{!-- Videos --}}
+    <div class="row progress-block">
+        <div class="col-sm-2">
+            <div class="progress-indicator progress-indicator-lg center-block {{vid_status}}">
+                <span class="sr-only">{{_ "there are " }}</span>
+                <div class="sidebar-icon icon-Video icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary">{{n_pl_videos}}</span></div>
+                <span class="sr-only">{{_ " videos." }}</span>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="progress playlist-progress-bar">
+                {{#if n_pl_videos}}
+                    {{#unless vid_pct_started}}
+                        <span class="sr-only">{{_ "You haven't started to watch videos! " }}</span>
+                    {{/unless}}
+                {{/if}}
+                {{#if vid_pct_complete}}
+                  <div class="progress-bar progress-bar-success" title={{_ "%% Completed" }} style="width: {{vid_pct_complete}}%">
+                        <span class="sr-only">{{_ "Of those you have completed " }}</span>
+                        <span>{{vid_pct_complete}}%</span>
+                    </div>
+                {{/if}}
+                {{#if vid_pct_started}}
+                  <div class="progress-bar inprogress" title={{_ "%% In-Progress"}} style="width: {{vid_pct_started}}%">
+                    {{#ifcond vid_pct_started "<" 100}}
+                        <span class="sr-only">{{_ "You are still working on " }}</span>
+                        <span>{{vid_pct_started}}%</span>
+                    {{/ifcond}}
+                    {{#ifcond vid_pct_started "===" 100}}
+                        <span class="sr-only">{{_ "You are still working on all of them." }}</span>
+                        <span aria-hidden="true" role="presentation">{{vid_pct_started}}%</span>
+                    {{/ifcond}}
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{!-- Exercises --}}
+    <div class="row progress-block">
+        <div class="col-sm-2">
+            <div class="progress-indicator progress-indicator-lg center-block {{ex_status}}">
+                <span class="sr-only">{{_ "There are " }}</span>
+                <div class="sidebar-icon icon-Exercise icon-label icon-label-lg"><span class="progress-indicator content-counter label label-primary">{{n_pl_exercises}}</span></div>
+                <span class="sr-only">{{_ " exercises." }}</span>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="progress playlist-progress-bar">
+                {{#if n_pl_exercises}}
+                    {{#if ex_status.notstarted}}
+                        <span class="sr-only">{{_ "You haven't started to work on exercises! " }}</span>
+                    {{/if}}
+                {{/if}}
+                {{#if ex_pct_mastered}}
+                    <div class="progress-bar progress-bar-success" title="% Mastered" style="width: {{ex_pct_mastered}}%">
+                        <span class="sr-only">{{_ "Of those you have mastered " }}</span>
+                        <span>{{ex_pct_mastered}}%</span>
+                    </div>
+                {{/if}}
+                {{#if ex_pct_incomplete}}
+                    <div class="progress-bar inprogress" title="% In-Progress" style="width: {{ex_pct_incomplete}}%">
+                    {{#ifcond ex_pct_incomplete "<" 100}}
+                        <span class="sr-only">{{_ "You are still working on " }}</span>
+                        <span>{{ex_pct_incomplete}}%</span>
+                    {{/ifcond}}
+                    {{#ifcond ex_pct_incomplete "===" 100}}
+                        <span class="sr-only">{{_ "You are still working on all of them." }}</span>
+                        <span aria-hidden="true" role="presentation">{{ex_pct_incomplete}}%</span>
+                    {{/ifcond}}
+                    </div>
+                {{/if}}
+                {{#if ex_pct_struggling}}
+                    <div class="progress-bar struggling" title="% Struggling" style="width: {{ex_pct_struggling}}%">
+                        <span class="sr-only">{{_ "And seem to be struggling with " }}</span>
+                        <span>{{ex_pct_struggling}}%</span>
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{!-- Quiz --}}
+    {{#if quiz_exists}}
+    <div class="row progress-block">
+        <div class="col-sm-2">
+            <div class="progress-indicator progress-indicator-lg center-block {{quiz_status}}">
+                <span class="sr-only">{{_ "There are " }}</span>
+                <span class="sidebar-icon icon-Quiz icon-label icon-label-lg"></span>
+                <span class="sr-only">{{_ " quizzes." }}</span>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="progress playlist-progress-bar">
+                {{#if quiz_pct_score}}
+                <div class="progress-bar {{quiz_status}}" title="% Score" style="width: {{quiz_pct_score}}%">
+                    {{!-- Radina: TODO - revise once quizzes are operational --}}
+                    <span class="sr-only">{{_ "And your score is " }}</span>
+                    <span>{{quiz_pct_score}}%</span>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    {{/if}}
+    <div class="row">
+        <div class="col-xs-12">
+            <button class="btn btn-sm btn-primary center-block toggle-details" aria-label="Press to open detailed view"><span class="expand-collapse glyphicon glyphicon-chevron-down"></span></button>
+        </div>
+    </div>
+    <div class="row playlist-progress-details">
+        <div class="col-xs-12">
+            <img class="center-block" src="/static/images/loading.gif" aria-hidden="true" role="presentation"/>
+        </div>
+    </div>
+</div>

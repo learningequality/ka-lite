@@ -1,0 +1,989 @@
+@import "../../../../../node_modules/bootstrap/less/bootstrap.less";
+
+@icon-font-path: "/static/fonts/";
+@import "./bootstrap-overrides.less";
+@import "./kalite-base.less";
+/************** khan-site.css overrides ***************/
+
+.simple-button.green,
+.simple-button.primary {
+    background-color: @k-accent-color !important;
+    background-image: -moz-linear-gradient(top, @k-accent-color, #47856A);
+    background-image: -ms-linear-gradient(top, @k-accent-color, #47856A);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@k-accent-color), to(#47856A));
+    background-image: -webkit-linear-gradient(top, @k-accent-color, #47856A);
+    background-image: -o-linear-gradient(top, @k-accent-color, #47856A);
+    background-image: linear-gradient(top, @k-accent-color, #47856A);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='@k-accent-color', endColorstr='#47856A', GradientType=0);
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    color: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.simple-button.green:hover,
+.simple-button.primary:hover,
+.simple-button.green:active,
+.simple-button.primary:active,
+.simple-button.green.disabled,
+.simple-button.primary.disabled,
+.simple-button.green[disabled],
+.simple-button.primary[disabled] {
+    background-color: #40775F !important;
+}
+
+/********** End of khan-site.css overrides ***********/
+
+/*body {
+    min-width: 600px;
+}*/
+
+/*article {
+    padding: 20px;
+}*/
+
+/*a:link:focus,
+a:hover {
+    color: #2F92A5;
+}*/
+
+/*hide points display in the navbar*/
+@media (max-width: 768px) {
+    #points-xs {
+        display: none !important;
+    }
+}
+
+
+#top-header {
+    height: 60px;
+    position: relative;
+    top: 0px;
+}
+
+#top-header #logo {
+    position: absolute;
+    top: 5px;
+    z-index: 50; /*TODO(dylanjbarth): stopgap solution;*/
+}
+
+#logo-image-small img {
+    height: 35px;
+    margin-top: 10px;
+    margin-left: 5px;
+}
+
+/********** Top Navigation bar ***********/
+
+.top-header-links {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    min-width: 280px;
+    height: 50px;
+}
+
+.nav-subheader {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 16px;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    margin-bottom: 0;
+    height: 30px;
+    color: #fff;
+}
+
+.nav-subheader a {
+    color: #263500;
+    height: 20px;
+    display: block;
+    line-height: 18px;
+}
+
+.nav-subheader a:hover {
+    color: #2F92A5;
+}
+
+.nav-subheader > a, .nav-subheader > span {
+    margin-left: 20px;
+    float: right;
+}
+
+.nav-subheader a.active:after {
+    content: url(/static/images/distributed/nav-selector.gif);
+    position: relative;
+    display: block;
+    left: 50%;
+    margin-left: -5px;
+    width: 15px;
+}
+
+#nav_registerdevice {
+    color: darkRed;
+}
+
+#nav_addstudent, #nav_addteacher, #nav_admin, #nav_coachreports, #nav_watch, #nav_practice, #nav_update, #nav_registerdevice, #nav_tests {
+    display: none;
+}
+
+.dropdown-menu span#points {
+    cursor: default;
+}
+
+.language-select select {
+    padding: 5px 5px;
+    max-width: 120px;
+    position: relative;
+    top: 30px;
+}
+.language-select {
+    height: 0;
+}
+
+/********** End of Top Navigation bar ***********/
+
+/********** "Teacher" Sub-Navigation bar ***********/
+.teach-nav {
+    width: 100%;
+    border-bottom: 4px solid @k-accent-color;
+    margin-bottom: 25px;
+}
+.teach-nav ul {
+    padding-left: 1%;
+    margin-bottom: 0;
+}
+.teach-nav li {
+    background-color: @k-accent-color;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    border-top: 3px solid @k-accent-color;
+    border-right: 3px solid @k-accent-color;
+    border-left: 3px solid @k-accent-color;
+    width: 130px;
+    text-align: center;
+    font-weight: bold;
+    display: inline-block;
+    margin: 0 2px -4px 0;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
+}
+.teach-nav li div {
+    position: relative;
+    width: 130px;
+    height: 95px;
+    margin: -18px 0px -47px -3px;
+    padding-top: 5px;
+}
+.teach-nav li div:hover {
+    color: @k-accent-color;
+}
+.teach-nav li:hover {
+    background-color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 16px;
+    color: @k-accent-color;
+    font-weight: bold;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
+}
+.teach-nav li a {
+    color: white;
+    padding: 0px 15px 5px 15px;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+}
+.teach-nav li a:hover {
+    color: @k-accent-color;
+}
+.teach-nav i.icon {
+    font-size: 40pt;
+}
+.link-width {
+    width: 90px;
+}
+.active-nav {
+    color: @k-accent-color !important;
+    background-color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 16px;
+    font-weight: bold;
+}
+.active-tab div {
+    color: @k-accent-color !important;
+}
+.reports, .reports:hover, .reports-active,
+.playlist, .playlist:hover, .playlists-active,
+.exams, .exams:hover, .exams-active, 
+.learn, .learn:hover, .learn-active {
+    background-position: center 7px;
+    height: 95px;
+}
+
+.units {
+    background: url("../../images/distributed/units-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 95px;
+}
+.units:hover, .units-active {
+    background: url("../../images/distributed/units-active-icon.png") no-repeat;
+    background-position: center 7px;
+    height: 95px;
+}
+
+/********* End Sub-Navigation bar **********/
+
+
+/********* "Admin" Sub-Navigation bar **********/
+.manage-nav {
+    display: inline-block;
+    width: 100%;
+    border-bottom: 4px solid @k-accent-color;
+    margin-bottom: 25px;
+}
+.manage-nav ul {
+    padding-left: 1%;
+}
+.manage-nav li {
+    background-color: @k-accent-color;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+    border-top: 3px solid @k-accent-color;
+    border-right: 3px solid @k-accent-color;
+    border-left: 3px solid @k-accent-color;
+    width: 130px;
+    padding: 8px 0px;
+    text-align: center;
+    font-weight: bold;
+    display: inline-block !important;
+    margin: 0 2px -4px 0;
+    -webkit-transition: all 115ms ease-out;
+    -moz-transition: all 115ms ease-out;
+    -o-transition: all 115ms ease-out;
+    transition: all 115ms ease-out;
+}
+.manage-nav li:hover {
+    background-color: white;
+    -webkit-transition: all 115ms ease-out !important;
+    -moz-transition: all 115ms ease-out !important;
+    -o-transition: all 115ms ease-out !important;
+    transition: all 115ms ease-out !important;
+}
+.manage-nav li a {
+    color: white;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 17px;
+}
+.manage-nav li div:hover {
+    color: @k-accent-color;
+}
+.manage-nav li a:hover {
+    color: @k-accent-color;
+    font-weight: bold;
+    text-decoration: none;
+}
+.manage-nav i.icon {
+    font-size: 40pt;
+}
+
+.active-nav {
+    color: #405D32 !important;
+    background-color: white !important;
+    font-weight: bold;
+}
+/********* End "Admin" Sub-Navigation bar **********/
+
+
+/********* Coach Reports Sub-Navigation bar *********/
+
+.sub-active {
+    border: 0;
+    margin: 0;
+    background: white;
+    color: white;
+    padding: 0;
+}
+.dropdown.sub-active {
+    padding: 0;
+    border-radius: 5px 15px 0 0;
+}
+.sub-active.open {
+    color: black;
+}
+.subnav {
+    text-align: center;
+    margin: 40px 0 50px 0;
+}
+.subnav li {
+    display: inline-block;
+    text-align: center;
+    border-radius: 10px;
+    border: 3px solid #6E9F56;
+    margin: -25px 10px 0 10px;
+}
+.subnav li a {
+    width: 150px;
+    height: 80px;
+    text-decoration: none;
+    color: @k-accent-color;
+    font-weight: bold;
+    -webkit-transition: all 115ms ease-out !important;
+    -moz-transition: all 115ms ease-out !important;
+    -o-transition: all 115ms ease-out !important;
+    transition: all 115ms ease-out !important;
+}
+.subnav span {
+    line-height: 1.6;
+    font-size: 17px;
+}
+.sub-active.open ul.dropdown-menu {
+    padding: 9px 0;
+}
+.sub-active.open ul.dropdown-menu li {
+    padding: 0;
+}
+.sub-active.open ul.dropdown-menu li a {
+    text-transform: none;
+    background-color: white;
+    color: black;
+    border-radius: 0;
+    border: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+.sub-active.open ul.dropdown-menu li a:hover {
+    background-color: rgb(237, 237, 237);
+}
+.sub-active.open a.dropdown-toggle,
+.sub-active.open a.dropdown-toggle:hover {
+    color: black;
+}
+.progress-tab img,
+.effort-tab img,
+.mastery-tab img {
+    margin: -10px -30px 0 -15px;
+    border-radius: 8px;
+    left: 15px;
+    opacity: 0.18;
+    position: absolute;
+}
+
+/********* End Coach Reports Sub-Navigation bar **********/
+
+.title-header .long-description {
+    color: #666;
+    font-size: 15px;
+}
+
+div.exercises-card {
+    width: 800px;
+}
+
+#answer_area_wrap {
+    width: 229px;
+}
+
+#streakbar .streak {
+    border: 1px solid #cccccc;
+    height: 30px;
+    background-color: #F7F7F7;
+}
+
+#streakbar .streak .progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: #9F9FFC;
+    padding: 0px;
+    border: none;
+    text-align: center;
+}
+
+#streakbar .streak .progress-bar.completed {
+    width: 100%;
+    background-color: #5BDB44;
+}
+
+#selected-input {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+}
+
+.exercise-title-prefix {}
+
+.attempts {
+    font-size: 18px;
+    text-align: right;
+    width: 100%;
+}
+
+.attempts .incorrect {
+    color: red;
+}
+
+.attempts .correct {
+    color: green;
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+.progress-points {
+    width: 90%;
+    text-align: center;
+    float: left;
+    white-space: nowrap;
+    font-size: 1.1em;
+    padding: 4px 8px;
+    color: #414141                                                                                                                                                                                                                                                                                                                                                                        ;
+}
+
+.practice-exercise-description {
+    opacity: 0.5;
+    font-size: 0.7em;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+}
+
+.current-card #problemarea {
+    margin-top: 0;
+}
+
+.current-card #answer_area_wrap {
+    margin-top: 15px;
+}
+
+.info-box #related-video-list {
+    margin-left: -10px;
+}
+
+.info-box #related-video-list a {
+    white-space: nowrap;
+    display: block;
+    float: left;
+    margin: 0;
+    width: 98%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info-box.related-content {
+    padding: 10px;
+    margin: 10px;
+    height: 100px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.basic-form label {
+    font-weight: bold;
+    padding-right: 12px;
+    display: block;
+}
+
+.basic-form p {
+    padding-top: 2px;
+}
+
+.basic-form input {
+    display: block;
+}
+
+.basic-form .errorlist {
+    margin-left: 0px;
+}
+
+.basic-form .submit, .basic-form h2 {
+    margin-left: 0px;
+}
+
+.progress-circle {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    position: relative;
+    top: 2px;
+}
+
+li .progress-circle {
+    margin-left: -15px;
+    top: 0;
+}
+
+.related-video-list .progress-circle {
+    margin-left: 0;
+    top: 2px;
+}
+
+.related-video-inline .progress-circle {
+    margin-left: 10px;
+}
+
+.progress-circle.complete {
+    background: url(/static/images/distributed/circle-complete.png) no-repeat;
+}
+
+.progress-circle.partial {
+    background: url(/static/images/distributed/circle-partial.png) no-repeat;
+}
+
+.main-headline {
+    width: 100%;
+    display: block;
+    float: left;
+}
+
+.admin-only,
+.unregistered-only, .not-unregistered-only,
+.logged-in-only,
+.client-online-only,
+.server-online-only
+{
+    display: none;
+}
+
+.message {
+    width: 75%;
+    padding: 4px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    border-style: solid;
+    border-width: 1px;
+    font-size: 13px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.message.error {
+    color: #FFFFFF;
+    background-color: #FF3030;
+    border-color: #330000;
+}
+
+.message.error a {
+    color: #6969C4;
+}
+
+.message.success {
+    color: #273C2B;
+    background-color: #8AF07C;
+    border-color: #273C2B;
+}
+
+.message.warning {
+    color: #330000;
+    background-color: #FF9955;
+    border-color: #330000;
+}
+
+.error, .errorlist {
+/*    padding-bottom: 10px;*/
+    color: red;
+}
+
+.hint-reminder {
+    line-height: 18px;
+    padding-top: 10px;
+    color: #777;
+}
+
+#totalpoints {
+    font-weight: bold;
+    font-size: 1.2em;
+    padding-top: 4px;
+    color: #77C;
+}
+
+#questionpoints {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #666600;
+    background-color: #EEEEFF;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.points-container {
+    margin: 0px;
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 4px;
+    font-size: 0.8em;
+    float: right;
+    background-color: #EEEEFF;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.vidprev {
+    float: left;
+}
+
+.vidnext {
+    float: right;
+    padding-right: 4px;
+}
+
+#sitepoints {
+    font-family: "MuseoSans500", Helvetica, Arial, sans-serif;
+    float: left;
+    margin-top: 3px;
+    margin-left: 168px;
+    opacity: 0.7;
+    font-size: 1.2em;
+}
+
+#scratchpad > div {
+    margin-top: 0; /* Controls whether scratchpad comes out of boundary - GH #1859 */
+    max-width: 537px;
+}
+
+.current-card-contents #workarea {
+    margin-top: 10px;
+    margin-right: 30px;
+}
+
+.helptext {
+    font-size: .85em;
+    display: block;
+}
+
+.glossary-link {
+    background: url('/static/images/distributed/question_mark.png') no-repeat center;
+    display: inline-block;
+    width: 28px;
+    height: 21px;
+    float: center;
+    margin-bottom: -5px;
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.thumb {
+    overflow: hidden;
+    position: relative;
+}
+
+.thumb .thumbimage {
+    position: absolute;
+    width: 200px;
+    z-index: -10;
+}
+
+#answer_area .answer-buttons input.simple-button, #answer_area input.simple-button.full-width {
+    white-space: normal;
+}
+
+.Video-unavailable,
+.Topic-unavailable,
+a:active.Video-unavailable,
+a:visited.Video-unavailable,
+a:active.Topic-unavailable,
+a:link.Topic-unavailable,
+a:link.Video-unavailable,
+a:visited.Topic-unavailable {
+    color: #ACBDD1;
+    font-weight: normal;
+    text-decoration: none;
+}
+a:hover.Video-unavailable {
+    color: #ddd;
+}
+a:hover.Topic-unavailable {
+    color: #ddd;
+}
+a.disabled {
+    background-color: #C0C0C0;
+}
+
+#search-box input {
+    width: 150px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    position: relative;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+#search-button {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* BEGIN styles for software-keyboard */
+
+
+#software-keyboard {
+    border: 2px solid #cfcfcf;
+    background: #c3c3c3;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 1);
+    text-align: center;
+    padding: 0px;
+    margin-top: 10px;
+}
+
+#software-keyboard .row {
+    min-width: 100%;
+    padding: 1px;
+}
+
+#software-keyboard .row .key {
+    width: 28%;
+    padding: 3px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 26px;
+}
+
+button#show-keyboard {
+    width: 100%;
+    font-size: 14px;
+    padding: 0;
+}
+
+/* END styles for software-keyboard */
+
+/*
+Icon Font
+======================================
+*/
+
+/*
+To update these icons go to icomoon.io
+and navigate to the icomoon app.
+
+Here click 'import icons' and select the SVG file
+in static/fonts.
+
+Select all the imported icons, and then add whichever
+other icons you want to use in addition.
+
+When finished, press the 'Font' button at the bottom of
+the screen. Take note of the character numbers \e6xx
+below your new icons, you will need these to specify
+in the css block below.
+
+Now click 'Download'.
+
+Open the icomoon.zip file that downloads and navigate into the
+fonts directory. Extract the contents of the fonts 
+directory into static/fonts overwriting all existing files.
+
+Also copy over the style.css file. Remember to modify the first
+few lines of this file to make the font source point to the fonts
+in the same folder rather than looking for them in a ./fonts folder.
+Otherwise, it will break all the existing icons in use on the site.
+
+Now add class definitions below for your new icon, and add that
+to items you want to have the icon appear with.
+*/
+
+.icon-Exercise:before {
+    content: "\e60f";
+}
+.icon-Video:before {
+    content: "\e610";
+}
+.icon-Quiz:before {
+    content: "\e611";
+}
+.icon-Topic:before {
+    content: "\e612";
+}
+.icon-Audio:before {
+    content: "\e613";
+}
+.icon-Document:before {
+    content: "\e614";
+}
+
+/* jQuery UI icon overrides */
+
+.ui-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.ui-widget-content {
+    border: 1px solid #aaaaaa;
+    background: #ffffff url("/static/images/jquery-ui-icons/ui-bg_flat_75_ffffff_40x100.png") 50% 50% repeat-x;
+    color: #222222;
+}
+
+.ui-icon,
+.ui-widget-content .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_222222_256x240.png)/*{iconsContent}*/;
+}
+.ui-widget-header .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_222222_256x240.png)/*{iconsHeader}*/;
+}
+.ui-state-default .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_888888_256x240.png)/*{iconsDefault}*/;
+}
+.ui-state-hover .ui-icon,
+.ui-state-focus .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_454545_256x240.png)/*{iconsHover}*/;
+}
+.ui-state-active .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_454545_256x240.png)/*{iconsActive}*/;
+}
+.ui-state-highlight .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_2e83ff_256x240.png)/*{iconsHighlight}*/;
+}
+.ui-state-error .ui-icon,
+.ui-state-error-text .ui-icon {
+    background-image: url(/static/images/jquery-ui-icons/ui-icons_cd0a0a_256x240.png)/*{iconsError}*/;
+}
+
+
+.pdf-frame {
+    height: 1000px;
+    font-size: 10px;
+    background-color: #404040;
+    padding: 0;
+    margin: 0;
+}
+
+.pdf-frame body, input, button, select {
+  font: message-box;
+  outline: none;
+}
+
+.qtip {
+    position: absolute;
+    left: -28000px;
+    top: -28000px;
+    display: none;
+    max-width: 280px;
+    min-width: 50px;
+    font-size: 10.5px;
+    line-height: 12px;
+    direction: ltr;
+    box-shadow: none;
+    padding: 0 5px 0 0;
+    font-size: 100%;
+    line-height: 1.3;
+}
+
+.qtip-default {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #f1d031;
+    background-color: #ffffa3;
+    color: #555;
+}
+
+.qtip-light {
+    background-color: white;
+    border-color: #e2e2e2;
+    color: #454545;
+}
+
+.examples {
+    color: #777;
+    padding-left: 5px;
+    list-style-type: disc;
+}
+
+.examples li {
+    margin: 5px 0;
+}
+
+#solutionarea input[type=text]:focus, textarea:focus {
+  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+  border-color: rgba(81, 203, 238, 1);
+  border-style: solid;
+}
+
+#workarea {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#workarea .perseus-widget-container.widget-highlight {
+    box-shadow: -4px 0 9px 5px #ffa500;
+}
+
+/* Styling for login modal dialog */
+#log-box .has-error .form-control {
+	box-shadow: 0 0 5px 3px rgba(171,0,0,0.75) inset;
+}
+.login-btn {
+	width: 100%;
+	margin: 0 0 15px;
+}
+.log-input {
+	margin: 0 15px;
+}
+.password-btn {
+	margin: 0 auto;
+}
+#id_password.form-control.input-lg:focus,
+#id_username.form-control.input-lg:focus {
+		box-shadow: 0 0 5px 3px rgba(102,175,233,0.75) inset;
+}
+.login .ui-menu .ui-menu-item a{
+    font-size: 1.5em;
+}
+
+/* reg-dev prefix is use in register_public_key_client.html */
+.reg-dev-title-info {
+    margin-bottom: 15px;
+    color: green;
+}
+#reg-dev-installation-info {
+    margin-left:40px
+}
+
+#reg-dev-register-div {
+    margin-left:40px
+}
+
+#register-online-row {
+    margin-top:30px
+}
+
+/* Additional styles for content-rec */
+
+.gly-h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.up10 {
+    margin-top: 10px;
+}
+
+/* jQuery Overlay progress meter overrides */
+
+.jQuery-plainOverlay-progress {
+  border-color: #5aa685 !important;
+}
+.jQuery-plainOverlay-progress-legacy div {
+  background-color: #5aa685 !important;
+}
+
+/************** Inline help tweaks ******************/
+.introjs-helperNumberLayer {
+    height: 25px;
+    width: 25px;
+}
+
+.introjs-skipbutton {
+    color: #000000;
+}

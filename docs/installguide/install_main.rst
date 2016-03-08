@@ -7,7 +7,5 @@ Hello! If you know what OS you're installing on then click ahead.
 
     Installation Guide <install_all>
     Release Notes <release_notes>
-
-Supported Browsers
-------------------
-KA Lite is currently *not* supported on Internet Explorer version 8 or lower. You must use IE9 or later.
+    Advanced Installation <advanced>
+    System Requirements <system_requirements>

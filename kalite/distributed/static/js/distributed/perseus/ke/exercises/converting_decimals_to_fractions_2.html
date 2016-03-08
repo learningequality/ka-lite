@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+    <title>Converting decimals to fractions 2</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+
+<body>
+<div class="exercise">
+
+    <div class="problems">
+        <div id="into-fraction">
+            <div class="vars">
+                <var id="NUMERATOR">randRange(0, 1) ? randRange(100, 999) : randRange(1000, 9999)</var>
+                <var id="D">NUMERATOR / 10000</var>
+            </div>
+            <p class="question">Express <code><var>localeToFixed(D, 4)</var></code> as a fraction.</p>
+            <p class="solution" data-forms="proper" data-simplify="optional"><var>D</var></p>
+            <div class="hints">
+                <div>
+                    <p><code><var>localeToFixed(D, 4)</var></code> can be represented as follows.</p>
+                    <p><code>
+                        = 0 + 
+                        <var>fraction(floor(NUMERATOR / 1000 % 10), 10)</var> + 
+                        <var>fraction(floor(NUMERATOR / 100 % 10), 100)</var> + 
+                        <var>fraction(floor(NUMERATOR / 10 % 10), 1000)</var> + 
+                        <var>fraction(floor(NUMERATOR % 10), 10000)</var>
+                    </code></p>
+                    <p><code>= <var>fraction(NUMERATOR, 10000)</var></code></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="into-mixed">
+            <div class="vars">
+                <var id="W">randRange(1, 19)</var>
+                <var id="D">randRangeExclude(1, 99, [10 , 20 , 30 , 40 , 50 , 60 , 70 , 80 , 90])</var>
+                <var id="FIXED">localeToFixed((W + D / 100), 2)</var>
+            </div>
+            <p class="question">Express <code><var>FIXED</var></code> as a mixed number.</p>
+
+            <p class="solution" data-type="mixed" data-simplify="optional"><var>W + D / 100</var></p>
+
+            <div class="hints">
+                <div>
+                    <p><code><var>FIXED</var></code> can be represented as follows:</p>
+                    <p><code>= <var>W</var> + <var>fraction(floor(D / 10), 10)</var> + <var>fraction(D % 10, 100)</var></code></p>
+                </div>
+                <p><code>= <var>W  + fraction(D, 100)</var></code></p>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

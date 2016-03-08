@@ -81,7 +81,10 @@ class KALiteClient(Client):
     def is_logged_out(self):
         return not self.is_logged_in()
 
-    def post_json(self, path="", url_name="", data={}):
+    def post_json(self, path="", url_name="", data=None):
+
+        if not data:
+            data = {}
 
         assert path or url_name and not (path and url_name), \
             "You must provide either a path or a reversible url_name!"
@@ -93,8 +96,8 @@ class KALiteClient(Client):
 
         return self.post(path or reverse(url_name), data=data, content_type="application/json")
 
-    def delete_videos(self, youtube_ids):
-        return self.post_json(url_name="delete_videos", data={"youtube_ids": youtube_ids})
+    def delete_videos(self, paths):
+        return self.post_json(url_name="delete_videos", data={"paths": paths})
 
     def convert_user_name_to_resource_uri(self, data):
         if data.get("user"):

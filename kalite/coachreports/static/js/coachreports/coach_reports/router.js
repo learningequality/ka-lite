@@ -1,6 +1,12 @@
-CoachReportRouter = Backbone.Router.extend({
+var Backbone = require("base/backbone");
+var StateModel = require("./models").StateModel;
+var CoachReportView = require("./views").CoachReportView;
+var _ = require("underscore");
+
+
+module.exports = Backbone.Router.extend({
     initialize: function(options) {
-        _.bindAll(this);
+        _.bindAll(this, "set_url");
         this.state_model = new StateModel();
         this.listenTo(this.state_model, "change", this.set_url);
         if (options.facility) {

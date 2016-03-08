@@ -5,7 +5,7 @@ Setup KA Lite:
  - Run migrations
  - Find and relocate obsolete user and data files
  - if interactive:
-     - Download and unpack assessment items
+     - Download and unpack the english content pack, containing assessment items
      - Create super user account
      - Run 'kalite start'
 """
@@ -16,9 +16,11 @@ import re
 import shutil
 import sys
 import tempfile
+import subprocess
 from distutils import spawn
 from annoying.functions import get_object_or_None
 from optparse import make_option
+from peewee import OperationalError
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -31,10 +33,13 @@ from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMEN
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
-from kalite.version import VERSION
+from kalite.distributed.management.commands.retrievecontentpack import CONTENT_PACK_URL_TEMPLATE
 from kalite.facility.models import Facility
+from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device
 import warnings
+
+CONTENTPACK_URL = CONTENT_PACK_URL_TEMPLATE.format(version=SHORTVERSION, langcode="en", suffix="")
 
 
 def raw_input_yn(prompt):
@@ -132,7 +137,7 @@ def get_assessment_items_filename():
             return False
 
     def find_recommended_file():
-        filename_guess = "assessment.zip"
+        filename_guess = "en.zip"
         curdir = os.path.abspath(os.curdir)
         pardir = os.path.abspath(os.path.join(curdir, os.pardir))
         while curdir != pardir:
@@ -145,8 +150,9 @@ def get_assessment_items_filename():
         return ""
 
     recommended_filename = find_recommended_file()
-    prompt = "Please enter the filename of the assessment items package you have downloaded (%s): " % recommended_filename
+    prompt = "Please enter the filename of the content pack you have downloaded (%s): " % recommended_filename
     filename = raw_input(prompt)
+    filename = os.path.expanduser(filename)
     if not filename:
         filename = recommended_filename
     while not validate_filename(filename):
@@ -197,12 +203,12 @@ class Command(BaseCommand):
                     action='store_true',
                     dest='force-assessment-item-dl',
                     default=False,
-                    help='Downloads assessment items from the url specified by settings.ASSESSMENT_ITEMS_ZIP_URL, without interaction'),
+                    help='Downloads content pack from the url specified by CONTENTPACK_URL, without interaction'),
         make_option('-i', '--no-assessment-items',
                     action='store_true',
                     dest='no-assessment-items',
                     default=False,
-                    help='Skip all steps associating with assessment item downloading or the assessment item database'),
+                    help='Skip all steps associating with content pack downloading or the content database'),
         make_option('-g', '--git-migrate',
                     action='store',
                     dest='git_migrate_path',
@@ -228,12 +234,14 @@ class Command(BaseCommand):
         print("         version %s" % VERSION)
         print("                                     ")
 
-        if sys.version_info >= (2, 8) or sys.version_info < (2, 6):
+        if sys.version_info < (2, 7):
+            raise CommandError("Support for Python version 2.6 and below had been discontinued, please upgrade.")
+        elif sys.version_info >= (2, 8):
             raise CommandError(
-                "You must have Python version 2.6.x or 2.7.x installed. Your version is: %d.%d.%d\n" % sys.version_info[:3])
-        if sys.version_info < (2, 7, 9):
+                "Your Python version is: %d.%d.%d -- which is not supported. Please use the Python 2.7 series or wait for Learning Equality to release Kolibri.\n" % sys.version_info[:3])
+        elif sys.version_info < (2, 7, 6):
             logging.warning(
-                "It's recommended that you install Python version 2.7.9. Your version is: %d.%d.%d\n" % sys.version_info[:3])
+                "It's recommended that you install Python version 2.7.6. Your version is: %d.%d.%d\n" % sys.version_info[:3])
 
         if options["interactive"]:
             print(
@@ -266,38 +274,46 @@ class Command(BaseCommand):
         if git_migrate_path:
             call_command("gitmigrate", path=git_migrate_path, interactive=options["interactive"])
 
-        # TODO(benjaoming): This is used very loosely, what does it mean?
-        # Does it mean that the installation path is clean or does it mean
-        # that we should remove (clean) items from a previous installation?
-        install_clean = not kalite.is_installed()
-
         database_kind = settings.DATABASES["default"]["ENGINE"]
-        database_file = (
-            "sqlite" in database_kind and settings.DATABASES["default"]["NAME"]) or None
+        if "sqlite" in database_kind:
+            database_file = settings.DATABASES["default"]["NAME"]
+        else:
+            database_file = None
 
-        if database_file and os.path.exists(database_file):
-            # We found an existing database file.  By default,
-            #   we will upgrade it; users really need to work hard
-            #   to delete the file (but it's possible, which is nice).
-            print(
-                "-------------------------------------------------------------------")
-            print("WARNING: Database file already exists!")
-            print(
-                "-------------------------------------------------------------------")
-            if not options["interactive"] \
-               or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
-               or not raw_input_yn("Remove database file '%s' now? " % database_file) \
-               or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
-                install_clean = False
-                print("Upgrading database to KA Lite version %s" % VERSION)
-            else:
+        database_exists = database_file and os.path.isfile(database_file)
+
+        # An empty file is created automatically even when the database dosn't
+        # exist. But if it's empty, it's safe to overwrite.
+        database_exists = database_exists and os.path.getsize(database_file) > 0
+
+        install_clean = not database_exists
+
+        if database_file:
+            if not database_exists:
                 install_clean = True
-                print("OK.  We will run a clean install; ")
-                # After all, don't delete--just move.
+            else:
+                # We found an existing database file.  By default,
+                #   we will upgrade it; users really need to work hard
+                #   to delete the file (but it's possible, which is nice).
                 print(
-                    "the database file will be moved to a deletable location.")
+                    "-------------------------------------------------------------------")
+                print("WARNING: Database file already exists!")
+                print(
+                    "-------------------------------------------------------------------")
+                if not options["interactive"] \
+                   or raw_input_yn("Keep database file and upgrade to KA Lite version %s? " % VERSION) \
+                   or not raw_input_yn("Remove database file '%s' now? " % database_file) \
+                   or not raw_input_yn("WARNING: all data will be lost!  Are you sure? "):
+                    install_clean = False
+                    print("Upgrading database to KA Lite version %s" % VERSION)
+                else:
+                    install_clean = True
+                    print("OK.  We will run a clean install; ")
+                    # After all, don't delete--just move.
+                    print(
+                        "the database file will be moved to a deletable location.")
 
-        if not install_clean and not database_file and not kalite.is_installed():
+        if not install_clean and not database_file:
             # Make sure that, for non-sqlite installs, the database exists.
             raise Exception(
                 "For databases not using SQLite, you must set up your database before running setup.")
@@ -351,56 +367,62 @@ class Command(BaseCommand):
 
         # Move database file (if exists)
         if install_clean and database_file and os.path.exists(database_file):
-            # This is an overwrite install; destroy the old db
-            dest_file = tempfile.mkstemp()[1]
-            print(
-                "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
-            shutil.move(database_file, dest_file)
+            if not settings.DB_TEMPLATE_DEFAULT or database_file != settings.DB_TEMPLATE_DEFAULT:
+                # This is an overwrite install; destroy the old db
+                dest_file = tempfile.mkstemp()[1]
+                print(
+                    "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
+                shutil.move(database_file, dest_file)
 
-        # benjaoming: Commented out, this hits the wrong directories currently
-        # and should not be necessary.
-        # If we have problems with pyc files, we're doing something else wrong.
-        # See https://github.com/learningequality/ka-lite/issues/3487
-
-        # Should clean_pyc for (clean) reinstall purposes
-        # call_command("clean_pyc", interactive=False, verbosity=options.get("verbosity"), path=os.path.join(settings.PROJECT_PATH, ".."))
-
-        # Migrate the database
-        call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
-        call_command("migrate", merge=True, verbosity=options.get("verbosity"))
+        if settings.DB_TEMPLATE_DEFAULT and not database_exists:
+            print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH))
+            shutil.copy(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH)
+        else:
+            print("Baking a fresh database from scratch or upgrading existing database.")
+            call_command("syncdb", interactive=False, verbosity=options.get("verbosity"))
+            call_command("migrate", merge=True, verbosity=options.get("verbosity"))
         Settings.set("database_version", VERSION)
 
-        # download assessment items
+        # Copy all content item db templates
+        for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+            if file_name.endswith("sqlite"):
+                template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
+                dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
+                if install_clean or not os.path.exists(dest_database):
+                    print("Copying {} to {}".format(template_path, dest_database))
+                    shutil.copy(template_path, dest_database)
+                else:
+                    print("Skipping {}".format(template_path))
+
+        # download the english content pack
         # This can take a long time and lead to Travis stalling. None of this
         # is required for tests, and does not apply to the central server.
         if options.get("no-assessment-items", False):
 
-            logging.warning("Skipping assessment item downloading and configuration.")
+            logging.warning("Skipping content pack downloading and configuration.")
 
         else:
-
-            call_command("syncdb", interactive=False, verbosity=options.get("verbosity"), database="assessment_items")
 
             # Outdated location of assessment items - move assessment items from their
             # old location (CONTENT_ROOT/khan where they were mixed with other content
             # items)
-            
+
             # TODO(benjaoming) for 0.15, remove the "move assessment items"
             # mechanism
             writable_assessment_items = os.access(KHAN_ASSESSMENT_ITEM_ROOT, os.W_OK)
-    
+
             # Remove old assessment items
             if os.path.exists(OLD_ASSESSMENT_ITEMS_LOCATION) and os.access(OLD_ASSESSMENT_ITEMS_LOCATION, os.W_OK):
                 logging.info("Deleting old assessment items")
                 shutil.rmtree(OLD_ASSESSMENT_ITEMS_LOCATION)
-            
+
             if writable_assessment_items and options['force-assessment-item-dl']:
                 call_command(
-                    "unpack_assessment_zip", settings.ASSESSMENT_ITEMS_ZIP_URL)
+                    "retrievecontentpack", "download", "en")
             elif options['force-assessment-item-dl']:
                 raise RuntimeError(
                     "Got force-assessment-item-dl but directory not writable")
-            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE and not settings.RUNNING_IN_TRAVIS and options['interactive']:
+            elif not settings.RUNNING_IN_TRAVIS and options['interactive']:
                 print(
                     "\nStarting in version 0.13, you will need an assessment items package in order to access many of the available exercises.")
                 print(
@@ -408,27 +430,27 @@ class Command(BaseCommand):
                 print(
                     "If you have already downloaded the assessment items package, you can specify the file in the next step.")
                 print("Otherwise, we will download it from {url}.".format(
-                    url=settings.ASSESSMENT_ITEMS_ZIP_URL))
-    
-                if raw_input_yn("Do you wish to download the assessment items package now?"):
-                    ass_item_filename = settings.ASSESSMENT_ITEMS_ZIP_URL
-                elif raw_input_yn("Have you already downloaded the assessment items package?"):
+                    url=CONTENTPACK_URL))
+
+                if raw_input_yn("Do you wish to download the content pack now?"):
+                    ass_item_filename = CONTENTPACK_URL
+                    retrieval_method = "download"
+                elif raw_input_yn("Have you already downloaded the content pack?"):
                     ass_item_filename = get_assessment_items_filename()
+                    retrieval_method = "local"
                 else:
                     ass_item_filename = None
+                    retrieval_method = "local"
 
                 if not ass_item_filename:
                     logging.warning(
-                        "No assessment items package file given. You will need to download and unpack it later.")
+                        "No content pack given. You will need to download and unpack it later.")
                 else:
-                    call_command("unpack_assessment_zip", ass_item_filename)
-            
-            elif options['interactive'] and not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
+                    call_command("retrievecontentpack", retrieval_method, "en", ass_item_filename, foreground=True)
+
+            elif options['interactive']:
                 logging.warning(
                     "Assessment item directory not writable, skipping download.")
-            elif not settings.ASSESSMENT_ITEMS_SYSTEM_WIDE:
-                logging.warning(
-                    "No assessment items package file given. You will need to download and unpack it later.")
             else:
                 print("Found bundled assessment items")
 
@@ -455,6 +477,7 @@ class Command(BaseCommand):
         # Now deploy the static files
         logging.info("Copying static media...")
         call_command("collectstatic", interactive=False, verbosity=0)
+        call_command("collectstatic_js_reverse", interactive=False)
 
         # This is not possible in a distributed env
         if not settings.CENTRAL_SERVER:
@@ -470,13 +493,20 @@ class Command(BaseCommand):
             else:
                 start_script_path = kalite_executable
 
-            # Run videoscan, on the distributed server.
-            print("Scanning for video files in the content directory (%s)" %
+            # Run annotate_content_items, on the distributed server.
+            print("Annotating availability of all content, checking for content in this directory: (%s)" %
                   settings.CONTENT_ROOT)
-            call_command("videoscan")
+            try:
+                call_command("annotate_content_items")
+            except OperationalError:
+                pass
 
             # done; notify the user.
-            print(
-                "\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
-            print(
-                "You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+            print("\nCONGRATULATIONS! You've finished setting up the KA Lite server software.")
+            print("You can now start KA Lite with the following command:\n\n\t%s start\n\n" % start_script_path)
+
+            if options['interactive']:
+                if raw_input_yn("Do you wish to start the server now?"):
+                    print("Running {0} start".format(start_script_path))
+                    p = subprocess.Popen([start_script_path, "start"], env=os.environ)
+                    p.wait()

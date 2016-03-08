@@ -16,6 +16,32 @@ from setuptools.command.install_scripts import install_scripts
 
 import kalite
 
+try:
+    # There's an issue on the OSX build server -- sys.stdout and sys.stderr are non-blocking by default,
+    # which can result in IOError: [Errno 35] Resource temporarily unavailable
+    # See similar issue here: http://trac.edgewall.org/ticket/2066#comment:1
+    # So we just make them blocking.
+    import fcntl
+
+    def make_blocking(fd):
+        """
+        Takes a file descriptor, fd, and checks its flags. Unsets O_NONBLOCK if it's set.
+        This makes the file blocking, so that there are no race conditions if several threads try to access it at once.
+        """
+        flags = fcntl.fcntl(fd, fcntl.F_GETFL)
+        if flags & os.O_NONBLOCK:
+            sys.stderr.write("Setting to blocking...\n")
+            fcntl.fcntl(fd, fcntl.F_SETFL, flags & ~os.O_NONBLOCK)
+        else:
+            sys.stderr.write("Already blocking...\n")
+        sys.stderr.flush()
+
+    make_blocking(sys.stdout.fileno())
+    make_blocking(sys.stderr.fileno())
+except ImportError:
+    pass
+
+
 # Since pip 7.0.1, bdist_wheel has started to be called automatically when
 # the sdist was being installed. Let's not have that.
 # By raising an exception,
@@ -30,7 +56,7 @@ if 'bdist_wheel' in sys.argv:
 where_am_i = os.path.dirname(os.path.realpath(__file__))
 
 # Handle requirements
-DIST_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
+RAW_REQUIREMENTS = open(os.path.join(where_am_i, 'requirements.txt'), 'r').read().split("\n")
 
 
 def filter_requirement_statements(req):
@@ -45,8 +71,21 @@ def filter_requirement_statements(req):
 
 
 # Filter out comments from requirements
-DIST_REQUIREMENTS = map(filter_requirement_statements, DIST_REQUIREMENTS)
-DIST_REQUIREMENTS = filter(lambda x: bool(x), DIST_REQUIREMENTS)
+RAW_REQUIREMENTS = map(filter_requirement_statements, RAW_REQUIREMENTS)
+RAW_REQUIREMENTS = filter(lambda x: bool(x), RAW_REQUIREMENTS)
+
+# Special parser for http://blah#egg=asdasd-1.2.3
+DIST_REQUIREMENTS = []
+DEPENDENCY_LINKS = []
+for req in RAW_REQUIREMENTS:
+    if req.startswith("https://"):
+        DEPENDENCY_LINKS.append(req)
+        __, req = req.split("#egg=")
+        dashed_components = req.split("-")
+        version = dashed_components[-1]
+        req_name = "-".join(dashed_components[:-1])
+        req = "{req:s}=={version:s}".format(req=req_name, version=version)
+    DIST_REQUIREMENTS.append(req)
 
 # Requirements if doing a build with --static
 STATIC_REQUIREMENTS = []
@@ -123,17 +162,26 @@ def get_installed_packages():
 # site-packages directory.
 
 
-def gen_data_files(*dirs):
+def gen_data_files(*dirs, **kwargs):
     """
     We can only link files, not directories. Therefore, we use an approach
     that scans all files to pass them to the data_files kwarg for setup().
     Thanks: http://stackoverflow.com/a/7288382/405682
     """
     results = []
-    
-    filter_illegal_extensions = lambda f: os.path.splitext(f)[1] != ".pyc"
-    
+
+    optional = kwargs.pop('optional', False)
+
+    def filter_illegal_extensions(f):
+        return os.path.splitext(f)[1] != ".pyc"
+
     for src_dir in dirs:
+        if not os.path.isdir(src_dir):
+            if optional:
+                continue
+            else:
+                raise RuntimeError("{dir:s} does not exist, cannot continue".format(dir=src_dir))
+
         for root, dirs, files in os.walk(src_dir):
             results.append(
                 (
@@ -160,6 +208,11 @@ data_files += map(
 data_files += map(
     lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
     gen_data_files('static-libraries')
+)
+
+data_files += map(
+    lambda x: (os.path.join(kalite.ROOT_DATA_PATH, x[0]), x[1]),
+    gen_data_files(os.path.join('docs', '_build', 'html'), optional=True)
 )
 
 # For now, just disguise the kalitectl.py script here as it's only to be accessed
@@ -228,37 +281,37 @@ class my_install_scripts(install_scripts):
 # If it's a static build, we invoke pip to bundle dependencies in python-packages
 # This would be the case for commands "bdist" and "sdist"
 if STATIC_BUILD:
-    
+
     manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
     manifest_content += "\n" + "recursive-include dist-packages *\nrecursive-exclude dist-packages *pyc"
     file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-    
+
     sys.stderr.write(
         "This is a static build... invoking pip to put static dependencies in "
         "dist-packages/\n"
     )
-    
+
     STATIC_DIST_PACKAGES_DOWNLOAD_CACHE = os.path.join(where_am_i, 'dist-packages-downloads')
     STATIC_DIST_PACKAGES_TEMP = os.path.join(where_am_i, 'dist-packages-temp')
-    
+
     # Create directory where dynamically created dependencies are put
     if not os.path.exists(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE):
         os.mkdir(STATIC_DIST_PACKAGES_DOWNLOAD_CACHE)
-    
+
     # Should remove the temporary directory always
     if os.path.exists(STATIC_DIST_PACKAGES_TEMP):
         print("Removing previous temporary sources for pip {}".format(STATIC_DIST_PACKAGES_TEMP))
         shutil.rmtree(STATIC_DIST_PACKAGES_TEMP)
-    
+
     # Install from pip
-    
+
     # Code modified from this example:
     # http://threebean.org/blog/2011/06/06/installing-from-pip-inside-python-or-a-simple-pip-api/
     import pip.commands.install
-    
+
     # Ensure we get output from pip
     enable_log_to_stdout('pip.commands.install')
-    
+
     def install_distributions(distributions):
         command = pip.commands.install.InstallCommand()
         opts, ___ = command.parser.parse_args([])
@@ -270,20 +323,24 @@ if STATIC_BUILD:
         opts.ignore_dependencies = True
         opts.use_wheel = False
         opts.no_clean = False
+        # Hotfix for the one single tastypie dependency link. Not nice.
+        # To be removed as soon as an upstream tastypie fixes our
+        # Django 1.5 issue
+        opts.process_dependency_links = True
         command.run(opts, distributions)
         # requirement_set.source_dir = STATIC_DIST_PACKAGES_TEMP
         # requirement_set.install(opts)
-    
+
     # Install requirements into dist-packages
     if DIST_BUILDING_COMMAND:
-        install_distributions(STATIC_REQUIREMENTS)
-    
+        install_distributions(RAW_REQUIREMENTS)
+
     # Empty the requirements.txt file
 
 
 # It's not a build command with --static or it's not a build command at all
 else:
-    
+
     # If the dist-packages directory is non-empty
     if os.listdir(STATIC_DIST_PACKAGES):
         # If we are building something or running from the source
@@ -302,7 +359,7 @@ else:
             # everything in the requirements.txt file
             DIST_REQUIREMENTS = []
             DIST_NAME = 'ka-lite-static'
-            
+
             if "ka-lite" in get_installed_packages():
                 raise RuntimeError(
                     "Already installed ka-lite so cannot install ka-lite-static. "
@@ -314,7 +371,7 @@ else:
                     "...or other possible installation mechanisms you may have "
                     "been using."
                 )
-    
+
     # No dist-packages/ and not building, so must be installing the dynamic
     # version
     elif not DIST_BUILDING_COMMAND:
@@ -335,7 +392,7 @@ else:
         manifest_content = file(os.path.join(where_am_i, 'MANIFEST.in.dist'), 'r').read()
         manifest_content += "\n" + "recursive-include dist-packages *"
         file(os.path.join(where_am_i, 'MANIFEST.in'), "w").write(manifest_content)
-    
+
 
 # All files from dist-packages are included if the directory exists
 if os.listdir(STATIC_DIST_PACKAGES):
@@ -344,7 +401,6 @@ if os.listdir(STATIC_DIST_PACKAGES):
         gen_data_files('dist-packages')
     )
 
-
 setup(
     name=DIST_NAME,
     version=kalite.VERSION,
@@ -352,7 +408,7 @@ setup(
     author_email="info@learningequality.org",
     url="https://www.learningequality.org",
     description=DIST_DESCRIPTION,
-    license="GPLv3",
+    license="MIT",
     keywords=("khan academy", "offline", "education", "OER"),
     scripts=['bin/kalite'],
     packages=find_packages(exclude=["python-packages"]),
@@ -361,7 +417,7 @@ setup(
     install_requires=DIST_REQUIREMENTS,
     classifiers=[
         'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: MIT License',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',

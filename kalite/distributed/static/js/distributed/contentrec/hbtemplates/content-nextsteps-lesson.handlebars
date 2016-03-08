@@ -1,0 +1,39 @@
+
+<div class="row" class="content-nextsteps-lesson">
+	<a href="/learn/{{ path }}" class="content-nextsteps-lesson-link">
+      <div class="col-xs-3">
+        <center>
+        <!--ALT for image gets read from 'description' so it doesn't need to be read twice-->
+          {{#if content_urls.thumbnail }}
+          <img src="{{content_urls.thumbnail}}" class="img-responsive"
+              {{#if description }}
+                  aria-hidden="true" role="presentation"
+              {{else}}
+                  alt="{{ truncate description 150 }}"
+              {{/if}}>
+          {{else}}
+          <span aria-hidden="true" role="presentation"><i class="icon-{{kind}} content-rec-icon"></i></span>
+          {{/if}}
+        </center>
+      </div>
+
+      <div class="col-xs-6">
+          <h2 class="h4">
+            <span class="small">{{ topic.title }}:</span>
+            <br />
+            {{ title }}
+          </h2>
+      </div>
+    </a>
+    <!--The URL without the specific video, so that we see the path
+    along the nav and show them the entire series-->
+    <a href="/learn/{{ topic.path }}" class="content-nextsteps-topic-link">
+      <div class="col-xs-3">
+          <p class="h4">{{_ "Topic" }}:</p>
+          <span aria-hidden="true" role="presentation"><i class="ns_series_arrow glyphicon glyphicon-arrow-right"></i></span>
+          <!--Radina: Since glyph is invisible, adding 'sr-only' topic title-->
+          <span class="sr-only">{{ topic.title }}</span>
+      </div>
+    </a>
+<hr class="module_divider">
+</div>

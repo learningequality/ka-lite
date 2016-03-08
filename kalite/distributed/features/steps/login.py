@@ -98,6 +98,7 @@ def impl(context):
 
 def fill_field(context, text, field_id):
     field = find_id_with_wait(context, field_id)
+    field.send_keys("")  # Send empty string to ensure focus is on element.
     field.send_keys(text)
 
 def fill_username(context, text):
@@ -113,5 +114,4 @@ def check_highlight(context, item):
     assert expected == actual, "Expected id: {exp}\n Actual id: {act}".format(exp=expected,act=actual)
 
 def check_single_popover(context, item):
-    popover = find_id_with_wait(context, "id_{item}-popover".format(item=item))
-    return (len(context.browser.find_elements_by_class_name("popover")) == 1) and "popover" in popover.get_attribute("class")
+    return find_css_with_wait(context, "#id_{item} + div.popover".format(item=item))

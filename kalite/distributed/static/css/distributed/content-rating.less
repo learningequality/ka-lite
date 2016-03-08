@@ -1,0 +1,121 @@
+.panel-kalite-rating {
+    border-style: solid;
+    border-color: grey;
+    border-width: 1px;
+    padding: 1em;
+
+    .panel-heading {
+        border-bottom-style: solid;
+        border-bottom-color: black;
+        border-bottom-px: 4px;
+
+        .panel-title {
+            font-size: 2em;
+        }
+    }
+
+    .panel-body {
+        background: inherit;
+    }
+}
+
+.star-rating-inner-wrapper {
+    padding-top: 0.5em;
+    margin: 0 auto;
+
+    .rating-row > div {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .btn-star {
+        border-style: solid;
+        border-width: 1px;
+        border-color: black;
+    }
+
+    .star-title-label {
+        background: inherit;
+        color: inherit;
+    }
+
+    .rating-label {
+        height: 1em;
+        font-size: 1em;
+    }
+
+    @media (max-width: 767px) {
+        .lowest-label, .highest-label, .btn-star {
+            font-size: 1em;
+        }
+
+        .btn-star {
+            max-width: 3em;
+            display: block;
+        }
+
+        .rating-label {
+            display: none;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .lowest-label, .highest-label, .btn-star, .rating-label {
+            font-size: 1em;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .lowest-label, .highest-label {
+            padding-top: 1.1em;
+        }
+
+        .btn-star {
+            font-size: 2em;
+        }
+
+        .glyphicon-star-empty {
+            top: 5px;
+            left: 2px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .lowest-label, .highest-label {
+            padding-top: 1.8em;
+        }
+
+        .btn-star {
+            font-size: 3em;
+        }
+    }
+
+    .btn-star {
+        background: #FFFFFF;
+    }
+    .btn-star:active {
+        background: #FFFF66;
+    }
+    .btn-star.activated {
+        background: #CC6600;
+    }
+    .btn-star.activated:active {
+        background: #663300;
+    }
+    .btn-star:hover {
+        background: #EEEEEE;
+    }
+    .btn-star.activated:hover {
+        background: #BB5500;
+    }
+}
+
+#text-container {
+    .rating-text-feedback {
+        max-width: 60%;
+    }
+
+    .text-feedback-label {
+        padding-left: 0;
+    }
+}

@@ -7,7 +7,14 @@
             {% trans "Facilities" %}
             <small>
                 <span class="help-tooltip glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="right" title='{% trans "A facility is a physical location where learners learn." %}'></span>
+                <!---TODO - Radina: implement accessible tooltip. -->
             </small>
+            {% if missing_meta %}
+            <small>
+                <span class="help-tooltip glyphicon glyphicon-exclamation-sign
+                notice" data-toggle="tooltip" data-placement="right" title='{%trans "The facilities highlighted below are missing metadata (e.g. location, contact information). Click the pencil icon to edit or update this information." %}'></span>
+            </small>
+            {% endif %}
         </h2>
         {% if not facilities %}
             <p id="no-facilities-message">
@@ -27,11 +34,12 @@
                     </thead>
                     <tbody>
                         {% for id,facility in facilities.items %}
-                            <tr>
+                            <tr {% if facility.meta_data_in_need %} class="warning" {% endif %}>
                                 <td>
-                                     <a class="facility-name" href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">
-                                        {{ facility.name }}
-                                    </a>
+                                     <a class="facility-name" href="{% url 'facility_management' zone_id=zone_id facility_id=facility.id %}">{{ facility.name }}</a>
+ 					{% if facility.meta_data_in_need %} 
+						<a href="{% url 'facility_form' facility_id=facility.id %}" class="help-tooltip glyphicon glyphicon-pencil notice" data-toggle="tooltip" data-placement="right" title="{% trans "Edit/update information for this facility." %}"></a>
+ 					{% endif %}
                                 </td>
                                 <td>
                                     {{ facility.num_users }}
@@ -52,7 +60,8 @@
                                 <td>
                                     {% if request.is_django_user %}
                                     <a class="facility-delete-link" href="#">
-                                        <span class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}"></span>
+                                        <span aria-hidden="true"><i class="glyphicon glyphicon-trash" title="{% trans 'Delete facility' %}" value="{% url 'facility_delete' facility_id=facility.id %}"></i></span>
+                                        <span class="sr-only">{% trans 'Delete facility' %}</span>
                                     </a>
                                     {% endif %}
                                 </td>
@@ -69,7 +78,7 @@
     <div class="col-sm-4 col-xs-12">
         <p class="add-new-table-item">
             <a class="create-facility" href="{% url 'add_facility' zone_id=zone_id %}">
-                <span class="glyphicon glyphicon-plus-sign"></span>
+                <span aria-hidden="true"><i class="glyphicon glyphicon-plus-sign"></i></span>
                 {% trans 'Add a new facility' %}...
             </a>
         </p>

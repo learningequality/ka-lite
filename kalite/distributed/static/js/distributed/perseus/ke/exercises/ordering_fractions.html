@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html data-require="math math-format interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Ordering fractions</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+
+    <style type="text/css">
+        .number-list {
+            font-size: 1.7em;
+            text-align: center
+        }
+
+        body.mobile .number-list {
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="LCD &lt; 200 &amp;&amp; NUMS_TEX !== FRACTION_SORT_TEX">
+            <var id="COLORS">KhanUtil.shuffle([ "blue", "green", "red", "purple", "pink" ])</var>
+            <var id="NUMS">(function() {
+                var array = [];
+                var ds = [];
+
+                var used = {};
+
+                var arrLength = randRange(4, 5);
+                while ( array.length &lt; arrLength ) {
+                    var d = randFromArray(denominators);
+                    var n = randRange(1, d - 1);
+                    var ns = localeToFixed(n / d, 3);
+
+                    if (!used[ns]) {
+                        var gcd = getGCD(n, d);
+                        array.push([ n / d,
+                                    (n / gcd),
+                                    (d / gcd),
+                                    fractionReduce(n, d),
+                                    COLORS[array.length]
+                                ]);
+
+                        ds.push( d/gcd );
+                        used[ ns ] = true;
+                    }
+                }
+                return array;
+            })()</var>
+
+            <var id="DENOMS">$.map(NUMS, function(el) {
+                return el[2];
+            })</var>
+
+            <var id="LCD">getLCM.apply(KhanUtil, DENOMS)</var>
+            <var id="NUMS_LCD">$.map(NUMS, function(el) {
+                return el[1] * LCD / el[2];
+            })</var>
+
+            <var id="NUMS_TEX">$.map(NUMS, function(el) {
+                return el[3];
+            }).join(",")</var>
+
+            <var id="NUMS_TEX_COLOR">$.map(NUMS, function(el) {
+                return "\\" + el[4] + "{" + el[3] + "}";
+            }).join(",")</var>
+
+            <var id="NUMS_SORT">$.extend(true, [], NUMS).sort(function(a, b) {
+                return a[0] - b[0];
+            })</var>
+
+            <var id="FRACTION_SORT_TEX">$.map(NUMS_SORT, function(el) {
+                return el[3];
+            }).join(",")</var>
+
+            <var id="NUMS_SORT_COLOR">$.map(NUMS_SORT, function(el) {
+                return "\\" + el[4] + "{" + (el[1] * LCD / el[2]) + "}";
+            }).join("&lt;")</var>
+
+            <var id="FRACTION_LCD_SORT_COLOR">$.map(NUMS_SORT, function(el) {
+                return "\\" + el[4] + "{\\dfrac{" + (el[1] * LCD / el[2]) + "}{" + LCD + "}}";
+            }).join(",\\ ")</var>
+
+
+            <var id="NUMS_LCD_COLOR">$.map(NUMS, function(el) {
+                return "\\" + el[4] + "{\\dfrac{" + (el[1] * LCD / el[2]) + "}{" + LCD + "}}";
+            })</var>
+
+            <var id="NUMS_SORT_TEX_COLOR">$.map(NUMS_SORT, function(el) {
+                return "\\" + el[4] + "{" + el[3] + "}";
+            }).join(",\\ ")</var>
+
+            <var id="SORTER">createSorter()</var>
+        </div>
+
+        <div class="problems">
+            <div>
+                <div class="question">
+                    <p>Order the following fractions from least to greatest:</p>
+                    <ul id="sortable">
+                        <li data-each="NUMS as NUM">
+                            <span class="sort-key"><var>NUM[3]</var></span>
+                            <code><var>NUM[3]</var></code>
+                        </li>
+                    </ul>
+                    <p><var>SORTER.init( "sortable" )</var></p>
+
+                </div>
+
+                <div class="solution" data-type="custom">
+                    <div class="guess">SORTER.getContent()</div>
+                    <div class="validator-function">
+                        if (SORTER.hasAttempted) {
+                            return guess.join(",") === FRACTION_SORT_TEX;
+                        } else {
+                            return "";
+                        }
+                    </div>
+                    <div class="show-guess">
+                        SORTER.setContent( guess );
+                    </div>
+                </div>
+
+                <div class="hints">
+                    <div>
+                        <p>Let's change the fractions to have a common denominator of <code><var>LCD</var></code>:</p>
+                        <p data-each="NUMS as I, NUM"><code>\qquad
+                            \<var>NUM[4]</var>{<var>NUM[3]</var>} \times
+                            \dfrac{<var>LCD / NUM[2]</var>}{<var>LCD / NUM[2]</var>} =
+                            \<var>NUM[4]</var>{\dfrac{<var>NUMS_LCD[I]</var>}{<var>LCD</var>}}
+                        </code></p>
+                    </div>
+                    <div>
+                        <p>Now that our fractions have the same denominator, we can order their numerators from least to greatest:</p>
+                        <p><code>\qquad <var>NUMS_SORT_COLOR</var></code></p>
+                    </div>
+                    <div>
+                        <p>The fractions listed in order from least to greatest are as follows:</p>
+                        <p><code>\qquad <var>FRACTION_LCD_SORT_COLOR</var></code>.</p>
+                    </div>
+                    <div>
+                        <p>Finally, let's convert the fractions back to their original form:</p>
+                        <p><code>\qquad <var>NUMS_SORT_TEX_COLOR</var></code>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

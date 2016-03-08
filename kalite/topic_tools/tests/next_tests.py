@@ -2,10 +2,12 @@
 This module contains all tests for the functions invoked to
 get the "Next" recommendations.
 '''
+import datetime
 
-from kalite.topic_tools.content_recommendation import *
-from kalite.facility.models import FacilityGroup
+from kalite.topic_tools.content_recommendation import get_group_recommendations, get_struggling_exercises, get_exercise_prereqs
 from kalite.testing.base import KALiteTestCase
+from kalite.facility.models import Facility, FacilityUser, FacilityGroup
+from kalite.main.models import ExerciseLog
 
 class TestNextMethods(KALiteTestCase):
 

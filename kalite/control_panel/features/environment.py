@@ -5,4 +5,4 @@ could be used to bootstrap other integration tests in our project.
 It sets up a test server and test database by using the LiveServerTestCase
 machinery.
 """
-from kalite.testing.base_environment import before_all, after_all, before_feature, after_feature
+from kalite.testing.base_environment import *

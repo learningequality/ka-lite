@@ -1,4 +1,6 @@
-SessionModel = Backbone.Model.extend({
+var Backbone = require("../base/backbone");
+
+var SessionModel = Backbone.Model.extend({
     defaults: {
         USER_URL                    : "",
 
@@ -18,8 +20,11 @@ SessionModel = Backbone.Model.extend({
 
         // Used by updates app
         AVAILABLE_LANGUAGEPACK_URL      : "",
-        DEFAULT_LANGUAGE                : ""
+        DEFAULT_LANGUAGE                : "",
+
+        // Used by content rating
+        CONTENT_RATING_LIST_URL     : "/api/content_rating"
     }
 });
 
-window.sessionModel = new SessionModel();
+module.exports = SessionModel;

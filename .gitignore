@@ -2,6 +2,9 @@
 # File created by Coverage
 .coverage
 
+# PyCharm
+.idea
+
 # Eclipse
 .project
 .pydevproject
@@ -30,6 +33,9 @@ static-updates
 # MAC stuff
 .DS_Store
 
+# oh-my-zsh
+.venv
+
 # SQLite files (should probably specify the path)
 *.db
 *.sqlite*
@@ -38,12 +44,20 @@ static-updates
 *.patch
 *.pid
 *.prof
+secretkey.txt
 
 # Python compiling
 *.pyc
 *.pyo
+
+# Backup files
 *~
+
+# Sublime editor
 *.sublime-*
+
+# Ignore all .zip files!? No comment?? Needs fixing, I guess it's to avoid
+# committing local assessment items.
 *.zip
 
 # Documentation
@@ -53,6 +67,16 @@ docs/images/*
 # oh-my-zsh convention for automatically
 # switching on a venv
 .venv
+venv/
+
+# Ignore built javascript files
+/kalite/*/static/js/*/bundles
+
+# Ignore changes to Perseus and Khan Exercises that do not come from intentional edits
+/kalite/distributed/static/js/distributed/perseus
+
+# Ignore file used to store queued video download info.
+videos_to_download.json
 
 # Lacks documentation
 locale/

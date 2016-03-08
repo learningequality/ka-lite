@@ -158,13 +158,12 @@ def process_file(file, dirpath, potfile, domain, verbosity,
         orig_file = os.path.join(dirpath, file)
         with open(orig_file) as fp:
             src_data = fp.read()
-        src_data = prepare_js_for_gettext(src_data)
         thefile = '%s.c' % file
         work_file = os.path.join(dirpath, thefile)
         with open(work_file, "w") as fp:
             fp.write(src_data)
         cmd = (
-            'xgettext -d %s -L C %s %s --keyword=gettext_noop '
+            'xgettext -d %s -L JavaScript %s %s --keyword=gettext_noop '
             '--keyword=gettext_lazy --keyword=ngettext_lazy:1,2 '
             '--keyword=pgettext:1c,2 --keyword=npgettext:1c,2,3 '
             '--from-code UTF-8 --add-comments=Translators -o - "%s"' %

@@ -1,4 +1,13 @@
-window.VideoPlayerState = {
+var _ = require("underscore");
+var BaseView = require("base/baseview");
+var Handlebars = require("base/handlebars");
+var _V_ = require("video.js");
+global.videojs = _V_;
+require("../../../css/distributed/video-js-override.less");
+
+var ContentBaseView = require("content/baseview");
+
+var VideoPlayerState = {
     UNSTARTED: -1,
     ENDED: 0,
     PLAYING: 1,
@@ -7,11 +16,13 @@ window.VideoPlayerState = {
     VIDEO_CUED: 5
 };
 
-window.VideoPlayerView = ContentBaseView.extend({
+var VideoPlayerView = ContentBaseView.extend({
 
-    template: HB.template("video/video-player"),
+    template: require("./hbtemplates/video-player.handlebars"),
 
     render: function() {
+
+        _.bindAll(this, "on_resize");
 
         var that = this;
 
@@ -37,6 +48,8 @@ window.VideoPlayerView = ContentBaseView.extend({
             that.initialize_player(width, height);
 
         });
+
+        window._kalite_debug.video_player_initialized = true;
     },
 
     initialize_player: function(width, height) {
@@ -50,7 +63,17 @@ window.VideoPlayerView = ContentBaseView.extend({
         var player_id = this.$(".video-js").attr("id");
 
         if (player_id) {
-            this.player = this.player = _V_(player_id);
+            var video_player_options = {
+                "controls": true,
+                "playbackRates": [0.5, 1, 1.25, 1.5, 2],
+                "html5": {
+                    nativeTextTracks: false
+                }
+            };
+            if( this.data_model.get("content_urls").thumbnail ) {
+                video_player_options['poster'] = this.data_model.get("content_urls").thumbnail;
+            }
+            this.player = window.player = _V_(player_id, video_player_options);
             this.initialize_listeners();
         } else {
             console.warn("Warning: Could not find Video.JS player!");
@@ -62,6 +85,7 @@ window.VideoPlayerView = ContentBaseView.extend({
 
     },
 
+    /* Jessica TODO: Use Modernizr to detect when a user is on a tablet, and then apply appropriate CSS changes */
     on_resize: _.throttle(function() {
         var available_width = $(".content-player-container").width();
         var available_height = $(window).height() * 0.9;
@@ -75,7 +99,7 @@ window.VideoPlayerView = ContentBaseView.extend({
         var width = container_width;
         var height = container_height;
 
-        var ratio = this.data_model.get("width") / this.data_model.get("height");
+        var ratio = this.data_model.get("width") / (this.data_model.get("height") || 1);
 
         if (container_ratio > ratio) {
             width = container_height * ratio;
@@ -87,6 +111,7 @@ window.VideoPlayerView = ContentBaseView.extend({
             this.player.width(width).height(height);
         }
 
+        this.$("#video-player").height(height);
         this.$(".video-thumb").width(width).height(height);
 
     },
@@ -97,7 +122,6 @@ window.VideoPlayerView = ContentBaseView.extend({
         var self = this;
 
         $(window).resize(this.on_resize);
-        this.on_resize();
 
         this.player
             .on("loadstart", function() {
@@ -207,8 +231,12 @@ window.VideoPlayerView = ContentBaseView.extend({
 
     close: function() {
         if (this.intervalId) clearInterval(this.intervalId);
-        window.ContentBaseView.prototype.close.apply(this);
+        ContentBaseView.prototype.close.apply(this);
     }
 
 
 });
+
+module.exports = {
+    VideoPlayerView: VideoPlayerView
+};

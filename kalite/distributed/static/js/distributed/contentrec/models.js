@@ -1,11 +1,15 @@
+var $ = require("../base/jQuery");
+var Backbone = require("../base/backbone");
+
+
 //Models
 
-window.SuggestedContentModel = Backbone.Model.extend({});
+var SuggestedContentModel = Backbone.Model.extend({});
 
 
 //Collections
 
-window.SuggestedContentCollection = Backbone.Collection.extend({
+var SuggestedContentCollection = Backbone.Collection.extend({
 	initialize: function(models, options) {
 		this.filters = $.extend({
 			"user": window.statusModel.get("user_id")
@@ -18,3 +22,8 @@ window.SuggestedContentCollection = Backbone.Collection.extend({
 
 	model: SuggestedContentModel
 });
+
+module.exports = {
+	SuggestedContentModel: SuggestedContentModel,
+	SuggestedContentCollection: SuggestedContentCollection
+};

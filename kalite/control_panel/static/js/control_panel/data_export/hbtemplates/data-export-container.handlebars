@@ -1,0 +1,36 @@
+<form class="form-horizontal" role="form" id="data-export-form" method="GET">
+    <div id="student-select-container">{{!insert student select template here}}</div>
+    <div class="form-group">
+        <label for="resource-name" class="col-xs-2">{{_ "Resource" }}</label>
+        <div class="col-xs-8">
+            <select class="form-control" id="resource-id">
+                <option value="facility_user">{{_ "Facility User Logs" }}</option>
+                <option value="attempt_log">{{_ "Attempt Logs" }}</option>
+                <option value="exercise_log">{{_ "Exercise Logs" }}</option>
+                <option value="content_rating">{{_ "Ratings" }}</option>
+                {{#if is_nalanda}}
+                <option value="test_log">{{_ "Test Logs" }}</option>
+                {{/if}}
+                {{#if is_central}}
+                <option value="device_log">{{_ "Device Logs" }}</option>
+                {{/if}}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="data-type" class="col-xs-2">{{_ "Data Type" }}</label>
+        <div class="col-xs-8">
+            <select class="form-control" id="test-name" disabled>
+                <option>{{_ "CSV" }}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-2"></div>
+        <div class="col-xs-8">
+            <button id="export-button" class="btn btn-success">
+                {{_ "Export" }}
+            </button>
+        </div>
+    </div>
+</form>

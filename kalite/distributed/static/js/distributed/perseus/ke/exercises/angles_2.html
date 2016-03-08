@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Angles 2</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+
+        <div class="vars">
+            <var id="RAND_SWITCH2">rand(2)</var>
+            <var id="RAND_SWITCH3">rand(3)</var>
+            <var id="RAND_COMBO">RAND_SWITCH2 + 10 * RAND_SWITCH3</var>
+        </div>
+
+        <div class="problems">
+            <!-- Opposite angle of alternate interior angle and 180 degrees in a triangle. -->
+            <div id="opp-alternate-interior">
+                <div class="vars">
+                    <var id="Tri_Y">rand(15) + 40</var>
+                    <var id="Tri_Z">rand(10) + 100</var>
+                    <var id="Tri_X">180 - Tri_Y - Tri_Z</var>
+                </div>
+
+                <div class="question">
+                    <p>Given the following:</p>
+                    <ul>
+                        <li><code>\green{\angle{ABC}} = <var>Tri_Y</var>^\circ</code></li>
+                        <li><code>\purple{\angle{BAC}} = <var>Tri_Z</var>^\circ</code></li>
+                        <li><code>\overline{BC} \parallel \overline{DE}</code>  (line <code>BC</code> is parallel to line <code>DE</code>)</li>
+                        <li><code>C</code> and <code>F</code> lie on a straight line.</li>
+                    </ul>
+                    <p data-if="RAND_SWITCH2 === 0">What is <code>\blue{\angle{DAF}}{?}</code></p>
+                    <p data-else="">What is <code>\blue{\angle{CAE}}{?}</code></p>
+                    <div class="render-answer-area-here"></div>
+                </div>
+
+                <div class="problem">
+                    <div class="graphie" id="tri-and-parallel">
+                        init({
+                            range: [[-5, 5], [-3, 5]],
+                            scale: [40, 40]
+                        });
+
+                        // label angle ABC
+                        arc([-4, 3], 0.75, 312, 360, { stroke: GREEN });
+                        label([-3.2, 3], "\\green{" + Tri_Y + "^\\circ}", "below right");
+
+                        // label angle BAC
+                        arc([-1.3, 0], 0.75, 38, 125, { stroke: PURPLE });
+                        label([-1.3, .7], "\\purple{" + Tri_Z + "^\\circ}", "above");
+
+                        // Label X according to problem variation
+                        if (RAND_SWITCH2 == 0 ) {
+                            arc([-1, 0], 1, 180, 208, { stroke: BLUE });
+                            LABEL = label([-3.3, 0], "\\blue{\\angle{DAF}} = {?}", "below");
+                        } else {
+                            arc([-1.3, 0], 0.75, 0, 35, { stroke: BLUE });
+                            LABEL = label([0.75, 0], "\\blue{\\angle{CAE}} = {?}", "above");
+                        }
+
+                        // Draw a horizontal line and a crossing line
+                        // to form 2 opposing angles.
+                        path([[-5, 0], [5, 0]]);
+                        path([[-5, -3], [5, 5]]);
+                        path([[-5, 3], [5, 3]]);
+                        path([[-1.2, 0], [-4, 3]]);
+                        ParallelLineMarkers(4.5, 0);
+                        ParallelLineMarkers(4.5, 3);
+
+                        label([-1.3, 0], "A", "below");
+                        label([-4, 3], "B", "above");
+                        label([2.5, 3], "C", "above");
+                        label([-4, 0], "D", "above");
+                        label([3, 0], "E", "above");
+                        label([-3.75, -2], "F", "above");
+
+                        var dotStyle = { r: 0.1, fill: BLUE, stroke: "none" };
+                        circle([-1.25, 0], dotStyle);
+                        circle([-4, 3], dotStyle);
+                        circle([2.5, 3], dotStyle);
+                        circle([-4,0], dotStyle);
+                        circle([3,0], dotStyle);
+                        circle([-3.75,-2], dotStyle);
+                    </div>
+
+                    <p style="color:grey"><strong>NOTE:</strong> Angles not drawn to scale.</p>
+                </div>
+                <div class="solution" data-type="multiple">
+                    <span class="sol"><var>Tri_X</var></span><code>\Large{{}^\circ}</code>
+                </div>
+
+                <div class="hints">
+                    <p>The measure of the angles in a triangle sum to <code>180^\circ</code>.</p>
+                    <div>
+                        <p><code>\red{\angle{BCA}} = 180^\circ - \green{\angle{ABC}} - \purple{\angle{BAC}}</code></p>
+                        <div class="graphie" data-update="tri-and-parallel">
+                            arc([2.5, 3], 0.75, 180, 220, { stroke: RED });
+                            graph.TriX = label([1.8, 3], "\\red{\\angle{BCA}}", "below left");
+                        </div>
+                    </div>
+                    <div>
+                        <p><code>
+                            \red{\angle{BCA}} = 180^\circ - \green{<var>Tri_Y</var>^\circ} - \purple{<var>Tri_Z</var>^\circ} =
+                            \red{<var>Tri_X</var>^\circ}
+                        </code></p>
+                        <div class="graphie" data-update="tri-and-parallel">
+                            graph.TriX.remove();
+                            label([1.8, 3], "\\red{" + Tri_X + "^\\circ}", "below left");
+                        </div>
+                    </div>
+                    <div data-if="RAND_SWITCH2 === 0" data-unwrap="">
+                        <p><code>\blue{\angle{DAF}}</code> is a corresponding angle to <code>\red{\angle{BCA}}</code>.</p>
+                        <div>
+                            <p><code>\blue{\angle{DAF}}</code> = <code>\red{\angle{BCA}} = <var>Tri_X</var>^\circ</code></p>
+                            <div class="graphie" data-update="tri-and-parallel">
+                                LABEL.remove();
+                                label([-3.3, 0], "\\blue{\\angle{DAF}}=" + Tri_X + "^\\circ", "below");
+                            </div>
+                        </div>
+                    </div>
+                    <div data-else="" data-unwrap="">
+                        <p><code>\blue{\angle{CAE}}</code> is an alternate interior angle to <code>\red{\angle{BCA}}</code>.</p>
+                        <div>
+                            <p><code>\blue{\angle{CAE}}</code> = <code>\red{\angle{BCA}} = <var>Tri_X</var>^\circ</code></p>
+                            <div class="graphie" data-update="tri-and-parallel">
+                                LABEL.remove();
+                                label([0.9, 0], "\\blue{\\angle{CAE}} = " + Tri_X + "^\\circ", "above");
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="opp-parallel">
+                <div class="vars">
+                    <var id="Y">rand(20) + 100</var>
+                    <var id="X">180 - Y</var>
+                </div>
+
+                <div class="question">
+                    <p>Given the following:</p>
+                    <ul>
+                        <li><code>\overline{AB} \parallel \overline{CD}</code> (line <code>AB</code> is parallel to line <code>CD</code>)</li>
+                        <li data-if="RAND_SWITCH3 === 0"><code>\green{\angle{EGB}} = <var>X</var>^\circ</code></li>
+                        <li data-else-if="RAND_SWITCH3 === 1"><code>\purple{\angle{AGH}} = <var>X</var>^\circ</code></li>
+                        <li data-else=""><code>\green{\angle{BGH}} = <var>180 - X</var>^\circ</code></li>
+                        <li><code>E</code> and <code>F</code> lie on a straight line.</li>
+                    </ul>
+                    <p data-if="RAND_SWITCH2 === 0">What is <code>\blue{\angle{GHD}}{?}</code></p>
+                    <p data-else="">What is <code>\blue{\angle{CHF}}{?}</code></p>
+                    <div class="render-answer-area-here"></div>
+                </div>
+
+                <div class="problem">
+                    <div class="graphie" id="opposite-parallel">
+                        init({
+                            range: [[-6.5, 5.8], [-5, 4.2]],
+                            scale: [40, 40]
+                        });
+
+                        // label angle X
+                        if(RAND_SWITCH2 === 0) {
+                            arc([-2.9, -2], 1, 0, 50, { stroke: BLUE });
+                            LABEL = label([-2, -2], "\\blue{\\angle{GHD}}= {?}", "above right");
+                        } else {
+                            arc([-2.9, -2], 1, 180, 220, { stroke: BLUE });
+                            LABEL = label([-4, -2.5], "\\blue{\\angle{CHF}}= {?}", "below left");
+                        }
+
+                        // label angle Y
+                        if(RAND_SWITCH3 === 0) {
+                            arc([1.2, 2], 1, 0, 54, { stroke: GREEN });
+                            label([2.2, 2], "\\green{" + X + "^\\circ}", "above right");
+                        } else if (RAND_SWITCH3 === 1) {
+                            arc([1.4, 2], 1, 180, 210, { stroke: PURPLE });
+                            label([0, 2], "\\purple{" + X + "^\\circ}", "below left");
+                        } else {
+                            arc([1.2, 2], 1, 216, 0, { stroke: GREEN });
+                            label([1.5, 1.2], "\\green{" + (180 - X) + "^\\circ}", "below right");
+                        }
+
+                        path([[-5, 2], [5, 2]]);
+                        path([[-5, -2], [5, -2]]);
+                        path([[-5, -4], [3, 4]]);
+                        ParallelLineMarkers(4.2, 2);
+                        ParallelLineMarkers(4.2, -2);
+
+                        label([-5, 2], "A", "below");
+                        label([5, 2], "B", "below");
+                        label([-5, -2], "C", "below");
+                        label([5, -2], "D", "below");
+                        label([3, 4], "E", "below");
+                        label([-5, -4], "F", "right");
+                        label([1, 2], "G", "below right");
+                        label([-3, -2], "H", "below right");
+
+                        var dotStyle = { r: 0.1, fill: BLUE, stroke: "none" };
+                        circle([-5, 2], dotStyle);
+                        circle([5, 2], dotStyle);
+                        circle([-5, -2], dotStyle);
+                        circle([5, -2], dotStyle);
+                        circle([3, 4], dotStyle);
+                        circle([-5, -4], dotStyle);
+                        circle([1,2], dotStyle);
+                        circle([-3, -2], dotStyle);
+                    </div>
+                    <p style="color:grey"><strong>NOTE:</strong> Angles not drawn to scale.</p>
+                </div>
+
+                <div class="solution" data-type="multiple">
+                    <span class="sol"><var>X</var></span><code>\Large{{}^\circ}</code>
+                </div>
+
+                <div class="hints">
+                    <div data-if="RAND_SWITCH3 === 2" data-unwrap="">
+                        <div>
+                            <p><code>\purple{\angle{AGH}}</code> forms a linear pair with <code>\green{\angle{BGH}}</code>.</p>
+                            <div class="graphie" data-update="opposite-parallel">
+                                arc([1,2], 0.88, 180, 225, { stroke: PURPLE });
+                                graph.AGH = label([0, 2], "\\purple{\\angle{AGH}}", "below left");
+                            </div>
+                        </div>
+                        <div>
+                            <p>Therefore <code>\purple{\angle{AGH}} = 180^\circ - \green{<var>Y</var>^\circ} = <var>X</var>^\circ</code>.</p>
+                            <div class="graphie" data-update="opposite-parallel">
+                                graph.AGH.remove();
+                                label([0,2], "\\purple{" + X + "^\\circ}", "below left");
+                            </div>
+                        </div>
+                    </div>
+                    <div data-else-if="RAND_COMBO === 0" data-unwrap="">
+                        <p><code>\blue{\angle{GHD}}</code> and <code>\green{\angle{EGB}}</code> are complementary angles.</p>
+                        <p>Therefore <code>\blue{\angle{GHD}} = \green{\angle{EGB}}</code>.</p>
+                    </div>
+                    <div data-else-if="RAND_COMBO === 1" data-unwrap="">
+                        <div>
+                            <p><code>\purple{\angle{AGH}}</code> and <code>\green{\angle{EGB}}</code> are opposite angles.</p>
+                            <div class="graphie" data-update="opposite-parallel">
+                                arc([1,2], 0.88, 180, 225, { stroke: PURPLE });
+                                graph.AGH = label([0, 2], "\\purple{\\angle{AGH}}", "below left");
+                            </div>
+                        </div>
+                        <div>
+                            <p>Therefore <code>\purple{\angle{AGH}} = \green{\angle{EGB}} = <var>X</var>^\circ</code>.</p>
+                            <div class="graphie" data-update="opposite-parallel">
+                                graph.AGH.remove();
+                                label([0,2], "\\purple{" + X + "^\\circ}", "below left");
+                            </div>
+                        </div>
+                    </div>
+                    <div data-else-if="RAND_COMBO === 10">
+                        <p><code>\blue{\angle{GHD}}</code> and <code>\purple{\angle{AGH}}</code> are alternate interior angles.</p>
+                        <p>Therefore <code>\blue{\angle{GHD}} = \purple{\angle{AGH}}</code>.</p>
+                    </div>
+
+                    <div data-if="RAND_COMBO === 20" data-unwrap="">
+                        <p><code>\blue{\angle{GHD}}</code> and <code>\purple{\angle{AGH}}</code> are alternate interior angles.</p>
+                        <p>Therefore <code>\blue{\angle{GHD}} = \green{\purple{AGH}}</code>.</p>
+                    </div>
+
+                    <div data-if="RAND_SWITCH2 === 0">
+                        <p><code>\angle{GHD} = <var>X</var>^\circ</code></p>
+                        <div class="graphie" data-update="opposite-parallel">
+                            LABEL.remove();
+                            label([-2, -2], "\\blue{\\angle{GHD}}=" + X + "^\\circ", "above right");
+                        </div>
+                    </div>
+                    <div data-else="" data-unwrap="">
+                        <p><code>\blue{\angle{CHF}}</code> and <code>\purple{\angle{AGH}}</code> are corresponding angles.</p>
+                        <p>Therefore <code>\blue{\angle{CHF}} = \purple{\angle{AGH}}</code>.</p>
+                        <div>
+                            <p><code>\angle{CHF} = <var>X</var>^\circ</code></p>
+                            <div class="graphie" data-update="opposite-parallel">
+                                LABEL.remove();
+                                label([-4, -2.5], "\\blue{\\angle{CHF}}=" + X + "^\\circ", "below left");
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Star Problem 1 :
+                Adjacent Angles + 180 deg in triangle + opposite angles (variations 0-2)
+                (and adjacent in variations 1,2) -->
+            <div id="star1">
+                <div class="vars">
+                    <var id="ANGLE_2">rand(10) + 30</var>
+                    <var id="ANGLE_3">rand(10) + 100</var>
+                    <var id="ANGLE_1">180 - ANGLE_2 - ANGLE_3</var>
+                </div>
+
+                <div class="question">
+                    <p>Given the following:</p>
+                    <ul>
+                        <li><code>\green{\angle{BDC}} = <var>ANGLE_2</var>^\circ</code></li>
+                        <li><code>\red{\angle{DBE}} = <var>ANGLE_1</var>^\circ</code></li>
+                    </ul>
+                    <p>
+                        What is <code>\blue{\angle{<var>RAND_SWITCH3 === 0 ? "CHE" : ( RAND_SWITCH3 === 1 ? "GHC" : "DHE" )</var>}} {?}</code>
+                    </p>
+                    <div class="render-answer-area-here"></div>
+                </div>
+
+                <div class="problem">
+                    <div class="graphie" id="star1">
+                        init({
+                            range: [[-10, 10], [-7, 10]],
+                            scale: [25, 25]
+                        });
+
+                        // Label pts on the star.
+                        label([-8, 5], "A", "left");
+                        label([0, 9], "B", "above");
+                        label([8, 5], "C", "right");
+                        label([-6, -6], "D", "below");
+                        label([6, -6], "E", "below");
+                        label([-1.8, 5], "F", "above left");
+                        label([1.8, 5], "G", "above right");
+                        label([3.2, 1.3], "H", "below right");
+                        label([0, -1.3], "I", "below");
+                        label([-3.2, 1.3], "J", "below left");
+
+                        // Label the given angles
+                        label([-5.5, -5.2], "\\green{" + ANGLE_2 + "^\\circ}", "above right");
+                        arc([-6, -6], 1.3, 40, 70, { stroke: GREEN });
+                        label([0, 7.4], "\\red{" + ANGLE_1 + "^\\circ}", "below");
+                        arc([0, 9], 1.3, 247, 290, { stroke: RED });
+
+                        // Label X according to variation on the problem
+                        if(RAND_SWITCH3 == 0) {
+                            LABEL = label([4.7, 1.0], "\\blue{\\angle{CHE}}= {?}", "right");
+                            arc([3.2, 1.3], 1.5, 287, 35, { stroke: BLUE });
+                        } else if (RAND_SWITCH3 == 1) {
+                            LABEL = label([4, 2.5], "\\blue{\\angle{GHC}}= {?}", "above");
+                            arc([3.2, 1.3], 1, 35, 118, { stroke: BLUE });
+                        } else {
+                            LABEL = label([2.5, -0.5], "\\blue{\\angle{DHE}}= {?}", "below");
+                            arc([3.2, 1.3], 1, 219, 286, { stroke: BLUE });
+                        }
+
+                        // Draw A Star
+                        path([[-8, 5], [8, 5], [-6, -6], [0, 9], [0, 9], [6,-6], [-8, 5]]);
+                    </div>
+
+                    <p style="color:grey"><strong>NOTE:</strong> Angles not drawn to scale.</p>
+                </div>
+
+                <div class="solution" data-type="multiple">
+                    <span class="sol">
+                        <var data-if="RAND_SWITCH3 === 0">ANGLE_3</var>
+                        <var data-else="">180 - ANGLE_3</var>
+                    </span>
+                    <code>\Large{{}^\circ}</code>
+                </div>
+
+                <div class="hints">
+                    <p>The measure of the angles in a triangle sum to <code>180^\circ</code>.</p>
+                    <div>
+                        <p><code>\purple{\angle{BHD}} = 180^\circ - \green{\angle{BDC}} - \red{\angle{DBE}}</code></p>
+                        <div class="graphie" data-update="star1">
+                            // label angle BHD
+                            arc([3.2, 1.3], 1, 118, 220, { stroke: PURPLE });
+                            graph.angle3 = label([2.4, 2], "\\purple{\\angle{BHD}}", "below left");
+                        </div>
+                    </div>
+                    <div>
+                        <p><code>
+                            \purple{\angle{BHD}} = 180^\circ - \green{<var>ANGLE_2</var>^\circ} -
+                            \red{<var>ANGLE_1</var>^\circ} = \purple{<var>ANGLE_3</var>^\circ}
+                        </code></p>
+                        <div class="graphie" data-update="star1">
+                            graph.angle3.remove();
+                            label([2.4, 2], "\\purple{" + ANGLE_3 + "^\\circ}", "below left");
+                        </div>
+                    </div>
+
+                    <div data-if="RAND_SWITCH3 === 0" data-unwrap="">
+                        <p><code>\blue{\angle{CHE}}</code> and <code>\purple{\angle{BHD}}</code> are opposite angles are equal.</p>
+                        <div>
+                            <p>Therefore <code>\blue{\angle{CHE}} = \purple{\angle{BHD}} = <var>ANGLE_3</var>^\circ</code>.</p>
+                            <div class="graphie" data-update="star1">
+                                LABEL.remove();
+                                label([4.8, 1.0], "\\blue{\\angle{CHE}}=" + ANGLE_3 + "^\\circ", "right");
+                            </div>
+                        </div>
+                    </div>
+                    <div data-else="" data-unwrap="">
+                        <p>
+                            <span data-if="RAND_SWITCH3 === 1"><code>\blue{\angle{CHG}}</code></span>
+                            <span data-else=""><code>\blue{\angle{DHE}}</code></span>
+                            and <code>\purple{\angle{BHD}}</code> form a linear pair.
+                        </p>
+                         <p>Therefore <code>
+                            <span data-if="RAND_SWITCH3 === 1">\blue{\angle{CHG}}</span>
+                            <span data-else="">\blue{\angle{DHE}}</span>
+                            = 180 ^\circ - \purple{<var>ANGLE_3</var>^\circ}</code>.
+                        </p>
+                        <p>
+                            <span data-if="RAND_SWITCH3 === 1">
+                                <code>\blue{\angle{GHC}}</code>
+                                <span class="graphie" data-update="star1">
+                                    LABEL.remove();
+                                    label([4, 2.5], "\\blue{\\angle{GHC}}=" + (180 - ANGLE_3) + "^\\circ", "above");
+                                </span>
+                            </span>
+                            <span data-else="">
+                                <code>\blue{\angle{DHE}}</code>
+                                <span class="graphie" data-update="star1">
+                                    LABEL.remove();
+                                    label([2.5, -0.5], "\\blue{\\angle{DHE}}=" + (180 - ANGLE_3) + "^\\circ", "below");
+                                </span>
+                            </span>
+                            <code> = <var>180 - ANGLE_3</var>^\circ</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Star Problem 2 : 180 deg in triangle + opposite angles  -->
+            <div id="star2">
+                <div class="vars">
+                    <var id="ANGLE_1">rand(10) + 30</var>
+                    <var id="ANGLE_2">rand(10) + 70</var>
+                    <var id="ANGLE_3">180 - ANGLE_1 - ANGLE_2</var>
+                </div>
+
+                <div class="question">
+                    <p>Given the following:</p>
+                    <ul data-if="RAND_SWITCH2 === 0">
+                        <li><code>\green{\angle{BDC}} = <var>ANGLE_1</var>^\circ</code></li>
+                        <li><code>\red{\angle{AIC}} = <var>180 - ANGLE_2</var>^\circ</code></li>
+                    </ul><ul data-else="">
+                        <li><code>\green{\angle{GCH}} = <var>ANGLE_1</var>^\circ</code></li>
+                        <li><code>\red{\angle{FGH}} = <var>180 - ANGLE_2</var>^\circ</code></li>
+                    </ul>
+                    <p data-if="RAND_SWITCH2 === 0">What is <code>\blue{\angle{AJF}} {?}</code></p><p data-else="">What is <code>\blue{\angle{IHE}} {?}</code></p>
+                    <div class="render-answer-area-here"></div>
+                </div>
+
+                <div class="problem">
+                    <div class="graphie" id="star2">
+                            init({
+                                range: [[-10, 10], [-7, 10]],
+                                scale: [25, 25]
+                            });
+
+                            // Label pts on the star.
+                            label([-8, 5], "A", "left");
+                            label([0, 9], "B", "above");
+                            label([8, 5], "C", "right");
+                            label([-6, -6], "D", "below");
+                            label([6, -6], "E", "below");
+                            label([-1.8, 5], "F", "above left");
+                            label([1.8, 5], "G", "above right");
+                             label([3.2, 1.4], "H", "below right");
+                            label([0, -1.3], "I", "below");
+                            label([-3.2, 1.4], "J", "below left");
+
+                            // Label Angles and X according to variation
+                            if( RAND_SWITCH2 == 0) {
+                                // Label the given angles
+                                label([-5.5, -5.2], "\\green{" + ANGLE_1 + "^\\circ}", "above right");
+                                arc([-6, -6], 1.3, 39, 69, { stroke: GREEN });
+                                label([0, -0.4], "\\red{" + (180 - ANGLE_2) + "^\\circ}", "above");
+                                arc([0, -1.2], 0.75, 32, 145, { stroke: RED });
+
+                                // Label X
+                                LABEL = label([-3.7, 2.5], "\\blue{\\angle{AJF}}= {?}", "above");
+                                arc([-3.2, 1.3], 1, 65, 142, { stroke: BLUE });
+                            } else {
+                                // Label the given angles
+                                label([6.5, 5], "\\green{" + ANGLE_1 + "^\\circ}", "below left");
+                                arc([8, 5], 1.3, 180, 220, { stroke: GREEN });
+                                label([1.3, 4.5], "\\red{" + (180 - ANGLE_2) + "^\\circ}", "below left");
+                                arc([1.7, 5], 1, 180, 289, { stroke: RED });
+
+                                // Label X
+                                LABEL = label([4.0, -0.3], "\\blue{\\angle{IHE}}= {?}", "below left");
+                                arc([3.1, 1.2], 1, 220, 290, { stroke: BLUE });
+                            }
+
+                            // Draw A Star
+                            path([[-8, 5], [8, 5], [-6, -6], [0, 9], [0, 9], [6,-6], [-8, 5]]);
+                    </div>
+
+                    <p style="color:grey"><strong>NOTE:</strong> Angles not drawn to scale.</p>
+                </div>
+
+                <div class="solution" data-type="multiple">
+                    <span class="sol"><var>ANGLE_3</var></span>
+                    <code>\Large{{}^\circ}</code>
+                </div>
+
+                <div class="hints">
+                    <div data-if="RAND_SWITCH2 === 0" data-unwrap="">
+                        <p><code>\purple{\angle{DIJ}}</code> forms a linear pair with <code>\red{\angle{AIC}}</code>.</p>
+
+                        <div>
+                            <p>Therefore, <code>\purple{\angle{DIJ}} = 180^\circ - \red{<var>180 - ANGLE_2</var>^\circ}</code>.</p>
+                            <div class="graphie" data-update="star2">
+                                // label angle JID
+                                arc([0, -1.2], 0.75, 143, 220, { stroke: PURPLE });
+                                label([-.75, -1.2], "\\purple{" + ANGLE_2 + "^\\circ}", "left");
+                            </div>
+                        </div>
+
+                        <p>The measure of the angles in a triangle sum to <code>180^\circ</code>.</p>
+
+                        <div>
+                            <p>Therefore, <code>\pink{\angle{DJI}} = 180^\circ - \green{\angle{BDC}} - \purple{\angle{DIJ}}</code>.</p>
+                            <div class="graphie" data-update="star2">
+                                // label angle JID
+                                arc([-3.2, 1.3], 1, 256 , 318, { stroke: PINK });
+                                graph.DJI = label([-3.2, 0.50], "\\pink{\\angle{DJI}}", "below right");
+                            </div>
+                        </div>
+
+                        <div>
+                            <p><code>
+                                \pink{\angle{DJI}} = 180^\circ - \green{<var>ANGLE_1</var>^\circ} - \purple{<var>ANGLE_2</var>^\circ}
+                                = \pink{<var>ANGLE_3</var>^\circ}
+                            </code></p>
+                            <div class="graphie" data-update="star2">
+                                graph.DJI.remove();
+                                label([-3.2, 0.50], "\\pink{" + ANGLE_3 + "^\\circ}", "below right");
+                            </div>
+                        </div>
+
+                        <p><code>\blue{\angle{AJF}}</code> and <code>\pink{\angle{DJI}}</code> are opposite angles.</p>
+
+                        <div>
+                            <p>Therefore, <code>\angle{AJF} = \angle{DJI} = <var>ANGLE_3</var>^\circ</code>.</p>
+                            <div class="graphie" data-update="star2">
+                                LABEL.remove();
+                                label([-3.7, 2.5], "\\blue{\\angle{AJF}}=" + ANGLE_3 + "^\\circ", "above");
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-else="" data-unwrap="">
+                        <p><code>\purple{\angle{HGC}}</code> forms a linear pair with <code>\red{\angle{FGH}}</code>.</p>
+
+                        <div>
+                            <p>Therefore, <code>\purple{\angle{HGC}} = 180^\circ - \red{<var>180 - ANGLE_2</var>^\circ}</code>.</p>
+                            <div class="graphie" data-update="star2">
+                                // label angle HGC
+                                arc([1.7, 5], 1, 285, 0, { stroke: PURPLE });
+                                label([2.4, 4.6], "\\purple{" + ANGLE_2 + "^\\circ}", "below right");
+                            </div>
+                        </div>
+
+                        <p>The measure of the angles in a triangle sum to <code>180^\circ</code>.</p>
+                        <div>
+                            <p>Therefore, <code>\pink{\angle{CHG}} = 180^\circ - \green{\angle{ACD}} - \purple{\angle{HGC}}</code>.</p>
+                            <div class="graphie" data-update="star2">
+                                // label angle CHG
+                                arc([3.2, 1.3], 0.75, 35, 118, {stroke: PINK });
+                                graph.CHG = label([3.5, 1.8], "\\pink{\\angle{CHG}}", "above");
+                            </div>
+                        </div>
+                        <div>
+                            <p><code>
+                                \pink{\angle{CHG}} = 180^\circ - \green{<var>ANGLE_1</var>^\circ} - \purple{<var>ANGLE_2</var>^\circ}
+                                = \pink{<var>ANGLE_3</var>^\circ}
+                            </code></p>
+                            <div class="graphie" data-update="star2">
+                                graph.CHG.remove();
+                                label([3.5, 1.8], "\\pink{" + ANGLE_3 + "^\\circ}", "above");
+                            </div>
+                        </div>
+
+                        <p><code>\blue{\angle{IHE}}</code> and <code>\pink{\angle{CHG}}</code> are opposite angles.</p>
+
+                        <div>
+                            <p>Therefore, <code>\angle{IHE} = \pink{\angle{CHG}} = <var>ANGLE_3</var>^\circ</code>.</p>
+                            <div class="graphie" data-update="star2">
+                                LABEL.remove();
+                                label([4.0, -0.3], "\\blue{\\angle{IHE}}=" + ANGLE_3 + "^\\circ", "below left");
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

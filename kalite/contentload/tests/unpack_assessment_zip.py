@@ -15,14 +15,10 @@ from kalite.contentload.management.commands import unpack_assessment_zip as mod
 from kalite import version
 
 TEMP_CONTENT_PATH = tempfile.mkdtemp()
-TEMP_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(TEMP_CONTENT_PATH, 'assessmentitems.sqlite')
 TEMP_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(TEMP_CONTENT_PATH, 'assessmentitems.version')
 TEMP_ASSESSMENT_ITEM_JSON_PATH = os.path.join(os.path.dirname(__file__), "fixtures", "assessmentitems.json")
-DUMMY_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH = os.path.join(os.path.dirname(__file__), "fixtures", "assessmentitems.dummydb")
 
 MODIFIED_DB_SETTINGS = copy.deepcopy(settings.DATABASES)
-MODIFIED_DB_SETTINGS["assessment_items"]["NAME"] = TEMP_ASSESSMENT_ITEM_DATABASE_PATH
-
 
 from kalite.contentload import settings as contentload_settings
 
@@ -31,7 +27,6 @@ from kalite.contentload import settings as contentload_settings
 # overwritten after
 contentload_settings.ASSESSMENT_ITEM_ROOT = TEMP_CONTENT_PATH
 contentload_settings.KHAN_ASSESSMENT_ITEM_ROOT = TEMP_CONTENT_PATH
-contentload_settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH = os.path.join(TEMP_CONTENT_PATH, 'assessmentitems.sqlite')
 # Default locations of specific elements from the assessment items bundle.
 # Files will be forced into this location when running unpack_assessment_zip
 contentload_settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH = os.path.join(TEMP_CONTENT_PATH, 'assessmentitems.version')
@@ -47,7 +42,6 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
             zf = zipfile.ZipFile(f, "w")
-            zf.write(DUMMY_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH, "assessmentitems.sqlite")
             zf.writestr("assessmentitems.version", version.SHORTVERSION)
             zf.close()
 
@@ -86,9 +80,6 @@ class UnpackAssessmentZipCommandTests(KALiteTestCase):
 
             get_method.assert_called_once_with(url, prefetch=False)
 
-            # TODO(aron): write test for verifying that assessment items are combined
-            # once the splitting code on the generate_assessment_zips side is written
-
             # verify that the other items are written to the content directory
             for filename in zf.namelist():
                 # already verified above; no need to double-dip
@@ -109,7 +100,6 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         _, self.zipfile_path = tempfile.mkstemp()
         with open(self.zipfile_path, "w") as f:
             zf = zipfile.ZipFile(f, "w")
-            zf.write(DUMMY_ASSESSMENT_ITEM_DATABASE_SOURCE_PATH, "assessmentitems.sqlite")
             zf.writestr("assessmentitems.version", version.SHORTVERSION)
             zf.close()
 
@@ -122,12 +112,14 @@ class UnpackAssessmentZipUtilityFunctionTests(KALiteTestCase):
         os.unlink(self.zipfile_path)
 
     def test_unpack_zipfile_to_khan_content_extracts_to_content_dir(self):
-        zipfile_instance = MagicMock()
+        zipfile_instance = zipfile.ZipFile(open(self.zipfile_path, "r"), "r")
+
+        zipfile_instance.extractall = MagicMock(side_effect=zipfile_instance.extractall)
         
         from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT
         extract_dir = KHAN_ASSESSMENT_ITEM_ROOT
 
-        mod.unpack_zipfile_to_khan_content(zipfile_instance)
+        mod.unpack_zipfile_to_content_folder(zipfile_instance)
 
         zipfile_instance.extractall.assert_called_once_with(extract_dir)
 

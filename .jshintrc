@@ -1,0 +1,5 @@
+{
+	"sub": true,
+	"browserify": true,
+	"browser": true
+}

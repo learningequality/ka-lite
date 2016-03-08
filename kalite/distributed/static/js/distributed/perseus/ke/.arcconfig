@@ -1,0 +1,5 @@
+{
+    "project_id": "khan-exercises",
+    "conduit_uri": "https://phabricator.khanacademy.org/",
+    "lint.engine": "ArcanistConfigurationDrivenLintEngine"
+}

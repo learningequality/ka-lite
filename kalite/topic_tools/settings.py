@@ -12,15 +12,16 @@ only on django.conf.settings
 import os
 from django.conf import settings
 
+# Where runtime data is stored
+CONTENT_DATABASE_PATH = os.path.join(settings.DEFAULT_DATABASE_DIR, "content_{channel}_{language}.sqlite")
 
-DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP = getattr(settings, "DO_NOT_RELOAD_CONTENT_CACHE_AT_STARTUP", False)
+# Where db templates are stored
+CONTENT_DATABASE_TEMPLATE_PATH = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, "content_{channel}_{language}.sqlite")
 
-KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "perseus", "ke")
+CHANNEL = getattr(settings, "CHANNEL", "khan")
 
-TOPICS_FILEPATHS = {
-    settings.CHANNEL: os.path.join(settings.CHANNEL_DATA_PATH, "topics.json")
-}
-EXERCISES_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "exercises.json")
-CONTENT_FILEPATH = os.path.join(settings.CHANNEL_DATA_PATH, "contents.json")
+CHANNEL_DATA_PATH = os.path.join(settings.CONTENT_DATA_PATH, CHANNEL)
+
+KHAN_EXERCISES_DIRPATH = os.path.join(settings.STATIC_ROOT, "js", "distributed", "perseus", "ke")
 
 TOPIC_RECOMMENDATION_DEPTH = 3

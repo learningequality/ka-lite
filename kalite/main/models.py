@@ -19,10 +19,13 @@ from django.dispatch import receiver
 
 from fle_utils.django_utils.classes import ExtendedModel
 from fle_utils.general import datediff, isnumeric
-from kalite import i18n
+from kalite.topic_tools.content_models import get_video_from_youtube_id
 from kalite.facility.models import FacilityUser
 from kalite.dynamic_assets.utils import load_dynamic_settings
 from securesync.models import DeferredCountSyncedModel, Device
+from kalite.topic_tools.settings import CHANNEL
+
+from .content_rating_models import ContentRating
 
 
 class VideoLog(DeferredCountSyncedModel):
@@ -62,7 +65,9 @@ class VideoLog(DeferredCountSyncedModel):
         if not self.video_id:
             assert kwargs.get("imported", False), "video_id better be set by internal code."
             assert self.youtube_id, "If not video_id, you better have set youtube_id!"
-            self.video_id = i18n.get_video_id(self.youtube_id) or self.youtube_id  # for unknown videos, default to the youtube_id
+            video = get_video_from_youtube_id(self.youtube_id)
+            self.video_id = video.get("id",
+                                      self.youtube_id) if video else self.youtube_id  # for unknown videos, default to the youtube_id
 
         if not kwargs.get("imported", False):
             self.full_clean()
@@ -526,7 +531,7 @@ class ContentLog(DeferredCountSyncedModel):
     time_spent = models.FloatField(blank=True, null=True)
     progress_timestamp = models.DateTimeField(blank=True, null=True)
     latest_activity_timestamp = models.DateTimeField(blank=True, null=True); latest_activity_timestamp.minversion="0.14.0"
-    content_source = models.CharField(max_length=100, db_index=True, default=settings.CHANNEL)
+    content_source = models.CharField(max_length=100, db_index=True, default=CHANNEL)
     content_kind = models.CharField(max_length=100, db_index=True)
     progress = models.FloatField(blank=True, null=True)
     views = models.IntegerField(blank=True, null=True)
@@ -547,6 +552,16 @@ class ContentLog(DeferredCountSyncedModel):
         if self.content_id and not self.complete:
             self.progress_timestamp = datetime.now()
         super(ContentLog, self).save(*args, **kwargs)
+
+    def get_uuid(self):
+        assert self.user is not None and self.user.id is not None, "User ID required for get_uuid"
+        assert self.content_id is not None, "Content id required for get_uuid"
+        assert self.content_kind is not None, "Content kind required for get_uuid"
+        assert self.content_source is not None, "Content source required for get_uuid"
+
+        namespace = uuid.UUID(self.user.id)
+        hashtext = ":".join([self.__class__.__name__, self.content_source, self.content_kind, self.content_id])
+        return uuid.uuid5(namespace, hashtext.encode("utf-8")).hex
 
 
 @receiver(pre_save, sender=UserLog)

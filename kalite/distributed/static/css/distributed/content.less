@@ -1,0 +1,106 @@
+@import "./kalite-base.less";
+/* Styles for the generic content container */
+
+.content-wrapper {
+    border: 2px solid rgb(240, 240, 240);
+    border-radius: 5px;
+    padding: 20px;
+    background-color: rgb(248, 248, 248);
+}
+.points-wrapper {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+.download-link {
+    margin-bottom: 10px;
+}
+.panel-heading-right-column {
+    float: right;
+    text-align: right;
+}
+.points-wrapper span.points-container {
+    /* Most of this is overriding the styles from video css */
+    margin: 5px 0;
+    float: right;
+    background-color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+    position: relative;
+    color: #77B05D;
+    font-weight: 400;
+    border-radius: 4px;
+}
+.btn.btn-primary.download-link.pull-right {
+    font-size: 20px;
+    font-weight: 800;
+    padding: 15px;
+    margin: 15px;
+    color: white;
+    background-color: @k-accent-color;
+    border: 2px solid @k-accent-color;
+}
+.btn.btn-primary.download-link.pull-right:hover {
+    background-color: white;
+    color: #77B05D;
+    border: 2px solid white;
+}
+.organization {
+    display: block;
+    margin-top: -3px;
+    margin-bottom: 5px;
+    color: #6d726b;
+    word-wrap: break-word;
+    font-size: 20px;
+}
+/*.related-content-container {
+    background-color: rgba(141, 198, 63, 0.5);
+}
+.related-content-container > a {
+    color: rgb(109, 109, 109);
+}
+.related-content-container:hover {
+    background-color: rgba(141, 198, 63, 1);
+}
+.related-content-container > a:hover {
+    color: white;
+}*/
+.btn-related-content {
+    text-align: left;
+    white-space: normal;
+    background-color: #8dc63f;
+    border-color: #8dc63f;
+}
+.btn-related-content:hover {
+    background-color: @k-accent-color;
+    border-color: @k-accent-color;
+}
+.related-content-header {
+    font-size: 14px;
+    padding-bottom: 5px;
+    /*overflow: hidden;
+    white-space: nowrap;*/
+}
+.related-content-title {
+    font-weight: 400;
+    font-size: 1.2em;
+    margin-left: 10px;
+    position: relative;
+    top: 5px;
+}
+.panel-footer h3 {
+    color: #6d726b;
+    margin-top: 0px;
+    font-size: 20px;
+    font-weight: 400;
+}
+.btn-tag {
+    font-size: 1.2em;
+    font-weight: 400;
+    background-color: #8dc63f;
+    border-color: #8dc63f;
+    color: white;
+}
+.btn-tag:hover {
+    background-color: @k-accent-color;
+    border-color: @k-accent-color;
+    color: white;
+}

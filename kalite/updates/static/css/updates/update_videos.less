@@ -1,0 +1,131 @@
+@import "../../../../../node_modules/jquery.fancytree/dist/skin-common.less";
+@import "../../../../distributed/static/css/distributed/kalite-base.less";
+
+@fancy-inline-sprites: true;
+@fancy-image-dir: "../../../../../node_modules/jquery.fancytree/dist/skin-lion";
+
+#content_tree .complete span.fancytree-icon {
+    margin-top: 0;
+    vertical-align: middle;
+    background: url(/static/images/distributed/circle-complete.png) no-repeat;
+}
+
+#content_tree .partial span.fancytree-icon {
+    margin-top: 0;
+    vertical-align: middle;
+    background: url(/static/images/distributed/circle-partial.png) no-repeat;
+}
+
+#content_tree .unstarted span.fancytree-icon {
+    margin-top: 0;
+    vertical-align: middle;
+    background: url(/static/images/distributed/circle-empty.png) no-repeat;
+}
+
+.button_text {
+    margin-bottom: 0px;
+}
+
+li span.fancytree-selected {
+    border-color: #00CC99;
+    background-color: #00CC99;
+}
+span.fancytree-expanded {
+    border-color: @k-accent-color;
+    background-color: @k-accent-color;
+}
+
+span.fancytree-expanded::before {
+    font-family: "Glyphicons Halflings";
+    content: "\e118  ";
+    font-size: 0.8em;
+    color: white;
+}
+span.fancytree-checkbox {
+    margin-top: 6px;
+}
+span.fancytree-expander {
+    display: none;
+}
+ul.fancytree-container:focus {
+    outline: 0;
+}
+
+.fancytree-node {
+    font-size: 20px;
+    cursor:pointer;
+    background-color: #C4D7E3;
+    border-color: #d0d0d0;
+    border-style: solid;
+    border-width: 5px;
+}
+.fancytree-has-children {
+    border-color: #d0d0d0;
+    background-color: #d0d0d0;
+}
+.fancytree-has-children::before {
+    font-family: "Glyphicons Halflings";
+    content: "\e117  ";
+    font-size: 0.8em;
+    color: grey;
+}
+
+ul.fancytree-container {
+    border: none;
+}
+
+ul.fancytree-container li, .ui-widget-content {
+    background-image: none;
+}
+
+.download-actions {
+    margin-right: 10px;
+    margin-top: 5px;
+    min-height: 109px;
+    padding: 10px;
+}
+
+#content_tree {
+    margin-top: 15px;
+}
+
+#download-videos, #delete-videos, #scan-videos, #cancel-video-download {
+    font-weight: bold;
+    padding: 4px 10px 5px 10px;
+    margin-bottom: 5px;
+}
+
+#download-videos:enabled {
+    color: white;
+}
+
+#delete-videos:enabled {
+    color: white;
+}
+
+#cancel-download {
+    display: none;
+    margin-top: 15px;
+}
+
+.progress-waiting {
+    padding: 5px 0px 0px 0px;
+    display: none;
+}
+
+#download_language_selector {
+    display: none;
+}
+
+h4.videos {
+    font-size: 20px;
+    margin-top: 0;
+}
+
+@media only screen and (max-width: 680px) {
+    .download-actions { display: block; float: none; width: 100%; }
+}
+
+.progress-section {
+    width: 100%;
+}

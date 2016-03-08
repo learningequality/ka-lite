@@ -1,0 +1,40 @@
+<div class="login">
+    <div class="panel panel-default">
+        <div class="panel-body text-center">
+            <form class="form-horizontal" id="log-box">
+            {{#if facilities}}
+            <div class="form-group form-group-lg" id="id_facility-container">
+              <label class="sr-only control-label h3" for="id_facility" id="id_facility-addon">{{_ "Facility" }}</label>
+              <div class="log-input">
+                <select class="form-control input-lg" id="id_facility">
+                  <option selected disabled>{{_ "Select Facility" }}</option>
+                  {{#each facilities}}
+                    <option value="{{this.id}}">{{this.name}}</option>
+                  {{/each}}
+                </select>
+              </div>
+            </div>
+            </br>
+            {{/if}}
+            <div class="form-group form-group-lg" id="id_username-container">
+              <label class="sr-only control-label h3" for="id_username" id="id_username-addon">{{_ "Username" }}</label>
+              <div class="log-input">
+                <input type="text" class="form-control input-lg" id="id_username" placeholder={{_ "Username" }} aria-describedby="id_username-addon">
+              </div>
+            </div>
+            </br>
+            <div class="form-group form-group-lg" id="id_password-container" {{#if simplified_login}}style="display: none;"{{/if}}>
+              <label class="sr-only control-label h3" for="id_password" id="id_password-addon">{{_ "Password" }}</label>
+              <div class="log-input">
+                <input type="password" class="form-control input-lg" id="id_password" placeholder={{_ "Password" }} aria-describedby="id_password-addon">
+              </div>
+            </div>
+            </br>
+            </form>
+            <button class="login-btn btn btn-lg btn-primary" type="submit">{{_ "Login" }}</button>
+            {{#if simplified_login}}
+              <button class="password-btn btn btn-danger" disabled type="submit">{{_ "Admin" }}/{{_ "Coach" }}</button>
+            {{/if}}
+        </div>
+    </div>
+</div>

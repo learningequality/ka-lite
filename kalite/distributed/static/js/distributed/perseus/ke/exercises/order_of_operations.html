@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html data-require="math math-format">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Order of operations</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="vars" data-ensure="B + C !== 0 && (A < 0 || B < 0 || C < 0)">
+            <var id="A">randRangeNonZero(-10, 10)</var>
+            <var id="B">randRangeNonZero(-10, 10)</var>
+            <var id="C">randRangeNonZero(-10, 10)</var>
+            <var id="D">randRangeNonZero(-5, 5)</var>
+            <var id="E">randRangeNonZero(-5, 5)</var>
+            <var id="USE_PAREN">rand(2)</var>
+        </div>
+
+        <div class="problems">
+            <div id="order-of-operations">
+                <p class="question">Evaluate the following expression.</p>
+                <p class="problem">
+                    <span data-if="USE_PAREN"><code><var>A</var> + (<var>B</var> \times <var>negParens(C)</var>)</code></span>
+                    <span data-else=""><code><var>A</var> + <var>B</var> \times <var>negParens(C)</var></code></span>
+                </p>
+
+                <p class="solution" data-forms="integer"><var>A + B * C</var></p>
+
+                <div class="hints">
+                    <p data-if="USE_PAREN"><code>= <var>A</var> + (<var>B * C</var>)</code></p>
+                    <p><code>= <var>A</var> + <var>B * C</var></code></p>
+                    <p><code>= <var>A + B * C</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <code><var>A</var> \times (<var>B</var> + <var>negParens(C)</var>)</code>
+                </p>
+
+                <p class="solution" data-forms="integer"><var>A * (B + C)</var></p>
+
+                <div class="hints">
+                    <p><code>= <var>A</var> \times <var>B + C</var></code></p>
+                    <p><code>= <var>A * (B + C)</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <span data-if="USE_PAREN"><code><var>A</var> + \left(\dfrac{<var>B * C</var>}{<var>C</var>}\right)</code></span>
+                    <span data-else=""><code><var>A</var> + \dfrac{<var>B * C</var>}{<var>C</var>}</code></span>
+                </p>
+
+                <p class="solution" data-forms="integer"><var>A + B</var></p>
+
+                <div class="hints">
+                    <p data-if="USE_PAREN"><code>= <var>A</var> + (<var>B</var>)</code></p>
+                    <p><code>= <var>A</var> + <var>B</var></code></p>
+                    <p><code>= <var>A + B</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <code>\dfrac{<var>A * (B + C)</var>}{<var>B</var> + <var>C</var>}</code>
+                </p>
+
+                <p class="solution" data-forms="integer"><var>A</var></p>
+
+                <div class="hints">
+                    <p><code>= \dfrac{<var>A * (B + C)</var>}{<var>B + C</var> }</code></p>
+                    <p><code>= <var>A</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <code>(<var>A</var> + (<var>B</var> - <var>C</var> \times <var>negParens(D)</var>)) \times <var>negParens(E)</var></code>
+                </p>
+
+                <p class="solution" data-forms="integer"><var>(A + (B - (C * D))) * E</var></p>
+
+                <div class="hints">
+                    <p><code>= (<var>A</var> + (<var>B</var> - <var>C * D</var>)) \times <var>negParens(E)</var></code></p>
+                    <p><code>= (<var>A</var> + (<var>B - (C * D)</var>)) \times <var>negParens(E)</var></code></p>
+                    <p><code>= (<var>A</var> + <var>B - (C * D)</var>) \times <var>negParens(E)</var></code></p>
+                    <p><code>= (<var>A + (B - (C * D))</var>) \times <var>negParens(E)</var></code></p>
+                    <p><code>= <var>A + (B - (C * D))</var> \times <var>negParens(E)</var></code></p>
+                    <p><code>= <var>(A + (B - (C * D))) * E</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <code><var>A</var> + (<var>B</var> + <var>C</var> \times <var>negParens(D)</var>) \times <var>negParens(E)</var></code></p>
+
+                <p class="solution" data-forms="integer"><var>A + ((B + (C * D)) * E)</var></p>
+
+                <div class="hints">
+                    <p><code>= <var>A</var> + (<var>B</var> + <var>C * D</var>) \times <var>negParens(E)</var></code></p>
+                    <p><code>= <var>A</var> + (<var>B + C * D</var>) \times <var>negParens(E)</var></code></p>
+                    <p><code>= <var>A</var> + <var>(B + C * D) * E</var></code></p>
+                    <p><code>= <var>A + (B + C * D) * E</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <code><var>A</var> + <var>B</var> \times <var>negParens(C)</var> + \dfrac{<var>(D * E)</var>}{<var>E</var>}</code>
+                </p>
+
+                <p class="solution" data-forms="integer">
+                    <var>A + B * C + D</var>
+                </p>
+
+                <div class="hints">
+                    <p><code>= <var>A</var> + <var>B</var> \times <var>negParens(C)</var> + <var>D</var></code></p>
+                    <p><code>= <var>A</var> + <var>B * C</var> + <var>D</var></code></p>
+                    <p><code>= <var>A + B * C</var> + <var>D</var></code></p>
+                    <p><code>= <var>A + B * C + D</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <code><var>A</var> \times <var>negParens(B)</var> + <var>C</var> \times \dfrac{<var>(D * E)</var>}{<var>E</var>}</code>
+                </p>
+
+                <p class="solution" data-forms="integer">
+                    <var>(A * B) + (C * D)</var>
+                </p>
+
+                <div class="hints">
+                    <p><code>= <var>A</var> \times <var>negParens(B)</var> + <var>C</var> \times <var>negParens(D)</var></code></p>
+                    <p><code>= <var>A * B</var> + <var>C</var> \times <var>negParens(D)</var></code></p>
+                    <p><code>= <var>A * B</var> + <var>C * D</var></code></p>
+                    <p><code>= <var>A * B + C * D</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <span data-if="USE_PAREN">
+                        <code>(<var>A</var> + <var>B</var> \times <var>negParens(D)</var>) - <var>C</var> \times <var>negParens(E)</var></code>
+                    </span><span data-else="">
+                        <code><var>A</var> + <var>B</var> \times <var>negParens(D)</var> - <var>C</var> \times <var>negParens(E)</var></code>
+                    </span>
+                </p>
+
+                <p class="solution" data-forms="integer"><var>A + B * D - C * E</var></p>
+
+                <div class="hints">
+                    <p data-if="USE_PAREN"><code>= (<var>A</var> + <var>B * D</var>) - <var>C</var> \times <var>negParens(E)</var></code></p>
+                    <p data-else=""><code>= <var>A</var> + <var>B * D</var> - <var>C</var> \times <var>negParens(E)</var></code></p>
+                    <p><code>= <var>A</var> + <var>B * D</var> - <var>C * E</var></code></p>
+                    <p><code>= <var>A + B * D</var> - <var>C * E</var></code></p>
+                    <p><code>= <var>A + B * D - C * E</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <p class="problem">
+                    <code><var>A</var> - <var>negParens(B)</var>^2</code>
+                </p>
+
+                <p class="solution" data-forms="integer"><var>A - B * B</var></p>
+
+                <div class="hints">
+                    <p><code>= <var>A</var> - <var>B * B</var></code></p>
+                    <p><code>= <var>A - B * B</var></code></p>
+                </div>
+            </div>
+
+            <div data-type="order-of-operations">
+                <div class="vars" data-ensure="abs(B + C) < 11">
+                    <var id="B">randRangeNonZero(-10, 10)</var>
+                    <var id="C">randRangeNonZero(-10, 10)</var>
+                </div>
+                <p class="problem">
+                    <code><var>A</var> - (<var>B</var> + <var>C</var>)^2</code>
+                </p>
+
+                <p class="solution" data-forms="integer"><var>A - (B + C) * (B + C)</var></p>
+
+                <div class="hints">
+                    <p><code>= <var>A</var> - (<var>B + C</var>)^2</code></p>
+                    <p><code>= <var>A</var> - <var>(B + C) * (B + C)</var></code></p>
+                    <p><code>= <var>A - (B + C) * (B + C)</var></code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

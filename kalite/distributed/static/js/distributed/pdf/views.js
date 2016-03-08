@@ -1,6 +1,23 @@
-window.PDFViewerView = ContentBaseView.extend({
+var _ = require("underscore");
+var Handlebars = require("base/handlebars");
 
-    template: HB.template("pdf/pdf-viewer"),
+var ContentBaseView = require("content/baseview");
+
+require("../../../../../../static-libraries/pdfjs/web/compatibility.js");
+require("../../../../../../static-libraries/pdfjs/web/l10n.js");
+require("../../../../../../static-libraries/pdfjs/build/pdf.js");
+PDFJS.workerSrc = window.sessionModel.get("STATIC_URL") + 'pdfjs/build/pdf.worker.js';
+PDFJS.imageResourcesPath = window.sessionModel.get("STATIC_URL") + 'pdfjs/web/images/';
+PDFJS.cMapUrl = window.sessionModel.get("STATIC_URL") + 'pdfjs/web/cmaps/';
+PDFJS.cMapPacked = true;
+PDFJS.disableFontFace = true;
+require("../../../../../../static-libraries/pdfjs/web/viewer.js");
+// require("../../../../../../static-libraries/pdfjs/web/viewer.css");
+
+
+var PDFViewerView = ContentBaseView.extend({
+
+    template: require("./hbtemplates/pdf-viewer.handlebars"),
 
     render: function() {
         if (!this.log_model.get("highest_page")) {
@@ -49,3 +66,7 @@ window.PDFViewerView = ContentBaseView.extend({
     }
 
 });
+
+module.exports = {
+    PDFViewerView: PDFViewerView
+};

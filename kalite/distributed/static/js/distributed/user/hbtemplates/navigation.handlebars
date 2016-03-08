@@ -1,0 +1,56 @@
+{{#if is_admin }}
+  <li class="teach-tab" role="menuitem"><a href="{{ url "coach_reports" zone_id }}">{{_ "Teach" }}</a></li>
+  <li class="manage-tab" role="menuitem"><a href="{{#unless is_django_user }}{{ url "facility_management" "None" facility_id }}{{else}}{{url "zone_redirect" }}{{/unless}}">{{_ "Manage" }}</a></li>
+{{/if}}
+{{!-- Learn for all --}}
+  <li id="nav-handlebars" class="learn-tab" role="menuitem"><a href="{{url "learn" }}" id="nav_learn" class="home-navlink">{{_ "Learn" }}</a></li>
+{{!-- Login --}}
+{{#unless is_logged_in}}
+  <li role="menuitem"><a href="#" data-toggle="modal" data-target="#loginModal" id="nav_login">{{_ "Login" }}</a></li>
+  <li role="menuitem"><a href="{{ url "facility_user_signup" }}" id="nav_signup">{{_ "Sign Up" }}</a></li>
+{{/unless}}
+
+{{#if docs_exist}}
+  {{#if is_admin}}
+    <li role="menuitem" id="nav_documentation">
+      <a role="menuitem" tabindex="-1" id="documentation_a" href="/static/html/usermanual/userman_main.html">
+        {{_ "User Manual" }}
+       </a>
+    </li>
+  {{/if}}
+{{/if}}
+
+  <hr class="nav-divider">
+{{#if is_admin}}
+  <hr class="nav-divider">
+{{/if}}
+
+{{!-- Farthest right nav is logged in user dropdown --}}
+{{#if is_logged_in}}
+  <li class="dropdown " id="user-name" role="menuitem">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="user-name-a" tabindex="0">
+        <span id="username">{{!-- Username injected here w/ js --}}</span>
+      <span class="caret hidden-xs"></span>
+    </a>
+
+    <ul class="dropdown-menu" data-no-collapse="true" aria-label="{{_ "User menu" }}" role="menu">
+    {{#unless is_admin}}
+      {{!-- Student account management --}}
+      <li role="menuitem" id="points-tab" class="motivational-feature" tabindex="0">
+        <span class="sr-only">{{_ "I have" }}</span>
+        <span id="points">{{!-- Points injected here w/ js --}}</br></span>
+        <a href="{{ url "student_view" }}" tabindex="-1" id="nav_progress">
+          {{_ "My Progress" }}
+        </a>
+      </li>
+      <li role="presentation" class="divider"></li>
+    {{/unless}}
+      {{!-- Logout goes at the bottom! --}}
+      <li role="presentation" id="logout">
+        <a role="menuitem" tabindex="-1" id="nav_logout" href="#">
+          {{_ "Logout" }}
+        </a>
+      </li>
+    </ul>
+  </li>
+{{/if}}

@@ -1,0 +1,86 @@
+/* Responsive content display for tablets */
+/* Jessica TODO: take off !important tags */
+
+@import (inline) "../../../../../node_modules/video.js/dist/video-js.css";
+
+@vjs-font-path: "/static/css/distributed/font/";
+
+@font-face{
+  font-family: 'VideoJS';
+  src: url('/static/css/distributed/font/vjs.eot');
+  src: url('/static/css/distributed/font/vjs.eot?#iefix') format('embedded-opentype'),
+  url('/static/css/distributed/font/vjs.woff') format('woff'),
+  url('/static/css/distributed/font/vjs.ttf') format('truetype'),
+  url('/static/css/distributed/font/vjs.svg#icomoon') format('svg');
+
+  font-weight: normal;
+  font-style: normal;
+}
+
+#video-player {
+    height: 500px;
+}
+div.video-player {
+    width: 100% !important;
+    margin: auto !important;
+}
+.vjs-default-skin .vjs-big-play-button {
+    margin: auto !important;
+    position: relative !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important; 
+}
+.video-js.vjs-fullscreen {
+	position: relative !important;
+}
+
+@media screen and (max-width: 1000px) , screen and (max-height: 610px) {
+	.kalite-navbar {
+		margin-bottom: 0px;
+	}
+	#content-container {
+		width: 100%;
+	}
+	.content-description {
+		padding: 0px;
+	}
+	.top-nav {
+		padding-right: 0px;
+	}
+}
+
+/*!
+Video.js overrides for improved focus states in keyboard navigation
+Video.js version 4.11.4
+*/
+
+/* Slider - used for Volume bar and Seek bar */
+.vjs-default-skin .vjs-progress-holder:focus {
+  border: 0.6em solid #FFBF00;
+  /* box-shadow */
+  -webkit-box-shadow: 0 0 2em #FFD24C;
+  -moz-box-shadow: 0 0 2em #FFD24C;
+  box-shadow: 0 0 2em #FFD24C;
+}
+.vjs-default-skin .vjs-progress-holder:hover {
+  border: 0.4em solid #FFBF00;
+  /* box-shadow */
+  -webkit-box-shadow: 0 0 2em #FFD24C;
+  -moz-box-shadow: 0 0 2em #FFD24C;
+  box-shadow: 0 0 2em #FFD24C;
+}
+.vjs-default-skin .vjs-volume-bar:focus {
+  border: 0.4em solid #FFBF00;
+  /* box-shadow */
+  -webkit-box-shadow: 0 0 2em #FFD24C;
+  -moz-box-shadow: 0 0 2em #FFD24C;
+  box-shadow: 0 0 2em #FFD24C;
+}
+/* Replacement for focus outline */
+.vjs-default-skin .vjs-control:focus:before,
+.vjs-default-skin .vjs-control:hover:before {
+  text-shadow: 0em 0em 1em #FFFF00;
+}
+.vjs-default-skin .vjs-control:focus {
+  border: 0.2em dashed #FFBF00;
+}

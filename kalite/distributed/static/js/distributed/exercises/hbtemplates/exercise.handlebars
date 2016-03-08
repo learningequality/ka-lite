@@ -1,0 +1,47 @@
+<div class="exercises-body">
+    <div class="exercises-card current-card">
+        <div class="current-card-container card-type-problem">
+            <div class="current-card-container-inner vertical-shadow">
+                <div class="current-card-contents">
+                    <div id="problem-and-answer">
+                        <div id='problemarea'>
+                            <div id='scratchpad'><div></div></div>
+                            <div id='workarea'></div>
+                            <div id='hintsarea'></div>
+                        </div>
+                    <div id="answer_area_wrap"><div id="answer_area">
+                        <form class="answer-form">
+                            <div class="exercise-progress-wrapper"></div>
+                            <div id="answercontent" class="info-box">
+                                <span class="info-box-header">{{_ "Answer" }}</span>
+                                <ul id="examples" style="display: none"></ul>
+                                <div id="questionpoints"></div>
+                                <div class="solutionarea-placeholder"></div>
+                                <div id="solutionarea" class="solutionarea fancy-scrollbar"></div>
+                                <div class="answer-buttons">
+                                    <div class="answer-buttons-enabled">
+                                        <input type="button" class="simple-button green" disabled id="check-answer-button" value="{{_ "Check Answer" }}"/>
+                                        <input type="button" class="simple-button green" id="next-question-button" style="display: none;" value="{{_ "Correct! Next Question..." }}"/>
+                                        <div id="check-answer-results"><p class="check-answer-message info-box-sub-description"></p></div>
+                                    </div>
+                                    <div class="answer-buttons-disabled" style="display: none;">
+                                        {{_ "Loading..." }}
+                                    </div>
+                                </div>
+                                <div id="software-keyboard-container"></div>
+                            </div>
+                            <div class="exercise-hint-wrapper"></div>
+                            <div class="exercise-related-video-wrapper"></div>
+
+                        </form>
+                    </div></div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="scratchpad-btn-container">
+        <button class="simple-button orange" id="scratchpad-show" href style>{{_ "Show scratchpad" }}</button>
+        <span class="simple-button disabled" id="scratchpad-not-available" style="display: none;">{{_ "Scratchpad not available" }}</span>
+    </div>
+</div>

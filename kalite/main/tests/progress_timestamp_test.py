@@ -28,7 +28,7 @@ class TestSaveContentLog(KALiteTestCase):
         # create an initial ContentLog instance so we have something to update later
         self.contentlog = ContentLog(content_id=self.CONTENT_ID, user=self.user)
         self.contentlog.points = self.POINTS
-        self.contentlog.content_kind = self.CONTENT_KIND,
+        self.contentlog.content_kind = self.CONTENT_KIND
         self.contentlog.content_source = self.CONTENT_SOURCE
         self.contentlog.save()
 

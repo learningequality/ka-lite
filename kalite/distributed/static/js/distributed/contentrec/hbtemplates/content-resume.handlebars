@@ -1,0 +1,74 @@
+<div class="container card">
+  <!--This is where the card title is-->
+  <div class="row card-title">
+    <div class="col-xs-9">
+      <h1>{{_ "Resume" }}</h1>
+    </div>
+    <div class="col-xs-3">
+      <span aria-hidden="true" role="presentation"><i class="glyphicon glyphicon-play-circle gly-h1"></i></span>
+    </div>
+    <hr class="module_divider" />
+  </div>
+  <a href="/learn/{{ path }}" class="content-resume-topic-link">
+    <!--Where the video thumbnail and description go-->
+    <div id="content-resume-thumbnail">
+      {{#if content_urls.thumbnail }}
+      <div class="row">
+        <center>
+          <div class="col-xs-12">
+            <h2 class="h4">{{ title }}</h2>
+          </div>
+        </center>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <center>
+          <!--ALT for image gets read from 'description' so it doesn't need to be read twice-->
+            <img src="{{content_urls.thumbnail}}" class="img-responsive"
+                 {{#if description }}
+                     aria-hidden="true" role="presentation"
+                 {{else}}
+                     alt="{{ truncate description 150 }}"
+                 {{/if}}>
+          </center>
+        </div>
+      </div>
+        {{#if description }}
+        <div class="row">
+          <div class="col-xs-12">
+            <p class="h3">{{_ "Description" }}:</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <p>{{ truncate description 100 }}</p>
+          </div>
+        </div>
+        {{/if}} 
+      {{else}}
+      <div class="row">
+        <div class="col-xs-3">
+          <center>
+            <span aria-hidden="true" role="presentation"><i class="icon-{{kind}} content-rec-icon"></i></span>
+          </center>
+        </div> 
+        
+        <div class="col-xs-9">
+          <h2 class="h4">{{_ kind }}:<br />
+          {{ title }}</h2>
+        </div>
+        
+<!-- NO descriptions for excercise? Is it necessary?
+        {{#if description }}
+          <div class="col-xs-12">
+            <h3><small>Description:</small></h3>
+            <p>{{ truncate description 100 }}</p>
+          </div>
+        {{/if}}
+-->
+        
+      </div>
+      {{/if}}
+    </div>
+  </a>
+</div>

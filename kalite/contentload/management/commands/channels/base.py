@@ -6,6 +6,8 @@ from django.conf import settings; logging = settings.LOG
 
 from django.utils.text import slugify
 
+from kalite.contentload.utils import dedupe_paths
+
 # For specification of channel_data dictionary, please see CHANNELDATA.md
 def retrieve_API_data(channel=None):
 
@@ -20,14 +22,16 @@ def retrieve_API_data(channel=None):
     return topic_tree, exercises, assessment_items, content
 
 
-def whitewash_node_data(node, path="", channel_data={}):
+def whitewash_node_data(node, path="", channel_data=None):
     """
     Utility function to convert nodes into the format used by KA Lite.
     Extracted from other functions so as to be reused by both the denormed
     and fully inflated exercise and video nodes.
     """
+    if not channel_data:
+        channel_data = {}
 
-    kind = node.get("kind", None)
+    kind = node.get("kind")
 
     if not kind:
         return node
@@ -53,7 +57,7 @@ def whitewash_node_data(node, path="", channel_data={}):
     node["title"] = (node["title"] or "").strip()
 
     if "description" in node:
-        node["description"] = node["description"].strip()
+        node["description"] = (node["description"] or "").strip()
 
     if kind == "Video":
         # TODO: map new videos into old videos; for now, this will do nothing.
@@ -118,7 +122,7 @@ def rebuild_topictree(
             children_to_delete = []
             child_kinds = set()
             for i, child in enumerate(node.get("children", [])):
-                child_kind = child.get("kind", None)
+                child_kind = child.get("kind")
 
                 if child_kind == "Video" or child_kind == "Exercise":
                     children_to_delete.append(i)
@@ -156,7 +160,7 @@ def rebuild_topictree(
         children_to_delete = []
         child_kinds = set()
         for i, child in enumerate(node.get("children", [])):
-            child_kind = child.get("kind", None)
+            child_kind = child.get("kind")
 
             # Blacklisted--remove
             if child_kind in channel_data["kind_blacklist"]:
@@ -195,6 +199,8 @@ def rebuild_topictree(
 
         return child_kinds
     recurse_nodes(topic_tree)
+
+    dedupe_paths(topic_tree)
 
     def recurse_nodes_to_remove_childless_nodes(node):
         """

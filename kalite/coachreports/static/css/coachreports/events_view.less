@@ -1,0 +1,60 @@
+/* overriding the nav tabs of bootstrap-overrides.css for the detailed events panel */
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+	display: none;
+}
+.tab-content > .active,
+.pill-content > .active {
+	display: block;
+}
+.tabs-left > .nav-tabs > li {
+	float: none;
+}
+.tabs-left > .nav-tabs > li > a {
+	min-width: 74px;
+	margin-right: 0;
+	margin-bottom: 3px;
+	border-right: 1px solid #ddd;
+}
+.tabs-left > .nav-tabs {
+	float: left;
+	display: block;
+	min-height: 300px;
+	margin-right: 5px;
+	border-right: 1px solid #ddd;
+}
+.tabs-left > .nav-tabs > li > a {
+	margin-right: -1px;
+	-webkit-border-radius: 4px 0 0 4px;
+	-moz-border-radius: 4px 0 0 4px;
+	border-radius: 4px 0 0 4px;
+}
+.tabs-left > .nav-tabs > li > a:hover,
+.tabs-left > .nav-tabs > li > a:focus {
+	border:1px solid #ddd;
+	border-color: #eeeeee #dddddd #eeeeee #eeeeee;
+}
+.tabs-left > .nav-tabs .active > a,
+.tabs-left > .nav-tabs .active > a:hover,
+.tabs-left > .nav-tabs .active > a:focus {
+	border-color: #ddd transparent #ddd #ddd;
+}
+
+.tabs-left > .nav-tabs > li > a,
+.tabs-left > .nav-tabs > li .active > a,
+.tabs-left > .nav-tabs > li > a:active {
+	border:1px solid #ddd;
+	border-radius: 5px 0 0 5px;
+	background: #f9f9f9;
+	
+}
+
+/* Force panel to a min width and cells to a max-width to keep table inline */
+.detail-panel-contents {
+	min-width: 500px;
+}
+
+table.details-table td.detail-table-cell {
+	overflow: auto;
+	max-width: 120px;
+}

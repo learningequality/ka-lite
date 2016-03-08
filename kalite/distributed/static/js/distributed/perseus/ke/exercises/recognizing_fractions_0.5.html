@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html data-require="math graphie graphie-helpers word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Recognizing fractions 0.5</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <!--
+        Compares fractions that have the same numerator or have the same denominator.
+        TODO: would like to draw overlapping circles or rectangle slices for hints.
+    -->
+    <div class="exercise">
+        <div class="vars">
+            <var id="DEN_1">randFromArray([2, 3, 4, 6, 8])</var>
+            <var id="NUM_1">randRange(1, DEN_1 * 2)</var>
+            <var id="WHOLES">ceil(NUM_1 / DEN_1)</var>
+            <var id="FINAL">NUM_1 - (WHOLES - 1) * DEN_1</var>
+            <var id="FRACTION">"\\blue{\\dfrac{1}{" + DEN_1 + "}}"</var>
+        </div>
+        <div class="problems">
+            <div id="pie-chart">
+                <div class="question">
+                    <div>
+                        <div data-if="NUM_1 >= DEN_1">
+                            <p>This circle represents one whole.</p>
+                            <div class="graphie">
+                                init({
+                                    range: [[0, 6], [-2.1, 2.1]],
+                                    scale: 25
+                                });
+                                piechart([0, DEN_1], [BLUE, GRAY20], 2, false, 3, 0);
+                            </div>
+                        </div>
+                        <p>
+                            What fraction is shaded blue below?
+                            <span class="render-answer-area-here"></span>
+                        <p>
+                    </div>
+
+                    <div class="graphie">
+                        init({
+                            range: [[0, 6 * WHOLES], [-2.1, 2.1]],
+                            scale: 25
+                        });
+
+                        for (var i = 0; i &lt; WHOLES; i++) {
+                            if (i === 0) {
+                                piechart([FINAL, DEN_1 - FINAL], [BLUE, GRAY20], 2, false, (i + 1) * 3, 0);
+                            } else {
+                                piechart([DEN_1, 0], [BLUE, GRAY20], 2, false, i * 6 + 3, 0);
+                            }
+                        }
+                    </div>
+                </div>
+                <p class="solution" data-simplify="optional"><var>NUM_1 / DEN_1</var></p>
+                <div class="hints">
+                    <p>Each blue slice is <code><var>FRACTION</var></code> of the whole.</p>
+                    <p data-if="isSingular(NUM_1)">Only one slice is shaded blue.</p>
+                    <div data-else="">
+                        <p>
+                            <code>\pink{<var>NUM_1</var>}</code> slices are shaded blue, so we add
+                            <code><var>FRACTION</var></code> a total of <code>\pink{<var>NUM_1</var>}</code> times.
+                        </p>
+                        <p><code><var>_.times(NUM_1, function() { return FRACTION; }).join(" + ")</var> = ?</code></p>
+                    </div>
+                    <p>The fraction shaded blue is <code>\dfrac{<var>NUM_1</var>}{<var>DEN_1</var>}</code>.</p>
+                </div>
+            </div>
+
+            <div id="rectangle-area">
+                <div class="question">
+                    <div data-if="NUM_1 >= DEN_1">
+                        <p>This rectangle represents one whole.</p>
+                        <div class="graphie">
+                            init({
+                                range: [[0, 1], [0, 1]],
+                                scale: [250, 25]
+                            });
+                            rectchart([0, DEN_1], [BLUE, GRAY20], 0);
+                        </div>
+                    </div>
+                    <p>
+                        What fraction is shaded blue below?
+                        <span class="render-answer-area-here"></span>
+                    <p>
+
+                    <div class="graphie">
+                        init({
+                            range: [[0, 1], [0, 2 * WHOLES - 1]],
+                            scale: [250, 25]
+                        });
+
+                        for (var i = 0; i &lt; WHOLES; i++) {
+                            if (i === 0) {
+                                rectchart([FINAL, DEN_1 - FINAL], [BLUE, GRAY20], i * 2);
+                            } else {
+                                rectchart([DEN_1, 0], [BLUE, GRAY20], i * 2);
+                            }
+                        }
+                    </div>
+                </div>
+                <p class="solution" data-simplify="optional"><var>NUM_1 / DEN_1</var></p>
+
+                <div class="hints">
+                    <p>Each blue piece is <code><var>FRACTION</var></code> of the whole.</p>
+                    <p data-if="isSingular(NUM_1)">Only one piece is shaded blue.</p>
+                    <div data-else="">
+                        <p>
+                            <code>\pink{<var>NUM_1</var>}</code> piece are shaded blue, so we add
+                            <code><var>FRACTION</var></code> a total of <code>\pink{<var>NUM_1</var>}</code> times.
+                        </p>
+                        <p><code><var>_.times(NUM_1, function() { return FRACTION; }).join(" + ")</var> = ?</code></p>
+                    </div>
+                    <p>The fraction shaded blue is <code>\dfrac{<var>NUM_1</var>}{<var>DEN_1</var>}</code>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

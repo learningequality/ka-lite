@@ -96,7 +96,6 @@ class TestContentImportTopicTree(MainTestCase):
             for child in node["children"]:
                 self.recursively_find_nodes(child, key, value, cache)
 
-    @unittest.skip("Skipping until kaa package is replaced")
     def test_create_topic_tree(self):
         slug = os.path.basename(self.tempdir)
         topic_tree = {

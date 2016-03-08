@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html data-require="math math-format word-problems expressions">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Factoring linear binomials</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div>
+                <div class="vars">
+                    <var id="A">randRange(2, 9)</var>
+                    <var id="IS_IRREDUCIBLE">random() &lt; 0.2</var>
+
+                    <div data-ensure="(GCD === 1) === IS_IRREDUCIBLE">
+                        <var id="B">randRangeExclude(-20, 20, [-1, 0, 1])</var>
+                        <var id="GCD">getGCD(A, B)</var>
+                    </div>
+                    <var id="SOLUTION">
+                        IS_IRREDUCIBLE ? plus(A + "x", B) :
+                            GCD + "(" + plus(A / GCD + "x", B / GCD) + ")"
+                    </var>
+                    <var id="Ax_FACTORS">toSentenceTex(getFactors(abs(A)).concat(["x"]))</var>
+                    <var id="B_FACTORS">toSentenceTex(getFactors(abs(B)))</var>
+                </div>
+                <p class="question">
+                    Factor the expression below completely. All coefficients should be integers.
+                </p>
+                <p class="problem">
+                    <code><var>expr(["+", ["*", A, "x"], B])</var></code>
+                </p>
+                <div class="solution" data-type="expression" data-same-form="">
+                    <var>SOLUTION</var>
+                </div>
+                <div class="hints">
+                    <p>
+                        To factor a binomial, you should first find
+                        the greatest common factor of all the terms.
+                    </p>
+                    <p>
+                        The factors of <code><var>A</var>x</code> are <var>Ax_FACTORS</var>.<br>
+                        The factors of <code><var>B</var></code> are <var>B_FACTORS</var>.
+                    </p>
+                    <p>
+                        The greatest common factor of <code><var>A</var>x</code>
+                        and <code><var>B</var></code> is 
+                        <code><var>GCD</var></code>.
+                    </p>
+
+                    <p data-if="IS_IRREDUCIBLE">
+                        Since the greatest common factor is <code>1</code>,
+                        the expression is already in its most factored form.
+                    </p>
+                    <p class="final_answer" data-if="IS_IRREDUCIBLE">
+                        Therefore the answer is the original expression,
+                        <code><var>SOLUTION</var></code>.
+                    </p>
+
+                    <p data-if="!IS_IRREDUCIBLE">
+                        So we can factor out the <code><var>GCD</var></code>.
+                    </p>
+                    <p data-if="!IS_IRREDUCIBLE">
+                        If we divide each of the terms in the original
+                        expression by <code><var>GCD</var></code> we get
+                        <code>\dfrac{<var>A</var>x}{<var>GCD</var>} =
+                        <var>plus((A/GCD) + "x")</var></code> and
+                        <code>\dfrac{<var>B</var>}{<var>GCD</var>} =
+                        <var>B/GCD</var></code>.
+                    </p>
+                    <p class="final_answer" data-if="!IS_IRREDUCIBLE">
+                        So the factored expression is
+                        <code><var>SOLUTION</var></code>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

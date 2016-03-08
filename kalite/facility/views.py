@@ -4,6 +4,7 @@ from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
 from securesync.devices.views import *  # ARGH! TODO(aron): figure out what things are imported here, and import them specifically
 
+from django import forms
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
@@ -14,10 +15,10 @@ from django.utils.translation import ugettext as _
 
 from .decorators import facility_required
 from .forms import FacilityUserForm, FacilityGroupForm
-from .models import FacilityGroup, FacilityUser
+from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet.functions import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
-from kalite.i18n import get_default_language
+from kalite.i18n.base import get_default_language
 from kalite.shared.decorators.auth import require_authorized_admin
 
 
@@ -123,7 +124,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
                 if request.next:
                     return HttpResponseRedirect(next)
                 else:
-                    zone_id = facility.get_zone().getattr(id, None)
+                    zone_id = getattr(facility.get_zone(), "id", None)
                     return HttpResponseRedirect(reverse("facility_management", kwargs={"zone_id": zone_id, "facility_id": facility.id}))
 
             # New student signed up
@@ -139,10 +140,15 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
     # in all other cases, we are creating a new user
     else:
         form = FacilityUserForm(facility, initial={
-            "group": request.GET.get("group", None),
+            "group": request.GET.get("group"),
             "is_teacher": is_teacher,
             "default_language": get_default_language(),
         })
+
+    if is_teacher or (not (request.is_admin or request.is_teacher) and FacilityGroup.objects.filter(facility=facility).count() == 0) or (not new_user and not (request.is_admin or request.is_teacher)):
+        form.fields['group'].widget = forms.HiddenInput()
+    if Facility.objects.count() < 2 or (not new_user and not request.is_admin):
+        form.fields['facility'].widget = forms.HiddenInput()
 
     return {
         "title": title,
@@ -178,7 +184,6 @@ def group_edit(request, facility, group_id):
         "form": form,
         "group_id": group_id,
         "facility": facility,
-        "singlefacility": request.session["facility_count"] == 1,
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 

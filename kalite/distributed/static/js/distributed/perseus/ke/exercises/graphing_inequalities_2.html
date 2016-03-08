@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html data-require="math math-format expressions graphie interactive word-problems">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Graphing and solving linear inequalities</title>
+    <script data-main="../local-only/main.js" src="../local-only/require.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars">
+                <var id="SLOPE_FRAC">reduce(randRangeNonZero(-5, 5), randRange(1, 5))</var>
+                <var id="YINT">randRangeNonZero( max( -10, -10 - SLOPE_FRAC[0] ), min( 10, 10 - SLOPE_FRAC[0] ) )</var>
+                <var id="SLOPE">SLOPE_FRAC[0] / SLOPE_FRAC[1]</var>
+                <var id="PRETTY_SLOPE">fractionVariable(SLOPE_FRAC[0], SLOPE_FRAC[1], "x")</var>
+                <var id="MULT">randRangeNonZero( -3, 3 )</var>
+                <var id="A">SLOPE_FRAC[0] * -MULT</var>
+                <var id="B">SLOPE_FRAC[1] * MULT</var>
+                <var id="C">SLOPE_FRAC[1] * YINT * MULT</var>
+                <var id="STD_FORM">randFromArray([ true, false ])</var>
+                <var id="COMP">randFromArray([ "&lt;", "&gt;", "≤", "≥" ])</var>
+                <var id="STD_FORM_COMP">B &lt; 0 ? { "&lt;": "&gt;", "&gt;": "&lt;", "≤": "≥", "≥": "≤" }[ COMP ] : COMP</var>
+                <var id="LESS_THAN">COMP === "&lt;" || COMP === "≤"</var>
+                <var id="INCLUSIVE">COMP === "≥" || COMP === "≤"</var>
+                <var id="EDGE_POINT" data-ensure="abs(EDGE_POINT[0]) < 10 && abs(EDGE_POINT[1]) < 10">(function() {
+                    // Create a point on the line
+                    var minN = floor(9 / abs(SLOPE_FRAC[1]));
+                    var n = randRange(-minN, minN);
+                    return [n * SLOPE_FRAC[1], YINT+ n * SLOPE_FRAC[0]];
+                })()</var>
+                <!-- 1/3 of the time the point should be on the line -->
+                <var id="POINT">randFromArray([
+                    [randRangeExclude(-9, 9, [-3, -2, -1, 0]), randRangeExclude(-9, 9, [-1, -2])],
+                    [randRangeExclude(-9, 9, [-3, -2, -1, 0]), randRangeExclude(-9, 9, [-1, -2])],
+                     EDGE_POINT
+                ])</var>
+                <var id="POINT_ON_LINE">POINT[1] === SLOPE * POINT[0] + YINT</var>
+                <var id="POINT_SOLUTION">(function() {
+                    if (POINT_ON_LINE) {
+                        return INCLUSIVE;
+                    }
+                    return (POINT[1] &lt; SLOPE * POINT[0] + YINT) ? LESS_THAN : !LESS_THAN;
+                })()
+                </var>
+            </div>
+
+            <p class="question">
+                Graph the following inequality:
+            </p>
+
+            <div class="problem">
+                <p class="hint_blue" data-if="STD_FORM">
+                    <code><var>expr([ "+", [ "*", A, "x" ], [ "*", B, "y" ] ])</var> <var>STD_FORM_COMP</var> <var>C</var></code>
+                </p>
+                <p class="hint_blue" data-else="">
+                    <code>y <var>COMP</var> <var>PRETTY_SLOPE</var> + <var>YINT</var></code>
+                </p>
+
+                <form>
+                    <input onclick="javascript:
+                        KhanUtil.currentGraph.graph.shadetop = !KhanUtil.currentGraph.graph.shadetop;
+                        KhanUtil.currentGraph.graph.update();
+                    " type="button" value="Shade other side">
+                    <ul class="inequalities-one-line-radios">
+                        <li>
+                            <label>
+                                <input checked name="dashradio" onclick="javascript:
+                                       KhanUtil.currentGraph.graph.dasharray = '';
+                                       KhanUtil.currentGraph.graph.update();
+                                       " type="radio" value="solid">
+                                Solid line
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input name="dashradio" onclick="javascript:
+                                       KhanUtil.currentGraph.graph.dasharray = '- ';
+                                       KhanUtil.currentGraph.graph.update();
+                                       " type="radio" value="dashed">
+                                Dashed line
+                            </label>
+                        </li>
+                    </ul>
+                </form>
+                <div class="graphie inequalities-padding" id="grid">
+                    graphInit({
+                        range: 11,
+                        scale: 20,
+                        axisArrows: "&lt;-&gt;",
+                        tickStep: 1,
+                        labelStep: 1,
+                        gridOpacity: 0.05,
+                        axisOpacity: 0.2,
+                        tickOpacity: 0.4,
+                        labelOpacity: 0.5
+                    });
+
+                    addMouseLayer();
+                    graph.pointA = addMovablePoint({
+                        coord: [ -5, 5 ],
+                        snapX: 0.5,
+                        snapY: 0.5,
+                        normalStyle: {
+                            stroke: KhanUtil.BLUE,
+                            fill: KhanUtil.BLUE
+                        }
+                    });
+                    graph.pointB = addMovablePoint({
+                        coord: [ 5, 5 ],
+                        snapX: 0.5,
+                        snapY: 0.5,
+                        normalStyle: {
+                            stroke: KhanUtil.BLUE,
+                            fill: KhanUtil.BLUE
+                        }
+                    });
+                    graph.line1 = bogusShape;
+                    graph.shading = bogusShape;
+
+                    graph.update = function() {
+                        graph.line1.remove();
+                        graph.shading.remove();
+                        if ( abs( graph.pointB.coord[0] - graph.pointA.coord[0] ) &gt; 0.001 ) {
+                            var slope = ( graph.pointB.coord[1] - graph.pointA.coord[1] ) / ( graph.pointB.coord[0] - graph.pointA.coord[0] );
+                            var yint = slope * ( 0 - graph.pointA.coord[0] ) + graph.pointA.coord[1];
+                            var shadeEdge = ( ( graph.pointA.coord[0] &lt; graph.pointB.coord[0] ) ? graph.shadetop : !graph.shadetop ) ? 11 : -11;
+                            style({ stroke: BLUE, strokeWidth: 2, strokeDasharray: graph.dasharray }, function() {
+                                graph.line1 = line( [ -11, -11 * slope + yint ], [ 11, 11 * slope + yint ] ).toBack();
+                            });
+                            style({ fill: BLUE, stroke: null, opacity: KhanUtil.FILL_OPACITY }, function() {
+                                graph.shading = path([ [ 11, shadeEdge ], [ 11, 11 * slope + yint ], [ -11, -11 * slope + yint ], [ -11, shadeEdge ] ]);
+                            });
+
+                        } else {
+                            // vertical line
+                            var x = graph.pointA.coord[0];
+                            var shadeEdge = ( ( graph.pointB.coord[1] &lt; graph.pointA.coord[1] ) ? graph.shadetop : !graph.shadetop ) ? 11 : -11;
+                            style({ stroke: BLUE, strokeWidth: 2, strokeDasharray: graph.dasharray }, function() {
+                                graph.line1 = line( [ x, -11 ], [ x, 11 ] ).toBack();
+                            });
+                            style({ fill: BLUE, stroke: null, opacity: KhanUtil.FILL_OPACITY }, function() {
+                                graph.shading = path([ [ x, -11 ], [ x, 11 ], [ shadeEdge, 11 ], [ shadeEdge, -11 ] ]);
+                            });
+                        }
+                        graph.pointA.toFront();
+                        graph.pointB.toFront();
+                    };
+
+                    // A and B can't be in the same place
+                    graph.pointA.onMove = function( x, y ) {
+                        if ( x != graph.pointB.coord[0] || y != graph.pointB.coord[1] ) {
+                            graph.pointA.setCoord([ x, y ]);
+                            graph.update();
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                    graph.pointB.onMove = function( x, y ) {
+                        if ( x != graph.pointA.coord[0] || y != graph.pointA.coord[1] ) {
+                            graph.pointB.setCoord([ x, y, ]);
+                            graph.update();
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+
+                    graph.dasharray = "";
+                    graph.shadetop = true;
+                    graph.update();
+                    graph.pointA.toFront();
+                    graph.pointB.toFront();
+                </div>
+
+                <p class="question">
+                    Is <code>(<var>POINT[0]</var>, <var>POINT[1]</var>)</code> a solution of the inequality?
+                </p>
+
+                <div class="render-answer-area-here"></div>
+            </div>
+            <div class="solution" data-type="multiple">
+                <div class="instruction">
+                    <ul>
+                        <li>
+                            <label>
+                                <input id="yes" checked name="isSolution" type="radio">
+                                <span>Yes</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input id="no" name="isSolution" type="radio">
+                                <span>No</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sol" data-type="custom">
+                    <div class="guess">[
+                        graph.pointA.coord, graph.pointB.coord,
+                        graph.pointA.coord[0] &gt; graph.pointB.coord[0] ? graph.shadetop : !graph.shadetop,
+                        graph.dasharray === "- " ? false : true,
+                        $("input[name='isSolution']:checked").attr("id")]
+                    </div>
+                    <div class="validator-function">
+                        if (_.isEqual(guess, [[-5, 5], [5, 5], false, true])) {
+                            return "";
+                        }
+
+                        var slope = ( guess[1][1] - guess[0][1] ) / ( guess[1][0] - guess[0][0] );
+                        var yint = slope * ( 0 - guess[0][0] ) + guess[0][1];
+                        return abs( SLOPE - slope ) &lt; 0.001
+                            &amp;&amp; abs( YINT - yint ) &lt; 0.001
+                            &amp;&amp; guess[2] === LESS_THAN
+                            &amp;&amp; guess[3] === INCLUSIVE
+                            &amp;&amp; POINT_SOLUTION === (guess[4] === 'yes');
+                    </div>
+                    <div class="show-guess">
+                        graph.pointA.setCoord( guess[0] );
+                        graph.pointB.setCoord( guess[1] );
+                        graph.shadetop = graph.pointA.coord[0] &gt; graph.pointB.coord[0] ? guess[2] : !guess[2];
+                        if ( guess[3] ) {
+                            graph.dasharray = "";
+                            $( "input[name=dashradio][value=solid]" ).attr( "checked", true );
+                        } else {
+                            graph.dasharray = "- ";
+                            $( "input[name=dashradio][value=dashed]" ).attr( "checked", true );
+                        }
+                        graph.update();
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <div data-if="STD_FORM" data-unwrap="">
+            <p>
+                Let's first convert the inequality into slope-intercept form,
+                which allows us to determine the <code>y</code>-intercept and the slope of the line in order to graph it.
+            </p>
+            <p><code>
+                \qquad\begin{eqnarray}
+                <var>expr(["+", ["*", A, "x"], ["*", B, "y"]])</var> &amp;<var>STD_FORM_COMP</var>&amp; <var>C</var> \\
+                <var>coefficient(B)</var>y &amp;<var>STD_FORM_COMP</var>&amp; <var>expr([ "+", [ "*", -A, "x" ], C ])</var> \\
+                y &amp;<var>COMP</var>&amp; <var>PRETTY_SLOPE</var> + <var>YINT</var>
+                \end{eqnarray}
+            </code></p>
+        </div>
+
+        <div>
+            <p>
+                Since the inequality is in slope-intercept form, we can use the
+                <code>y</code>-intercept and the slope of the line in order to graph it.
+            </p>
+            <p>The inequality sign then tells us which side of the line is to be shaded and whether the line is solid or dashed.</p>
+            <p>Finally, we can see whether or not our given point lies in the shaded area to check if it's a solution of the inequality.</p>
+        </div>
+
+        <div>
+            <p>
+                Based on the inequality, we can see that the <code>y</code>-intercept
+                of the boundary line is the point <code>(0, <var>YINT</var>)</code>.
+                We can also see that the slope of the line is <code><var>fractionReduce(SLOPE_FRAC[0], SLOPE_FRAC[1])</var></code>.
+            </p>
+            <p data-if="SLOPE_FRAC[0] < 0">
+                This means that for every <code>\blue{<var>SLOPE_FRAC[1]</var>}</code> <var>plural_form(genericUnit[1], SLOPE_FRAC[1])</var>
+                we increase along the <code>x</code>-axis, we move <code>\pink{<var>abs(SLOPE_FRAC[0])</var>}</code>
+                <var>plural_form(genericUnit[1], SLOPE_FRAC[0])</var> down the <code>y</code>-axis to find another point on the boundary line:
+            </p><p data-else="">
+                This means that for every <code>\blue{<var>SLOPE_FRAC[1]</var>}</code> <var>plural_form(genericUnit[1], SLOPE_FRAC[1])</var>
+                we increase along the <code>x</code>-axis, we move <code>\pink{<var>abs(SLOPE_FRAC[0])</var>}</code>
+                <var>plural_form(genericUnit[1], SLOPE_FRAC[0])</var> up the <code>y</code>-axis to find another point on the boundary line:
+            </p>
+            <p><code>
+                (0 + \blue{<var>SLOPE_FRAC[1]</var>}, <var>YINT</var> + \pink{<var>SLOPE_FRAC[0]</var>}) =
+                (<var>SLOPE_FRAC[1]</var>, <var>YINT + SLOPE_FRAC[0]</var>)
+            </code></p>
+            <p>We can now connect these points to graph the line.</p>
+            <div class="graphie" data-update="grid">
+                graph.pointA.setCoord([0, YINT]);
+                graph.pointB.setCoord([SLOPE_FRAC[1], YINT + SLOPE_FRAC[0]]);
+                graph.update();
+            </div>
+        </div>
+
+        <div>
+            <p>The inequality is <code>y <var>COMP</var> <var>PRETTY_SLOPE</var> + <var>YINT</var></code>.</p>
+            <div data-if="LESS_THAN">
+                <div data-if="INCLUSIVE">
+                    This means that for each point <code>(x, y)</code> in the solution set,
+                    the <code>y</code>-value is <em>less than or equal</em> <code><var>PRETTY_SLOPE</var> + <var>YINT</var></code>.
+                    Therefore, the solution set lies <em>below</em> the line and the line should be <em>solid</em>.
+                </div><div data-else="">
+                    This means that for each point <code>(x, y)</code> in the solution set,
+                    the <code>y</code>-value is <em>strictly less than</em> <code><var>PRETTY_SLOPE</var> + <var>YINT</var></code>.
+                    Therefore, the solution set lies <em>below</em> the line and the line should be <em>dashed</em>.
+                </div>
+            </div>
+            <div data-else="">
+                <div data-if="INCLUSIVE">
+                    This means that for each point <code>(x, y)</code> in the solution set,
+                    the <code>y</code>-value is <em>greater than or equal</em> <code><var>PRETTY_SLOPE</var> + <var>YINT</var></code>.
+                    Therefore, the solution set lies <em>above</em> the line and the line should be <em>solid</em>.
+                </div><div data-else="">
+                    This means that for each point <code>(x, y)</code> in the solution set,
+                    the <code>y</code>-value is <em>strictly greater than</em> <code><var>PRETTY_SLOPE</var> + <var>YINT</var></code>.
+                    Therefore, the solution set lies <em>above</em> the line and the line should be <em>dashed</em>.
+                </div>
+            </div>
+            <div class="graphie" data-update="grid">
+                graph.shadetop = graph.pointA.coord[0] &gt; graph.pointB.coord[0] ? LESS_THAN : !LESS_THAN;
+                if (INCLUSIVE) {
+                    graph.dasharray = '';
+                    $('input[name=dashradio][value=solid]').attr('checked', true);
+                } else {
+                    graph.dasharray = '- ';
+                    $('input[name=dashradio][value=dashed]').attr('checked', true);
+                }
+                graph.update();
+            </div>
+        </div>
+
+        <div>
+            <p data-if="POINT_SOLUTION">
+                We can see that <code>(<var>POINT[0]</var>, <var>POINT[1]</var>)</code> lies within the shaded area,
+                which means that it is a solution of the inequality.
+            </p>
+            <p data-else="">
+                We can see that <code>(<var>POINT[0]</var>, <var>POINT[1]</var>)</code> lies outline of the shaded area,
+                which means that it is <em>not</em> a solution of the inequality.
+            </p>
+
+            <div class="graphie" data-update="grid">
+                style({ stroke: PINK, fill: PINK }, function() {
+                    circle( [ POINT[0], POINT[1] ], 0.2 ).toBack();
+                });
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
