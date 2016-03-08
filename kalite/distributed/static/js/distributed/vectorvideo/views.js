@@ -19,12 +19,6 @@ var VectorVideoView = ContentBaseView.extend({
     initialize: function (options) {
         ContentBaseView.prototype.initialize.call(this, options);
 
-        //TODO: move this to the other place
-        this.data_model.set("previous_time", 0);
-        this.data_model.set("previous_object", 0);
-        this.data_model.set("previous_stroke", 0);
-        this.data_model.set("previous_substroke", 0);
-
         _.bindAll(this, "create_audio_object", "check_if_playing");
 
         this.render();
