@@ -14,6 +14,7 @@ from django.views.i18n import javascript_catalog
 from contextlib import contextmanager
 
 from kalite.version import VERSION, SHORTVERSION
+from kalite.topic_tools import settings as topic_settings
 
 from fle_utils.config.models import Settings
 from fle_utils.general import ensure_dir, softload_json
@@ -381,3 +382,25 @@ def download_content_pack(fobj, lang, minimal=False):
     httpf.close()
 
     return zf
+
+
+def extract_content_db(zf, lang, is_template=False):
+    """
+    :param: as_template: Extracts the result to the template destination,
+                         intended for source distribution
+    """
+    if not is_template:
+        content_db_path = topic_settings.CONTENT_DATABASE_PATH.format(
+            channel=topic_settings.CHANNEL,
+            language=lang,
+        )
+    else:
+        content_db_path = topic_settings.CONTENT_DATABASE_TEMPLATE_PATH.format(
+            channel=topic_settings.CHANNEL,
+            language=lang,
+        )
+
+    with open(content_db_path, "wb") as f:
+        dbfobj = zf.open("content.db")
+        shutil.copyfileobj(dbfobj, f)
+
