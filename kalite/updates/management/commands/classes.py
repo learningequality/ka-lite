@@ -3,12 +3,16 @@
 from datetime import datetime
 from optparse import make_option
 
-from django.conf import settings; logging = settings.LOG
+from django.conf import settings
+from django.core.management import call_command
 from django.utils.translation import ugettext as _
 
 from ...models import UpdateProgressLog
 from fle_utils.django_utils.command import LocaleAwareCommand
 from functools import wraps
+
+
+logging = settings.LOG
 
 
 def skip_if_no_progress_log(func):
@@ -45,6 +49,8 @@ class UpdatesCommand(LocaleAwareCommand):
         super(UpdatesCommand, self).__init__(*args, **kwargs)
 
     def setup(self, options):
+
+        call_command("initialize_kalite")  # Ensure database has been initialized for access below!
 
         # Should be set by command's handle() method since there's no clear
         # call structure defined. Respected by the methods that update stuff
