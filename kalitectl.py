@@ -186,7 +186,7 @@ def update_default_args(defaults, updates):
     looking into django.
     """
     # Returns either the default or an updated argument
-    arg_name = re.compile(r"^-?-?\s*=?([^\s=-]+)")
+    arg_name = re.compile(r"^-?-?\s*=?([^\s=]+)")
     # Create a dictionary of defined defaults and updates where '-somearg' is
     # always the key, update the defined defaults dictionary with the updates
     # dictionary thus overwriting the defaults.
