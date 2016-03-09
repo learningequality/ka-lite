@@ -31,14 +31,10 @@ clean-build:
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
 	rm -fr kalite/database/templates
-	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '*.egg' -exec rm -f {} +
+	find . -regextype posix-extended -regex '.*\.(egg-info|egg)' -exec rm -fr {} +
 
 clean-pyc:
-	find . -name '*.pyc' -exec rm -f {} +
-	find . -name '*.pyo' -exec rm -f {} +
-	find . -name '*~' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -fr {} +
+	find . -regextype posix-extended -regex '.*\.(pyc|pyo|~|__pycache__)' -exec rm -fr {} +
 
 clean-test:
 	rm -fr .tox/
