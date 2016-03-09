@@ -33,7 +33,7 @@ from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMEN
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
-from kalite.distributed.management.commands.retrievecontentpack import CONTENT_PACK_URL_TEMPLATE
+from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE
 from kalite.facility.models import Facility
 from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device

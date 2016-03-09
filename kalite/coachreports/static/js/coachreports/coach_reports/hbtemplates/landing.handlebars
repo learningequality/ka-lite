@@ -3,7 +3,7 @@
 		<h1 class="status_name">{{ status.facility_name }}{{#if status.group_name }}: {{ status.group_name }}{{/if}}</h1>
 		<div class="topic-row">
 			<div class="col-sm-6">
-				<label for="topic-list">Topic: </label>
+				  <label for="topic-list">{{_ "Topic:" }}</label>
 				<div id="topic-list-div">
 					<select id="topic-list" multiple="multiple">
 					</select>
@@ -47,7 +47,7 @@
 				</h5>
 				<div class="progressbar">
 					<div class="innerbar col-md-3">
-						<label id="legendMargin" for="legend">Key</label>
+						  <label id="legendMargin" for="legend">{{_ "Key" }}</label>
 				        <ul id="legend">
 				        	<li class="barlegend"><div class="struggling"></div><span>{{_ "Struggling" }}</span></li>
 				            <li class="barlegend"><div class="complete"></div><span>{{_ "Completed" }}</span></li>
