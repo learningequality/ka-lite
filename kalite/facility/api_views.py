@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet.decorators import api_response_causes_reload
-from fle_utils.internet.classes import JsonResponseMessageSuccess, JsonResponseMessageError
+from fle_utils.internet.classes import JsonResponseMessageSuccess, JsonResponseMessageError, JsonResponse
 from kalite.shared.decorators.auth import require_authorized_admin
 
 
@@ -72,3 +72,16 @@ def group_delete(request, group_id=None):
     count = groups_to_delete.count()
     groups_to_delete.soft_delete()
     return JsonResponseMessageSuccess(_("Deleted %(num_groups)d group(s) successfully.") % {"num_groups": count})
+
+
+def dl_progress_view(request):
+    """
+    :param request: the request
+    :param request_id: sent in with url request
+    """
+    print "\n\nREACHED DL_PROGRESS_VIEW\n\n"
+
+    # create async process to udpate the model and start download process
+    download_progress = DownloadAssessmentProgress.objects.get(something)
+    # get data from django model 
+    return JsonResponse({ "name" : "download_progress" })

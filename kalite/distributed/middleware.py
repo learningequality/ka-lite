@@ -16,3 +16,6 @@ class LockdownCheck:
             and not request.path.startswith(settings.STATIC_URL)):
 
             raise PermissionDenied()
+
+
+

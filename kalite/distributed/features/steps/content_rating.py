@@ -38,7 +38,7 @@ def impl(context):
 @then(u'I see a feedback form')
 def impl(context):
     feedback_form_container = find_id_with_wait(context, RATING_CONTAINER_ID, wait_time=60)
-    assert elem_is_visible_with_wait(context, feedback_form_container), "Rating form is not visible."
+    assert feedback_form_container.is_displayed(), "Rating form is not visible."
 
 @when(u'I alter a star rating')
 def impl(context):
@@ -166,20 +166,22 @@ def rate_id(context, id_, val=3):
     Enter a star rating given the id of the container
     :param context: behave context
     :param id: id of the container element
-    :return: nothing
     """
 
     def rate_element(driver):
         try:
-            container = find_id_with_wait(context, id_)
-            els = container.find_elements_by_class_name(STAR_RATING_OPTION_CLASS)
-            rating_el = [el for el in els if int(el.get_attribute("data-val")) == val].pop()
+            inner_wrapper = find_id_with_wait(context, id_, wait_time=2)
+            els = inner_wrapper.find_elements_by_class_name(STAR_RATING_OPTION_CLASS)
+            rating_el = [el for el in filter(lambda x: int(x.get_attribute("data-val")) == val, els)][0]
             rating_el.click()
             return True
-        except (NoSuchElementException, StaleElementReferenceException):
+        except (NoSuchElementException, StaleElementReferenceException, TimeoutException, IndexError):
             return False
 
-    WebDriverWait(context.browser, 10).until(rate_element)
+    try:
+        WebDriverWait(context.browser, 10).until(rate_element)
+    except TimeoutException:
+        raise Exception("Did not find rating for {id:s}".format(id=id_))
 
 
 def enter_text_feedback(context, text_feedback):

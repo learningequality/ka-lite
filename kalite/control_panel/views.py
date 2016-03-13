@@ -6,7 +6,7 @@ import re
 import os
 from annoying.decorators import render_to
 from annoying.functions import get_object_or_None
-from collections_local_copy import OrderedDict
+from fle_utils.collections_local_copy import OrderedDict
 
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
@@ -31,7 +31,6 @@ from kalite.facility.forms import FacilityForm
 from kalite.facility.models import Facility, FacilityUser, FacilityGroup
 from kalite.main.models import ExerciseLog, VideoLog, UserLog, UserLogSummary
 from kalite.shared.decorators.auth import require_authorized_admin, require_authorized_access_to_student_data
-from kalite.topic_tools import get_exercise_cache
 from kalite.version import VERSION, VERSION_INFO
 
 
@@ -359,10 +358,9 @@ def facility_management(request, ds, facility, group_id=None, zone_id=None, per_
     # If group_id exists, extract data for that group
     if group_id:
         if group_id == ungrouped_id:
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["name"] == _(UNGROUPED))
+            group_data = group_data[None]
         else:
-            group_id_index = next(index for (index, d) in enumerate(group_data.values()) if d["id"] == group_id)
-        group_data = group_data.values()[group_id_index]
+            group_data = group_data[group_id]
     else:
         group_data = {}
 
@@ -444,7 +442,6 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # compute period start and end
     # Now compute stats, based on queried data
-    num_exercises = len(get_exercise_cache())
     user_data = OrderedDict()
     group_data = OrderedDict()
 
@@ -507,7 +504,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     for elog in exercise_logs:
         user_data[elog["user__pk"]]["total_exercises"] += 1
-        user_data[elog["user__pk"]]["pct_mastery"] += 1. / num_exercises
+        user_data[elog["user__pk"]]["pct_mastery"] += elog["streak_progress"]
         user_data[elog["user__pk"]]["exercises_mastered"].append(elog["exercise_id"])
 
     for vlog in video_logs:
@@ -539,6 +536,7 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 
     # Add group data.  Allow a fake group UNGROUPED
     for user in users:
+        user_data[user.pk]["pct_mastery"] = user_data[user.pk]["pct_mastery"]/(user_data[user.pk]["total_exercises"] or 1)
         group_pk = getattr(user.group, "pk", None)
         if group_pk not in group_data:
             logging.error("User %s still in nonexistent group %s!" % (user.id, group_pk))
@@ -550,9 +548,9 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
         group_data[group_pk]["total_exercises"] += user_data[user.pk]["total_exercises"]
 
         total_mastery_so_far = (group_data[group_pk]["pct_mastery"] * (group_data[group_pk]["total_users"] - 1) + user_data[user.pk]["pct_mastery"])
-        group_data[group_pk]["pct_mastery"] =  total_mastery_so_far / group_data[group_pk]["total_users"]
+        group_data[group_pk]["pct_mastery"] = total_mastery_so_far / group_data[group_pk]["total_users"]
 
-    if len(group_data) == 1 and group_data.has_key(None):
+    if len(group_data) == 1 and None in group_data:
         if not group_data[None]["total_users"]:
             del group_data[None]
 
@@ -562,14 +560,14 @@ def _get_user_usage_data(users, groups=None, period_start=None, period_end=None,
 def check_meta_data(facility):
     '''Checks whether any metadata is missing for the specified facility.
 
-    Args: 
+    Args:
       facility (Facility instance): facility to check for missing metadata
- 
+
     Returns:
       bool: True if one or more metadata fields are missing'''
 
     check_fields = ['user_count', 'latitude', 'longitude', 'address', 'contact_name', 'contact_phone', 'contact_email']
-    return any([ (getattr(facility, field, None) is None or getattr(facility, field)=='') for field in check_fields])
+    return any([(getattr(facility, field, None) is None or getattr(facility, field) == '') for field in check_fields])
 
 
 # context functions

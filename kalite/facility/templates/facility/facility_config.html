@@ -1,0 +1,24 @@
+{% extends "distributed/base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block headcss %}
+    <link rel="stylesheet" href="{% static 'css/facility/config_form.css' %}">
+{% endblock headcss %}
+
+{% block headjs %}
+    <script type="text/javascript">
+        var need_update = "{{ need_update }}";
+        var default_hostname = "{{ default_hostname }}";
+        var csrftoken = "{{ csrf_token }}";
+    </script>
+
+    <script src="{% static 'js/facility/bundles/bundle_facility.js' %}"> </script>
+{% endblock headjs %}
+
+{% block content %}
+
+{% csrf_token %}
+
+{% endblock content %}
+

@@ -11,11 +11,10 @@ import kalite.django_cherrypy_wsgiserver.api_urls
 import kalite.i18n.api_urls
 import kalite.coachreports.api_urls
 import kalite.control_panel.api_urls
-import kalite.playlist.api_urls
 import kalite.contentload.api_urls
+import kalite.facility.api_urls
 import kalite.main.api_urls
 import kalite.updates.api_urls
-import kalite.store.api_urls
 import kalite.inline.api_urls
 
 urlpatterns = patterns(__package__ + '.api_views',
@@ -26,6 +25,10 @@ urlpatterns = patterns(__package__ + '.api_views',
 ############ Inline narratives ############################################
 urlpatterns += patterns('',
     url(r'^inline/narrative/', include(kalite.inline.api_urls))
+)
+
+urlpatterns += patterns('', 
+    url(r'^facility/', include(kalite.facility.api_urls))
 )
 
 # Let user to create the super user from browser
@@ -54,10 +57,6 @@ urlpatterns += patterns('kalite.updates.api_views',
     url(r'^', include(kalite.updates.api_urls)),
 )
 
-# Playlist endpoints for updating playlist info
-urlpatterns += patterns('kalite.playlist.api_views',
-    url(r'^playlists/', include(kalite.playlist.api_urls)),
-)
 
 # Control panel data export endpoints
 urlpatterns += patterns('kalite.control_panel.api_views',
@@ -73,12 +72,6 @@ urlpatterns += patterns('kalite.coachreports.api_views',
 urlpatterns += patterns('kalite.i18n.api_views',
     url(r'^i18n/', include(kalite.i18n.api_urls)),
 )
-
-# store allows purchasing of user items with points
-urlpatterns += patterns('',
-    url(r'^store/', include(kalite.store.api_urls)),
-)
-
 
 urlpatterns += patterns('',
     # toss out any requests made to actual KA site urls

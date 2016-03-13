@@ -1,0 +1,41 @@
+    <form id="config-form" method="post" class="basic-form">
+        <div class="user-form">
+            <h4>Choose a username and password for the admin account.</h4>
+            <div class="user-config row">
+                <div class="col-md-2 col-xs-3">Username:</div>
+                <div class="col-md-10"><input class="user-input" type="text" name="username" ></div>
+            </div>
+
+            <div class="user-config row">
+                <div class="col-md-2 col-xs-3">Password:</div> 
+                <div class="col-md-10"><input class="user-input" type="password" name="password"></div>
+            </div>
+
+            <div class="user-config row">
+                <div class="col-md-2 col-xs-3">Re-type Password:</div>
+                <div class="col-md-2"><input class="user-input" type="password" name="pw_confirm"></div>
+                <div class="col-md-4" id="pw_error">* Passwords do not match</div>
+            </div>
+
+            <button id="load-device-form" type="button">Next</button>
+        </div>
+
+        <div class="device-form">
+            <h4>Enter a hostname for this server. If left blank, it will default to {{ default_hostname }}</h4>
+    
+            <div class="device-config row">
+                <div class="col-md-2 col-xs-3">Hostname:</div>
+                <div class="col-md-10"><input type="text" name="hostname"></div>
+            </div>
+
+            <h4>Enter a one-line description for this server (optional). </h4>
+
+            <div class="device-config row">
+                <div class="col-md-2 col-xs-3">Description:</div>
+                <div class="col-md-10"><input type="text" name="description"></div>
+            </div>
+            <button id="submit" type="button">Next</button>
+
+        </div> 
+    
+    </form>

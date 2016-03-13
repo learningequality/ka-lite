@@ -9,8 +9,8 @@ from django.utils.translation import ugettext as _
 
 from kalite.facility.models import FacilityUser
 from kalite.main.models import ExerciseLog, VideoLog
-from kalite.playlist.models import QuizLog
-from kalite.topic_tools import get_id2slug_map, get_leafed_topics, get_content_cache, get_exercise_cache, get_node_cache
+from kalite.topic_tools.content_models import get_topic_nodes, get_topic_node, get_content_parents, get_topic_contents
+
 
 class PlaylistProgressParent:
     """Parent class for helpful class methods"""
@@ -18,10 +18,9 @@ class PlaylistProgressParent:
     @classmethod
     def get_playlist_entry_ids(cls, playlist):
         """Return a tuple of the playlist's video ids and exercise ids as sets"""
-        playlist_entries = playlist.get("children")
-        topic_cache = get_node_cache()["Topic"]
-        pl_video_ids = set([id for id in playlist_entries if topic_cache.get(id).get("kind") == "Video"])
-        pl_exercise_ids = set([id for id in playlist_entries if topic_cache.get(id).get("kind") == "Exercise"])
+        items = get_topic_contents(topic_id=playlist.get("id"))
+        pl_video_ids = set([item.get("id") for item in items if item.get("kind") == "Video"])
+        pl_exercise_ids = set([item.get("id") for item in items if item.get("kind") == "Exercise"])
         return (pl_video_ids, pl_exercise_ids)
 
     @classmethod
@@ -39,20 +38,6 @@ class PlaylistProgressParent:
 
         return (user_vid_logs, user_ex_logs)
 
-    @classmethod
-    def get_quiz_log(cls, user, playlist_entries, playlist_id):
-        exists = True if [entry for entry in playlist_entries if entry.get("entity_kind") == "Quiz"] else False
-        try:
-            quiz = QuizLog.objects.get(user=user, quiz=playlist_id)
-        except ObjectDoesNotExist:
-            quiz = None
-
-        if quiz:
-            score = int(float(json.loads(quiz.response_log)[quiz.attempts-1]) / float(quiz.total_number) * 100)
-        else:
-            score = 0
-
-        return (exists, quiz, score)
 
 class PlaylistProgress(PlaylistProgressParent):
     """Users progress on playlists"""
@@ -71,22 +56,15 @@ class PlaylistProgress(PlaylistProgressParent):
             language = Settings.get("default_language") or settings.LANGUAGE_CODE
 
         user = FacilityUser.objects.get(id=user_id)
-        all_playlists = get_leafed_topics(language=language)
 
         # Retrieve video, exercise, and quiz logs that appear in this playlist
         user_vid_logs, user_ex_logs = cls.get_user_logs(user)
 
-        exercise_ids = set([ex_log["exercise_id"] for ex_log in user_ex_logs])
-        video_ids = set([get_id2slug_map().get(vid_log["video_id"]) for vid_log in user_vid_logs])
-        # quiz_log_ids = [ql_id["quiz"] for ql_id in QuizLog.objects.filter(user=user).values("quiz")]
-        # Build a list of playlists for which the user has at least one data point
-        user_playlists = list()
-        for p in all_playlists:
-            for e_id in p.get("children"):
+        exercise_ids = list(set([ex_log["exercise_id"] for ex_log in user_ex_logs]))
+        video_ids = list(set([vid_log["video_id"] for vid_log in user_vid_logs]))
 
-                if e_id in exercise_ids or e_id in video_ids:
-                    user_playlists.append(p)
-                    break
+        # Build a list of playlists for which the user has at least one data point
+        user_playlists = get_content_parents(ids=exercise_ids+video_ids)
 
         # Store stats for each playlist
         user_progress = list()
@@ -131,20 +109,6 @@ class PlaylistProgress(PlaylistProgressParent):
             else:
                 ex_status = "complete"
 
-            # Oh Quizzes, we hardly knew ye!
-            # TODO (rtibbles): Sort out the status of Quizzes, and either reinstate them or remove them.
-            # Compute quiz stats
-            # quiz_exists, quiz_log, quiz_pct_score = cls.get_quiz_log(user, (p.get("entries") or p.get("children")), p.get("id"))
-            # if quiz_log:
-            #     if quiz_pct_score <= 50:
-            #         quiz_status = "struggling"
-            #     elif quiz_pct_score <= 79:
-            #         quiz_status = "borderline"
-            #     else:
-            #         quiz_status = "complete"
-            # else:
-            #     quiz_status = "notstarted"
-
             progress = {
                 "title": p.get("title"),
                 "id": p.get("id"),
@@ -156,9 +120,6 @@ class PlaylistProgress(PlaylistProgressParent):
                 "ex_pct_incomplete": ex_pct_incomplete,
                 "ex_pct_struggling": ex_pct_struggling,
                 "ex_status": ex_status,
-                # "quiz_status": quiz_status,
-                # "quiz_exists": quiz_exists,
-                # "quiz_pct_score": quiz_pct_score,
                 "n_pl_videos": n_pl_videos,
                 "n_pl_exercises": n_pl_exercises,
             }
@@ -183,8 +144,7 @@ class PlaylistProgressDetail(PlaylistProgressParent):
         self.score = kwargs.get("score")
         self.path = kwargs.get("path")
 
-    @classmethod
-    def user_progress_detail(cls, user_id, playlist_id, language=None):
+    def user_progress_detail(cls, user_id, playlist_id):
         """
         Return a list of video, exercise, and quiz log PlaylistProgressDetail
         objects associated with a specific user and playlist ID.
@@ -193,22 +153,18 @@ class PlaylistProgressDetail(PlaylistProgressParent):
             language = Settings.get("default_language") or settings.LANGUAGE_CODE
 
         user = FacilityUser.objects.get(id=user_id)
-        playlist = next((pl for pl in get_leafed_topics() if pl.get("id") == playlist_id), None)
+        playlist = get_topic_node(content_id=playlist_id)
 
         pl_video_ids, pl_exercise_ids = cls.get_playlist_entry_ids(playlist)
 
         # Retrieve video, exercise, and quiz logs that appear in this playlist
         user_vid_logs, user_ex_logs = cls.get_user_logs(user, pl_video_ids, pl_exercise_ids)
 
-        # Format & append quiz the quiz log, if it exists
-        # quiz_exists, quiz_log, quiz_pct_score = cls.get_quiz_log(user, (playlist.get("entries") or playlist.get("children")), playlist.get("id"))
-
         # Finally, sort an ordered list of the playlist entries, with user progress
         # injected where it exists.
         progress_details = list()
         for entity_id in playlist.get("children"):
             entry = {}
-            leaf_node = get_content_cache(language=language).get(entity_id) or get_exercise_cache(language=language).get(entity_id) or {}
             kind = leaf_node.get("kind")
 
             status = "notstarted"
@@ -236,14 +192,6 @@ class PlaylistProgressDetail(PlaylistProgressParent):
 
                     score = ex_log.get('streak_progress')
 
-            entry = {
-                "id": entity_id,
-                "kind": kind,
-                "status": status,
-                "score": score,
-                "title": leaf_node["title"],
-                "path": leaf_node["path"],
-            }
 
             progress_details.append(cls(**entry))
 

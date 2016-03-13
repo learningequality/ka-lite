@@ -1,13 +1,80 @@
 """
 """
-from django.conf import settings
+import os
 
+from annoying.decorators import render_to
+
+from django.conf import settings
+from django.core.management import call_command
+from django.db import DatabaseError, connection
 from django.db.models import signals
 from django.db.models.signals import post_save
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.template.response import TemplateResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .models import Facility
 
+from fle_utils.config.models import Settings
+from fle_utils.general import get_host_name
+
 FACILITY_CACHE_STALE = False
+
+@ensure_csrf_cookie
+@render_to("facility/facility_config.html")
+def config_form(request, database):
+    """
+    Render the template for configuration form, passing in database information
+    
+    @param database: a dictionary containing the following info:
+        { "need_update" : does the user need an update?
+          "superuser" : does the superuser exist?
+          "default_hostname" : what will the hostname default to, if User
+                               chooses not to configure one? 
+        }
+    """
+    return database
+
+def is_configured():
+    """
+    Checks whether a system has been configured. For now, being configured
+    simply means that a superuser exists. 
+    """
+    database = False
+    superuser = False
+    need_update = False
+
+    # Check if database file exists
+    database_kind = settings.DATABASES["default"]["ENGINE"]
+    database_file =  (
+        "sqlite" in database_kind \
+                and settings.DATABASES["default"]["NAME"]) or None
+
+
+    if database_file and os.path.exists(database_file):
+        database = True
+
+        # Check for database version, if mismatch, ask user to update
+        # try:
+    from kalite.version import VERSION
+
+    # If version in database not set, it is probably the first
+    # time running this version of KA Lite, but they haven't run setup
+    if not Settings.get("database_version"):
+        Settings.set("database_version", VERSION)
+
+    # Otherwise, if database is already versioned, check
+    # to see if it matches most updated version available
+    assert Settings.get("database_version") == VERSION
+
+    return { "need_update" : need_update,
+             "superuser" : superuser,
+             "default_hostname" : get_host_name() }
+
 
 def refresh_session_facility_info(request, facility_count):
     # Fix for #1211
@@ -62,3 +129,26 @@ class FacilityCheck:
         if not "facility_exists" in request.session or FACILITY_CACHE_STALE:
             # always refresh for admins, or when no facility exists yet.
             refresh_session_facility_info(request, facility_count=Facility.objects.count())
+
+class ConfigCheck:
+    def process_response(self, request, response):
+        """
+        Display configuration page if facility does not have a superuser, 
+        or if there are updates available. 
+        """
+
+        # Only intercept text/html responses to prevent interfering with
+        # static files
+        if response['Content-Type'].split(';')[0] == 'text/html': 
+            db_exists = is_configured()
+            if db_exists['superuser'] and not db_exists['need_update']:
+                return response
+
+            # If device isn't configured, and user is trying to access KA Lite 
+            # for the first time, load the form page to configure settings
+            if request.path != '/facility/config/' and \
+                    request.path != '/securesync/api/dl_progress':
+            
+                return config_form(request, db_exists)
+
+        return response

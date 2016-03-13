@@ -9,7 +9,6 @@ from django.core.management.base import BaseCommand
 from django.db import DatabaseError
 
 from fle_utils.config.models import Settings
-from kalite.caching import initialize_content_caches
 from securesync.models import Device
 
 
@@ -36,20 +35,7 @@ class Command(BaseCommand):
             # Double check the setup process worked ok.
             assert Settings.get("database_version") == VERSION, "There was an error configuring the server. Please report the output of this command to Learning Equality."
 
-    def reinitialize_server(self):
-        """Reset the server state."""
-
-        # Next, call videoscan.
-        logging.info("Running videoscan.")
-        call_command("videoscan")
-
-        # Finally, pre-load global data
-        initialize_content_caches()
 
     def handle(self, *args, **options):
 
         self.setup_server_if_needed()
-
-        # we do this on every server request,
-        # as we don't know what happens when we're not looking.
-        self.reinitialize_server()

@@ -14,12 +14,9 @@ from django.http import HttpResponseRedirect
 from . import api_urls
 import kalite.dynamic_assets.urls
 import kalite.coachreports.urls
-import kalite.playlist.urls
 import kalite.control_panel.urls
 import kalite.facility.urls
 import kalite.updates.urls
-import kalite.student_testing.urls
-import kalite.store.urls
 import securesync.urls
 
 from kalite.contentload import settings as contentload_settings
@@ -63,9 +60,6 @@ urlpatterns += patterns(__package__ + '.views',
     # For teachers
     url(r'^coachreports/', include(kalite.coachreports.urls)),
 
-    # For playlists
-    url(r'^playlists/', include(kalite.playlist.urls)),
-
     # For admins
     url(r'^update/', include(kalite.updates.urls)),
 
@@ -95,9 +89,6 @@ if "kalite.testing.loadtesting" in settings.INSTALLED_APPS:
 urlpatterns += patterns(__package__ + '.views',
     url(r'^$', 'homepage', {}, 'homepage'),
     url(r'^search/$', 'search', {}, 'search'),
-    url(r'^test/', include(kalite.student_testing.urls)),
-
-    url(r'^store/', include(kalite.store.urls)),
     # the following pattern is a catch-all, so keep it last:
 
     # Allows remote admin of the distributed server
@@ -105,6 +96,10 @@ urlpatterns += patterns(__package__ + '.views',
 
     # the following has no "$", and thus catches anything starting with "learn/"
     url(r'^learn/', 'learn', {}, 'learn'),
+)
+# Web-Based Config... move later
+urlpatterns += patterns('',
+    url(r'^facility/', include(kalite.facility.urls)),
 )
 
 if settings.DEBUG:

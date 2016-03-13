@@ -35,6 +35,7 @@
     "backbone": "~1.2.1",
     "bootstrap": "^3.3.5",
     "bootstrap-datepicker": "^1.4.0",
+    "bootstrap-multiselect": "^0.9.13-1",
     "browserify": "~11.0.1",
     "browsernizr": "^1.0.2",
     "colors": "^1.1.2",

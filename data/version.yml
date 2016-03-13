@@ -1,3 +1,17 @@
+0.16.0:
+  release_date:
+  git_commit: ""
+  new_features:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+  bugs_fixed:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
 0.15.1:
   release_date: "2015/12/01"
   git_commit: "746d0d"

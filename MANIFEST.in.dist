@@ -9,6 +9,9 @@ include requirements.txt
 
 recursive-include kalite *.html *.txt *.png *.js *.css *.gif *.less *.otf *.svg *.woff *.eot *.ttf *.zip *.json *.handlebars
 
+# Get the empty DBs -- make sure they are properly generated!
+include kalite/database/data.sqlite
+
 # This can be a huge problem when creating an sdist from
 # a local development environment
 recursive-exclude kalite/static *

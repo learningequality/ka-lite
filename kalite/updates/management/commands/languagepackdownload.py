@@ -9,20 +9,17 @@ import zipfile
 from optparse import make_option
 from StringIO import StringIO
 
-from django.conf import settings; logging = settings.LOG
-import httplib
+from django.conf import settings
+logging = settings.LOG
 
-from ... import REMOTE_VIDEO_SIZE_FILEPATH
 from .classes import UpdatesStaticCommand
 from fle_utils.chronograph.management.croncommand import CronCommand
 from fle_utils.general import ensure_dir
 from fle_utils.internet.download import callback_percent_proxy, download_file
-
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.utils.translation import ugettext as _
-from kalite import caching
-from kalite.i18n import get_language_name, get_language_pack_url, \
+from kalite.i18n.base import get_language_name, get_language_pack_url, \
     get_localized_exercise_dirpath, get_po_filepath, get_srt_path, \
     lcode_to_django_dir, lcode_to_ietf, update_jsi18n_file
 from kalite.version import SHORTVERSION
@@ -88,7 +85,6 @@ class Command(UpdatesStaticCommand, CronCommand):
             self.next_stage(_("Creating static files for language pack '%(lang_code)s'") % {"lang_code": lang_code})
             update_jsi18n_file(lang_code)
 
-
             self.next_stage(_("Moving files to their appropriate local disk locations."))
             move_dubbed_video_map(lang_code)
             move_exercises(lang_code)
@@ -97,9 +93,6 @@ class Command(UpdatesStaticCommand, CronCommand):
 
             self.next_stage()
             call_command("collectstatic", interactive=False)
-
-            self.next_stage(_("Invalidate caches"))
-            caching.invalidate_all_caches()
 
             self.complete(_("Finished processing language pack %(lang_name)s.") % {"lang_name": get_language_name(lang_code)})
         except Exception as e:

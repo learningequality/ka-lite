@@ -16,6 +16,10 @@ from fle_utils.django_utils.users import verify_raw_password
 from securesync.models import DeviceZone
 from securesync.engine.models import DeferredCountSyncedModel
 
+import os
+import subprocess
+
+from kalite import ROOT_DATA_PATH
 
 class Facility(DeferredCountSyncedModel):
     name = models.CharField(verbose_name=_("Name"), help_text=_("(This is the name that learners/coaches will see when choosing their facility; it can be in the local language.)"), max_length=100)
@@ -307,3 +311,48 @@ class CachedPassword(models.Model):
 
     class Meta:
         app_label = "securesync"  # for back-compat reasons
+
+
+class AssessmentItemsDownloadProgress(models.Model):
+    """
+    Model representing the download process for assessment items.
+    When created, should be associated with a process to download
+    assessment items. The process will update the model's progress field.
+    When deleted, should kill the process. 
+    """
+    progress = models.IntegerField(default=0)
+    
+    def save(self, *args, **kwargs):
+        # start a new process which starts the dl
+        path = os.path.abspath(__file__).rsplit("/",1)[0]
+
+        # spawn new process with current working directory set to parent
+        # directory, so that it can import all of the appropriate modules
+        # we want it to be the ka-lite directory
+        new_cwd = os.path.dirname(os.path.dirname(path))
+
+        print "HERE ARE os.environ: "
+        print os.environ
+        print "\n\n"
+
+        print "os.environ.get('PYTHONPATH'): "
+        print os.environ.get('PYTHONPATH')
+        print "\n\n"
+
+        self.process = subprocess.Popen(["python", 
+                                         os.path.join(path, "dl_assess.py")],
+                                        #cwd=new_cwd)
+                                        env={'PYTHONPATH': new_cwd})
+                                        #env=dict(os.environ, PYTHONPATH=new_cwd) )
+        
+        super(AssessmentItemsDownloadProgress, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self.process.poll()
+        
+        if not self.process.returncode:
+            self.process.kill()
+
+        super(AssessmentItemsDownloadProgress, self).delete(*args, **kwargs)
+
+

@@ -7,18 +7,21 @@ from securesync.devices.views import *  # ARGH! TODO(aron): figure out what thin
 from django import forms
 from django.conf import settings; logging = settings.LOG
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_protect
 
 from .decorators import facility_required
 from .forms import FacilityUserForm, FacilityGroupForm
 from .models import Facility, FacilityGroup, FacilityUser
 from fle_utils.internet.functions import set_query_params
 from kalite.dynamic_assets.decorators import dynamic_settings
-from kalite.i18n import get_default_language
+from kalite.i18n.base import get_default_language
 from kalite.shared.decorators.auth import require_authorized_admin
 
 
@@ -140,7 +143,7 @@ def _facility_user(request, facility, title, is_teacher=False, new_user=False, u
     # in all other cases, we are creating a new user
     else:
         form = FacilityUserForm(facility, initial={
-            "group": request.GET.get("group", None),
+            "group": request.GET.get("group"),
             "is_teacher": is_teacher,
             "default_language": get_default_language(),
         })
@@ -188,3 +191,54 @@ def group_edit(request, facility, group_id):
         "title": _("Add a new group") if group_id == 'new' else _("Edit group"),
     }
 
+#@render_to("facility/facility_config2.html")
+# we don't necessarily have to render anything on django end because
+# all you need to return is just some http response and the front end
+# will the render whatever subview it does in facility/views.js
+def config(request):
+    """
+    Calls command to configure database, admin account, and server info
+    """
+
+    # Commented out for testing. We don't want to actually create a superuser
+    # for testing, because then we won't have to go and delete the database
+    # every time if we want to load the server for testing
+    # Uncomment during actual user testing
+
+    # Form is not complete unless password field is filled out
+    """
+    if request.POST.get('password'):
+        name = "default" #getpass.getuser().replace("-", "_")
+        
+        if request.POST.get('username'):
+            name = request.POST.get('username')
+        
+            call_command("createsuperuser", username=name,
+                          email="dummy@learningequality.org", 
+                          interactive=False)
+
+            admin = User.objects.get(username=name)
+            admin.set_password(request.POST.get('password'))
+            admin.save()
+    """
+    #return { "username" : name }
+    return HttpResponse("rudolph the rednose reindeer")
+
+@render_to("facility/test.html")
+def dl_progress(request):
+    print request.POST
+
+    return {"nothing": "nothing"}
+
+    """
+    if request.POST.get('download-items') == 'yes':
+        call_command("unpack_assessment_zip")
+
+
+        return HttpResponse("yay download for u")
+    else:
+        return HttpResponse("ok no download for you")
+
+
+    return HttpResponse("temporary")
+    """

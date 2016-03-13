@@ -16,6 +16,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from django.contrib.auth.models import User
 from django.core.management import call_command
 from django.db import connections
+from django.db.transaction import TransactionManagementError
 
 from kalite.testing.base import KALiteTestCase
 from kalite.testing.behave_helpers import login_as_admin, login_as_coach, logout, login_as_learner
@@ -168,7 +169,10 @@ def database_teardown(context):
     setup/teardown done by TestCases in order to achieve consistent isolation.
     """
     for alias in connections:
-        call_command("flush", database=alias, interactive=False)
+        try:
+            call_command("flush", database=alias, interactive=False)
+        except TransactionManagementError as e:
+            print("Couldn't flush the database, got a TransactionManagementError: " + e.message)
 
 def do_fake_registration():
     """

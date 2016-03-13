@@ -17,16 +17,20 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from kalite import version
-from kalite.i18n import lcode_to_django_lang
+from kalite.i18n.base import lcode_to_django_lang
 from kalite.distributed.api_views import compute_total_points, get_messages_for_api_calls
+from kalite.facility.models import AssessmentItemsDownloadProgress
 from kalite.main.models import UserLog
 
 from securesync.models import Device
 
+from tastypie.authentication import Authentication
+from tastypie.authorization import Authorization
 
 class FacilityResource(ModelResource):
     class Meta:
@@ -211,3 +215,15 @@ class FacilityUserResource(ModelResource):
             data["username"] = request.user.username
 
         return data
+
+class DownloadProgress(ModelResource):
+    class Meta:
+        queryset = AssessmentItemsDownloadProgress.objects.all()
+        resource_name = 'dl_progress'
+        list_allowed_methods = ['get','post']
+        detail_allowed_methods = ['get', 'delete']
+        # DEFAULT NO-OP authorization currently used for
+        # develop mode... change back to teacher/admin auth later!
+        #authorization = TeacherOrAdminCanReadWrite()
+        authorization = Authorization()
+        authentication = Authentication()
