@@ -1,7 +1,8 @@
 var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
-var _V_ = require("video.js");
+var _V_ = require("video.js/dist/alt/video.novtt");
+var vttjs = require("vtt.js");
 global.videojs = _V_;
 require("../../../css/distributed/video-js-override.less");
 
@@ -19,6 +20,12 @@ var VideoPlayerState = {
 var VideoPlayerView = ContentBaseView.extend({
 
     template: require("./hbtemplates/video-player.handlebars"),
+
+    initialize: function(options) {
+        ContentBaseView.prototype.initialize.call(this, options);
+        this.flash_only = options.flash_only;
+    },
+
 
     render: function() {
 
@@ -60,6 +67,8 @@ var VideoPlayerView = ContentBaseView.extend({
         }
         this._loaded = true;
 
+        var self = this;
+
         var player_id = this.$(".video-js").attr("id");
 
         if (player_id) {
@@ -68,12 +77,29 @@ var VideoPlayerView = ContentBaseView.extend({
                 "playbackRates": [0.5, 1, 1.25, 1.5, 2],
                 "html5": {
                     nativeTextTracks: false
+                },
+                "techOrder": this.flash_only ? ["flash"] : ["html5", "flash"],
+                flash: {
+                    swf: window.sessionModel.get("STATIC_URL") + "distributed/js/distributed/video/video-js.swf"
                 }
             };
             if( this.data_model.get("content_urls").thumbnail ) {
                 video_player_options['poster'] = this.data_model.get("content_urls").thumbnail;
             }
             this.player = window.player = _V_(player_id, video_player_options);
+            this.player.ready(function() {
+                videoPlayer = this;
+
+                videoPlayer.on('error', function() { // error event listener
+                    // dispose the old player and its HTML
+                    videoPlayer.dispose();
+
+                    self.flash_only = true;
+                    self._loaded = false;
+                    self.render();
+
+                });
+            });
             this.initialize_listeners();
         } else {
             console.warn("Warning: Could not find Video.JS player!");
