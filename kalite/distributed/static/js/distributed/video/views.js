@@ -1,8 +1,11 @@
 var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
-var _V_ = require("video.js/dist/alt/video.novtt");
-var vttjs = require("vtt.js");
+
+var vtt = require("videojs-vtt.js");  // Must precede video.js
+global.WebVTT = vtt.WebVTT;  // Required to be in the global scope by video.js
+
+var _V_ = require("video.js");
 global.videojs = _V_;
 require("../../../css/distributed/video-js-override.less");
 
@@ -80,7 +83,7 @@ var VideoPlayerView = ContentBaseView.extend({
                 },
                 "techOrder": this.flash_only ? ["flash"] : ["html5", "flash"],
                 flash: {
-                    swf: window.sessionModel.get("STATIC_URL") + "distributed/js/distributed/video/video-js.swf"
+                    swf: window.sessionModel.get("STATIC_URL") + "js/distributed/video/video-js.swf"
                 }
             };
             if( this.data_model.get("content_urls").thumbnail ) {
