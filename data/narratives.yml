@@ -28,9 +28,9 @@ update/videos:
   - '#content_tree':
     - step: 2
     - text: Downloadable content will be organized in this topic tree.
-  - span.dynatree-node.dynatree-folder.dynatree-has-children.unstarted.dynatree-exp-c.dynatree-ico-cf:
+  - .fancytree-node:
     - step: 3
-    - text: Simply toggle the "+" button to view see more subtopics under a topic....
+    - text: Simply toggle topic button to view see more subtopics.
 update/languages:
   - li.languages.active:
     - step: 1
