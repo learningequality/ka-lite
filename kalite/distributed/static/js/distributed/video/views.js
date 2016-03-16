@@ -58,8 +58,6 @@ var VideoPlayerView = ContentBaseView.extend({
             that.initialize_player(width, height);
 
         });
-
-        window._kalite_debug.video_player_initialized = true;
     },
 
     initialize_player: function(width, height) {
@@ -91,6 +89,7 @@ var VideoPlayerView = ContentBaseView.extend({
             }
             this.player = window.player = _V_(player_id, video_player_options);
             this.player.ready(function() {
+                window._kalite_debug.video_player_initialized = true;
                 videoPlayer = this;
 
                 videoPlayer.on('error', function() { // error event listener
