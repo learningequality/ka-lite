@@ -38,7 +38,7 @@ update/languages:
   - '#language-packs-selection':
     - step: 2
     - text: Click on this drop down menu to view the available language packs...
-  - '#option-bg':
+  - '#language-packs-ul li':
     - step: 3
     - text: ...select the language of your choice...
     - before-showing:
@@ -47,7 +47,7 @@ update/languages:
     - step: 4
     - text: ...and details such as the number of subtitles, translation completion, and total download size will be displayed for the chosen language pack!
     - before-showing:
-      - click: '#option-bg'
+      - click: '#language-packs-ul li'
   - '#get-language-button':
     - step: 5
     - text: Just click this button to start your download!
