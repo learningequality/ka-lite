@@ -39,7 +39,6 @@ def impl(context):
 def impl(context):
     context.browser.get(build_url(context, reverse("learn") + context.video.path))
     wait_for_video_player_ready(context)
-    context.browser.execute_script('$("video").trigger("loadedmetadata");')
 
 
 @then(u'the video player is aware of the subtitles')

@@ -482,6 +482,10 @@ def wait_for_video_player_ready(context, wait_time=MAX_WAIT_TIME):
 
     context_wm = ContextWithMixin()
 
+    context_wm.browser_wait_for_js_object_exists("$")
+    context_wm.browser_wait_for_js_object_exists('$("video")')
+    context.browser.execute_script('$("video").trigger("loadedmetadata");')
+
     try:
         context_wm.browser_wait_for_js_condition("window._kalite_debug.video_player_initialized",
                                                  max_wait_time=wait_time)
