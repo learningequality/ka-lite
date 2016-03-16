@@ -73,7 +73,7 @@ def get_langcode_map(lang_name=None, force=False):
 
 
 def get_srt_url(youtube_id, code):
-    return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
+    return settings.STATIC_URL + "srt/%s/subtitles/%s.vtt" % (code, youtube_id)
 
 
 def get_srt_path(lang_code=None, youtube_id=None):
@@ -89,7 +89,7 @@ def get_srt_path(lang_code=None, youtube_id=None):
     if lang_code:
         srt_path = os.path.join(srt_path, lcode_to_django_dir(lang_code), "subtitles")
     if youtube_id:
-        srt_path = os.path.join(srt_path, youtube_id + ".srt")
+        srt_path = os.path.join(srt_path, youtube_id + ".vtt")
 
     return srt_path
 
