@@ -229,13 +229,13 @@ function start_languagepack_download(lang_code) {
     messages.clear_messages();  // get rid of any lingering messages before starting download
     $("#get-language-button").prop("disabled", true);
     downloading = true;
-    // tell server to start languagepackdownload job
+    // tell server to start retrievecontentpack job
     api.doRequest(
         Urls.start_languagepack_download(),
         { lang: lang_code }
     ).success(function(progress, status, req) {
         base.updatesStart(
-            "languagepackdownload",
+            "retrievecontentpack",
             2000, // 2 seconds
             languagepack_callbacks
         );
@@ -307,7 +307,7 @@ function update_server_status() {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
         // Best to assume offline, as online check returns much faster than offline check.
         if(server_is_online){
-            base.updatesStart("languagepackdownload", 1000, languagepack_callbacks);
+            base.updatesStart("retrievecontentpack", 1000, languagepack_callbacks);
         } else {
             messages.clear_messages();
             messages.show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));
