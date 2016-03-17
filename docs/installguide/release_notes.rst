@@ -1,6 +1,14 @@
 Release Notes
 =============
 
+0.16.0
+------
+
+General
+^^^^^^^
+
+* KA Lite is officially supported on OSX 10.11 (El Capitan).
+
 0.15.0
 ------
 
