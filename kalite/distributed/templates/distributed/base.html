@@ -78,6 +78,10 @@
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
 
+        <script>
+            // Inline help module may need to reload bootstrap src, so keep a reference to it.
+            window.bootstrap_src="{% static 'js/inline/bundles/bundle_bootstrap.js' %}";
+        </script>
         <script type="text/javascript" src="{% static 'js/inline/bundles/bundle_inline_help.js' %}"></script>
     </head>
 
