@@ -4,6 +4,8 @@ var seeded_shuffle = require("utils/shuffle");
 var get_params = require("utils/get_params");
 var seedrandom = require("seedrandom");
 
+var ContentModels = require("content/models");
+
 var ds = window.ds || {};
 
 var ExerciseParams = {
@@ -13,7 +15,7 @@ var ExerciseParams = {
 };
 
 
-var ExerciseDataModel = Backbone.Model.extend({
+var ExerciseDataModel = ContentModels.ContentDataModel.extend({
     /*
     Contains data about an exercise itself, with no user-specific data.
     */
@@ -40,13 +42,9 @@ var ExerciseDataModel = Backbone.Model.extend({
 
     },
 
-    url: function () {
-        return "/api/exercise/" + this.get("exercise_id");
-    },
-
     update_if_needed_then: function(callback) {
         // TODO(jamalex): use a better method for checking status of lazy loading
-        if (this.get("exercise_id") !== this.get("name")) {
+        if (this.get("id") !== this.get("name")) {
             this.fetch().then(callback);
         } else {
             _.defer(callback);
@@ -67,7 +65,7 @@ var ExerciseDataModel = Backbone.Model.extend({
                 "secondsPerFastProblem": this.get("seconds_per_fast_problem"),
                 "authorName": this.get("author_name"),
                 "relatedVideos": this.get("related_videos"),
-                "fileName": this.get("template")
+                "fileName": this.get("file_name")
             },
             "exerciseProgress": {
                 "level": "" // needed to keep khan-exercises from blowing up
@@ -84,7 +82,8 @@ var ExerciseDataModel = Backbone.Model.extend({
 var AssessmentItemModel = Backbone.Model.extend({
 
     urlRoot: function() {
-        return window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL");
+        var base = window.sessionModel.get("ALL_ASSESSMENT_ITEMS_URL"); // Has a trailing '/'
+        return base.slice(0, base.length - 1); // Remove it so the url can be properly built.
     },
 
     get_item_data: function() {
@@ -146,41 +145,28 @@ var ExerciseLogModel = Backbone.Model.extend({
         return ExerciseParams.FIXED_BLOCK_EXERCISES - this.attempts_since_completion();
     },
 
-    urlRoot: "/api/exerciselog/"
+    urlRoot: function() {
+        return window.sessionModel.get("GET_EXERCISE_LOGS_URL");
+    },
 
 });
 
 
-var ExerciseLogCollection = Backbone.Collection.extend({
+var ExerciseLogCollection = ContentModels.ContentLogCollection.extend({
 
     model: ExerciseLogModel,
 
-    initialize: function(models, options) {
-        options = typeof options !== "undefined" && options !== null ? options : {};
-        this.exercise_id = options.exercise_id;
-        this.exercise_ids = options.exercise_ids;
-    },
-
-    url: function() {
-        data = {
-            "user": window.statusModel.get("user_id")
-        };
-        if (typeof this.exercise_id !== "undefined") {
-            data["exercise_id"] = this.exercise_id;
-        } else if (typeof this.exercise_ids !== "undefined") {
-            data["exercise_id__in"] = this.exercise_ids;
-        }
-        return get_params.setGetParamDict(this.model.prototype.urlRoot, data);
-    },
+    model_id_key: "exercise_id",
 
     get_first_log_or_new_log: function() {
         if (this.length > 0) {
             return this.at(0);
         } else { // create a new exercise log if none existed
-            return new ExerciseLogModel({
-                "exercise_id": this.exercise_id,
+            var data = {
                 "user": window.statusModel.get("user_uri")
-            });
+            };
+            data[this.model_id_key] = this.content_model.get("id");
+            return new this.model(data);
         }
     }
 
@@ -192,7 +178,9 @@ var AttemptLogModel = Backbone.Model.extend({
     Contains data about the user's response to a particular exercise instance.
     */
 
-    urlRoot: "/api/attemptlog/",
+    urlRoot: function() {
+        return window.sessionModel.get("GET_ATTEMPT_LOGS_URL");
+    },
 
     defaults: {
         complete: false,
@@ -252,7 +240,7 @@ var AttemptLogCollection = Backbone.Collection.extend({
     },
 
     url: function() {
-        return "/api/attemptlog/?" + $.param(this.filters, true);
+        return get_params.setGetParamDict(this.model.prototype.urlRoot(), this.filters);
     },
 
     to_objects: function() {

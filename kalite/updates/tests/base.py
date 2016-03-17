@@ -1,5 +1,4 @@
 from kalite.testing.base import KALiteTestCase
-from kalite.caching import initialize_content_caches
 
 
 class UpdatesTestCase(KALiteTestCase):
@@ -8,7 +7,4 @@ class UpdatesTestCase(KALiteTestCase):
     """
     def setUp(self):
         super(UpdatesTestCase, self).setUp()
-
-        # Set up the topic tree
-        initialize_content_caches(force=True)
 

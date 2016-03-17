@@ -1,6 +1,8 @@
 from math import ceil
 import datetime
+import json
 
+from django.conf import settings; logging = settings.LOG
 from django.utils.translation import ugettext as _
 from django.db.models import Q, Sum, Avg
 
@@ -9,7 +11,29 @@ from fle_utils.internet.classes import JsonResponse, JsonResponseMessage, JsonRe
 from kalite.main.models import ExerciseLog, VideoLog, ContentLog, AttemptLog, UserLogSummary
 from kalite.facility.models import FacilityUser
 from kalite.shared.decorators.auth import require_admin
-from kalite.topic_tools import get_topic_leaves, get_exercise_cache, get_content_cache
+from kalite.topic_tools.content_models import get_topic_contents, get_topic_nodes, get_leafed_topics, get_content_parents
+
+
+def unique_by_id_and_kind_sort(seq):
+    """
+    Due to the fact that we have duplicate content items for the same content id in our topic tree, as the way that
+    we have implemented duplication of content across the topic tree.
+    :param seq: an iterator of content items.
+    :return: A unique, sorted list of content items.
+    """
+
+    seq.sort(key=lambda x: x.get("sort_order", 0))
+    seen = {}
+    result = []
+    for item in seq:
+        marker = item.get("id") + item.get("kind")
+
+        if marker in seen:
+            continue
+        seen[marker] = 1
+        result.append(item)
+    return result
+
 
 def get_learners_from_GET(request):
     learner_ids = request.GET.getlist("user_id")
@@ -51,7 +75,7 @@ def return_log_type_details(log_type, topic_ids=None):
         return None
     id_field = obj_id_field.split("__")[0]
     if topic_ids:
-        objects = [obj for topic_id in topic_ids for obj in get_topic_leaves(topic_id=topic_id, leaf_type=log_type.title())]
+        objects = [obj for topic_id in topic_ids for obj in get_topic_contents(topic_id=topic_id, kinds=[log_type.title()])]
         obj_ids = {obj_id_field: [obj.get("id") for obj in objects]}
     else:
         objects = []
@@ -61,7 +85,6 @@ def return_log_type_details(log_type, topic_ids=None):
 @require_admin
 def learner_logs(request):
 
-    lang = request.language
     page = request.GET.get("page", 1)
 
     limit = request.GET.get("limit", 50)
@@ -69,11 +92,11 @@ def learner_logs(request):
     # Look back a week by default
     time_window = request.GET.get("time_window", 7)
 
-    start_date = request.GET.get("start_date", None)
+    start_date = request.GET.get("start_date")
 
-    end_date = request.GET.get("end_date", None)
+    end_date = request.GET.get("end_date")
 
-    topic_ids = request.GET.getlist("topic_id", [])
+    topic_ids = json.loads(request.GET.get("topic_ids", "[]"))
 
     learners = get_learners_from_GET(request)
 
@@ -101,12 +124,17 @@ def learner_logs(request):
             topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date, latest_activity_timestamp__lte=end_date)
             if topic_objects.count() == 0:
                 topic_objects = log_objects
-            objects = dict([(obj[id_field], get_content_cache(language=lang).get(obj[id_field], get_exercise_cache(language=lang).get(obj[id_field]))) for obj in topic_objects]).values()
+            # Can return multiple items with same id, due to topic tree redundancy, so make unique by id here.
+            objects = dict([(item.get("id"), item) for item in get_topic_nodes(ids=[obj[id_field] for obj in topic_objects]) or []]).values()
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
+    output_objects = unique_by_id_and_kind_sort(output_objects)
+
     return JsonResponse({
+        # All learner log objects for each content item.
         "logs": output_logs,
+        # All content items for which logs are being returned.
         "contents": output_objects,
         # Sometimes 'learners' gets collapsed to a list from the Queryset. This insures against that eventuality.
         "learners": [{
@@ -123,7 +151,6 @@ def learner_logs(request):
 @require_admin
 def aggregate_learner_logs(request):
 
-    lang = request.language
     learners = get_learners_from_GET(request)
 
     event_limit = request.GET.get("event_limit", 10)
@@ -131,11 +158,11 @@ def aggregate_learner_logs(request):
     # Look back a week by default
     time_window = request.GET.get("time_window", 7)
 
-    start_date = request.GET.get("start_date", None)
+    start_date = request.GET.get("start_date")
 
-    end_date = request.GET.get("end_date", None)
+    end_date = request.GET.get("end_date")
 
-    topic_ids = request.GET.getlist("topic_id", [])
+    topic_ids = json.loads(request.GET.get("topic_ids", "[]"))
 
     log_types = request.GET.getlist("log_type", ["exercise", "video", "content"])
 
@@ -145,43 +172,75 @@ def aggregate_learner_logs(request):
         "content_time_spent": 0,
         "exercise_attempts": 0,
         "exercise_mastery": None,
+        "total_in_progress": 0,
+        "total_complete": 0,
+        "total_struggling": 0,
+        "total_not_attempted": 0,
+        "available_topics": [],
     }
 
     end_date = datetime.datetime.strptime(end_date,'%Y/%m/%d') if end_date else datetime.datetime.now()
 
     start_date = datetime.datetime.strptime(start_date,'%Y/%m/%d') if start_date else end_date - datetime.timedelta(time_window)
 
+    number_content = 0
+
+    all_object_ids = set()
+
     for log_type in log_types:
 
-        LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)
+        LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)   
 
         log_objects = LogModel.objects.filter(
             user__in=learners,
             latest_activity_timestamp__gte=start_date,
             latest_activity_timestamp__lte=end_date, **obj_ids).order_by("-latest_activity_timestamp")
 
+        number_content += len(set(log_objects.values_list(id_field, flat=True)))
 
         if log_type == "video":
+            output_dict["total_in_progress"] += log_objects.filter(complete=False).count()
             output_dict["content_time_spent"] += log_objects.aggregate(Sum("total_seconds_watched"))["total_seconds_watched__sum"] or 0
         elif log_type == "content":
+            output_dict["total_in_progress"] += log_objects.filter(complete=False).count()
             output_dict["content_time_spent"] += log_objects.aggregate(Sum("time_spent"))["time_spent__sum"] or 0
         elif log_type == "exercise":
+            output_dict["total_struggling"] = log_objects.filter(struggling=True).count()
+            output_dict["total_in_progress"] += log_objects.filter(complete=False, struggling=False).count()
             output_dict["exercise_attempts"] = AttemptLog.objects.filter(user__in=learners,
                 timestamp__gte=start_date,
-                timestamp__lte=end_date).count()
+                timestamp__lte=end_date, **obj_ids).count()
             if log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"] is not None:
                 output_dict["exercise_mastery"] = round(log_objects.aggregate(Avg("streak_progress"))["streak_progress__avg"])
         output_logs.extend(log_objects)
+        output_dict["total_complete"] += log_objects.filter(complete=True).count()
 
+        object_buffer = LogModel.objects.filter(
+            user__in=learners,
+            latest_activity_timestamp__gte=start_date,
+            latest_activity_timestamp__lte=end_date).values_list(id_field, flat=True)
+
+        if len(object_buffer) > 1:
+            all_object_ids.update(object_buffer)
+        elif len(object_buffer) == 1:
+            all_object_ids.add(object_buffer)
+    if len(all_object_ids) > 0:
+        output_dict["available_topics"] = map(lambda x: {"id": x.get("id"), "title": x.get("title")}, get_content_parents(ids=list(all_object_ids)))
+    output_dict["total_not_attempted"] = number_content*len(learners) - (
+        output_dict["total_complete"] + output_dict["total_struggling"] + output_dict["total_in_progress"])
     # Report total time in hours
     output_dict["content_time_spent"] = round(output_dict["content_time_spent"]/3600.0,1)
     output_logs.sort(key=lambda x: x.latest_activity_timestamp, reverse=True)
+
+    learner_event_objects = dict([(item["id"], item) for item in get_topic_nodes(
+        ids=[getattr(log, "exercise_id", getattr(log, "video_id", getattr(log, "content_id", ""))) for log in output_logs[:event_limit]], language=request.language) or []])
+
     output_dict["learner_events"] = [{
         "learner": log.user.get_name(),
         "complete": log.complete,
         "struggling": getattr(log, "struggling", None),
         "progress": getattr(log, "streak_progress", getattr(log, "progress", None)),
-        "content": get_exercise_cache(language=lang).get(getattr(log, "exercise_id", "")) or get_content_cache(language=lang).get(getattr(log, "video_id", None) or getattr(log, "content_id", "")) or {}
+        "content": learner_event_objects.get(getattr(log, "exercise_id", getattr(log, "video_id", getattr(log, "content_id", ""))), {}),
         } for log in output_logs[:event_limit]]
     output_dict["total_time_logged"] = round((UserLogSummary.objects\
         .filter(user__in=learners, start_datetime__gte=start_date, start_datetime__lte=end_date)\

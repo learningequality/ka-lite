@@ -156,6 +156,7 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
     verbosity = 1
     output_path = None
 
+    @staticmethod
     def _fake_test():
         # Fools django.utils.unittest.case.TestCase.__init__
         # See the small novel comment under __init__ below
@@ -218,6 +219,9 @@ class Screenshot(FacilityMixins, BrowserActionMixins, KALiteBrowserTestCase):
         # Selenium won't scroll to an element, so we have to make the window size is large enough so that everything is visible
         self.browser.set_window_size(1024, 768)
         # self.browser.implicitly_wait(3)
+
+        # After initializing the server (with setUp) and a browser, set the language
+        self.set_session_language(kwargs['language'])
 
         # After initializing the server (with setUp) and a browser, set the language
         self.set_session_language(kwargs['language'])

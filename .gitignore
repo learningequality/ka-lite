@@ -33,6 +33,9 @@ static-updates
 # MAC stuff
 .DS_Store
 
+# oh-my-zsh
+.venv
+
 # SQLite files (should probably specify the path)
 *.db
 *.sqlite*
@@ -41,6 +44,7 @@ static-updates
 *.patch
 *.pid
 *.prof
+secretkey.txt
 
 # Python compiling
 *.pyc
@@ -59,7 +63,6 @@ static-updates
 # Documentation
 docs/_build
 docs/images/*
-docs/kalite.1.gz
 
 # oh-my-zsh convention for automatically
 # switching on a venv
@@ -71,6 +74,9 @@ venv/
 
 # Ignore changes to Perseus and Khan Exercises that do not come from intentional edits
 /kalite/distributed/static/js/distributed/perseus
+
+# Ignore file used to store queued video download info.
+videos_to_download.json
 
 # Lacks documentation
 locale/

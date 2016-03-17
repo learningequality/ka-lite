@@ -11,6 +11,11 @@ var StateModel = Backbone.Model.extend({
                 group_name: undefined
             });
         }
+        if (key === "facility" || key.facility || key === "group" || key.group) {
+            this.set({
+                topic_ids: undefined
+            });
+        }
 
         Backbone.Model.prototype.set.call(this, key, val, options);
     }
@@ -34,6 +39,7 @@ var CoachReportModel = Backbone.Model.extend({
         this.group = options.group;
         this.start_date = options.start_date;
         this.end_date = options.end_date;
+        this.topic_ids = options.topic_ids;
     },
 
     url: function() {
@@ -41,7 +47,8 @@ var CoachReportModel = Backbone.Model.extend({
             facility_id: this.facility,
             group_id: this.group,
             start_date: this.start_date,
-            end_date: this.end_date
+            end_date: this.end_date,
+            topic_ids: this.topic_ids
         });
     }
 });
@@ -52,6 +59,7 @@ var CoachReportAggregateModel = Backbone.Model.extend({
         this.group = options.group;
         this.start_date = options.start_date;
         this.end_date = options.end_date;
+        this.topic_ids = options.topic_ids;
     },
 
     url: function() {
@@ -68,7 +76,8 @@ var CoachReportAggregateModel = Backbone.Model.extend({
             facility_id: this.facility,
             group_id: this.group,
             start_date: this.start_date,
-            end_date: end_date
+            end_date: end_date,
+            topic_ids: this.topic_ids
         });
     }
 });

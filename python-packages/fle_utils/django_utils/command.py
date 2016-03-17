@@ -178,12 +178,21 @@ def call_outside_command_with_output(command, *args, **kwargs):
             cleaned_val = unicode(val).replace(" ", "")
             cmd += (u"%s%s=%s" % (prefix, key, cleaned_val),)
 
+    # we also need to change the environment to point to the the local
+    # kalite settings. This is especially important for when the
+    # central server calls this function, as if we don't change this,
+    # kalitectl.py wil look for centralserver.settings instead of
+    # kalite.settings.
+    new_env = os.environ.copy()
+    new_env["DJANGO_SETTINGS_MODULE"] = kwargs.get("settings") or "kalite.settings"
+
     p = subprocess.Popen(
         cmd,
         shell=False,
         # cwd=os.path.split(cmd[0])[0],
         stdout=None if output_to_stdout else subprocess.PIPE,
         stderr=None if output_to_stderr else subprocess.PIPE,
+        env=new_env,
     )
     out = p.communicate() if wait else (None, None)
 

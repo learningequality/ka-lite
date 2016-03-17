@@ -2,6 +2,7 @@ var _ = require("underscore");
 var BaseView = require("base/baseview");
 var Handlebars = require("base/handlebars");
 var _V_ = require("video.js");
+global.videojs = _V_;
 require("../../../css/distributed/video-js-override.less");
 
 var ContentBaseView = require("content/baseview");
@@ -47,6 +48,8 @@ var VideoPlayerView = ContentBaseView.extend({
             that.initialize_player(width, height);
 
         });
+
+        window._kalite_debug.video_player_initialized = true;
     },
 
     initialize_player: function(width, height) {
@@ -60,7 +63,17 @@ var VideoPlayerView = ContentBaseView.extend({
         var player_id = this.$(".video-js").attr("id");
 
         if (player_id) {
-            this.player = this.player = _V_(player_id);
+            var video_player_options = {
+                "controls": true,
+                "playbackRates": [0.5, 1, 1.25, 1.5, 2],
+                "html5": {
+                    nativeTextTracks: false
+                }
+            };
+            if( this.data_model.get("content_urls").thumbnail ) {
+                video_player_options['poster'] = this.data_model.get("content_urls").thumbnail;
+            }
+            this.player = window.player = _V_(player_id, video_player_options);
             this.initialize_listeners();
         } else {
             console.warn("Warning: Could not find Video.JS player!");
@@ -86,7 +99,7 @@ var VideoPlayerView = ContentBaseView.extend({
         var width = container_width;
         var height = container_height;
 
-        var ratio = this.data_model.get("width") / this.data_model.get("height");
+        var ratio = this.data_model.get("width") / (this.data_model.get("height") || 1);
 
         if (container_ratio > ratio) {
             width = container_height * ratio;
