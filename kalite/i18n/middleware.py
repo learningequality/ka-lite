@@ -18,7 +18,7 @@ Other values set here:
 """
 from django.conf import settings; logging = settings.LOG
 
-from . import get_default_language, set_request_language, select_best_available_language
+from .base import get_default_language, set_request_language, select_best_available_language
 
 
 def set_language_data_from_request(request):

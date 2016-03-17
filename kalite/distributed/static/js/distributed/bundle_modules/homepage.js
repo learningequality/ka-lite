@@ -21,7 +21,8 @@ $(function() {
         if (!window.statusModel.get("has_superuser")) { // "has_superuser" is true if an admin user exists.
             window.super_user_create_modal = new user.SuperUserCreateModalView();
         } else if ( typeof window.super_user_create_modal !== "undefined" ) {
-            window.super_user_create_modal.remove();
+            // super_user_create_modal might not be properly hidden yet if remove too fast 
+            setTimeout(function () {window.super_user_create_modal.remove();}, 2000);
         }
     });
 });
