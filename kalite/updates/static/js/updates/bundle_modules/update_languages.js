@@ -288,8 +288,7 @@ function languagepack_reset_callback(progress, resp) {
 }
 
 function languagepack_complete_callback(progress_log) {
-    // Trigger a reminder to restart server when a language pack is installed.
-    messages.show_message("warning", sprintf(gettext("Server must be restarted to activate language pack %(lang)s."), {lang: progress_log.process_name}));
+    // This is a no-op for now. Used to remind the user to restart the server, but that's not necessary anymore.
 }
 
 function set_server_language(lang) {
