@@ -599,6 +599,9 @@ Once you have deployed KA Lite to a computer, there are a number of ways you can
 
 .. warning:: Please follow these instructions carefully! Customizing the server incorrectly can break your installation. It can be very hard to find and undo the error.
 
+
+.. _running-ka-lite-with-your-own-settings:
+
 Running KA Lite with your own settings
 ______________________________________
 
