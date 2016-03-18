@@ -14,7 +14,7 @@ from fle_utils.general import ensure_dir
 
 from kalite.contentload import settings as content_settings
 from kalite.i18n.base import lcode_to_django_lang, get_po_filepath, get_locale_path, \
-    download_content_pack, update_jsi18n_file, get_srt_path as get_subtitle_path, \
+    download_content_pack, update_jsi18n_file, get_subtitle_file_path as get_subtitle_path, \
     extract_content_db
 from kalite.updates.management.commands.classes import UpdatesStaticCommand
 

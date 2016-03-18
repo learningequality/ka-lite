@@ -2,7 +2,7 @@ import os
 
 from django.conf import settings as django_settings
 
-from kalite.i18n.base import get_srt_path, get_language_name
+from kalite.i18n.base import get_subtitle_file_path, get_language_name
 from kalite.updates.videos import get_local_video_size
 
 
@@ -36,8 +36,8 @@ def update_content_availability(content_list, language="en", channel="khan"):
 
     subtitle_langs = {}
 
-    if os.path.exists(get_srt_path()):
-        for (dirpath, dirnames, filenames) in os.walk(get_srt_path()):
+    if os.path.exists(get_subtitle_file_path()):
+        for (dirpath, dirnames, filenames) in os.walk(get_subtitle_file_path()):
             # Only both looking at files that are inside a 'subtitles' directory
             if os.path.basename(dirpath) == "subtitles":
                 lc = os.path.basename(os.path.dirname(dirpath))
