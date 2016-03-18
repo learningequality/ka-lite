@@ -90,25 +90,6 @@ var VideoPlayerView = ContentBaseView.extend({
             this.player = window.player = _V_(player_id, video_player_options);
             this.player.ready(function() {
                 window._kalite_debug.video_player_initialized = true;
-                videoPlayer = this;
-
-                /*
-                This breaks the subtitle availability test, presumably because it destroys the player's html
-                and any <track> elements underneath it.
-                Moreover, that test waits for `window._kalite_debug.video_player_initialized = true` on the assumption
-                that this value, once set, won't change back to `false` and indicates that the window.player object
-                is "ready". If this assumption is violated, it could make the test flaky... so be careful here!
-
-                videoPlayer.on('error', function() { // error event listener
-                    // dispose the old player and its HTML
-                    videoPlayer.dispose();
-
-                    self.flash_only = true;
-                    self._loaded = false;
-                    self.render();
-
-                });
-                */
             });
             this.initialize_listeners();
         } else {
