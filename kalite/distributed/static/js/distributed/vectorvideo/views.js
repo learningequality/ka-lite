@@ -32,6 +32,11 @@ var VectorVideoView = ContentBaseView.extend({
 
         this.$el.html(this.template(this.data_model.attributes));
 
+        this.latest_time = 0;
+        this.latest_obj = 0;
+        this.latest_stroke = 0;
+        this.latest_sub_stroke = 0;
+
         this.$(".papCanvas").attr("id", Math.random().toString());
 
         this.initialize_sound_manager();
@@ -47,7 +52,7 @@ var VectorVideoView = ContentBaseView.extend({
         this.modify_json();
 
         //console.log("NEW JSON: ");
-        //console.log(this.json_data);
+        console.log(this.json_data);
 
         var papCanvas = this.$(".papCanvas");
         this.paper_scope.setup(papCanvas[0]);
@@ -65,65 +70,59 @@ var VectorVideoView = ContentBaseView.extend({
         var data = this.json_data;
 
         //LOOP THROUGH ALL OBJECTS
-        for (var object = 0; object < data.operations.length; object++) {
-            var object_start_time = parseFloat(data.operations[object].start);
-            var object_end_time = parseFloat(data.operations[object].end);
-            var object_duration = object_end_time - object_start_time;
-            var object_distance = 0;
-
-            var object_offset_x = parseInt(data.operations[object].offset_x);
-            var object_offset_y = parseInt(data.operations[object].offset_y);
-
-            var stroke_distances_array = [];
+        for (var obj = 0; obj < data.operations.length; obj++) {
+            var obj_offset_x = parseInt(data.operations[obj].offset_x);
+            var obj_offset_y = parseInt(data.operations[obj].offset_y);
+            var obj_start_time = parseFloat(data.operations[obj].start);
+            var obj_end_time = parseFloat(data.operations[obj].end);
+            var obj_dur = obj_end_time - obj_start_time;
+            var obj_dist = 0;
+            var stroke_distances = [];
 
             //LOOP THROUGH ALL STROKES IN ONE OBJECT
-            for (var stroke = 0; stroke < data.operations[object].strokes.length; stroke++) {
+            for (var stroke = 0; stroke < data.operations[obj].strokes.length; stroke++) {
+                var stroke_dist = 0;
 
-                var stroke_distance = 0;
+                //LOOP THROUGH ALL SUB STROKES IN ONE STROKE
+                for (var sub_stroke = 0; sub_stroke < data.operations[obj].strokes[stroke].length - 1; sub_stroke++) {
 
-                //LOOP THROUGH ALL SUBSTROKES IN ONE STROKE
-                for (var sub_stroke = 0; sub_stroke < data.operations[object].strokes[stroke].length - 1; sub_stroke++) {
+                    var x_cord = parseInt(data.operations[obj].strokes[stroke][sub_stroke][0]);
+                    var y_cord = parseInt(data.operations[obj].strokes[stroke][sub_stroke][1]);
+                    var x_cord_nxt = parseInt(data.operations[obj].strokes[stroke][(sub_stroke + 1)][0]);
+                    var y_cord_nxt = parseInt(data.operations[obj].strokes[stroke][(sub_stroke + 1)][1]);
+                    var sub_stroke_dist = Math.sqrt(Math.pow((x_cord_nxt - x_cord), 2) + Math.pow((y_cord_nxt - y_cord), 2));
+                    stroke_dist = stroke_dist + sub_stroke_dist;
 
-                    var x_cord = parseInt(data.operations[object].strokes[stroke][sub_stroke][0]);
-                    var y_cord = parseInt(data.operations[object].strokes[stroke][sub_stroke][1]);
-                    var x_cord_next = parseInt(data.operations[object].strokes[stroke][(sub_stroke + 1)][0]);
-                    var y_cord_next = parseInt(data.operations[object].strokes[stroke][(sub_stroke + 1)][1]);
-                    var substroke_distance = Math.sqrt((( x_cord_next - x_cord ) * ( x_cord_next - x_cord)) + (( y_cord_next - y_cord) * ( y_cord_next - y_cord)));
-                    stroke_distance = stroke_distance + substroke_distance;
-
-                    //add full x and y to substroke
-                    data.operations[object].strokes[stroke][sub_stroke].x = x_cord + object_offset_x;
-                    data.operations[object].strokes[stroke][sub_stroke].y = y_cord + object_offset_y;
+                    //ADD EXACT X AND Y COORDINATES TO EVERY SUB STROKE
+                    data.operations[obj].strokes[stroke][sub_stroke].x = obj_offset_x + x_cord;
+                    data.operations[obj].strokes[stroke][sub_stroke].y = obj_offset_y + y_cord;
                 }
 
-                object_distance = object_distance + stroke_distance;
-                stroke_distances_array.push(stroke_distance);
+                stroke_distances.push(stroke_dist);
+                obj_dist = obj_dist + stroke_dist;
             }
 
+            //GO THROUGH ARRAY
+            for (var i = 0; i < stroke_distances.length; i++) {
+                var stroke_dur = (parseFloat(stroke_distances[i]) / obj_dist) * obj_dur;
 
-            for (var i = 0; i < stroke_distances_array.length; i++) {
-                var stroke_duration = (parseFloat(stroke_distances_array[i]) / object_distance) * object_duration;
-                var stroke_start_time = object_start_time;
-
-                //IF FIRST STROKE
                 if (i === 0) {
-                    data.operations[object].strokes[i].stroke_start_time = stroke_start_time;
-                    data.operations[object].strokes[i].stroke_end_time = object_start_time + stroke_duration;
+                    data.operations[obj].strokes[i].stroke_start_time = obj_start_time;
+                    data.operations[obj].strokes[i].stroke_end_time = obj_start_time + stroke_dur;
                 }
 
                 else {
-                    var before_stroke_start_time = parseFloat(data.operations[object].strokes[i - 1].stroke_start_time);
-                    var before_stroke_end_time = parseFloat(data.operations[object].strokes[i - 1].stroke_end_time);
-                    data.operations[object].strokes[i].stroke_start_time = stroke_duration + before_stroke_start_time;
-                    data.operations[object].strokes[i].stroke_end_time = stroke_duration + before_stroke_end_time;
+                    data.operations[obj].strokes[i].stroke_start_time = parseFloat(data.operations[obj].strokes[i - 1].stroke_end_time);
+                    data.operations[obj].strokes[i].stroke_end_time = parseFloat(data.operations[obj].strokes[i - 1].stroke_end_time) + stroke_dur;
                 }
 
-                //LOOP THROUGH ALL SUBSTROKES and apply easing function
-                for (var j = 0; j < data.operations[object].strokes[i].length; j++) {
-                    var percent = j / parseFloat(data.operations[object].strokes[i].length);
-                    var eased_percent = this.ease(percent);
-                    var substroke_start_time = eased_percent * stroke_duration;
-                    data.operations[object].strokes[i][j].substroke_start_time = substroke_start_time + stroke_start_time;
+                //LOOP THROUGH ALL SUB STROKES AND ADD SUB STROKE START TIME
+                for (var j = 0; j < data.operations[obj].strokes[i].length; j++) {
+                    var stroke_start_time = parseFloat(data.operations[obj].strokes[i].stroke_start_time);
+                    var ratio = j / parseFloat(data.operations[obj].strokes[i].length);
+                    //var eased_ratio = this.ease(ratio);
+                    var sub_stroke_start_time = stroke_dur * ratio;
+                    data.operations[obj].strokes[i][j].sub_stroke_start_time = stroke_start_time + sub_stroke_start_time;
                 }
             }
         }
@@ -131,11 +130,7 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     ease: function (t) {
-        //easeinquad
-        return t * t;
-
-        //easeoutquad
-        //return t*(2-t);
+        return t;
     },
 
 
@@ -158,78 +153,76 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     update_canvas: function () {
-        var current_time = (parseInt(this.get_position())) / 1000;
-        var previous_time = this.data_model.get("previous_time");
+        var curr_time = ((parseInt(this.get_position())) / 1000);
 
-        var previous_object = this.data_model.get("previous_object");
-
-        var previous_stroke = this.data_model.get("previous_stroke");
-        var previous_substroke = this.data_model.get("previous_substroke");
-
-        //IF PLAYING BACKWARDS
-        if (current_time < previous_time) {
-            //erase canvas
-            //reset current object = 0
-            //current stroke =0
-            //reset substroke to 0
-            //previous_time = 0
-            this.data_model.set("previous_object", 0);
-            this.data_model.set("previous_stroke", 0);
-            this.data_model.set("previous_substroke", 0);
-            this.data_model.set("previous_time", 0);
+        //IF REWINDED
+        if (curr_time < this.latest_time) {
+            this.latest_obj = 0;
+            this.latest_stroke = 0;
+            this.latest_sub_stroke = 0;
+            this.latest_time = 0;
             this.paper_scope.project.clear();
         }
 
-        //IF PLAYING FORWARD
         else {
-            this.data_model.set("previous_time", current_time);
-            //loop through all objects
-            //loop through all strokes
-            //loop through all substrokes and draw based on start time
-            for (var object = previous_object; object < this.json_data.operations.length; object++) {
-                var current_object = this.json_data.operations[object];
-                var object_color_r = parseInt(current_object.color[0]) / 255;
-                var object_color_g = parseInt(current_object.color[1]) / 255;
-                var object_color_b = parseInt(current_object.color[2]) / 255;
+            this.latest_time = curr_time;
 
-                for (var stroke = previous_stroke; stroke < this.json_data.operations[object].strokes.length; stroke++) {
-                    for (var sub_stroke = previous_substroke; sub_stroke < this.json_data.operations[object].strokes[stroke].length - 1; sub_stroke++) {
+            //LOOP THROUGH OBJECTS
+            for (var obj = this.latest_obj; obj < this.json_data.operations.length; obj++) {
 
-                        var sub_stroke_curr = this.json_data.operations[object].strokes[stroke][sub_stroke];
-
-                        var sub_stroke_curr_x = parseFloat(sub_stroke_curr.x);
-                        var sub_stroke_curr_y = parseFloat(sub_stroke_curr.y);
-                        var sub_stroke_curr_start = parseFloat(sub_stroke_curr.substroke_start_time);
-
-                        if (sub_stroke_curr_start <= current_time) {
-
-                            //x-1 then use x+1
-                            //if (wlocation !== undefined)
-                            //if next exists aka not the last stroke
-                            var path = new this.paper_scope.Path();
-                            path.strokeColor = new this.paper_scope.Color(object_color_r, object_color_g, object_color_b);
-                            path.add(new this.paper_scope.Point(sub_stroke_curr_x, sub_stroke_curr_y));
-
-                            //if (this.json_data.operations[object].strokes[stroke][sub_stroke + 1]) {
-                            var sub_stroke_next = this.json_data.operations[object].strokes[stroke][sub_stroke + 1];
-                            var sub_stroke_next_x = parseFloat(sub_stroke_next.x);
-                            var sub_stroke_next_y = parseFloat(sub_stroke_next.y);
-                            path.add(new this.paper_scope.Point(sub_stroke_next_x, sub_stroke_next_y));
-
-                            //THIS MAKES IT LAG FOR DAYS SO NO!!!
-                            //this.paper_scope.view.update();
-
-                            this.data_model.set("previous_object", object);
-                            this.data_model.set("previous_stroke", stroke);
-                            this.data_model.set("previous_substroke", sub_stroke);
-                        }
-                        else {
-                            return;
-                        }
-                    }
-                    this.data_model.set("previous_substroke", 0);
+                if ((parseFloat( this.json_data.operations[obj].start)) > this.latest_time){
+                    continue;
                 }
-                this.data_model.set("previous_stroke", 0);
+                else{
+                    var curr_obj = this.json_data.operations[obj];
+                    var red = parseInt(curr_obj.color[0]) / 255;
+                    var green = parseInt(curr_obj.color[1]) / 255;
+                    var blue = parseInt(curr_obj.color[2]) / 255;
+
+                    //LOOP THROUGH STROKES
+                    for (var stroke = this.latest_stroke; stroke < this.json_data.operations[obj].strokes.length; stroke++) {
+                        //if start time for stroke is greater than then break
+                        for (var sub_stroke = this.latest_sub_stroke; sub_stroke < curr_obj.strokes[stroke].length - 1; sub_stroke++) {
+
+                            var curr_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke];
+
+                            var curr_sub_stroke_x = parseFloat(curr_sub_stroke.x);
+                            var curr_sub_stroke_y = parseFloat(curr_sub_stroke.y);
+                            var curr_sub_stroke_start = parseFloat(curr_sub_stroke.sub_stroke_start_time);
+
+                            this.latest_obj = obj;
+                            this.latest_stroke = stroke;
+                            this.latest_sub_stroke = sub_stroke;
+
+                            if (curr_sub_stroke_start <= curr_time) {
+
+                                //x-1 then use x+1
+                                //if (wlocation !== undefined)
+                                //if next exists aka not the last stroke
+                                var path = new this.paper_scope.Path();
+                                path.strokeColor = new this.paper_scope.Color(red, green, blue);
+                                path.add(new this.paper_scope.Point(curr_sub_stroke_x, curr_sub_stroke_y));
+
+                                //if (this.json_data.operations[obj].strokes[stroke][sub_stroke + 1]) {
+                                var nxt_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke + 1];
+                                var nxt_sub_stroke_x = parseFloat(nxt_sub_stroke.x);
+                                var nxt_sub_stroke_y = parseFloat(nxt_sub_stroke.y);
+                                path.add(new this.paper_scope.Point(nxt_sub_stroke_x, nxt_sub_stroke_y));
+
+                                //console.log(obj, stroke, sub_stroke);
+                            } else {
+                                return;
+                            }
+                        }
+                        this.latest_sub_stroke = 0;
+
+                    }
+
+                    this.latest_stroke = 0;
+                    this.latest_obj = obj;
+                }
+
+
             }
         }
     },
@@ -395,7 +388,7 @@ var VectorVideoView = ContentBaseView.extend({
             hh = Math.floor(nSec / 3600),
             min = Math.floor(nSec / 60) - Math.floor(hh * 60),
             sec = Math.floor(nSec - (hh * 3600) - (min * 60));
-        return (use_string ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + ( sec < 10 ? '0' + sec : sec ) ) : {
+        return (use_string ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec)) : {
             'min': min,
             'sec': sec
         });
