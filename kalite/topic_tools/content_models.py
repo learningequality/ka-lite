@@ -12,9 +12,9 @@ the dictionary, or with many of the fields collapsed into an 'extra_fields' key.
 All functions return the model data as a dictionary, in order to prevent external functions from having to know
 implementation details about the model class used in this module.
 """
-import json
-
 import itertools
+import json
+import os
 
 from peewee import Model, SqliteDatabase, CharField, TextField, BooleanField, ForeignKeyField, PrimaryKeyField, Using,\
     DoesNotExist, fn, IntegerField, OperationalError, FloatField
@@ -395,13 +395,16 @@ def get_topic_contents(kinds=None, topic_id=None, **kwargs):
 
 
 @set_database
-def get_download_youtube_ids(paths=None, **kwargs):
+def get_download_youtube_ids(paths=None, downloaded=False, **kwargs):
     """
     Convenience function for taking a list of content ids and returning
     all associated youtube_ids for downloads, regardless of whether the input
     paths are paths for content nodes or topic nodes
+
     :param paths: A list of paths to nodes - used to ensure uniqueness.
-    :return: A unique list of youtube_ids as strings.
+    :param downloaded: If False, returns videos that have not been downloaded. If True, returns videos that *have*
+        been downloaded.
+    :return: A dictionary mapping youtube_ids to video titles.
     """
     if paths:
         youtube_ids = dict()
@@ -410,7 +413,20 @@ def get_download_youtube_ids(paths=None, **kwargs):
 
             youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
 
-        return youtube_ids
+        if downloaded:
+            return {k: v for (k, v) in youtube_ids.iteritems() if _video_downloaded(k)}
+        else:
+            return {k: v for (k, v) in youtube_ids.iteritems() if not _video_downloaded(k)}
+
+
+def _video_downloaded(youtube_id):
+    """
+    Checks whether the given video file has been downloaded already.
+
+    :param youtube_id: The youtube id, a string
+    :return: True or False
+    """
+    return os.path.isfile(os.path.join(settings.CONTENT_ROOT, "{}.mp4".format(youtube_id)))
 
 
 def get_video_from_youtube_id(youtube_id):
