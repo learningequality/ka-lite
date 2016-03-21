@@ -17,15 +17,16 @@
                 return randRange(1, lifespan);
             } )</var>
             <var id="MEAN">roundTo(1, mean(DATA))</var>
+            <var id="MEAN_IS_ROUNDED">mean(DATA) !== MEAN</var>
             <var id="SQR_DEV">$.map(DATA, function( x ) { return roundTo(2, (x - MEAN) * (x - MEAN)); })</var>
             <var id="VARIANCE">roundTo(2, sum(SQR_DEV) / (DATA_POINTS - 1))</var>
             <var id="VARIANCE_POP">roundTo(2, sum(SQR_DEV) / DATA_POINTS)</var>
             <var id="STDDEV">roundTo(1, stdDev(DATA))</var>
             <var id="STDDEV_POP">roundTo(1, stdDevPop(DATA))</var>
             <var id="YEAR">new Plural(function(num) {
-                return $.ngettext("year", "years", num);
+                return i18n.ngettext("year", "years", num);
             })</var>
-            <var id="YEARS_OLD">$._("%(years)s old", {years: plural_form(YEAR, MEAN)})</var>
+            <var id="YEARS_OLD">i18n._("%(years)s old", {years: plural_form(YEAR, MEAN)})</var>
         </div>
 
         <div class="problems">
@@ -69,7 +70,7 @@
 
                     <p><code>
                         \blue{\mu} \quad = \quad
-                        \dfrac{<var>plus.apply(KhanUtil, DATA)</var>}{\green{<var>DATA_POINTS</var>}} \quad = \quad
+                        \dfrac{<var>plus.apply(KhanUtil, DATA)</var>}{\green{<var>DATA_POINTS</var>}} \quad <var>MEAN_IS_ROUNDED ? '\\approx' : '=' </var> \quad
                         \blue{<var>MEAN</var>\text{ <var>YEARS_OLD</var>}}
                     </code></p>
 

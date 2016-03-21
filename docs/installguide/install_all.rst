@@ -4,8 +4,13 @@ Windows
 #. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-15>`_ installer.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
-Upgrading KA Lite over an existing installation is easy -- just run the installer and follow the prompts!
+Upgrade
+_______
+
+Upgrading KA Lite in Windows over an existing installation is easy -- just run the installer and follow the prompts!
 You don't need to uninstall your old KA Lite installation first.
+You can follow the prompts to either keep your existing data or delete old data and start over.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 Mac OS X
 ========
@@ -51,6 +56,8 @@ To upgrade an existing KA Lite installation.
 
     This will enable the greyed-out assessment items on the sidebar.
 
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
+
 
 Linux
 =====
@@ -63,6 +70,15 @@ Download the latest .deb manually from
 After that, you can install the .deb file like this::
 
     sudo dpkg -i FILENAME.deb
+
+.. warning::
+    Double-clicking the .deb in Ubuntu will open it in Ubuntu Software Center.
+    This will fail on a default installation due to
+    `a bug <https://bugs.launchpad.net/ubuntu/+source/software-center/+bug/1389582>`_
+    in Ubuntu. To make it work, you need to install ``libgtk2-perl``, for
+    instance by running ``sudo apt-get install libgtk2-perl``. After that, make
+    sure Software Center is closed and double-click the .deb file.
+
 
 
 ``FILENAME`` should be replaced with the name of the file you downloaded.
@@ -106,7 +122,7 @@ It can be installed by downloading the latest .deb on the Pi and installing it::
     # Install dependencies
     sudo apt-get install python-m2crypto python-pkg-resources nginx python-psutil
     # Fetch the latest .deb
-    sudo wget https://learningequality.org/r/deb-pi-installer-0-15 --no-check-certificate
+    sudo wget https://learningequality.org/r/deb-pi-installer-0-15 --no-check-certificate --content-disposition 
     # Install the .deb
     sudo dpkg -i ka-lite-raspberry-pi*.deb
 
@@ -123,6 +139,12 @@ _____________
 KA Lite is available for all platforms (e.g. non-Debian compatible platforms)
 through PyPi. See :ref:`pip-installation`.
 
+Upgrade
+_______
+
+To upgrade KA Lite on Linux, simply download the latest deb file and follow the instructions above for installation.
+Your existing data will be preserved by default.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 Configuration after installation or update
 __________________________________________

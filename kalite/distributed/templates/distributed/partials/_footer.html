@@ -6,21 +6,17 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-                <!-- Language selection, admins do not need to see this. -->
-                {% if request.session.facility_user.is_teacher %}
-                  <div class="teacher-only language-select">
-                {% else %}
-                  <div class="not-admin-only language-select">
-                {% endif %}
-                {% if num_language_choices > 1 %}
+                <!-- Language selection -->
+                  <div class="language-select">
+                  {% if num_language_choices > 1 %}
                   <select id="language_selector" aria-label="{% trans 'Select language' %}">
-                  {% for lang_code, lang_meta in language_choices.iteritems %}
+                    {% for lang_code, lang_meta in language_choices.iteritems %}
                     <option value="{{ lang_code }}" {% if lang_code == current_language %}selected{% endif %}>
                         {{ lang_code|get_language_name }}
                     </option>
-                  {% endfor %}
+                    {% endfor %}
                   </select>
-                {% endif %}
+                  {% endif %}
                   </div>
                 <!-- End: Language selection -->         
                 <p class="footer-text">

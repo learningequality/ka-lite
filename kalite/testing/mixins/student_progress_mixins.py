@@ -45,7 +45,7 @@ class CreateExerciseLogMixin(object):
     @classmethod
     def create_exercise_log(cls, **kwargs):
         fields = CreateExerciseLogMixin.DEFAULTS.copy()
-        fields['user'] = kwargs.get("user")
+        fields.update(kwargs)
 
         return ExerciseLog.objects.create(**fields)
 

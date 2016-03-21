@@ -14,9 +14,14 @@ def step_impl(context):
 
 @when("I click on the first option")
 def step_impl(context):
-    menu_item = find_css_class_with_wait(context, "ui-menu-item", wait_time=60)
-    assert menu_item, "No menu item on page."
-    click_and_wait_for_page_load(context, menu_item)
+    def clicked(driver):
+        try:
+            menu_item = find_css_class_with_wait(context, "ui-menu-item")
+            return click_and_wait_for_page_load(context, menu_item)
+        except StaleElementReferenceException:
+            return False
+
+    WebDriverWait(context.browser, 60).until(clicked)
 
 @then("I should see a list of options")
 def step_impl(context):

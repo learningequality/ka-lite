@@ -6,7 +6,6 @@ var sprintf = require("sprintf-js").sprintf;
 var TopicNode = Backbone.Model.extend({
 
     initialize: function(options) {
-        
         if (this.get("entity_kind")===undefined && this.get("kind")!==undefined){
             this.set("entity_kind", this.get("kind"));
         }
