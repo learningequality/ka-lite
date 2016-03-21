@@ -770,7 +770,6 @@ def diagnose():
         diag("content root", settings.CONTENT_ROOT)
         diag("content size", filesizeformat(get_size(settings.CONTENT_ROOT)))
         diag("user database", settings.DATABASES['default']['NAME'])
-        diag("assessment database", settings.DATABASES['assessment_items']['NAME'])
         try:
             from securesync.models import Device
             device = Device.get_own_device()
