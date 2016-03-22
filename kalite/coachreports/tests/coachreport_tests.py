@@ -165,7 +165,7 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
         url = base_url + '?' + urllib.urlencode({'user_id': self.student.id})
         resp = self.client.get(url)
         expect_len = 'fr'
-        actual_len = mocked_get_content_parents.call_args[1]['language']
+        actual_len = str(mocked_get_content_parents.call_args[1]['language'])
         assert actual_len == expect_len
 
     @patch('kalite.coachreports.models.get_topic_nodes')
@@ -182,7 +182,7 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
         except:
             pass
         expect_len = 'fr'
-        actual_len = mocked_get_topic_nodes.call_args[1]['language']
+        actual_len = str(mocked_get_topic_nodes.call_args[1]['language'])
         assert actual_len == expect_len
 
 
