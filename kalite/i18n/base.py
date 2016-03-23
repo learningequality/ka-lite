@@ -72,11 +72,11 @@ def get_langcode_map(lang_name=None, force=False):
     return LANG2CODE_MAP.get(lang_name) if lang_name else LANG2CODE_MAP
 
 
-def get_srt_url(youtube_id, code):
-    return settings.STATIC_URL + "srt/%s/subtitles/%s.srt" % (code, youtube_id)
+def get_subtitle_url(youtube_id, code):
+    return settings.STATIC_URL + "srt/%s/subtitles/%s.vtt" % (code, youtube_id)
 
 
-def get_srt_path(lang_code=None, youtube_id=None):
+def get_subtitle_file_path(lang_code=None, youtube_id=None):
     """Both central and distributed servers must make these available
     at a web-accessible location.
 
@@ -89,7 +89,7 @@ def get_srt_path(lang_code=None, youtube_id=None):
     if lang_code:
         srt_path = os.path.join(srt_path, lcode_to_django_dir(lang_code), "subtitles")
     if youtube_id:
-        srt_path = os.path.join(srt_path, youtube_id + ".srt")
+        srt_path = os.path.join(srt_path, youtube_id + ".vtt")
 
     return srt_path
 
@@ -322,7 +322,7 @@ def select_best_available_language(target_code, available_codes=None):
 
 def delete_language(lang_code):
 
-    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_srt_path(lang_code), get_locale_path(lang_code) ]
+    langpack_resource_paths = [ get_localized_exercise_dirpath(lang_code), get_subtitle_file_path(lang_code), get_locale_path(lang_code) ]
 
     for langpack_resource_path in langpack_resource_paths:
         try:
