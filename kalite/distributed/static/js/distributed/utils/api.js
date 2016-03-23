@@ -57,7 +57,7 @@ function handleFailedAPI(resp, error_prefix) {
     var messages = {};
     switch (resp.status) {
         case 0:
-            messages = {error: gettext("Could not connect to the server.") + " " + gettext("Please try again later.")};
+            messages = {error: gettext("Connecting to the server.") + " " + gettext("Please wait...")};
             break;
         
         case 401:

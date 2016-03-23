@@ -12,11 +12,17 @@ help:
 	@echo "assets - build all JS/CSS assets"
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
-	@echo "dist - package locally"
+	@echo "release - package and upload a release, options: format=[gztar,zip]"
+	@echo "dist - package locally, options: format=[gztar,zip]"
 	@echo "install - install the package to the active Python's site-packages"
 
+# used for release and dist targets
+format?=gztar
+
 clean: clean-build clean-pyc clean-test
+
+clean-dev-db:
+	rm -f kalite/database/data.sqlite
 
 clean-build:
 	rm -fr build/
@@ -24,14 +30,11 @@ clean-build:
 	rm -fr .eggs/
 	rm -fr dist-packages/
 	rm -fr dist-packages-temp/
-	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '*.egg' -exec rm -f {} +
+	rm -fr kalite/database/templates
+	find . -regextype posix-extended -regex '.*\.(egg-info|egg)' -exec rm -fr {} +
 
 clean-pyc:
-	find . -name '*.pyc' -exec rm -f {} +
-	find . -name '*.pyo' -exec rm -f {} +
-	find . -name '*~' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -fr {} +
+	find . -regextype posix-extended -regex '.*\.(pyc|pyo|~|__pycache__)' -exec rm -fr {} +
 
 clean-test:
 	rm -fr .tox/
@@ -45,7 +48,7 @@ lint:
 test:
 	bin/kalite manage test --bdd-only
 
-test-bdd:
+test-bdd: docs
 	bin/kalite manage test --bdd-only
 
 test-nobdd:
@@ -73,8 +76,12 @@ docs:
 	# sphinx-apidoc -o docs/ ka-lite-gtk
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
-	cli2man bin/kalite -o docs/kalite.1.gz
 	# open docs/_build/html/index.html
+
+
+# Runs separately from the docs command for now because of Windows issues
+man:
+	cli2man bin/kalite -o docs/kalite.1.gz
 
 assets:
 	# Necessary because NPM may have wrong versions in the cache
@@ -82,15 +89,20 @@ assets:
 	npm install --production
 	node build.js
 	bin/kalite manage compileymltojson
+	bin/kalite manage syncdb --noinput
+	bin/kalite manage migrate
+	mkdir -p kalite/database/templates/
+	cp kalite/database/data.sqlite kalite/database/templates/
+	bin/kalite manage retrievecontentpack download en --minimal --foreground --template
 
-release: clean docs assets
-	python setup.py sdist --formats=gztar,zip upload --sign
-	python setup.py sdist --formats=gztar,zip upload --sign --static
+release: dist man
 	ls -l dist
+	echo "uploading above to PyPi, using twine"
+	twine upload -s dist/*
 
-dist: clean docs assets
-	python setup.py sdist
-	python setup.py sdist --static
+dist: clean clean-dev-db docs assets
+	python setup.py sdist --formats=$(format)
+	python setup.py sdist --formats=$(format) --static
 	ls -l dist
 
 install: clean

@@ -20,6 +20,10 @@ global.sessionModel = new SessionModel();
 
 var url = require("url");
 
+// An object we can use for checking the state of our models and views.
+// Be sure to clean up after yourself if you use it, so there's no memory bloat!
+window._kalite_debug = {};
+
 window.onerror=function(msg){
     window.js_errors = window.js_errors || [];
     window.js_errors.push(msg);
@@ -30,6 +34,9 @@ require("jquery-ui/themes/base/jquery-ui.css");
 require("bootstrap/dist/js/npm.js");
 
 require("../../../css/distributed/khan-site.css");
+
+// We override introjs.css in khan-lite.less, so load before.
+require("intro.js/introjs.css");
 
 require("../../../css/distributed/khan-lite.less");
 

@@ -4,12 +4,16 @@ import urlparse
 import zipfile
 import tempfile
 import sys
+import shutil
+import threading
+import time
 from distutils.version import StrictVersion
 from fle_utils.general import ensure_dir
 from optparse import make_option
 
 from django.conf import settings as django_settings
 from django.core.management.base import BaseCommand, CommandError
+from django.core.management import call_command
 
 logging = django_settings.LOG
 
@@ -34,21 +38,21 @@ class Command(BaseCommand):
         ziplocation = args[0]
 
         if not should_upgrade_assessment_items() and not kwargs['force_download']:
-            logging.debug("Assessment item resources are in the right version. Skipping download;")
+            logging.debug("Assessment item resources are in the right version. Doing nothing.")
             return
 
         if is_valid_url(ziplocation):  # url; download the zip
-            print "Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time..."
+            logging.info("Downloading assessment item data from a remote server. Please be patient; this file is big, so this may take some time...")
             # this way we can download stuff larger than the device's RAM
             r = requests.get(ziplocation, prefetch=False)
             content_length = r.headers.get("Content-Length")
-            print "Downloaded size: ", str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown"
+            logging.info("Downloaded size: ", str(int(content_length) // 1024 // 1024) + " MB" if content_length else "Unknown")
             sys.stdout.write("Downloading file...")
             sys.stdout.flush()
             f = tempfile.TemporaryFile("r+")
             r.raise_for_status()
             for cnt, chunk in enumerate(r.iter_content(chunk_size=1024)):
-                if chunk: # filter out keep-alive new chunks
+                if chunk:  # filter out keep-alive new chunks
                     f.write(chunk)
                     if cnt % 1000 == 0:
                         sys.stdout.write(".")
@@ -59,16 +63,30 @@ class Command(BaseCommand):
         else:                   # file; just open it normally
             f = open(ziplocation, "rb")
 
-        print "Unpacking..."
-        zf = zipfile.ZipFile(f, "r")
-        unpack_zipfile_to_content_folder(zf)
+        def unpack():
+            zf = zipfile.ZipFile(f, "r")
+            unpack_zipfile_to_content_folder(zf)
+
+        unpack_thread = threading.Thread(target=unpack)
+        unpack_thread.daemon = True
+        unpack_thread.start()
+        logging.info("Unpacking...")
+        while unpack_thread.is_alive():
+            time.sleep(1)
+            sys.stdout.write(".")
+            sys.stdout.flush()
+        unpack_thread.join()
+
+        logging.info("Scanning items and updating content db...")
+        call_command("annotate_content_items")
+        logging.info("Done, assessment items installed and everything updated. Refresh your browser!")
 
 
 def should_upgrade_assessment_items():
     # if assessmentitems.version doesn't exist, then we assume
     # that they haven't got assessment items EVER
-    if not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH) or not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
-        logging.debug("%s does not exist; downloading assessment items" % settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH)
+    if not os.path.exists(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH):
+        logging.debug("%s does not exist; downloading assessment items" % settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH)
         return True
 
     with open(settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH) as f:
@@ -96,22 +114,13 @@ def unpack_zipfile_to_content_folder(zf):
 
     ensure_dir(settings.KHAN_ASSESSMENT_ITEM_ROOT)
     # Ensure that special files are in their configured locations
-    os.rename(
+    shutil.move(
         os.path.join(folder, 'assessmentitems.version'),
         settings.KHAN_ASSESSMENT_ITEM_VERSION_PATH
     )
-    os.rename(
-        os.path.join(folder, 'assessmentitems.sqlite'),
-        settings.KHAN_ASSESSMENT_ITEM_DATABASE_PATH
-    )
-    # JSON file is apparrently not required (not in the test at least)
-    if os.path.isfile(os.path.join(folder, 'assessmentitems.json')):
-        os.rename(
-            os.path.join(folder, 'assessmentitems.json'),
-            settings.KHAN_ASSESSMENT_ITEM_JSON_PATH
-        )
 
 
 def is_valid_url(url):
     parsed_url = urlparse.urlparse(url)
-    return bool(parsed_url.scheme)
+    allowed_methods = ("http", "https")  # urlparse("C:\folder") results in scheme = "c", so use a whitelist
+    return bool(parsed_url.scheme in allowed_methods)

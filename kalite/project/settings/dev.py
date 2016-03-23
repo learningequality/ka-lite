@@ -20,7 +20,8 @@ from .base import *  # @UnusedWildImport
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-TASTYPIE_FULL_DEBUG = True
+TASTYPIE_FULL_DEBUG = DEBUG
+
 
 # Set logging level based on the value of DEBUG (evaluates to 0 if False,
 # 1 if True)

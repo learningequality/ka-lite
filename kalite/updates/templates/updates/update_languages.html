@@ -16,7 +16,7 @@
     <script type="text/javascript" src="{% static 'js/updates/bundles/bundle_update_languages.js' %}"></script>
     <script type="text/javascript">
      window.sessionModel.set({
-         AVAILABLE_LANGUAGEPACK_URL: "http://" + window.sessionModel.get("CENTRAL_SERVER_HOST") + "/api/i18n/language_packs/available/{{ SHORTVERSION }}",
+         AVAILABLE_LANGUAGEPACK_URL: "http://pantry.learningequality.org/downloads/ka-lite/{{ SHORTVERSION }}/content/contentpacks/all_metadata.json",
          DEFAULT_LANGUAGE: "{{ default_language }}",
      });
     </script>
@@ -69,7 +69,7 @@
             </div>
         </div>
 
-        <div id="languagepackdownload-progressbar">
+        <div id="retrievecontentpack-progressbar">
             {% include "updates/progress-bar.html" %}
         </div>
         <div class="clear"></div>

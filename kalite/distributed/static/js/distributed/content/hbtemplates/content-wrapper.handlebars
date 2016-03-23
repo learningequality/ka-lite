@@ -49,7 +49,8 @@
                             <div class="col-xs-4">
                                 <a href="/learn/{{ path }}" title="{{description}}" class="btn btn-success btn-related-content">
                                     <div class="related-content-header">
-                                        <span class="icon-{{ kind }}"></span>
+                                        <span aria-hidden="true"><i class="icon-{{ kind }}"></i></span>
+                                        <span class="sr-only">{{ kind }}</span>
                                         <span class="related-content-title">{{ title }}</span>
                                     </div>
                                     <div class="related-content-body">

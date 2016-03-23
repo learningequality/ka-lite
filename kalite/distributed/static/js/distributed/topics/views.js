@@ -193,7 +193,7 @@ var SidebarView = BaseView.extend({
         this.render();
 
         this.listenTo(this.state_model, "change:open", this.update_sidebar_visibility);
-        this.listenTo(this.state_model, "change:current_level", this.resize_sidebar);
+        this.listenTo(this.state_model, "change:current_level", this.update_sidebar_visibility);
     },
 
     render: function() {
@@ -236,60 +236,63 @@ var SidebarView = BaseView.extend({
         }
     },
 
-    resize_for_narrow: _.debounce(function() {
-        var current_level = this.state_model.get("current_level");
-        var column_width = this.$(".topic-container-inner").width();
-        var last_column_width = this.$(".topic-container-inner:last-child").width();
-        // Hack to give the last child of .topic-container-inner to be 1.5 times the 
-        // width of their parents. Also, sidebar overflow out of the left side of screen
-        // is computed and set here.
+    resize_for_narrow: function() {
+        if (this.state_model.get("open")) {
+            var current_level = this.state_model.get("current_level");
+            var column_width = this.$(".topic-container-inner").width();
+            var last_column_width = this.$(".topic-container-inner:last-child").width();
+            // Hack to give the last child of .topic-container-inner to be 1.5 times the
+            // width of their parents. Also, sidebar overflow out of the left side of screen
+            // is computed and set here.
 
-        // THE magic variable that controls number of visible panels
-        var numOfPanelsToShow = 4;
+            // THE magic variable that controls number of visible panels
+            var numOfPanelsToShow = 4;
 
-        if ($(window).width() < 1120)
-            numOfPanelsToShow = 3;
+            if ($(window).width() < 1120)
+                numOfPanelsToShow = 3;
 
-        if ($(window).width() < 920)
-            numOfPanelsToShow = 2;
+            if ($(window).width() < 920)
+                numOfPanelsToShow = 2;
 
-        if ($(window).width() < 620)
+            if ($(window).width() < 620)
             numOfPanelsToShow = 1;
+            // Used to get left value in number form
+            var sidebarPanelPosition = this.sidebar.position();
+            var sidebarPanelLeft = sidebarPanelPosition.left;
 
-        // Used to get left value in number form
-        var sidebarPanelPosition = this.sidebar.position();
-        var sidebarPanelLeft = sidebarPanelPosition.left;
+            this.width = (current_level - 1) * column_width + last_column_width + 10;
+            this.sidebar.width(this.width);
+            var sidebarPanelNewLeft = -(column_width * (current_level - numOfPanelsToShow)) + this.sidebarBack.width();
+            if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
 
-        this.width = (current_level - 1) * column_width + last_column_width + 10;
-        this.sidebar.width(this.width);
-        var sidebarPanelNewLeft = -(column_width * (current_level - numOfPanelsToShow)) + this.sidebarBack.width();
-        if (sidebarPanelNewLeft > 0) sidebarPanelNewLeft = 0;
+            // Signature color flash (also hides a slight UI glitch)
+            var originalBackColor = this.sidebarBack.css('background-color');
+            this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
 
-        // Signature color flash (also hides a slight UI glitch)
-        var originalBackColor = this.sidebarBack.css('background-color');
-        this.sidebarBack.css('background-color', this.sidebarTab.css('background-color')).animate({'background-color': originalBackColor});
-        
-        var self = this;
-        this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function() {
-            self.set_sidebar_back();
-        });
+            var self = this;
+            this.sidebar.animate({"left": sidebarPanelNewLeft}, 115, function () {
+                self.set_sidebar_back();
+            });
 
-        this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
-    }, 100),
+            this.sidebarTab.animate({left: this.sidebar.width() + sidebarPanelNewLeft}, 115);
+        }
+    },
 
     // Pretty much the code for pre-back-button sidebar resize
-    resize_for_wide: _.debounce(function() {
-        var current_level = this.state_model.get("current_level");
-        var column_width = this.$(".topic-container-inner").width();
-        var last_column_width = 400;
-        
-        this.width = (current_level-1) * column_width + last_column_width + 10;
-        this.sidebar.width(this.width);
-        this.sidebar.css({left: 0});
-        this.sidebarTab.css({left: this.width});
-        
-        this.set_sidebar_back();
-    }, 100),
+    resize_for_wide: function() {
+       if (this.state_model.get("open")) {
+           var current_level = this.state_model.get("current_level");
+           var column_width = this.$(".topic-container-inner").width();
+           var last_column_width = 400;
+
+           this.width = (current_level-1) * column_width + last_column_width + 10;
+           this.sidebar.width(this.width);
+           this.sidebar.css({left: 0});
+           this.sidebarTab.css({left: this.width});
+
+            this.set_sidebar_back();
+       }
+    },
 
     check_external_click: function(ev) {
         if (this.state_model.get("open")) {
@@ -309,19 +312,19 @@ var SidebarView = BaseView.extend({
 
     update_sidebar_visibility: _.debounce(function() {
         if (this.state_model.get("open")) {
-            // Used to get left value in number form
-            var sidebarPanelPosition = this.sidebar.position();
             this.sidebar.css({left: 0});
             this.resize_sidebar();
+            // Used to get left value in number form
+            var sidebarPanelPosition = this.sidebar.position();
             this.sidebarTab.css({left: this.sidebar.width() + sidebarPanelPosition.left}).html('<span class="icon-circle-left"></span>');
             this.$(".sidebar-fade").show();
         } else {
-            this.sidebar.css({left: - this.width});
+            // In an edge case, this.width may be undefined -- if so, then just make sure a sufficiently high
+            // numerical value is set to hide the sidebar
+            this.sidebar.css({left: -(this.width || $(window).width())});
             this.sidebarTab.css({left: 0}).html('<span class="icon-circle-right"></span>');
             this.$(".sidebar-fade").hide();
         }
-
-        this.set_sidebar_back();
     }, 100),
 
     set_sidebar_back: function() {
@@ -369,11 +372,15 @@ var SidebarView = BaseView.extend({
     },
 
     show_sidebar: function() {
-        this.state_model.set("open", true);
+        if (!this.state_model.get("open")) {
+            this.state_model.set("open", true);
+        }
     },
 
     hide_sidebar: function() {
-        this.state_model.set("open", false);
+        if (this.state_model.get("open")) {
+            this.state_model.set("open", false);
+        }
     },
 
     show_sidebar_tab: function() {
@@ -673,6 +680,14 @@ var TopicContainerOuterView = BaseView.extend({
         var self = this;
 
         this.inner_views[0].deferred_node_by_slug(path, function(node){
+            /*
+            Ultimately this will be called once for each TopicNode in the encapsulating SidebarView's TopicCollection
+            corresponding to the given path.
+
+            If no path is found, e.g. because an invalid url was entered (or because we're using the testing
+            framework) then node will be undefined. We still request the entry in order to complete the Sidebar
+            display logic, even though nothing will be shown.
+             */
             if (node!==undefined) {
                 if (node.get("kind")==="Topic") {
                     self.show_new_topic(node);
@@ -680,6 +695,8 @@ var TopicContainerOuterView = BaseView.extend({
                     self.entry_requested(node);
                 }
                 node.set("active", true);
+            } else {
+                self.entry_requested(node);
             }
         });
     },
@@ -709,51 +726,34 @@ var TopicContainerOuterView = BaseView.extend({
     },
 
     entry_requested: function(entry) {
-        var kind = entry.get("kind") || entry.get("entity_kind");
-        var id = entry.get("id") || entry.get("entity_id");
-
-        var view;
+        // entry could be undefined if we've requested a content item that *doesn't exist*, either through a bad url
+        // or more likely because we're using the testing framework. In this case, just pretend like we finished
+        // without actually showing anything.
+        var kind;
+        var id;
+        if( entry !== undefined ) {
+            kind = entry.get("kind") || entry.get("entity_kind");
+            id = entry.get("id") || entry.get("entity_id");
+        } else {
+            kind = "Video";
+            id = "undefined_entry_id";
+            entry = new Models.TopicNode();
+        }
 
         this.content_view.model = entry;
         // The rating subview depends on the content_view.model, but we can't just listen to events on the model
         // to trigger show_rating, since the actual object is swapped out here. We must call it explicitly.
         this.content_view.show_rating();
-        var self = this;
-        // Mask "require" with "external" to prevent browserify from bundling what we want to be external dependencies.
-        var external = require;
-        switch(kind) {
 
-            case "Exercise":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    var ExerciseViews = external("exercise");
-                    view = new ExerciseViews.ExercisePracticeView({
-                        exercise_id: id,
-                        context_type: "playlist",
-                        context_id: self.model.get("id")
-                    });
-                    self.content_view.show_view(view);
-                });
-                break;
+        var view = new ContentViews.ContentWrapperView({
+            id: id,
+            kind: kind,
+            context_id: this.model.get("id"),
+            channel: window.channel_router.channel
+        });
 
-            case "Quiz":
-                $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_exercise.js", function(){
-                    var ExerciseViews = external("exercise");
-                    view = new ExerciseViews.ExerciseQuizView({
-                        quiz_model: new ExerciseModels.QuizDataModel({entry: entry}),
-                        context_id: self.model.get("id") // for now, just use the playlist ID as the quiz context_id
-                    });
-                    self.content_view.show_view(view);
-                });
-                break;
+        this.content_view.show_view(view);
 
-            default:
-                view = new ContentViews.ContentWrapperView({
-                    id: id,
-                    context_id: this.model.get("id")
-                });
-                this.content_view.show_view(view);
-                break;
-        }
         this.inner_views.unshift(this.content_view);
         this.trigger("inner_view_added");
         this.state_model.set("content_displayed", true);
