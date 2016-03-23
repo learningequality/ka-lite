@@ -166,7 +166,7 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
         resp = self.client.get(url)
         expect_len = 'fr'
         actual_len = str(mocked_get_content_parents.call_args[1]['language'])
-        assert actual_len == expect_len
+        self.assertEqual(actual_len, expect_len)
 
     @patch('kalite.coachreports.models.get_topic_nodes')
     def test_playlist_progress_detail_language(self, mocked_get_topic_nodes):
@@ -183,7 +183,7 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
             pass
         expect_len = 'fr'
         actual_len = str(mocked_get_topic_nodes.call_args[1]['language'])
-        assert actual_len == expect_len
+        self.assertEqual(actual_len, expect_len)
 
 
 class LearnerLogAPITests(FacilityMixins,
