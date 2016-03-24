@@ -550,10 +550,10 @@ var ExerciseWrapperBaseView = BaseView.extend({
         }
 
         var defaults = {
-            exercise_id: this.options.exercise_id,
+            exercise_id: this.log_model.get("exercise_id"),
             user: window.statusModel.get("user_uri"),
-            context_type: this.options.context_type || "",
-            context_id: this.options.context_id || "",
+            context_type: "exercise",
+            context_id: "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version"),
             seed: seed,
@@ -564,7 +564,7 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.current_attempt_log = new Models.AttemptLogModel(data);
 
-        this.attempt_collection.add(this.current_attempt_log);
+        this.attempt_collection.unshift(this.current_attempt_log);
 
         return this.current_attempt_log;
 
