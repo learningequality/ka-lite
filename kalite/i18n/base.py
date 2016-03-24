@@ -200,7 +200,7 @@ def _get_installed_language_packs():
     # There's always English...
     installed_language_packs = [{
         'code': 'en',
-        'software_version': VERSION,
+        'software_version': SHORTVERSION,
         'language_pack_version': 0,
         'percent_translated': 100,
         'subtitle_count': 0,
