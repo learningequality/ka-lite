@@ -5,6 +5,7 @@ import shutil
 import urllib
 import zipfile
 from collections_local_copy import OrderedDict
+from distutils.version import LooseVersion
 from fle_utils.internet.webcache import invalidate_web_cache
 
 from django.http import HttpRequest
@@ -164,6 +165,23 @@ def convert_language_code_format(lang_code, for_django=True):
             lang_code = "-".join(code_parts)
 
     return lang_code
+
+
+def outdated_langpacks():
+    """
+    Function that returns a list of languages (full metadata) that needs to be
+    upgraded to the latest version. Returns an empty list if all languages are
+    upgraded to this release's version.
+    """
+
+    langpacks = get_installed_language_packs(force=True)
+
+    for langpack in langpacks.itervalues():
+        langpackversion = LooseVersion(langpack.get("software_version") or SHORTVERSION)
+        current_software_version = LooseVersion(SHORTVERSION)
+
+        if current_software_version > langpackversion:
+            yield langpack
 
 
 INSTALLED_LANGUAGES_CACHE = None
