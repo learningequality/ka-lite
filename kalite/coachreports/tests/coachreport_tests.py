@@ -13,6 +13,7 @@ from kalite.testing.mixins.facility_mixins import FacilityMixins
 from kalite.testing.mixins.student_progress_mixins import StudentProgressMixin
 from kalite.topic_tools.content_models import get_content_parents, Item, set_database, create
 from kalite.i18n.api_views import set_default_language
+from django.test.utils import override_settings
 
 
 class ExternalAPITests(FacilityMixins,
@@ -160,9 +161,8 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
         """
         Test if the right language argument gets passed to get_content_parents() when playlist_progress is requested.
         """
-        set_default_language('fr')
         base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress'})
-        url = base_url + '?' + urllib.urlencode({'user_id': self.student.id})
+        url = base_url + '?' + urllib.urlencode({'user_id': self.student.id}) + '&lang=fr'
         resp = self.client.get(url)
         expect_len = 'fr'
         actual_len = str(mocked_get_content_parents.call_args[1]['language'])
@@ -174,9 +174,8 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
         This is a very hacky way to test if the right language argument gets passed to get_topic_nodes() when playlist_progress_detail is requested.
         It is very tricky to get the response right with all the truble to login as student.
         """
-        set_default_language('fr')
         base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress_detail'})
-        url = base_url + '?' + urllib.urlencode({'user_id': self.student.id, 'playlist_id': self.topic1.id, '_': '1458605610477'})
+        url = base_url + '?' + urllib.urlencode({'user_id': self.student.id, 'playlist_id': self.topic1.id}) + '&lang=fr'
         try:
             resp = self.client.get(url)
         except:
