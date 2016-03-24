@@ -69,7 +69,7 @@ var ExerciseProgressView = BaseView.extend({
 
         this.collection.forEach(function(model) {
             if (model.has("correct")) {
-                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
+                attempt_text = (model.get("correct") ? "<span aria-hidden='true' class='correct'><i class='glyphicon glyphicon-ok'></i></span> " : "<span aria-hidden='true' class='incorrect'><i class='glyphicon glyphicon-remove'></i></span> ") + attempt_text;
             }
         });
 
@@ -550,10 +550,10 @@ var ExerciseWrapperBaseView = BaseView.extend({
         }
 
         var defaults = {
-            exercise_id: this.options.exercise_id,
+            exercise_id: this.log_model.get("exercise_id"),
             user: window.statusModel.get("user_uri"),
-            context_type: this.options.context_type || "",
-            context_id: this.options.context_id || "",
+            context_type: "exercise",
+            context_id: "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version"),
             seed: seed,
@@ -564,7 +564,7 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.current_attempt_log = new Models.AttemptLogModel(data);
 
-        this.attempt_collection.add(this.current_attempt_log);
+        this.attempt_collection.unshift(this.current_attempt_log);
 
         return this.current_attempt_log;
 
@@ -677,10 +677,22 @@ var ExerciseWrapperBaseView = BaseView.extend({
     },
 
     update_total_points: function(data) {
-        // update the top-right point display, now that we've saved the points successfully
-        if (this.log_model.has("points")) {
-            window.statusModel.update_total_points(this.log_model.get("points") - this.status_points);
-            this.status_points = this.log_model.get("points");
+        /*
+            Update the top-right point display, now that we've saved the points successfully.
+            However, we should *only* update the points display if it's actually changed.
+
+            This is called in case there is a discrepancy between the points reported by the server and the points
+            known to the client.
+
+            :param data: Is in fact a log_model instance, since this is a callback to the
+              built-in "sync" event. It should be the *same* object as this.log_model.
+         */
+        if (data.has("points")) {
+            if(data.changed.points) {
+                var points_diff = data.get("points") - this.points_before_sync;
+                window.statusModel.update_total_points(points_diff);
+            }
+            this.points_before_sync = data.get("points");
         }
     },
 
@@ -773,7 +785,7 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
 
         // store the number of points that are currently in the ExerciseLog, so we can calculate the difference
         // once it changes, for updating the "total points" in the nav bar display
-        this.status_points = this.log_model.get("points");
+        this.points_before_sync = this.log_model.get("points");
 
 
         if ( !window.statusModel.get("is_django_user") ) {

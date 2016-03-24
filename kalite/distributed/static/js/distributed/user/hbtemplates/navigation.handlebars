@@ -13,9 +13,11 @@
 {{#if docs_exist}}
   {{#if is_admin}}
     <li role="menuitem" id="nav_documentation">
-      <a role="menuitem" tabindex="-1" id="documentation_a" href="/static/html/usermanual/userman_main.html">
-        {{_ "User Manual" }}
-       </a>
+      <a role="menuitem" tabindex="-1" id="documentation_a" href="/static/html/usermanual/userman_main.html" title="{{_ "Open user manual in new window" }}" target="_blank" >
+        {{_ "Docs" }}
+        <span class="sr-only">{{_ "Open user manual in new window" }}</span>
+        <i aria-hidden="true" class="glyphicon glyphicon-new-window"></i>
+      </a>
     </li>
   {{/if}}
 {{/if}}

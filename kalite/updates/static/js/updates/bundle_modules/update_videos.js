@@ -125,7 +125,7 @@ $(function() {
         },
         postProcess: function(event, data) {
             data.response = _.map(data.response, function(node) {
-                if (node.files_complete === 0) {
+                if (node.files_complete === 0 || node.files_complete === null || typeof node.files_complete === "undefined") {
                     node["extraClasses"] = "unstarted";
                 } else if (node.files_complete < node.total_files) {
                     node["extraClasses"] = "partial";
@@ -415,10 +415,12 @@ function getSelectedStartedMetadata(data_type) {
 }
 
 function setNodeClass(node, className) {
-    if (node.extraClasses != className) {
-        node.extraClasses = className;
-        if (node.parent !== null) {
-            updateNodeClass(node.parent);
+    if (node !== null) {
+        if (node.extraClasses != className) {
+            node.extraClasses = className;
+            if (node.parent !== null) {
+                updateNodeClass(node.parent);
+            }
         }
     }
 }

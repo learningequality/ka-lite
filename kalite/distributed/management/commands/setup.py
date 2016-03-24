@@ -33,7 +33,7 @@ from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMEN
 from fle_utils.config.models import Settings
 from fle_utils.general import get_host_name
 from fle_utils.platforms import is_windows
-from kalite.distributed.management.commands.retrievecontentpack import CONTENT_PACK_URL_TEMPLATE
+from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE
 from kalite.facility.models import Facility
 from kalite.version import VERSION, SHORTVERSION
 from securesync.models import Device
@@ -374,7 +374,7 @@ class Command(BaseCommand):
                     "(Re)moving database file to temp location, starting clean install. Recovery location: %s" % dest_file)
                 shutil.move(database_file, dest_file)
 
-        if settings.DB_TEMPLATE_DEFAULT and not database_exists:
+        if settings.DB_TEMPLATE_DEFAULT and not database_exists and os.path.exists(settings.DB_TEMPLATE_DEFAULT):
             print("Copying database file from {0} to {1}".format(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH))
             shutil.copy(settings.DB_TEMPLATE_DEFAULT, settings.DEFAULT_DATABASE_PATH)
         else:
@@ -384,15 +384,16 @@ class Command(BaseCommand):
         Settings.set("database_version", VERSION)
 
         # Copy all content item db templates
-        for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
-            if file_name.endswith("sqlite"):
-                template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
-                dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
-                if install_clean or not os.path.exists(dest_database):
-                    print("Copying {} to {}".format(template_path, dest_database))
-                    shutil.copy(template_path, dest_database)
-                else:
-                    print("Skipping {}".format(template_path))
+        if os.path.exists(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+            for file_name in os.listdir(settings.DB_CONTENT_ITEM_TEMPLATE_DIR):
+                if file_name.endswith("sqlite"):
+                    template_path = os.path.join(settings.DB_CONTENT_ITEM_TEMPLATE_DIR, file_name)
+                    dest_database = os.path.join(settings.DEFAULT_DATABASE_DIR, file_name)
+                    if install_clean or not os.path.exists(dest_database):
+                        print("Copying {} to {}".format(template_path, dest_database))
+                        shutil.copy(template_path, dest_database)
+                    else:
+                        print("Skipping {}".format(template_path))
 
         # download the english content pack
         # This can take a long time and lead to Travis stalling. None of this
