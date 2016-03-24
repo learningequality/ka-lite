@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _
 
 from fle_utils.internet.classes import JsonResponseMessageError
 from fle_utils.internet.functions import get_ip_addresses, set_query_params
+from kalite.i18n.base import outdated_langpacks
 from kalite.shared.decorators.auth import require_admin
 from kalite.topic_tools.content_models import search_topic_nodes
 from securesync.api_client import BaseClient
@@ -88,6 +89,13 @@ def homepage(request):
     """
     Homepage.
     """
+    def _alert_outdated_languages(langpacks):
+        pretty_lang_names = " --- ".join(lang.get("name", "") for lang in langpacks)
+        messages.warning(request, _("Dear Admin, please log in and upgrade the following languages as soon as possible: {}").format(pretty_lang_names))
+
+    outdated_langpack_list = list(outdated_langpacks())
+    if outdated_langpack_list:
+        _alert_outdated_languages(outdated_langpack_list)
     return {}
 
 
