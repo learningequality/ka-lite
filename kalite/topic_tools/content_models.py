@@ -395,18 +395,24 @@ def get_topic_contents(kinds=None, topic_id=None, **kwargs):
 
 
 @set_database
-def get_download_youtube_ids(paths=None, **kwargs):
+def get_download_youtube_ids(paths=None, downloaded=False, **kwargs):
     """
     Convenience function for taking a list of content ids and returning
     all associated youtube_ids for downloads, regardless of whether the input
     paths are paths for content nodes or topic nodes
     :param paths: A list of paths to nodes - used to ensure uniqueness.
+    :param downloaded: Boolean to select whether to return files that have been downloaded already or not.
     :return: A unique list of youtube_ids as strings.
     """
     if paths:
         youtube_ids = dict()
         for path in paths:
             selector = (Item.kind != "Topic") & (Item.path.contains(path)) & (Item.youtube_id.is_null(False))
+
+            if downloaded:
+                selector &= Item.files_complete > 0
+            else:
+                selector &= Item.files_complete == 0
 
             youtube_ids.update(dict([item for item in Item.select(Item.youtube_id, Item.title).where(selector).tuples() if item[0]]))
 
