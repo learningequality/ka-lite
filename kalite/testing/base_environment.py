@@ -67,8 +67,10 @@ def setup_content_paths(context, db):
     # It then updates the items with these paths with their update dicts, and then propagates
     # availability changes up the topic tree - this means that we can alter the availability of one item
     # and make all its parent topics available so that it is navigable to in integration tests.
-    annotate_content_models(db=db, iterator_content_items=lambda ids: [(
-        context.available_content_path, {"available": True})])
+    def iterator_content_items(ids=None, channel="khan", language="en"):
+        return [(context.available_content_path, {"available": True})]
+
+    annotate_content_models(db=db, iterator_content_items=iterator_content_items)
 
     with Using(db, [Item], with_transaction=False):
         context._unavailable_item = Item.create(
