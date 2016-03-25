@@ -80,8 +80,10 @@ def update_content_availability(content_list, language="en", channel="khan"):
                 update["size_on_disk"] = get_local_video_size(content.get("youtube_id"))
             else:
                 # The video file for this content item does not exist. Set the files_complete and size_on_disk to 0
-                update["files_complete"] = 0
-                update["size_on_disk"] = 0
+                if content.get("files_complete"):
+                    update["files_complete"] = 0
+                if content.get("size_on_disk"):
+                    update["size_on_disk"] = 0
                 # Set file_id to None as a flag that this file should not be used in any later processing.
                 file_id = None
 
