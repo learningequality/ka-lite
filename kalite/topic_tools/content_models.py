@@ -587,7 +587,7 @@ def update_item(update=None, path=None, **kwargs):
             item.save()
 
 
-def iterator_content_items(ids=None, **kwargs):
+def iterator_content_items(ids=None, channel="khan", language="en", **kwargs):
     """
     Generator to iterate over content items specified by ids,
     run update content availability on that item and then yield the
@@ -601,13 +601,13 @@ def iterator_content_items(ids=None, **kwargs):
         items = Item.select().dicts().iterator()
 
     mapped_items = itertools.imap(unparse_model_data, items)
-    updated_mapped_items = update_content_availability(mapped_items)
+    updated_mapped_items = update_content_availability(mapped_items, channel=channel, language=language)
 
     for path, update in updated_mapped_items:
         yield path, update
 
 
-def iterator_content_items_by_youtube_id(ids=None, **kwargs):
+def iterator_content_items_by_youtube_id(ids=None, channel="khan", language="en", **kwargs):
     """
     Generator to iterate over content items specified by youtube ids,
     run update content availability on that item and then yield the
@@ -621,7 +621,7 @@ def iterator_content_items_by_youtube_id(ids=None, **kwargs):
         items = Item.select().dicts().iterator()
 
     mapped_items = itertools.imap(unparse_model_data, items)
-    updated_mapped_items = update_content_availability(mapped_items)
+    updated_mapped_items = update_content_availability(mapped_items, channel=channel, language=language)
 
     for path, update in updated_mapped_items:
         yield path, update
@@ -661,7 +661,7 @@ def annotate_content_models(channel="khan", language="en", ids=None, iterator_co
 
     db = kwargs.get("db")
     if db:
-        content_models = iterator_content_items(ids=ids)
+        content_models = iterator_content_items(ids=ids, channel=channel, language=language)
         with db.atomic() as transaction:
             def recurse_availability_up_tree(node, available):
                 if not node.parent:
