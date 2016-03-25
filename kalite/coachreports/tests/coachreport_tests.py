@@ -159,7 +159,7 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
     @patch('kalite.coachreports.models.get_content_parents')
     def test_playlist_progress_language(self, mocked_get_content_parents):
         """
-        Test if the right language argument gets passed to get_content_parents() when playlist_progress is requested.
+        Test if there is language argument got passed to get_content_parents() when playlist_progress is requested.
         """
         base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress'})
         url = base_url + '?' + urllib.urlencode({'user_id': self.student.id})
@@ -170,11 +170,12 @@ class PlaylistProgressResourceTestCase(FacilityMixins, StudentProgressMixin, KAL
     @patch('kalite.coachreports.models.get_topic_nodes')
     def test_playlist_progress_detail_language(self, mocked_get_topic_nodes):
         """
-        This is a very hacky way to test if the right language argument gets passed to get_topic_nodes() when playlist_progress_detail is requested.
-        It is very tricky to get the response right with all the truble to login as student.
+        This is a very hacky way to test if there is language argument got passed to get_topic_nodes() when playlist_progress_detail is requested.
         """
         base_url = self.reverse('api_dispatch_list', kwargs={'resource_name': 'playlist_progress_detail'})
         url = base_url + '?' + urllib.urlencode({'user_id': self.student.id, 'playlist_id': self.topic1.id})
+        # It is very tricky to get the endpoint response right with all the truble to login as student.
+        # So for the purpose of this test, I ignore any error caused by the request, just check the argument in get_topic_nodes()
         try:
             resp = self.client.get(url)
         except:
