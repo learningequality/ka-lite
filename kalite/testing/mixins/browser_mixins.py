@@ -114,6 +114,9 @@ class BrowserActionMixins(object):
         else:
             messages = []
 
+        if isinstance(contains, str):  # make sure we only look at messages we're looking for.
+            messages = [message for message in messages if contains in message.text]
+
         # Check that we got as many as expected
         if num_messages is not None:
             msg = "Make sure there are %d message(s), type='%s'." % \
