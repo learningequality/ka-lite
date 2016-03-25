@@ -52,7 +52,7 @@ class DependenciesTests(unittest2.TestCase):
     DJANGO_VERSION_STR = "1.5.1.final.0"
 
     DJANGO_HOST = '127.0.0.1'
-    DJANGO_PRODUCTION_PORT = getattr(settings, "PRODUCTION_PORT", 8008)
+    DJANGO_PRODUCTION_PORT = getattr(settings, "HTTP_PORT", 8008)
 
     PSUTIL_MIN_VERSION = "2.0"
 
@@ -159,33 +159,6 @@ class SqliteTests(DependenciesTests):
             self._pass(msg='%s set to "%s" when running tests...' % (msg, self.SQLITE_ON_MEMORY,))
 
 
-class DjangoTests(DependenciesTests):
-
-    def test_django_is_installed(self):
-        self._log("Testing if Django is installed...")
-        try:
-            import django
-            self._pass()
-        except ImportError:
-            self._fail()
-
-    def test_minimum_python_version(self):
-        self._log("Testing minimum Python version %s for Django version %s..." %
-                  (self.MINIMUM_PYTHON_VERSION_STR, self.DJANGO_VERSION_STR,))
-        if sys.version_info >= self.MINIMUM_PYTHON_VERSION:
-            self._pass()
-        else:
-            self._fail(" found version %s instead..." % (_tuple_to_str(sys.version_info),))
-
-    def test_django_webserver_can_serve_on_port(self):
-        self._log("Testing if Django can serve on %s..." % self.make_url())
-        from kalite.django_cherrypy_wsgiserver.cherrypyserver import port_is_available
-        result = port_is_available(self.DJANGO_HOST, self.DJANGO_PRODUCTION_PORT)
-        if not result:
-            self._fail()
-        self._pass()
-
-
 class PackagesTests(DependenciesTests):
     """
     TODO(cpauya): We can improve this with version checks like how pip does
@@ -253,31 +226,6 @@ class PackagesTests(DependenciesTests):
         else:
             self._pass("\n...Result: all apps can be imported...")
 
-    def test_required_packages_and_versions(self):
-        # Don't do this, we are cleaning up dependency management and will
-        # not need to test things this way anymore
-        return
-        try:
-            self._log("Testing required Python packages and their versions...")
-            fail_count = 0
-
-            for package, version in sorted(self.PACKAGES.iteritems()):
-                self._log("\n...importing %s..." % package)
-                p = __import__(package)
-                imported_version = self.get_version(p)
-                self._log("need version %s, found %s..." % (version, imported_version,))
-                if self.check_versions_are_equal(version, imported_version):
-                    self._log(" %s" % self.OK)
-                else:
-                    fail_count += 1
-                    self._fail(raise_fail=False, end_chars="")
-            if fail_count > 0:
-                self._fail("\n...Result: %s required Python package/s failed import..." % fail_count)
-            else:
-                self._pass("\n...Result: all required Python packages can be imported...")
-        except ImportError as exc:
-            self._fail("Exception: %s" % exc)
-
     def test_psutil(self):
         """
         From `fle_utils.set_process_priority.py`:
@@ -301,56 +249,6 @@ class PackagesTests(DependenciesTests):
         except ImportError as exc:
             self._log("not installed...")
             self._pass()
-
-
-class PathsTests(DependenciesTests):
-    """
-    Check that we have access to all paths and files we need read or write access to.
-    """
-
-    JSON_FILES = ("channel_data.json", "contents.json", "exercises.json",
-                  "topics.json",)
-
-    def test_content_path(self):
-        content_path = os.path.realpath(os.path.join(PROJECT_PATH, "content"))
-        msg = 'Testing write access to content folder "%s"...' % content_path
-        self.check_path(content_path, os.W_OK, msg=msg)
-
-    def test_data_path(self):
-        khan_path = os.path.realpath(os.path.join(PROJECT_PATH, "data", "khan"))
-        msg = 'Testing read-only access to data folder "%s"...' % khan_path
-        self.check_path(khan_path, os.R_OK, msg=msg)
-
-    def test_json_path(self):
-        khan_path = os.path.realpath(os.path.join(PROJECT_PATH, "data", "khan"))
-        msg = 'Testing access to and format of json files at "%s"...' % khan_path
-        self._log(msg)
-        fail_count = 0
-        for json_file in self.JSON_FILES:
-            json_path = os.path.realpath(os.path.join(khan_path, json_file)) + ''
-            msg = '\n...checking access to "%s"...' % json_path
-            if not self.check_path(json_path, os.R_OK, msg=msg, raise_fail=False, end_chars=""):
-                fail_count += 1
-            else:
-                # Attempt to load .json file to validate format.
-                # TODO(cpauya): Check if .json file is large to prevent delays.
-                self._log("\n......loading json file...")
-                json_content = softload_json(json_path, default=None)
-                if json_content is None:
-                    msg = "file has invalid json format or is empty..."
-                    self._fail(msg, raise_fail=False, end_chars="")
-                    fail_count += 1
-                else:
-                    self._pass(end_chars="")
-        if fail_count > 0:
-            self._fail("\n...Result: %s json file/s failed test..." % fail_count)
-        else:
-            self._pass("\n...Result: all json file/s are ok...")
-
-    def test_scripts_path(self):
-        scripts_path = os.path.realpath(os.path.join(PROJECT_PATH, "scripts"))
-        msg = 'Testing execute access for the scripts folder "%s"...' % scripts_path
-        self.check_path(scripts_path, os.X_OK, msg=msg)
 
 
 # NOTE: Enable these if we want to run the tests in specified order.

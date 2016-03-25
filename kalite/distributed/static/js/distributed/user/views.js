@@ -67,6 +67,7 @@ var SuperUserCreateModalView = BaseView.extend({
                 success : function(e){
                     if (e.Status == 'Success') {
                         this.close_modal();
+                        window.statusModel.set("has_superuser", true);
                     }else if (e.Status == 'Invalid'){
                         $('#superusercreate-container').html(e.data);
                         this.highlight_form();
@@ -374,10 +375,7 @@ var TotalPointView = Backbone.View.extend({
             return;
         }
 
-        message = sprintf(gettext("Points: %(points)d "), { points : points });
-        if (ds.store.show_store_link_once_points_earned) {
-            message += " | <a href='/store/'>Store!</a>";
-        }
+        message = sprintf(gettext(" %(points)d points "), { points : points });
 
         this.$el.html(message);
         this.$el.show();
@@ -465,19 +463,21 @@ var UserView = BaseView.extend({
                 // Set the option for the URL redirect after login success
                 options.next = next;
             }
-            if (this.loginModalView) {
-                // If there is already a loginModalView for some reason, just set the above options on it
-                // and rerender
-                this.loginModalView.set_options(options);
-                if (this.login_start_open) {
-                    this.loginModalView.show_modal();
+            // If SuperUserCreateModalView get displayed, don't display loginModalView
+            if (window.statusModel.get("has_superuser")){
+                if (this.loginModalView) {
+                    // If there is already a loginModalView for some reason, just set the above options on it
+                    // and rerender
+                    this.loginModalView.set_options(options);
+                    if (this.login_start_open) {
+                        this.loginModalView.show_modal();
+                    }
+                } else {
+                    // Otherwise just start the modal view with these options, but add in the statusModel with it
+                    options.model = this.model;
+                    this.loginModalView = new LoginModalView(options);
                 }
-            } else {
-                // Otherwise just start the modal view with these options, but add in the statusModel with it
-                options.model = this.model;
-                this.loginModalView = new LoginModalView(options);
             }
-
         }
     },
 

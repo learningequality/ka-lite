@@ -85,12 +85,6 @@ def step_impl(context):
 
 @then("the modal will dismiss")
 def impl(context):
-    for id_ in (PASSWORD_CONFIRM_ID, PASSWORD_ID, USERNAME_ID):
-        try:
-            is_border_red(context, id_)
-            raise RedBorderException("The border should not be red for the element with id #{0}".format(id_))
-        except AssertionError:
-            pass  # The border should _not_ be red, so the above function _should_ raise an exception
     assert elem_is_invisible_with_wait(context, context.modal_element, wait_time=120), "modal not dismissed!"
 
 def fill_field(context, text, field_id):

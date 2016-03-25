@@ -60,10 +60,11 @@
 
           STATIC_URL                  : "{% static "" %}",
 
-          ALL_ASSESSMENT_ITEMS_URL    : "{% url 'api_dispatch_list' resource_name='assessment_item' %}",
+          ALL_ASSESSMENT_ITEMS_URL    : "{% url 'assessment_item' assessment_item_id='' %}",
           GET_VIDEO_LOGS_URL          : "{% url 'api_dispatch_list' resource_name='videolog' %}",
           GET_EXERCISE_LOGS_URL       : "{% url 'api_dispatch_list' resource_name='exerciselog' %}",
           GET_CONTENT_LOGS_URL        : "{% url 'api_dispatch_list' resource_name='contentlog' %}",
+          GET_ATTEMPT_LOGS_URL        : "{% url 'api_dispatch_list' resource_name='attemptlog' %}",
 
           KHAN_EXERCISES_URL : "{% static 'js/distributed/perseus/ke/' %}",
 
@@ -77,10 +78,11 @@
         {% block headjs %}{% endblock headjs %}
         {% block analytics %}{% endblock analytics %}
 
-        {% if inline_help %}
-        <!-- inline help, introjs -->
-        <script type="text/javascript" src="{% static 'js/inline/bundle_modules/inline_help.js' %}"></script>
-        {% endif %}
+        <script>
+            // Inline help module may need to reload bootstrap src, so keep a reference to it.
+            window.bootstrap_src="{% static 'js/inline/bundles/bundle_bootstrap.js' %}";
+        </script>
+        <script type="text/javascript" src="{% static 'js/inline/bundles/bundle_inline_help.js' %}"></script>
     </head>
 
     <body class="{% block bodyclass %}{% endblock %}">
@@ -92,22 +94,22 @@
                   <div class="row">
                       <div class="navbar-header">
                           {# collapse entire menu #}
-                          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" aria-hidden="true" id="navbar_toggle">
+                          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" title="{% trans 'Open menu' %}" id="navbar_toggle">
                               <span class="icon-bar"></span>
                               <span class="icon-bar"></span>
                               <span class="icon-bar"></span>
                           </button>
                           <div class="navbar-brand">
                               <a href="{% url 'homepage' %}" title="{{ channel_data.channel_name }} {% trans 'Home' %}">
-                                  <img src="/data/{{ channel }}/images/horizontal-logo-small.png" alt="{{ channel_data.channel_name }} {% trans 'logo' %}">
+                                  <img src="{{ channel_data.header_logo }}" alt="{{ channel_data.channel_name }} {% trans 'logo' %}">
                               </a>
                               <div class="pull-right visible-xs sitepoint" id="points-xs"></div>
                           </div>
 
                       </div>
 
-                      <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="Main menu">
-                          <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="tablist"></ul>
+                      <div class="collapse navbar-collapse top-nav" role="navigation" aria-label="{% trans 'Main menu' %}">
+                          <ul class="nav navbar-nav navbar-right nav-tabs" id="topnav" role="menubar"></ul>
                       </div>
 
                     </div>
@@ -129,6 +131,11 @@
         </div> {# End wrapper #}
         {# Footer #}
         {% include "distributed/partials/_footer.html" %}
+
+        {% if settings.DEBUG %}
+        <script type="text/javascript" src="{% static 'js/tota11y.min.js' %}"></script>
+        {% endif %}
+
     </body>
 
 </html>

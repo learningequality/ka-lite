@@ -32,8 +32,7 @@ function version_comparison(v1, v2) {
 
 function get_available_languages() {
     return api.doRequest(window.sessionModel.get("AVAILABLE_LANGUAGEPACK_URL"), null, {
-        cache: false,
-        dataType: "jsonp"
+        cache: false
     }).success(function(languages) {
         installable_languages = languages;
         display_languages();
@@ -230,13 +229,13 @@ function start_languagepack_download(lang_code) {
     messages.clear_messages();  // get rid of any lingering messages before starting download
     $("#get-language-button").prop("disabled", true);
     downloading = true;
-    // tell server to start languagepackdownload job
+    // tell server to start retrievecontentpack job
     api.doRequest(
         Urls.start_languagepack_download(),
         { lang: lang_code }
     ).success(function(progress, status, req) {
         base.updatesStart(
-            "languagepackdownload",
+            "retrievecontentpack",
             2000, // 2 seconds
             languagepack_callbacks
         );
@@ -289,8 +288,7 @@ function languagepack_reset_callback(progress, resp) {
 }
 
 function languagepack_complete_callback(progress_log) {
-    // Trigger a reminder to restart server when a language pack is installed.
-    messages.show_message("warning", sprintf(gettext("Server must be restarted to activate language pack %(lang)s."), {lang: progress_log.process_name}));
+    // This is a no-op for now. Used to remind the user to restart the server, but that's not necessary anymore.
 }
 
 function set_server_language(lang) {
@@ -308,7 +306,7 @@ function update_server_status() {
         // We assume the distributed server is offline; if it's online, then we enable buttons that only work with internet.
         // Best to assume offline, as online check returns much faster than offline check.
         if(server_is_online){
-            base.updatesStart("languagepackdownload", 1000, languagepack_callbacks);
+            base.updatesStart("retrievecontentpack", 1000, languagepack_callbacks);
         } else {
             messages.clear_messages();
             messages.show_message("error", gettext("Could not connect to the central server; language packs cannot be downloaded at this time."));

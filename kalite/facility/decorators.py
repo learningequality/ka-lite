@@ -31,7 +31,7 @@ def facility_from_request(handler=None, request=None, *args, **kwargs):
     def facility_from_request_wrapper_fn(request, *args, **kwargs):
         facility = None
 
-        if kwargs.get("facility_id", None):  # avoid using blank
+        if kwargs.get("facility_id"):  # avoid using blank
             # Facility passed in directly
             facility = get_object_or_None(Facility, pk=kwargs["facility_id"])
             del kwargs["facility_id"]

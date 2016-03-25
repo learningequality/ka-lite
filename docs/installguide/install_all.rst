@@ -4,8 +4,29 @@ Windows
 #. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-15>`_ installer.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
-Upgrading KA Lite over an existing installation is easy -- just run the installer and follow the prompts!
+Upgrade
+_______
+
+Upgrading KA Lite in Windows over an existing installation is easy -- just run the installer and follow the prompts!
 You don't need to uninstall your old KA Lite installation first.
+You can follow the prompts to either keep your existing data or delete old data and start over.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
+
+When you start the KA Lite program, you will find a leaf icon in your task tray.
+Right click on this icon to start/stop the server, open the application in a browser, or set other options:
+
+.. image:: windows_task_tray.png
+    :class: screenshot
+
+By default, you can access KA Lite on the installation computer from the address http://127.0.0.1:8008.
+To access KA Lite from other machines, you will need to connect to the same network as the installation computer and
+access port 8008 using the its IP address.
+For example, if the installation computer has the IP address 192.168.0.104 on your network then you can access it from
+other machines on the same network at the address http://192.168.0.104:8008.
+
+For more advanced use of KA Lite, such as changing the default port, see :ref:`running-ka-lite-with-your-own-settings`
+or use the command-line ``kalite`` program, which in typical installations can be found at the path
+``C:\Python27\Scripts\kalite``. Run ``kalite --help`` for usage info.
 
 When you start the KA Lite program, you will find a leaf icon in your task tray.
 Right click on this icon to start/stop the server, open the application in a browser, or set other options:
@@ -66,6 +87,8 @@ To upgrade an existing KA Lite installation.
     #. Restart the server, login to the web app, then check the sidebar contents.
 
     This will enable the greyed-out assessment items on the sidebar.
+
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 
 Linux
@@ -148,6 +171,12 @@ _____________
 KA Lite is available for all platforms (e.g. non-Debian compatible platforms)
 through PyPi. See :ref:`pip-installation`.
 
+Upgrade
+_______
+
+To upgrade KA Lite on Linux, simply download the latest deb file and follow the instructions above for installation.
+Your existing data will be preserved by default.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 Configuration after installation or update
 __________________________________________
