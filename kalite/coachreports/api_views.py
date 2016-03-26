@@ -58,7 +58,7 @@ def get_learners_from_GET(request):
     return FacilityUser.objects.filter(learner_filter & Q(is_teacher=False)).order_by("last_name")
 
 def return_log_type_details(log_type, topic_ids=None):
-    fields = ["user", "points", "complete", "completion_timestamp", "completion_counter"]
+    fields = ["user", "points", "complete", "completion_timestamp", "completion_counter", "latest_activity_timestamp"]
     if log_type == "exercise":
         LogModel = ExerciseLog
         fields.extend(["exercise_id", "attempts", "struggling", "streak_progress", "attempts_before_completion"])
@@ -120,12 +120,12 @@ def learner_logs(request):
         LogModel, fields, id_field, obj_ids, objects = return_log_type_details(log_type, topic_ids)
 
         log_objects = LogModel.objects.filter(user__in=learners, **obj_ids).values(*fields)
+
         if not topic_ids:
             topic_objects = log_objects.filter(latest_activity_timestamp__gte=start_date, latest_activity_timestamp__lte=end_date)
-            if topic_objects.count() == 0:
-                topic_objects = log_objects
             # Can return multiple items with same id, due to topic tree redundancy, so make unique by id here.
             objects = dict([(item.get("id"), item) for item in get_topic_nodes(ids=[obj[id_field] for obj in topic_objects]) or []]).values()
+
         output_objects.extend(objects)
         output_logs.extend(log_objects)
 
