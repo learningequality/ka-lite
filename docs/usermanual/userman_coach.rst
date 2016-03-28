@@ -51,13 +51,6 @@ This allows you to easily identify which areas learners are struggling in, as we
     :focus: #show_tabular_report | Click here to expand the tabular report.
     :class: screenshot
 
-.. screenshot::
-    :user-role: coach
-    :url: /coachreports/coach/zone/None
-    :navigation-steps: #show_tabular_report click
-    :focus: #detailed_report_view div
-    :class: screenshot
-
 Progress By Topic
 ^^^^^^^^^^^^^^^^^
 

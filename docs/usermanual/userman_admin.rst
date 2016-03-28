@@ -76,29 +76,29 @@ By registering your device with FLE, you can sync data back with our central dat
 
 You will have two options:
 
-    #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use. **Caution**: if you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, you can rerun the setup command by navigating to the folder KA Lite is in and rerunning the setup command). |first| |one-click|
+    #. **One click registration**. This is the perfect option for individual users who just want to get KA Lite up and running fast, and don't need online access to data. This allows you to get the registration process over in one-click without worrying about creating a login that you're never going to use. **Caution**: if you choose to one-click register, you will unable to register with online access to data later. (If you chose this option by accident and would like to start over, you can rerun the setup command by navigating to the folder KA Lite is in and rerunning the setup command).
 
-    #. **Register with online access to data**. Choose this option if you're an administrator of larger projects. This option allows you to access your uploaded data and connect multiple installations to the same account. |long-register|
+    #. **Register with online access to data**. Choose this option if you're an administrator of larger projects. This option allows you to access your uploaded data and connect multiple installations to the same account.
 
 
-.. |first| screenshot::
+.. screenshot::
     :user-role: admin
     :url: /management/zone/
     :navigation-steps:
-    :focus: li a.not-registered-only | Click here to register!
+    :focus: li>a.not-registered-only | Click here to register!
     :class: screenshot
 
-.. |one-click| screenshot::
+.. screenshot::
     :user-role: admin
-    :url: /management/zone/
-    :navigation-steps: .not-registered-only click
+    :url: /securesync/register/
+    :navigation-steps:
     :focus: #one-click-register | Click here for one-click registration!
     :class: screenshot
 
-.. |long-register| screenshot::
+.. screenshot::
     :user-role: admin
-    :url: /management/zone/
-    :navigation-steps: .not-registered-only click
+    :url: /securesync/register/
+    :navigation-steps:
     :focus: #online-register | Or here for online access!
     :class: screenshot
 
@@ -446,9 +446,8 @@ After registering your device:
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/
+    :url: /update/videos/
     :navigation-steps:
-    :focus: li.video
     :class: screenshot
 
 3. View subtopics by clicking on the subject of your choice. You can close them by clicking on the subject again.
@@ -482,15 +481,15 @@ When you have copied in the files, to register them with KA Lite, follow the fol
 
 1. Click the "Manage" tab at the top of the page.
 2. Click on the "Videos" tab.
+3. Click the blue "Scan content folder for videos" button in the top left box of the page.
 
 .. screenshot::
     :user-role: admin
-    :url: /management/zone/
+    :url: /update/videos/
     :navigation-steps:
-    :focus: li.video
+    :focus: #scan-videos | Click this to search your video folder for previously downloaded videos!
     :class: screenshot
 
-3. Click the blue "Scan content folder for videos" button in the top left box of the page.
 4. Once the scan is completed, video content will be ready for Learners to watch!
 
 
@@ -516,14 +515,6 @@ _______________________
 To download language packs:
 
 1. From the "Manage" page, click on the "Language" tab.
-
-.. screenshot::
-    :user-role: admin
-    :url: /management/zone/
-    :navigation-steps:
-    :focus: li.languages
-    :class: screenshot
-
 2. Select the language pack you wish to download by selecting from the drop-down menu.
 
 .. screenshot::
@@ -560,7 +551,7 @@ To delete language packs:
     :user-role: admin
     :url: /update/languages/
     :navigation-steps:
-    :focus: .delete-language-button button | Use the buttons in this column to delete language packs.
+    :focus: .delete-language-button>button:first | Use the buttons in this column to delete language packs.
     :class: screenshot
     :registered: true
 
