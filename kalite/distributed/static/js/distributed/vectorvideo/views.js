@@ -12,7 +12,8 @@ var VectorVideoView = ContentBaseView.extend({
 
     events: {
         "click .play-pause": "play_pause_clicked",
-        "click .sm2-progress-track": "progress_track_clicked"
+        "click .sm2-progress-track": "progress_track_clicked",
+        "click .back_15_sec": "back_15_sec"
     },
 
 
@@ -225,6 +226,15 @@ var VectorVideoView = ContentBaseView.extend({
         }
     },
 
+    back_15_sec: function () {
+        var curr_time = ((parseInt(this.get_position())) / 1000);
+        curr_time = curr_time - 15;
+        if (curr_time < 0) {
+            curr_time = 0;
+        }
+        this.set_position(curr_time*1000);
+    },
+
 
     initialize_sound_manager: function () {
         var self = this;
@@ -377,6 +387,10 @@ var VectorVideoView = ContentBaseView.extend({
 
     get_position: function () {
         return this.audio_object.position;
+    },
+
+    set_position: function (val) {
+        this.audio_object.setPosition(val);
     },
 
 
