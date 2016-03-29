@@ -1,7 +1,7 @@
 Windows
 =======
 
-#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-15>`_ installer.
+#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-16>`_ installer.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
 Upgrade
@@ -31,16 +31,13 @@ or use the command-line ``kalite`` program, which in typical installations can b
 Mac OS X
 ========
 
-.. warning:: The latest OS X version (EL Capitan) is not yet supported.
-
 Installation
 ____________
 
-#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
-#. After the download is complete, double click the .dmg file.
-#. Click the ``Agree`` button to accept the LICENSE agreement.
-#. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
-#. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-16>`_.
+#. After the download is complete, double click the .pkg file.
+#. Click the ``Agree`` button to accept the LICENSE agreement and follow the installer instructions.
+#. Launch ``KA-Lite app`` from your ``Applications`` folder.
 #. On first load, it will check your current environment and show the Preferences dialog.
 #. Input your preferred administrator username and password, then click the ``Apply`` button in ``KA-Lite Preferences`` dialog.
 #. You will be prompted that initial setup will take a few minutes, click the ``OK`` button and wait for the notification that KA-Lite has been setup and can now be started.
@@ -54,23 +51,11 @@ _______
 
 To upgrade an existing KA Lite installation.
 
-#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
-#. After the download is complete, double click the .dmg file.
-#. Click the ``Agree`` button to accept the LICENSE agreement.
-#. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
-#. Give confirmation to overwrite the existing app.
-#. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
-
-.. tip::
-    If the sidebar shows entries that are greyed-out, the child items of the entry may be videos that were not yet downloaded.  If there are assessment items inside, then you need to extract the `assessment.zip` manually:
-
-    #. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
-    #. Click on the app icon at the menu bar.
-    #. Click on ``Preferences`` in the menu option.
-    #. Go to ``Advanced`` tab, click on the ``Extract Assessment`` button, then confirm the action. 
-    #. Restart the server, login to the web app, then check the sidebar contents.
-
-    This will enable the greyed-out assessment items on the sidebar.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-16>`_.
+#. Make sure that you stop the server and quit the KA Lite Monitor.
+#. After the download is complete, double click the .pkg file.
+#. Click the ``Agree`` button to accept the LICENSE agreement and follow the installer instructions.
+#. Launch ``KA-Lite app`` from your ``Applications`` folder.
 
 See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 

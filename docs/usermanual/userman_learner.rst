@@ -11,7 +11,7 @@ There are two ways KA Lite can be used:
 #. **Set up on a network with one main server, having machines connect to this server.** If this is the setup chosen, installation is not necessary on a learner's computer, as it can be accessible through a web browser with the IP address of the server. Simply copy and paste the server's IP address into your web browser any time you'd like to access KA Lite. If you are unsure what the address is, please contact your administrator.
 
 
-#. **Installed for single user, on one machine.** If you are not accessing KA Lite through a network or wish to run KA Lite on your own computer, please follow the :doc:`../installguide/install_main` first before proceeding with this user manual. Once you have done so, copy and paste the URL given during the installation process into a web browser to access KA Lite (it should be http://127.0.0.1:8008).
+#. **Installed for single user, on one machine.** If you are not accessing KA Lite through a network or wish to run KA Lite on your own computer, please follow the :doc:`../installguide/install_main`  first before proceeding with this user manual. Once you have done so, copy and paste the URL given during the installation process into a web browser to access KA Lite (it should be http://127.0.0.1:8008).
 
 
 How to Sign Up
