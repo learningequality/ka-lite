@@ -8,8 +8,6 @@ var sample_json = require("../../../js/distributed/vectorvideo/sample_json.json"
 
 var VectorVideoView = ContentBaseView.extend({
     template: require("./hbtemplates/video-vectorization.handlebars"),
-
-
     events: {
         "click .play-pause": "play_pause_clicked",
         "click .sm2-progress-track": "progress_track_clicked",
@@ -19,41 +17,185 @@ var VectorVideoView = ContentBaseView.extend({
 
     initialize: function (options) {
         ContentBaseView.prototype.initialize.call(this, options);
-
         _.bindAll(this, "create_audio_object", "check_if_playing");
-
         this.render();
-
         this.paper_scope = new Paper.paper.PaperScope();
     },
 
 
     render: function () {
         //_.bindAll(this, "on_resize");
-
         this.$el.html(this.template(this.data_model.attributes));
-
         this.latest_time = 0;
         this.latest_obj = 0;
         this.latest_stroke = 0;
         this.latest_sub_stroke = 0;
-        console.log("make sure this never prints also");
 
         this.$(".papCanvas").attr("id", Math.random().toString());
-
         this.initialize_sound_manager();
     },
 
 
+//////////////////////////AUDIO/////////////////////////////////
+
+    initialize_sound_manager: function () {
+        window.soundManager.setup({
+            url: window.sessionModel.get("STATIC_URL") + "soundmanager/",
+            preferFlash: false,
+            onready: this.create_audio_object
+        });
+        //this.on_resize();
+    },
+
+    create_audio_object: function () {
+        window.audio_object = this.audio_object = soundManager.createSound({
+            url: this.data_model.get("content_urls").stream,
+            onload: this.loaded.bind(this),
+            onplay: this.played.bind(this),
+            onresume: this.played.bind(this),
+            onpause: this.paused.bind(this),
+            onfinish: this.finished.bind(this),
+            whileplaying: this.progress.bind(this)
+        });
+        this.initialize_listeners();
+    },
+
+
+    initialize_listeners: function () {
+        this.$(".sm2-progress-ball").draggable({
+            axis: "x",
+            start: function () {
+                this.dragging = true;
+            },
+            stop: function (ev) {
+                this.dragging = false;
+                this.progress_track_clicked({offsetX: this.$(".sm2-progress-ball").position().left});
+            }
+        }).css("position", "absolute");
+        //$(window).resize(this.on_resize);
+    },
+
+
+    loaded: function () {
+        this.$(".sm2-inline-duration").text(this.get_time(this.audio_object.duration, true));
+        if ((this.log_model.get("last_percent") || 0) > 0) {
+            this.set_position_percent(this.log_model.get("last_percent"));
+        }
+    },
+
+
+    played: function () {
+        this.$el.addClass("playing");
+        this.activate();
+        this.data_model.set("is_playing", true);
+    },
+
+
+    paused: function () {
+        this.$el.removeClass("playing");
+        this.deactivate();
+        this.data_model.set("is_playing", false);
+    },
+
+
+    finished: function () {
+        this.audio_object.setPosition(0);
+        this.paused();
+    },
+
+
+    play_pause_clicked: function () {
+        if (this.audio_object.playState === 0) {
+            this.audio_object.setPosition(0);
+            this.audio_object.play();
+        } else if (this.audio_object.paused) {
+            this.audio_object.play();
+        } else {
+            this.audio_object.pause();
+        }
+    },
+
+
+    progress: function () {
+        this.update_progress();
+        // display the current position time
+        this.$(".sm2-inline-time").text(this.get_time(this.audio_object.position, true));
+        if (!this.dragging) {
+            var left = this.get_position_percent() * this.$(".sm2-progress-track").width();
+            this.$(".sm2-progress-ball")[0].style.left = left + "px";
+        }
+    },
+
+
+    progress_track_clicked: function (ev) {
+        this.set_position_percent(ev.offsetX / this.$(".sm2-progress-track").width());
+    },
+
+
+    set_position: function (val) {
+        this.audio_object.setPosition(val);
+    },
+
+
+    get_position: function () {
+        return this.audio_object.position;
+    },
+
+
+    set_position_percent: function (percent) {
+        this.audio_object.setPosition(percent * this.audio_object.duration);
+    },
+
+
+    get_position_percent: function (percent) {
+        return this.audio_object.position / this.audio_object.duration;
+    },
+
+
+    get_time: function (msec, use_string) {
+        // convert milliseconds to hh:mm:ss, return as object literal or string
+        var nSec = Math.floor(msec / 1000),
+            hh = Math.floor(nSec / 3600),
+            min = Math.floor(nSec / 60) - Math.floor(hh * 60),
+            sec = Math.floor(nSec - (hh * 3600) - (min * 60));
+        return (use_string ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec)) : {
+            'min': min,
+            'sec': sec
+        });
+    },
+
+
+    back_15_sec: function () {
+        var curr_time = ((parseInt(this.get_position())) / 1000);
+        curr_time = curr_time - 15;
+        if (curr_time < 0) {
+            curr_time = 0;
+        }
+        this.set_position(curr_time * 1000);
+    },
+
+
+    close: function () {
+        this.audio_object.stop();
+        this.audio_object.destruct();
+        window.ContentBaseView.prototype.close.apply(this);
+    },
+
+
+    content_specific_progress: function (event) {
+        var percent = this.audio_object.position / this.audio_object.duration;
+        this.log_model.set("last_percent", percent);
+        var progress = this.log_model.get("time_spent") / (this.audio_object.duration / 1000);
+        console.log("here" + progress);
+        return progress;
+    },
+
+
+////////////////////CANVAS///////////////////////////////
+
     initialize_canvas: function () {
         this.json_data = sample_json;
-
-        //console.log("ORIGINAL JSON:");
-        //console.log(this.json_data);
-
         this.modify_json();
-
-        //console.log("NEW JSON: ");
         console.log(this.json_data);
 
         var papCanvas = this.$(".papCanvas");
@@ -62,9 +204,7 @@ var VectorVideoView = ContentBaseView.extend({
         //TODO - When there are two canvasses, paperscope references the second object
         //It is a problem with paper.js itself. 
 
-        //console.log("Before");
         this.paper_scope.view.onFrame = this.check_if_playing;
-        //console.log("After");
     },
 
 
@@ -132,26 +272,16 @@ var VectorVideoView = ContentBaseView.extend({
 
 
     ease: function (t) {
+        //TODO: Implement
         return t;
     },
 
 
     check_if_playing: function () {
-        var self = this;
-        var is_playing = this.data_model.get("is_playing");
-
-        if (is_playing === false) {
-            return;
-        }
-
-        //playing
-        if (is_playing === true) {
-            // get time and draw up until this time.
-            //console.log("starting to draw");
+        if (this.data_model.get("is_playing") === true) {
             console.log("Call update_canvas()");
-            self.update_canvas();
+            this.update_canvas();
         }
-        //console.log(this.active);
     },
 
 
@@ -224,41 +354,7 @@ var VectorVideoView = ContentBaseView.extend({
                 }
             }
         }
-    },
-
-    back_15_sec: function () {
-        var curr_time = ((parseInt(this.get_position())) / 1000);
-        curr_time = curr_time - 15;
-        if (curr_time < 0) {
-            curr_time = 0;
-        }
-        this.set_position(curr_time*1000);
-    },
-
-
-    initialize_sound_manager: function () {
-        var self = this;
-        window.soundManager.setup({
-            url: window.sessionModel.get("STATIC_URL") + "soundmanager/",
-            preferFlash: false,
-            onready: self.create_audio_object
-        });
-        //this.on_resize();
-    },
-
-
-    create_audio_object: function () {
-        window.audio_object = this.audio_object = soundManager.createSound({
-            url: this.data_model.get("content_urls").stream,
-            onload: this.loaded.bind(this),
-            onplay: this.played.bind(this),
-            onresume: this.played.bind(this),
-            onpause: this.paused.bind(this),
-            onfinish: this.finished.bind(this),
-            whileplaying: this.progress.bind(this)
-        });
-        this.initialize_listeners();
-    },
+    }
 
 
     /*on_resize: _.throttle(function() {
@@ -292,126 +388,6 @@ var VectorVideoView = ContentBaseView.extend({
      this.$("#video-player").height(height);
      },
      */
-
-
-    initialize_listeners: function () {
-        var self = this;
-        this.$(".sm2-progress-ball").draggable({
-            axis: "x",
-            start: function () {
-                self.dragging = true;
-            },
-            stop: function (ev) {
-                self.dragging = false;
-                self.progress_track_clicked({offsetX: self.$(".sm2-progress-ball").position().left});
-            }
-        }).css("position", "absolute");
-        //$(window).resize(this.on_resize);
-    },
-
-
-    content_specific_progress: function (event) {
-        var percent = this.audio_object.position / this.audio_object.duration;
-        this.log_model.set("last_percent", percent);
-        var progress = this.log_model.get("time_spent") / (this.audio_object.duration / 1000);
-        console.log("here" + progress);
-        return progress;
-    },
-
-
-    loaded: function () {
-        this.$(".sm2-inline-duration").text(this.get_time(this.audio_object.duration, true));
-        if ((this.log_model.get("last_percent") || 0) > 0) {
-            this.set_position_percent(this.log_model.get("last_percent"));
-        }
-    },
-
-
-    played: function () {
-        this.$el.addClass("playing");
-        this.activate();
-        this.data_model.set("is_playing", true);
-    },
-
-
-    paused: function () {
-        this.$el.removeClass("playing");
-        this.deactivate();
-        this.data_model.set("is_playing", false);
-    },
-
-
-    finished: function () {
-        this.audio_object.setPosition(0);
-        this.paused();
-    },
-
-
-    progress: function () {
-        this.update_progress();
-        // display the current position time
-        this.$(".sm2-inline-time").text(this.get_time(this.audio_object.position, true));
-        if (!this.dragging) {
-            var left = this.get_position_percent() * this.$(".sm2-progress-track").width();
-            this.$(".sm2-progress-ball")[0].style.left = left + "px";
-        }
-    },
-
-
-    play_pause_clicked: function () {
-        if (this.audio_object.playState === 0) {
-            this.audio_object.setPosition(0);
-            this.audio_object.play();
-        } else if (this.audio_object.paused) {
-            this.audio_object.play();
-        } else {
-            this.audio_object.pause();
-        }
-    },
-
-
-    progress_track_clicked: function (ev) {
-        this.set_position_percent(ev.offsetX / this.$(".sm2-progress-track").width());
-    },
-
-
-    set_position_percent: function (percent) {
-        this.audio_object.setPosition(percent * this.audio_object.duration);
-    },
-
-
-    get_position_percent: function (percent) {
-        return this.audio_object.position / this.audio_object.duration;
-    },
-
-
-    get_position: function () {
-        return this.audio_object.position;
-    },
-
-    set_position: function (val) {
-        this.audio_object.setPosition(val);
-    },
-
-
-    get_time: function (msec, use_string) {
-        // convert milliseconds to hh:mm:ss, return as object literal or string
-        var nSec = Math.floor(msec / 1000),
-            hh = Math.floor(nSec / 3600),
-            min = Math.floor(nSec / 60) - Math.floor(hh * 60),
-            sec = Math.floor(nSec - (hh * 3600) - (min * 60));
-        return (use_string ? ((hh ? hh + ':' : '') + (hh && min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec)) : {
-            'min': min,
-            'sec': sec
-        });
-    },
-
-
-    close: function () {
-        this.audio_object.stop();
-        this.audio_object.destruct();
-        window.ContentBaseView.prototype.close.apply(this);
-    }
 });
 
 
