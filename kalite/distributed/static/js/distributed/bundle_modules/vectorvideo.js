@@ -5,7 +5,7 @@ var Models = require("content/models");
 
 
 var data_model = new Models.ContentDataModel({
-    content_urls: {stream: "https://raw.githubusercontent.com/christianmemije/audio_file/master/audio.mp3"},
+    content_urls: {stream: "https://raw.githubusercontent.com/anuvaradha/ka-lite/vectorization/kalite/distributed/static/js/distributed/vectorvideo/sample_audio.mp3"},
     is_playing: false
 });
 
@@ -13,12 +13,7 @@ var log_model = new Models.ContentLogModel();
 
 window.vectorVideoView = new file.VectorVideoView({data_model: data_model, log_model: log_model});
 
-//vectorVideoView.render();
-//console.log(vectorVideoView);
-
 $(function () {
     $("#content-area").append(vectorVideoView.el);
-    console.log($(".papCanvas").length);
     vectorVideoView.initialize_canvas();
 });
-
