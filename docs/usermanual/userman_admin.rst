@@ -45,7 +45,7 @@ Please allow the app to run. This will make it possible for the KA Lite applicat
 
 Accessing KA Lite
 -------------------
-Once the server has started, you will be given two IP addresses that you can copy and paste them into a web browser to to access KA Lite.
+Once the server has started, you will be given two IP addresses that you can copy and paste into a web browser to to access KA Lite.
 
 * To access KA Lite from the same machine where the server is installed use the http://127.0.0.1:8008 IP address.
 * In order to access KA Lite from other machines in your local network, use the second IP address (different from the above) listed in Terminal after running `kalite start`.
@@ -58,7 +58,7 @@ Once you have successfully installed KA Lite, the installation script will give 
     #. Copy and paste the URL into a web browser. The KA Lite application should show up.
     #. Login to KA Lite using the username and password you created during the installation process.
 
-    * If you have forgotten the username/password combination, simply run ``kalite manage createsuperuser`` and follow the instructions.
+    * If you have forgotten the username/password combination, simply run ``kalite manage createsuperuser`` in your Terminal.
 
 .. screenshot::
     :navigation-steps: LOGIN admin superpassword
@@ -72,7 +72,7 @@ ____________________________________
 
 By registering your device with FLE, you can sync data back with our central data hub. This is useful for many reasons:
 
-    #. Project administrator can manage user accounts and view usage data from afar, without the need to physically visit the offline device.
+    #. The Project administrator can manage user accounts and view usage data from afar, without the need to physically visit the offline device.
     #. Syncing back usage data can inform the FLE team of multiple users in a certain geographic region, and we can connect people that might be able to help one another.
     #. It helps FLE and our partners understand where and how the software is being used, so we can keep adding features that support you!
 
@@ -430,7 +430,7 @@ _____________________
 
 Allowing Other Users to Connect
 --------------------------------
-In order for other users to be able to connect with the KA Lite from different computers, you will need to give them an IP address with which to access the software. The rest of the users should use the second IP address, different from the one you use (usually 127.0.0.1:8008 received during setup).
+In order for other users to be able to connect with the KA Lite from different computers, you will need to give them an IP address with which to access the software. The rest of the users should use the second IP address, different from the one you use (usually 127.0.0.1:8008 received during setup), to connect with KA Lite.
 
 
 Downloading Videos
@@ -474,8 +474,8 @@ On Windows, navigate to something like ``C:\Documents and Settings\<username>\.k
 
 .. note:: If the drive where your ``.kalite/`` folder is located does not have enough free disk space,
           you can change the path of the ``CONTENT_ROOT`` in your `Configuration Settings`_, and
-          define a different folder where your want to store videos. Remember also to move the contents
-          of your old ``/content/`` folder into the new one.
+          define a different folder where your want to store videos. Remember to move the files
+          from your old ``/content/`` folder into the new one.
 
 .. note:: The ``.kalite`` folder may be hidden on some systems, so you have to enable showing hidden
           files and folders in your file browser.
@@ -499,7 +499,7 @@ After you copied in the new video files or changed the ``CONTENT_ROOT`` path, yo
 Adding Languages
 ----------------
 
-KA Lite content is offered in several languages. If your language is available you can download the **contentpack** for it with all the available subtitles and user interface translations. After you download and install the **contentpack** for a desired language, KA Lite will give you the option to download individual dubbed videos from that language Khan Academy YouTube channel. For more technical background about the new **contentpacks**, please refer to our `Wiki page <https://github.com/learningequality/ka-lite/wiki/Content-packs>`_.
+KA Lite content is offered in several languages. If your language is available you can download the **contentpack** for it with all the available subtitles and user interface translations. After you download and install the **contentpack** for a desired language, KA Lite will give you the option to download individual dubbed videos from that language's Khan Academy YouTube channel. For more technical background about the new **contentpacks**, please refer to our `Wiki page <https://github.com/learningequality/ka-lite/wiki/Content-packs>`_.
 
 .. warning:: If you are upgrading from a previous KA Lite version, you **MUST** update all the languages you had previously **AND** restart your server. If you are unsure on how to do this, please see :ref:`restarting-your-server`.
 

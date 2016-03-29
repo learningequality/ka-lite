@@ -38,7 +38,7 @@ ____________
 #. After the download is complete, double click the .pkg file.
 #. Click on the Continue button to allow the installer program to check for pre-installation requirements.
 #. Follow the prompts in the installer dialog to install KA Lite.
-#. The "KA Lite app" will be launched automatically during installation, display notifications and a menu bar icon.
+#. The "KA Lite app" will launch automatically during installation, display notifications and a menu bar icon.
 #. When the installation finishes, you will be notified that "KA Lite is running...". The installer will also show the "Summary" page with instructions to start using KA Lite.
 #. To start using KA Lite, click on the menu bar icon and select "Open in Browser".
 
@@ -53,7 +53,7 @@ To upgrade an existing KA Lite installation.
 #. After the download is complete, double click the .pkg file.
 #. Click on the Continue button to allow the installer program to check for pre-installation requirements.
 #. Follow the prompts in the installer dialog to install KA Lite.
-#. The "KA Lite app" will be launched automatically during installation, display notifications and a menu bar icon.
+#. The "KA Lite app" will launch automatically during installation, display notifications and a menu bar icon.
 #. When the installation finishes, you will be notified that "KA Lite is running...". The installer will also show the "Summary" page with instructions to start using KA Lite.
 #. To start using KA Lite, click on the menu bar icon and select "Open in Browser".
 

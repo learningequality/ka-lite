@@ -86,7 +86,7 @@ Use the language code indicated below:
 
 An example invocation for Windows would be::
 
-    C:\Program Files\KA Lite\ka-lite\bin\windows\kalite.bat kalite manage etrievecontentpack local en en.zip
+    C:\Program Files\KA Lite\ka-lite\bin\windows\kalite.bat kalite manage retrievecontentpack local en en.zip
 
 
 After starting up your server, you should now see your new language in the Manage > Language page.
@@ -232,4 +232,4 @@ See the :doc:`installation guide <installguide/install_all>` for some more info.
 I can't see videos in Firefox on Ubuntu/Debian!
 -----------------------------------------------
 
-Install `Ubuntu restricted extras package <https://apps.ubuntu.com/cat/applications/ubuntu-restricted-extras/>`_ in Ubuntu Software Center.
+Install `Ubuntu restricted extras package <https://apps.ubuntu.com/cat/applications/ubuntu-restricted-extras/>`_ in the Ubuntu Software Center.
