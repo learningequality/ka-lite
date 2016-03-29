@@ -1,8 +1,13 @@
 0.16.0:
-  release_date:
+  release_date: "2016/04/01"
   git_commit: ""
   new_features:
-    all: []
+    all:
+      - New content pack format.
+      - Faster startup time.
+      - New inline help feature (BETA).
+      - A few UI tweaks.
+      - A lot of bugfixes.
     students: []
     coaches: []
     admins: []

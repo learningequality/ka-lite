@@ -8,6 +8,14 @@ General
 ^^^^^^^
 
 * KA Lite is officially supported on OSX 10.11 (El Capitan).
+* We've revamped the language packs into a new format, called content packs.
+  This results in significantly faster startup times across the board.
+.. WARNING::
+   You will have to redownload all your languages to fully support 0.16.
+
+* We introduced a new beta inline help system. Check this out by going to the
+  Facility management page and clicking "Show me how!"
+* A lot of UI tweaks and bugfixes. KA Lite is now more stable than ever!
 
 0.15.0
 ------
