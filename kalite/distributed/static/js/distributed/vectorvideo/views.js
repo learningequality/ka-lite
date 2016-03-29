@@ -147,6 +147,7 @@ var VectorVideoView = ContentBaseView.extend({
         if (is_playing === true) {
             // get time and draw up until this time.
             //console.log("starting to draw");
+            console.log("Call update_canvas()");
             self.update_canvas();
         }
         //console.log(this.active);
@@ -188,7 +189,7 @@ var VectorVideoView = ContentBaseView.extend({
                             //LOOP THROUGH SUB STROKES
                             for (var sub_stroke = this.latest_sub_stroke; sub_stroke < this.json_data.operations[obj].strokes[stroke].length - 1; sub_stroke++) {
 
-                                if ((parseFloat(this.json_data.operations[obj].strokes[stroke][sub_stroke].sub_stroke_start_time)) <= this.latest_time) {
+                                if ((parseFloat(this.json_data.operations[obj].strokes[stroke][sub_stroke].sub_stroke_start_time)) <= this.latest_time && sub_stroke) {
                                     this.latest_sub_stroke = sub_stroke;
 
                                     var curr_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke];
