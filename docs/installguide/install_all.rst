@@ -36,15 +36,12 @@ ____________
 
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-16>`_.
 #. After the download is complete, double click the .pkg file.
-#. Click the ``Agree`` button to accept the LICENSE agreement and follow the installer instructions.
-#. Launch ``KA-Lite app`` from your ``Applications`` folder.
-#. On first load, it will check your current environment and show the Preferences dialog.
-#. Input your preferred administrator username and password, then click the ``Apply`` button in ``KA-Lite Preferences`` dialog.
-#. You will be prompted that initial setup will take a few minutes, click the ``OK`` button and wait for the notification that KA-Lite has been setup and can now be started.
-#. Click on the KA-Lite logo icon on the menu bar and select the ``Start KA-Lite`` menu option.
-#. Wait for the notification that you can now click on ``Open in Browser`` menu option.
-#. Click on the KA-Lite logo icon on the menu bar and select ``Open in Browser`` menu option - this should launch KA-Lite in your preferred web browser.
-#. Login using the administrator account you have specified during setup.
+#. Click on the Continue button to allow the installer program to check for pre-installation requirements.
+#. Follow the prompts in the installer dialog to install KA Lite.
+#. The "KA Lite app" will be launched automatically during installation, display notifications and a menu bar icon.
+#. When the installation finishes, you will be notified that "KA Lite is running...". The installer will also show the "Summary" page with instructions to start using KA Lite.
+#. To start using KA Lite, click on the menu bar icon and select "Open in Browser".
+
 
 Upgrade
 _______
@@ -54,8 +51,11 @@ To upgrade an existing KA Lite installation.
 #. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-16>`_.
 #. Make sure that you stop the server and quit the KA Lite Monitor.
 #. After the download is complete, double click the .pkg file.
-#. Click the ``Agree`` button to accept the LICENSE agreement and follow the installer instructions.
-#. Launch ``KA-Lite app`` from your ``Applications`` folder.
+#. Click on the Continue button to allow the installer program to check for pre-installation requirements.
+#. Follow the prompts in the installer dialog to install KA Lite.
+#. The "KA Lite app" will be launched automatically during installation, display notifications and a menu bar icon.
+#. When the installation finishes, you will be notified that "KA Lite is running...". The installer will also show the "Summary" page with instructions to start using KA Lite.
+#. To start using KA Lite, click on the menu bar icon and select "Open in Browser".
 
 See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
@@ -67,7 +67,7 @@ Main method: Ubuntu/Debian .deb
 _______________________________
 
 Download the latest .deb manually from
-`our server <https://learningequality.org/r/deb-bundle-installer-0-15>`_.
+`our server <https://learningequality.org/r/deb-bundle-installer-0-16>`_.
 After that, you can install the .deb file like this::
 
     sudo dpkg -i FILENAME.deb
