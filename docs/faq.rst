@@ -154,7 +154,7 @@ KA Lite is an independent, open-source project maintained by `Learning Equality`
 How can local curriculum be generated?
 --------------------------------------
 
-Local content creation is something that Learning Equality intends to build into future `platforms <https://learningequality.org/kolibri/>`_. If you would like to be notified when it is available, subscribe for `updates <https://learningequality.org/kolibri/>`_, or if you would like to help fund this project, please `click here <https://learningequality.org/give/>`_.
+Local content creation is something that Learning Equality intends to build into future `platforms <https://learningequality.org/kolibri/>`_. If you would like to be notified when it is available, subscribe for `updates <https://github.com/learningequality/ka-lite/wiki/Communication%20and%20Coordination>`_, or if you would like to help fund this project, please `click here <https://learningequality.org/give/>`_.
 
 .. _home page: http://kalite.learningequality.org/
 
