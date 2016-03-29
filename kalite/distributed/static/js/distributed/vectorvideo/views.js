@@ -36,6 +36,7 @@ var VectorVideoView = ContentBaseView.extend({
         this.latest_obj = 0;
         this.latest_stroke = 0;
         this.latest_sub_stroke = 0;
+        console.log("make sure this never prints also");
 
         this.$(".papCanvas").attr("id", Math.random().toString());
 
@@ -162,6 +163,7 @@ var VectorVideoView = ContentBaseView.extend({
             this.latest_sub_stroke = 0;
             this.latest_time = 0;
             this.paper_scope.project.clear();
+            console.log("make sure this never prints");
         }
 
         else {
@@ -170,59 +172,54 @@ var VectorVideoView = ContentBaseView.extend({
             //LOOP THROUGH OBJECTS
             for (var obj = this.latest_obj; obj < this.json_data.operations.length; obj++) {
 
-                if ((parseFloat( this.json_data.operations[obj].start)) > this.latest_time){
-                    continue;
-                }
-                else{
-                    var curr_obj = this.json_data.operations[obj];
-                    var red = parseInt(curr_obj.color[0]) / 255;
-                    var green = parseInt(curr_obj.color[1]) / 255;
-                    var blue = parseInt(curr_obj.color[2]) / 255;
+                if ((parseFloat(this.json_data.operations[obj].start)) <= this.latest_time) {
+                    this.latest_obj = obj;
+
+                    var red = parseInt(this.json_data.operations[obj].color[0]) / 255;
+                    var green = parseInt(this.json_data.operations[obj].color[1]) / 255;
+                    var blue = parseInt(this.json_data.operations[obj].color[2]) / 255;
 
                     //LOOP THROUGH STROKES
                     for (var stroke = this.latest_stroke; stroke < this.json_data.operations[obj].strokes.length; stroke++) {
-                        //if start time for stroke is greater than then break
-                        for (var sub_stroke = this.latest_sub_stroke; sub_stroke < curr_obj.strokes[stroke].length - 1; sub_stroke++) {
 
-                            var curr_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke];
-
-                            var curr_sub_stroke_x = parseFloat(curr_sub_stroke.x);
-                            var curr_sub_stroke_y = parseFloat(curr_sub_stroke.y);
-                            var curr_sub_stroke_start = parseFloat(curr_sub_stroke.sub_stroke_start_time);
-
-                            this.latest_obj = obj;
+                        if ((parseFloat(this.json_data.operations[obj].strokes[stroke].stroke_start_time)) <= this.latest_time) {
                             this.latest_stroke = stroke;
-                            this.latest_sub_stroke = sub_stroke;
 
-                            if (curr_sub_stroke_start <= curr_time) {
+                            //LOOP THROUGH SUB STROKES
+                            for (var sub_stroke = this.latest_sub_stroke; sub_stroke < this.json_data.operations[obj].strokes[stroke].length - 1; sub_stroke++) {
 
-                                //x-1 then use x+1
-                                //if (wlocation !== undefined)
-                                //if next exists aka not the last stroke
-                                var path = new this.paper_scope.Path();
-                                path.strokeColor = new this.paper_scope.Color(red, green, blue);
-                                path.add(new this.paper_scope.Point(curr_sub_stroke_x, curr_sub_stroke_y));
+                                if ((parseFloat(this.json_data.operations[obj].strokes[stroke][sub_stroke].sub_stroke_start_time)) <= this.latest_time) {
+                                    this.latest_sub_stroke = sub_stroke;
 
-                                //if (this.json_data.operations[obj].strokes[stroke][sub_stroke + 1]) {
-                                var nxt_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke + 1];
-                                var nxt_sub_stroke_x = parseFloat(nxt_sub_stroke.x);
-                                var nxt_sub_stroke_y = parseFloat(nxt_sub_stroke.y);
-                                path.add(new this.paper_scope.Point(nxt_sub_stroke_x, nxt_sub_stroke_y));
+                                    var curr_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke];
+                                    var nxt_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke + 1];
+                                    var curr_sub_stroke_x = parseFloat(curr_sub_stroke.x);
+                                    var curr_sub_stroke_y = parseFloat(curr_sub_stroke.y);
+                                    var nxt_sub_stroke_x = parseFloat(nxt_sub_stroke.x);
+                                    var nxt_sub_stroke_y = parseFloat(nxt_sub_stroke.y);
 
-                                //console.log(obj, stroke, sub_stroke);
-                            } else {
-                                return;
+                                    //DRAW
+                                    var path = new this.paper_scope.Path();
+                                    path.strokeColor = new this.paper_scope.Color(red, green, blue);
+                                    path.add(new this.paper_scope.Point(curr_sub_stroke_x, curr_sub_stroke_y));
+                                    path.add(new this.paper_scope.Point(nxt_sub_stroke_x, nxt_sub_stroke_y));
+
+                                    //TESTING
+                                    console.log(obj, stroke, sub_stroke);
+
+                                    //IF LAST SUBSTROKE
+                                    if (sub_stroke == this.json_data.operations[obj].strokes[stroke].length - 2) {
+                                        this.latest_sub_stroke = 0;
+                                    }
+                                }
+                            }
+                            // IF LAST STROKE
+                            if (stroke == this.json_data.operations[obj].strokes.length - 1) {
+                                this.latest_stroke = 0;
                             }
                         }
-                        this.latest_sub_stroke = 0;
-
                     }
-
-                    this.latest_stroke = 0;
-                    this.latest_obj = obj;
                 }
-
-
             }
         }
     },
