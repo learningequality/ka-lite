@@ -21,8 +21,4 @@ DATABASES = {
         "ENGINE": SQLITE3_ENGINE,
         "NAME": ":memory:",
     },
-    "assessment_items": {
-        "ENGINE": SQLITE3_ENGINE,
-        "NAME": ":memory:",
-    },
 }

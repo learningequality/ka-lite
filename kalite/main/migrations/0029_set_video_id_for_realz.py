@@ -4,7 +4,7 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
-from kalite import i18n
+from kalite.topic_tools.content_models import get_video_from_youtube_id
 
 
 class Migration(DataMigration):
@@ -12,7 +12,8 @@ class Migration(DataMigration):
     def forwards(self, orm):
         # Setting the video ID
         for vlog in orm["main.VideoLog"].objects.all():
-            vlog.video_id = i18n.get_video_id(vlog.youtube_id) or vlog.youtube_id
+            video = get_video_from_youtube_id(vlog.youtube_id)
+            vlog.video_id = video.get("id", vlog.youtube_id) if video else vlog.youtube_id
             vlog.save()
 
     def backwards(self, orm):

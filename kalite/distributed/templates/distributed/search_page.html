@@ -30,9 +30,6 @@
                             <a href="{% url 'learn' %}{{ node.path }}" class="{{ node.kind }}-{% if not node.available %}un{% endif %}available">{% trans node.title %}</a>
                         </li>
                     {% endfor %}
-                    {% if hit_max|get_item:category %}
-                        <div>...</div>
-                    {% endif %}
                     </ul>
                 </div>
                 <hr class="visible-xs">

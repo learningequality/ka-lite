@@ -52,13 +52,14 @@
                         {% if is_central %}
                         {% trans "New Sharing Network" %}
                         {% else %}
-                        Unregistered Device {{ device.name }} - <a class="not-registered-only" href="{% url 'register_public_key' %}">Register Now!</a>
+                            {% trans "Unregistered Device" %} {{ device.name }} - <a class="not-registered-only" href="{% url 'register_public_key' %}">{% trans "Register Now!" %}</a>
                         {% endif %}
                     {% endif %}
                 {% if facility or device %}</a>
                 {% elif own_device_is_trusted %}
                 <a class="edit-link" href="{% url 'zone_form' zone_id=zone_id %}">
-                    <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></span>
+                    <span aria-hidden="true"><i class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></i></span>
+                    <span class="sr-only">{% trans 'Edit' %}</span>
                 </a>
                 {% endif %}
             </li>
@@ -74,8 +75,9 @@
                 {% else %}
                 {{ facility.name }}
                 <a class="edit-link edit-facility" href="{% url 'facility_form' zone_id=zone_id facility_id=facility.id %}">
-                <span class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></span>
-              </a>
+                    <span aria-hidden="true"><i class="glyphicon glyphicon-pencil" title="{% trans 'Edit' %}"></i></span>
+                    <span class="sr-only">{% trans 'Edit' %}</span>
+                </a>
                 {% endif %}
             </li>
             {% endif %}

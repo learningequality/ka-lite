@@ -1,11 +1,32 @@
 Windows
 =======
 
-#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-15>`_ installer.
+#. Download the KA Lite `Windows <https://learningequality.org/r/windows-installer-0-16>`_ installer.
 #. Double-click the downloaded .exe file, and the wizard window will appear to guide you through the process of installing KA Lite on your server.
 
-Upgrading KA Lite over an existing installation is easy -- just run the installer and follow the prompts!
+Upgrade
+_______
+
+Upgrading KA Lite in Windows over an existing installation is easy -- just run the installer and follow the prompts!
 You don't need to uninstall your old KA Lite installation first.
+You can follow the prompts to either keep your existing data or delete old data and start over.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
+
+When you start the KA Lite program, you will find a leaf icon in your task tray.
+Right click on this icon to start/stop the server, open the application in a browser, or set other options:
+
+.. image:: windows_task_tray.png
+    :class: screenshot
+
+By default, you can access KA Lite on the installation computer from the address http://127.0.0.1:8008.
+To access KA Lite from other machines, you will need to connect to the same network as the installation computer and
+access port 8008 using the its IP address.
+For example, if the installation computer has the IP address 192.168.0.104 on your network then you can access it from
+other machines on the same network at the address http://192.168.0.104:8008.
+
+For more advanced use of KA Lite, such as changing the default port, see :ref:`running-ka-lite-with-your-own-settings`
+or use the command-line ``kalite`` program, which in typical installations can be found at the path
+``C:\Python27\Scripts\kalite``. Run ``kalite --help`` for usage info.
 
 When you start the KA Lite program, you will find a leaf icon in your task tray.
 Right click on this icon to start/stop the server, open the application in a browser, or set other options:
@@ -26,46 +47,33 @@ or use the command-line ``kalite`` program, which in typical installations can b
 Mac OS X
 ========
 
-.. warning:: The latest OS X version (EL Capitan) is not yet supported.
-
 Installation
 ____________
 
-#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
-#. After the download is complete, double click the .dmg file.
-#. Click the ``Agree`` button to accept the LICENSE agreement.
-#. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
-#. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
-#. On first load, it will check your current environment and show the Preferences dialog.
-#. Input your preferred administrator username and password, then click the ``Apply`` button in ``KA-Lite Preferences`` dialog.
-#. You will be prompted that initial setup will take a few minutes, click the ``OK`` button and wait for the notification that KA-Lite has been setup and can now be started.
-#. Click on the KA-Lite logo icon on the menu bar and select the ``Start KA-Lite`` menu option.
-#. Wait for the notification that you can now click on ``Open in Browser`` menu option.
-#. Click on the KA-Lite logo icon on the menu bar and select ``Open in Browser`` menu option - this should launch KA-Lite in your preferred web browser.
-#. Login using the administrator account you have specified during setup.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-16>`_.
+#. After the download is complete, double click the .pkg file.
+#. Click on the Continue button to allow the installer program to check for pre-installation requirements.
+#. Follow the prompts in the installer dialog to install KA Lite.
+#. The "KA Lite app" will launch automatically during installation, display notifications and a menu bar icon.
+#. When the installation finishes, you will be notified that "KA Lite is running...". The installer will also show the "Summary" page with instructions to start using KA Lite.
+#. To start using KA Lite, click on the menu bar icon and select "Open in Browser".
+
 
 Upgrade
 _______
 
 To upgrade an existing KA Lite installation.
 
-#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-15>`_.
-#. After the download is complete, double click the .dmg file.
-#. Click the ``Agree`` button to accept the LICENSE agreement.
-#. On the .dmg window, drag the ``KA-Lite Monitor`` app into the ``Applications`` folder.
-#. Give confirmation to overwrite the existing app.
-#. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
+#. Download the KA Lite `OSX installer <https://learningequality.org/r/osx-installer-0-16>`_.
+#. Make sure that you stop the server and quit the KA Lite Monitor.
+#. After the download is complete, double click the .pkg file.
+#. Click on the Continue button to allow the installer program to check for pre-installation requirements.
+#. Follow the prompts in the installer dialog to install KA Lite.
+#. The "KA Lite app" will launch automatically during installation, display notifications and a menu bar icon.
+#. When the installation finishes, you will be notified that "KA Lite is running...". The installer will also show the "Summary" page with instructions to start using KA Lite.
+#. To start using KA Lite, click on the menu bar icon and select "Open in Browser".
 
-.. tip::
-    If the sidebar shows entries that are greyed-out, the child items of the entry may be videos that were not yet downloaded.  If there are assessment items inside, then you need to extract the `assessment.zip` manually:
-
-    #. Launch ``KA-Lite Monitor`` from your ``Applications`` folder.
-    #. Click on the app icon at the menu bar.
-    #. Click on ``Preferences`` in the menu option.
-    #. Go to ``Advanced`` tab, click on the ``Extract Assessment`` button, then confirm the action. 
-    #. Restart the server, login to the web app, then check the sidebar contents.
-
-    This will enable the greyed-out assessment items on the sidebar.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 
 Linux
@@ -75,7 +83,7 @@ Main method: Ubuntu/Debian .deb
 _______________________________
 
 Download the latest .deb manually from
-`our server <https://learningequality.org/r/deb-bundle-installer-0-15>`_.
+`our server <https://learningequality.org/r/deb-bundle-installer-0-16>`_.
 After that, you can install the .deb file like this::
 
     sudo dpkg -i FILENAME.deb
@@ -148,6 +156,12 @@ _____________
 KA Lite is available for all platforms (e.g. non-Debian compatible platforms)
 through PyPi. See :ref:`pip-installation`.
 
+Upgrade
+_______
+
+To upgrade KA Lite on Linux, simply download the latest deb file and follow the instructions above for installation.
+Your existing data will be preserved by default.
+See the :doc:`release notes <release_notes>` for critical upgrade information for specific versions.
 
 Configuration after installation or update
 __________________________________________

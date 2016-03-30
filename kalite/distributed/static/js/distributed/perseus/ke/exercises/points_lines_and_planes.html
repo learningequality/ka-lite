@@ -91,27 +91,27 @@
             </p>
 
             <div class="solution" data-type="set">
-                <div class="set-sol" data-type="text"><var>A + B + E</var></div>
-                <div class="set-sol" data-type="text"><var>A + C + E</var></div>
-                <div class="set-sol" data-type="text"><var>A + E + B</var></div>
-                <div class="set-sol" data-type="text"><var>A + E + C</var></div>
-                <div class="set-sol" data-type="text"><var>B + A + E</var></div>
-                <div class="set-sol" data-type="text"><var>B + C + E</var></div>
-                <div class="set-sol" data-type="text"><var>B + E + A</var></div>
-                <div class="set-sol" data-type="text"><var>B + E + C</var></div>
-                <div class="set-sol" data-type="text"><var>C + A + E</var></div>
-                <div class="set-sol" data-type="text"><var>C + B + E</var></div>
-                <div class="set-sol" data-type="text"><var>C + E + A</var></div>
-                <div class="set-sol" data-type="text"><var>C + E + B</var></div>
-                <div class="set-sol" data-type="text"><var>E + A + B</var></div>
-                <div class="set-sol" data-type="text"><var>E + A + C</var></div>
-                <div class="set-sol" data-type="text"><var>E + B + A</var></div>
-                <div class="set-sol" data-type="text"><var>E + B + C</var></div>
-                <div class="set-sol" data-type="text"><var>E + C + A</var></div>
-                <div class="set-sol" data-type="text"><var>E + C + B</var></div>
+                <div class="set-sol" data-type="caps"><var>A + B + E</var></div>
+                <div class="set-sol" data-type="caps"><var>A + C + E</var></div>
+                <div class="set-sol" data-type="caps"><var>A + E + B</var></div>
+                <div class="set-sol" data-type="caps"><var>A + E + C</var></div>
+                <div class="set-sol" data-type="caps"><var>B + A + E</var></div>
+                <div class="set-sol" data-type="caps"><var>B + C + E</var></div>
+                <div class="set-sol" data-type="caps"><var>B + E + A</var></div>
+                <div class="set-sol" data-type="caps"><var>B + E + C</var></div>
+                <div class="set-sol" data-type="caps"><var>C + A + E</var></div>
+                <div class="set-sol" data-type="caps"><var>C + B + E</var></div>
+                <div class="set-sol" data-type="caps"><var>C + E + A</var></div>
+                <div class="set-sol" data-type="caps"><var>C + E + B</var></div>
+                <div class="set-sol" data-type="caps"><var>E + A + B</var></div>
+                <div class="set-sol" data-type="caps"><var>E + A + C</var></div>
+                <div class="set-sol" data-type="caps"><var>E + B + A</var></div>
+                <div class="set-sol" data-type="caps"><var>E + B + C</var></div>
+                <div class="set-sol" data-type="caps"><var>E + C + A</var></div>
+                <div class="set-sol" data-type="caps"><var>E + C + B</var></div>
 
                 <div class="input-format">
-                    <p>Plane <span class="entry"></span></p>
+                    <p>Plane <span class="entry" data-type="caps"></span></p>
                 </div>
             </div>
             <div class="hints">
@@ -188,8 +188,8 @@
 
         <div id="collinear-3">
             <div class="vars">
-                <var id="YES">$._("Yes")</var>
-                <var id="NO">$._("No")</var>
+                <var id="YES">i18n._("Yes")</var>
+                <var id="NO">i18n._("No")</var>
                 <var id="POINTS,SOLUTION">randFromArray([
                     [[A, B, C], true],
                     [[A, B, D], false],
@@ -225,8 +225,8 @@
 
         <div id="collinear-2">
             <div class="vars">
-                <var id="YES">$._("Yes")</var>
-                <var id="NO">$._("No")</var>
+                <var id="YES">i18n._("Yes")</var>
+                <var id="NO">i18n._("No")</var>
                 <var id="POINTS">shuffle([A, B, C, D, E], 2)</var>
             </div>
 
@@ -250,8 +250,8 @@
 
         <div id="coplanar">
             <div class="vars">
-                <var id="YES">$._("Yes")</var>
-                <var id="NO">$._("No")</var>
+                <var id="YES">i18n._("Yes")</var>
+                <var id="NO">i18n._("No")</var>
                 <var id="POINTS,SOLUTION,COPLANAR">randFromArray([
                     [[A, B, C, E], true, []],
                     [[A, B, D, E], false,  [A, B, E]],

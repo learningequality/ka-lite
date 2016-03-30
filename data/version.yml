@@ -1,3 +1,22 @@
+0.16.0:
+  release_date: "2016/04/01"
+  git_commit: ""
+  new_features:
+    all:
+      - New content pack format.
+      - Faster startup time.
+      - New inline help feature (BETA).
+      - A few UI tweaks.
+      - A lot of bugfixes.
+    students: []
+    coaches: []
+    admins: []
+  bugs_fixed:
+    all: []
+    students: []
+    coaches: []
+    admins: []
+
 0.15.1:
   release_date: "2015/12/01"
   git_commit: "746d0d"
