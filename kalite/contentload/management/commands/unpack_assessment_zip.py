@@ -82,6 +82,7 @@ class Command(BaseCommand):
         logging.info("Done, assessment items installed and everything updated. Refresh your browser!")
 
 
+# TODO(jamalex): move this to somewhere outside of this management command file, as we're importing it elsewhere
 def should_upgrade_assessment_items():
     # if assessmentitems.version doesn't exist, then we assume
     # that they haven't got assessment items EVER
