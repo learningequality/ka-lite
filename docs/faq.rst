@@ -84,7 +84,7 @@ Use the language code indicated below:
      Zulu             zul
     ================ ======
 
-An example invocation for installing French `contentpack` on Windows would be::
+An example invocation for installing the French `contentpack` on Windows would be::
 
     C:\Python27\Scripts\kalite manage retrievecontentpack local fr fr.zip
 
