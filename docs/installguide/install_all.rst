@@ -66,9 +66,7 @@ Linux
 Main method: Ubuntu/Debian .deb
 _______________________________
 
-Download the latest .deb manually from
-`our server <https://learningequality.org/r/deb-bundle-installer-0-16>`_.
-After that, you can install the .deb file like this::
+Download the `latest .deb <https://learningequality.org/r/deb-bundle-installer-0-16>`_ installer, and run this command::
 
     sudo dpkg -i FILENAME.deb
 
@@ -89,9 +87,11 @@ Debian, Raspberry Pi, Linux Mint etc.
 You will be prompted to enter some configuration information.
 You should read the on-screen instructions carefully, but some explanation is included here:
 
-1. You will be asked to choose to run KA Lite on boot or not. We recommend choosing yes, as it simplifies data management.
-If you choose no, you must manually start KA lite every time. Note that running KA Lite as different users creates
-different sets of data files, so it's recommended that you run KA Lite as the same user every time.
+1. Choose weather you want to run KA Lite on boot or not. We recommend choosing yes, as it simplifies data management.
+If you choose not to, you must manually start KA lite every time.
+
+.. note::
+    Running KA Lite as different users creates different sets of data files, so it's recommended that you run KA Lite as the same user every time.
 
 .. image:: linux-install-startup.png
   :class: screenshot
