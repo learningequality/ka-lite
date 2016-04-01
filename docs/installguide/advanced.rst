@@ -80,7 +80,7 @@ Once it's unpacked, install it by entering the extracted directory and running::
 
     $> sudo python setup.py install.
 
-Beware that the PyPi sources do not contain assessment items, son you need to
+Beware that the PyPi sources do not contain assessment items, so you need to
 `download the contentpack en.zip manually <http://pantry.learningequality.org/downloads/ka-lite/0.16/content/contentpacks/en.zip>`_ (~650 MB).
 
 
