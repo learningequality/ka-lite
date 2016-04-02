@@ -31,7 +31,7 @@ import kalite
 from kalite.contentload.settings import KHAN_ASSESSMENT_ITEM_ROOT, OLD_ASSESSMENT_ITEMS_LOCATION
 
 from fle_utils.config.models import Settings
-from fle_utils.general import get_host_name
+from fle_utils.general import get_host_name, ensure_dir
 from fle_utils.platforms import is_windows
 from kalite.i18n.base import CONTENT_PACK_URL_TEMPLATE, outdated_langpacks
 from kalite.contentload.management.commands.unpack_assessment_zip import should_upgrade_assessment_items
@@ -481,6 +481,7 @@ class Command(BaseCommand):
 
         # Now deploy the static files
         logging.info("Copying static media...")
+        ensure_dir(settings.STATIC_ROOT)
         call_command("collectstatic", interactive=False, verbosity=0, ignore_patterns=['vtt', 'html', 'srt'],
                      clear=True)
         call_command("collectstatic_js_reverse", interactive=False)
