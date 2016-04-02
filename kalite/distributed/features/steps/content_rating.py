@@ -182,7 +182,7 @@ def rate_id(context, id_, val=3):
 
     def rate_element(driver):
         try:
-            inner_wrapper = find_id_with_wait(context, id_, wait_time=2)
+            inner_wrapper = find_id_with_wait(context, id_, wait_time=5)
             els = inner_wrapper.find_elements_by_class_name(STAR_RATING_OPTION_CLASS)
             rating_el = [el for el in filter(lambda x: int(x.get_attribute("data-val")) == val, els)][0]
             rating_el.click()
