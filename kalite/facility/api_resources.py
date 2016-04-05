@@ -1,7 +1,6 @@
 import datetime
-import os
 from dateutil.tz import tzlocal
-
+from django.db.models.signals import post_save
 from tastypie import fields
 from tastypie.http import HttpUnauthorized
 from tastypie.resources import ModelResource, ALL_WITH_RELATIONS
@@ -21,7 +20,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from kalite import version
-from kalite.i18n import lcode_to_django_lang
+from kalite.i18n.base import lcode_to_django_lang
 from kalite.distributed.api_views import compute_total_points, get_messages_for_api_calls
 from kalite.main.models import UserLog
 
@@ -40,6 +39,27 @@ class FacilityGroupResource(ModelResource):
         resource_name = 'group'
         authorization = TeacherOrAdminCanReadWrite()
 
+FACILITY_LIST = None
+
+def facility_list():
+    global FACILITY_LIST
+
+    if FACILITY_LIST is None:
+        if settings.CENTRAL_SERVER:
+            FACILITY_LIST = []
+        else:
+            # To enable login, list the id and names of all facilities.
+            # This keeps it cached so that the status api call can return this to the client side
+            # without significantly increasing DB load on every status call.
+            FACILITY_LIST = [{"id": id, "name": name} for id, name in Facility.objects.values_list("id", "name")]
+
+    return FACILITY_LIST
+
+def flag_facility_cache(**kwargs):
+    global FACILITY_LIST
+    FACILITY_LIST = None
+
+post_save.connect(flag_facility_cache, sender=Facility)
 
 class FacilityUserResource(ModelResource):
     facility = fields.ForeignKey(FacilityResource, 'facility')
@@ -93,12 +113,12 @@ class FacilityUserResource(ModelResource):
 
         if users.count() == 0:
             if Facility.objects.count() > 1:
-                error_message = _("Username was not found for this facility. Did you type your username correctly, and choose the right facility?")
+                error_message = _("Username and password do not match. Make sure you choose the right facility.")
             else:
-                error_message = _("Username was not found. Did you type your username correctly?")
+                error_message = _("Username and password do not match.")
             return self.create_response(request, {
                 'messages': {'error': error_message},
-                'error_highlight': "username"
+                'error_highlight': "password"
                 }, HttpUnauthorized )
 
         for user in users:
@@ -112,9 +132,12 @@ class FacilityUserResource(ModelResource):
                 user = None
 
         if not user:
+            if Facility.objects.count() > 1:
+                error_message = _("Username and password do not match. Make sure you choose the right facility.")
+            else:
+                error_message = _("Username and password do not match.")
             return self.create_response(request, {
-                'messages': {'error': _("Password was incorrect. Please try again.")},
-                # Specify which field to highlight as in error.
+                'messages': {'error': error_message},
                 'error_highlight': "password"
                 }, HttpUnauthorized )
         else:
@@ -185,7 +208,7 @@ class FacilityUserResource(ModelResource):
             "messages": message_dicts,
             "status_timestamp": datetime.datetime.now(tzlocal()),
             "version": version.VERSION,
-            "facilities": request.session.get("facilities"),
+            "facilities": facility_list(),
             "simplified_login": settings.SIMPLIFIED_LOGIN,
             "docs_exist": getattr(settings, "DOCS_EXIST", False),
             "zone_id": getattr(Device.get_own_device().get_zone(), "id", "None"),

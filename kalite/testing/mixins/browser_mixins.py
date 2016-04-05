@@ -10,8 +10,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from ..browser import browse_to, setup_browser, wait_for_page_change
+from kalite.topic_tools.content_models import get_random_content
 from kalite.facility.models import Facility
-from kalite.topic_tools import get_content_cache
 
 from django.contrib.auth.models import User
 
@@ -76,28 +76,31 @@ class BrowserActionMixins(object):
         so find another way when that becomes an issue.
         """
         browser = kwargs.get("browser", self.browser)
-        elem = kwargs.get("elem", None)
-        id = kwargs.get("id", None)
-        name = kwargs.get("name", None)
-        tag_name = kwargs.get("tag_name", None)
-        css_class = kwargs.get("css_class", None)
-        xpath = kwargs.get("xpath", None)
+        elem = kwargs.get("elem")
+        id = kwargs.get("id")
+        name = kwargs.get("name")
+        tag_name = kwargs.get("tag_name")
+        css_class = kwargs.get("css_class")
+        xpath = kwargs.get("xpath")
         max_wait = kwargs.get("max_wait", FIND_ELEMENT_TIMEOUT)
         try:
             if not elem:
                 if id:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.ID, id)))
+                    locator = (By.ID, id)
                 elif name:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.NAME, name)))
+                    locator = (By.NAME, name)
                 elif tag_name:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.TAG_NAME, tag_name)))
+                    locator = (By.TAG_NAME, tag_name)
                 elif css_class:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.CLASS_NAME, css_class)))
+                    locator = (By.CLASS_NAME, css_class)
                 elif xpath:
-                    elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located((By.XPATH, xpath)))
+                    locator = (By.XPATH, xpath)
+            elem = WebDriverWait(browser, max_wait).until(EC.presence_of_element_located(locator))
         except TimeoutException:
             raise KALiteTimeout("browser_activate_element timed out with keyword arguments: {0}".format(kwargs))
-        elem.click()
+        else:
+            WebDriverWait(browser, max_wait).until(EC.element_to_be_clickable(locator))
+            elem.click()
 
     def browser_send_keys(self, keys, browser=None):
         """Convenience method to send keys to active_element in the browser"""
@@ -113,6 +116,9 @@ class BrowserActionMixins(object):
             messages = WebDriverWait(self.browser, 5).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "alert")))
         else:
             messages = []
+
+        if isinstance(contains, str):  # make sure we only look at messages we're looking for.
+            messages = [message for message in messages if contains in message.text]
 
         # Check that we got as many as expected
         if num_messages is not None:
@@ -421,12 +427,7 @@ class BrowserActionMixins(object):
 
     def browse_to_random_video(self):
         available = False
-        while not available:
-            video = get_content_cache()[choice(get_content_cache().keys())]
-            # The inclusion of this line can potentially lead to the test hanging indefinitely
-            # So we can't assume that a video has been downloaded for testing purposes :(
-            # available = (len(video['languages']) > 0)
-            available = True
+        video = get_random_content(limit=1)[0]
         video_url = video['path']
         self.browse_to(self.reverse("learn") + video_url)
 

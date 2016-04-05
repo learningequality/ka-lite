@@ -11,7 +11,7 @@ from django.core.cache.backends.filebased import FileBasedCache
 from django.core.cache.backends.locmem import LocMemCache
 
 from kalite.testing.base import KALiteTestCase
-from kalite.topic_tools import get_content_cache
+from kalite.topic_tools.content_models import get_random_content, update_item
 from securesync.models import Device
 
 
@@ -20,7 +20,7 @@ class MainTestCase(KALiteTestCase):
     def __init__(self, *args, **kwargs):
         self.content_root = tempfile.mkdtemp() + "/"
 
-        return super(MainTestCase, self).__init__(*args, **kwargs)
+        super(MainTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self, *args, **kwargs):
         self.setUp_fake_contentroot()
@@ -30,7 +30,7 @@ class MainTestCase(KALiteTestCase):
         """
         Set up a location for the content folder that won't mess with the actual application.
         Because we're using call_command, the value of settings should persist
-        into the videoscan command.
+        into the annotate_content_items command.
         """
         settings.CONTENT_ROOT = self.content_root
 
@@ -50,10 +50,12 @@ class MainTestCase(KALiteTestCase):
         """
         Helper function for testing content files.
         """
-        content_id = random.choice(get_content_cache().keys())
-        youtube_id = get_content_cache()[content_id]["youtube_id"]
+        content = get_random_content(kinds=["Video"], limit=1)[0]
+        youtube_id = content["id"]
+        path = content["path"]
         fake_content_file = os.path.join(settings.CONTENT_ROOT, "%s.mp4" % youtube_id)
         with open(fake_content_file, "w") as fh:
             fh.write("")
+        update_item(update={"files_complete": 1, "available": True, "size_on_disk": 12}, path=content["path"])
         self.assertTrue(os.path.exists(fake_content_file), "Make sure the content file was created, youtube_id='%s'." % youtube_id)
-        return (fake_content_file, content_id, youtube_id)
+        return (fake_content_file, content["id"], youtube_id, path)

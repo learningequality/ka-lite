@@ -11,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import FacilityUser, Facility, FacilityGroup
 from fle_utils.django_utils.users import verify_raw_password
-from kalite.i18n import get_installed_language_packs, get_language_name, get_default_language
+from kalite.i18n.base import get_installed_language_packs, get_language_name, get_default_language
 
 
 class FacilityUserForm(forms.ModelForm):
@@ -165,13 +165,16 @@ class FacilityGroupForm(forms.ModelForm):
         self.fields["facility"].initial = facility
         self.fields["facility"].queryset = Facility.objects.by_zone(facility.get_zone())
 
+        if self.fields["facility"].queryset.count() < 2:
+            self.fields["facility"].widget = forms.HiddenInput()
+
     class Meta:
         model = FacilityGroup
         fields = ("name", "description", "facility", "zone_fallback", )
         widgets = {
-            "facility": forms.HiddenInput(),
             "zone_fallback": forms.HiddenInput(), # TODO(jamalex): this shouldn't be in here
         }
+
 
     def clean_name(self):
         name = self.cleaned_data.get("name", "")

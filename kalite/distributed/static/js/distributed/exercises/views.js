@@ -69,7 +69,7 @@ var ExerciseProgressView = BaseView.extend({
 
         this.collection.forEach(function(model) {
             if (model.has("correct")) {
-                attempt_text = (model.get("correct") ? "<span class='correct'><b>&#10003;</b></span> " : "<span class='incorrect'>&#10007;</span> ") + attempt_text;
+                attempt_text = (model.get("correct") ? "<span aria-hidden='true' class='correct'><i class='glyphicon glyphicon-ok'></i></span> " : "<span aria-hidden='true' class='incorrect'><i class='glyphicon glyphicon-remove'></i></span> ") + attempt_text;
             }
         });
 
@@ -120,9 +120,13 @@ var ExerciseView = BaseView.extend({
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         // load the info about the exercise itself
-        this.data_model = new Models.ExerciseDataModel({exercise_id: options.exercise_id});
-        if (this.data_model.exercise_id) {
-            this.data_model.fetch();
+        if (options.data_model) {
+            this.data_model = options.data_model;
+        } else {
+            this.data_model =  new Models.ExerciseDataModel({id: options.id});
+            if (this.data_model.id) {
+                this.data_model.fetch();
+            }
         }
 
         this.Khan = global.Khan;
@@ -510,6 +514,9 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.options = options;
 
+        this.data_model = options.data_model;
+        this.log_model = options.log_model;
+
         _.bindAll.apply(_, [this].concat(_.functions(this)));
 
         window.statusModel.loaded.then(this.setup_exercise_environment);
@@ -543,10 +550,10 @@ var ExerciseWrapperBaseView = BaseView.extend({
         }
 
         var defaults = {
-            exercise_id: this.options.exercise_id,
+            exercise_id: this.log_model.get("exercise_id"),
             user: window.statusModel.get("user_uri"),
-            context_type: this.options.context_type || "",
-            context_id: this.options.context_id || "",
+            context_type: "exercise",
+            context_id: "",
             language: "", // TODO(jamalex): get the current exercise language
             version: window.statusModel.get("version"),
             seed: seed,
@@ -557,7 +564,7 @@ var ExerciseWrapperBaseView = BaseView.extend({
 
         this.current_attempt_log = new Models.AttemptLogModel(data);
 
-        this.attempt_collection.add(this.current_attempt_log);
+        this.attempt_collection.unshift(this.current_attempt_log);
 
         return this.current_attempt_log;
 
@@ -670,10 +677,22 @@ var ExerciseWrapperBaseView = BaseView.extend({
     },
 
     update_total_points: function(data) {
-        // update the top-right point display, now that we've saved the points successfully
-        if (this.log_model.has("points")) {
-            window.statusModel.update_total_points(this.log_model.get("points") - this.status_points);
-            this.status_points = this.log_model.get("points");
+        /*
+            Update the top-right point display, now that we've saved the points successfully.
+            However, we should *only* update the points display if it's actually changed.
+
+            This is called in case there is a discrepancy between the points reported by the server and the points
+            known to the client.
+
+            :param data: Is in fact a log_model instance, since this is a callback to the
+              built-in "sync" event. It should be the *same* object as this.log_model.
+         */
+        if (data.has("points")) {
+            if(data.changed.points) {
+                var points_diff = data.get("points") - this.points_before_sync;
+                window.statusModel.update_total_points(points_diff);
+            }
+            this.points_before_sync = data.get("points");
         }
     },
 
@@ -709,7 +728,9 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
     initialize_subviews: function() {
         this.exercise_view = this.add_subview(ExerciseView, {
             el: this.el,
-            exercise_id: this.options.exercise_id
+            exercise_id: this.options.data_model.get("exercise_id"),
+            data_model: this.options.data_model,
+            log_model: this.options.log_model
         });
 
         this.listenTo(this.exercise_view, "ready_for_next_question", this.ready_for_next_question);
@@ -727,16 +748,12 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
 
     load_user_data: function() {
 
-        // load the data about the user's overall progress on the exercise
-        this.log_collection = new Models.ExerciseLogCollection([], {exercise_id: this.options.exercise_id});
-        var log_collection_deferred = this.log_collection.fetch();
-
         // load the last 10 (or however many) specific attempts the user made on this exercise
-        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.exercise_id, context_type__in: ["playlist", "exercise"]});
+        this.attempt_collection = new Models.AttemptLogCollection([], {exercise_id: this.options.data_model.get("exercise_id"), context_type__in: ["playlist", "exercise"]});
         var attempt_collection_deferred = this.attempt_collection.fetch();
 
         // wait until both the exercise and attempt logs have been loaded before continuing
-        this.user_data_loaded_deferred = $.when(log_collection_deferred, attempt_collection_deferred);
+        this.user_data_loaded_deferred = $.when(attempt_collection_deferred);
         this.user_data_loaded_deferred.then(this.user_data_loaded);
 
     },
@@ -748,7 +765,7 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
     user_data_loaded: function() {
 
         // get the exercise log model from the queried collection
-        this.log_model = this.log_collection.get_first_log_or_new_log();
+        this.log_model = this.options.log_model;
 
         this.listenTo(this.log_model, "sync", this.update_total_points);
 
@@ -768,7 +785,7 @@ var ExercisePracticeView = ExerciseWrapperBaseView.extend({
 
         // store the number of points that are currently in the ExerciseLog, so we can calculate the difference
         // once it changes, for updating the "total points" in the nav bar display
-        this.status_points = this.log_model.get("points");
+        this.points_before_sync = this.log_model.get("points");
 
 
         if ( !window.statusModel.get("is_django_user") ) {

@@ -1,6 +1,22 @@
 Release Notes
 =============
 
+0.16.0
+------
+
+General
+^^^^^^^
+
+* KA Lite is officially supported on OSX 10.11 (El Capitan).
+* We've revamped the language packs into a new format, called content packs.
+  This results in significantly faster startup times across the board.
+.. WARNING::
+   You will have to redownload all your languages to fully support 0.16.
+
+* We introduced a new beta inline help system. Check this out by going to the
+  Facility management page and clicking "Show me how!"
+* A lot of UI tweaks and bugfixes. KA Lite is now more stable than ever!
+
 0.15.0
 ------
 
@@ -10,7 +26,7 @@ General
 Python 2.6 is no longer supported. It *may* still work, but we are no longer actively supporting it.
 Other known issues:
 
-* The latest OSX version (EL Capitan) is not yet supported.
+* The latest OSX version (EL Capitan) is not yet supported. KA Lite is officially supported on OS X 10.8 - 10.10.
 * On OSX, you must restart the server after downloading videos in order for them to be marked as available.
 * On all platforms, you must restart the server after downloading a language pack in order to use it.
 * You can no longer configure your server using ``local_settings.py``. Instead, custom settings must appear in

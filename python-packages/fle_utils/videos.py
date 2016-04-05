@@ -11,6 +11,7 @@ from internet.download import callback_percent_proxy, download_file, URLNotFound
 OUTSIDE_DOWNLOAD_BASE_URL = "http://s3.amazonaws.com/KA-youtube-converted/"  # needed for redirects
 OUTSIDE_DOWNLOAD_URL = OUTSIDE_DOWNLOAD_BASE_URL + "%s/%s"  # needed for default behavior, below
 
+logger = logging.getLogger(__name__)
 
 def get_outside_video_urls(youtube_id, download_url=OUTSIDE_DOWNLOAD_URL, format="mp4"):
 
@@ -36,12 +37,18 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
 
     try:
         path, response = download_file(url, filepath, callback_percent_proxy(callback, end_percent=95))
-        if not response.type.startswith("video"):
-            raise URLNotFound("Video was not found!")
+        if (
+                not os.path.isfile(filepath) or
+                "Content-Length" not in response or
+                not str(len(open(filepath, "rb").read())) == response["Content-Length"]):
+            raise URLNotFound("Video was not found, tried: {}".format(url))
 
         path, response = download_file(thumb_url, thumb_filepath, callback_percent_proxy(callback, start_percent=95, end_percent=100))
-        if not response.type.startswith("image"):
-            raise URLNotFound("Thumbnail was not found!")
+        if (
+                not os.path.isfile(thumb_filepath) or
+                "Content-Length" not in response or
+                not str(len(open(thumb_filepath, "rb").read())) == response["Content-Length"]):
+            raise URLNotFound("Thumbnail was not found, tried: {}".format(thumb_url))
 
     except DownloadCancelled:
         delete_downloaded_files(youtube_id, download_path)
@@ -59,8 +66,12 @@ def download_video(youtube_id, download_path="../content/", download_url=OUTSIDE
         raise
 
 def delete_downloaded_files(youtube_id, download_path):
+    files_deleted = 0
     for filepath in glob.glob(os.path.join(download_path, youtube_id + ".*")):
         try:
             os.remove(filepath)
+            files_deleted += 1
         except OSError:
             pass
+    if files_deleted:
+        return True

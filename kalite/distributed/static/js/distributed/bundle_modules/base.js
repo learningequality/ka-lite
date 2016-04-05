@@ -20,6 +20,10 @@ global.sessionModel = new SessionModel();
 
 var url = require("url");
 
+// An object we can use for checking the state of our models and views.
+// Be sure to clean up after yourself if you use it, so there's no memory bloat!
+window._kalite_debug = {};
+
 window.onerror=function(msg){
     window.js_errors = window.js_errors || [];
     window.js_errors.push(msg);
@@ -31,13 +35,16 @@ require("bootstrap/dist/js/npm.js");
 
 require("../../../css/distributed/khan-site.css");
 
+// We override introjs.css in khan-lite.less, so load before.
+require("intro.js/introjs.css");
+
 require("../../../css/distributed/khan-lite.less");
 
 // Related to showing elements on screen
 $(function(){
 
     if (!Modernizr.canvas) {
-        $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_compatilibity.js");
+        $script(window.sessionModel.get("STATIC_URL") + "js/distributed/bundles/bundle_compatibility.js");
     }
 
     attachfastclick(document.body);

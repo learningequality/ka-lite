@@ -34,14 +34,30 @@ srcdir="$webapp_root/third_party/javascript-khansrc"
 destdir="$exercises_root/local-only"
 
 # Copy stuff from the webapp repo into local-only.
-cp -f "$srcdir"/jed/jed.js "$destdir"
 cp -f "$srcdir"/jquery-migrate/jquery-migrate-1.1.1.js "$destdir"
 cp -f "$srcdir"/jquery/jquery.js "$destdir"
 cp -f "$srcdir"/qTip2/jquery.qtip.js "$destdir"
 cp -f "$srcdir"/underscore/underscore.js "$destdir"
 cp -f "$srcdir"/moment-khansrc/moment.js "$destdir"
 
-cp -f "$webapp_root"/javascript/shared-package/i18n.js "$destdir"
+# Get an es5-friendly version of i18n.js
+(
+   cd "$webapp_root"
+   python kake/build_prod_main.py genfiles/compiled_es6/en/javascript/shared-package/i18n.js
+)
+
+# Get rid of the require lines -- we just provide all the required
+# libs as globals.  Also get rid of module.exports, which this js
+# system doesn't like.  We also need to wrap this in an IIFE to avoid
+# leaking internal vars.
+( echo "(function() {"
+  echo "// Perseus running in local mode depends on \$_, which is defined here"
+  echo "if (typeof React !== 'undefined') {"
+  echo "    var createFragment = React.__internalAddons.createFragment;"
+  echo "}\n"
+  sed /module.exports/q "$webapp_root"/genfiles/compiled_es6/en/javascript/shared-package/i18n.js | grep -v -e '= require("' -e 'module.exports ='
+  echo "})();"
+) > "$destdir"/i18n.js
 
 # We only need some of the jquery-ui files, and we'll concatenate them together
 rm -f "$destdir"/jquery-ui.js
@@ -60,7 +76,7 @@ rm -f "$destdir/localeplanet/icu.__language__.js"
 
 # Update khan-site.css
 python "$webapp_root/kake/build_prod_main.py" shared.css exercises.css \
-   --readable --no-update-manifest
+   --readable
 
 cat "$webapp_root/genfiles/readable_css_packages_prod/en/shared-package.css" \
     "$webapp_root/genfiles/readable_css_packages_prod/en/exercises-package.css" \
