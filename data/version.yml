@@ -6,6 +6,7 @@
     all:
       - Tweaks to our documentation (#5067)
       - Refactor assessment item asking logic in the setup command (#5065)
+      - Properly copy over docs pages while preserving content pack assets (#5074)
     students: []
     coaches: []
     admins: []
