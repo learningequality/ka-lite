@@ -34,4 +34,4 @@ INSERT TRACEBACK, LOG MESSAGES ETC. HERE
 
 ## Real-life consequences (anything community should be aware, for instance how it affects your deployment)
 
-*If applicaple*
+*If applicable*
