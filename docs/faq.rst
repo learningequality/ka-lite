@@ -84,9 +84,9 @@ Use the language code indicated below:
      Zulu             zul
     ================ ======
 
-An example invocation for Windows would be::
+An example invocation for installing the French `contentpack` on Windows would be::
 
-    C:\Program Files\KA Lite\ka-lite\bin\windows\kalite.bat kalite manage retrievecontentpack local en en.zip
+    C:\Python27\Scripts\kalite manage retrievecontentpack local fr fr.zip
 
 
 After starting up your server, you should now see your new language in the Manage > Language page.
