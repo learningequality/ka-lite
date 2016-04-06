@@ -1,37 +1,48 @@
-.video-player {
-    background-color: black;
-    height: 750px;
-    width: 100%;
-}
+/**
+ * SoundManager 2: "Bar UI" player - CSS
+ * Copyright (c) 2014, Scott Schiller. All rights reserved.
+ * http://www.schillmania.com/projects/soundmanager2/
+ * Code provided under BSD license.
+ * http://schillmania.com/projects/soundmanager2/license.txt
+ */
 
 .sm2-bar-ui {
-    position: relative;
-    display: block;
-    width: 100%;
     font-family: helvetica, arial, verdana, sans-serif;
     font-weight: normal;
+
+    position: relative;
+
+    display: inline-block;
+    overflow: hidden;
+
+    width: 100%;
+    min-width: 20em;
+    max-width: 30em;
+    /* just for fun (animate normal / full-width) */
+
+    transition: max-width .2s ease-in-out;
+    /* take out overflow if you want an absolutely-positioned playlist dropdown. */
+
+    border-radius: 2px;
     /* prevent background border bleed */
     -webkit-background-clip: padding-box;
     background-clip: padding-box;
     /* because indeed, fonts do look pretty "fat" otherwise in this case. */
+
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     /* general font niceness? */
+    font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    min-width: 20em;
-    max-width: 30em;
-    /* take out overflow if you want an absolutely-positioned playlist dropdown. */
-    border-radius: 2px;
-    overflow: hidden;
-    /* just for fun (animate normal / full-width) */
-    transition: max-width 0.2s ease-in-out;
 }
 
 .sm2-bar-ui .sm2-playlist li {
-    text-align: center;
-    margin-top: -2px;
     font-size: 95%;
     line-height: 1em;
+
+    margin-top: -2px;
+
+    text-align: center;
 }
 
 .sm2-bar-ui.compact {
@@ -53,27 +64,30 @@
 }
 
 .sm2-bar-ui.full-width {
-    max-width: 100%;
     z-index: 5;
+
+    max-width: 100%;
 }
 
 .sm2-bar-ui.fixed {
     position: fixed;
+    /* and this should probably have a high z-index. tweak as needed. */
+    z-index: 999;
     top: auto;
     bottom: 0;
     left: 0;
-    border-radius: 0;
     /* so the absolutely-positioned playlist can show... */
+
     overflow: visible;
-    /* and this should probably have a high z-index. tweak as needed. */
-    z-index: 999;
+
+    border-radius: 0;
 }
 
 .sm2-bar-ui.fixed .bd,
 .sm2-bar-ui.bottom .bd {
+    border-bottom: none;
     /* display: table; */
     border-radius: 0;
-    border-bottom: none;
 }
 
 .sm2-bar-ui.bottom {
@@ -81,21 +95,24 @@
     top: auto;
     bottom: 0;
     left: 0;
-    border-radius: 0;
     /* so the absolutely-positioned playlist can show... */
+
     overflow: visible;
+
+    border-radius: 0;
 }
 
 .sm2-bar-ui.playlist-open .bd {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
     border-bottom-color: transparent;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .sm2-bar-ui .bd,
 .sm2-bar-ui .sm2-extra-controls {
     position: relative;
-    background-color: #000000;
+
+    background-color: #28c;
     /*
     transition: background 0.2s ease-in-out;
     */
@@ -104,12 +121,14 @@
 .sm2-bar-ui .sm2-inline-gradient {
     /* gradient */
     position: absolute;
-    left: 0;
     top: 0;
+    left: 0;
+
     width: 100%;
     height: 100%;
-    background-image: -moz-linear-gradient(to bottom, rgba(255, 255, 255, 0.125) 5%, rgba(255, 255, 255, 0.125) 45%, rgba(255, 255, 255, 0.15) 52%, rgba(0, 0, 0, 0.01) 51%, rgba(0, 0, 0, 0.1) 95%); /* W3C */
-    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.125) 5%, rgba(255, 255, 255, 0.125) 45%, rgba(255, 255, 255, 0.15) 50%, rgba(0, 0, 0, 0.1) 51%, rgba(0, 0, 0, 0.1) 95%); /* W3C */
+
+    background-image: -moz-linear-gradient(to bottom, rgba(255, 255, 255, .125) 5%, rgba(255, 255, 255, .125) 45%, rgba(255, 255, 255, .15) 52%, rgba(0, 0, 0, .01) 51%, rgba(0, 0, 0, .1) 95%); /* W3C */
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, .125) 5%, rgba(255, 255, 255, .125) 45%, rgba(255, 255, 255, .15) 50%, rgba(0, 0, 0, .1) 51%, rgba(0, 0, 0, .1) 95%); /* W3C */
 }
 
 .sm2-bar-ui.flat .sm2-inline-gradient {
@@ -118,6 +137,7 @@
 
 .sm2-bar-ui.flat .sm2-box-shadow {
     display: none;
+
     box-shadow: none;
 }
 
@@ -130,13 +150,14 @@
     position: absolute;
     top: 0;
     left: 0;
+
     width: 100%;
     height: 100%;
     /* for example */
     /* background-image: url(../image/wood_pattern_dark.png); */
     /* additional opacity effects can be applied here. */
-    opacity: 0.75;
 
+    opacity: .75;
 }
 
 .sm2-bar-ui.textured.dark-text .sm2-inline-texture {
@@ -152,7 +173,7 @@
 .sm2-bar-ui.textured.dark-text .sm2-playlist-wrapper ul li:hover a,
 .sm2-bar-ui.textured.dark-text .sm2-playlist-wrapper ul li.selected a {
     /* dark + textured case: dark highlights */
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, .1);
     background-image: url(../image/black-10.png);
     /* modern browsers don't neeed the image */
     background-image: none, none;
@@ -160,30 +181,32 @@
 
 .sm2-bar-ui .bd {
     display: table;
+
     border-bottom: none;
 }
 
 .sm2-bar-ui .sm2-playlist-wrapper {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, .1);
 }
 
 .sm2-bar-ui .sm2-extra-controls .bd {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, .2);
 }
 
 .sm2-bar-ui.textured .sm2-extra-controls .bd {
     /* lighten extra color overlays */
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, .05);
 }
 
 .sm2-bar-ui .sm2-extra-controls {
-    background-color: transparent;
     border: none;
+    background-color: transparent;
 }
 
 .sm2-bar-ui .sm2-extra-controls .bd {
     /* override full-width table behaviour */
     display: block;
+
     border: none;
 }
 
@@ -205,7 +228,7 @@
     /* Warning/disclaimer: SVG might be fuzzy when inverted on Chrome, losing resolution on hi-DPI displays. */
     -webkit-filter: invert(1);
     /* SVG-based invert filter for Firefox */
-    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'invert\'><feColorMatrix in='SourceGraphic' type='matrix' values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0'/></filter></svg>#invert");
+    filter: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'invert\'><feColorMatrix in=\'SourceGraphic\' type=\'matrix\' values=\'-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0\'/></filter></svg>#invert');
     /* IE 8 inverse filter, may only match pure black/white */
     /* filter: xray; */
     /* pending W3 standard */
@@ -219,13 +242,13 @@
 }
 
 .sm2-bar-ui .bd .sm2-button-element:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, .1);
     background-image: url(../image/black-10.png);
     background-image: none, none;
 }
 
 .sm2-bar-ui .bd .sm2-button-element:active {
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: rgba(0, 0, 0, .25);
     background-image: url(../image/black-25.png);
     background-image: none, none;
 }
@@ -234,20 +257,20 @@
 .sm2-bar-ui .bd .active .sm2-inline-button /*,
 .sm2-bar-ui.playlist-open .sm2-menu a */
 {
-    -ms-transform: scale(0.9);
-    -webkit-transform: scale(0.9);
-    -webkit-transform-origin: 50% 50%;
-    /* firefox doesn't scale quite right. */
-    transform: scale(0.9);
-    transform-origin: 50% 50%;
+    -webkit-transform: scale(.9);
     /* firefox doesn't scale quite right. */
     -moz-transform: none;
+    -ms-transform: scale(.9);
+    /* firefox doesn't scale quite right. */
+    transform: scale(.9);
+    -webkit-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
 }
 
 .sm2-bar-ui .bd .sm2-extra-controls .sm2-button-element:hover,
 .sm2-bar-ui .bd .sm2-extra-controls .sm2-button-element:active,
 .sm2-bar-ui .bd .active {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, .1);
     background-image: url(../image/black-10.png);
     background-image: none, none;
 }
@@ -260,15 +283,19 @@
 .sm2-bar-ui {
     /* base font size */
     font-size: 15px;
+
     text-shadow: none;
 }
 
 .sm2-bar-ui .sm2-inline-element {
     position: relative;
+
     display: inline-block;
-    vertical-align: middle;
-    padding: 0;
     overflow: hidden;
+
+    padding: 0;
+
+    vertical-align: middle;
 }
 
 .sm2-bar-ui .sm2-inline-element,
@@ -295,37 +322,40 @@
     position: absolute;
     top: 0;
     left: 0;
+
     width: 100%;
     height: 100%;
 }
 
 .sm2-bar-ui .sm2-extra-controls .bd {
+    background-color: rgba(0, 0, 0, .15);
     /* don't double-layer. */
     background-image: none;
-    background-color: rgba(0, 0, 0, 0.15);
 }
 
 .sm2-bar-ui .sm2-extra-controls .sm2-inline-element {
     width: 25px; /* bare minimum */
-    min-height: 1.75em;
     min-width: 2.5em;
+    min-height: 1.75em;
 }
 
 .sm2-bar-ui .sm2-inline-status {
     line-height: 100%;
     /* how much to allow before truncating song artist / title with ellipsis */
+
     display: inline-block;
+
     min-width: 200px;
     max-width: 20em;
+    padding-right: .75em;
     /* a little more spacing */
-    padding-left: 0.75em;
-    padding-right: 0.75em;
+    padding-left: .75em;
 }
 
 .sm2-bar-ui .sm2-inline-element {
     /* extra-small em scales up nicely, vs. 1px which gets fat */
-    border-right: 0.075em dotted #666; /* legacy */
-    border-right: 0.075em solid rgba(0, 0, 0, 0.1);
+    border-right: .075em dotted #666; /* legacy */
+    border-right: .075em solid rgba(0, 0, 0, .1);
 }
 
 .sm2-bar-ui .sm2-inline-element.noborder {
@@ -334,13 +364,14 @@
 
 .sm2-bar-ui .sm2-inline-element.compact {
     min-width: 2em;
-    padding: 0 0.25em;
+    padding: 0 .25em;
 }
 
 .sm2-bar-ui .sm2-inline-element:first-of-type {
+    overflow: hidden;
+
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
-    overflow: hidden;
 }
 
 .sm2-bar-ui .sm2-inline-element:last-of-type {
@@ -350,38 +381,48 @@
 }
 
 .sm2-bar-ui .sm2-inline-status a:hover {
-    background-color: transparent;
     text-decoration: underline;
+
+    background-color: transparent;
 }
 
 .sm2-inline-time,
 .sm2-inline-duration {
-    display: table-cell;
-    width: 1%;
     font-size: 75%;
-    line-height: 0.9em;
+    line-height: .9em;
+
+    display: table-cell;
+
+    width: 1%;
     min-width: 2em; /* if you have sounds > 10:00 in length, make this bigger. */
+
     vertical-align: middle;
 }
 
 .sm2-bar-ui .sm2-playlist {
     position: relative;
+
     height: 1.45em;
 }
 
 .sm2-bar-ui .sm2-playlist-target {
     /* initial render / empty case */
     position: relative;
+
     min-height: 1em;
 }
 
 .sm2-bar-ui .sm2-playlist ul {
     position: absolute;
-    left: 0;
     top: 0;
-    width: 100%;
-    list-style-type: none;
+    left: 0;
+
     overflow: hidden;
+
+    width: 100%;
+
+    list-style-type: none;
+
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -400,41 +441,49 @@
 .sm2-bar-ui .sm2-playlist ul li,
 .sm2-bar-ui .sm2-playlist ul li a {
     position: relative;
+
     display: block;
-    /* prevent clipping of characters like "g" */
-    height: 1.5em;
-    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    /* prevent clipping of characters like "g" */
+
+    height: 1.5em;
+
     text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .sm2-row {
     position: relative;
+
     display: table-row;
 }
 
 .sm2-progress-bd {
     /* spacing between progress track/ball and time (position) */
-    padding: 0 0.8em;
+    padding: 0 .8em;
 }
 
 .sm2-progress .sm2-progress-track,
 .sm2-progress .sm2-progress-ball,
 .sm2-progress .sm2-progress-bar {
     position: relative;
+
     width: 100%;
-    height: 0.65em;
-    border-radius: 0.65em;
+    height: .65em;
+
+    border-radius: .65em;
 }
 
 .sm2-progress .sm2-progress-bar {
     /* element which follows the progres "ball" as it moves */
     position: absolute;
-    left: 0;
     top: 0;
+    left: 0;
+
     width: 0;
-    background-color: rgba(0, 0, 0, 0.33);
+
+    background-color: rgba(0, 0, 0, .33);
     background-image: url(../image/black-33.png);
     background-image: none, none;
 }
@@ -455,22 +504,25 @@
     position: absolute;
     top: 0;
     left: 0;
+
     width: 1em;
-    height: 1em;
-    margin: -0.2em 0 0 -0.5em;
     width: 14px;
+    width: .9333em;
+    height: 1em;
     height: 14px;
+    height: .9333em;
+    margin: -.2em 0 0 -.5em;
     margin: -2px 0 0 -7px;
-    width: 0.9333em;
-    height: 0.9333em;
-    margin: -0.175em 0 0 -0.466em;
-    background-color: #fff;
+    margin: -.175em 0 0 -.466em;
     padding: 0;
     /*
      z-index: 1;
     */
-    -webkit-transition: -webkit-transform 0.15s ease-in-out;
-    transition: transform 0.15s ease-in-out;
+
+    -webkit-transition: -webkit-transform .15s ease-in-out;
+    transition: transform .15s ease-in-out;
+
+    background-color: #fff;
 }
 
 /*
@@ -480,14 +532,14 @@
 */
 
 .sm2-progress .sm2-progress-track {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, .4);
     background-image: url(../image/black-33.png); /* legacy */
     background-image: none, none; /* modern browsers */
 }
 
 /* scrollbar rules have to be separate, browsers not supporting this syntax will skip them when combined. */
 .sm2-playlist-wrapper ul::-webkit-scrollbar-track {
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, .4);
 }
 
 .playing.grabbing .sm2-progress .sm2-progress-track,
@@ -503,40 +555,42 @@
 }
 
 .sm2-inline-button {
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
     /* hide inner text */
     line-height: 10em;
+
+    -ms-interpolation-mode: nearest-neighbor;
+    -ms-interpolation-mode: bicubic;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
     /**
      * image-rendering seems to apply mostly to Firefox in this case. Use with caution.
      * https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering#Browser_compatibility
      */
+
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-    -ms-interpolation-mode: nearest-neighbor;
-    -ms-interpolation-mode: bicubic;
 }
 
 .play-pause,
 .play-pause:hover,
 .paused .play-pause:hover {
-    background-image: url(../images/distributed/play-button.png);
-    background-image: none, url(../images/distributed/play-button.svg);
-    background-size: 67.5%;
+    background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/play.png);
+    background-image: none, url(https://storage.googleapis.com/material-icons/external-assets/v4/icons/svg/ic_play_arrow_white_24px.svg);
     background-position: 40% 53%;
+    background-size: 67.5%;
 }
 
 .playing .play-pause {
-    background-image: url(../images/distributed/pause.png);
-    background-image: none, url(../images/distributed/pause.svg);
-    background-size: 57.6%;
+    background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/pause.png);
+    background-image: none, url(https://storage.googleapis.com/material-icons/external-assets/v4/icons/svg/ic_pause_white_24px.svg);
     background-position: 50% 53%;
+    background-size: 57.6%;
 }
 
 .sm2-volume-control {
-    background-image: url(../images/distributed/volume.png);
-    background-image: none, url(../images/distributed/volume.svg);
+    background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/volume.png);
+    background-image: none, url(https://storage.googleapis.com/material-icons/external-assets/v4/icons/svg/ic_volume_up_white_24px.svg);
 }
 
 .sm2-volume-control,
@@ -546,18 +600,23 @@
 }
 
 .volume-shade {
-    filter: alpha(opacity=33); /* <= IE 8 */
-    opacity: 0.33;
+    opacity: .33;
     /* -webkit-filter: invert(1);*/
-    background-image: url(../images/distributed/volume.png);
-    background-image: none, url(../images/distributed/volume.svg);
+    background-image: url(../image/icomoon/entypo-25px-000000/PNG/volume.png);
+    background-image: none, url(https://storage.googleapis.com/material-icons/external-assets/v4/icons/svg/ic_volume_up_black_24px.svg);
+
+    filter: alpha(opacity=33); /* <= IE 8 */
+}
+
+.back_10_sec {
+    background-image: none, url(https://storage.googleapis.com/material-icons/external-assets/v4/icons/svg/ic_replay_10_white_24px.svg);
 }
 
 .menu {
     background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/list2.png);
     background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/list2.svg);
-    background-size: 58%;
     background-position: 54% 51%;
+    background-size: 58%;
 }
 
 .previous {
@@ -572,19 +631,20 @@
 
 .previous,
 .next {
-    background-size: 49.5%;
     background-position: 50% 50%;
+    background-size: 49.5%;
 }
 
 .sm2-extra-controls .previous,
 .sm2-extra-controls .next {
+    backgound-size: 53%;
 }
 
 .shuffle {
     background-image: url(../image/icomoon/entypo-25px-ffffff/PNG/shuffle.png);
     background-image: none, url(../image/icomoon/entypo-25px-ffffff/SVG/shuffle.svg);
-    background-size: 45%;
     background-position: 50% 50%;
+    background-size: 45%;
 }
 
 .repeat {
@@ -600,14 +660,17 @@
 
 .sm2-playlist-wrapper ul li .sm2-row {
     display: table;
+
     width: 100%;
 }
 
 .sm2-playlist-wrapper ul li .sm2-col {
     display: table-cell;
-    vertical-align: top;
     /* by default, collapse. */
+
     width: 0;
+
+    vertical-align: top;
 }
 
 .sm2-playlist-wrapper ul li .sm2-col.sm2-wide {
@@ -618,29 +681,32 @@
 .sm2-playlist-wrapper ul li .sm2-icon {
     display: inline-block;
     overflow: hidden;
+
     width: 2em;
-    color: transparent !important; /* hide text */
-    white-space: nowrap; /* don't let text affect height */
-    padding-left: 0;
     padding-right: 0;
+    padding-left: 0;
+
+    white-space: nowrap; /* don't let text affect height */
     text-indent: 2em; /* IE 8, mostly */
+
+    color: transparent !important; /* hide text */
 }
 
 .sm2-playlist-wrapper ul li .sm2-icon,
 .sm2-playlist-wrapper ul li:hover .sm2-icon,
 .sm2-playlist-wrapper ul li.selected .sm2-icon {
-    background-size: 55%;
-    background-position: 50% 50%;
     background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: 55%;
 }
 
 .sm2-playlist-wrapper ul li .sm2-col {
     /* sibling table cells get borders. */
-    border-right: 1px solid rgba(0, 0, 0, 0.075);
+    border-right: 1px solid rgba(0, 0, 0, .075);
 }
 
 .sm2-playlist-wrapper ul li.selected .sm2-col {
-    border-color: rgba(255, 255, 255, 0.075);
+    border-color: rgba(255, 255, 255, .075);
 }
 
 .sm2-playlist-wrapper ul li .sm2-col:last-of-type {
@@ -678,39 +744,43 @@
 }
 
 .sm2-bar-ui.dark-text .sm2-playlist-wrapper ul li .sm2-col {
-    border-left-color: rgba(0, 0, 0, 0.15);
+    border-left-color: rgba(0, 0, 0, .15);
 }
 
 .sm2-playlist-wrapper ul li .sm2-icon:hover {
-    background-color: rgba(0, 0, 0, 0.33);
+    background-color: rgba(0, 0, 0, .33);
 }
 
 .sm2-bar-ui .sm2-playlist-wrapper ul li .sm2-icon:hover {
-    background-color: rgba(0, 0, 0, 0.45);
+    background-color: rgba(0, 0, 0, .45);
 }
 
 .sm2-bar-ui.dark-text .sm2-playlist-wrapper ul li.selected .sm2-icon:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-    border-color: rgba(0, 0, 0, 0.125);
+    border-color: rgba(0, 0, 0, .125);
+    background-color: rgba(255, 255, 255, .25);
 }
 
 .sm2-progress-ball .icon-overlay {
     position: absolute;
-    width: 100%;
-    height: 100%;
     top: 0;
     left: 0;
-    background: none, url(../images/distributed/spinner.svg);
-    background-size: 72%;
-    background-position: 50%;
-    background-repeat: no-repeat;
+
     display: none;
+
+    width: 100%;
+    height: 100%;
+
+    background: none, url(../image/icomoon/free-25px-000000/SVG/spinner.svg);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    background-size: 72%;
 }
 
 .playing.buffering .sm2-progress-ball .icon-overlay {
     display: block;
-    -webkit-animation: spin 0.6s linear infinite;
-    animation: spin 0.6s linear infinite;
+
+    -webkit-animation: spin .6s linear infinite;
+    animation: spin .6s linear infinite;
 }
 
 @-webkit-keyframes spin {
@@ -742,6 +812,7 @@
 
 .sm2-element ul {
     font-size: 95%;
+
     list-style-type: none;
 }
 
@@ -755,14 +826,18 @@
     /* optional: absolute positioning */
     /* position: absolute; */
     z-index: 3;
-    border-radius: 0;
-    width: 100%;
-    height: 0;
-    border: none;
-    background-image: none;
+
     display: block;
     overflow: hidden;
-    transition: height 0.2s ease-in-out;
+
+    width: 100%;
+    height: 0;
+
+    transition: height .2s ease-in-out;
+
+    border: none;
+    border-radius: 0;
+    background-image: none;
 }
 
 .sm2-bar-ui.fixed .bd.sm2-playlist-drawer,
@@ -782,9 +857,10 @@
 }
 
 .sm2-bar-ui .bd.sm2-playlist-drawer {
-    opacity: 0.5;
     /* redraw fix for Chrome, background color doesn't always draw when playlist drawer open. */
     transform: translateZ(0);
+
+    opacity: .5;
 }
 
 /* experimental, may not perform well. */
@@ -796,6 +872,7 @@
 
 .sm2-bar-ui.playlist-open .bd.sm2-playlist-drawer {
     height: auto;
+
     opacity: 1;
 }
 
@@ -806,17 +883,18 @@
 .sm2-bar-ui.fixed.playlist-open .bd.sm2-playlist-drawer .sm2-playlist-wrapper,
 .sm2-bar-ui.bottom.playlist-open .bd.sm2-playlist-drawer .sm2-playlist-wrapper {
     /* extra padding when open */
-    padding-bottom: 0.5em;
+    padding-bottom: .5em;
+
     box-shadow: none;
 }
 
 .sm2-bar-ui .bd.sm2-playlist-drawer {
-    transition: all 0.2s ease-in-out;
+    transition: all .2s ease-in-out;
     transition-property: transform, height, opacity, background-color, -webkit-filter;
 }
 
 .sm2-bar-ui .bd.sm2-playlist-drawer a {
-    transition: -webkit-filter 0.2s ease-in-out;
+    transition: -webkit-filter .2s ease-in-out;
 }
 
 .sm2-bar-ui .bd.sm2-playlist-drawer .sm2-inline-texture {
@@ -826,37 +904,45 @@
 
 .sm2-box-shadow {
     position: absolute;
-    left: 0;
     top: 0;
+    left: 0;
+
     width: 100%;
     height: 100%;
-    box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.15);
+
+    box-shadow: inset 0 1px 6px rgba(0, 0, 0, .15);
 }
 
 .sm2-playlist-wrapper {
     position: relative;
-    padding: 0.5em 0.5em 0.5em 0.25em;
+
+    padding: .5em .5em .5em .25em;
+
     background-image: none, none;
 }
 
 .sm2-playlist-wrapper ul {
-    max-height: 9.25em;
     overflow: auto;
+
+    max-height: 9.25em;
 }
 
 .sm2-playlist-wrapper ul li {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, .05);
 }
 
 .sm2-playlist-wrapper ul li:nth-child(odd) {
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(255, 255, 255, .03);
 }
 
 .sm2-playlist-wrapper ul li a {
-    display: block;
-    padding: 0.5em 0.25em 0.5em 0.75em;
-    margin-right: 0;
     font-size: 90%;
+
+    display: block;
+
+    margin-right: 0;
+    padding: .5em .25em .5em .75em;
+
     vertical-align: middle;
 }
 
@@ -867,37 +953,39 @@
 .sm2-playlist-wrapper ul li a.sm2-exclude .label {
     font-size: 95%;
     line-height: 1em;
+
     margin-left: 0;
     padding: 2px 4px;
 }
 
 .sm2-playlist-wrapper ul li:hover a {
-    background-color: rgba(0, 0, 0, 0.20);
+    background-color: rgba(0, 0, 0, .20);
     background-image: url(../image/black-20.png);
     background-image: none, none;
 }
 
 .sm2-bar-ui.dark-text .sm2-playlist-wrapper ul li:hover a {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, .1);
     background-image: url(../image/black-10.png);
     background-image: none, none;
 }
 
 .sm2-playlist-wrapper ul li.selected a {
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: rgba(0, 0, 0, .25);
     background-image: url(../image/black-20.png);
     background-image: none, none;
 }
 
 .sm2-bar-ui.dark-text ul li.selected a {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, .1);
     background-image: url(../image/black-10.png);
     background-image: none, none;
 }
 
 .sm2-bar-ui .disabled {
+    opacity: .33;
+
     filter: alpha(opacity=33); /* <= IE 8 */
-    opacity: 0.33;
 }
 
 .sm2-bar-ui .bd .sm2-button-element.disabled:hover {
@@ -907,9 +995,9 @@
 .sm2-bar-ui .active,
     /*.sm2-bar-ui.playlist-open .sm2-menu,*/
 .sm2-bar-ui.playlist-open .sm2-menu:hover {
-    /* depressed / "on" state */
-    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
     background-image: none;
+    /* depressed / "on" state */
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, .1);
 }
 
 .firefox-fix {
@@ -919,7 +1007,9 @@
      * https://bugzilla.mozilla.org/show_bug.cgi?id=63895
      */
     position: relative;
+
     display: inline-block;
+
     width: 100%;
     height: 100%;
 }
@@ -931,8 +1021,8 @@
 }
 
 .sm2-playlist-wrapper ul::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.33);
     border-radius: 10px;
+    background: rgba(0, 0, 0, .33);
 }
 
 .sm2-playlist-wrapper ul::-webkit-scrollbar-thumb {
@@ -942,29 +1032,36 @@
 
 .sm2-extra-controls {
     font-size: 0;
+
     text-align: center;
 }
 
 .sm2-bar-ui .label {
+    font-size: .7em;
+
     position: relative;
+
     display: inline-block;
-    font-size: 0.7em;
-    margin-left: 0.25em;
-    vertical-align: top;
-    background-color: rgba(0, 0, 0, 0.25);
-    border-radius: 3px;
-    padding: 0 3px;
+
     box-sizing: padding-box;
+    margin-left: .25em;
+    padding: 0 3px;
+
+    vertical-align: top;
+
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, .25);
 }
 
 .sm2-bar-ui.dark-text .label {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, .1);
     background-image: url(../image/black-10.png);
     background-image: none, none;
 }
 
 .sm2-bar-ui .sm2-playlist-drawer .label {
-    font-size: 0.8em;
+    font-size: .8em;
+
     padding: 0 3px;
 }
 
@@ -996,6 +1093,53 @@
     overflow: hidden;
 }
 
+/*CUSTOM*/
+.video-player {
+    width: 100%;
+
+    background-color: black;
+}
+
 .papCanvas {
     background: black url('../static/js/distributed/vectorvideo/sample_background.jpg') no-repeat;
+    background-size: contain;
+
+    -webkit-user-select: initial !important;
+    touch-action: initial !important;
+    -webkit-user-drag: initial !important;
+}
+
+.canvas-wrapper {
+    position: relative;
+
+    width: 100%; /* desired width */
+}
+
+.canvas-wrapper:before {
+    display: block;
+
+    padding-top: 56.25%; /* initial ratio of 1:1*/
+
+    content: '';
+}
+
+.video-player {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.sm2-bar-ui {
+    font-size: 16px;
+}
+
+.sm2-bar-ui .sm2-main-controls,
+.sm2-bar-ui .sm2-playlist-drawer {
+    background-color: #0fae99;
+}
+
+.sm2-bar-ui .sm2-inline-texture {
+    background: transparent;
 }

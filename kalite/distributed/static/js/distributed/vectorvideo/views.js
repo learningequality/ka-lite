@@ -11,7 +11,7 @@ var VectorVideoView = ContentBaseView.extend({
     events: {
         "click .play-pause": "play_pause_clicked",
         "click .sm2-progress-track": "progress_track_clicked",
-        "click .back_15_sec": "back_15_sec"
+        "click .back_10_sec": "back_10_sec"
     },
 
 
@@ -121,8 +121,7 @@ var VectorVideoView = ContentBaseView.extend({
         // display the current position time
         this.$(".sm2-inline-time").text(this.get_time(this.audio_object.position, true));
         if (!this.dragging) {
-            var left = this.get_position_percent() * this.$(".sm2-progress-track").width();
-            this.$(".sm2-progress-ball")[0].style.left = left + "px";
+            this.$(".sm2-progress-ball")[0].style.left = this.get_position_percent() * this.$(".sm2-progress-track").width() + "px";
         }
     },
 
@@ -165,7 +164,7 @@ var VectorVideoView = ContentBaseView.extend({
     },
 
 
-    back_15_sec: function () {
+    back_10_sec: function () {
         var curr_time = ((parseInt(this.get_position())) / 1000);
         curr_time = curr_time - 15;
         if (curr_time < 0) {
@@ -200,16 +199,42 @@ var VectorVideoView = ContentBaseView.extend({
 
         var papCanvas = this.$(".papCanvas");
         this.paper_scope.setup(papCanvas[0]);
-
         //TODO - When there are two canvasses, paperscope references the second object
         //It is a problem with paper.js itself. 
 
         this.paper_scope.view.onFrame = this.check_if_playing;
+        this.paper_scope.view.onResize = this.resize_canvas;
+        var temp = this.paper_scope.view.onResize;
+    },
+
+    //TODO: FINISH THIS
+    resize_canvas: function () {
+        var size = new Paper.Size($(".canvas-wrapper").width(), $(".canvas-wrapper").height());
+        this.viewSize = size;
+        //console.log(this._project);
+        //this.latest_obj = 0;
+        //this.latest_stroke = 0;
+       // this.latest_sub_stroke = 0;
+        //this.latest_time = 0;
+        //this.project.activeLayer.removeChildren();
     },
 
 
     modify_json: function () {
         var data = this.json_data;
+
+
+        //TODO: ORIGINAL DIMENSIONS SHOULD BE IN THE JSON. HERE I AM ASSUMING 1280 x 720
+        var orig_width = 1280;
+        var orig_height = 720;
+        this.data_model.set("orig_width", orig_width);
+        this.data_model.set("orig_height", orig_height);
+
+
+        //CALCULATE FPS AND HOW OFTEN, IN TERMS OF TIME, THE CURSOR SHOULD BE UPDATES
+        data.actual_fps = data.cursor.length / parseFloat(data.total_time);
+        data.cursor_update_rate = parseFloat(data.total_time) / data.cursor.length;
+
 
         //LOOP THROUGH ALL OBJECTS
         for (var obj = 0; obj < data.operations.length; obj++) {
@@ -238,6 +263,7 @@ var VectorVideoView = ContentBaseView.extend({
                     //ADD EXACT X AND Y COORDINATES TO EVERY SUB STROKE
                     data.operations[obj].strokes[stroke][sub_stroke].x = obj_offset_x + x_cord;
                     data.operations[obj].strokes[stroke][sub_stroke].y = obj_offset_y + y_cord;
+
                 }
 
                 stroke_distances.push(stroke_dist);
@@ -279,7 +305,7 @@ var VectorVideoView = ContentBaseView.extend({
 
     check_if_playing: function () {
         if (this.data_model.get("is_playing") === true) {
-            console.log("Call update_canvas()");
+            //console.log("Call update_canvas()");
             this.update_canvas();
         }
     },
@@ -288,6 +314,12 @@ var VectorVideoView = ContentBaseView.extend({
     update_canvas: function () {
         var curr_time = ((parseInt(this.get_position())) / 1000);
 
+
+        //GET CURRENT WIDTH AND HEIGHT
+        var width_adjust = ($(".canvas-wrapper").width()) / this.data_model.get("orig_width");
+        var height_adjust = ($(".canvas-wrapper").height()) / this.data_model.get("orig_height");
+
+
         //IF REWINDED
         if (curr_time < this.latest_time) {
             this.latest_obj = 0;
@@ -295,12 +327,28 @@ var VectorVideoView = ContentBaseView.extend({
             this.latest_sub_stroke = 0;
             this.latest_time = 0;
             this.paper_scope.project.clear();
-            console.log("make sure this never prints");
         }
 
         else {
             this.latest_time = curr_time;
 
+            //UPDATE CURSOR
+            var cursor_index = parseInt((this.latest_time / parseFloat(this.json_data.total_time)) * this.json_data.cursor.length);
+            var cursor_x = (parseInt(this.json_data.cursor[cursor_index][0])) * width_adjust;
+            var cursor_y = (parseInt(this.json_data.cursor[cursor_index][1])) * height_adjust;
+            if (!this.cursor) {
+                this.cursor = new this.paper_scope.Path.Circle({
+                    center: new this.paper_scope.Point(cursor_x, cursor_y),
+                    radius: 2,
+                    fillColor: 'white'
+                });
+            }
+            else {
+                this.cursor.position = new this.paper_scope.Point(cursor_x, cursor_y);
+            }
+
+
+            //UPDATE STROKES
             //LOOP THROUGH OBJECTS
             for (var obj = this.latest_obj; obj < this.json_data.operations.length; obj++) {
 
@@ -314,40 +362,45 @@ var VectorVideoView = ContentBaseView.extend({
                     //LOOP THROUGH STROKES
                     for (var stroke = this.latest_stroke; stroke < this.json_data.operations[obj].strokes.length; stroke++) {
 
-                        if ((parseFloat(this.json_data.operations[obj].strokes[stroke].stroke_start_time)) <= this.latest_time) {
+                        if (((parseFloat(this.json_data.operations[obj].strokes[stroke].stroke_start_time)) <= this.latest_time)) {
                             this.latest_stroke = stroke;
 
                             //LOOP THROUGH SUB STROKES
                             for (var sub_stroke = this.latest_sub_stroke; sub_stroke < this.json_data.operations[obj].strokes[stroke].length - 1; sub_stroke++) {
 
-                                if ((parseFloat(this.json_data.operations[obj].strokes[stroke][sub_stroke].sub_stroke_start_time)) <= this.latest_time && sub_stroke) {
-                                    this.latest_sub_stroke = sub_stroke;
+                                if (((parseFloat(this.json_data.operations[obj].strokes[stroke][sub_stroke].sub_stroke_start_time)) <= this.latest_time)) {
 
                                     var curr_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke];
                                     var nxt_sub_stroke = this.json_data.operations[obj].strokes[stroke][sub_stroke + 1];
-                                    var curr_sub_stroke_x = parseFloat(curr_sub_stroke.x);
-                                    var curr_sub_stroke_y = parseFloat(curr_sub_stroke.y);
-                                    var nxt_sub_stroke_x = parseFloat(nxt_sub_stroke.x);
-                                    var nxt_sub_stroke_y = parseFloat(nxt_sub_stroke.y);
+                                    var curr_sub_stroke_x = parseFloat(curr_sub_stroke.x) * width_adjust;
+                                    var curr_sub_stroke_y = parseFloat(curr_sub_stroke.y) * height_adjust;
+                                    var nxt_sub_stroke_x = parseFloat(nxt_sub_stroke.x) * width_adjust;
+                                    var nxt_sub_stroke_y = parseFloat(nxt_sub_stroke.y) * height_adjust;
 
                                     //DRAW
-                                    var path = new this.paper_scope.Path();
-                                    path.strokeColor = new this.paper_scope.Color(red, green, blue);
-                                    path.add(new this.paper_scope.Point(curr_sub_stroke_x, curr_sub_stroke_y));
-                                    path.add(new this.paper_scope.Point(nxt_sub_stroke_x, nxt_sub_stroke_y));
+                                    var sub_stroke_path = new this.paper_scope.Path.Line((new this.paper_scope.Point(curr_sub_stroke_x, curr_sub_stroke_y)), (new this.paper_scope.Point(nxt_sub_stroke_x, nxt_sub_stroke_y)));
+                                    sub_stroke_path.strokeColor = new this.paper_scope.Color(red, green, blue);
+                                    sub_stroke_path.strokeCap = 'round';
+                                    sub_stroke_path.strokeJoin = 'round';
 
                                     //TESTING
-                                    console.log(obj, stroke, sub_stroke);
+                                    //console.log(obj, stroke, sub_stroke);
 
-                                    //IF LAST SUBSTROKE
-                                    if (sub_stroke == this.json_data.operations[obj].strokes[stroke].length - 2) {
+                                    //IF LAST SUBSTROKE AND LAST STROKE
+                                    if ((sub_stroke == this.json_data.operations[obj].strokes[stroke].length - 2) && (stroke == this.json_data.operations[obj].strokes.length - 1)) {
                                         this.latest_sub_stroke = 0;
+                                        this.latest_stroke = 0;
+                                        this.latest_obj++;
+                                    }
+                                    //IF JUST LAST SUBSTROKE
+                                    else if (sub_stroke == this.json_data.operations[obj].strokes[stroke].length - 2) {
+                                        this.latest_sub_stroke = 0;
+                                        this.latest_stroke++;
+                                    }
+                                    else {
+                                        this.latest_sub_stroke = sub_stroke + 1;
                                     }
                                 }
-                            }
-                            // IF LAST STROKE
-                            if (stroke == this.json_data.operations[obj].strokes.length - 1) {
-                                this.latest_stroke = 0;
                             }
                         }
                     }
@@ -355,39 +408,6 @@ var VectorVideoView = ContentBaseView.extend({
             }
         }
     }
-
-
-    /*on_resize: _.throttle(function() {
-     var available_width = $(".content-player-container").width();
-     var available_height = $(window).height() * 0.9;
-     this.set_container_size(available_width, available_height);
-     }, 500),
-
-     set_container_size: function(container_width, container_height) {
-
-     var container_ratio = container_width / container_height;
-
-     var width = container_width;
-     var height = container_height;
-
-     var ratio = this.data_model.get("width") / this.data_model.get("height");
-
-     console.log(ratio);
-
-     if (container_ratio > ratio) {
-     width = container_height * ratio;
-     } else {
-     height = container_width / ratio;
-     }
-
-     if (this.player) {
-     console.log("meep");
-     this.player.width(width).height(height);
-     }
-
-     this.$("#video-player").height(height);
-     },
-     */
 });
 
 
