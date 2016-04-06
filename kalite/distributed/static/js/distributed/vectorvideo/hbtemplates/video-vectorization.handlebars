@@ -1,6 +1,8 @@
-<canvas class="video-player papCanvas"></canvas>
+<div class="canvas-wrapper">
+    <canvas class="video-player papCanvas" keepalive="true" resize="true"></canvas>
+</div>
 
-<div class="sm2-bar-ui compact full-width">
+<div class="sm2-bar-ui compact full-width textured flat">
     <div class="bd sm2-main-controls">
         <div class="sm2-inline-texture"></div>
         <div class="sm2-inline-gradient"></div>
@@ -13,7 +15,7 @@
 
         <div class="sm2-inline-element sm2-button-element">
             <div class="sm2-button-bd">
-                <a href="#back_15_sec" class="sm2-inline-button back_15_sec">back_15_sec</a>
+                <a href="#back_10_sec" class="sm2-inline-button back_10_sec">back_10_sec</a>
             </div>
         </div>
 
@@ -45,12 +47,6 @@
     <div class="bd sm2-playlist-drawer sm2-element">
         <div class="sm2-inline-texture">
             <div class="sm2-box-shadow"></div>
-        </div>
-
-        <div class="sm2-playlist-wrapper">
-            <ul class="sm2-playlist-bd">
-                <li><a href="/content/{{ content_id }}.{{ format }}">{{ title }}</a></li>
-            </ul>
         </div>
     </div>
 </div>
