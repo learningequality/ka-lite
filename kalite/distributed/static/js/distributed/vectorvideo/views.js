@@ -1,4 +1,5 @@
 var soundManager = require("soundmanager2").soundManager;
+//var soundManager = require("../../../js/distributed/vectorvideo/soundmanager2_tester.js").soundManager;
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 var Paper = require("../../../../../../node_modules/paper/dist/paper-full.min.js");
@@ -17,7 +18,7 @@ var VectorVideoView = ContentBaseView.extend({
 
     initialize: function (options) {
         ContentBaseView.prototype.initialize.call(this, options);
-        _.bindAll(this, "create_audio_object", "check_if_playing");
+        _.bindAll(this, "create_audio_object", "check_if_playing", "resize_canvas");
         this.render();
         this.paper_scope = new Paper.paper.PaperScope();
     },
@@ -42,7 +43,8 @@ var VectorVideoView = ContentBaseView.extend({
         window.soundManager.setup({
             url: window.sessionModel.get("STATIC_URL") + "soundmanager/",
             preferFlash: false,
-            onready: this.create_audio_object
+            onready: this.create_audio_object,
+            html5PollingInterval: 15
         });
         //this.on_resize();
     },
@@ -205,18 +207,23 @@ var VectorVideoView = ContentBaseView.extend({
         this.paper_scope.view.onFrame = this.check_if_playing;
         this.paper_scope.view.onResize = this.resize_canvas;
         var temp = this.paper_scope.view.onResize;
+        console.log(this);
     },
 
     //TODO: FINISH THIS
     resize_canvas: function () {
         var size = new Paper.Size($(".canvas-wrapper").width(), $(".canvas-wrapper").height());
-        this.viewSize = size;
-        //console.log(this._project);
-        //this.latest_obj = 0;
-        //this.latest_stroke = 0;
-       // this.latest_sub_stroke = 0;
-        //this.latest_time = 0;
-        //this.project.activeLayer.removeChildren();
+        this.paper_scope.view.viewSize = size;
+        this.reset_canvas();
+    },
+
+    reset_canvas: function () {
+        this.latest_obj = 0;
+        this.latest_stroke = 0;
+        this.latest_sub_stroke = 0;
+        this.latest_time = 0;
+        this.paper_scope.project.clear();
+        this.cursor = null;
     },
 
 
@@ -242,7 +249,8 @@ var VectorVideoView = ContentBaseView.extend({
             var obj_offset_y = parseInt(data.operations[obj].offset_y);
             var obj_start_time = parseFloat(data.operations[obj].start);
             var obj_end_time = parseFloat(data.operations[obj].end);
-            var obj_dur = obj_end_time - obj_start_time;
+            //TODO: ADJUST THE OBJECT DURATION BY DIVIDING OR SUBTRACTING BY SOMETHING
+            var obj_dur = (obj_end_time - obj_start_time);
             var obj_dist = 0;
             var stroke_distances = [];
 
@@ -305,7 +313,6 @@ var VectorVideoView = ContentBaseView.extend({
 
     check_if_playing: function () {
         if (this.data_model.get("is_playing") === true) {
-            //console.log("Call update_canvas()");
             this.update_canvas();
         }
     },
@@ -322,30 +329,11 @@ var VectorVideoView = ContentBaseView.extend({
 
         //IF REWINDED
         if (curr_time < this.latest_time) {
-            this.latest_obj = 0;
-            this.latest_stroke = 0;
-            this.latest_sub_stroke = 0;
-            this.latest_time = 0;
-            this.paper_scope.project.clear();
+            this.reset_canvas();
         }
 
         else {
             this.latest_time = curr_time;
-
-            //UPDATE CURSOR
-            var cursor_index = parseInt((this.latest_time / parseFloat(this.json_data.total_time)) * this.json_data.cursor.length);
-            var cursor_x = (parseInt(this.json_data.cursor[cursor_index][0])) * width_adjust;
-            var cursor_y = (parseInt(this.json_data.cursor[cursor_index][1])) * height_adjust;
-            if (!this.cursor) {
-                this.cursor = new this.paper_scope.Path.Circle({
-                    center: new this.paper_scope.Point(cursor_x, cursor_y),
-                    radius: 2,
-                    fillColor: 'white'
-                });
-            }
-            else {
-                this.cursor.position = new this.paper_scope.Point(cursor_x, cursor_y);
-            }
 
 
             //UPDATE STROKES
@@ -406,6 +394,22 @@ var VectorVideoView = ContentBaseView.extend({
                     }
                 }
             }
+
+            //UPDATE CURSOR
+            var cursor_index = parseInt((this.latest_time / parseFloat(this.json_data.total_time)) * this.json_data.cursor.length);
+            var cursor_x = (parseInt(this.json_data.cursor[cursor_index][0])) * width_adjust;
+            var cursor_y = (parseInt(this.json_data.cursor[cursor_index][1])) * height_adjust;
+            if (!this.cursor) {
+                this.cursor = new this.paper_scope.Path.Circle({
+                    center: new this.paper_scope.Point(cursor_x, cursor_y),
+                    radius: 2,
+                    fillColor: 'white'
+                });
+            }
+            else {
+                this.cursor.position = new this.paper_scope.Point(cursor_x, cursor_y);
+            }
+
         }
     }
 });
