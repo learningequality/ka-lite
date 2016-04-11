@@ -1,5 +1,5 @@
-var soundManager = require("soundmanager2").soundManager;
-//var soundManager = require("../../../js/distributed/vectorvideo/soundmanager2_tester.js").soundManager;
+//var soundManager = require("soundmanager2").soundManager;
+var soundManager = require("../../../js/distributed/vectorvideo/soundmanager2_tester.js").soundManager;
 var ContentBaseView = require("content/baseview");
 var Handlebars = require("base/handlebars");
 var Paper = require("../../../../../../node_modules/paper/dist/paper-full.min.js");
@@ -12,7 +12,9 @@ var VectorVideoView = ContentBaseView.extend({
     events: {
         "click .play-pause": "play_pause_clicked",
         "click .sm2-progress-track": "progress_track_clicked",
-        "click .back_10_sec": "back_10_sec"
+        "click .back_10_sec": "back_10_sec",
+        "click .papCanvas": "canvas_clicked",
+        "click .playback_rate": "change_playback_rate"
     },
 
 
@@ -75,6 +77,10 @@ var VectorVideoView = ContentBaseView.extend({
             }
         }).css("position", "absolute");
         //$(window).resize(this.on_resize);
+    },
+
+    canvas_clicked: function () {
+        this.play_pause_clicked();
     },
 
 
@@ -175,6 +181,11 @@ var VectorVideoView = ContentBaseView.extend({
         this.set_position(curr_time * 1000);
     },
 
+    change_playback_rate: function () {
+        var speed= parseFloat($('#playback_rate_half').html());
+        this.audio_object.setPlaybackRate(speed);
+    },
+
 
     close: function () {
         this.audio_object.stop();
@@ -206,11 +217,9 @@ var VectorVideoView = ContentBaseView.extend({
 
         this.paper_scope.view.onFrame = this.check_if_playing;
         this.paper_scope.view.onResize = this.resize_canvas;
-        var temp = this.paper_scope.view.onResize;
-        console.log(this);
+        this.resize_canvas();
     },
 
-    //TODO: FINISH THIS
     resize_canvas: function () {
         var size = new Paper.Size($(".canvas-wrapper").width(), $(".canvas-wrapper").height());
         this.paper_scope.view.viewSize = size;
